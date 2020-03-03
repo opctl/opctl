@@ -8,7 +8,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/internal/fakes"
+	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 	"io/ioutil"
 )
 
@@ -16,13 +17,13 @@ var _ = Context("imagePuller", func() {
 	Context("imageRef valid", func() {
 		It("should call dockerClient.ImagePull w/ expected args", func() {
 			/* arrange */
-			providedImage := &model.DCGContainerCallImage{Ref: "dummy-ref"}
+			providedImageRef := "imageRef"
 			expectedImagePullOptions := types.ImagePullOptions{}
 			providedCtx := context.Background()
 
 			imagePullResponse := ioutil.NopCloser(bytes.NewBufferString(""))
 
-			_fakeDockerClient := new(fakeDockerClient)
+			_fakeDockerClient := new(FakeCommonAPIClient)
 			_fakeDockerClient.ImagePullReturns(imagePullResponse, nil)
 
 			objectUnderTest := _imagePuller{
@@ -32,10 +33,11 @@ var _ = Context("imagePuller", func() {
 			/* act */
 			err := objectUnderTest.Pull(
 				providedCtx,
-				providedImage,
 				"",
+				&model.PullCreds{},
+				providedImageRef,
 				"",
-				new(pubsub.FakeEventPublisher),
+				new(FakeEventPublisher),
 			)
 			if nil != err {
 				panic(err)
@@ -44,7 +46,7 @@ var _ = Context("imagePuller", func() {
 			/* assert */
 			actualCtx, actualImageRef, actualImagePullOptions := _fakeDockerClient.ImagePullArgsForCall(0)
 			Expect(actualCtx).To(Equal(providedCtx))
-			Expect(actualImageRef).To(Equal(providedImage.Ref))
+			Expect(actualImageRef).To(Equal(providedImageRef))
 			Expect(actualImagePullOptions).To(Equal(expectedImagePullOptions))
 		})
 		Context("dockerClient.ImagePull errors", func() {
@@ -54,7 +56,7 @@ var _ = Context("imagePuller", func() {
 				expectedError := imagePullError
 				imagePullResponse := ioutil.NopCloser(bytes.NewBufferString(""))
 
-				_fakeDockerClient := new(fakeDockerClient)
+				_fakeDockerClient := new(FakeCommonAPIClient)
 				_fakeDockerClient.ImagePullReturns(imagePullResponse, imagePullError)
 
 				objectUnderTest := _imagePuller{
@@ -64,10 +66,11 @@ var _ = Context("imagePuller", func() {
 				/* act */
 				actualError := objectUnderTest.Pull(
 					context.Background(),
-					&model.DCGContainerCallImage{Ref: "dummy-ref"},
 					"",
+					nil,
+					"dummyImageRef",
 					"",
-					new(pubsub.FakeEventPublisher),
+					new(FakeEventPublisher),
 				)
 
 				/* assert */

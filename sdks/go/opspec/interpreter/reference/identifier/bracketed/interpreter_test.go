@@ -4,7 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/bracketed/item"
+	. "github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/bracketed/internal/fakes"
+	itemFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/bracketed/item/fakes"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/value"
 
 	. "github.com/onsi/ginkgo"
@@ -61,7 +62,7 @@ var _ = Context("Interpreter", func() {
 			/* arrange */
 			providedData := model.Value{String: new(string)}
 
-			fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
+			fakeCoerceToArrayOrObjecter := new(FakeCoerceToArrayOrObjecter)
 			// err to trigger immediate return
 			fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(nil, errors.New("dummyErr"))
 
@@ -88,7 +89,7 @@ var _ = Context("Interpreter", func() {
 				providedRef := "[]"
 				providedData := model.Value{String: new(string)}
 
-				fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
+				fakeCoerceToArrayOrObjecter := new(FakeCoerceToArrayOrObjecter)
 				coerceToArrayOrObjectErr := errors.New("coerceToArrayOrObjectErr")
 				fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(nil, coerceToArrayOrObjectErr)
 
@@ -114,11 +115,11 @@ var _ = Context("Interpreter", func() {
 				providedRefIdentifier := "dummyIdentifier"
 				providedRef := fmt.Sprintf("[%v]", providedRefIdentifier)
 
-				fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
+				fakeCoerceToArrayOrObjecter := new(FakeCoerceToArrayOrObjecter)
 				coercedArray := model.Value{Array: new([]interface{})}
 				fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedArray, nil)
 
-				fakeItemInterpreter := new(item.FakeInterpreter)
+				fakeItemInterpreter := new(itemFakes.FakeInterpreter)
 				// err to trigger immediate return
 				fakeItemInterpreter.InterpretReturns(nil, errors.New("dummyErr"))
 
@@ -144,11 +145,11 @@ var _ = Context("Interpreter", func() {
 				It("should return expected result", func() {
 					/* arrange */
 
-					fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
+					fakeCoerceToArrayOrObjecter := new(FakeCoerceToArrayOrObjecter)
 					coercedArray := model.Value{Array: new([]interface{})}
 					fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedArray, nil)
 
-					fakeItemInterpreter := new(item.FakeInterpreter)
+					fakeItemInterpreter := new(itemFakes.FakeInterpreter)
 					itemInterpreterErr := errors.New("itemDereferencerErr")
 					fakeItemInterpreter.InterpretReturns(nil, itemInterpreterErr)
 
@@ -172,11 +173,11 @@ var _ = Context("Interpreter", func() {
 				It("should return expected result", func() {
 					/* arrange */
 
-					fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
+					fakeCoerceToArrayOrObjecter := new(FakeCoerceToArrayOrObjecter)
 					coercedArray := model.Value{Array: new([]interface{})}
 					fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedArray, nil)
 
-					fakeItemInterpreter := new(item.FakeInterpreter)
+					fakeItemInterpreter := new(itemFakes.FakeInterpreter)
 					interpretdItemValue := model.Value{}
 					fakeItemInterpreter.InterpretReturns(&interpretdItemValue, nil)
 
@@ -204,7 +205,7 @@ var _ = Context("Interpreter", func() {
 				providedRefIdentifier := "dummyIdentifier"
 				providedRef := fmt.Sprintf("[%v]", providedRefIdentifier)
 
-				fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
+				fakeCoerceToArrayOrObjecter := new(FakeCoerceToArrayOrObjecter)
 				object := &map[string]interface{}{providedRefIdentifier: "dummyValue"}
 				coercedObject := model.Value{Object: object}
 				fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedObject, nil)
@@ -233,7 +234,7 @@ var _ = Context("Interpreter", func() {
 				It("should return expected result", func() {
 					/* arrange */
 
-					fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
+					fakeCoerceToArrayOrObjecter := new(FakeCoerceToArrayOrObjecter)
 					coercedObject := model.Value{Object: new(map[string]interface{})}
 					fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedObject, nil)
 
@@ -263,7 +264,7 @@ var _ = Context("Interpreter", func() {
 				It("should return expected result", func() {
 					/* arrange */
 
-					fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
+					fakeCoerceToArrayOrObjecter := new(FakeCoerceToArrayOrObjecter)
 					coercedObject := model.Value{Object: new(map[string]interface{})}
 					fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedObject, nil)
 

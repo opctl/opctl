@@ -81,12 +81,14 @@ func (cr _runContainer) RunContainer(
 
 	var pullErr error
 	if nil != req.Image.Src {
-		req.Image.Ref = fmt.Sprintf("%s:latest", req.ContainerID)
+		imageRef := fmt.Sprintf("%s:latest", req.ContainerID)
+		req.Image.Ref = &imageRef
 
 		pullErr = cr.imagePusher.Push(
 			ctx,
-			req.Image,
 			req.ContainerID,
+			imageRef,
+			req.Image.Src,
 			req.RootOpID,
 			eventPublisher,
 		)
@@ -95,8 +97,9 @@ func (cr _runContainer) RunContainer(
 		// note: this trades local reproducibility for distributed reproducibility
 		pullErr = cr.imagePuller.Pull(
 			ctx,
-			req.Image,
 			req.ContainerID,
+			req.Image.PullCreds,
+			*req.Image.Ref,
 			req.RootOpID,
 			eventPublisher,
 		)
@@ -113,7 +116,7 @@ func (cr _runContainer) RunContainer(
 	containerConfig := cr.containerConfigFactory.Construct(
 		req.Cmd,
 		req.EnvVars,
-		req.Image.Ref,
+		*req.Image.Ref,
 		portBindings,
 		req.WorkDir,
 	)

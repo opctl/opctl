@@ -1,13 +1,12 @@
 package item
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeParseIndexer.go --fake-name fakeParseIndexer ./ parseIndexer
-
 import (
 	"fmt"
 	"strconv"
 )
 
 // parseIndexer parses identifier as an index of array. If identifier is a negative integer, indexing will occur from the end of the array
+//counterfeiter:generate -o internal/fakes/parseIndexer.go . parseIndexer
 type parseIndexer interface {
 	ParseIndex(
 		identifier string,

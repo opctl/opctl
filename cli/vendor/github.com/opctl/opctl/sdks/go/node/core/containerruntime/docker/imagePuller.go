@@ -1,7 +1,5 @@
 package docker
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeImagePuller.go --fake-name fakeImagePuller ./ imagePuller
-
 import (
 	"context"
 	"encoding/json"
@@ -13,11 +11,13 @@ import (
 	"io"
 )
 
+//counterfeiter:generate -o internal/fakes/imagePuller.go . imagePuller
 type imagePuller interface {
 	Pull(
 		ctx context.Context,
-		dcgContainerImage *model.DCGContainerCallImage,
 		containerID string,
+		imagePullCreds *model.PullCreds,
+		imageRef string,
 		rootOpID string,
 		eventPublisher pubsub.EventPublisher,
 	) error
@@ -37,20 +37,21 @@ type _imagePuller struct {
 
 func (ip _imagePuller) Pull(
 	ctx context.Context,
-	dcgContainerImage *model.DCGContainerCallImage,
 	containerID string,
+	imagePullCreds *model.PullCreds,
+	imageRef string,
 	rootOpID string,
 	eventPublisher pubsub.EventPublisher,
 ) error {
 
 	imagePullOptions := types.ImagePullOptions{}
-	if nil != dcgContainerImage.PullCreds &&
-		"" != dcgContainerImage.PullCreds.Username &&
-		"" != dcgContainerImage.PullCreds.Password {
+	if nil != imagePullCreds &&
+		"" != imagePullCreds.Username &&
+		"" != imagePullCreds.Password {
 		var err error
 		imagePullOptions.RegistryAuth, err = constructRegistryAuth(
-			dcgContainerImage.PullCreds.Username,
-			dcgContainerImage.PullCreds.Password,
+			imagePullCreds.Username,
+			imagePullCreds.Password,
 		)
 		if nil != err {
 			return err
@@ -59,7 +60,7 @@ func (ip _imagePuller) Pull(
 
 	imagePullResp, err := ip.dockerClient.ImagePull(
 		ctx,
-		dcgContainerImage.Ref,
+		imageRef,
 		imagePullOptions,
 	)
 	if nil != err {

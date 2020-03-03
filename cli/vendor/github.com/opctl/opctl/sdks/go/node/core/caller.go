@@ -1,7 +1,5 @@
 package core
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeCaller.go --fake-name fakeCaller ./ caller
-
 import (
 	"context"
 	"errors"
@@ -13,6 +11,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
+//counterfeiter:generate -o internal/fakes/caller.go . caller
 type caller interface {
 	// Call executes a call
 	Call(

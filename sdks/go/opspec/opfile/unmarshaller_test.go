@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
+	. "github.com/opctl/opctl/sdks/go/opspec/opfile/internal/fakes"
 )
 
 var _ = Context("unmarshaller", func() {
@@ -17,7 +18,7 @@ var _ = Context("unmarshaller", func() {
 			/* arrange */
 			providedBytes := []byte("dummyBytes")
 
-			fakeValidator := new(fakeValidator)
+			fakeValidator := new(FakeValidator)
 
 			// err to cause immediate return
 			fakeValidator.ValidateReturns([]error{errors.New("dummyError")})
@@ -44,7 +45,7 @@ var _ = Context("unmarshaller", func() {
     - %v
 -`, errs[0], errs[1])
 
-				fakeValidator := new(fakeValidator)
+				fakeValidator := new(FakeValidator)
 
 				// err to cause immediate return
 				fakeValidator.ValidateReturns(errs)
@@ -101,7 +102,7 @@ var _ = Context("unmarshaller", func() {
 				}
 
 				objectUnderTest := _unmarshaller{
-					validator: new(fakeValidator),
+					validator: new(FakeValidator),
 				}
 
 				/* act */

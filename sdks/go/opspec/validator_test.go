@@ -11,9 +11,9 @@ import (
 	"github.com/ghodss/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	. "github.com/opctl/opctl/sdks/go/opspec/opfile/fakes"
 )
 
 var _ = Describe("Validator", func() {
@@ -53,7 +53,7 @@ var _ = Describe("Validator", func() {
 								for _, scenario := range scenarioOpFile {
 									if nil != scenario.Validate {
 										/* act */
-										fakeHandle := new(data.FakeHandle)
+										fakeHandle := new(modelFakes.FakeDataHandle)
 										fakeHandle.GetContentStub = func(ctx context.Context, contentPath string) (model.ReadSeekCloser, error) {
 											return os.Open(filepath.Join(path, contentPath))
 										}
@@ -82,9 +82,9 @@ var _ = Describe("Validator", func() {
 		It("should call opFileGetter.Get w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
-			providedOpHandle := new(data.FakeHandle)
+			providedOpHandle := new(modelFakes.FakeDataHandle)
 
-			fakeOpFileGetter := new(opfile.FakeGetter)
+			fakeOpFileGetter := new(FakeGetter)
 			// error to trigger immediate return
 			fakeOpFileGetter.GetReturns(nil, errors.New("dummyErr"))
 
@@ -110,7 +110,7 @@ var _ = Describe("Validator", func() {
 				/* arrange */
 				expectedErrors := []error{errors.New("dummyError")}
 
-				fakeOpFileGetter := new(opfile.FakeGetter)
+				fakeOpFileGetter := new(FakeGetter)
 				fakeOpFileGetter.GetReturns(nil, expectedErrors[0])
 
 				objectUnderTest := _validator{
@@ -120,7 +120,7 @@ var _ = Describe("Validator", func() {
 				/* act */
 				actualErrors := objectUnderTest.Validate(
 					context.Background(),
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 				)
 
 				/* assert */
@@ -130,7 +130,7 @@ var _ = Describe("Validator", func() {
 		Context("opFileGetter.Get doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeOpFileGetter := new(opfile.FakeGetter)
+				fakeOpFileGetter := new(FakeGetter)
 
 				objectUnderTest := _validator{
 					opFileGetter: fakeOpFileGetter,
@@ -139,7 +139,7 @@ var _ = Describe("Validator", func() {
 				/* act */
 				actualErrs := objectUnderTest.Validate(
 					context.Background(),
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 				)
 
 				/* assert */

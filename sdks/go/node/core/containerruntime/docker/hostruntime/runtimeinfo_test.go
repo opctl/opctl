@@ -6,12 +6,13 @@ import (
 	"github.com/docker/docker/api/types/container"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/hostruntime/internal/fakes"
 	uuid "github.com/satori/go.uuid"
 )
 
 var _ = Context("RuntimeInfo", func() {
 	Context("when not running in a container", func() {
-		cli := fakeContainerInspector{}
+		cli := FakeContainerInspector{}
 		cu := containerUtils{
 			inAContainer: func() bool { return false },
 		}
@@ -35,7 +36,7 @@ var _ = Context("RuntimeInfo", func() {
 		}
 
 		Context("when given docker engine doesn't host opctl container", func() {
-			cli := fakeContainerInspector{}
+			cli := FakeContainerInspector{}
 			cli.ContainerInspectReturns(types.ContainerJSON{}, FakeNotFoundError{})
 
 			It("should return empty info", func() {
@@ -49,7 +50,7 @@ var _ = Context("RuntimeInfo", func() {
 		})
 
 		Context("when given docker engine hosts opctl container", func() {
-			cli := fakeContainerInspector{}
+			cli := FakeContainerInspector{}
 			containerJSON := types.ContainerJSON{
 				ContainerJSONBase: &types.ContainerJSONBase{
 					HostConfig: &container.HostConfig{

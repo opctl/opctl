@@ -4,9 +4,9 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	. "github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater/fakes"
 )
 
 var _ = Context("Interpret", func() {
@@ -21,7 +21,7 @@ var _ = Context("Interpret", func() {
 				actualValue, _ := objectUnderTest.Interpret(
 					providedValueExpression,
 					map[string]*model.Value{},
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 				)
 
 				/* assert */
@@ -38,7 +38,7 @@ var _ = Context("Interpret", func() {
 				actualValue, _ := objectUnderTest.Interpret(
 					providedValueExpression,
 					map[string]*model.Value{},
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 				)
 
 				/* assert */
@@ -56,7 +56,7 @@ var _ = Context("Interpret", func() {
 				actualValue, _ := objectUnderTest.Interpret(
 					providedValueExpression,
 					map[string]*model.Value{},
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 				)
 
 				/* assert */
@@ -68,13 +68,13 @@ var _ = Context("Interpret", func() {
 		Context("expression is []interface{}", func() {
 		})
 		Context("expression is string", func() {
-			It("should call interpolater.Interpolate w/ expected args & return expected result", func() {
+			It("should call interpolaterFakes.Interpolate w/ expected args & return expected result", func() {
 				/* arrange */
 				providedScope := map[string]*model.Value{"dummyName": {}}
 				providedExpression := "dummyExpression"
-				providedOpRef := new(data.FakeHandle)
+				providedOpRef := new(modelFakes.FakeDataHandle)
 
-				fakeInterpolater := new(interpolater.Fake)
+				fakeInterpolater := new(FakeInterpolater)
 				// err to trigger immediate return
 				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
@@ -99,10 +99,10 @@ var _ = Context("Interpret", func() {
 				Expect(actualOpRef).To(Equal(providedOpRef))
 
 			})
-			Context("interpolater.Interpolate errs", func() {
+			Context("interpolaterFakes.Interpolate errs", func() {
 				It("should return expected err", func() {
 					/* arrange */
-					fakeInterpolater := new(interpolater.Fake)
+					fakeInterpolater := new(FakeInterpolater)
 					interpolateErr := errors.New("dummyError")
 					fakeInterpolater.InterpolateReturns("", interpolateErr)
 
@@ -114,7 +114,7 @@ var _ = Context("Interpret", func() {
 					_, actualErr := objectUnderTest.Interpret(
 						"dummyExpression",
 						map[string]*model.Value{},
-						new(data.FakeHandle),
+						new(modelFakes.FakeDataHandle),
 					)
 
 					/* assert */
@@ -125,7 +125,7 @@ var _ = Context("Interpret", func() {
 		})
 		It("should return expected result", func() {
 			/* arrange */
-			fakeInterpolater := new(interpolater.Fake)
+			fakeInterpolater := new(FakeInterpolater)
 
 			interpolatedValue := "dummyString"
 			fakeInterpolater.InterpolateReturns(interpolatedValue, nil)
@@ -138,7 +138,7 @@ var _ = Context("Interpret", func() {
 			actualValue, actualErr := objectUnderTest.Interpret(
 				"dummyExpression",
 				map[string]*model.Value{},
-				new(data.FakeHandle),
+				new(modelFakes.FakeDataHandle),
 			)
 
 			/* assert */

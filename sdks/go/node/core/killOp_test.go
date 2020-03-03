@@ -4,6 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
+	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 )
 
 var _ = Context("core", func() {
@@ -12,7 +13,7 @@ var _ = Context("core", func() {
 			/* arrange */
 			providedReq := model.KillOpReq{OpID: "dummyOpID"}
 
-			fakeCallKiller := new(fakeCallKiller)
+			fakeCallKiller := new(FakeCallKiller)
 
 			objectUnderTest := _core{
 				callKiller: fakeCallKiller,

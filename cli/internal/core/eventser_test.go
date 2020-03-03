@@ -7,10 +7,11 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
-	cliModel "github.com/opctl/opctl/cli/internal/model"
+	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
+	modelFakes "github.com/opctl/opctl/cli/internal/model/fakes"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api/client"
+	clientFakes "github.com/opctl/opctl/sdks/go/node/api/client/fakes"
 )
 
 var _ = Context("Eventser", func() {
@@ -19,14 +20,14 @@ var _ = Context("Eventser", func() {
 			/* arrange */
 			providedCtx := context.Background()
 
-			fakeAPIClient := new(client.Fake)
-			fakeNodeHandle := new(cliModel.FakeNodeHandle)
+			fakeAPIClient := new(clientFakes.FakeClient)
+			fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 			fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 			fakeNodeProvider := new(nodeprovider.Fake)
 			fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
-			fakeCliExiter := new(cliexiter.Fake)
+			fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 			eventChannel := make(chan model.Event)
 			close(eventChannel)
@@ -53,11 +54,11 @@ var _ = Context("Eventser", func() {
 		Context("client.GetEventStream errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeCliExiter := new(cliexiter.Fake)
+				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 				returnedError := errors.New("dummyError")
 
-				fakeAPIClient := new(client.Fake)
-				fakeNodeHandle := new(cliModel.FakeNodeHandle)
+				fakeAPIClient := new(clientFakes.FakeClient)
+				fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 				fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 				fakeNodeProvider := new(nodeprovider.Fake)
@@ -84,10 +85,10 @@ var _ = Context("Eventser", func() {
 			Context("channel closes unexpectedly", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
-					fakeCliExiter := new(cliexiter.Fake)
+					fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
-					fakeAPIClient := new(client.Fake)
-					fakeNodeHandle := new(cliModel.FakeNodeHandle)
+					fakeAPIClient := new(clientFakes.FakeClient)
+					fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 					fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 					fakeNodeProvider := new(nodeprovider.Fake)

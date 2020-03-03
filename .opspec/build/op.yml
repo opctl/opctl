@@ -35,7 +35,7 @@ run:
             go run github.com/rakyll/statik -src ../webapp/build -dest internal/core/node/creater -f
         dirs:
           /src: $(srcDir)
-        image: { ref: 'golang:1.13' }
+        image: { ref: 'golang:1.14' }
         workDir: /src/cli
     - op:
         ref: ../cli/.opspec/build

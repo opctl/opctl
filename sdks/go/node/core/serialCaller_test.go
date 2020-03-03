@@ -6,10 +6,11 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
+	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("serialCaller", func() {
@@ -17,8 +18,8 @@ var _ = Context("serialCaller", func() {
 		It("should return serialCaller", func() {
 			/* arrange/act/assert */
 			Expect(newSerialCaller(
-				new(fakeCaller),
-				new(pubsub.Fake),
+				new(FakeCaller),
+				new(FakePubSub),
 			)).To(Not(BeNil()))
 		})
 	})
@@ -29,7 +30,7 @@ var _ = Context("serialCaller", func() {
 			providedCallID := "providedCallID"
 			providedInboundScope := map[string]*model.Value{}
 			providedRootOpID := "providedRootOpID"
-			providedOpHandle := new(data.FakeHandle)
+			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedSCGSerialCalls := []*model.SCG{
 				{
 					Container: &model.SCGContainerCall{},
@@ -45,7 +46,7 @@ var _ = Context("serialCaller", func() {
 				},
 			}
 
-			fakePubSub := new(pubsub.Fake)
+			fakePubSub := new(FakePubSub)
 			eventChannel := make(chan model.Event, 100)
 			fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
 				for index := range providedSCGSerialCalls {
@@ -58,9 +59,9 @@ var _ = Context("serialCaller", func() {
 				return eventChannel, make(chan error)
 			}
 
-			fakeCaller := new(fakeCaller)
+			fakeCaller := new(FakeCaller)
 
-			fakeUniqueStringFactory := new(uniquestring.Fake)
+			fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 			uniqueStringCallIndex := 0
 			fakeUniqueStringFactory.ConstructStub = func() (string, error) {
 				defer func() {
@@ -110,7 +111,7 @@ var _ = Context("serialCaller", func() {
 				providedCallID := "dummyCallID"
 				providedInboundScope := map[string]*model.Value{}
 				providedRootOpID := "dummyRootOpID"
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 				providedSCGSerialCalls := []*model.SCG{
 					{
 						Container: &model.SCGContainerCall{},
@@ -120,7 +121,7 @@ var _ = Context("serialCaller", func() {
 				callID := "callID"
 
 				expectedErrorMessage := "expectedErrorMessage"
-				fakePubSub := new(pubsub.Fake)
+				fakePubSub := new(FakePubSub)
 				eventChannel := make(chan model.Event, 100)
 				fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
 					for range providedSCGSerialCalls {
@@ -137,11 +138,11 @@ var _ = Context("serialCaller", func() {
 					return eventChannel, make(chan error)
 				}
 
-				fakeUniqueStringFactory := new(uniquestring.Fake)
+				fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 				fakeUniqueStringFactory.ConstructReturns(callID, nil)
 
 				objectUnderTest := _serialCaller{
-					caller:              new(fakeCaller),
+					caller:              new(FakeCaller),
 					pubSub:              fakePubSub,
 					uniqueStringFactory: fakeUniqueStringFactory,
 				}
@@ -175,7 +176,7 @@ var _ = Context("serialCaller", func() {
 					}
 					expectedInboundScopeToSecondChild := providedInboundScope
 					providedRootOpID := "dummyRootOpID"
-					providedOpHandle := new(data.FakeHandle)
+					providedOpHandle := new(modelFakes.FakeDataHandle)
 					providedSCGSerialCalls := []*model.SCG{
 						{
 							Container: &model.SCGContainerCall{},
@@ -185,7 +186,7 @@ var _ = Context("serialCaller", func() {
 						},
 					}
 
-					fakePubSub := new(pubsub.Fake)
+					fakePubSub := new(FakePubSub)
 					eventChannel := make(chan model.Event, 100)
 					fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
 						for index := range providedSCGSerialCalls {
@@ -199,9 +200,9 @@ var _ = Context("serialCaller", func() {
 						return eventChannel, make(chan error)
 					}
 
-					fakeCaller := new(fakeCaller)
+					fakeCaller := new(FakeCaller)
 
-					fakeUniqueStringFactory := new(uniquestring.Fake)
+					fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 					uniqueStringCallIndex := 0
 					fakeUniqueStringFactory.ConstructStub = func() (string, error) {
 						defer func() {
@@ -258,7 +259,7 @@ var _ = Context("serialCaller", func() {
 						"dummyVar3Name": providedInboundScope["dummyVar3Name"],
 					}
 					providedRootOpID := "dummyRootOpID"
-					providedOpHandle := new(data.FakeHandle)
+					providedOpHandle := new(modelFakes.FakeDataHandle)
 					providedSCGSerialCalls := []*model.SCG{
 						{
 							Container: &model.SCGContainerCall{},
@@ -268,7 +269,7 @@ var _ = Context("serialCaller", func() {
 						},
 					}
 
-					fakePubSub := new(pubsub.Fake)
+					fakePubSub := new(FakePubSub)
 					eventChannel := make(chan model.Event, 100)
 					fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
 						for index := range providedSCGSerialCalls {
@@ -284,9 +285,9 @@ var _ = Context("serialCaller", func() {
 						return eventChannel, make(chan error)
 					}
 
-					fakeCaller := new(fakeCaller)
+					fakeCaller := new(FakeCaller)
 
-					fakeUniqueStringFactory := new(uniquestring.Fake)
+					fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 					uniqueStringCallIndex := 0
 					fakeUniqueStringFactory.ConstructStub = func() (string, error) {
 						defer func() {

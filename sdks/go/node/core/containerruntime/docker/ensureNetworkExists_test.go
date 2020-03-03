@@ -6,12 +6,13 @@ import (
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/internal/fakes"
 )
 
 var _ = Context("EnsureNetworkExists", func() {
 	It("should call dockerClient.NetworkInspect w/ expected args", func() {
 		/* arrange */
-		fakeDockerClient := new(fakeDockerClient)
+		fakeDockerClient := new(FakeCommonAPIClient)
 
 		providedContainerID := "dummyContainerID"
 
@@ -30,7 +31,7 @@ var _ = Context("EnsureNetworkExists", func() {
 	Context("dockerClient.NetworkInspect doesn't err", func() {
 		It("should return nil and not call dockerClient.NetworkCreate", func() {
 			/* arrange */
-			fakeDockerClient := new(fakeDockerClient)
+			fakeDockerClient := new(FakeCommonAPIClient)
 
 			providedContainerID := "dummyContainerID"
 
@@ -50,7 +51,7 @@ var _ = Context("EnsureNetworkExists", func() {
 		Context("is NotFoundErr", func() {
 			It("should call dockerClient.NetworkCreate w/ expected args", func() {
 				/* arrange */
-				fakeDockerClient := new(fakeDockerClient)
+				fakeDockerClient := new(FakeCommonAPIClient)
 
 				fakeDockerClient.NetworkInspectReturns(
 					types.NetworkResource{},
@@ -83,7 +84,7 @@ var _ = Context("EnsureNetworkExists", func() {
 					/* arrange */
 					errorReturnedFromNetworkCreate := errors.New("dummyError")
 
-					fakeDockerClient := new(fakeDockerClient)
+					fakeDockerClient := new(FakeCommonAPIClient)
 
 					fakeDockerClient.NetworkInspectReturns(
 						types.NetworkResource{},
@@ -113,7 +114,7 @@ var _ = Context("EnsureNetworkExists", func() {
 			Context("dockerClient.NetworkCreate doesn't error", func() {
 				It("shouldn't error", func() {
 					/* arrange */
-					fakeDockerClient := new(fakeDockerClient)
+					fakeDockerClient := new(FakeCommonAPIClient)
 
 					fakeDockerClient.NetworkInspectReturns(
 						types.NetworkResource{},
@@ -139,7 +140,7 @@ var _ = Context("EnsureNetworkExists", func() {
 				/* arrange */
 				errorReturnedFromNetworkInspect := errors.New("dummyError")
 
-				fakeDockerClient := new(fakeDockerClient)
+				fakeDockerClient := new(FakeCommonAPIClient)
 				fakeDockerClient.NetworkInspectReturns(types.NetworkResource{}, errorReturnedFromNetworkInspect)
 
 				expectedError := fmt.Errorf(

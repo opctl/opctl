@@ -4,7 +4,7 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data/coerce"
+	coerceFakes "github.com/opctl/opctl/sdks/go/data/coerce/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -20,7 +20,7 @@ var _ = Context("coerceToArrayOrObjecter", func() {
 			/* arrange */
 			providedData := model.Value{String: new(string)}
 
-			fakeCoerce := new(coerce.Fake)
+			fakeCoerce := new(coerceFakes.FakeCoerce)
 			fakeCoerce.ToArrayReturns(nil, errors.New("dummyErr"))
 
 			objectUnderTest := _coerceToArrayOrObjecter{

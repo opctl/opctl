@@ -8,6 +8,7 @@ inputs:
   path:
     string:
       description: relative path to file containing a 'go:generate ...' pre-processing directive
+      default: ./...
 outputs:
   srcDir:
     dir:
@@ -20,8 +21,8 @@ run:
       - generate
       - $(path)
     envVars:
-      GOFLAGS: -mod=vendor
+      GOFLAGS: -mod=vendor -tags=containers_image_openpgp 
     dirs:
       /src: $(srcDir)
-    image: { ref: 'golang:1.13' }
+    image: { ref: 'golang:1.14' }
     workDir: /src/sdks/go

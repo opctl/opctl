@@ -1,7 +1,5 @@
 package interpolater
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ Interpolater
-
 import (
 	"fmt"
 	"github.com/opctl/opctl/sdks/go/data/coerce"
@@ -18,6 +16,7 @@ const (
 	RefEnd    = string(refCloser)
 )
 
+//counterfeiter:generate -o fakes/interpolater.go . Interpolater
 type Interpolater interface {
 	// Interpolate interpolates the provided expression
 	Interpolate(

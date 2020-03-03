@@ -8,9 +8,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
+	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
-	"github.com/opctl/opctl/sdks/go/data"
-	op "github.com/opctl/opctl/sdks/go/opspec"
+	. "github.com/opctl/opctl/sdks/go/model/fakes"
+	. "github.com/opctl/opctl/sdks/go/opspec/fakes"
 )
 
 var _ = Context("Validater", func() {
@@ -22,12 +23,12 @@ var _ = Context("Validater", func() {
 			fakeDataResolver := new(dataresolver.Fake)
 			fakeDataResolver.ResolveReturns(nil)
 
-			fakeOpValidator := new(op.FakeValidator)
+			fakeOpValidator := new(FakeValidator)
 			// error to trigger immediate return
 			fakeOpValidator.ValidateReturns([]error{errors.New("dummyError")})
 
 			objectUnderTest := _validater{
-				cliExiter:    new(cliexiter.Fake),
+				cliExiter:    new(cliexiterFakes.FakeCliExiter),
 				dataResolver: fakeDataResolver,
 				opValidator:  fakeOpValidator,
 			}
@@ -49,14 +50,14 @@ var _ = Context("Validater", func() {
 			/* arrange */
 			providedCtx := context.Background()
 
-			fakeOpValidator := new(op.FakeValidator)
+			fakeOpValidator := new(FakeValidator)
 
 			fakeDataResolver := new(dataresolver.Fake)
-			fakeOpHandle := new(data.FakeHandle)
+			fakeOpHandle := new(FakeDataHandle)
 			fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 			objectUnderTest := _validater{
-				cliExiter:    new(cliexiter.Fake),
+				cliExiter:    new(cliexiterFakes.FakeCliExiter),
 				dataResolver: fakeDataResolver,
 				opValidator:  fakeOpValidator,
 			}
@@ -77,11 +78,11 @@ var _ = Context("Validater", func() {
 		Context("pkg.Validate returns errors", func() {
 			It("should call cliExiter.Exit w/ expected args", func() {
 				/* arrange */
-				fakeOpValidator := new(op.FakeValidator)
+				fakeOpValidator := new(FakeValidator)
 
 				fakeDataResolver := new(dataresolver.Fake)
 
-				fakeOpHandle := new(data.FakeHandle)
+				fakeOpHandle := new(FakeDataHandle)
 				fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 				errsReturnedFromValidate := []error{errors.New("dummyError")}
@@ -96,7 +97,7 @@ var _ = Context("Validater", func() {
 					Code: 1,
 				}
 
-				fakeCliExiter := new(cliexiter.Fake)
+				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 				objectUnderTest := _validater{
 					cliExiter:    fakeCliExiter,
@@ -118,9 +119,9 @@ var _ = Context("Validater", func() {
 		Context("pkg.Validate doesn't return errors", func() {
 			It("should call cliExiter.Exit w/ expected args", func() {
 				/* arrange */
-				fakeOpValidator := new(op.FakeValidator)
+				fakeOpValidator := new(FakeValidator)
 
-				fakeOpHandle := new(data.FakeHandle)
+				fakeOpHandle := new(FakeDataHandle)
 				opRef := "dummyPkgRef"
 				fakeOpHandle.RefReturns(opRef)
 
@@ -131,7 +132,7 @@ var _ = Context("Validater", func() {
 					Message: fmt.Sprintf("%v is valid", opRef),
 				}
 
-				fakeCliExiter := new(cliexiter.Fake)
+				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 				objectUnderTest := _validater{
 					cliExiter:    fakeCliExiter,

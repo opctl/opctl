@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
+	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 )
 
@@ -31,7 +32,7 @@ var _ = Context("Killer", func() {
 				expectedError := errors.New("dummyError")
 				fakeNodeProvider.KillNodeIfExistsReturns(expectedError)
 
-				fakeCliExiter := new(cliexiter.Fake)
+				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 				objectUnderTest := _killer{
 					nodeProvider: fakeNodeProvider,

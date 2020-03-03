@@ -28,29 +28,52 @@ run:
             # construct version
             echo "opctl -v returned: \$(/opctl -v 2>&1)"
             version=\$(/opctl -v 2>&1)
-            echo -n "opctl/opctl:${version}" > /imageName
+            echo -n "opctl/opctl:${version}" > /imageRefPrefix
         image: { ref: 'alpine:3.4' }
         files:
           /opctl: $(opctlForLinux)
-          /imageName: $(imageName)
+          /imageRefPrefix: $(imageRefPrefix)
           /entrypoint.sh:
         dirs:
           /context: $(context)
-    - op:
-        ref: github.com/opspec-pkgs/docker.image.build#2.1.0
-        inputs:
-          imageName:
-          dockerfile: $(/Dockerfile)
-          context:
-          username: $(dockerUsername)
-          password: $(dockerPassword)
-          registry: https://docker.io
-        outputs:
-          imageTar:
-    - op:
-        ref: github.com/opspec-pkgs/docker.image.push#2.1.0
-        inputs:
-          imageTar:
-          imageName:
-          username: $(dockerUsername)
-          password: $(dockerPassword)
+    - parallel:
+      # dind
+      - serial:
+        - op:
+            ref: github.com/opspec-pkgs/docker.image.build#2.1.0
+            inputs:
+              imageName: $(imageRefPrefix)-dind
+              dockerfile: $(/dind.Dockerfile)
+              context:
+              username: $(dockerUsername)
+              password: $(dockerPassword)
+              registry: https://docker.io
+            outputs:
+              imageTar:
+        - op:
+            ref: github.com/opspec-pkgs/docker.image.push#2.1.0
+            inputs:
+              imageTar:
+              imageName: $(imageRefPrefix)-dind
+              username: $(dockerUsername)
+              password: $(dockerPassword)
+      # dood
+      - serial:
+        - op:
+            ref: github.com/opspec-pkgs/docker.image.build#2.1.0
+            inputs:
+              imageName: $(imageRefPrefix)-dood
+              dockerfile: $(/dood.Dockerfile)
+              context:
+              username: $(dockerUsername)
+              password: $(dockerPassword)
+              registry: https://docker.io
+            outputs:
+              imageTar:
+        - op:
+            ref: github.com/opspec-pkgs/docker.image.push#2.1.0
+            inputs:
+              imageTar:
+              imageName: $(imageRefPrefix)-dood
+              username: $(dockerUsername)
+              password: $(dockerPassword)

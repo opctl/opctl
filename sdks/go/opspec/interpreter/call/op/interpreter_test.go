@@ -12,11 +12,15 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
+	. "github.com/opctl/opctl/sdks/go/data/fakes"
+	"github.com/opctl/opctl/sdks/go/data/provider"
+	. "github.com/opctl/opctl/sdks/go/data/provider/fakes"
+	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs"
-	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
-	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	inputsFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs/fakes"
+	strFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/str/fakes"
+	. "github.com/opctl/opctl/sdks/go/opspec/opfile/fakes"
 )
 
 var _ = Context("Interpreter", func() {
@@ -112,10 +116,10 @@ var _ = Context("Interpreter", func() {
 		})
 		It("should call pkg.NewFSProvider w/ expected args", func() {
 			/* arrange */
-			providedParentOpHandle := new(data.FakeHandle)
+			providedParentOpHandle := new(modelFakes.FakeDataHandle)
 			providedParentOpHandle.PathReturns(new(string))
 
-			fakeData := new(data.Fake)
+			fakeData := new(FakeData)
 			// error to trigger immediate return
 			fakeData.ResolveReturns(nil, errors.New("dummyError"))
 
@@ -140,12 +144,12 @@ var _ = Context("Interpreter", func() {
 		Context("scgOpCall.Pkg.PullCreds is nil", func() {
 			It("should call pkg.NewGitProvider w/ expected args", func() {
 				/* arrange */
-				providedParentOpHandle := new(data.FakeHandle)
+				providedParentOpHandle := new(modelFakes.FakeDataHandle)
 				providedParentOpHandle.PathReturns(new(string))
 
 				providedDataCachePath := "dummyDataCachePath"
 
-				fakeData := new(data.Fake)
+				fakeData := new(FakeData)
 				// error to trigger immediate return
 				fakeData.ResolveReturns(nil, errors.New("dummyError"))
 
@@ -177,12 +181,12 @@ var _ = Context("Interpreter", func() {
 			Context("stringInterpreter.Interpret errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					fakeStringInterpreter := new(stringPkg.FakeInterpreter)
+					fakeStrInterpreter := new(strFakes.FakeInterpreter)
 					interpretError := errors.New("dummyError")
-					fakeStringInterpreter.InterpretReturns(nil, interpretError)
+					fakeStrInterpreter.InterpretReturns(nil, interpretError)
 
 					objectUnderTest := _interpreter{
-						stringInterpreter: fakeStringInterpreter,
+						stringInterpreter: fakeStrInterpreter,
 					}
 
 					/* act */
@@ -192,7 +196,7 @@ var _ = Context("Interpreter", func() {
 							PullCreds: &model.SCGPullCreds{},
 						},
 						"dummyOpID",
-						new(data.FakeHandle),
+						new(modelFakes.FakeDataHandle),
 						"dummyRootOpID",
 					)
 
@@ -203,22 +207,22 @@ var _ = Context("Interpreter", func() {
 			Context("stringInterpreter.Interpret doesn't err", func() {
 				It("should call pkg.NewGitProvider w/ expected args", func() {
 					/* arrange */
-					providedParentOpHandle := new(data.FakeHandle)
+					providedParentOpHandle := new(modelFakes.FakeDataHandle)
 					providedParentOpHandle.PathReturns(new(string))
 
 					providedDataCachePath := "dummyDataCachePath"
 
-					fakeStringInterpreter := new(stringPkg.FakeInterpreter)
+					fakeStrInterpreter := new(strFakes.FakeInterpreter)
 					expectedPullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
-					fakeStringInterpreter.InterpretReturnsOnCall(0, &model.Value{String: &expectedPullCreds.Username}, nil)
-					fakeStringInterpreter.InterpretReturnsOnCall(1, &model.Value{String: &expectedPullCreds.Password}, nil)
+					fakeStrInterpreter.InterpretReturnsOnCall(0, &model.Value{String: &expectedPullCreds.Username}, nil)
+					fakeStrInterpreter.InterpretReturnsOnCall(1, &model.Value{String: &expectedPullCreds.Password}, nil)
 
-					fakeData := new(data.Fake)
+					fakeData := new(FakeData)
 					// error to trigger immediate return
 					fakeData.ResolveReturns(nil, errors.New("dummyError"))
 
 					objectUnderTest := _interpreter{
-						stringInterpreter: fakeStringInterpreter,
+						stringInterpreter: fakeStrInterpreter,
 						data:              fakeData,
 						dataCachePath:     providedDataCachePath,
 					}
@@ -246,7 +250,7 @@ var _ = Context("Interpreter", func() {
 		})
 		It("should call pkg.Resolve w/ expected args", func() {
 			/* arrange */
-			providedParentOpHandle := new(data.FakeHandle)
+			providedParentOpHandle := new(modelFakes.FakeDataHandle)
 			providedParentOpHandle.PathReturns(new(string))
 
 			provideddataDirPath := "dummydataDirPath"
@@ -256,11 +260,11 @@ var _ = Context("Interpreter", func() {
 
 			expectedOpRef := providedSCGOpCall.Ref
 
-			fakeData := new(data.Fake)
+			fakeData := new(FakeData)
 
-			expectedPkgProviders := []data.Provider{
-				new(data.FakeProvider),
-				new(data.FakeProvider),
+			expectedPkgProviders := []provider.Provider{
+				new(FakeProvider),
+				new(FakeProvider),
 			}
 			fakeData.NewFSProviderReturns(expectedPkgProviders[0])
 			fakeData.NewGitProviderReturns(expectedPkgProviders[1])
@@ -294,16 +298,16 @@ var _ = Context("Interpreter", func() {
 		Context("pkg.Resolve errs", func() {
 			It("should return err", func() {
 				/* arrange */
-				providedParentOpHandle := new(data.FakeHandle)
+				providedParentOpHandle := new(modelFakes.FakeDataHandle)
 				providedParentOpHandle.PathReturns(new(string))
 
 				expectedErr := errors.New("dummyError")
-				fakeData := new(data.Fake)
+				fakeData := new(FakeData)
 				fakeData.ResolveReturns(nil, expectedErr)
 
 				objectUnderTest := _interpreter{
 					data:                fakeData,
-					uniqueStringFactory: new(uniquestring.Fake),
+					uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
 				}
 
 				/* act */
@@ -322,15 +326,15 @@ var _ = Context("Interpreter", func() {
 		Context("pkg.Resolve doesn't err", func() {
 			It("should call pkg.GetManifest w/ expected args", func() {
 				/* arrange */
-				providedParentOpHandle := new(data.FakeHandle)
+				providedParentOpHandle := new(modelFakes.FakeDataHandle)
 				providedParentOpHandle.PathReturns(new(string))
 
-				fakeDataHandle := new(data.FakeHandle)
+				fakeDataHandle := new(modelFakes.FakeDataHandle)
 
-				fakeData := new(data.Fake)
+				fakeData := new(FakeData)
 				fakeData.ResolveReturns(fakeDataHandle, nil)
 
-				fakeOpFileGetter := new(opfile.FakeGetter)
+				fakeOpFileGetter := new(FakeGetter)
 				expectedErr := errors.New("dummyError")
 				// err to trigger immediate return
 				fakeOpFileGetter.GetReturns(nil, expectedErr)
@@ -338,7 +342,7 @@ var _ = Context("Interpreter", func() {
 				objectUnderTest := _interpreter{
 					data:                fakeData,
 					opFileGetter:        fakeOpFileGetter,
-					uniqueStringFactory: new(uniquestring.Fake),
+					uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
 				}
 
 				/* act */
@@ -360,17 +364,17 @@ var _ = Context("Interpreter", func() {
 			Context("pkg.GetManifest errs", func() {
 				It("should return err", func() {
 					/* arrange */
-					providedParentOpHandle := new(data.FakeHandle)
+					providedParentOpHandle := new(modelFakes.FakeDataHandle)
 					providedParentOpHandle.PathReturns(new(string))
 
 					expectedErr := errors.New("dummyError")
-					fakeOpFileGetter := new(opfile.FakeGetter)
+					fakeOpFileGetter := new(FakeGetter)
 					fakeOpFileGetter.GetReturns(nil, expectedErr)
 
 					objectUnderTest := _interpreter{
-						data:                new(data.Fake),
+						data:                new(FakeData),
 						opFileGetter:        fakeOpFileGetter,
-						uniqueStringFactory: new(uniquestring.Fake),
+						uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
 					}
 
 					/* act */
@@ -387,7 +391,7 @@ var _ = Context("Interpreter", func() {
 				})
 			})
 			Context("pkg.GetManifest doesn't err", func() {
-				It("should call inputs.Interpret w/ expected inputs", func() {
+				It("should call inputsFakes.Interpret w/ expected inputs", func() {
 					/* arrange */
 					providedScope := map[string]*model.Value{
 						"dummyScopeRef1Name": {String: new(string)},
@@ -402,28 +406,28 @@ var _ = Context("Interpreter", func() {
 
 					providedOpID := "dummyOpID"
 
-					providedParentOpHandle := new(data.FakeHandle)
+					providedParentOpHandle := new(modelFakes.FakeDataHandle)
 					parentOpDirPath := "dummyParentOpDirPath"
 					providedParentOpHandle.PathReturns(&parentOpDirPath)
 
-					fakeDataHandle := new(data.FakeHandle)
+					fakeDataHandle := new(modelFakes.FakeDataHandle)
 					opPath := "dummyOpPath"
 					fakeDataHandle.PathReturns(&opPath)
 
-					fakeData := new(data.Fake)
+					fakeData := new(FakeData)
 					fakeData.ResolveReturns(fakeDataHandle, nil)
 
 					expectedInputParams := map[string]*model.Param{
 						"dummyParam1Name": {String: &model.StringParam{}},
 					}
 
-					fakeOpFileGetter := new(opfile.FakeGetter)
+					fakeOpFileGetter := new(FakeGetter)
 					returnedManifest := &model.OpFile{
 						Inputs: expectedInputParams,
 					}
 					fakeOpFileGetter.GetReturns(returnedManifest, nil)
 
-					fakeInputsInterpreter := new(inputs.FakeInterpreter)
+					fakeInputsInterpreter := new(inputsFakes.FakeInterpreter)
 
 					dcgScratchDir := "dummyDCGScratchDir"
 
@@ -431,7 +435,7 @@ var _ = Context("Interpreter", func() {
 						dcgScratchDir:       dcgScratchDir,
 						data:                fakeData,
 						opFileGetter:        fakeOpFileGetter,
-						uniqueStringFactory: new(uniquestring.Fake),
+						uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
 						inputsInterpreter:   fakeInputsInterpreter,
 					}
 

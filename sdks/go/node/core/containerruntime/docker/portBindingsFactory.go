@@ -1,12 +1,11 @@
 package docker
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakePortBindingsFactory.go --fake-name fakePortBindingsFactory ./ portBindingsFactory
-
 import (
 	"fmt"
 	"github.com/docker/go-connections/nat"
 )
 
+//counterfeiter:generate -o internal/fakes/portBindingsFactory.go . portBindingsFactory
 type portBindingsFactory interface {
 	Construct(
 		containerCallPorts map[string]string,

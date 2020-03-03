@@ -1,12 +1,12 @@
 package data
 
 import (
-	"github.com/opctl/opctl/sdks/go/node/core"
+	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 
-	"github.com/opctl/opctl/sdks/go/node/api/handler/data/ref"
+	refFakes "github.com/opctl/opctl/sdks/go/node/api/handler/data/ref/fakes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -16,7 +16,7 @@ var _ = Context("Handler", func() {
 	Context("NewHandler", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewHandler(new(core.Fake))).Should(Not(BeNil()))
+			Expect(NewHandler(new(FakeCore))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {
@@ -50,7 +50,7 @@ var _ = Context("Handler", func() {
 					panic(err.Error())
 				}
 
-				fakeRefHandler := new(ref.FakeHandler)
+				fakeRefHandler := new(refFakes.FakeHandler)
 
 				objectUnderTest := _handler{
 					refHandler: fakeRefHandler,

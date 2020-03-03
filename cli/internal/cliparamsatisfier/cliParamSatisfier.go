@@ -1,6 +1,6 @@
 package cliparamsatisfier
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ CLIParamSatisfier
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"bytes"
@@ -20,6 +20,7 @@ import (
 // CLIParamSatisfier attempts to satisfy the provided inputs via the provided inputSourcer
 //
 // if all fails an error is logged and we exit with a nonzero code.
+//counterfeiter:generate -o fakes/cliParamSatisfier.go . CLIParamSatisfier
 type CLIParamSatisfier interface {
 	InputSrcFactory
 

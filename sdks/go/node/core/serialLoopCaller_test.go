@@ -3,16 +3,17 @@ package core
 import (
 	"context"
 
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop/iteration"
+	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	loopFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop/fakes"
+	iterationFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop/iteration/fakes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
+	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/serialloop"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	serialloopFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/serialloop/fakes"
+	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("serialLoopCaller", func() {
@@ -20,8 +21,8 @@ var _ = Context("serialLoopCaller", func() {
 		It("should return serialLoopCaller", func() {
 			/* arrange/act/assert */
 			Expect(newSerialLoopCaller(
-				new(fakeCaller),
-				new(pubsub.Fake),
+				new(FakeCaller),
+				new(FakePubSub),
 			)).To(Not(BeNil()))
 		})
 	})
@@ -30,19 +31,19 @@ var _ = Context("serialLoopCaller", func() {
 		Context("initial dcgSerialLoop.Until true", func() {
 			It("should not call caller.Call", func() {
 				/* arrange */
-				fakeSerialLoopInterpreter := new(serialloop.FakeInterpreter)
+				fakeSerialLoopInterpreter := new(serialloopFakes.FakeInterpreter)
 				until := true
 				fakeSerialLoopInterpreter.InterpretReturns(&model.DCGSerialLoopCall{Until: &until}, nil)
 
-				fakeCaller := new(fakeCaller)
+				fakeCaller := new(FakeCaller)
 
 				objectUnderTest := _serialLoopCaller{
 					caller:                fakeCaller,
-					loopDeScoper:          new(loop.FakeDeScoper),
+					loopDeScoper:          new(loopFakes.FakeDeScoper),
 					serialLoopInterpreter: fakeSerialLoopInterpreter,
-					iterationScoper:       new(iteration.FakeScoper),
-					pubSub:                new(pubsub.Fake),
-					uniqueStringFactory:   new(uniquestring.Fake),
+					iterationScoper:       new(iterationFakes.FakeScoper),
+					pubSub:                new(FakePubSub),
+					uniqueStringFactory:   new(uniquestringFakes.FakeUniqueStringFactory),
 				}
 
 				/* act */
@@ -51,19 +52,19 @@ var _ = Context("serialLoopCaller", func() {
 					"id",
 					map[string]*model.Value{},
 					model.SCGSerialLoopCall{},
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					nil,
 					"rootOpID",
 				)
 
 				/* assert */
-				Expect(fakeCaller.CallCount()).To(Equal(0))
+				Expect(fakeCaller.CallCallCount()).To(Equal(0))
 			})
 		})
 		Context("initial dcgSerialLoop.On empty", func() {
 			It("should not call caller.Call", func() {
 				/* arrange */
-				fakeSerialLoopInterpreter := new(serialloop.FakeInterpreter)
+				fakeSerialLoopInterpreter := new(serialloopFakes.FakeInterpreter)
 				fakeSerialLoopInterpreter.InterpretReturns(
 					&model.DCGSerialLoopCall{
 						Range: &model.Value{
@@ -73,15 +74,15 @@ var _ = Context("serialLoopCaller", func() {
 					nil,
 				)
 
-				fakeCaller := new(fakeCaller)
+				fakeCaller := new(FakeCaller)
 
 				objectUnderTest := _serialLoopCaller{
 					caller:                fakeCaller,
-					loopDeScoper:          new(loop.FakeDeScoper),
+					loopDeScoper:          new(loopFakes.FakeDeScoper),
 					serialLoopInterpreter: fakeSerialLoopInterpreter,
-					iterationScoper:       new(iteration.FakeScoper),
-					pubSub:                new(pubsub.Fake),
-					uniqueStringFactory:   new(uniquestring.Fake),
+					iterationScoper:       new(iterationFakes.FakeScoper),
+					pubSub:                new(FakePubSub),
+					uniqueStringFactory:   new(uniquestringFakes.FakeUniqueStringFactory),
 				}
 
 				/* act */
@@ -90,13 +91,13 @@ var _ = Context("serialLoopCaller", func() {
 					"id",
 					map[string]*model.Value{},
 					model.SCGSerialLoopCall{},
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					nil,
 					"rootOpID",
 				)
 
 				/* assert */
-				Expect(fakeCaller.CallCount()).To(Equal(0))
+				Expect(fakeCaller.CallCallCount()).To(Equal(0))
 			})
 		})
 		Context("initial dcgSerialLoop.Until false", func() {
@@ -113,12 +114,12 @@ var _ = Context("serialLoopCaller", func() {
 						Index: &index,
 					},
 				}
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 				providedParentCallIDValue := "providedParentCallID"
 				providedParentCallID := &providedParentCallIDValue
 				providedRootOpID := "providedRootOpID"
 
-				fakeSerialLoopInterpreter := new(serialloop.FakeInterpreter)
+				fakeSerialLoopInterpreter := new(serialloopFakes.FakeInterpreter)
 				until := false
 				fakeSerialLoopInterpreter.InterpretReturns(
 					&model.DCGSerialLoopCall{
@@ -130,18 +131,18 @@ var _ = Context("serialLoopCaller", func() {
 					nil,
 				)
 
-				fakeIterationScoper := new(iteration.FakeScoper)
+				fakeIterationScoper := new(iterationFakes.FakeScoper)
 				expectedScope := map[string]*model.Value{
 					index: &model.Value{Number: new(float64)},
 				}
 				fakeIterationScoper.ScopeReturns(expectedScope, nil)
 
-				fakeCaller := new(fakeCaller)
+				fakeCaller := new(FakeCaller)
 
 				callID := "callID"
 
 				expectedErrorMessage := "expectedErrorMessage"
-				fakePubSub := new(pubsub.Fake)
+				fakePubSub := new(FakePubSub)
 				eventChannel := make(chan model.Event, 100)
 				fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
 					eventChannel <- model.Event{
@@ -156,12 +157,12 @@ var _ = Context("serialLoopCaller", func() {
 					return eventChannel, make(chan error)
 				}
 
-				fakeUniqueStringFactory := new(uniquestring.Fake)
+				fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 				fakeUniqueStringFactory.ConstructReturns(callID, nil)
 
 				objectUnderTest := _serialLoopCaller{
 					caller:                fakeCaller,
-					loopDeScoper:          new(loop.FakeDeScoper),
+					loopDeScoper:          new(loopFakes.FakeDeScoper),
 					serialLoopInterpreter: fakeSerialLoopInterpreter,
 					iterationScoper:       fakeIterationScoper,
 					pubSub:                fakePubSub,

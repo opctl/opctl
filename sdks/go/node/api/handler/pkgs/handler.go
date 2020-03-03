@@ -1,6 +1,6 @@
 package pkgs
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeHandler.go --fake-name FakeHandler ./ Handler
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"net/http"
@@ -11,6 +11,7 @@ import (
 )
 
 // Handler deprecated; use data
+//counterfeiter:generate -o fakes/handler.go . Handler
 type Handler interface {
 	Handle(
 		httpResp http.ResponseWriter,

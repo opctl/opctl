@@ -1,7 +1,5 @@
 package dirs
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
-
 import (
 	"fmt"
 	"path/filepath"
@@ -13,6 +11,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
 )
 
+//counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	Interpret(
 		opHandle model.DataHandle,

@@ -5,10 +5,10 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/array"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	arrayFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/array/fakes"
+	objectFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/object/fakes"
 )
 
 var _ = Context("Interpreter", func() {
@@ -23,10 +23,10 @@ var _ = Context("Interpreter", func() {
 			/* arrange */
 			providedExpression := "providedExpression"
 
-			providedOpHandle := new(data.FakeHandle)
+			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedScope := map[string]*model.Value{}
 
-			fakeArrayInterpreter := new(array.FakeInterpreter)
+			fakeArrayInterpreter := new(arrayFakes.FakeInterpreter)
 
 			objectUnderTest := _interpreter{
 				arrayInterpreter: fakeArrayInterpreter,
@@ -51,7 +51,7 @@ var _ = Context("Interpreter", func() {
 		Context("arrayInterpreter.Interpret doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeArrayInterpreter := new(array.FakeInterpreter)
+				fakeArrayInterpreter := new(arrayFakes.FakeInterpreter)
 
 				expectedValue := &model.Value{}
 				fakeArrayInterpreter.InterpretReturns(
@@ -68,7 +68,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
 					"dummyExpression",
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					map[string]*model.Value{},
 				)
 
@@ -81,16 +81,16 @@ var _ = Context("Interpreter", func() {
 				/* arrange */
 				providedExpression := "providedExpression"
 
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 				providedScope := map[string]*model.Value{}
 
-				fakeArrayInterpreter := new(array.FakeInterpreter)
+				fakeArrayInterpreter := new(arrayFakes.FakeInterpreter)
 				fakeArrayInterpreter.InterpretReturns(
 					nil,
 					errors.New(""),
 				)
 
-				fakeObjectInterpreter := new(object.FakeInterpreter)
+				fakeObjectInterpreter := new(objectFakes.FakeInterpreter)
 
 				objectUnderTest := _interpreter{
 					arrayInterpreter:  fakeArrayInterpreter,
@@ -115,13 +115,13 @@ var _ = Context("Interpreter", func() {
 			})
 			It("should return expected result", func() {
 				/* arrange */
-				fakeArrayInterpreter := new(array.FakeInterpreter)
+				fakeArrayInterpreter := new(arrayFakes.FakeInterpreter)
 				fakeArrayInterpreter.InterpretReturns(
 					nil,
 					errors.New(""),
 				)
 
-				fakeObjectInterpreter := new(object.FakeInterpreter)
+				fakeObjectInterpreter := new(objectFakes.FakeInterpreter)
 
 				expectedValue := &model.Value{}
 				fakeObjectInterpreter.InterpretReturns(
@@ -139,7 +139,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
 					"dummyExpression",
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					map[string]*model.Value{},
 				)
 

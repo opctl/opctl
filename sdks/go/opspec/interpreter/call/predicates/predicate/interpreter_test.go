@@ -6,11 +6,11 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/eq"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/exists"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/ne"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	eqFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/eq/fakes"
+	existsFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/exists/fakes"
+	neFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/ne/fakes"
 )
 
 var _ = Context("Interpreter", func() {
@@ -24,7 +24,7 @@ var _ = Context("Interpreter", func() {
 		Context("Eq Predicate", func() {
 			It("should call eqInterpreter.Interpret w/ expected args & return result", func() {
 				/* arrange */
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 
 				providedScgPredicate := &model.SCGPredicate{
 					Eq: new([]interface{}),
@@ -32,7 +32,7 @@ var _ = Context("Interpreter", func() {
 
 				providedScope := map[string]*model.Value{}
 
-				fakeEqInterpreter := new(eq.FakeInterpreter)
+				fakeEqInterpreter := new(eqFakes.FakeInterpreter)
 				expectedResult := true
 				expectedError := errors.New("expectedErr")
 				fakeEqInterpreter.InterpretReturns(true, expectedError)
@@ -64,7 +64,7 @@ var _ = Context("Interpreter", func() {
 		Context("Exists Predicate", func() {
 			It("should call existsInterpreter.Interpret w/ expected args & return result", func() {
 				/* arrange */
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 
 				providedScgPredicate := &model.SCGPredicate{
 					Exists: new(string),
@@ -72,7 +72,7 @@ var _ = Context("Interpreter", func() {
 
 				providedScope := map[string]*model.Value{}
 
-				fakeExistsInterpreter := new(exists.FakeInterpreter)
+				fakeExistsInterpreter := new(existsFakes.FakeInterpreter)
 				expectedResult := true
 				expectedError := errors.New("expectedErr")
 				fakeExistsInterpreter.InterpretReturns(true, expectedError)
@@ -104,7 +104,7 @@ var _ = Context("Interpreter", func() {
 		Context("Ne predicate", func() {
 			It("should call neInterpreter.Interpret w/ expected args & return result", func() {
 				/* arrange */
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 
 				providedScgPredicate := &model.SCGPredicate{
 					Ne: new([]interface{}),
@@ -112,7 +112,7 @@ var _ = Context("Interpreter", func() {
 
 				providedScope := map[string]*model.Value{}
 
-				fakeNeInterpreter := new(ne.FakeInterpreter)
+				fakeNeInterpreter := new(neFakes.FakeInterpreter)
 				expectedResult := true
 				expectedError := errors.New("expectedErr")
 				fakeNeInterpreter.InterpretReturns(true, expectedError)
@@ -144,7 +144,7 @@ var _ = Context("Interpreter", func() {
 		Context("NotExists Predicate", func() {
 			It("should call existsInterpreter.Interpret w/ expected args & return result", func() {
 				/* arrange */
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 
 				providedScgPredicate := &model.SCGPredicate{
 					NotExists: new(string),
@@ -152,7 +152,7 @@ var _ = Context("Interpreter", func() {
 
 				providedScope := map[string]*model.Value{}
 
-				fakeNotExistsInterpreter := new(exists.FakeInterpreter)
+				fakeNotExistsInterpreter := new(existsFakes.FakeInterpreter)
 				expectedResult := true
 				expectedError := errors.New("expectedErr")
 				fakeNotExistsInterpreter.InterpretReturns(true, expectedError)
@@ -191,7 +191,7 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualError := objectUnderTest.Interpret(
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					providedScgPredicate,
 					map[string]*model.Value{},
 				)

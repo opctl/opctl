@@ -1,6 +1,8 @@
 // Package core defines the core interface for an opspec node
 package core
 
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
+
 import (
 	"context"
 	"path/filepath"
@@ -16,8 +18,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ Core
-
+//counterfeiter:generate -o fakes/core.go . Core
 type Core interface {
 	GetEventStream(
 		ctx context.Context,
@@ -71,8 +72,6 @@ func New(
 		pubSub,
 	)
 
-	opInterpreter := op.NewInterpreter(dataDirPath)
-
 	caller := newCaller(
 		call.NewInterpreter(
 			container.NewInterpreter(dataDirPath),
@@ -90,13 +89,11 @@ func New(
 
 	core = _core{
 		caller:              caller,
+		callKiller:          callKiller,
 		containerRuntime:    containerRuntime,
 		data:                data.New(),
 		dataCachePath:       filepath.Join(dataDirPath, "ops"),
-		callStore:           callStore,
 		opFileGetter:        opfile.NewGetter(),
-		opInterpreter:       opInterpreter,
-		callKiller:          callKiller,
 		pubSub:              pubSub,
 		uniqueStringFactory: uniqueStringFactory,
 	}
@@ -106,13 +103,12 @@ func New(
 
 type _core struct {
 	caller              caller
+	callKiller          callKiller
 	containerRuntime    containerruntime.ContainerRuntime
 	data                data.Data
 	dataCachePath       string
-	callStore           callStore
 	opFileGetter        opfile.Getter
 	opInterpreter       op.Interpreter
-	callKiller          callKiller
 	pubSub              pubsub.PubSub
 	uniqueStringFactory uniquestring.UniqueStringFactory
 }

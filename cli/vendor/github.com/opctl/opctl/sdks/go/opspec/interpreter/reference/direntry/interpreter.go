@@ -1,7 +1,5 @@
 package direntry
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
-
 import (
 	"fmt"
 	"path/filepath"
@@ -14,6 +12,7 @@ import (
 // Interpreter interprets a dir entry ref i.e. refs of the form name/sub/file.ext
 // it's an error if ref doesn't start with '/'
 // returns ref remainder, dereferenced data, and error if one occurred
+//counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	Interpret(
 		ref string,

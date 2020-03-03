@@ -7,10 +7,11 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
+	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("parallelCaller", func() {
@@ -18,8 +19,8 @@ var _ = Context("parallelCaller", func() {
 		It("should return parallelCaller", func() {
 			/* arrange/act/assert */
 			Expect(newParallelCaller(
-				new(fakeCaller),
-				new(pubsub.Fake),
+				new(FakeCaller),
+				new(FakePubSub),
 			)).To(Not(BeNil()))
 		})
 	})
@@ -29,7 +30,7 @@ var _ = Context("parallelCaller", func() {
 			providedCallID := "dummyCallID"
 			providedInboundScope := map[string]*model.Value{}
 			providedRootOpID := "dummyRootOpID"
-			providedOpHandle := new(data.FakeHandle)
+			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedSCGParallelCalls := []*model.SCG{
 				{
 					Container: &model.SCGContainerCall{},
@@ -47,7 +48,7 @@ var _ = Context("parallelCaller", func() {
 
 			mtx := sync.Mutex{}
 
-			fakeCaller := new(fakeCaller)
+			fakeCaller := new(FakeCaller)
 			eventChannel := make(chan model.Event, 100)
 			callerCallIndex := 0
 			fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string) {
@@ -63,10 +64,10 @@ var _ = Context("parallelCaller", func() {
 				mtx.Unlock()
 			}
 
-			fakePubSub := new(pubsub.Fake)
+			fakePubSub := new(FakePubSub)
 			fakePubSub.SubscribeReturns(eventChannel, nil)
 
-			fakeUniqueStringFactory := new(uniquestring.Fake)
+			fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 			uniqueStringCallIndex := 0
 			expectedChildCallIds := []string{}
 			fakeUniqueStringFactory.ConstructStub = func() (string, error) {
@@ -120,7 +121,7 @@ var _ = Context("parallelCaller", func() {
 				providedCallID := "dummyCallID"
 				providedInboundScope := map[string]*model.Value{}
 				providedRootOpID := "dummyRootOpID"
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 				providedSCGParallelCalls := []*model.SCG{
 					{
 						Container: &model.SCGContainerCall{},
@@ -144,7 +145,7 @@ var _ = Context("parallelCaller", func() {
 
 				mtx := sync.Mutex{}
 
-				fakeCaller := new(fakeCaller)
+				fakeCaller := new(FakeCaller)
 				eventChannel := make(chan model.Event, 100)
 				callerCallIndex := 0
 				fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string) {
@@ -164,10 +165,10 @@ var _ = Context("parallelCaller", func() {
 					mtx.Unlock()
 				}
 
-				fakePubSub := new(pubsub.Fake)
+				fakePubSub := new(FakePubSub)
 				fakePubSub.SubscribeReturns(eventChannel, nil)
 
-				fakeUniqueStringFactory := new(uniquestring.Fake)
+				fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 				uniqueStringCallIndex := 0
 				expectedChildCallIds := []string{}
 				fakeUniqueStringFactory.ConstructStub = func() (string, error) {
@@ -216,7 +217,7 @@ var _ = Context("parallelCaller", func() {
 				providedCallID := "dummyCallID"
 				providedInboundScope := map[string]*model.Value{}
 				providedRootOpID := "dummyRootOpID"
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 				providedSCGParallelCalls := []*model.SCG{
 					{
 						Container: &model.SCGContainerCall{},
@@ -234,7 +235,7 @@ var _ = Context("parallelCaller", func() {
 
 				mtx := sync.Mutex{}
 
-				fakeCaller := new(fakeCaller)
+				fakeCaller := new(FakeCaller)
 				eventChannel := make(chan model.Event, 100)
 				callerCallIndex := 0
 				fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string) {
@@ -250,10 +251,10 @@ var _ = Context("parallelCaller", func() {
 					mtx.Unlock()
 				}
 
-				fakePubSub := new(pubsub.Fake)
+				fakePubSub := new(FakePubSub)
 				fakePubSub.SubscribeReturns(eventChannel, nil)
 
-				fakeUniqueStringFactory := new(uniquestring.Fake)
+				fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 				uniqueStringCallIndex := 0
 				expectedChildCallIds := []string{}
 				fakeUniqueStringFactory.ConstructStub = func() (string, error) {

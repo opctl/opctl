@@ -7,15 +7,14 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/opctl/opctl/sdks/go/data/coerce"
-
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/filecopier"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
+	coerceFakes "github.com/opctl/opctl/sdks/go/data/coerce/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/file"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	fileFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/file/fakes"
 )
 
 var _ = Context("Files", func() {
@@ -39,15 +38,15 @@ var _ = Context("Files", func() {
 				// implicitly bound
 				containerFilePath: nil,
 			}
-			providedOpHandle := new(data.FakeHandle)
+			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedScope := map[string]*model.Value{}
 			providedScratchDir := "dummyScratchDir"
 
-			fakeFileInterpreter := new(file.FakeInterpreter)
+			fakeFileInterpreter := new(fileFakes.FakeInterpreter)
 			// error to trigger immediate return
 			fakeFileInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 
-			fakeCoerce := new(coerce.Fake)
+			fakeCoerce := new(coerceFakes.FakeCoerce)
 			// error to trigger immediate return
 			fakeCoerce.ToFileReturns(nil, errors.New("dummyError"))
 
@@ -85,11 +84,11 @@ var _ = Context("Files", func() {
 						containerFilePath: nil,
 					}
 
-					fakeFileInterpreter := new(file.FakeInterpreter)
+					fakeFileInterpreter := new(fileFakes.FakeInterpreter)
 					fakeFileInterpreter.InterpretReturns(nil, fmt.Errorf("interpretErr"))
 
 					toFileErr := fmt.Errorf("toFileErr")
-					fakeCoerce := new(coerce.Fake)
+					fakeCoerce := new(coerceFakes.FakeCoerce)
 					fakeCoerce.ToFileReturns(nil, toFileErr)
 
 					expectedErr := fmt.Errorf(
@@ -106,7 +105,7 @@ var _ = Context("Files", func() {
 
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
-						new(data.FakeHandle),
+						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						providedSCGContainerCallFiles,
 						"dummyScratchDirPath",
@@ -123,7 +122,7 @@ var _ = Context("Files", func() {
 					/* arrange */
 					containerFilePath := "/dummyFile1Path.txt"
 
-					fakeFileInterpreter := new(file.FakeInterpreter)
+					fakeFileInterpreter := new(fileFakes.FakeInterpreter)
 					filePath := tempFile.Name()
 					fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
 
@@ -138,7 +137,7 @@ var _ = Context("Files", func() {
 
 					/* act */
 					actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
-						new(data.FakeHandle),
+						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						map[string]interface{}{
 							// implicitly bound
@@ -159,7 +158,7 @@ var _ = Context("Files", func() {
 					containerFilePath := "/parent/child/dummyFilePath.txt"
 					providedScratchDirPath := "dummyScratchDirPath"
 
-					fakeFileInterpreter := new(file.FakeInterpreter)
+					fakeFileInterpreter := new(fileFakes.FakeInterpreter)
 					filePath := tempFile.Name()
 					fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
 
@@ -177,7 +176,7 @@ var _ = Context("Files", func() {
 
 					/* act */
 					objectUnderTest.Interpret(
-						new(data.FakeHandle),
+						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						map[string]interface{}{
 							// implicitly bound
@@ -199,7 +198,7 @@ var _ = Context("Files", func() {
 						/* arrange */
 						containerFilePath := "/dummyFile1Path.txt"
 
-						fakeFileInterpreter := new(file.FakeInterpreter)
+						fakeFileInterpreter := new(fileFakes.FakeInterpreter)
 						filePath := tempFile.Name()
 						fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
 
@@ -222,7 +221,7 @@ var _ = Context("Files", func() {
 
 						/* act */
 						_, actualErr := objectUnderTest.Interpret(
-							new(data.FakeHandle),
+							new(modelFakes.FakeDataHandle),
 							map[string]*model.Value{},
 							map[string]interface{}{
 								// implicitly bound
@@ -241,7 +240,7 @@ var _ = Context("Files", func() {
 						providedScratchDir := "dummyScratchDir"
 						containerFilePath := "/dummyFile1Path.txt"
 
-						fakeFileInterpreter := new(file.FakeInterpreter)
+						fakeFileInterpreter := new(fileFakes.FakeInterpreter)
 						filePath := tempFile.Name()
 						fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
 
@@ -260,7 +259,7 @@ var _ = Context("Files", func() {
 
 						/* act */
 						objectUnderTest.Interpret(
-							new(data.FakeHandle),
+							new(modelFakes.FakeDataHandle),
 							map[string]*model.Value{},
 							map[string]interface{}{
 								// implicitly bound
@@ -282,7 +281,7 @@ var _ = Context("Files", func() {
 							/* arrange */
 							containerFilePath := "/dummyFile1Path.txt"
 
-							fakeFileInterpreter := new(file.FakeInterpreter)
+							fakeFileInterpreter := new(fileFakes.FakeInterpreter)
 							filePath := tempFile.Name()
 							fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
 
@@ -308,7 +307,7 @@ var _ = Context("Files", func() {
 
 							/* act */
 							_, actualErr := objectUnderTest.Interpret(
-								new(data.FakeHandle),
+								new(modelFakes.FakeDataHandle),
 								map[string]*model.Value{},
 								map[string]interface{}{
 									// implicitly bound

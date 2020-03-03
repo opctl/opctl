@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params"
+	paramsFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/fakes"
 )
 
 var _ = Context("outputs.interpreter", func() {
@@ -23,12 +23,12 @@ var _ = Context("outputs.interpreter", func() {
 			providedOutputParams := map[string]*model.Param{"dummyParamName": new(model.Param)}
 			providedOpScratchDir := "providedOpScratchDir"
 
-			fakeParamsCoercer := new(params.FakeCoercer)
+			fakeParamsCoercer := new(paramsFakes.FakeCoercer)
 
 			objectUnderTest := _interpreter{
 				paramsCoercer:   fakeParamsCoercer,
-				paramsDefaulter: new(params.FakeDefaulter),
-				paramsValidator: new(params.FakeValidator),
+				paramsDefaulter: new(paramsFakes.FakeDefaulter),
+				paramsValidator: new(paramsFakes.FakeValidator),
 			}
 
 			/* act */
@@ -56,17 +56,17 @@ var _ = Context("outputs.interpreter", func() {
 			providedOutputParams := map[string]*model.Param{"dummyParamName": new(model.Param)}
 			providedOpPath := "dummyOpPath"
 
-			fakeParamsCoercer := new(params.FakeCoercer)
+			fakeParamsCoercer := new(paramsFakes.FakeCoercer)
 			coercedOutputArgs := map[string]*model.Value{"dummyArgName": new(model.Value)}
 
 			fakeParamsCoercer.CoerceReturns(coercedOutputArgs, nil)
 
-			fakeParamsDefaulter := new(params.FakeDefaulter)
+			fakeParamsDefaulter := new(paramsFakes.FakeDefaulter)
 
 			objectUnderTest := _interpreter{
 				paramsCoercer:   fakeParamsCoercer,
 				paramsDefaulter: fakeParamsDefaulter,
-				paramsValidator: new(params.FakeValidator),
+				paramsValidator: new(paramsFakes.FakeValidator),
 			}
 
 			/* act */
@@ -92,17 +92,17 @@ var _ = Context("outputs.interpreter", func() {
 			providedOutputParams := map[string]*model.Param{"dummyParamName": new(model.Param)}
 			providedOpPath := "dummyOpPath"
 
-			fakeParamsDefaulter := new(params.FakeDefaulter)
+			fakeParamsDefaulter := new(paramsFakes.FakeDefaulter)
 			defaultedOutputArgs := map[string]*model.Value{"dummyArgName": new(model.Value)}
 
 			fakeParamsDefaulter.DefaultReturns(defaultedOutputArgs)
 
-			fakeParamsValidator := new(params.FakeValidator)
+			fakeParamsValidator := new(paramsFakes.FakeValidator)
 			validateErr := errors.New("dummyErr")
 			fakeParamsValidator.ValidateReturns(validateErr)
 
 			objectUnderTest := _interpreter{
-				paramsCoercer:   new(params.FakeCoercer),
+				paramsCoercer:   new(paramsFakes.FakeCoercer),
 				paramsDefaulter: fakeParamsDefaulter,
 				paramsValidator: fakeParamsValidator,
 			}

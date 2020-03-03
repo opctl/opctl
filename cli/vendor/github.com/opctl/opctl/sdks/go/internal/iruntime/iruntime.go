@@ -1,12 +1,13 @@
 package iruntime
 
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
+
 import (
 	"runtime"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ IRuntime
-
 // virtual operating system interface
+//counterfeiter:generate -o fakes/iruntime.go . IRuntime
 type IRuntime interface {
 	// GOOS is the running program's operating system target:
 	// one of darwin, freebsd, linux, and so on.

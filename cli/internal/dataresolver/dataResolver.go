@@ -1,6 +1,6 @@
 package dataresolver
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ DataResolver
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"context"
@@ -15,6 +15,7 @@ import (
 )
 
 // DataResolver resolves packages
+//counterfeiter:generate -o fakes/dataResolver.go . DataResolver
 type DataResolver interface {
 	Resolve(
 		dataRef string,

@@ -1,4 +1,4 @@
-package loop
+package parallelloop
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
 )
@@ -26,7 +26,7 @@ var _ = Context("Interpreter", func() {
 				On: "on",
 			}
 
-			providedOpHandle := new(data.FakeHandle)
+			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedScope := map[string]*model.Value{}
 
 			fakeLoopableInterpreter := new(loopable.FakeInterpreter)
@@ -70,7 +70,7 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualError := objectUnderTest.Interpret(
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					&model.SCGLoop{
 						On: "on",
 					},
@@ -87,7 +87,7 @@ var _ = Context("Interpreter", func() {
 				Until: []*model.SCGPredicate{},
 			}
 
-			providedOpHandle := new(data.FakeHandle)
+			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedScope := map[string]*model.Value{}
 
 			fakePredicatesInterpreter := new(predicates.FakeInterpreter)
@@ -131,7 +131,7 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualError := objectUnderTest.Interpret(
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					&model.SCGLoop{
 						Until: []*model.SCGPredicate{},
 					},
@@ -177,7 +177,7 @@ var _ = Context("Interpreter", func() {
 
 			/* act */
 			actualResult, _ := objectUnderTest.Interpret(
-				new(data.FakeHandle),
+				new(modelFakes.FakeDataHandle),
 				providedScgLoop,
 				map[string]*model.Value{},
 			)

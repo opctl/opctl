@@ -1,7 +1,7 @@
 package ref
 
 import (
-	"github.com/opctl/opctl/sdks/go/data"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	"net/http"
 	"net/http/httptest"
 
@@ -24,7 +24,7 @@ var _ = Context("HandleGetOrHeader", func() {
 
 				/* act */
 				objectUnderTest.HandleGetOrHead(
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					providedHTTPResp,
 					providedHTTPReq,
 				)
@@ -46,7 +46,7 @@ var _ = Context("HandleGetOrHeader", func() {
 
 				/* act */
 				objectUnderTest.HandleGetOrHead(
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					providedHTTPResp,
 					providedHTTPReq,
 				)

@@ -1,6 +1,6 @@
 package clioutput
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ CliOutput
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"fmt"
@@ -10,7 +10,8 @@ import (
 	"time"
 )
 
-// allows mocking/faking output
+//CliOutput allows mocking/faking output
+//counterfeiter:generate -o fakes/cliOutput.go . CliOutput
 type CliOutput interface {
 	// outputs a msg requiring attention
 	Attention(format string, values ...interface{})

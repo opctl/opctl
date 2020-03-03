@@ -1,16 +1,15 @@
 package envvars
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
-
 import (
 	"fmt"
 
 	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
-	stringpkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	stringpkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
 )
 
+//counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,

@@ -1,13 +1,12 @@
 package bracketed
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeCoerceToArrayOrObjecter.go --fake-name fakeCoerceToArrayOrObjecter ./ coerceToArrayOrObjecter
-
 import (
 	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
 // coerceToArrayOrObjecter coerces data ao an object or an array value
+//counterfeiter:generate -o internal/fakes/coerceToArrayOrObjecter.go . coerceToArrayOrObjecter
 type coerceToArrayOrObjecter interface {
 	CoerceToArrayOrObject(
 		data *model.Value,

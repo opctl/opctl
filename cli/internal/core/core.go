@@ -1,6 +1,6 @@
 package core
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ Core
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"os"
@@ -15,6 +15,7 @@ import (
 )
 
 // Core exposes all cli commands
+//counterfeiter:generate -o fakes/core.go . Core
 type Core interface {
 	Eventser
 	Lser

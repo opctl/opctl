@@ -1,7 +1,7 @@
 // Package data implements use cases specific to data
 package data
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ Data
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 type Data interface {
 	providerFactory
@@ -9,6 +9,7 @@ type Data interface {
 	resolver
 }
 
+//counterfeiter:generate -o fakes/data.go . Data
 func New() Data {
 	return struct {
 		providerFactory

@@ -2,7 +2,7 @@
 // A fake implementation is included to allow faking said interactions.
 package containerruntime
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ ContainerRuntime
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"context"
@@ -12,6 +12,7 @@ import (
 )
 
 // ContainerRuntime defines the interface container runtimes must implement to be supported by
+//counterfeiter:generate -o fakes/containerRuntime.go . ContainerRuntime
 type ContainerRuntime interface {
 	DeleteContainerIfExists(
 		containerID string,

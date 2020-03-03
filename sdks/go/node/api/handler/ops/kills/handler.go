@@ -1,6 +1,6 @@
 package kills
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeHandler.go --fake-name FakeHandler ./ Handler
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"encoding/json"
@@ -9,6 +9,7 @@ import (
 	"net/http"
 )
 
+//counterfeiter:generate -o fakes/handler.go . Handler
 type Handler interface {
 	Handle(
 		res http.ResponseWriter,

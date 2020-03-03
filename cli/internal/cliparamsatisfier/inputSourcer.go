@@ -1,25 +1,34 @@
 package cliparamsatisfier
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInputSourcer.go --fake-name FakeInputSourcer ./ InputSourcer
+import (
+	"github.com/opctl/opctl/cli/internal/cliparamsatisfier/inputsrc"
+)
 
+//counterfeiter:generate -o fakes/inputSourcer.go . InputSourcer
 type InputSourcer interface {
+	inputSourcer
+}
+
+// inputSourcer is an internal version of Parser so fakes don't cause cyclic deps
+//counterfeiter:generate -o internal/fakes/InputSourcer.go . inputSourcer
+type inputSourcer interface {
 	// Source obtains values for inputs in order of precedence.
 	Source(inputName string) (*string, bool)
 }
 
 func NewInputSourcer(
-	sources ...InputSrc,
+	sources ...inputsrc.InputSrc,
 ) InputSourcer {
-	return inputSourcer{
+	return _inputSourcer{
 		sources: sources,
 	}
 }
 
-type inputSourcer struct {
-	sources []InputSrc
+type _inputSourcer struct {
+	sources []inputsrc.InputSrc
 }
 
-func (this inputSourcer) Source(
+func (this _inputSourcer) Source(
 	inputName string,
 ) (*string, bool) {
 	for _, source := range this.sources {

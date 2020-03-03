@@ -1,7 +1,5 @@
 package opspec
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInstaller.go --fake-name FakeInstaller ./ Installer
-
 import (
 	"context"
 	"github.com/golang-interfaces/ios"
@@ -10,6 +8,7 @@ import (
 	"path/filepath"
 )
 
+//counterfeiter:generate -o fakes/installer.go . Installer
 type Installer interface {
 	// Install installs an op; path will be created if it doesn't exist
 	Install(

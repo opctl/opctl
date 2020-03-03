@@ -1,7 +1,5 @@
 package opspec
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeLister.go --fake-name FakeLister ./ Lister
-
 import (
 	"context"
 	"github.com/golang-interfaces/iioutil"
@@ -10,6 +8,7 @@ import (
 	"path/filepath"
 )
 
+//counterfeiter:generate -o fakes/lister.go . Lister
 type Lister interface {
 	// List recursively lists ops within a directory
 	List(

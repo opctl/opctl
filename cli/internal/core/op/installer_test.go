@@ -7,10 +7,11 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
+	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	op "github.com/opctl/opctl/sdks/go/opspec"
+	. "github.com/opctl/opctl/sdks/go/model/fakes"
+	. "github.com/opctl/opctl/sdks/go/opspec/fakes"
 )
 
 var _ = Context("Installer", func() {
@@ -24,10 +25,10 @@ var _ = Context("Installer", func() {
 			}
 
 			fakeDataResolver := new(dataresolver.Fake)
-			fakeDataResolver.ResolveReturns(new(data.FakeHandle))
+			fakeDataResolver.ResolveReturns(new(FakeDataHandle))
 
 			objectUnderTest := _installer{
-				opInstaller:  new(op.FakeInstaller),
+				opInstaller:  new(FakeInstaller),
 				dataResolver: fakeDataResolver,
 			}
 
@@ -52,12 +53,12 @@ var _ = Context("Installer", func() {
 			providedCtx := context.Background()
 			providedPath := "dummyPath"
 
-			fakeHandle := new(data.FakeHandle)
+			fakeHandle := new(FakeDataHandle)
 
 			fakeDataResolver := new(dataresolver.Fake)
 			fakeDataResolver.ResolveReturns(fakeHandle)
 
-			fakeInstaller := new(op.FakeInstaller)
+			fakeInstaller := new(FakeInstaller)
 
 			objectUnderTest := _installer{
 				opInstaller:  fakeInstaller,
@@ -85,12 +86,12 @@ var _ = Context("Installer", func() {
 		Context("pkg.Install errs", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeInstaller := new(op.FakeInstaller)
+				fakeInstaller := new(FakeInstaller)
 
 				expectedError := errors.New("dummyError")
 				fakeInstaller.InstallReturns(expectedError)
 
-				fakeCliExiter := new(cliexiter.Fake)
+				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 				objectUnderTest := _installer{
 					cliExiter:    fakeCliExiter,

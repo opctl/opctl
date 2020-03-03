@@ -1,8 +1,7 @@
 package docker
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeFSPathConverter.go --fake-name fakeFSPathConverter ./ fsPathConverter
-
 import (
+	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/opctl/opctl/sdks/go/internal/iruntime"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/hostruntime"
 	"github.com/pkg/errors"
@@ -11,12 +10,15 @@ import (
 	"strings"
 )
 
+//counterfeiter:generate -o internal/fakes/fsPathConverter.go . fsPathConverter
 type fsPathConverter interface {
 	LocalToEngine(localPath string) string
 }
 
-func newFSPathConverter(cli hostruntime.ContainerInspector) (fsPathConverter, error) {
-	hr, err := hostruntime.New(cli)
+func newFSPathConverter(
+	dockerClient dockerClientPkg.CommonAPIClient,
+) (fsPathConverter, error) {
+	hr, err := hostruntime.New(dockerClient)
 	if err != nil {
 		return _fsPathConverter{}, errors.Wrap(err, "error detecting docker host runtime")
 	}

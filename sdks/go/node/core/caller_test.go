@@ -7,10 +7,11 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	callFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/fakes"
+	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("caller", func() {
@@ -19,12 +20,12 @@ var _ = Context("caller", func() {
 			/* arrange/act/assert */
 			Expect(
 				newCaller(
-					new(call.FakeInterpreter),
-					new(fakeContainerCaller),
+					new(callFakes.FakeInterpreter),
+					new(FakeContainerCaller),
 					"dummyDataDir",
-					new(fakeCallStore),
-					new(fakeCallKiller),
-					new(pubsub.Fake),
+					new(FakeCallStore),
+					new(FakeCallKiller),
+					new(FakePubSub),
 				),
 			).To(Not(BeNil()))
 		})
@@ -36,14 +37,14 @@ var _ = Context("caller", func() {
 		Context("Null SCG", func() {
 			It("should not throw", func() {
 				/* arrange */
-				fakeContainerCaller := new(fakeContainerCaller)
+				fakeContainerCaller := new(FakeContainerCaller)
 
 				/* act */
 				objectUnderTest := _caller{
-					callInterpreter: new(call.FakeInterpreter),
-					callStore:       new(fakeCallStore),
+					callInterpreter: new(callFakes.FakeInterpreter),
+					callStore:       new(FakeCallStore),
 					containerCaller: fakeContainerCaller,
-					pubSub:          new(pubsub.Fake),
+					pubSub:          new(FakePubSub),
 				}
 
 				/* assert */
@@ -52,7 +53,7 @@ var _ = Context("caller", func() {
 					"dummyCallID",
 					map[string]*model.Value{},
 					nil,
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					nil,
 					"dummyRootOpID",
 				)
@@ -64,25 +65,25 @@ var _ = Context("caller", func() {
 			providedCallID := "dummyCallID"
 			providedScope := map[string]*model.Value{}
 			providedSCG := &model.SCG{}
-			providedOpHandle := new(data.FakeHandle)
+			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedParentIDValue := "providedParentID"
 			providedParentID := &providedParentIDValue
 			providedRootOpID := "dummyRootOpID"
 
-			fakeCallInterpreter := new(call.FakeInterpreter)
+			fakeCallInterpreter := new(callFakes.FakeInterpreter)
 			fakeCallInterpreter.InterpretReturns(
 				&model.DCG{},
 				nil,
 			)
 
-			fakePubSub := new(pubsub.Fake)
+			fakePubSub := new(FakePubSub)
 			// ensure eventChan closed so call exits
 			fakePubSub.SubscribeReturns(closedEventChan, nil)
 
 			objectUnderTest := _caller{
 				callInterpreter: fakeCallInterpreter,
-				callStore:       new(fakeCallStore),
-				containerCaller: new(fakeContainerCaller),
+				callStore:       new(FakeCallStore),
+				containerCaller: new(FakeContainerCaller),
 				pubSub:          fakePubSub,
 			}
 
@@ -118,7 +119,7 @@ var _ = Context("caller", func() {
 				providedCallID := "dummyCallID"
 				providedRootOpID := "dummyRootOpID"
 
-				fakeCallInterpreter := new(call.FakeInterpreter)
+				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				falseBoolean := false
 				fakeCallInterpreter.InterpretReturns(
 					&model.DCG{
@@ -134,14 +135,14 @@ var _ = Context("caller", func() {
 					},
 				}
 
-				fakePubSub := new(pubsub.Fake)
+				fakePubSub := new(FakePubSub)
 				// ensure eventChan closed so call exits
 				fakePubSub.SubscribeReturns(closedEventChan, nil)
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
-					callStore:       new(fakeCallStore),
-					containerCaller: new(fakeContainerCaller),
+					callStore:       new(FakeCallStore),
+					containerCaller: new(FakeContainerCaller),
 					pubSub:          fakePubSub,
 				}
 
@@ -151,7 +152,7 @@ var _ = Context("caller", func() {
 					providedCallID,
 					map[string]*model.Value{},
 					&model.SCG{},
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					nil,
 					providedRootOpID,
 				)
@@ -171,7 +172,7 @@ var _ = Context("caller", func() {
 		Context("Container SCG", func() {
 			It("should call containerCaller.Call w/ expected args", func() {
 				/* arrange */
-				fakeContainerCaller := new(fakeContainerCaller)
+				fakeContainerCaller := new(FakeContainerCaller)
 
 				providedScope := map[string]*model.Value{}
 				providedSCG := &model.SCG{
@@ -181,16 +182,16 @@ var _ = Context("caller", func() {
 				expectedDCG := &model.DCG{
 					Container: &model.DCGContainerCall{},
 				}
-				fakeCallInterpreter := new(call.FakeInterpreter)
+				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
 
-				fakePubSub := new(pubsub.Fake)
+				fakePubSub := new(FakePubSub)
 				// ensure eventChan closed so call exits
 				fakePubSub.SubscribeReturns(closedEventChan, nil)
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
-					callStore:       new(fakeCallStore),
+					callStore:       new(FakeCallStore),
 					containerCaller: fakeContainerCaller,
 					pubSub:          fakePubSub,
 				}
@@ -201,7 +202,7 @@ var _ = Context("caller", func() {
 					"dummyCallID",
 					providedScope,
 					providedSCG,
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					nil,
 					"dummyRootOpID",
 				)
@@ -221,12 +222,12 @@ var _ = Context("caller", func() {
 		Context("Op SCG", func() {
 			It("should call opCaller.Call w/ expected args", func() {
 				/* arrange */
-				fakeOpCaller := new(fakeOpCaller)
+				fakeOpCaller := new(FakeOpCaller)
 
 				expectedDCG := &model.DCG{
 					Op: &model.DCGOpCall{},
 				}
-				fakeCallInterpreter := new(call.FakeInterpreter)
+				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(
 					expectedDCG,
 					nil,
@@ -239,17 +240,17 @@ var _ = Context("caller", func() {
 						Ref: "dummyOpRef",
 					},
 				}
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 				providedParentID := "providedParentID"
 				providedRootOpID := "dummyRootOpID"
 
-				fakePubSub := new(pubsub.Fake)
+				fakePubSub := new(FakePubSub)
 				// ensure eventChan closed so call exits
 				fakePubSub.SubscribeReturns(closedEventChan, nil)
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
-					callStore:       new(fakeCallStore),
+					callStore:       new(FakeCallStore),
 					opCaller:        fakeOpCaller,
 					pubSub:          fakePubSub,
 				}
@@ -282,7 +283,7 @@ var _ = Context("caller", func() {
 		Context("Parallel SCG", func() {
 			It("should call parallelCaller.Call w/ expected args", func() {
 				/* arrange */
-				fakeParallelCaller := new(fakeParallelCaller)
+				fakeParallelCaller := new(FakeParallelCaller)
 
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
@@ -291,22 +292,22 @@ var _ = Context("caller", func() {
 						{Container: &model.SCGContainerCall{}},
 					},
 				}
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 				providedRootOpID := "dummyRootOpID"
 
-				fakeCallInterpreter := new(call.FakeInterpreter)
+				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(
 					&model.DCG{},
 					nil,
 				)
 
-				fakePubSub := new(pubsub.Fake)
+				fakePubSub := new(FakePubSub)
 				// ensure eventChan closed so call exits
 				fakePubSub.SubscribeReturns(closedEventChan, nil)
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
-					callStore:       new(fakeCallStore),
+					callStore:       new(FakeCallStore),
 					parallelCaller:  fakeParallelCaller,
 					pubSub:          fakePubSub,
 				}
@@ -341,30 +342,30 @@ var _ = Context("caller", func() {
 		Context("ParallelLoop SCG", func() {
 			It("should call parallelLoopCaller.Call w/ expected args", func() {
 				/* arrange */
-				fakeParallelLoopCaller := new(fakeParallelLoopCaller)
+				fakeParallelLoopCaller := new(FakeParallelLoopCaller)
 
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
 				providedSCG := &model.SCG{
 					ParallelLoop: &model.SCGParallelLoopCall{},
 				}
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 				providedRootOpID := "dummyRootOpID"
 				providedParentID := "providedParentID"
 
 				expectedDCG := &model.DCG{
 					ParallelLoop: &model.DCGParallelLoopCall{},
 				}
-				fakeCallInterpreter := new(call.FakeInterpreter)
+				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
 
-				fakePubSub := new(pubsub.Fake)
+				fakePubSub := new(FakePubSub)
 				// ensure eventChan closed so call exits
 				fakePubSub.SubscribeReturns(closedEventChan, nil)
 
 				objectUnderTest := _caller{
 					callInterpreter:    fakeCallInterpreter,
-					callStore:          new(fakeCallStore),
+					callStore:          new(FakeCallStore),
 					parallelLoopCaller: fakeParallelLoopCaller,
 					pubSub:             fakePubSub,
 				}
@@ -402,7 +403,7 @@ var _ = Context("caller", func() {
 
 			It("should call serialCaller.Call w/ expected args", func() {
 				/* arrange */
-				fakeSerialCaller := new(fakeSerialCaller)
+				fakeSerialCaller := new(FakeSerialCaller)
 
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
@@ -411,23 +412,23 @@ var _ = Context("caller", func() {
 						{Container: &model.SCGContainerCall{}},
 					},
 				}
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 				providedRootOpID := "dummyRootOpID"
 
-				fakeCallInterpreter := new(call.FakeInterpreter)
+				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(
 					&model.DCG{},
 					nil,
 				)
 
-				fakePubSub := new(pubsub.Fake)
+				fakePubSub := new(FakePubSub)
 				// ensure eventChan closed so call exits
 				fakePubSub.SubscribeReturns(closedEventChan, nil)
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
-					callStore:       new(fakeCallStore),
-					containerCaller: new(fakeContainerCaller),
+					callStore:       new(FakeCallStore),
+					containerCaller: new(FakeContainerCaller),
 					pubSub:          fakePubSub,
 					serialCaller:    fakeSerialCaller,
 				}
@@ -462,30 +463,30 @@ var _ = Context("caller", func() {
 		Context("SerialLoop SCG", func() {
 			It("should call serialLoopCaller.Call w/ expected args", func() {
 				/* arrange */
-				fakeSerialLoopCaller := new(fakeSerialLoopCaller)
+				fakeSerialLoopCaller := new(FakeSerialLoopCaller)
 
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
 				providedSCG := &model.SCG{
 					SerialLoop: &model.SCGSerialLoopCall{},
 				}
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 				providedRootOpID := "dummyRootOpID"
 				providedParentID := "providedParentID"
 
 				expectedDCG := &model.DCG{
 					SerialLoop: &model.DCGSerialLoopCall{},
 				}
-				fakeCallInterpreter := new(call.FakeInterpreter)
+				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
 
-				fakePubSub := new(pubsub.Fake)
+				fakePubSub := new(FakePubSub)
 				// ensure eventChan closed so call exits
 				fakePubSub.SubscribeReturns(closedEventChan, nil)
 
 				objectUnderTest := _caller{
 					callInterpreter:  fakeCallInterpreter,
-					callStore:        new(fakeCallStore),
+					callStore:        new(FakeCallStore),
 					serialLoopCaller: fakeSerialLoopCaller,
 					pubSub:           fakePubSub,
 				}
@@ -525,23 +526,23 @@ var _ = Context("caller", func() {
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
 				providedSCG := &model.SCG{}
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 				providedRootOpID := "dummyRootOpID"
 				expectedError := fmt.Errorf("Invalid call graph %+v\n", providedSCG)
 
-				fakeCallInterpreter := new(call.FakeInterpreter)
+				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(
 					&model.DCG{},
 					nil,
 				)
 
-				fakePubSub := new(pubsub.Fake)
+				fakePubSub := new(FakePubSub)
 				// ensure eventChan closed so call exits
 				fakePubSub.SubscribeReturns(closedEventChan, nil)
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
-					callStore:       new(fakeCallStore),
+					callStore:       new(FakeCallStore),
 					pubSub:          fakePubSub,
 				}
 

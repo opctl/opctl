@@ -1,8 +1,8 @@
 package events
 
 import (
-	"github.com/opctl/opctl/sdks/go/node/api/handler/events/stream"
-	"github.com/opctl/opctl/sdks/go/node/core"
+	streamFakes "github.com/opctl/opctl/sdks/go/node/api/handler/events/stream/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -15,7 +15,7 @@ var _ = Context("Handler", func() {
 	Context("NewHandler", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewHandler(new(core.Fake))).Should(Not(BeNil()))
+			Expect(NewHandler(new(FakeCore))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {
@@ -40,7 +40,7 @@ var _ = Context("Handler", func() {
 		Context("next URL path segment is stream", func() {
 			It("should call refHandler.Handle w/ expected args", func() {
 				/* arrange */
-				fakeStreamHandler := new(stream.FakeHandler)
+				fakeStreamHandler := new(streamFakes.FakeHandler)
 
 				objectUnderTest := _handler{
 					streamHandler: fakeStreamHandler,

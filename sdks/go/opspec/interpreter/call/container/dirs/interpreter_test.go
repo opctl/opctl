@@ -12,9 +12,9 @@ import (
 	"github.com/golang-utils/dircopier"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	dirFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/dir/fakes"
 )
 
 var _ = Context("Dirs", func() {
@@ -38,11 +38,11 @@ var _ = Context("Dirs", func() {
 				// implicitly bound
 				containerDirPath: "",
 			}
-			providedOpHandle := new(data.FakeHandle)
+			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedScope := map[string]*model.Value{}
 			providedScratchDir := "dummyScratchDir"
 
-			fakeDirInterpreter := new(dir.FakeInterpreter)
+			fakeDirInterpreter := new(dirFakes.FakeInterpreter)
 			// error to trigger immediate return
 			fakeDirInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 			fakeOS := new(ios.Fake)
@@ -81,7 +81,7 @@ var _ = Context("Dirs", func() {
 					providedContainerDirPath: "",
 				}
 
-				fakeDirInterpreter := new(dir.FakeInterpreter)
+				fakeDirInterpreter := new(dirFakes.FakeInterpreter)
 				fakeDirInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 
 				expectedPath := filepath.Join(providedScratchDirPath, providedContainerDirPath)
@@ -97,7 +97,7 @@ var _ = Context("Dirs", func() {
 
 				/* act */
 				objectUnderTest.Interpret(
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					map[string]*model.Value{},
 					providedSCGContainerCallDirs,
 					providedScratchDirPath,
@@ -117,7 +117,7 @@ var _ = Context("Dirs", func() {
 					/* arrange */
 					containerDirPath := "/dummyDir1Path.txt"
 
-					fakeDirInterpreter := new(dir.FakeInterpreter)
+					fakeDirInterpreter := new(dirFakes.FakeInterpreter)
 					filePath := tempDir.Name()
 					fakeDirInterpreter.InterpretReturns(&model.Value{Dir: &filePath}, nil)
 
@@ -132,7 +132,7 @@ var _ = Context("Dirs", func() {
 
 					/* act */
 					actualDCGContainerCallDirs, actualErr := objectUnderTest.Interpret(
-						new(data.FakeHandle),
+						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						map[string]string{
 							// implicitly bound
@@ -153,7 +153,7 @@ var _ = Context("Dirs", func() {
 					providedScratchDir := "dummyScratchDir"
 					containerDirPath := "/dummyDir1Path.txt"
 
-					fakeDirInterpreter := new(dir.FakeInterpreter)
+					fakeDirInterpreter := new(dirFakes.FakeInterpreter)
 					filePath := tempDir.Name()
 					fakeDirInterpreter.InterpretReturns(&model.Value{Dir: &filePath}, nil)
 
@@ -171,7 +171,7 @@ var _ = Context("Dirs", func() {
 
 					/* act */
 					objectUnderTest.Interpret(
-						new(data.FakeHandle),
+						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						map[string]string{
 							// implicitly bound
@@ -193,7 +193,7 @@ var _ = Context("Dirs", func() {
 						/* arrange */
 						containerDirPath := "/dummyDir1Path.txt"
 
-						fakeDirInterpreter := new(dir.FakeInterpreter)
+						fakeDirInterpreter := new(dirFakes.FakeInterpreter)
 						filePath := tempDir.Name()
 						fakeDirInterpreter.InterpretReturns(&model.Value{Dir: &filePath}, nil)
 
@@ -218,7 +218,7 @@ var _ = Context("Dirs", func() {
 
 						/* act */
 						_, actualErr := objectUnderTest.Interpret(
-							new(data.FakeHandle),
+							new(modelFakes.FakeDataHandle),
 							map[string]*model.Value{},
 							map[string]string{
 								// implicitly bound

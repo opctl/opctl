@@ -1,6 +1,6 @@
 package ref
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeHandler.go --fake-name FakeHandler ./ Handler
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"fmt"
@@ -12,6 +12,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/core"
 )
 
+//counterfeiter:generate -o fakes/handler.go . Handler
 type Handler interface {
 	Handle(
 		dataRef string,

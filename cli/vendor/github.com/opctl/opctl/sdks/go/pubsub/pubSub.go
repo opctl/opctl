@@ -1,8 +1,6 @@
 package pubsub
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeEventSubscriber.go --fake-name FakeEventSubscriber ./ EventSubscriber
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeEventPublisher.go --fake-name FakeEventPublisher ./ EventPublisher
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ PubSub
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"context"
@@ -19,12 +17,14 @@ func New(
 	}
 }
 
+//counterfeiter:generate -o fakes/eventPublisher.go . EventPublisher
 type EventPublisher interface {
 	Publish(
 		event model.Event,
 	)
 }
 
+//counterfeiter:generate -o fakes/eventSubscriber.go . EventSubscriber
 type EventSubscriber interface {
 	// Subscribe returns a filtered event stream
 	// events will be sent to the subscription until either:
@@ -40,6 +40,7 @@ type EventSubscriber interface {
 	)
 }
 
+//counterfeiter:generate -o fakes/pubSub.go . PubSub
 type PubSub interface {
 	EventPublisher
 	EventSubscriber

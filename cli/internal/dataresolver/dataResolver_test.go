@@ -8,12 +8,15 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
-	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
-	cliModel "github.com/opctl/opctl/cli/internal/model"
+	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
+	cliparamsatisfierFakes "github.com/opctl/opctl/cli/internal/cliparamsatisfier/fakes"
+	modelFakes "github.com/opctl/opctl/cli/internal/model/fakes"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
-	"github.com/opctl/opctl/sdks/go/data"
+	. "github.com/opctl/opctl/sdks/go/data/fakes"
+	. "github.com/opctl/opctl/sdks/go/data/provider/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api/client"
+	. "github.com/opctl/opctl/sdks/go/model/fakes"
+	clientFakes "github.com/opctl/opctl/sdks/go/node/api/client/fakes"
 )
 
 var _ = Context("dataResolver", func() {
@@ -25,7 +28,7 @@ var _ = Context("dataResolver", func() {
 				expectedError := errors.New("dummyError")
 				fakeIOS.GetwdReturns("", expectedError)
 
-				fakeCliExiter := new(cliexiter.Fake)
+				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 				objectUnderTest := _dataResolver{
 					cliExiter: fakeCliExiter,
@@ -46,15 +49,15 @@ var _ = Context("dataResolver", func() {
 		Context("os.Getwd doesn't err", func() {
 			It("should call data.NewFSProvider w/ expected args", func() {
 				/* arrange */
-				fakeAPIClient := new(client.Fake)
-				fakeNodeHandle := new(cliModel.FakeNodeHandle)
+				fakeAPIClient := new(clientFakes.FakeClient)
+				fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 				fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 				fakeNodeProvider := new(nodeprovider.Fake)
 				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, errors.New("dummyError"))
 
-				fakeData := new(data.Fake)
-				fakeFSDataProvider := new(data.FakeProvider)
+				fakeData := new(FakeData)
+				fakeFSDataProvider := new(FakeProvider)
 				fakeData.NewFSProviderReturns(fakeFSDataProvider)
 
 				fakeIOS := new(ios.Fake)
@@ -63,7 +66,7 @@ var _ = Context("dataResolver", func() {
 
 				objectUnderTest := _dataResolver{
 					data:         fakeData,
-					cliExiter:    new(cliexiter.Fake),
+					cliExiter:    new(cliexiterFakes.FakeCliExiter),
 					os:           fakeIOS,
 					nodeProvider: fakeNodeProvider,
 				}
@@ -81,15 +84,15 @@ var _ = Context("dataResolver", func() {
 					Password: "dummyPassword",
 				}
 
-				fakeAPIClient := new(client.Fake)
-				fakeNodeHandle := new(cliModel.FakeNodeHandle)
+				fakeAPIClient := new(clientFakes.FakeClient)
+				fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 				fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 				fakeNodeProvider := new(nodeprovider.Fake)
 				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
-				fakeData := new(data.Fake)
-				fakeNodeDataProvider := new(data.FakeProvider)
+				fakeData := new(FakeData)
+				fakeNodeDataProvider := new(FakeProvider)
 				fakeData.NewNodeProviderReturns(fakeNodeDataProvider)
 
 				// err to trigger immediate return
@@ -97,7 +100,7 @@ var _ = Context("dataResolver", func() {
 
 				objectUnderTest := _dataResolver{
 					data:         fakeData,
-					cliExiter:    new(cliexiter.Fake),
+					cliExiter:    new(cliexiterFakes.FakeCliExiter),
 					os:           new(ios.Fake),
 					nodeProvider: fakeNodeProvider,
 				}
@@ -118,19 +121,19 @@ var _ = Context("dataResolver", func() {
 				/* arrange */
 				providedDataRef := "dummyDataRef"
 
-				fakeAPIClient := new(client.Fake)
-				fakeNodeHandle := new(cliModel.FakeNodeHandle)
+				fakeAPIClient := new(clientFakes.FakeClient)
+				fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 				fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 				fakeNodeProvider := new(nodeprovider.Fake)
 				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
-				fakeData := new(data.Fake)
+				fakeData := new(FakeData)
 
-				fakeFSDataProvider := new(data.FakeProvider)
+				fakeFSDataProvider := new(FakeProvider)
 				fakeData.NewFSProviderReturns(fakeFSDataProvider)
 
-				fakeNodeDataProvider := new(data.FakeProvider)
+				fakeNodeDataProvider := new(FakeProvider)
 				fakeData.NewNodeProviderReturns(fakeNodeDataProvider)
 
 				// err to trigger immediate return
@@ -138,7 +141,7 @@ var _ = Context("dataResolver", func() {
 
 				objectUnderTest := _dataResolver{
 					data:         fakeData,
-					cliExiter:    new(cliexiter.Fake),
+					cliExiter:    new(cliexiterFakes.FakeCliExiter),
 					os:           new(ios.Fake),
 					nodeProvider: fakeNodeProvider,
 				}
@@ -161,21 +164,21 @@ var _ = Context("dataResolver", func() {
 				Context("data.ErrDataProviderAuthorization", func() {
 					It("should call cliParamSatisfier.Satisfy w/ expected args", func() {
 						/* arrange */
-						fakeAPIClient := new(client.Fake)
-						fakeNodeHandle := new(cliModel.FakeNodeHandle)
+						fakeAPIClient := new(clientFakes.FakeClient)
+						fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 						fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 						fakeNodeProvider := new(nodeprovider.Fake)
 						fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
-						fakeData := new(data.Fake)
+						fakeData := new(FakeData)
 						expectedError := model.ErrDataProviderAuthorization{}
 						fakeData.ResolveReturnsOnCall(0, nil, expectedError)
 
 						username := "dummyUsername"
 						password := "dummyPassword"
 
-						fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
+						fakeCliParamSatisfier := new(cliparamsatisfierFakes.FakeCLIParamSatisfier)
 						fakeCliParamSatisfier.SatisfyReturns(
 							map[string]*model.Value{
 								usernameInputName: {String: &username},
@@ -186,7 +189,7 @@ var _ = Context("dataResolver", func() {
 						objectUnderTest := _dataResolver{
 							data:              fakeData,
 							cliParamSatisfier: fakeCliParamSatisfier,
-							cliExiter:         new(cliexiter.Fake),
+							cliExiter:         new(cliexiterFakes.FakeCliExiter),
 							os:                new(ios.Fake),
 							nodeProvider:      fakeNodeProvider,
 						}
@@ -200,15 +203,15 @@ var _ = Context("dataResolver", func() {
 					})
 					It("should call data.NewNodeProvider w/ expected args", func() {
 						/* arrange */
-						fakeAPIClient := new(client.Fake)
-						fakeNodeHandle := new(cliModel.FakeNodeHandle)
+						fakeAPIClient := new(clientFakes.FakeClient)
+						fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 						fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 						fakeNodeProvider := new(nodeprovider.Fake)
 						fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
-						fakeData := new(data.Fake)
-						fakeNodeDataProvider := new(data.FakeProvider)
+						fakeData := new(FakeData)
+						fakeNodeDataProvider := new(FakeProvider)
 						fakeData.NewNodeProviderReturns(fakeNodeDataProvider)
 
 						expectedError := model.ErrDataProviderAuthentication{}
@@ -219,7 +222,7 @@ var _ = Context("dataResolver", func() {
 							Password: "dummyPassword",
 						}
 
-						fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
+						fakeCliParamSatisfier := new(cliparamsatisfierFakes.FakeCLIParamSatisfier)
 						fakeCliParamSatisfier.SatisfyReturns(
 							map[string]*model.Value{
 								usernameInputName: {String: &pullCreds.Username},
@@ -230,7 +233,7 @@ var _ = Context("dataResolver", func() {
 						objectUnderTest := _dataResolver{
 							data:              fakeData,
 							cliParamSatisfier: fakeCliParamSatisfier,
-							cliExiter:         new(cliexiter.Fake),
+							cliExiter:         new(cliexiterFakes.FakeCliExiter),
 							os:                new(ios.Fake),
 							nodeProvider:      fakeNodeProvider,
 						}
@@ -251,25 +254,25 @@ var _ = Context("dataResolver", func() {
 						/* arrange */
 						providedDataRef := "dummyDataRef"
 
-						fakeAPIClient := new(client.Fake)
-						fakeNodeHandle := new(cliModel.FakeNodeHandle)
+						fakeAPIClient := new(clientFakes.FakeClient)
+						fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 						fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 						fakeNodeProvider := new(nodeprovider.Fake)
 						fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
-						fakeData := new(data.Fake)
+						fakeData := new(FakeData)
 
-						fakeFSDataProvider := new(data.FakeProvider)
+						fakeFSDataProvider := new(FakeProvider)
 						fakeData.NewFSProviderReturns(fakeFSDataProvider)
 
-						fakeNodeDataProvider := new(data.FakeProvider)
+						fakeNodeDataProvider := new(FakeProvider)
 						fakeData.NewNodeProviderReturns(fakeNodeDataProvider)
 
 						expectedError := model.ErrDataProviderAuthentication{}
 						fakeData.ResolveReturnsOnCall(0, nil, expectedError)
 
-						fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
+						fakeCliParamSatisfier := new(cliparamsatisfierFakes.FakeCLIParamSatisfier)
 						fakeCliParamSatisfier.SatisfyReturns(
 							map[string]*model.Value{
 								usernameInputName: {String: new(string)},
@@ -280,7 +283,7 @@ var _ = Context("dataResolver", func() {
 						objectUnderTest := _dataResolver{
 							data:              fakeData,
 							cliParamSatisfier: fakeCliParamSatisfier,
-							cliExiter:         new(cliexiter.Fake),
+							cliExiter:         new(cliexiterFakes.FakeCliExiter),
 							os:                new(ios.Fake),
 							nodeProvider:      fakeNodeProvider,
 						}
@@ -305,14 +308,14 @@ var _ = Context("dataResolver", func() {
 						/* arrange */
 						providedDataRef := "dummyDataRef"
 
-						fakeAPIClient := new(client.Fake)
-						fakeNodeHandle := new(cliModel.FakeNodeHandle)
+						fakeAPIClient := new(clientFakes.FakeClient)
+						fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 						fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 						fakeNodeProvider := new(nodeprovider.Fake)
 						fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
-						fakeData := new(data.Fake)
+						fakeData := new(FakeData)
 						resolveError := errors.New("dummyError")
 						fakeData.ResolveReturns(nil, resolveError)
 
@@ -322,7 +325,7 @@ var _ = Context("dataResolver", func() {
 							resolveError.Error(),
 						)
 
-						fakeCliExiter := new(cliexiter.Fake)
+						fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 						objectUnderTest := _dataResolver{
 							data:         fakeData,
@@ -344,15 +347,15 @@ var _ = Context("dataResolver", func() {
 			Context("data.Resolve doesn't err", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					fakeAPIClient := new(client.Fake)
-					fakeNodeHandle := new(cliModel.FakeNodeHandle)
+					fakeAPIClient := new(clientFakes.FakeClient)
+					fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 					fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 					fakeNodeProvider := new(nodeprovider.Fake)
 					fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
-					fakeData := new(data.Fake)
-					fakeHandle := new(data.FakeHandle)
+					fakeData := new(FakeData)
+					fakeHandle := new(FakeDataHandle)
 
 					// err to trigger immediate return
 					fakeData.ResolveReturns(fakeHandle, nil)

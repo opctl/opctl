@@ -1,11 +1,10 @@
 package loop
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeDeScoper.go --fake-name FakeDeScoper ./ DeScoper
-
 import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
+//counterfeiter:generate -o fakes/deScoper.go . DeScoper
 type DeScoper interface {
 	// DeScope de-scopes loop vars (index, key, value)
 	DeScope(

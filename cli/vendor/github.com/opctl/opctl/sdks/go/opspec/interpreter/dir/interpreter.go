@@ -1,7 +1,5 @@
 package dir
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
-
 import (
 	"fmt"
 	"strings"
@@ -11,6 +9,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 )
 
+//counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	// Interpret interprets an expression to a dir value.
 	// Expression must be of type string.

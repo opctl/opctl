@@ -1,7 +1,5 @@
 package opspec
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeCreator.go --fake-name FakeCreator ./ Creator
-
 import (
 	"github.com/ghodss/yaml"
 	"github.com/golang-interfaces/iioutil"
@@ -11,6 +9,7 @@ import (
 	"path/filepath"
 )
 
+//counterfeiter:generate -o fakes/creator.go . Creator
 type Creator interface {
 	// Create creates an operation
 	Create(

@@ -5,7 +5,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
-	"github.com/opctl/opctl/sdks/go/opspec"
+	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
+	. "github.com/opctl/opctl/sdks/go/opspec/fakes"
 	"path/filepath"
 )
 
@@ -13,7 +14,7 @@ var _ = Context("Creater", func() {
 	Context("Create", func() {
 		It("should call opCreator.Create w/ expected args", func() {
 			/* arrange */
-			fakeOpCreator := new(opspec.FakeCreator)
+			fakeOpCreator := new(FakeCreator)
 
 			providedPath := "dummyPath"
 			providedPkgName := "dummyPkgName"
@@ -42,11 +43,11 @@ var _ = Context("Creater", func() {
 		Context("opCreator.Create errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeOpCreator := new(opspec.FakeCreator)
+				fakeOpCreator := new(FakeCreator)
 				expectedError := errors.New("dummyError")
 				fakeOpCreator.CreateReturns(expectedError)
 
-				fakeCliExiter := new(cliexiter.Fake)
+				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 				objectUnderTest := _creater{
 					opCreator: fakeOpCreator,

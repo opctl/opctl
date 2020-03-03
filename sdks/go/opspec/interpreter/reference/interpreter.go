@@ -1,7 +1,5 @@
 package reference
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
-
 import (
 	"fmt"
 	"strings"
@@ -36,6 +34,7 @@ const (
 // - scope object path refs: $(name.sub.prop)
 // - scope file path refs: $(name/sub/file.ext)
 // - op file path refs: $(/name/sub/file.ext)
+//counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	// Interpret returns the interpreted value (if any), and any err
 	Interpret(

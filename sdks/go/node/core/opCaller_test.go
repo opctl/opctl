@@ -7,11 +7,12 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs"
-	"github.com/opctl/opctl/sdks/go/opspec/opfile"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	outputsFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs/fakes"
+	. "github.com/opctl/opctl/sdks/go/opspec/opfile/fakes"
+	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("opCaller", func() {
@@ -19,9 +20,9 @@ var _ = Context("opCaller", func() {
 		It("should return opCaller", func() {
 			/* arrange/act/assert */
 			Expect(newOpCaller(
-				new(fakeCallStore),
-				new(pubsub.Fake),
-				new(fakeCaller),
+				new(FakeCallStore),
+				new(FakePubSub),
+				new(FakeCaller),
 				"",
 			)).To(Not(BeNil()))
 		})
@@ -30,7 +31,7 @@ var _ = Context("opCaller", func() {
 		It("should call pubSub.Publish w/ expected args", func() {
 			/* arrange */
 			providedOpHandleRef := "dummyOpRef"
-			fakeOpHandle := new(data.FakeHandle)
+			fakeOpHandle := new(modelFakes.FakeDataHandle)
 			fakeOpHandle.RefReturns(providedOpHandleRef)
 
 			providedDCGOpCall := &model.DCGOpCall{
@@ -52,19 +53,19 @@ var _ = Context("opCaller", func() {
 				},
 			}
 
-			fakePubSub := new(pubsub.Fake)
+			fakePubSub := new(FakePubSub)
 			eventChannel := make(chan model.Event)
 			// close eventChannel to trigger immediate return
 			close(eventChannel)
 			fakePubSub.SubscribeReturns(eventChannel, nil)
 
-			fakeOpFileGetter := new(opfile.FakeGetter)
+			fakeOpFileGetter := new(FakeGetter)
 			// err to trigger immediate return
 			fakeOpFileGetter.GetReturns(nil, errors.New("dummyErr"))
 
 			objectUnderTest := _opCaller{
-				caller:       new(fakeCaller),
-				callStore:    new(fakeCallStore),
+				caller:       new(FakeCaller),
+				callStore:    new(FakeCallStore),
 				opFileGetter: fakeOpFileGetter,
 				pubSub:       fakePubSub,
 			}
@@ -94,7 +95,7 @@ var _ = Context("opCaller", func() {
 			providedCtx := context.Background()
 			providedDCGOpCall := &model.DCGOpCall{
 				DCGBaseCall: model.DCGBaseCall{
-					OpHandle: new(data.FakeHandle),
+					OpHandle: new(modelFakes.FakeDataHandle),
 					RootOpID: "providedRootID",
 				},
 				ChildCallID: "dummyChildCallID",
@@ -111,21 +112,21 @@ var _ = Context("opCaller", func() {
 				OpID: "providedOpID",
 			}
 
-			fakePubSub := new(pubsub.Fake)
+			fakePubSub := new(FakePubSub)
 			eventChannel := make(chan model.Event)
 			// close eventChannel to trigger immediate return
 			close(eventChannel)
 			fakePubSub.SubscribeReturns(eventChannel, nil)
 
-			fakeCaller := new(fakeCaller)
+			fakeCaller := new(FakeCaller)
 
-			fakeOpFileGetter := new(opfile.FakeGetter)
+			fakeOpFileGetter := new(FakeGetter)
 			// err to trigger immediate return
 			fakeOpFileGetter.GetReturns(nil, errors.New("dummyErr"))
 
 			objectUnderTest := _opCaller{
 				caller:       fakeCaller,
-				callStore:    new(fakeCallStore),
+				callStore:    new(FakeCallStore),
 				opFileGetter: fakeOpFileGetter,
 				pubSub:       fakePubSub,
 			}
@@ -160,7 +161,7 @@ var _ = Context("opCaller", func() {
 			It("should call pubSub.Publish w/ expected args", func() {
 				/* arrange */
 				providedOpHandleRef := "dummyOpRef"
-				fakeOpHandle := new(data.FakeHandle)
+				fakeOpHandle := new(modelFakes.FakeDataHandle)
 				fakeOpHandle.RefReturns(providedOpHandleRef)
 				fakeOpHandle.PathReturns(new(string))
 
@@ -185,24 +186,24 @@ var _ = Context("opCaller", func() {
 					},
 				}
 
-				fakeCallStore := new(fakeCallStore)
+				fakeCallStore := new(FakeCallStore)
 				fakeCallStore.GetReturns(model.DCG{IsKilled: true})
 
-				fakeOpFileGetter := new(opfile.FakeGetter)
+				fakeOpFileGetter := new(FakeGetter)
 				fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
-				fakePubSub := new(pubsub.Fake)
+				fakePubSub := new(FakePubSub)
 				eventChannel := make(chan model.Event)
 				// close eventChannel to trigger immediate return
 				close(eventChannel)
 				fakePubSub.SubscribeReturns(eventChannel, nil)
 
 				objectUnderTest := _opCaller{
-					caller:             new(fakeCaller),
+					caller:             new(FakeCaller),
 					callStore:          fakeCallStore,
 					opFileGetter:       fakeOpFileGetter,
 					pubSub:             fakePubSub,
-					outputsInterpreter: new(outputs.FakeInterpreter),
+					outputsInterpreter: new(outputsFakes.FakeInterpreter),
 				}
 
 				/* act */
@@ -231,7 +232,7 @@ var _ = Context("opCaller", func() {
 				It("should call pubSub.Publish w/ expected args", func() {
 					/* arrange */
 					providedOpHandleRef := "dummyOpRef"
-					fakeOpHandle := new(data.FakeHandle)
+					fakeOpHandle := new(modelFakes.FakeDataHandle)
 					fakeOpHandle.RefReturns(providedOpHandleRef)
 					fakeOpHandle.PathReturns(new(string))
 
@@ -260,19 +261,19 @@ var _ = Context("opCaller", func() {
 						},
 					}
 
-					fakePubSub := new(pubsub.Fake)
+					fakePubSub := new(FakePubSub)
 					eventChannel := make(chan model.Event)
 					// close eventChannel to trigger immediate return
 					close(eventChannel)
 					fakePubSub.SubscribeReturns(eventChannel, nil)
 
-					fakeOpFileGetter := new(opfile.FakeGetter)
+					fakeOpFileGetter := new(FakeGetter)
 					// err to trigger immediate return
 					fakeOpFileGetter.GetReturns(nil, errors.New(errMsg))
 
 					objectUnderTest := _opCaller{
-						caller:       new(fakeCaller),
-						callStore:    new(fakeCallStore),
+						caller:       new(FakeCaller),
+						callStore:    new(FakeCallStore),
 						opFileGetter: fakeOpFileGetter,
 						pubSub:       fakePubSub,
 					}
@@ -302,7 +303,7 @@ var _ = Context("opCaller", func() {
 			It("should call pubSub.Publish w/ expected args", func() {
 				/* arrange */
 				providedOpHandleRef := "dummyOpRef"
-				fakeOpHandle := new(data.FakeHandle)
+				fakeOpHandle := new(modelFakes.FakeDataHandle)
 				fakeOpHandle.RefReturns(providedOpHandleRef)
 				fakeOpHandle.PathReturns(new(string))
 
@@ -322,7 +323,7 @@ var _ = Context("opCaller", func() {
 					},
 				}
 
-				fakeOutputsInterpreter := new(outputs.FakeInterpreter)
+				fakeOutputsInterpreter := new(outputsFakes.FakeInterpreter)
 				interpretedOutputs := map[string]*model.Value{
 					expectedOutputName: new(model.Value),
 					// include unbound output to ensure it's not added to scope
@@ -343,18 +344,18 @@ var _ = Context("opCaller", func() {
 					},
 				}
 
-				fakeOpFileGetter := new(opfile.FakeGetter)
+				fakeOpFileGetter := new(FakeGetter)
 				fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
-				fakePubSub := new(pubsub.Fake)
+				fakePubSub := new(FakePubSub)
 				eventChannel := make(chan model.Event)
 				// close eventChannel to trigger immediate return
 				close(eventChannel)
 				fakePubSub.SubscribeReturns(eventChannel, nil)
 
 				objectUnderTest := _opCaller{
-					caller:             new(fakeCaller),
-					callStore:          new(fakeCallStore),
+					caller:             new(FakeCaller),
+					callStore:          new(FakeCallStore),
 					opFileGetter:       fakeOpFileGetter,
 					pubSub:             fakePubSub,
 					outputsInterpreter: fakeOutputsInterpreter,

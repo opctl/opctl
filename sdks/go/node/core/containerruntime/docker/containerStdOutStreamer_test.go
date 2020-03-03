@@ -6,6 +6,7 @@ import (
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/internal/fakes"
 	"golang.org/x/net/context"
 	"io"
 	"io/ioutil"
@@ -18,7 +19,7 @@ var _ = Context("containerStdOutStreamer", func() {
 			providedCtx := context.Background()
 			providedContainerID := "dummyContainerID"
 
-			fakeDockerClient := new(fakeDockerClient)
+			fakeDockerClient := new(FakeCommonAPIClient)
 			// err to trigger immediate return
 			fakeDockerClient.ContainerLogsReturns(nil, errors.New("dummyErr"))
 
@@ -50,7 +51,7 @@ var _ = Context("containerStdOutStreamer", func() {
 		Context("dockerClient.ContainerLogs errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeDockerClient := new(fakeDockerClient)
+				fakeDockerClient := new(FakeCommonAPIClient)
 				expectedErr := errors.New("dummyErr")
 				fakeDockerClient.ContainerLogsReturns(nil, expectedErr)
 
@@ -74,7 +75,7 @@ var _ = Context("containerStdOutStreamer", func() {
 				/* arrange */
 				providedWriter := bytes.NewBufferString("")
 
-				fakeDockerClient := new(fakeDockerClient)
+				fakeDockerClient := new(FakeCommonAPIClient)
 				expectedErr := errors.New("dummyErr")
 				fakeDockerClient.ContainerLogsReturns(nil, expectedErr)
 

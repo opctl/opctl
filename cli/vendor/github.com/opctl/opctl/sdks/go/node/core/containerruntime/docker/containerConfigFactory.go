@@ -1,7 +1,5 @@
 package docker
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeContainerConfigFactory.go --fake-name fakeContainerConfigFactory ./ containerConfigFactory
-
 import (
 	"fmt"
 	"sort"
@@ -10,6 +8,7 @@ import (
 	"github.com/docker/go-connections/nat"
 )
 
+//counterfeiter:generate -o internal/fakes/containerConfigFactory.go . containerConfigFactory
 type containerConfigFactory interface {
 	Construct(
 		cmd []string,

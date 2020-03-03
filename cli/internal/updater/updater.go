@@ -1,6 +1,6 @@
 package updater
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ Updater
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"github.com/equinox-io/equinox"
@@ -11,6 +11,7 @@ type Update struct {
 	equinoxResponse *equinox.Response
 }
 
+//counterfeiter:generate -o fakes/updater.go . Updater
 type Updater interface {
 	GetUpdateIfExists(
 		releaseChannel string,

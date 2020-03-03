@@ -1,13 +1,12 @@
 package opspec
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeValidator.go --fake-name FakeValidator ./ Validator
-
 import (
 	"context"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
 
+//counterfeiter:generate -o fakes/validator.go . Validator
 type Validator interface {
 	// Validate validates an op
 	Validate(

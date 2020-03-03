@@ -7,10 +7,10 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
+	referenceFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/fakes"
 )
 
 var _ = Context("Interpret", func() {
@@ -20,11 +20,11 @@ var _ = Context("Interpret", func() {
 			providedScope := map[string]*model.Value{"": new(model.Value)}
 
 			providedExpression := "$(providedReference)"
-			providedOpRef := new(data.FakeHandle)
+			providedOpRef := new(modelFakes.FakeDataHandle)
 
 			expectedReference := strings.TrimSuffix(strings.TrimPrefix(providedExpression, interpolater.RefStart), interpolater.RefEnd)
 
-			fakeReferenceInterpreter := new(reference.FakeInterpreter)
+			fakeReferenceInterpreter := new(referenceFakes.FakeInterpreter)
 			// err to trigger immediate return
 			fakeReferenceInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 
@@ -56,7 +56,7 @@ var _ = Context("Interpret", func() {
 
 				providedExpression := "$(providedReference)"
 
-				fakeReferenceInterpreter := new(reference.FakeInterpreter)
+				fakeReferenceInterpreter := new(referenceFakes.FakeInterpreter)
 				interpretErr := errors.New("dummyError")
 				fakeReferenceInterpreter.InterpretReturns(nil, interpretErr)
 
@@ -70,7 +70,7 @@ var _ = Context("Interpret", func() {
 				actualValue, actualErr := objectUnderTest.Interpret(
 					providedScope,
 					providedExpression,
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 				)
 
 				/* assert */
@@ -85,7 +85,7 @@ var _ = Context("Interpret", func() {
 					/* arrange */
 					providedExpression := "$(providedReference)"
 					expectedValue := &model.Value{}
-					fakeReferenceInterpreter := new(reference.FakeInterpreter)
+					fakeReferenceInterpreter := new(referenceFakes.FakeInterpreter)
 					fakeReferenceInterpreter.InterpretReturns(expectedValue, nil)
 
 					objectUnderTest := _interpreter{
@@ -96,7 +96,7 @@ var _ = Context("Interpret", func() {
 					actualValue, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
 						providedExpression,
-						new(data.FakeHandle),
+						new(modelFakes.FakeDataHandle),
 					)
 
 					/* assert */
@@ -110,7 +110,7 @@ var _ = Context("Interpret", func() {
 					expectedValue := &model.Value{
 						Dir: new(string),
 					}
-					fakeReferenceInterpreter := new(reference.FakeInterpreter)
+					fakeReferenceInterpreter := new(referenceFakes.FakeInterpreter)
 					fakeReferenceInterpreter.InterpretReturns(expectedValue, nil)
 
 					objectUnderTest := _interpreter{
@@ -121,7 +121,7 @@ var _ = Context("Interpret", func() {
 					actualValue, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
 						"$(providedReference)",
-						new(data.FakeHandle),
+						new(modelFakes.FakeDataHandle),
 					)
 
 					/* assert */

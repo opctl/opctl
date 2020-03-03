@@ -4,7 +4,9 @@ import (
 	"context"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
+	. "github.com/opctl/opctl/sdks/go/data/fakes"
+	"github.com/opctl/opctl/sdks/go/data/provider"
+	. "github.com/opctl/opctl/sdks/go/data/provider/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -19,11 +21,11 @@ var _ = Context("core", func() {
 				Password: "dummyPassword",
 			}
 
-			fakeData := new(data.Fake)
+			fakeData := new(FakeData)
 
-			expectedPkgProviders := []data.Provider{
-				new(data.FakeProvider),
-				new(data.FakeProvider),
+			expectedPkgProviders := []provider.Provider{
+				new(FakeProvider),
+				new(FakeProvider),
 			}
 			fakeData.NewFSProviderReturns(expectedPkgProviders[0])
 			fakeData.NewGitProviderReturns(expectedPkgProviders[1])

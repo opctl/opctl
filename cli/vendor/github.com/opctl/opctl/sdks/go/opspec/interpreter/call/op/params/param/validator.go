@@ -1,7 +1,5 @@
 package param
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeValidator.go --fake-name FakeValidator ./ Validator
-
 import (
 	"errors"
 	"fmt"
@@ -16,6 +14,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/str"
 )
 
+//counterfeiter:generate -o fakes/validator.go . Validator
 type Validator interface {
 	Validate(
 		value *model.Value,

@@ -1,7 +1,5 @@
 package str
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeValidator.go --fake-name FakeValidator ./ Validator
-
 import (
 	"encoding/json"
 	"errors"

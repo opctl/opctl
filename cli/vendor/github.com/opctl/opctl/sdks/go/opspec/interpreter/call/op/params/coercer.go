@@ -1,7 +1,5 @@
 package params
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeCoercer.go --fake-name FakeCoercer ./ Coercer
-
 import (
 	"bytes"
 	"fmt"
@@ -10,7 +8,14 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
+//counterfeiter:generate -o fakes/coercer.go . Coercer
 type Coercer interface {
+	coercer
+}
+
+// coercer is an internal version of Coercer so fakes don't cause cyclic deps
+//counterfeiter:generate -o internal/fakes/coercer.go . coercer
+type coercer interface {
 	// Coerce coerces values for/against params
 	Coerce(
 		values map[string]*model.Value,

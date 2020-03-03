@@ -1,6 +1,6 @@
 package node
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ Node
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"github.com/opctl/opctl/cli/internal/cliexiter"
@@ -9,6 +9,7 @@ import (
 )
 
 // Node exposes the "node" sub command
+//counterfeiter:generate -o fakes/node.go . Node
 type Node interface {
 	creater.Creater
 	Killer

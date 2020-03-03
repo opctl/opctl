@@ -8,5 +8,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "data.coerce")
+	RunSpecs(t, "data/coerce")
 }

@@ -3,6 +3,7 @@ package cliparamsatisfier
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/opctl/opctl/cli/internal/cliparamsatisfier/internal/fakes"
 )
 
 var _ = Describe("inputSourcer", func() {

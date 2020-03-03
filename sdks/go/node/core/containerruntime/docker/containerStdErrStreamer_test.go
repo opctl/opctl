@@ -4,12 +4,20 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"io"
+	"io/ioutil"
+
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"io"
-	"io/ioutil"
+	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/internal/fakes"
 )
+
+type nopWriteCloser struct {
+	io.Writer
+}
+
+func (w nopWriteCloser) Close() error { return nil }
 
 var _ = Context("containerStdErrStreamer", func() {
 	Context("Stream", func() {
@@ -18,7 +26,7 @@ var _ = Context("containerStdErrStreamer", func() {
 			providedCtx := context.Background()
 			providedContainerID := "dummyContainerID"
 
-			fakeDockerClient := new(fakeDockerClient)
+			fakeDockerClient := new(FakeCommonAPIClient)
 			// err to trigger immediate return
 			fakeDockerClient.ContainerLogsReturns(nil, errors.New("dummyErr"))
 
@@ -50,7 +58,7 @@ var _ = Context("containerStdErrStreamer", func() {
 		Context("dockerClient.ContainerLogs errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeDockerClient := new(fakeDockerClient)
+				fakeDockerClient := new(FakeCommonAPIClient)
 				expectedErr := errors.New("dummyErr")
 				fakeDockerClient.ContainerLogsReturns(nil, expectedErr)
 
@@ -74,7 +82,7 @@ var _ = Context("containerStdErrStreamer", func() {
 				/* arrange */
 				providedWriter := bytes.NewBufferString("")
 
-				fakeDockerClient := new(fakeDockerClient)
+				fakeDockerClient := new(FakeCommonAPIClient)
 				expectedErr := errors.New("dummyErr")
 				fakeDockerClient.ContainerLogsReturns(nil, expectedErr)
 
