@@ -18,23 +18,23 @@
 <link rel="stylesheet" href="/styles.93f85254.css">
 
 
-<link rel="preload" href="/styles.da12c8f0.js" as="script">
+<link rel="preload" href="/styles.cef2f6ff.js" as="script">
 
-<link rel="preload" href="/runtime~main.aa5bbe0a.js" as="script">
+<link rel="preload" href="/runtime~main.7e573ba9.js" as="script">
 
-<link rel="preload" href="/main.2e2c451b.js" as="script">
+<link rel="preload" href="/main.719d2573.js" as="script">
 
-<link rel="preload" href="/1.51220248.js" as="script">
+<link rel="preload" href="/1.5327f387.js" as="script">
 
-<link rel="preload" href="/2.a7dac835.js" as="script">
+<link rel="preload" href="/2.9b094114.js" as="script">
 
-<link rel="preload" href="/53.cf8df395.js" as="script">
+<link rel="preload" href="/54.e18f19eb.js" as="script">
 
 <link rel="preload" href="/20ac7829.eaa683c1.js" as="script">
 
-<link rel="preload" href="/17896441.d5291738.js" as="script">
+<link rel="preload" href="/17896441.a84def80.js" as="script">
 
-<link rel="preload" href="/70604c15.7bc032e3.js" as="script">
+<link rel="preload" href="/70604c15.7e5c8d1e.js" as="script">
 
 </head>
 <body>
@@ -44,23 +44,23 @@
 just a matter of defining your <code>.gitlab-ci.yml</code> as follows:</p><ul><li>using the official <a href="https://hub.docker.com/r/opctl/opctl/">opctl docker image</a> as <code>image</code></li><li>adding &quot;stages&quot; with your calls to opctl</li></ul><h3><a aria-hidden="true" tabindex="-1" class="anchor enhancedAnchor_ZqCz" id="examples"></a><a aria-hidden="true" tabindex="-1" class="hash-link" href="#examples" title="Direct link to heading">#</a>Examples</h3><p>.gitlab-ci.yml</p><div class="mdxCodeBlock_iHAB"><pre class="prism-code language-yaml codeBlock_19pQ"><button type="button" aria-label="Copy code to clipboard" class="copyButton_1BYj">Copy</button><code class="codeBlockLines_2n9r" style="color:#bfc7d5;background-color:#292d3e"><div class="token-line" style="color:#bfc7d5"><span class="token key atrule">image</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> opctl/opctl</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain">0.1.26</span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token key atrule">stages</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> build</span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> deploy</span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token key atrule">build</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token key atrule">stage</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> build</span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token key atrule">script</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># passes args to opctl from gitlab variables</span><span class="token plain"></span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> export gitlabUsername=&quot;$CI_REGISTRY_USER&quot;</span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> export gitlabSecret=&quot;$CI_REGISTRY_PASSWORD&quot;</span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> opctl run build</span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token key atrule">deploy</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token key atrule">stage</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> deploy</span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token key atrule">only</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> master</span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token key atrule">script</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> opctl run deploy</span></div></code></pre></div></div></article><div class="margin-vert--xl"><div class="row"><div class="col"><a href="https://github.com/opctl/opctl/edit/master/docs/docs/setup/gitlab.md" target="_blank" rel="noreferrer noopener"><svg fill="currentColor" height="1.2em" width="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 40 40" style="margin-right:0.3em;vertical-align:sub"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col text--right"><em><small>Last updated on <time datetime="2020-01-30T23:46:58.000Z" class="docLastUpdatedAt_1sqk">1/30/2020</time> by <strong>Chris Dostert</strong></small></em></div></div></div><div class="margin-vert--lg"><nav class="pagination-nav"><div class="pagination-nav__item"><a class="pagination-nav__link" href="/docs/setup/docker"><h5 class="pagination-nav__link--sublabel">Previous</h5><h4 class="pagination-nav__link--label">« Docker</h4></a></div><div class="pagination-nav__item pagination-nav__item--next"><a class="pagination-nav__link" href="/docs/setup/kubernetes"><h5 class="pagination-nav__link--sublabel">Next</h5><h4 class="pagination-nav__link--label">Kubernetes »</h4></a></div></nav></div></div></div><div class="col col--3"><div class="tableOfContents_TbNY"><ul class="contents contents__left-border"><li><a href="#examples" class="contents__link">Examples</a></li></ul></div></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container"><div class="row footer__links"><div class="col footer__col"><h4 class="footer__title">Docs</h4><ul class="footer__items"><li class="footer__item"><a class="footer__link-item" href="/docs/zero-to-hero/hello-world">Docs</a></li></ul></div><div class="col footer__col"><h4 class="footer__title">Community</h4><ul class="footer__items"><li class="footer__item"><a class="footer__link-item" target="_blank" rel="noopener noreferrer" href="https://opctl-slackin.herokuapp.com/">Slack</a></li></ul></div><div class="col footer__col"><h4 class="footer__title">Social</h4><ul class="footer__items"><li class="footer__item"><a class="footer__link-item" target="_blank" rel="noopener noreferrer" href="https://github.com/opctl/opctl">Github</a></li></ul></div></div><div class="text--center">Copyright © 2020 opctl.io</div></div></footer>
 </div>
 
-<script src="/styles.da12c8f0.js"></script>
+<script src="/styles.cef2f6ff.js"></script>
 
-<script src="/runtime~main.aa5bbe0a.js"></script>
+<script src="/runtime~main.7e573ba9.js"></script>
 
-<script src="/main.2e2c451b.js"></script>
+<script src="/main.719d2573.js"></script>
 
-<script src="/1.51220248.js"></script>
+<script src="/1.5327f387.js"></script>
 
-<script src="/2.a7dac835.js"></script>
+<script src="/2.9b094114.js"></script>
 
-<script src="/53.cf8df395.js"></script>
+<script src="/54.e18f19eb.js"></script>
 
 <script src="/20ac7829.eaa683c1.js"></script>
 
-<script src="/17896441.d5291738.js"></script>
+<script src="/17896441.a84def80.js"></script>
 
-<script src="/70604c15.7bc032e3.js"></script>
+<script src="/70604c15.7e5c8d1e.js"></script>
 
 
 </body>
