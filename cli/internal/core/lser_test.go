@@ -6,9 +6,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
+	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
-	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/opspec"
+	. "github.com/opctl/opctl/sdks/go/model/fakes"
+	. "github.com/opctl/opctl/sdks/go/opspec/fakes"
 	"os"
 )
 
@@ -20,11 +21,11 @@ var _ = Context("Lser", func() {
 
 			fakeDataResolver := new(dataresolver.Fake)
 
-			fakeOpLister := new(opspec.FakeLister)
+			fakeOpLister := new(FakeLister)
 			// err to trigger immediate return
 			fakeOpLister.ListReturns(nil, errors.New("dummyError"))
 
-			fakeCliExiter := new(cliexiter.Fake)
+			fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 			objectUnderTest := _lsInvoker{
 				dataResolver: fakeDataResolver,
@@ -52,14 +53,14 @@ var _ = Context("Lser", func() {
 			providedDirRef := "dummyDirRef"
 
 			fakeDataResolver := new(dataresolver.Fake)
-			fakeDataHandle := new(data.FakeHandle)
+			fakeDataHandle := new(FakeDataHandle)
 			fakeDataResolver.ResolveReturns(fakeDataHandle)
 
-			fakeOpLister := new(opspec.FakeLister)
+			fakeOpLister := new(FakeLister)
 			// err to trigger immediate return
 			fakeOpLister.ListReturns(nil, errors.New("dummyError"))
 
-			fakeCliExiter := new(cliexiter.Fake)
+			fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 			objectUnderTest := _lsInvoker{
 				dataResolver: fakeDataResolver,
@@ -84,11 +85,11 @@ var _ = Context("Lser", func() {
 		Context("opLister.List errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeOpLister := new(opspec.FakeLister)
+				fakeOpLister := new(FakeLister)
 				expectedError := errors.New("dummyError")
 				fakeOpLister.ListReturns(nil, expectedError)
 
-				fakeCliExiter := new(cliexiter.Fake)
+				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 				objectUnderTest := _lsInvoker{
 					dataResolver: new(dataresolver.Fake),

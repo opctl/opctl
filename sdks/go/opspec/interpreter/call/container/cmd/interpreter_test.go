@@ -3,9 +3,9 @@ package cmd
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	strFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/str/fakes"
 )
 
 var _ = Context("Interpreter", func() {
@@ -23,18 +23,18 @@ var _ = Context("Interpreter", func() {
 				providedCurrentScope := map[string]*model.Value{
 					"name1": {String: &providedString1},
 				}
-				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle := new(modelFakes.FakeDataHandle)
 
 				providedSCGContainerCallCmd := []interface{}{
 					"dummy1",
 					"dummy2",
 				}
 
-				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
-				fakeStringInterpreter.InterpretReturns(&model.Value{String: new(string)}, nil)
+				fakeStrInterpreter := new(strFakes.FakeInterpreter)
+				fakeStrInterpreter.InterpretReturns(&model.Value{String: new(string)}, nil)
 
 				objectUnderTest := _interpreter{
-					stringInterpreter: fakeStringInterpreter,
+					stringInterpreter: fakeStrInterpreter,
 				}
 
 				/* act */
@@ -48,7 +48,7 @@ var _ = Context("Interpreter", func() {
 				for expectedCmdIndex, expectedCmdEntry := range providedSCGContainerCallCmd {
 					actualScope,
 						actualCmdEntry,
-						actualOpHandle := fakeStringInterpreter.InterpretArgsForCall(expectedCmdIndex)
+						actualOpHandle := fakeStrInterpreter.InterpretArgsForCall(expectedCmdIndex)
 
 					Expect(actualScope).To(Equal(providedCurrentScope))
 					Expect(actualCmdEntry).To(Equal(expectedCmdEntry))
@@ -67,19 +67,19 @@ var _ = Context("Interpreter", func() {
 					"dummy2",
 				}
 
-				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
-				fakeStringInterpreter.InterpretReturnsOnCall(0, &model.Value{String: &expectedResult[0]}, nil)
-				fakeStringInterpreter.InterpretReturnsOnCall(1, &model.Value{String: &expectedResult[1]}, nil)
+				fakeStrInterpreter := new(strFakes.FakeInterpreter)
+				fakeStrInterpreter.InterpretReturnsOnCall(0, &model.Value{String: &expectedResult[0]}, nil)
+				fakeStrInterpreter.InterpretReturnsOnCall(1, &model.Value{String: &expectedResult[1]}, nil)
 
 				objectUnderTest := _interpreter{
-					stringInterpreter: fakeStringInterpreter,
+					stringInterpreter: fakeStrInterpreter,
 				}
 
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedSCGContainerCallCmd,
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 				)
 
 				/* assert */

@@ -32,7 +32,7 @@ type SCGContainerCall struct {
 
 type SCGContainerCallImage struct {
 	Src       *string       `json:"src,omitempty"`
-	Ref       string        `json:"ref"`
+	Ref       *string       `json:"ref,omitempty"`
 	PullCreds *SCGPullCreds `json:"pullCreds,omitempty"`
 }
 

@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
+	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/cli/internal/updater"
 )
@@ -16,7 +17,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 		Context("invalid channel", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeCliExiter := new(cliexiter.Fake)
+				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 				providedReleaseChannel := "invalidChannel"
 
 				objectUnderTest := _selfUpdateInvoker{
@@ -40,7 +41,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 
 				objectUnderTest := _selfUpdateInvoker{
 					updater:   fakeUpdater,
-					cliExiter: new(cliexiter.Fake),
+					cliExiter: new(cliexiterFakes.FakeCliExiter),
 				}
 
 				providedChannel := "beta"
@@ -54,7 +55,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 			Context("updater.GetUpdateIfExists errors", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
-					fakeCliExiter := new(cliexiter.Fake)
+					fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 					returnedError := errors.New("dummyError")
 
 					fakeUpdater := new(updater.Fake)
@@ -77,7 +78,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 				Context("update doesn't exist", func() {
 					It("should call exiter w/ expected args", func() {
 						/* arrange */
-						fakeCliExiter := new(cliexiter.Fake)
+						fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 						fakeUpdater := new(updater.Fake)
 						fakeUpdater.GetUpdateIfExistsReturns(nil, nil)
@@ -98,7 +99,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 				Context("update exists", func() {
 					It("should call updater.ApplyUpdate w/ expected args", func() {
 						/* arrange */
-						fakeCliExiter := new(cliexiter.Fake)
+						fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 						fakeUpdater := new(updater.Fake)
 						returnedUpdate := &updater.Update{Version: "dummyVersion"}
@@ -121,7 +122,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 					Context("updater.ApplyUpdate errors", func() {
 						It("should call exiter w/ expected args", func() {
 							/* arrange */
-							fakeCliExiter := new(cliexiter.Fake)
+							fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 							returnedError := errors.New("dummyError")
 
 							fakeUpdater := new(updater.Fake)
@@ -155,7 +156,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 
 							objectUnderTest := _selfUpdateInvoker{
 								updater:      fakeUpdater,
-								cliExiter:    new(cliexiter.Fake),
+								cliExiter:    new(cliexiterFakes.FakeCliExiter),
 								nodeProvider: fakeNodeProvider,
 							}
 
@@ -168,7 +169,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 						Context("nodeProvider.KillNodeIfExists errors", func() {
 							It("should call exiter w/ expected args", func() {
 								/* arrange */
-								fakeCliExiter := new(cliexiter.Fake)
+								fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 								returnedError := errors.New("dummyError")
 
 								fakeNodeProvider := new(nodeprovider.Fake)
@@ -198,7 +199,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 						Context("nodeProvider.KillNodeIfExists doesn't error", func() {
 							It("should call exiter w/ expected args", func() {
 								/* arrange */
-								fakeCliExiter := new(cliexiter.Fake)
+								fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 								fakeUpdater := new(updater.Fake)
 								returnedUpdate := &updater.Update{Version: "dummyVersion"}

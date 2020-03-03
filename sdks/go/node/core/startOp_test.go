@@ -7,11 +7,15 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
+	. "github.com/opctl/opctl/sdks/go/data/fakes"
+	"github.com/opctl/opctl/sdks/go/data/provider"
+	. "github.com/opctl/opctl/sdks/go/data/provider/fakes"
+	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/opfile"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	. "github.com/opctl/opctl/sdks/go/opspec/opfile/fakes"
+	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("core", func() {
@@ -28,7 +32,7 @@ var _ = Context("core", func() {
 			}
 			providedDataCachePath := "providedDataCachePath"
 
-			fakeData := new(data.Fake)
+			fakeData := new(FakeData)
 			// err to trigger immediate return
 			fakeData.ResolveReturns(nil, errors.New("dummyErr"))
 
@@ -59,17 +63,17 @@ var _ = Context("core", func() {
 				},
 			}
 
-			fakeData := new(data.Fake)
+			fakeData := new(FakeData)
 			// err to trigger immediate return
 			fakeData.ResolveReturns(nil, errors.New("dummyErr"))
 
-			fsProvider := new(data.FakeProvider)
+			fsProvider := new(FakeProvider)
 			fakeData.NewFSProviderReturns(fsProvider)
 
-			gitProvider := new(data.FakeProvider)
+			gitProvider := new(FakeProvider)
 			fakeData.NewGitProviderReturns(gitProvider)
 
-			expectedProviders := []data.Provider{
+			expectedProviders := []provider.Provider{
 				fsProvider,
 				gitProvider,
 			}
@@ -104,7 +108,7 @@ var _ = Context("core", func() {
 					},
 				}
 
-				fakeData := new(data.Fake)
+				fakeData := new(FakeData)
 				expectedErr := errors.New("dummyErr")
 				fakeData.ResolveReturns(nil, expectedErr)
 
@@ -126,18 +130,18 @@ var _ = Context("core", func() {
 			It("should call data.Get w/ expected args", func() {
 				/* arrange */
 				providedCtx := context.Background()
-				fakeData := new(data.Fake)
-				fakeDataHandle := new(data.FakeHandle)
+				fakeData := new(FakeData)
+				fakeDataHandle := new(modelFakes.FakeDataHandle)
 				fakeData.ResolveReturns(fakeDataHandle, nil)
 
-				fakeOpFileGetter := new(opfile.FakeGetter)
+				fakeOpFileGetter := new(FakeGetter)
 				// err to trigger immediate return
 				fakeOpFileGetter.GetReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _core{
 					data:                fakeData,
 					opFileGetter:        fakeOpFileGetter,
-					uniqueStringFactory: new(uniquestring.Fake),
+					uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
 				}
 
 				/* act */
@@ -156,18 +160,18 @@ var _ = Context("core", func() {
 			Context("data.Get errs", func() {
 				It("should return expected error", func() {
 					/* arrange */
-					fakeData := new(data.Fake)
-					fakeDataHandle := new(data.FakeHandle)
+					fakeData := new(FakeData)
+					fakeDataHandle := new(modelFakes.FakeDataHandle)
 					fakeData.ResolveReturns(fakeDataHandle, nil)
 
-					fakeOpFileGetter := new(opfile.FakeGetter)
+					fakeOpFileGetter := new(FakeGetter)
 					expectedErr := errors.New("dummyError")
 					fakeOpFileGetter.GetReturns(&model.OpFile{}, expectedErr)
 
 					objectUnderTest := _core{
 						data:                fakeData,
 						opFileGetter:        fakeOpFileGetter,
-						uniqueStringFactory: new(uniquestring.Fake),
+						uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
 					}
 
 					/* act */
@@ -200,8 +204,8 @@ var _ = Context("core", func() {
 						},
 					}
 
-					fakeData := new(data.Fake)
-					expectedOpHandle := new(data.FakeHandle)
+					fakeData := new(FakeData)
+					expectedOpHandle := new(modelFakes.FakeDataHandle)
 					fakeData.ResolveReturns(expectedOpHandle, nil)
 
 					opFile := &model.OpFile{
@@ -211,7 +215,7 @@ var _ = Context("core", func() {
 						},
 					}
 
-					fakeOpFileGetter := new(opfile.FakeGetter)
+					fakeOpFileGetter := new(FakeGetter)
 					fakeOpFileGetter.GetReturns(opFile, nil)
 
 					expectedSCGOpCall := &model.SCGOpCall{
@@ -228,14 +232,14 @@ var _ = Context("core", func() {
 
 					expectedID := "expectedID"
 					expectedRootOpID := expectedID
-					fakeUniqueStringFactory := new(uniquestring.Fake)
+					fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 					fakeUniqueStringFactory.ConstructReturns(expectedID, nil)
 
-					fakeCaller := new(fakeCaller)
+					fakeCaller := new(FakeCaller)
 
 					objectUnderTest := _core{
 						caller:              fakeCaller,
-						pubSub:              new(pubsub.Fake),
+						pubSub:              new(FakePubSub),
 						data:                fakeData,
 						opFileGetter:        fakeOpFileGetter,
 						uniqueStringFactory: fakeUniqueStringFactory,

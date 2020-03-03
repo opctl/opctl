@@ -5,10 +5,10 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/data/coerce"
+	coerceFakes "github.com/opctl/opctl/sdks/go/data/coerce/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	valueFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/value/fakes"
 )
 
 var _ = Context("Interpret", func() {
@@ -16,9 +16,9 @@ var _ = Context("Interpret", func() {
 		/* arrange */
 		providedScope := map[string]*model.Value{"dummyName": {}}
 		providedExpression := "dummyExpression"
-		providedOpRef := new(data.FakeHandle)
+		providedOpRef := new(modelFakes.FakeDataHandle)
 
-		fakeValueInterpreter := new(value.FakeInterpreter)
+		fakeValueInterpreter := new(valueFakes.FakeInterpreter)
 		// err to trigger immediate return
 		fakeValueInterpreter.InterpretReturns(model.Value{}, errors.New("dummyError"))
 
@@ -48,7 +48,7 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			providedExpression := "dummyExpression"
 
-			fakeValueInterpreter := new(value.FakeInterpreter)
+			fakeValueInterpreter := new(valueFakes.FakeInterpreter)
 			interpretErr := errors.New("dummyError")
 			fakeValueInterpreter.InterpretReturns(model.Value{}, interpretErr)
 
@@ -62,7 +62,7 @@ var _ = Context("Interpret", func() {
 			_, actualErr := objectUnderTest.Interpret(
 				map[string]*model.Value{},
 				"dummyExpression",
-				new(data.FakeHandle),
+				new(modelFakes.FakeDataHandle),
 			)
 
 			/* assert */
@@ -73,12 +73,12 @@ var _ = Context("Interpret", func() {
 	Context("valueInterpreter.Interpret doesn't err", func() {
 		It("should call coerce.ToBoolean w/ expected args & return result", func() {
 			/* arrange */
-			fakeValueInterpreter := new(value.FakeInterpreter)
+			fakeValueInterpreter := new(valueFakes.FakeInterpreter)
 
 			expectedValue := model.Value{String: new(string)}
 			fakeValueInterpreter.InterpretReturns(expectedValue, nil)
 
-			fakeCoerce := new(coerce.Fake)
+			fakeCoerce := new(coerceFakes.FakeCoerce)
 
 			coercedValue := model.Value{Boolean: new(bool)}
 			fakeCoerce.ToBooleanReturns(&coercedValue, nil)
@@ -92,7 +92,7 @@ var _ = Context("Interpret", func() {
 			actualBoolean, actualErr := objectUnderTest.Interpret(
 				map[string]*model.Value{},
 				"dummyExpression",
-				new(data.FakeHandle),
+				new(modelFakes.FakeDataHandle),
 			)
 
 			/* assert */

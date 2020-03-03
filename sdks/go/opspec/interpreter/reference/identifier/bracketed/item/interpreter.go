@@ -1,7 +1,5 @@
 package item
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
-
 import (
 	"fmt"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -10,6 +8,7 @@ import (
 
 // Interpreter interprets an item from data via indexString.
 // data MUST be an array & indexString MUST parse to a +- integer within bounds of array
+//counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	Interpret(
 		indexString string,

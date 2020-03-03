@@ -1,7 +1,5 @@
 package params
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeDefaulter.go --fake-name FakeDefaulter ./ Defaulter
-
 import (
 	"github.com/opctl/opctl/sdks/go/model"
 	"path/filepath"
@@ -9,7 +7,14 @@ import (
 )
 
 // Defaulter defaults params by applying defaults to those w/out corresponding args
+//counterfeiter:generate -o fakes/defaulter.go . Defaulter
 type Defaulter interface {
+	defaulter
+}
+
+// defaulter is an internal version of Defaulter so fakes don't cause cyclic deps
+//counterfeiter:generate -o internal/fakes/defaulter.go . defaulter
+type defaulter interface {
 	// Default returns a map consisting of args & defaults from params
 	Default(
 		args map[string]*model.Value,

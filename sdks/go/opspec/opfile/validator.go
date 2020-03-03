@@ -1,6 +1,5 @@
 package opfile
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeValidator.go --fake-name fakeValidator ./ validator
 //go:generate go run github.com/mjibson/esc -pkg=opfile -o validator_schema.go -private ../../../../opspec/opfile/jsonschema.json
 
 import (
@@ -10,6 +9,7 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 )
 
+//counterfeiter:generate -o internal/fakes/validator.go . validator
 type validator interface {
 	// Validate validates an "op.yml"
 	Validate(

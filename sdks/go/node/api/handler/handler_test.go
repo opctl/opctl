@@ -5,12 +5,12 @@ import (
 	"net/http/httptest"
 	"strings"
 
-	"github.com/opctl/opctl/sdks/go/node/api/handler/data"
-	"github.com/opctl/opctl/sdks/go/node/api/handler/events"
-	"github.com/opctl/opctl/sdks/go/node/api/handler/liveness"
-	"github.com/opctl/opctl/sdks/go/node/api/handler/ops"
-	"github.com/opctl/opctl/sdks/go/node/api/handler/pkgs"
-	"github.com/opctl/opctl/sdks/go/node/core"
+	dataFakes "github.com/opctl/opctl/sdks/go/node/api/handler/data/fakes"
+	eventsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/events/fakes"
+	livenessFakes "github.com/opctl/opctl/sdks/go/node/api/handler/liveness/fakes"
+	opsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/ops/fakes"
+	pkgsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/pkgs/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -20,7 +20,7 @@ var _ = Context("Handler", func() {
 	Context("New", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(New(new(core.Fake))).Should(Not(BeNil()))
+			Expect(New(new(FakeCore))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {
@@ -45,7 +45,7 @@ var _ = Context("Handler", func() {
 		Context("next URL path segment is data", func() {
 			It("should call dataHandler.Handle w/ expected args", func() {
 				/* arrange */
-				fakeDataHandler := new(data.FakeHandler)
+				fakeDataHandler := new(dataFakes.FakeHandler)
 
 				objectUnderTest := _handler{
 					dataHandler: fakeDataHandler,
@@ -74,7 +74,7 @@ var _ = Context("Handler", func() {
 		Context("next URL path segment is events", func() {
 			It("should call eventsHandler.Handle w/ expected args", func() {
 				/* arrange */
-				fakeEventsHandler := new(events.FakeHandler)
+				fakeEventsHandler := new(eventsFakes.FakeHandler)
 
 				objectUnderTest := _handler{
 					eventsHandler: fakeEventsHandler,
@@ -103,7 +103,7 @@ var _ = Context("Handler", func() {
 		Context("next URL path segment is liveness", func() {
 			It("should call livenessHandler.Handle w/ expected args", func() {
 				/* arrange */
-				fakeLivenessHandler := new(liveness.FakeHandler)
+				fakeLivenessHandler := new(livenessFakes.FakeHandler)
 
 				objectUnderTest := _handler{
 					livenessHandler: fakeLivenessHandler,
@@ -132,7 +132,7 @@ var _ = Context("Handler", func() {
 		Context("next URL path segment is ops", func() {
 			It("should call livenessHandler.Handle w/ expected args", func() {
 				/* arrange */
-				fakeOpsHandler := new(ops.FakeHandler)
+				fakeOpsHandler := new(opsFakes.FakeHandler)
 
 				objectUnderTest := _handler{
 					opsHandler: fakeOpsHandler,
@@ -161,7 +161,7 @@ var _ = Context("Handler", func() {
 		Context("next URL path segment is pkgs", func() {
 			It("should call livenessHandler.Handle w/ expected args", func() {
 				/* arrange */
-				fakePkgsHandler := new(pkgs.FakeHandler)
+				fakePkgsHandler := new(pkgsFakes.FakeHandler)
 
 				objectUnderTest := _handler{
 					pkgsHandler: fakePkgsHandler,

@@ -7,10 +7,11 @@ import (
 	"net/http/httptest"
 	"strings"
 
-	"github.com/opctl/opctl/sdks/go/data"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/core"
+	. "github.com/opctl/opctl/sdks/go/node/api/handler/data/ref/internal/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -20,7 +21,7 @@ var _ = Context("Handler", func() {
 	Context("NewHandler", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewHandler(new(core.Fake))).Should(Not(BeNil()))
+			Expect(NewHandler(new(FakeCore))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {
@@ -54,7 +55,7 @@ var _ = Context("Handler", func() {
 					providedUsername := "dummyUsername"
 					providedPassword := "dummyPassword"
 
-					fakeCore := new(core.Fake)
+					fakeCore := new(FakeCore)
 					// err to trigger immediate return
 					fakeCore.ResolveDataReturns(nil, errors.New("dummyErr"))
 
@@ -97,7 +98,7 @@ var _ = Context("Handler", func() {
 				/* arrange */
 				providedDataRef := "dummyDataRef"
 
-				fakeCore := new(core.Fake)
+				fakeCore := new(FakeCore)
 				// err to trigger immediate return
 				fakeCore.ResolveDataReturns(nil, errors.New("dummyErr"))
 
@@ -132,7 +133,7 @@ var _ = Context("Handler", func() {
 						dataRefSegment1 := "dataRefSegment1"
 						providedDataRef := strings.Join([]string{dataRefSegment1, "dataRefSegment2"}, "/")
 
-						fakeCore := new(core.Fake)
+						fakeCore := new(FakeCore)
 						fakeCore.ResolveDataReturns(nil, model.ErrDataProviderAuthentication{})
 
 						objectUnderTest := _handler{
@@ -163,7 +164,7 @@ var _ = Context("Handler", func() {
 						dataRefSegment1 := "dataRefSegment1"
 						providedDataRef := strings.Join([]string{dataRefSegment1, "dataRefSegment2"}, "/")
 
-						fakeCore := new(core.Fake)
+						fakeCore := new(FakeCore)
 						fakeCore.ResolveDataReturns(nil, model.ErrDataProviderAuthorization{})
 
 						objectUnderTest := _handler{
@@ -191,7 +192,7 @@ var _ = Context("Handler", func() {
 				Context("err is ErrDataRefResolution", func() {
 					It("should return expected result", func() {
 						/* arrange */
-						fakeCore := new(core.Fake)
+						fakeCore := new(FakeCore)
 						fakeCore.ResolveDataReturns(nil, model.ErrDataRefResolution{})
 
 						objectUnderTest := _handler{
@@ -221,11 +222,11 @@ var _ = Context("Handler", func() {
 					/* arrange */
 					providedDataRef := "dummyDataRef"
 
-					fakeCore := new(core.Fake)
-					fakeDataHandle := new(data.FakeHandle)
+					fakeCore := new(FakeCore)
+					fakeDataHandle := new(modelFakes.FakeDataHandle)
 					fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
-					fakeHandleGetOrHeader := new(fakeHandleGetOrHeader)
+					fakeHandleGetOrHeader := new(FakeHandleGetOrHeader)
 
 					objectUnderTest := _handler{
 						core:              fakeCore,

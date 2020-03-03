@@ -1,7 +1,5 @@
 package core
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeContainerCaller.go --fake-name fakeContainerCaller ./ containerCaller
-
 import (
 	"context"
 	"fmt"
@@ -15,6 +13,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
+//counterfeiter:generate -o internal/fakes/containerCaller.go . containerCaller
 type containerCaller interface {
 	// Executes a container call
 	Call(
@@ -146,7 +145,6 @@ func (this _containerCaller) interpretLogs(
 						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
 							Data:        chunk,
 							ContainerID: dcgContainerCall.ContainerID,
-							ImageRef:    dcgContainerCall.Image.Ref,
 							OpRef:       dcgContainerCall.OpHandle.Ref(),
 							RootOpID:    dcgContainerCall.RootOpID,
 						},
@@ -167,7 +165,6 @@ func (this _containerCaller) interpretLogs(
 						ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
 							Data:        chunk,
 							ContainerID: dcgContainerCall.ContainerID,
-							ImageRef:    dcgContainerCall.Image.Ref,
 							OpRef:       dcgContainerCall.OpHandle.Ref(),
 							RootOpID:    dcgContainerCall.RootOpID,
 						},

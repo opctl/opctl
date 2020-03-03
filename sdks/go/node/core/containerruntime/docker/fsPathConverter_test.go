@@ -3,7 +3,7 @@ package docker
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/internal/iruntime"
+	iruntimeFakes "github.com/opctl/opctl/sdks/go/internal/iruntime/fakes"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/hostruntime"
 	uuid "github.com/satori/go.uuid"
 )
@@ -11,7 +11,7 @@ import (
 var _ = Context("fsPathConverter", func() {
 	Context("when runtime.GOOS == windows", func() {
 
-		fakeRuntime := new(iruntime.Fake)
+		fakeRuntime := new(iruntimeFakes.FakeIRuntime)
 		fakeRuntime.GOOSReturns("windows")
 		objectUnderTest := _fsPathConverter{
 			runtime:     fakeRuntime,
@@ -78,7 +78,7 @@ var _ = Context("fsPathConverter", func() {
 
 	Context("when runtime.GOOS == linux", func() {
 		Context("when running outside a container", func() {
-			fakeRuntime := new(iruntime.Fake)
+			fakeRuntime := new(iruntimeFakes.FakeIRuntime)
 			fakeRuntime.GOOSReturns("windows")
 			objectUnderTest := _fsPathConverter{
 				runtime:     fakeRuntime,
@@ -98,7 +98,7 @@ var _ = Context("fsPathConverter", func() {
 		})
 
 		Context("when running inside a container", func() {
-			fakeRuntime := new(iruntime.Fake)
+			fakeRuntime := new(iruntimeFakes.FakeIRuntime)
 			fakeRuntime.GOOSReturns("linux")
 			dockerID, _ := uuid.NewV4()
 			objectUnderTest := _fsPathConverter{

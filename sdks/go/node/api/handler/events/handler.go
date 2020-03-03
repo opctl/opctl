@@ -1,6 +1,6 @@
 package events
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeHandler.go --fake-name FakeHandler ./ Handler
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"github.com/opctl/opctl/sdks/go/internal/urlpath"
@@ -9,6 +9,7 @@ import (
 	"net/http"
 )
 
+//counterfeiter:generate -o fakes/handler.go . Handler
 type Handler interface {
 	Handle(
 		httpResp http.ResponseWriter,

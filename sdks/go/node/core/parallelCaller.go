@@ -1,7 +1,5 @@
 package core
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeParallelCaller.go --fake-name fakeParallelCaller ./ parallelCaller
-
 import (
 	"context"
 	"fmt"
@@ -12,6 +10,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
+//counterfeiter:generate -o internal/fakes/parallelCaller.go . parallelCaller
 type parallelCaller interface {
 	// Executes a parallel call
 	Call(

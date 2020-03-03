@@ -3,16 +3,17 @@ package core
 import (
 	"context"
 
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop/iteration"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/parallelloop"
+	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	loopFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop/fakes"
+	iterationFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop/iteration/fakes"
+	parallelloopFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/parallelloop/fakes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
+	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("parallelLoopCaller", func() {
@@ -20,8 +21,8 @@ var _ = Context("parallelLoopCaller", func() {
 		It("should return parallelLoopCaller", func() {
 			/* arrange/act/assert */
 			Expect(newParallelLoopCaller(
-				new(fakeCaller),
-				new(pubsub.Fake),
+				new(FakeCaller),
+				new(FakePubSub),
 			)).To(Not(BeNil()))
 		})
 	})
@@ -30,7 +31,7 @@ var _ = Context("parallelLoopCaller", func() {
 		Context("initial dcgParallelLoop.Range empty", func() {
 			It("should not call caller.Call", func() {
 				/* arrange */
-				fakeParallelLoopInterpreter := new(parallelloop.FakeInterpreter)
+				fakeParallelLoopInterpreter := new(parallelloopFakes.FakeInterpreter)
 				fakeParallelLoopInterpreter.InterpretReturns(
 					&model.DCGParallelLoopCall{
 						Range: &model.Value{
@@ -40,15 +41,15 @@ var _ = Context("parallelLoopCaller", func() {
 					nil,
 				)
 
-				fakeCaller := new(fakeCaller)
+				fakeCaller := new(FakeCaller)
 
 				objectUnderTest := _parallelLoopCaller{
 					caller:                  fakeCaller,
-					loopDeScoper:            new(loop.FakeDeScoper),
+					loopDeScoper:            new(loopFakes.FakeDeScoper),
 					parallelLoopInterpreter: fakeParallelLoopInterpreter,
-					iterationScoper:         new(iteration.FakeScoper),
-					pubSub:                  new(pubsub.Fake),
-					uniqueStringFactory:     new(uniquestring.Fake),
+					iterationScoper:         new(iterationFakes.FakeScoper),
+					pubSub:                  new(FakePubSub),
+					uniqueStringFactory:     new(uniquestringFakes.FakeUniqueStringFactory),
 				}
 
 				/* act */
@@ -57,13 +58,13 @@ var _ = Context("parallelLoopCaller", func() {
 					"id",
 					map[string]*model.Value{},
 					model.SCGParallelLoopCall{},
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					nil,
 					"rootOpID",
 				)
 
 				/* assert */
-				Expect(fakeCaller.CallCount()).To(Equal(0))
+				Expect(fakeCaller.CallCallCount()).To(Equal(0))
 			})
 		})
 		It("should call caller.Call w/ expected args", func() {
@@ -79,7 +80,7 @@ var _ = Context("parallelLoopCaller", func() {
 					Container: new(model.SCGContainerCall),
 				},
 			}
-			providedOpHandle := new(data.FakeHandle)
+			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedParentCallIDValue := "providedParentCallID"
 			providedParentCallID := &providedParentCallIDValue
 			providedRootOpID := "providedRootOpID"
@@ -89,7 +90,7 @@ var _ = Context("parallelLoopCaller", func() {
 				Array: &loopRangeValue,
 			}
 
-			fakeParallelLoopInterpreter := new(parallelloop.FakeInterpreter)
+			fakeParallelLoopInterpreter := new(parallelloopFakes.FakeInterpreter)
 			fakeParallelLoopInterpreter.InterpretReturnsOnCall(
 				0,
 				&model.DCGParallelLoopCall{
@@ -112,7 +113,7 @@ var _ = Context("parallelLoopCaller", func() {
 				nil,
 			)
 
-			fakeIterationScoper := new(iteration.FakeScoper)
+			fakeIterationScoper := new(iterationFakes.FakeScoper)
 			expectedScope := map[string]*model.Value{
 				index: &model.Value{Number: new(float64)},
 			}
@@ -121,7 +122,7 @@ var _ = Context("parallelLoopCaller", func() {
 			callID := "callID"
 			expectedErrorMessage := "expectedErrorMessage"
 
-			fakeCaller := new(fakeCaller)
+			fakeCaller := new(FakeCaller)
 			eventChannel := make(chan model.Event, 100)
 			fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string) {
 				eventChannel <- model.Event{
@@ -134,15 +135,15 @@ var _ = Context("parallelLoopCaller", func() {
 				}
 			}
 
-			fakePubSub := new(pubsub.Fake)
+			fakePubSub := new(FakePubSub)
 			fakePubSub.SubscribeReturns(eventChannel, nil)
 
-			fakeUniqueStringFactory := new(uniquestring.Fake)
+			fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 			fakeUniqueStringFactory.ConstructReturns(callID, nil)
 
 			objectUnderTest := _parallelLoopCaller{
 				caller:                  fakeCaller,
-				loopDeScoper:            new(loop.FakeDeScoper),
+				loopDeScoper:            new(loopFakes.FakeDeScoper),
 				parallelLoopInterpreter: fakeParallelLoopInterpreter,
 				iterationScoper:         fakeIterationScoper,
 				pubSub:                  fakePubSub,

@@ -1,11 +1,12 @@
 package clicolorer
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ CliColorer
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"github.com/fatih/color"
 )
 
+//counterfeiter:generate -o fakes/cliColorer.go . CliColorer
 type CliColorer interface {
 	// silently disables coloring
 	Disable()

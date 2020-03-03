@@ -13,8 +13,8 @@ import (
 	"github.com/golang-interfaces/ihttp"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/node/core"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
 )
 
 var _ = Context("Handler", func() {
@@ -23,11 +23,11 @@ var _ = Context("Handler", func() {
 			/* arrange */
 			providedContentPath := "dummyOpRef"
 
-			fakeDataHandle := new(data.FakeHandle)
+			fakeDataHandle := new(modelFakes.FakeDataHandle)
 			// error to trigger immediate return
 			fakeDataHandle.GetContentReturns(nil, errors.New("dummyError"))
 
-			fakeCore := new(core.Fake)
+			fakeCore := new(FakeCore)
 			fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 			objectUnderTest := _handler{
@@ -59,10 +59,10 @@ var _ = Context("Handler", func() {
 				/* arrange */
 				expectedBody := "dummyErrorMsg"
 
-				fakeDataHandle := new(data.FakeHandle)
+				fakeDataHandle := new(modelFakes.FakeDataHandle)
 				fakeDataHandle.GetContentReturns(nil, errors.New(expectedBody))
 
-				fakeCore := new(core.Fake)
+				fakeCore := new(FakeCore)
 				fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 				objectUnderTest := _handler{
@@ -102,10 +102,10 @@ var _ = Context("Handler", func() {
 				expectedReadSeeker, err := ioutil.TempFile("", "")
 				defer expectedReadSeeker.Close()
 
-				fakeDataHandle := new(data.FakeHandle)
+				fakeDataHandle := new(modelFakes.FakeDataHandle)
 				fakeDataHandle.GetContentReturns(expectedReadSeeker, nil)
 
-				fakeCore := new(core.Fake)
+				fakeCore := new(FakeCore)
 				fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 				fakeHTTP := new(ihttp.Fake)

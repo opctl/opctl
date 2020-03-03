@@ -1,7 +1,5 @@
 package docker
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeImagePusher.go --fake-name fakeImagePusher ./ imagePusher
-
 import (
 	"context"
 	"fmt"
@@ -14,11 +12,13 @@ import (
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
+//counterfeiter:generate -o internal/fakes/imagePusher.go . imagePusher
 type imagePusher interface {
 	Push(
 		ctx context.Context,
-		dcgContainerImage *model.DCGContainerCallImage,
 		containerID string,
+		imageRef string,
+		imageSrc *model.Value,
 		rootOpID string,
 		eventPublisher pubsub.EventPublisher,
 	) error
@@ -32,8 +32,9 @@ type _imagePusher struct{}
 
 func (ip _imagePusher) Push(
 	ctx context.Context,
-	dcgContainerImage *model.DCGContainerCallImage,
 	containerID string,
+	imageRef string,
+	imageSrc *model.Value,
 	rootOpID string,
 	eventPublisher pubsub.EventPublisher,
 ) error {
@@ -46,7 +47,7 @@ func (ip _imagePusher) Push(
 	}
 
 	srcImageRef, srcErr := layout.NewReference(
-		*dcgContainerImage.Src.Dir,
+		*imageSrc.Dir,
 		"",
 	)
 	if nil != srcErr {
@@ -54,7 +55,7 @@ func (ip _imagePusher) Push(
 	}
 
 	dstImageRef, dstErr := daemon.ParseReference(
-		dcgContainerImage.Ref,
+		imageRef,
 	)
 	if nil != dstErr {
 		return fmt.Errorf("error encountered loading image; error was: %v", dstErr)

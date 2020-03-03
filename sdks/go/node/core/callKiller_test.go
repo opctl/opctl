@@ -4,8 +4,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("core", func() {
@@ -14,12 +15,12 @@ var _ = Context("core", func() {
 			/* arrange */
 			providedCallID := "providedCallID"
 
-			fakeCallStore := new(fakeCallStore)
+			fakeCallStore := new(FakeCallStore)
 
 			objectUnderTest := _callKiller{
-				containerRuntime: new(containerruntime.Fake),
+				containerRuntime: new(FakeContainerRuntime),
 				callStore:        fakeCallStore,
-				eventPublisher:   new(pubsub.FakeEventPublisher),
+				eventPublisher:   new(FakeEventPublisher),
 			}
 
 			/* act */
@@ -35,12 +36,12 @@ var _ = Context("core", func() {
 			/* arrange */
 			providedCallID := "providedCallID"
 
-			fakeCallStore := new(fakeCallStore)
+			fakeCallStore := new(FakeCallStore)
 
 			objectUnderTest := _callKiller{
-				containerRuntime: new(containerruntime.Fake),
+				containerRuntime: new(FakeContainerRuntime),
 				callStore:        fakeCallStore,
-				eventPublisher:   new(pubsub.FakeEventPublisher),
+				eventPublisher:   new(FakeEventPublisher),
 			}
 
 			/* act */
@@ -62,7 +63,7 @@ var _ = Context("core", func() {
 					{Id: "dummyNode2Id"},
 					{Id: "dummyNode3Id"},
 				}
-				fakeCallStore := new(fakeCallStore)
+				fakeCallStore := new(FakeCallStore)
 				fakeCallStore.ListWithParentIDReturnsOnCall(0, nodesReturnedFromCallStore)
 
 				// use map so order ignored; calls happen in parallel so all ordering bets are off
@@ -74,9 +75,9 @@ var _ = Context("core", func() {
 				}
 
 				objectUnderTest := _callKiller{
-					containerRuntime: new(containerruntime.Fake),
+					containerRuntime: new(FakeContainerRuntime),
 					callStore:        fakeCallStore,
-					eventPublisher:   new(pubsub.FakeEventPublisher),
+					eventPublisher:   new(FakeEventPublisher),
 				}
 
 				/* act */
@@ -104,7 +105,7 @@ var _ = Context("core", func() {
 					{Id: "dummyNode2Id"},
 					{Id: "dummyNode3Id"},
 				}
-				fakeCallStore := new(fakeCallStore)
+				fakeCallStore := new(FakeCallStore)
 				fakeCallStore.ListWithParentIDReturnsOnCall(0, nodesReturnedFromCallStore)
 
 				// use map so order ignored; calls happen in parallel so all ordering bets are off
@@ -115,12 +116,12 @@ var _ = Context("core", func() {
 					nodesReturnedFromCallStore[2].Id: true,
 				}
 
-				fakeContainerRuntime := new(containerruntime.Fake)
+				fakeContainerRuntime := new(FakeContainerRuntime)
 
 				objectUnderTest := &_callKiller{
 					containerRuntime: fakeContainerRuntime,
 					callStore:        fakeCallStore,
-					eventPublisher:   new(pubsub.FakeEventPublisher),
+					eventPublisher:   new(FakeEventPublisher),
 				}
 
 				/* act */

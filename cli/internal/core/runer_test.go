@@ -9,15 +9,17 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/clicolorer"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
-	"github.com/opctl/opctl/cli/internal/clioutput"
-	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
+	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
+	clioutputFakes "github.com/opctl/opctl/cli/internal/clioutput/fakes"
+	cliparamsatisfierFakes "github.com/opctl/opctl/cli/internal/cliparamsatisfier/fakes"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	cliModel "github.com/opctl/opctl/cli/internal/model"
+	modelFakes "github.com/opctl/opctl/cli/internal/model/fakes"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api/client"
-	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	. "github.com/opctl/opctl/sdks/go/model/fakes"
+	clientFakes "github.com/opctl/opctl/sdks/go/node/api/client/fakes"
+	opfileFakes "github.com/opctl/opctl/sdks/go/opspec/opfile/fakes"
 )
 
 var _ = Context("Runer", func() {
@@ -26,19 +28,19 @@ var _ = Context("Runer", func() {
 			/* arrange */
 			providedOpRef := "dummyOpRef"
 
-			fakeOpFileGetter := new(opfile.FakeGetter)
+			fakeOpFileGetter := new(opfileFakes.FakeGetter)
 			// err to trigger immediate return
 			fakeOpFileGetter.GetReturns(nil, errors.New("dummyError"))
 
-			fakeOpHandle := new(data.FakeHandle)
+			fakeOpHandle := new(FakeDataHandle)
 			fakeDataResolver := new(dataresolver.Fake)
 			fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 			objectUnderTest := _runer{
 				opFileGetter:      fakeOpFileGetter,
 				dataResolver:      fakeDataResolver,
-				cliExiter:         new(cliexiter.Fake),
-				cliParamSatisfier: new(cliparamsatisfier.Fake),
+				cliExiter:         new(cliexiterFakes.FakeCliExiter),
+				cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 			}
 
 			/* act */
@@ -53,19 +55,19 @@ var _ = Context("Runer", func() {
 			/* arrange */
 			providedCtx := context.Background()
 
-			fakeOpFileGetter := new(opfile.FakeGetter)
+			fakeOpFileGetter := new(opfileFakes.FakeGetter)
 			// error to trigger immediate return
 			fakeOpFileGetter.GetReturns(nil, errors.New("dummyError"))
 
-			fakeOpHandle := new(data.FakeHandle)
+			fakeOpHandle := new(FakeDataHandle)
 			fakeDataResolver := new(dataresolver.Fake)
 			fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 			objectUnderTest := _runer{
 				opFileGetter:      fakeOpFileGetter,
 				dataResolver:      fakeDataResolver,
-				cliExiter:         new(cliexiter.Fake),
-				cliParamSatisfier: new(cliparamsatisfier.Fake),
+				cliExiter:         new(cliexiterFakes.FakeCliExiter),
+				cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 			}
 
 			/* act */
@@ -87,20 +89,20 @@ var _ = Context("Runer", func() {
 				/* arrange */
 				getManifestErr := errors.New("dummyError")
 
-				fakeOpFileGetter := new(opfile.FakeGetter)
+				fakeOpFileGetter := new(opfileFakes.FakeGetter)
 				fakeOpFileGetter.GetReturns(nil, getManifestErr)
 
-				fakeOpHandle := new(data.FakeHandle)
+				fakeOpHandle := new(FakeDataHandle)
 				fakeDataResolver := new(dataresolver.Fake)
 				fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-				fakeCliExiter := new(cliexiter.Fake)
+				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 				objectUnderTest := _runer{
 					opFileGetter:      fakeOpFileGetter,
 					dataResolver:      fakeDataResolver,
 					cliExiter:         fakeCliExiter,
-					cliParamSatisfier: new(cliparamsatisfier.Fake),
+					cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 				}
 
 				/* act */
@@ -125,33 +127,33 @@ var _ = Context("Runer", func() {
 
 				expectedParams := opFile.Inputs
 
-				fakeOpFileGetter := new(opfile.FakeGetter)
+				fakeOpFileGetter := new(opfileFakes.FakeGetter)
 				fakeOpFileGetter.GetReturns(opFile, nil)
 
-				fakeOpHandle := new(data.FakeHandle)
+				fakeOpHandle := new(FakeDataHandle)
 				fakeDataResolver := new(dataresolver.Fake)
 				fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 				// stub node provider
-				fakeAPIClient := new(client.Fake)
+				fakeAPIClient := new(clientFakes.FakeClient)
 
 				// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
 				eventChannel := make(chan model.Event)
 				close(eventChannel)
 				fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
-				fakeNodeHandle := new(cliModel.FakeNodeHandle)
+				fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 				fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 				fakeNodeProvider := new(nodeprovider.Fake)
 				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
-				fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
+				fakeCliParamSatisfier := new(cliparamsatisfierFakes.FakeCLIParamSatisfier)
 
 				objectUnderTest := _runer{
 					opFileGetter:      fakeOpFileGetter,
 					dataResolver:      fakeDataResolver,
-					cliExiter:         new(cliexiter.Fake),
+					cliExiter:         new(cliexiterFakes.FakeCliExiter),
 					cliParamSatisfier: fakeCliParamSatisfier,
 					nodeProvider:      fakeNodeProvider,
 				}
@@ -181,36 +183,36 @@ var _ = Context("Runer", func() {
 					},
 				}
 
-				fakeOpFileGetter := new(opfile.FakeGetter)
+				fakeOpFileGetter := new(opfileFakes.FakeGetter)
 				fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
-				fakeOpHandle := new(data.FakeHandle)
+				fakeOpHandle := new(FakeDataHandle)
 				fakeOpHandle.RefReturns(resolvedOpRef)
 
 				fakeDataResolver := new(dataresolver.Fake)
 				fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 				// stub node provider
-				fakeAPIClient := new(client.Fake)
+				fakeAPIClient := new(clientFakes.FakeClient)
 
 				// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
 				eventChannel := make(chan model.Event)
 				close(eventChannel)
 				fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
-				fakeNodeHandle := new(cliModel.FakeNodeHandle)
+				fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 				fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 				fakeNodeProvider := new(nodeprovider.Fake)
 				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
-				fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
+				fakeCliParamSatisfier := new(cliparamsatisfierFakes.FakeCLIParamSatisfier)
 				fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args)
 
 				objectUnderTest := _runer{
 					opFileGetter:      fakeOpFileGetter,
 					dataResolver:      fakeDataResolver,
-					cliExiter:         new(cliexiter.Fake),
+					cliExiter:         new(cliexiterFakes.FakeCliExiter),
 					cliParamSatisfier: fakeCliParamSatisfier,
 					nodeProvider:      fakeNodeProvider,
 				}
@@ -226,21 +228,21 @@ var _ = Context("Runer", func() {
 			Context("apiClient.StartOp errors", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
-					fakeCliExiter := new(cliexiter.Fake)
+					fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 					returnedError := errors.New("dummyError")
 
-					fakeOpFileGetter := new(opfile.FakeGetter)
+					fakeOpFileGetter := new(opfileFakes.FakeGetter)
 					fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
-					fakeOpHandle := new(data.FakeHandle)
+					fakeOpHandle := new(FakeDataHandle)
 					fakeDataResolver := new(dataresolver.Fake)
 					fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 					// stub node provider
-					fakeAPIClient := new(client.Fake)
+					fakeAPIClient := new(clientFakes.FakeClient)
 					fakeAPIClient.StartOpReturns("dummyOpID", returnedError)
 
-					fakeNodeHandle := new(cliModel.FakeNodeHandle)
+					fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 					fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 					fakeNodeProvider := new(nodeprovider.Fake)
@@ -250,7 +252,7 @@ var _ = Context("Runer", func() {
 						opFileGetter:      fakeOpFileGetter,
 						dataResolver:      fakeDataResolver,
 						cliExiter:         fakeCliExiter,
-						cliParamSatisfier: new(cliparamsatisfier.Fake),
+						cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 						nodeProvider:      fakeNodeProvider,
 					}
 
@@ -275,18 +277,18 @@ var _ = Context("Runer", func() {
 						},
 					}
 
-					fakeOpFileGetter := new(opfile.FakeGetter)
+					fakeOpFileGetter := new(opfileFakes.FakeGetter)
 					fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
-					fakeOpHandle := new(data.FakeHandle)
+					fakeOpHandle := new(FakeDataHandle)
 					fakeDataResolver := new(dataresolver.Fake)
 					fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 					// stub node provider
-					fakeAPIClient := new(client.Fake)
+					fakeAPIClient := new(clientFakes.FakeClient)
 					fakeAPIClient.StartOpReturns(rootOpIDReturnedFromStartOp, nil)
 
-					fakeNodeHandle := new(cliModel.FakeNodeHandle)
+					fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 					fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 					fakeNodeProvider := new(nodeprovider.Fake)
@@ -299,8 +301,8 @@ var _ = Context("Runer", func() {
 					objectUnderTest := _runer{
 						opFileGetter:      fakeOpFileGetter,
 						dataResolver:      fakeDataResolver,
-						cliExiter:         new(cliexiter.Fake),
-						cliParamSatisfier: new(cliparamsatisfier.Fake),
+						cliExiter:         new(cliexiterFakes.FakeCliExiter),
+						cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 						nodeProvider:      fakeNodeProvider,
 					}
 
@@ -322,20 +324,20 @@ var _ = Context("Runer", func() {
 				Context("apiClient.GetEventStream errors", func() {
 					It("should call exiter w/ expected args", func() {
 						/* arrange */
-						fakeCliExiter := new(cliexiter.Fake)
+						fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 						returnedError := errors.New("dummyError")
 
-						fakeOpFileGetter := new(opfile.FakeGetter)
+						fakeOpFileGetter := new(opfileFakes.FakeGetter)
 						fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
-						fakeOpHandle := new(data.FakeHandle)
+						fakeOpHandle := new(FakeDataHandle)
 						fakeDataResolver := new(dataresolver.Fake)
 						fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-						fakeAPIClient := new(client.Fake)
+						fakeAPIClient := new(clientFakes.FakeClient)
 						fakeAPIClient.GetEventStreamReturns(nil, returnedError)
 
-						fakeNodeHandle := new(cliModel.FakeNodeHandle)
+						fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 						fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 						fakeNodeProvider := new(nodeprovider.Fake)
@@ -345,7 +347,7 @@ var _ = Context("Runer", func() {
 							opFileGetter:      fakeOpFileGetter,
 							dataResolver:      fakeDataResolver,
 							cliExiter:         fakeCliExiter,
-							cliParamSatisfier: new(cliparamsatisfier.Fake),
+							cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 							nodeProvider:      fakeNodeProvider,
 						}
 
@@ -361,21 +363,21 @@ var _ = Context("Runer", func() {
 					Context("event channel closes", func() {
 						It("should call exiter w/ expected args", func() {
 							/* arrange */
-							fakeCliExiter := new(cliexiter.Fake)
+							fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
-							fakeOpFileGetter := new(opfile.FakeGetter)
+							fakeOpFileGetter := new(opfileFakes.FakeGetter)
 							fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
-							fakeOpHandle := new(data.FakeHandle)
+							fakeOpHandle := new(FakeDataHandle)
 							fakeDataResolver := new(dataresolver.Fake)
 							fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-							fakeAPIClient := new(client.Fake)
+							fakeAPIClient := new(clientFakes.FakeClient)
 							eventChannel := make(chan model.Event)
 							close(eventChannel)
 							fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
-							fakeNodeHandle := new(cliModel.FakeNodeHandle)
+							fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 							fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 							fakeNodeProvider := new(nodeprovider.Fake)
@@ -385,7 +387,7 @@ var _ = Context("Runer", func() {
 								opFileGetter:      fakeOpFileGetter,
 								dataResolver:      fakeDataResolver,
 								cliExiter:         fakeCliExiter,
-								cliParamSatisfier: new(cliparamsatisfier.Fake),
+								cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 								nodeProvider:      fakeNodeProvider,
 							}
 
@@ -414,23 +416,23 @@ var _ = Context("Runer", func() {
 											},
 										}
 
-										fakeCliExiter := new(cliexiter.Fake)
+										fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
-										fakeOpFileGetter := new(opfile.FakeGetter)
+										fakeOpFileGetter := new(opfileFakes.FakeGetter)
 										fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
-										fakeOpHandle := new(data.FakeHandle)
+										fakeOpHandle := new(FakeDataHandle)
 										fakeDataResolver := new(dataresolver.Fake)
 										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-										fakeAPIClient := new(client.Fake)
+										fakeAPIClient := new(clientFakes.FakeClient)
 										eventChannel := make(chan model.Event, 10)
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
-										fakeNodeHandle := new(cliModel.FakeNodeHandle)
+										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 										fakeNodeProvider := new(nodeprovider.Fake)
@@ -441,8 +443,8 @@ var _ = Context("Runer", func() {
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
 											cliExiter:         fakeCliExiter,
-											cliOutput:         new(clioutput.Fake),
-											cliParamSatisfier: new(cliparamsatisfier.Fake),
+											cliOutput:         new(clioutputFakes.FakeCliOutput),
+											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 											nodeProvider:      fakeNodeProvider,
 										}
 
@@ -465,23 +467,23 @@ var _ = Context("Runer", func() {
 											},
 										}
 
-										fakeCliExiter := new(cliexiter.Fake)
+										fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
-										fakeOpFileGetter := new(opfile.FakeGetter)
+										fakeOpFileGetter := new(opfileFakes.FakeGetter)
 										fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
-										fakeOpHandle := new(data.FakeHandle)
+										fakeOpHandle := new(FakeDataHandle)
 										fakeDataResolver := new(dataresolver.Fake)
 										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-										fakeAPIClient := new(client.Fake)
+										fakeAPIClient := new(clientFakes.FakeClient)
 										eventChannel := make(chan model.Event, 10)
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
-										fakeNodeHandle := new(cliModel.FakeNodeHandle)
+										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 										fakeNodeProvider := new(nodeprovider.Fake)
@@ -492,8 +494,8 @@ var _ = Context("Runer", func() {
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
 											cliExiter:         fakeCliExiter,
-											cliOutput:         new(clioutput.Fake),
-											cliParamSatisfier: new(cliparamsatisfier.Fake),
+											cliOutput:         new(clioutputFakes.FakeCliOutput),
+											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 											nodeProvider:      fakeNodeProvider,
 										}
 
@@ -517,23 +519,23 @@ var _ = Context("Runer", func() {
 											},
 										}
 
-										fakeCliExiter := new(cliexiter.Fake)
+										fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
-										fakeOpFileGetter := new(opfile.FakeGetter)
+										fakeOpFileGetter := new(opfileFakes.FakeGetter)
 										fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
-										fakeOpHandle := new(data.FakeHandle)
+										fakeOpHandle := new(FakeDataHandle)
 										fakeDataResolver := new(dataresolver.Fake)
 										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-										fakeAPIClient := new(client.Fake)
+										fakeAPIClient := new(clientFakes.FakeClient)
 										eventChannel := make(chan model.Event, 10)
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
-										fakeNodeHandle := new(cliModel.FakeNodeHandle)
+										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 										fakeNodeProvider := new(nodeprovider.Fake)
@@ -544,8 +546,8 @@ var _ = Context("Runer", func() {
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
 											cliExiter:         fakeCliExiter,
-											cliOutput:         new(clioutput.Fake),
-											cliParamSatisfier: new(cliparamsatisfier.Fake),
+											cliOutput:         new(clioutputFakes.FakeCliOutput),
+											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 											nodeProvider:      fakeNodeProvider,
 										}
 
@@ -568,23 +570,23 @@ var _ = Context("Runer", func() {
 											},
 										}
 
-										fakeCliExiter := new(cliexiter.Fake)
+										fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
-										fakeOpFileGetter := new(opfile.FakeGetter)
+										fakeOpFileGetter := new(opfileFakes.FakeGetter)
 										fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
-										fakeOpHandle := new(data.FakeHandle)
+										fakeOpHandle := new(FakeDataHandle)
 										fakeDataResolver := new(dataresolver.Fake)
 										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-										fakeAPIClient := new(client.Fake)
+										fakeAPIClient := new(clientFakes.FakeClient)
 										eventChannel := make(chan model.Event, 10)
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
-										fakeNodeHandle := new(cliModel.FakeNodeHandle)
+										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
 										fakeNodeProvider := new(nodeprovider.Fake)
@@ -595,8 +597,8 @@ var _ = Context("Runer", func() {
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
 											cliExiter:         fakeCliExiter,
-											cliOutput:         new(clioutput.Fake),
-											cliParamSatisfier: new(cliparamsatisfier.Fake),
+											cliOutput:         new(clioutputFakes.FakeCliOutput),
+											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 											nodeProvider:      fakeNodeProvider,
 										}
 

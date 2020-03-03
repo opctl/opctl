@@ -1,7 +1,5 @@
 package core
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeCallKiller.go --fake-name fakeCallKiller ./ callKiller
-
 import (
 	"sync"
 
@@ -11,6 +9,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
+//counterfeiter:generate -o internal/fakes/killer.go . callKiller
 type callKiller interface {
 	Kill(
 		callID string,

@@ -1,6 +1,6 @@
 package cliexiter
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ CliExiter
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"github.com/golang-interfaces/ios"
@@ -12,7 +12,8 @@ type ExitReq struct {
 	Code    int
 }
 
-// allows mocking/faking program exit
+//CliExiter allows mocking/faking program exit
+//counterfeiter:generate -o fakes/cliExiter.go . CliExiter
 type CliExiter interface {
 	Exit(req ExitReq)
 }

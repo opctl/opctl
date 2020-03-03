@@ -3,8 +3,8 @@ package core
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
+	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("core", func() {
@@ -13,8 +13,8 @@ var _ = Context("core", func() {
 			/* arrange/act/assert */
 			Expect(
 				New(
-					new(pubsub.Fake),
-					new(containerruntime.Fake),
+					new(FakePubSub),
+					new(FakeContainerRuntime),
 					"dummyFSRootPath",
 				),
 			).To(Not(BeNil()))

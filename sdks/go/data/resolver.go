@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"github.com/opctl/opctl/sdks/go/data/provider"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -15,7 +16,7 @@ type resolver interface {
 	Resolve(
 		ctx context.Context,
 		dataRef string,
-		providers ...Provider,
+		providers ...provider.Provider,
 	) (
 		model.DataHandle,
 		error,
@@ -31,7 +32,7 @@ type _resolver struct{}
 func (rslv _resolver) Resolve(
 	ctx context.Context,
 	dataRef string,
-	providers ...Provider,
+	providers ...provider.Provider,
 ) (
 	model.DataHandle,
 	error,

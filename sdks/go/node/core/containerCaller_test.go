@@ -9,10 +9,10 @@ import (
 	"github.com/golang-interfaces/iio"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
+	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("containerCaller", func() {
@@ -20,15 +20,15 @@ var _ = Context("containerCaller", func() {
 	closedPipeReader.Close()
 	closedPipeWriter.Close()
 	opHandleRef := "dummyOpRef"
-	fakeOpHandle := new(data.FakeHandle)
+	fakeOpHandle := new(modelFakes.FakeDataHandle)
 	fakeOpHandle.RefReturns(opHandleRef)
 
 	Context("newContainerCaller", func() {
 		It("should return containerCaller", func() {
 			/* arrange/act/assert */
 			Expect(newContainerCaller(
-				new(containerruntime.Fake),
-				new(pubsub.Fake),
+				new(FakeContainerRuntime),
+				new(FakePubSub),
 			)).To(Not(BeNil()))
 		})
 	})
@@ -54,13 +54,13 @@ var _ = Context("containerCaller", func() {
 				},
 			}
 
-			fakePubSub := new(pubsub.Fake)
+			fakePubSub := new(FakePubSub)
 
 			fakeIIO := new(iio.Fake)
 			fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 			objectUnderTest := _containerCaller{
-				containerRuntime: new(containerruntime.Fake),
+				containerRuntime: new(FakeContainerRuntime),
 				pubSub:           fakePubSub,
 				io:               fakeIIO,
 			}
@@ -91,9 +91,9 @@ var _ = Context("containerCaller", func() {
 					OpHandle: fakeOpHandle,
 				},
 			}
-			fakeContainerRuntime := new(containerruntime.Fake)
+			fakeContainerRuntime := new(FakeContainerRuntime)
 
-			fakePubSub := new(pubsub.Fake)
+			fakePubSub := new(FakePubSub)
 
 			fakeIIO := new(iio.Fake)
 			fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
@@ -125,9 +125,9 @@ var _ = Context("containerCaller", func() {
 			It("should publish expected ContainerExitedEvent", func() {
 				/* arrange */
 				expectedErrorMessage := "expectedErrorMessage"
-				fakePubSub := new(pubsub.Fake)
+				fakePubSub := new(FakePubSub)
 
-				fakeContainerRuntime := new(containerruntime.Fake)
+				fakeContainerRuntime := new(FakeContainerRuntime)
 				fakeContainerRuntime.RunContainerReturns(nil, errors.New(expectedErrorMessage))
 
 				fakeIIO := new(iio.Fake)
@@ -184,13 +184,13 @@ var _ = Context("containerCaller", func() {
 			},
 		}
 
-		fakePubSub := new(pubsub.Fake)
+		fakePubSub := new(FakePubSub)
 
 		fakeIIO := new(iio.Fake)
 		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 		objectUnderTest := _containerCaller{
-			containerRuntime: new(containerruntime.Fake),
+			containerRuntime: new(FakeContainerRuntime),
 			pubSub:           fakePubSub,
 			io:               fakeIIO,
 		}
@@ -238,13 +238,13 @@ var _ = Context("containerCaller", func() {
 			},
 		}
 
-		fakePubSub := new(pubsub.Fake)
+		fakePubSub := new(FakePubSub)
 
 		fakeIIO := new(iio.Fake)
 		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 		objectUnderTest := _containerCaller{
-			containerRuntime: new(containerruntime.Fake),
+			containerRuntime: new(FakeContainerRuntime),
 			pubSub:           fakePubSub,
 			io:               fakeIIO,
 		}

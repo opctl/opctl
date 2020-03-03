@@ -4,7 +4,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/clioutput"
+	clioutputFakes "github.com/opctl/opctl/cli/internal/clioutput/fakes"
 )
 
 var _ = Context("cliExiter", func() {
@@ -12,7 +12,7 @@ var _ = Context("cliExiter", func() {
 		It("should return Exiter", func() {
 			/* arrange/act/assert */
 			Expect(New(
-				new(clioutput.Fake),
+				new(clioutputFakes.FakeCliOutput),
 				new(ios.Fake)),
 			).To(Not(BeNil()))
 		})
@@ -26,7 +26,7 @@ var _ = Context("cliExiter", func() {
 					Message: "dummyMessage",
 				}
 
-				fakeOutput := new(clioutput.Fake)
+				fakeOutput := new(clioutputFakes.FakeCliOutput)
 				objectUnderTest := New(
 					fakeOutput,
 					new(ios.Fake),
@@ -46,7 +46,7 @@ var _ = Context("cliExiter", func() {
 				}
 				fakeIOS := new(ios.Fake)
 				objectUnderTest := New(
-					new(clioutput.Fake),
+					new(clioutputFakes.FakeCliOutput),
 					fakeIOS,
 				)
 
@@ -64,7 +64,7 @@ var _ = Context("cliExiter", func() {
 					Message: "dummyMessage",
 				}
 
-				fakeOutput := new(clioutput.Fake)
+				fakeOutput := new(clioutputFakes.FakeCliOutput)
 				objectUnderTest := New(
 					fakeOutput,
 					new(ios.Fake),
@@ -84,7 +84,7 @@ var _ = Context("cliExiter", func() {
 				}
 				fakeIOS := new(ios.Fake)
 				objectUnderTest := New(
-					new(clioutput.Fake),
+					new(clioutputFakes.FakeCliOutput),
 					fakeIOS,
 				)
 

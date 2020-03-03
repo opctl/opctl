@@ -5,10 +5,10 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs/input"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	inputFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs/input/fakes"
+	paramsFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/fakes"
 )
 
 var _ = Context("Interpreter", func() {
@@ -20,7 +20,7 @@ var _ = Context("Interpreter", func() {
 	})
 	Context("Interpret", func() {
 		Context("input arg", func() {
-			It("should call input.Interpret w/ expected args", func() {
+			It("should call inputFakes.Interpret w/ expected args", func() {
 				/* arrange */
 				providedArgName := "argName"
 				providedArgValue := "argValue"
@@ -35,7 +35,7 @@ var _ = Context("Interpreter", func() {
 
 				expectedParam := providedInputParams[providedArgName]
 
-				providedParentOpHandle := new(data.FakeHandle)
+				providedParentOpHandle := new(modelFakes.FakeDataHandle)
 
 				providedScope := map[string]*model.Value{
 					"scopeRef1Name": {},
@@ -43,14 +43,14 @@ var _ = Context("Interpreter", func() {
 
 				providedOpScratchDir := "dummyOpScratchDir"
 
-				fakeInputInterpreter := new(input.FakeInterpreter)
+				fakeInputInterpreter := new(inputFakes.FakeInterpreter)
 				// err to trigger immediate return
 				fakeInputInterpreter.InterpretReturns(nil, errors.New("dummyErr"))
 
 				objectUnderTest := _interpreter{
 					inputInterpreter: fakeInputInterpreter,
-					paramsDefaulter:  new(params.FakeDefaulter),
-					paramsValidator:  new(params.FakeValidator),
+					paramsDefaulter:  new(paramsFakes.FakeDefaulter),
+					paramsValidator:  new(paramsFakes.FakeValidator),
 				}
 
 				/* act */
@@ -79,8 +79,8 @@ var _ = Context("Interpreter", func() {
 				Expect(actualOpScratchDir).To(Equal(providedOpScratchDir))
 
 			})
-			Context("input.Interpret doesn't error", func() {
-				It("should call params.Default w/ expected args", func() {
+			Context("inputFakes.Interpret doesn't error", func() {
+				It("should call paramsFakes.Default w/ expected args", func() {
 					/* arrange */
 					providedArgName := "argName"
 
@@ -99,22 +99,22 @@ var _ = Context("Interpreter", func() {
 						providedArgName: expectedInput,
 					}
 
-					fakeInputInterpreter := new(input.FakeInterpreter)
+					fakeInputInterpreter := new(inputFakes.FakeInterpreter)
 					fakeInputInterpreter.InterpretReturns(expectedInput, nil)
 
-					fakeParamsDefaulter := new(params.FakeDefaulter)
+					fakeParamsDefaulter := new(paramsFakes.FakeDefaulter)
 
 					objectUnderTest := _interpreter{
 						inputInterpreter: fakeInputInterpreter,
 						paramsDefaulter:  fakeParamsDefaulter,
-						paramsValidator:  new(params.FakeValidator),
+						paramsValidator:  new(paramsFakes.FakeValidator),
 					}
 
 					/* act */
 					objectUnderTest.Interpret(
 						providedInputArgs,
 						providedParams,
-						new(data.FakeHandle),
+						new(modelFakes.FakeDataHandle),
 						providedOpPath,
 						map[string]*model.Value{},
 						"dummyOpScratchDir",
@@ -141,16 +141,16 @@ var _ = Context("Interpreter", func() {
 						providedArgName: nil,
 					}
 
-					fakeParamsDefaulter := new(params.FakeDefaulter)
+					fakeParamsDefaulter := new(paramsFakes.FakeDefaulter)
 					expectedInputs := map[string]*model.Value{
 						providedArgName: new(model.Value),
 					}
 					fakeParamsDefaulter.DefaultReturns(expectedInputs)
 
-					fakeParamsValidator := new(params.FakeValidator)
+					fakeParamsValidator := new(paramsFakes.FakeValidator)
 
 					objectUnderTest := _interpreter{
-						inputInterpreter: new(input.FakeInterpreter),
+						inputInterpreter: new(inputFakes.FakeInterpreter),
 						paramsDefaulter:  fakeParamsDefaulter,
 						paramsValidator:  fakeParamsValidator,
 					}
@@ -159,7 +159,7 @@ var _ = Context("Interpreter", func() {
 					objectUnderTest.Interpret(
 						providedInputArgs,
 						providedInputParams,
-						new(data.FakeHandle),
+						new(modelFakes.FakeDataHandle),
 						"dummyOpPath",
 						map[string]*model.Value{},
 						"dummyOpScratchDir",

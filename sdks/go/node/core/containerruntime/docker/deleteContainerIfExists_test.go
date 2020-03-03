@@ -6,12 +6,13 @@ import (
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/internal/fakes"
 )
 
 var _ = Context("DeleteContainerIfExists", func() {
 	It("should call dockerClient.ContainerRemove w/ expected args", func() {
 		/* arrange */
-		fakeDockerClient := new(fakeDockerClient)
+		fakeDockerClient := new(FakeCommonAPIClient)
 
 		providedContainerID := "dummyContainerID"
 		expectedContainerID := providedContainerID
@@ -37,7 +38,7 @@ var _ = Context("DeleteContainerIfExists", func() {
 			/* arrange */
 			errorReturnedFromContainerRemove := errors.New("dummyError")
 
-			fakeDockerClient := new(fakeDockerClient)
+			fakeDockerClient := new(FakeCommonAPIClient)
 			fakeDockerClient.ContainerRemoveReturns(errorReturnedFromContainerRemove)
 
 			expectedError := fmt.Errorf(
@@ -60,7 +61,7 @@ var _ = Context("DeleteContainerIfExists", func() {
 		It("shouldn't error", func() {
 			/* arrange */
 			objectUnderTest := _containerRuntime{
-				dockerClient: new(fakeDockerClient),
+				dockerClient: new(FakeCommonAPIClient),
 			}
 
 			/* act */

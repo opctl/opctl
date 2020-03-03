@@ -8,7 +8,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
+	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
 	"os"
 	"path/filepath"
@@ -23,7 +23,7 @@ var _ = Context("toFile", func() {
 				providedScratchDir := "dummyScratchDir"
 				uniqueString := "dummyUniqueString"
 
-				fakeUniqueString := new(uniquestring.Fake)
+				fakeUniqueString := new(uniquestringFakes.FakeUniqueStringFactory)
 				fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 				fakeIOUtil := new(iioutil.Fake)
@@ -63,7 +63,7 @@ var _ = Context("toFile", func() {
 
 					objectUnderTest := _toFiler{
 						ioUtil:       fakeIOUtil,
-						uniqueString: new(uniquestring.Fake),
+						uniqueString: new(uniquestringFakes.FakeUniqueStringFactory),
 					}
 
 					/* act */
@@ -85,7 +85,7 @@ var _ = Context("toFile", func() {
 					expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
 					expectedValue := model.Value{File: &expectedValuePath}
 
-					fakeUniqueString := new(uniquestring.Fake)
+					fakeUniqueString := new(uniquestringFakes.FakeUniqueStringFactory)
 					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					objectUnderTest := _toFiler{
@@ -122,7 +122,7 @@ var _ = Context("toFile", func() {
 
 				arrayUnderTest := _toFiler{
 					json:         fakeJSON,
-					uniqueString: new(uniquestring.Fake),
+					uniqueString: new(uniquestringFakes.FakeUniqueStringFactory),
 				}
 
 				/* act */
@@ -141,7 +141,7 @@ var _ = Context("toFile", func() {
 
 					arrayUnderTest := _toFiler{
 						json:         fakeJSON,
-						uniqueString: new(uniquestring.Fake),
+						uniqueString: new(uniquestringFakes.FakeUniqueStringFactory),
 					}
 
 					/* act */
@@ -166,7 +166,7 @@ var _ = Context("toFile", func() {
 
 					uniqueString := "dummyUniqueString"
 
-					fakeUniqueString := new(uniquestring.Fake)
+					fakeUniqueString := new(uniquestringFakes.FakeUniqueStringFactory)
 					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					fakeIOUtil := new(iioutil.Fake)
@@ -211,7 +211,7 @@ var _ = Context("toFile", func() {
 						arrayUnderTest := _toFiler{
 							json:         new(ijson.Fake),
 							ioUtil:       fakeIOUtil,
-							uniqueString: new(uniquestring.Fake),
+							uniqueString: new(uniquestringFakes.FakeUniqueStringFactory),
 						}
 
 						/* act */
@@ -230,7 +230,7 @@ var _ = Context("toFile", func() {
 						providedScratchDir := "dummyScratchDir"
 						uniqueString := "dummyUniqueString"
 
-						fakeUniqueString := new(uniquestring.Fake)
+						fakeUniqueString := new(uniquestringFakes.FakeUniqueStringFactory)
 						fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 						expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
@@ -269,7 +269,7 @@ var _ = Context("toFile", func() {
 
 				uniqueString := "dummyUniqueString"
 
-				fakeUniqueString := new(uniquestring.Fake)
+				fakeUniqueString := new(uniquestringFakes.FakeUniqueStringFactory)
 				fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 				fakeIOUtil := new(iioutil.Fake)
@@ -311,7 +311,7 @@ var _ = Context("toFile", func() {
 
 					objectUnderTest := _toFiler{
 						ioUtil:       fakeIOUtil,
-						uniqueString: new(uniquestring.Fake),
+						uniqueString: new(uniquestringFakes.FakeUniqueStringFactory),
 					}
 
 					/* act */
@@ -330,7 +330,7 @@ var _ = Context("toFile", func() {
 					providedScratchDir := "dummyScratchDir"
 					uniqueString := "dummyUniqueString"
 
-					fakeUniqueString := new(uniquestring.Fake)
+					fakeUniqueString := new(uniquestringFakes.FakeUniqueStringFactory)
 					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
@@ -407,7 +407,7 @@ var _ = Context("toFile", func() {
 
 				uniqueString := "dummyUniqueString"
 
-				fakeUniqueString := new(uniquestring.Fake)
+				fakeUniqueString := new(uniquestringFakes.FakeUniqueStringFactory)
 				fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 				fakeIOUtil := new(iioutil.Fake)
@@ -449,7 +449,7 @@ var _ = Context("toFile", func() {
 
 					objectUnderTest := _toFiler{
 						ioUtil:       fakeIOUtil,
-						uniqueString: new(uniquestring.Fake),
+						uniqueString: new(uniquestringFakes.FakeUniqueStringFactory),
 					}
 
 					/* act */
@@ -468,7 +468,7 @@ var _ = Context("toFile", func() {
 					providedScratchDir := "dummyScratchDir"
 					uniqueString := "dummyUniqueString"
 
-					fakeUniqueString := new(uniquestring.Fake)
+					fakeUniqueString := new(uniquestringFakes.FakeUniqueStringFactory)
 					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
@@ -512,7 +512,7 @@ var _ = Context("toFile", func() {
 
 				objectUnderTest := _toFiler{
 					json:         fakeJSON,
-					uniqueString: new(uniquestring.Fake),
+					uniqueString: new(uniquestringFakes.FakeUniqueStringFactory),
 				}
 
 				/* act */
@@ -531,7 +531,7 @@ var _ = Context("toFile", func() {
 
 					objectUnderTest := _toFiler{
 						json:         fakeJSON,
-						uniqueString: new(uniquestring.Fake),
+						uniqueString: new(uniquestringFakes.FakeUniqueStringFactory),
 					}
 
 					/* act */
@@ -556,7 +556,7 @@ var _ = Context("toFile", func() {
 
 					uniqueString := "dummyUniqueString"
 
-					fakeUniqueString := new(uniquestring.Fake)
+					fakeUniqueString := new(uniquestringFakes.FakeUniqueStringFactory)
 					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					fakeIOUtil := new(iioutil.Fake)
@@ -601,7 +601,7 @@ var _ = Context("toFile", func() {
 						objectUnderTest := _toFiler{
 							json:         new(ijson.Fake),
 							ioUtil:       fakeIOUtil,
-							uniqueString: new(uniquestring.Fake),
+							uniqueString: new(uniquestringFakes.FakeUniqueStringFactory),
 						}
 
 						/* act */
@@ -620,7 +620,7 @@ var _ = Context("toFile", func() {
 						providedScratchDir := "dummyScratchDir"
 						uniqueString := "dummyUniqueString"
 
-						fakeUniqueString := new(uniquestring.Fake)
+						fakeUniqueString := new(uniquestringFakes.FakeUniqueStringFactory)
 						fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 						expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
@@ -659,7 +659,7 @@ var _ = Context("toFile", func() {
 
 				uniqueString := "dummyUniqueString"
 
-				fakeUniqueString := new(uniquestring.Fake)
+				fakeUniqueString := new(uniquestringFakes.FakeUniqueStringFactory)
 				fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 				fakeIOUtil := new(iioutil.Fake)
@@ -701,7 +701,7 @@ var _ = Context("toFile", func() {
 
 					objectUnderTest := _toFiler{
 						ioUtil:       fakeIOUtil,
-						uniqueString: new(uniquestring.Fake),
+						uniqueString: new(uniquestringFakes.FakeUniqueStringFactory),
 					}
 
 					/* act */
@@ -720,7 +720,7 @@ var _ = Context("toFile", func() {
 					providedScratchDir := "dummyScratchDir"
 					uniqueString := "dummyUniqueString"
 
-					fakeUniqueString := new(uniquestring.Fake)
+					fakeUniqueString := new(uniquestringFakes.FakeUniqueStringFactory)
 					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
@@ -776,7 +776,7 @@ var _ = Context("toFile", func() {
 				fakeOS := new(ios.Fake)
 				fakeOS.MkdirAllReturns(errors.New("dummyError"))
 
-				fakeUniqueString := new(uniquestring.Fake)
+				fakeUniqueString := new(uniquestringFakes.FakeUniqueStringFactory)
 				fakeUniqueString.ConstructReturns("dummyUniqueString", nil)
 
 				objectUnderTest := _toFiler{
@@ -821,7 +821,7 @@ var _ = Context("toFile", func() {
 					objectUnderTest := _toFiler{
 						ioUtil:       fakeIOUtil,
 						os:           fakeOS,
-						uniqueString: new(uniquestring.Fake),
+						uniqueString: new(uniquestringFakes.FakeUniqueStringFactory),
 					}
 
 					/* act */
@@ -846,7 +846,7 @@ var _ = Context("toFile", func() {
 
 					uniqueString := "dummyUniqueString"
 
-					fakeUniqueString := new(uniquestring.Fake)
+					fakeUniqueString := new(uniquestringFakes.FakeUniqueStringFactory)
 					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					fakeIOUtil := new(iioutil.Fake)
@@ -893,7 +893,7 @@ var _ = Context("toFile", func() {
 						objectUnderTest := _toFiler{
 							ioUtil:       fakeIOUtil,
 							os:           new(ios.Fake),
-							uniqueString: new(uniquestring.Fake),
+							uniqueString: new(uniquestringFakes.FakeUniqueStringFactory),
 						}
 
 						/* act */
@@ -915,7 +915,7 @@ var _ = Context("toFile", func() {
 						fakeIOUtil := new(iioutil.Fake)
 						fakeIOUtil.WriteFileReturnsOnCall(0, os.ErrNotExist)
 
-						fakeUniqueString := new(uniquestring.Fake)
+						fakeUniqueString := new(uniquestringFakes.FakeUniqueStringFactory)
 						fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 						expectedValuePath := filepath.Join(providedScratchDir, uniqueString)

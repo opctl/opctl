@@ -1,7 +1,5 @@
 package value
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
-
 import (
 	"fmt"
 	"regexp"
@@ -12,6 +10,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 )
 
+//counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	// Interpret interprets a value expression
 	Interpret(
@@ -142,6 +141,6 @@ func (itp _interpreter) Interpret(
 	case model.Value:
 		return typedValueExpression, nil
 	default:
-		return model.Value{}, fmt.Errorf("unable to interpret %+v to string; unsupported type", typedValueExpression)
+		return model.Value{}, fmt.Errorf("unable to interpret %+v as value; unsupported type", typedValueExpression)
 	}
 }

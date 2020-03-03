@@ -5,9 +5,9 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	predicateFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/fakes"
 )
 
 var _ = Context("Interpreter", func() {
@@ -25,10 +25,10 @@ var _ = Context("Interpreter", func() {
 				&model.SCGPredicate{Ne: new([]interface{})},
 			}
 
-			providedOpHandle := new(data.FakeHandle)
+			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedScope := map[string]*model.Value{}
 
-			fakePredicateInterpreter := new(predicate.FakeInterpreter)
+			fakePredicateInterpreter := new(predicateFakes.FakeInterpreter)
 			fakePredicateInterpreter.InterpretReturns(
 				true,
 				nil,
@@ -65,7 +65,7 @@ var _ = Context("Interpreter", func() {
 		Context("predicateInterpreter.Interpret errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakePredicateInterpreter := new(predicate.FakeInterpreter)
+				fakePredicateInterpreter := new(predicateFakes.FakeInterpreter)
 
 				expectedError := errors.New("expectedError")
 				fakePredicateInterpreter.InterpretReturns(
@@ -79,7 +79,7 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualError := objectUnderTest.Interpret(
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					[]*model.SCGPredicate{
 						&model.SCGPredicate{Eq: new([]interface{})},
 					},
@@ -93,7 +93,7 @@ var _ = Context("Interpreter", func() {
 		Context("predicateInterpreter.Interpret returns true", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakePredicateInterpreter := new(predicate.FakeInterpreter)
+				fakePredicateInterpreter := new(predicateFakes.FakeInterpreter)
 
 				fakePredicateInterpreter.InterpretReturns(
 					true,
@@ -106,7 +106,7 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					[]*model.SCGPredicate{
 						&model.SCGPredicate{Eq: new([]interface{})},
 						&model.SCGPredicate{Ne: new([]interface{})},
@@ -121,7 +121,7 @@ var _ = Context("Interpreter", func() {
 		Context("predicateInterpreter.Interpret returns false", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakePredicateInterpreter := new(predicate.FakeInterpreter)
+				fakePredicateInterpreter := new(predicateFakes.FakeInterpreter)
 
 				fakePredicateInterpreter.InterpretReturns(
 					false,
@@ -134,7 +134,7 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					[]*model.SCGPredicate{
 						&model.SCGPredicate{Eq: new([]interface{})},
 						&model.SCGPredicate{Ne: new([]interface{})},

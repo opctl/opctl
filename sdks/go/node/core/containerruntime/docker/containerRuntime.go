@@ -1,6 +1,7 @@
 package docker
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeDockerClient.go --fake-name fakeDockerClient /go/src/github.com/opctl/opctl/sdks/go/vendor/github.com/docker/docker/client/interface.go CommonAPIClient
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
+//counterfeiter:generate -o internal/fakes/commonAPIClient.go github.com/docker/docker/client.CommonAPIClient
 
 import (
 	dockerClientPkg "github.com/docker/docker/client"

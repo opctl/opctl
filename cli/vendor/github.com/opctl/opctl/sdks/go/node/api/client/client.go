@@ -1,7 +1,7 @@
 // Package client implements a client for the opspec node api
 package client
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ Client
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"context"
@@ -14,6 +14,7 @@ import (
 	"github.com/sethgrid/pester"
 )
 
+//counterfeiter:generate -o fakes/client.go . Client
 type Client interface {
 	GetEventStream(
 		ctx context.Context,

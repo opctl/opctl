@@ -1,7 +1,5 @@
 package opfile
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeGetter.go --fake-name FakeGetter ./ Getter
-
 import (
 	"context"
 
@@ -9,6 +7,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
+//counterfeiter:generate -o fakes/getter.go . Getter
 type Getter interface {
 	// Get gets the validated, deserialized representation of an "op.yml" file
 	Get(

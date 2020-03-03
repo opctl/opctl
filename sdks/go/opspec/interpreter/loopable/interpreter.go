@@ -6,8 +6,6 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
-
 type Interpreter interface {
 	Interpret(
 		expression interface{},
@@ -17,6 +15,7 @@ type Interpreter interface {
 }
 
 // NewInterpreter returns an initialized Interpreter instance
+//counterfeiter:generate -o fakes/interpreter.go . Interpreter
 func NewInterpreter() Interpreter {
 	return &_interpreter{
 		arrayInterpreter:  array.NewInterpreter(),

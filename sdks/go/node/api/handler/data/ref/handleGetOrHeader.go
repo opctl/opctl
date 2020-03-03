@@ -1,7 +1,5 @@
 package ref
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeHandleGetOrHeader.go --fake-name fakeHandleGetOrHeader ./ handleGetOrHeader
-
 import (
 	"net/http"
 	"path"
@@ -13,6 +11,7 @@ import (
 )
 
 // handleGetOrHeader handles GET or HEAD's
+//counterfeiter:generate -o internal/fakes/handleGetOrHeader.go . handleGetOrHeader
 type handleGetOrHeader interface {
 	HandleGetOrHead(
 		dataHandle model.DataHandle,

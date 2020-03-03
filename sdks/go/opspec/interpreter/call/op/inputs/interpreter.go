@@ -1,7 +1,5 @@
 package inputs
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
-
 import (
 	"bytes"
 	"fmt"
@@ -11,6 +9,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params"
 )
 
+//counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	// Interpret interprets inputs via the provided inputArgs, inputParams, and scope;
 	// opScratchDir will be used to store any run data such as type coercions to files

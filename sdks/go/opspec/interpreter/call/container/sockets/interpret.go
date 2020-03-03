@@ -1,7 +1,5 @@
 package sockets
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
-
 import (
 	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -11,6 +9,7 @@ import (
 	"strings"
 )
 
+//counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,

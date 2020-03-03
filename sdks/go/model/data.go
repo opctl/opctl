@@ -1,7 +1,5 @@
 package model
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ../pkg/fakeHandle.go --fake-name FakeHandle ./ DataHandle
-
 import (
 	"context"
 	"fmt"
@@ -15,6 +13,8 @@ type ReadSeekCloser interface {
 }
 
 // DataHandle is a provider agnostic interface for interacting w/ data
+// @TODO: merge Value and DataHandle
+//counterfeiter:generate -o fakes/dataHandle.go . DataHandle
 type DataHandle interface {
 	// ListDescendants lists descendant of the data node pointed to by the current handle
 	ListDescendants(

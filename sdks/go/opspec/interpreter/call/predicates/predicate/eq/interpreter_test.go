@@ -5,9 +5,9 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	strFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/str/fakes"
 )
 
 var _ = Context("Interpreter", func() {
@@ -25,17 +25,17 @@ var _ = Context("Interpreter", func() {
 				"expression1",
 			}
 
-			providedOpHandle := new(data.FakeHandle)
+			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedScope := map[string]*model.Value{}
 
-			fakeStringInterpreter := new(stringPkg.FakeInterpreter)
-			fakeStringInterpreter.InterpretReturns(
+			fakeStrInterpreter := new(strFakes.FakeInterpreter)
+			fakeStrInterpreter.InterpretReturns(
 				&model.Value{String: new(string)},
 				nil,
 			)
 
 			objectUnderTest := _interpreter{
-				stringInterpreter: fakeStringInterpreter,
+				stringInterpreter: fakeStrInterpreter,
 			}
 
 			/* act */
@@ -48,7 +48,7 @@ var _ = Context("Interpreter", func() {
 			/* assert */
 			actualScope0,
 				actualExpression0,
-				actualOpHandle0 := fakeStringInterpreter.InterpretArgsForCall(0)
+				actualOpHandle0 := fakeStrInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope0).To(Equal(providedScope))
 			Expect(actualExpression0).To(Equal(providedExpressions[0]))
@@ -56,7 +56,7 @@ var _ = Context("Interpreter", func() {
 
 			actualScope1,
 				actualExpression1,
-				actualOpHandle1 := fakeStringInterpreter.InterpretArgsForCall(1)
+				actualOpHandle1 := fakeStrInterpreter.InterpretArgsForCall(1)
 
 			Expect(actualScope1).To(Equal(providedScope))
 			Expect(actualExpression1).To(Equal(providedExpressions[1]))
@@ -65,22 +65,22 @@ var _ = Context("Interpreter", func() {
 		Context("stringInterpreter.Interpret errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
+				fakeStrInterpreter := new(strFakes.FakeInterpreter)
 
 				expectedError := errors.New("expectedError")
-				fakeStringInterpreter.InterpretReturns(
+				fakeStrInterpreter.InterpretReturns(
 					nil,
 					expectedError,
 				)
 
 				objectUnderTest := _interpreter{
-					stringInterpreter: fakeStringInterpreter,
+					stringInterpreter: fakeStrInterpreter,
 				}
 
 				/* act */
 				_, actualError := objectUnderTest.Interpret(
 					[]interface{}{"dummyExpression"},
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					map[string]*model.Value{},
 				)
 
@@ -91,16 +91,16 @@ var _ = Context("Interpreter", func() {
 		Context("stringInterpreter.Interpret returns equal items", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
+				fakeStrInterpreter := new(strFakes.FakeInterpreter)
 
 				str := "str"
-				fakeStringInterpreter.InterpretReturns(
+				fakeStrInterpreter.InterpretReturns(
 					&model.Value{String: &str},
 					nil,
 				)
 
 				objectUnderTest := _interpreter{
-					stringInterpreter: fakeStringInterpreter,
+					stringInterpreter: fakeStrInterpreter,
 				}
 
 				/* act */
@@ -109,7 +109,7 @@ var _ = Context("Interpreter", func() {
 						"expression0",
 						"expression1",
 					},
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					map[string]*model.Value{},
 				)
 
@@ -120,24 +120,24 @@ var _ = Context("Interpreter", func() {
 		Context("stringInterpreter.Interpret returns unequal items", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
+				fakeStrInterpreter := new(strFakes.FakeInterpreter)
 
 				zero := "zero"
-				fakeStringInterpreter.InterpretReturnsOnCall(
+				fakeStrInterpreter.InterpretReturnsOnCall(
 					0,
 					&model.Value{String: &zero},
 					nil,
 				)
 
 				one := "one"
-				fakeStringInterpreter.InterpretReturnsOnCall(
+				fakeStrInterpreter.InterpretReturnsOnCall(
 					1,
 					&model.Value{String: &one},
 					nil,
 				)
 
 				objectUnderTest := _interpreter{
-					stringInterpreter: fakeStringInterpreter,
+					stringInterpreter: fakeStrInterpreter,
 				}
 
 				/* act */
@@ -146,7 +146,7 @@ var _ = Context("Interpreter", func() {
 						"expression0",
 						"expression1",
 					},
-					new(data.FakeHandle),
+					new(modelFakes.FakeDataHandle),
 					map[string]*model.Value{},
 				)
 

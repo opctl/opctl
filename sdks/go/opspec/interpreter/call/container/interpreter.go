@@ -1,7 +1,5 @@
 package container
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
-
 import (
 	"path/filepath"
 
@@ -13,9 +11,10 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/files"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/image"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/sockets"
-	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
 )
 
+//counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	// Interpret interprets an SCGContainerCall into a DCGContainerCall
 	Interpret(
@@ -39,7 +38,7 @@ func NewInterpreter(
 		imageInterpreter:   image.NewInterpreter(),
 		os:                 ios.New(),
 		dataDirPath:        dataDirPath,
-		stringInterpreter:  stringPkg.NewInterpreter(),
+		stringInterpreter:  str.NewInterpreter(),
 		socketsInterpreter: sockets.NewInterpreter(),
 	}
 }
@@ -52,7 +51,7 @@ type _interpreter struct {
 	imageInterpreter   image.Interpreter
 	os                 ios.IOS
 	dataDirPath        string
-	stringInterpreter  stringPkg.Interpreter
+	stringInterpreter  str.Interpreter
 	socketsInterpreter sockets.Interpreter
 }
 

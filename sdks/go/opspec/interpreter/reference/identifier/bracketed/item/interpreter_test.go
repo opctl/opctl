@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	. "github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/bracketed/item/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/value"
 
 	. "github.com/onsi/ginkgo"
@@ -25,7 +26,7 @@ var _ = Context("Interpreter", func() {
 			providedIndexString := "dummyIndexString"
 			providedData := model.Value{Array: new([]interface{})}
 
-			fakeParseIndexer := new(fakeParseIndexer)
+			fakeParseIndexer := new(FakeParseIndexer)
 			// err to trigger immediate return
 			fakeParseIndexer.ParseIndexReturns(0, errors.New("dummyErr"))
 
@@ -50,7 +51,7 @@ var _ = Context("Interpreter", func() {
 			It("should return expected result", func() {
 				/* arrange */
 
-				fakeParseIndexer := new(fakeParseIndexer)
+				fakeParseIndexer := new(FakeParseIndexer)
 				parseIndexErr := errors.New("dummyErr")
 				fakeParseIndexer.ParseIndexReturns(0, parseIndexErr)
 
@@ -78,7 +79,7 @@ var _ = Context("Interpreter", func() {
 				/* arrange */
 				providedData := nonEmptyArrayValue
 
-				fakeParseIndexer := new(fakeParseIndexer)
+				fakeParseIndexer := new(FakeParseIndexer)
 				parsedIndex := 0
 				fakeParseIndexer.ParseIndexReturns(0, nil)
 
@@ -106,7 +107,7 @@ var _ = Context("Interpreter", func() {
 
 				It("should return expected result", func() {
 					/* arrange */
-					fakeParseIndexer := new(fakeParseIndexer)
+					fakeParseIndexer := new(FakeParseIndexer)
 					fakeParseIndexer.ParseIndexReturns(0, nil)
 
 					fakeValueConstructor := new(value.FakeConstructor)
@@ -134,7 +135,7 @@ var _ = Context("Interpreter", func() {
 				It("should return expected result", func() {
 					/* arrange */
 
-					fakeParseIndexer := new(fakeParseIndexer)
+					fakeParseIndexer := new(FakeParseIndexer)
 					fakeParseIndexer.ParseIndexReturns(0, nil)
 
 					fakeValueConstructor := new(value.FakeConstructor)

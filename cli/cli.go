@@ -1,6 +1,6 @@
 package main
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeCli.go --fake-name FakeCli ./ cli
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"context"
@@ -14,6 +14,7 @@ import (
 	op "github.com/opctl/opctl/sdks/go/opspec"
 )
 
+//counterfeiter:generate -o internal/fakes/cli.go . cli
 type cli interface {
 	Run(args []string) error
 }

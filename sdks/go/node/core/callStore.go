@@ -6,8 +6,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeCallStore.go --fake-name fakeCallStore ./ callStore
-
+//counterfeiter:generate -o internal/fakes/callStore.go . callStore
 // stores DCG (dynamic call graph) calls
 type callStore interface {
 	// adds the provided call

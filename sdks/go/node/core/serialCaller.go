@@ -1,7 +1,5 @@
 package core
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeSerialCaller.go --fake-name fakeSerialCaller ./ serialCaller
-
 import (
 	"context"
 	"errors"
@@ -12,6 +10,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
+//counterfeiter:generate -o internal/fakes/serialCaller.go . serialCaller
 type serialCaller interface {
 	// Executes a serial call
 	Call(

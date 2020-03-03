@@ -1,12 +1,11 @@
 package cmd
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
-
 import (
 	"github.com/opctl/opctl/sdks/go/model"
-	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
 )
 
+//counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
@@ -18,12 +17,12 @@ type Interpreter interface {
 // NewInterpreter returns a new Interpreter instance
 func NewInterpreter() Interpreter {
 	return _interpreter{
-		stringInterpreter: stringPkg.NewInterpreter(),
+		stringInterpreter: str.NewInterpreter(),
 	}
 }
 
 type _interpreter struct {
-	stringInterpreter stringPkg.Interpreter
+	stringInterpreter str.Interpreter
 }
 
 func (itp _interpreter) Interpret(

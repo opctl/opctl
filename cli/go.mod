@@ -8,8 +8,6 @@ require (
 	github.com/fatih/color v1.7.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-delve/delve v1.3.2
-	github.com/golang-interfaces/encoding-ijson v0.0.0-20170731144015-49fbc3963d10
-	github.com/golang-interfaces/iioutil v0.0.0-20170803194630-7d1c0886acdc
 	github.com/golang-interfaces/ios v0.0.0-20170803194714-da59acb78efc
 	github.com/golang-utils/lockfile v0.0.0-20170803195317-342df9650a96
 	github.com/golang-utils/pscanary v0.0.0-20170803195345-167b86ee2e7e // indirect

@@ -13,14 +13,14 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
-	"github.com/opctl/opctl/sdks/go/node/core"
+	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
 )
 
 var _ = Context("Handler", func() {
 	Context("NewHandler", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewHandler(new(core.Fake))).Should(Not(BeNil()))
+			Expect(NewHandler(new(FakeCore))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {
@@ -32,7 +32,7 @@ var _ = Context("Handler", func() {
 				fakeUpgrader.UpgradeReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _handler{
-					core:     new(core.Fake),
+					core:     new(FakeCore),
 					upgrader: fakeUpgrader,
 				}
 
@@ -57,7 +57,7 @@ var _ = Context("Handler", func() {
 
 					/* arrange */
 					objectUnderTest := _handler{
-						core: new(core.Fake),
+						core: new(FakeCore),
 					}
 
 					invalidSince := "notValidTime"
@@ -89,7 +89,7 @@ var _ = Context("Handler", func() {
 				It("should call core.GetEventStream w/ expected args", func() {
 
 					/* arrange */
-					fakeCore := new(core.Fake)
+					fakeCore := new(FakeCore)
 					eventChannel := make(chan model.Event)
 					// close eventChannel to trigger immediate return
 					close(eventChannel)
@@ -133,7 +133,7 @@ var _ = Context("Handler", func() {
 			It("should call core.GetEventStream w/ expected args", func() {
 
 				/* arrange */
-				fakeCore := new(core.Fake)
+				fakeCore := new(FakeCore)
 				eventChannel := make(chan model.Event)
 				// close eventChannel to trigger immediate return
 				close(eventChannel)

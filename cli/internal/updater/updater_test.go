@@ -4,6 +4,7 @@ import (
 	"github.com/equinox-io/equinox"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/opctl/opctl/cli/internal/updater/internal/fakes"
 	"github.com/pkg/errors"
 )
 
@@ -17,7 +18,7 @@ var _ = Context("updater", func() {
 	Context("_new", func() {
 		It("should return Updater", func() {
 			/* arrange/act/assert */
-			Expect(_new(new(fakeEquinoxClient))).To(Not(BeNil()))
+			Expect(_new(new(FakeEquinoxClient))).To(Not(BeNil()))
 		})
 	})
 	Context("GetUpdateIfExists", func() {
@@ -27,7 +28,7 @@ var _ = Context("updater", func() {
 				equinoxResponse := equinox.Response{
 					ReleaseVersion: "dummyReleaseVersion",
 				}
-				fakeEquinoxClient := new(fakeEquinoxClient)
+				fakeEquinoxClient := new(FakeEquinoxClient)
 				fakeEquinoxClient.CheckReturns(equinoxResponse, nil)
 				objectUnderTest := _new(fakeEquinoxClient)
 				expectedUpdate := Update{
@@ -49,7 +50,7 @@ var _ = Context("updater", func() {
 			It("should return expected error", func() {
 				/* arrange */
 				expectedError := errors.New("dummyError")
-				fakeEquinoxClient := new(fakeEquinoxClient)
+				fakeEquinoxClient := new(FakeEquinoxClient)
 				fakeEquinoxClient.CheckReturns(equinox.Response{}, expectedError)
 				objectUnderTest := _new(fakeEquinoxClient)
 
@@ -63,7 +64,7 @@ var _ = Context("updater", func() {
 		Context("update doesn't exist", func() {
 			It("should return nil & no error", func() {
 				/* arrange */
-				fakeEquinoxClient := new(fakeEquinoxClient)
+				fakeEquinoxClient := new(FakeEquinoxClient)
 				fakeEquinoxClient.CheckReturns(equinox.Response{}, equinox.NotAvailableErr)
 				objectUnderTest := _new(fakeEquinoxClient)
 
@@ -84,7 +85,7 @@ var _ = Context("updater", func() {
 			It("should return the error", func() {
 				/* arrange */
 				expectedError := errors.New("dummyError")
-				fakeEquinoxClient := new(fakeEquinoxClient)
+				fakeEquinoxClient := new(FakeEquinoxClient)
 				fakeEquinoxClient.ApplyReturns(expectedError)
 				objectUnderTest := _new(fakeEquinoxClient)
 
@@ -98,7 +99,7 @@ var _ = Context("updater", func() {
 		Context("No error occurs", func() {
 			It("should call update.equinoxResponse.Apply()", func() {
 				/* arrange */
-				fakeEquinoxClient := new(fakeEquinoxClient)
+				fakeEquinoxClient := new(FakeEquinoxClient)
 				objectUnderTest := _new(fakeEquinoxClient)
 
 				/* act */

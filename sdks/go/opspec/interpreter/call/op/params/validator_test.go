@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param"
+	paramFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/fakes"
 )
 
 var _ = Context("Validator", func() {
@@ -27,7 +27,7 @@ var _ = Context("Validator", func() {
 				expectedName1: new(model.Param),
 			}
 
-			fakeParamValidator := new(param.FakeValidator)
+			fakeParamValidator := new(paramFakes.FakeValidator)
 
 			objectUnderTest := _validator{
 				paramValidator: fakeParamValidator,

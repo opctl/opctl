@@ -1,6 +1,6 @@
 package creater
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeCreater.go --fake-name FakeCreater ./ Creater
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"context"
@@ -13,6 +13,7 @@ import (
 )
 
 // Creater exposes the "node create" sub command
+//counterfeiter:generate -o fakes/creater.go . Creater
 type Creater interface {
 	Create(
 		opts model.NodeCreateOpts,

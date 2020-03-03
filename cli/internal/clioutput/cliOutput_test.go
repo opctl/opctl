@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/clicolorer"
+	clicolorerFakes "github.com/opctl/opctl/cli/internal/clicolorer/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
 	"time"
 )
@@ -14,7 +15,7 @@ var _ = Context("output", func() {
 		It("should return output", func() {
 			/* arrange/act/assert */
 			Expect(New(
-				new(clicolorer.Fake),
+				new(clicolorerFakes.FakeCliColorer),
 				new(fakeWriter),
 				new(fakeWriter),
 			)).To(Not(BeNil()))

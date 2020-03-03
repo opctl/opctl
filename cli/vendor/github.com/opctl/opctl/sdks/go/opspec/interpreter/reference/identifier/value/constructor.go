@@ -1,12 +1,11 @@
 package value
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeConstructor.go --fake-name FakeConstructor ./ Constructor
-
 import (
 	"fmt"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
+//counterfeiter:generate -o fakes/constructor.go . Constructor
 type Constructor interface {
 	// Construct constructs a model.Value from an interface{}
 	Construct(

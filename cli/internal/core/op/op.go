@@ -1,6 +1,6 @@
 package op
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ Op
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"github.com/opctl/opctl/cli/internal/cliexiter"
@@ -9,6 +9,7 @@ import (
 )
 
 // Op exposes the "op" sub command
+//counterfeiter:generate -o fakes/op.go . Op
 type Op interface {
 	Creater
 	Installer

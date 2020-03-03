@@ -1,7 +1,5 @@
 package params
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeValidator.go --fake-name FakeValidator ./ Validator
-
 import (
 	"bytes"
 	"fmt"
@@ -10,7 +8,14 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param"
 )
 
+//counterfeiter:generate -o fakes/validator.go . Validator
 type Validator interface {
+	validator
+}
+
+// validator is an internal version of Validator so fakes don't cause cyclic deps
+//counterfeiter:generate -o internal/fakes/validator.go . validator
+type validator interface {
 	// Validate validates values for/against params
 	Validate(
 		values map[string]*model.Value,

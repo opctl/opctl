@@ -1,7 +1,5 @@
 package iteration
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeScoper.go --fake-name FakeScoper ./ Scoper
-
 import (
 	"sort"
 
@@ -12,6 +10,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
+//counterfeiter:generate -o fakes/scoper.go . Scoper
 type Scoper interface {
 	// Scope scopes loop iteration vars (index, key, value)
 	Scope(

@@ -5,6 +5,9 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opctl/opctl/sdks/go/data/provider"
+	. "github.com/opctl/opctl/sdks/go/data/provider/fakes"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 )
 
 var _ = Context("resolver", func() {
@@ -14,7 +17,7 @@ var _ = Context("resolver", func() {
 			providedCtx := context.Background()
 			providedDataRef := "dummyDataRef"
 			fakeProvider0 := new(FakeProvider)
-			providedProviders := []Provider{fakeProvider0}
+			providedProviders := []provider.Provider{fakeProvider0}
 
 			objectUnderTest := _resolver{}
 
@@ -39,7 +42,7 @@ var _ = Context("resolver", func() {
 				expectedErr := errors.New("dummyError")
 				fakeProvider0.TryResolveReturns(nil, expectedErr)
 
-				providedProviders := []Provider{fakeProvider0}
+				providedProviders := []provider.Provider{fakeProvider0}
 
 				objectUnderTest := _resolver{}
 
@@ -58,10 +61,10 @@ var _ = Context("resolver", func() {
 			It("should return expected results", func() {
 				/* arrange */
 				fakeProvider0 := new(FakeProvider)
-				expectedHandle := new(FakeHandle)
+				expectedHandle := new(modelFakes.FakeDataHandle)
 				fakeProvider0.TryResolveReturnsOnCall(0, expectedHandle, nil)
 
-				providedProviders := []Provider{fakeProvider0}
+				providedProviders := []provider.Provider{fakeProvider0}
 
 				objectUnderTest := _resolver{}
 

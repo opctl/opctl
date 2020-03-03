@@ -5,10 +5,10 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/clicolorer"
-	"github.com/opctl/opctl/cli/internal/core"
-	"github.com/opctl/opctl/cli/internal/core/node"
-	"github.com/opctl/opctl/cli/internal/core/op"
+	cliColorerFakes "github.com/opctl/opctl/cli/internal/clicolorer/fakes"
+	coreFakes "github.com/opctl/opctl/cli/internal/core/fakes"
+	nodeFakes "github.com/opctl/opctl/cli/internal/core/node/fakes"
+	opFakes "github.com/opctl/opctl/cli/internal/core/op/fakes"
 	"github.com/opctl/opctl/cli/internal/model"
 )
 
@@ -18,11 +18,11 @@ var _ = Context("cli", func() {
 		Context("--no-color", func() {
 			It("should set color.NoColor", func() {
 				/* arrange */
-				fakeCliColorer := new(clicolorer.Fake)
+				fakeCliColorer := new(cliColorerFakes.FakeCliColorer)
 
 				objectUnderTest := newCli(
 					fakeCliColorer,
-					new(core.Fake),
+					new(coreFakes.FakeCore),
 				)
 
 				/* act */
@@ -34,13 +34,13 @@ var _ = Context("cli", func() {
 		})
 
 		Context("events", func() {
-			It("should call core.Events w/ expected args", func() {
+			It("should call coreFakes.Events w/ expected args", func() {
 				/* arrange */
 				providedCtx := context.Background()
-				fakeCore := new(core.Fake)
+				fakeCore := new(coreFakes.FakeCore)
 
 				objectUnderTest := newCli(
-					new(clicolorer.Fake),
+					new(cliColorerFakes.FakeCliColorer),
 					fakeCore,
 				)
 
@@ -56,13 +56,13 @@ var _ = Context("cli", func() {
 		Context("ls", func() {
 			Context("w/ dirRef", func() {
 
-				It("should call core.Ls w/ expected args", func() {
+				It("should call coreFakes.Ls w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(core.Fake)
+					fakeCore := new(coreFakes.FakeCore)
 
 					expectedDirRef := "dummyPath"
 					objectUnderTest := newCli(
-						new(clicolorer.Fake),
+						new(cliColorerFakes.FakeCliColorer),
 						fakeCore,
 					)
 
@@ -79,13 +79,13 @@ var _ = Context("cli", func() {
 			})
 			Context("w/out dirRef", func() {
 
-				It("should call core.Ls w/ expected args", func() {
+				It("should call coreFakes.Ls w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(core.Fake)
+					fakeCore := new(coreFakes.FakeCore)
 
 					expectedDirRef := ".opspec"
 					objectUnderTest := newCli(
-						new(clicolorer.Fake),
+						new(cliColorerFakes.FakeCliColorer),
 						fakeCore,
 					)
 
@@ -108,13 +108,13 @@ var _ = Context("cli", func() {
 
 				It("should call nodeCreateCmd.Invoke w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(core.Fake)
+					fakeCore := new(coreFakes.FakeCore)
 
-					fakeNode := new(node.Fake)
+					fakeNode := new(nodeFakes.FakeNode)
 					fakeCore.NodeReturns(fakeNode)
 
 					objectUnderTest := newCli(
-						new(clicolorer.Fake),
+						new(cliColorerFakes.FakeCliColorer),
 						fakeCore,
 					)
 
@@ -131,13 +131,13 @@ var _ = Context("cli", func() {
 
 				It("should call nodeKillCmd.Invoke w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(core.Fake)
+					fakeCore := new(coreFakes.FakeCore)
 
-					fakeNode := new(node.Fake)
+					fakeNode := new(nodeFakes.FakeNode)
 					fakeCore.NodeReturns(fakeNode)
 
 					objectUnderTest := newCli(
-						new(clicolorer.Fake),
+						new(cliColorerFakes.FakeCliColorer),
 						fakeCore,
 					)
 
@@ -155,18 +155,18 @@ var _ = Context("cli", func() {
 
 			Context("create", func() {
 				Context("w/ path", func() {
-					It("should call core.Create w/ expected args", func() {
+					It("should call coreFakes.Create w/ expected args", func() {
 						/* arrange */
-						fakeCore := new(core.Fake)
+						fakeCore := new(coreFakes.FakeCore)
 
-						fakeOp := new(op.Fake)
+						fakeOp := new(opFakes.FakeOp)
 						fakeCore.OpReturns(fakeOp)
 
 						expectedOpName := "dummyOpName"
 						expectedPath := "dummyPath"
 
 						objectUnderTest := newCli(
-							new(clicolorer.Fake),
+							new(cliColorerFakes.FakeCliColorer),
 							fakeCore,
 						)
 
@@ -182,18 +182,18 @@ var _ = Context("cli", func() {
 				})
 
 				Context("w/out path", func() {
-					It("should call core.Create w/ expected args", func() {
+					It("should call coreFakes.Create w/ expected args", func() {
 						/* arrange */
-						fakeCore := new(core.Fake)
+						fakeCore := new(coreFakes.FakeCore)
 
-						fakeOp := new(op.Fake)
+						fakeOp := new(opFakes.FakeOp)
 						fakeCore.OpReturns(fakeOp)
 
 						expectedOpName := "dummyOpName"
 						expectedPath := ".opspec"
 
 						objectUnderTest := newCli(
-							new(clicolorer.Fake),
+							new(cliColorerFakes.FakeCliColorer),
 							fakeCore,
 						)
 
@@ -208,11 +208,11 @@ var _ = Context("cli", func() {
 					})
 				})
 				Context("w/ description", func() {
-					It("should call core.Create w/ expected args", func() {
+					It("should call coreFakes.Create w/ expected args", func() {
 						/* arrange */
-						fakeCore := new(core.Fake)
+						fakeCore := new(coreFakes.FakeCore)
 
-						fakeOp := new(op.Fake)
+						fakeOp := new(opFakes.FakeOp)
 						fakeCore.OpReturns(fakeOp)
 
 						expectedOpName := "dummyOpName"
@@ -220,7 +220,7 @@ var _ = Context("cli", func() {
 						expectedPath := ".opspec"
 
 						objectUnderTest := newCli(
-							new(clicolorer.Fake),
+							new(cliColorerFakes.FakeCliColorer),
 							fakeCore,
 						)
 
@@ -236,18 +236,18 @@ var _ = Context("cli", func() {
 				})
 
 				Context("w/out description", func() {
-					It("should call core.Create w/ expected args", func() {
+					It("should call coreFakes.Create w/ expected args", func() {
 						/* arrange */
-						fakeCore := new(core.Fake)
+						fakeCore := new(coreFakes.FakeCore)
 
-						fakeOp := new(op.Fake)
+						fakeOp := new(opFakes.FakeOp)
 						fakeCore.OpReturns(fakeOp)
 
 						expectedName := "dummyOpName"
 						expectedPath := ".opspec"
 
 						objectUnderTest := newCli(
-							new(clicolorer.Fake),
+							new(cliColorerFakes.FakeCliColorer),
 							fakeCore,
 						)
 
@@ -264,11 +264,11 @@ var _ = Context("cli", func() {
 			})
 
 			Context("install", func() {
-				It("should call core.Install w/ expected args", func() {
+				It("should call coreFakes.Install w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(core.Fake)
+					fakeCore := new(coreFakes.FakeCore)
 
-					fakeOp := new(op.Fake)
+					fakeOp := new(opFakes.FakeOp)
 					fakeCore.OpReturns(fakeOp)
 
 					expectedPath := "dummyPath"
@@ -277,7 +277,7 @@ var _ = Context("cli", func() {
 					expectedPassword := "dummyPassword"
 
 					objectUnderTest := newCli(
-						new(clicolorer.Fake),
+						new(cliColorerFakes.FakeCliColorer),
 						fakeCore,
 					)
 
@@ -311,17 +311,17 @@ var _ = Context("cli", func() {
 			})
 
 			Context("kill", func() {
-				It("should call core.OpKill w/ expected args", func() {
+				It("should call coreFakes.OpKill w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(core.Fake)
+					fakeCore := new(coreFakes.FakeCore)
 
-					fakeOp := new(op.Fake)
+					fakeOp := new(opFakes.FakeOp)
 					fakeCore.OpReturns(fakeOp)
 
 					expectedOpID := "dummyOpID"
 
 					objectUnderTest := newCli(
-						new(clicolorer.Fake),
+						new(cliColorerFakes.FakeCliColorer),
 						fakeCore,
 					)
 
@@ -339,17 +339,17 @@ var _ = Context("cli", func() {
 
 			Context("validate", func() {
 
-				It("should call core.OpValidate w/ expected args", func() {
+				It("should call coreFakes.OpValidate w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(core.Fake)
+					fakeCore := new(coreFakes.FakeCore)
 
-					fakeOp := new(op.Fake)
+					fakeOp := new(opFakes.FakeOp)
 					fakeCore.OpReturns(fakeOp)
 
 					opRef := ".opspec/dummyOpName"
 
 					objectUnderTest := newCli(
-						new(clicolorer.Fake),
+						new(cliColorerFakes.FakeCliColorer),
 						fakeCore,
 					)
 
@@ -370,9 +370,9 @@ var _ = Context("cli", func() {
 
 		Context("run", func() {
 			Context("with two op run args & an arg-file", func() {
-				It("should call core.Run w/ expected args", func() {
+				It("should call coreFakes.Run w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(core.Fake)
+					fakeCore := new(coreFakes.FakeCore)
 
 					expectedRunOpts := &model.RunOpts{
 						Args:    []string{"arg1Name=arg1Value", "arg2Name=arg2Value"},
@@ -381,7 +381,7 @@ var _ = Context("cli", func() {
 					expectedOpRef := ".opspec/dummyOpName"
 
 					objectUnderTest := newCli(
-						new(clicolorer.Fake),
+						new(cliColorerFakes.FakeCliColorer),
 						fakeCore,
 					)
 
@@ -410,14 +410,14 @@ var _ = Context("cli", func() {
 			})
 
 			Context("with zero op run args", func() {
-				It("should call core.Run w/ expected args", func() {
+				It("should call coreFakes.Run w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(core.Fake)
+					fakeCore := new(coreFakes.FakeCore)
 
 					expectedOpRef := ".opspec/dummyOpName"
 
 					objectUnderTest := newCli(
-						new(clicolorer.Fake),
+						new(cliColorerFakes.FakeCliColorer),
 						fakeCore,
 					)
 
@@ -441,14 +441,14 @@ var _ = Context("cli", func() {
 
 		Context("with channel flag", func() {
 
-			It("should call core.SelfUpdate with expected releaseChannel", func() {
+			It("should call coreFakes.SelfUpdate with expected releaseChannel", func() {
 				/* arrange */
 				expectedChannel := "beta"
 
-				fakeCore := new(core.Fake)
+				fakeCore := new(coreFakes.FakeCore)
 
 				objectUnderTest := newCli(
-					new(clicolorer.Fake),
+					new(cliColorerFakes.FakeCliColorer),
 					fakeCore,
 				)
 
@@ -464,14 +464,14 @@ var _ = Context("cli", func() {
 
 		Context("without channel flag", func() {
 
-			It("should call core.SelfUpdate with expected releaseChannel", func() {
+			It("should call coreFakes.SelfUpdate with expected releaseChannel", func() {
 				/* arrange */
 				expectedChannel := "stable"
 
-				fakeCore := new(core.Fake)
+				fakeCore := new(coreFakes.FakeCore)
 
 				objectUnderTest := newCli(
-					new(clicolorer.Fake),
+					new(cliColorerFakes.FakeCliColorer),
 					fakeCore,
 				)
 

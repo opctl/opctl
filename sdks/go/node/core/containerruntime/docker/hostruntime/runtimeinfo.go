@@ -18,18 +18,12 @@ type RuntimeInfo struct {
 	HostPathMap HostPathMap
 }
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeContainerInspector.go --fake-name fakeContainerInspector ./ ContainerInspector
-
-type ContainerInspector interface {
-	ContainerInspect(ctx context.Context, containerID string) (types.ContainerJSON, error)
-}
-
-func New(cli ContainerInspector) (RuntimeInfo, error) {
+func New(cli containerInspector) (RuntimeInfo, error) {
 	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
 	return newContainerRuntimeInfo(ctx, cli, defaultContainerUtils)
 }
 
-func newContainerRuntimeInfo(ctx context.Context, cli ContainerInspector, cu containerUtils) (RuntimeInfo, error) {
+func newContainerRuntimeInfo(ctx context.Context, cli containerInspector, cu containerUtils) (RuntimeInfo, error) {
 	cri := RuntimeInfo{
 		HostPathMap: make(map[string]string),
 	}
@@ -56,7 +50,7 @@ func newContainerRuntimeInfo(ctx context.Context, cli ContainerInspector, cu con
 	return cri, nil
 }
 
-func inspect(ctx context.Context, cli ContainerInspector, dockerID string) (types.ContainerJSON, bool, error) {
+func inspect(ctx context.Context, cli containerInspector, dockerID string) (types.ContainerJSON, bool, error) {
 	info, err := cli.ContainerInspect(ctx, dockerID)
 	if err != nil && client.IsErrNotFound(err) {
 		return info, false, nil

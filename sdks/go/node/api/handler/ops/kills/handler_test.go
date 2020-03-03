@@ -8,14 +8,14 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/node/api"
-	"github.com/opctl/opctl/sdks/go/node/core"
+	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
 )
 
 var _ = Context("Handler", func() {
 	Context("NewHandler", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewHandler(new(core.Fake))).Should(Not(BeNil()))
+			Expect(NewHandler(new(FakeCore))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {
@@ -24,7 +24,7 @@ var _ = Context("Handler", func() {
 
 				/* arrange */
 				objectUnderTest := _handler{
-					core: new(core.Fake),
+					core: new(FakeCore),
 				}
 				providedHTTPResp := httptest.NewRecorder()
 

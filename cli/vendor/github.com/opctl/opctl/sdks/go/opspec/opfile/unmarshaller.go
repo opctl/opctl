@@ -1,7 +1,5 @@
 package opfile
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeUnmarshaller.go --fake-name FakeUnmarshaller ./ Unmarshaller
-
 import (
 	"bytes"
 	"fmt"
@@ -10,6 +8,7 @@ import (
 )
 
 // @TODO make private
+//counterfeiter:generate -o fakes/unmarshaller.go . Unmarshaller
 type Unmarshaller interface {
 	// Unmarshal validates and unmarshals an "op.yml" file
 	Unmarshal(

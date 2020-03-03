@@ -67,24 +67,24 @@ github.com/docker/distribution/digestset
 # github.com/docker/docker v0.7.3-0.20190808172531-150530564a14
 github.com/docker/docker/api/types
 github.com/docker/docker/api/types/container
-github.com/docker/docker/api/types/events
-github.com/docker/docker/api/types/filters
-github.com/docker/docker/api/types/image
 github.com/docker/docker/api/types/network
-github.com/docker/docker/api/types/registry
-github.com/docker/docker/api/types/swarm
-github.com/docker/docker/api/types/volume
 github.com/docker/docker/client
 github.com/docker/docker/pkg/jsonmessage
+github.com/docker/docker/api/types/filters
 github.com/docker/docker/api/types/mount
+github.com/docker/docker/api/types/registry
+github.com/docker/docker/api/types/swarm
 github.com/docker/docker/api/types/blkiodev
 github.com/docker/docker/api/types/strslice
-github.com/docker/docker/api/types/versions
 github.com/docker/docker/errdefs
-github.com/docker/docker/api/types/swarm/runtime
 github.com/docker/docker/api
+github.com/docker/docker/api/types/events
+github.com/docker/docker/api/types/image
 github.com/docker/docker/api/types/time
+github.com/docker/docker/api/types/versions
+github.com/docker/docker/api/types/volume
 github.com/docker/docker/pkg/term
+github.com/docker/docker/api/types/swarm/runtime
 github.com/docker/docker/pkg/term/windows
 # github.com/docker/go-connections v0.4.0
 github.com/docker/go-connections/nat
@@ -282,6 +282,12 @@ github.com/opctl/opctl/sdks/go/data
 github.com/opctl/opctl/sdks/go/node/api/client
 github.com/opctl/opctl/sdks/go/internal/uniquestring
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param
+github.com/opctl/opctl/sdks/go/data/coerce/fakes
+github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/fakes
+github.com/opctl/opctl/sdks/go/model/fakes
+github.com/opctl/opctl/sdks/go/node/api/client/fakes
+github.com/opctl/opctl/sdks/go/opspec/fakes
+github.com/opctl/opctl/sdks/go/opspec/opfile/fakes
 github.com/opctl/opctl/sdks/go/internal/urlpath
 github.com/opctl/opctl/sdks/go/node/api/handler/data
 github.com/opctl/opctl/sdks/go/node/api/handler/events
@@ -299,6 +305,13 @@ github.com/opctl/opctl/sdks/go/opspec/interpreter/call/parallelloop
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/serialloop
 github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable
 github.com/opctl/opctl/sdks/go/internal/iruntime
+github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/hostruntime
+github.com/opctl/opctl/sdks/go/data/provider
+github.com/opctl/opctl/sdks/go/data/provider/fs
+github.com/opctl/opctl/sdks/go/data/provider/git
+github.com/opctl/opctl/sdks/go/data/provider/node
+github.com/opctl/opctl/sdks/go/data/fakes
+github.com/opctl/opctl/sdks/go/data/provider/fakes
 github.com/opctl/opctl/sdks/go/node/api
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/array
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/boolean
@@ -320,11 +333,12 @@ github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/envvars
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/files
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/image
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/sockets
-github.com/opctl/opctl/sdks/go/opspec/interpreter/string
+github.com/opctl/opctl/sdks/go/opspec/interpreter/str
 github.com/opctl/opctl/sdks/go/opspec/interpreter/value
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs
 github.com/opctl/opctl/sdks/go/opspec/interpreter/array
 github.com/opctl/opctl/sdks/go/opspec/interpreter/object
+github.com/opctl/opctl/sdks/go/data/provider/git/internal
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/constraints
 github.com/opctl/opctl/sdks/go/node/api/handler/pkgs/ref/contents
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate
@@ -449,8 +463,8 @@ golang.org/x/net/html
 golang.org/x/net/internal/socks
 golang.org/x/net/html/atom
 # golang.org/x/sync v0.0.0-20190423024810-112230192c58
-golang.org/x/sync/singleflight
 golang.org/x/sync/semaphore
+golang.org/x/sync/singleflight
 # golang.org/x/sys v0.0.0-20191008105621-543471e840be
 golang.org/x/sys/unix
 golang.org/x/sys/windows

@@ -1,7 +1,5 @@
 package boolean
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
-
 import (
 	"fmt"
 	"github.com/opctl/opctl/sdks/go/data/coerce"
@@ -9,6 +7,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
 )
 
+//counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	// Interpret interprets an expression to an boolean value.
 	// Expression must be a type supported by coerce.ToBoolean

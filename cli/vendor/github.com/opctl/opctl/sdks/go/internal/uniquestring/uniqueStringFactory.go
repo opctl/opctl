@@ -1,12 +1,13 @@
 package uniquestring
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ UniqueStringFactory
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
 	"github.com/golang-interfaces/satori-go.uuid"
 	"strings"
 )
 
+//counterfeiter:generate -o fakes/uniqueStringFactory.go . UniqueStringFactory
 type UniqueStringFactory interface {
 	Construct() (string, error)
 }

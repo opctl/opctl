@@ -1,16 +1,15 @@
 package docker
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeHostConfigFactory.go --fake-name fakeHostConfigFactory ./ hostConfigFactory
-
 import (
 	"fmt"
 	"github.com/docker/docker/api/types/container"
+	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
-	"github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/hostruntime"
 	"sort"
 	"strings"
 )
 
+//counterfeiter:generate -o internal/fakes/hostConfigFactory.go . hostConfigFactory
 type hostConfigFactory interface {
 	Construct(
 		containerCallDirs map[string]string,
@@ -20,8 +19,10 @@ type hostConfigFactory interface {
 	) *container.HostConfig
 }
 
-func newHostConfigFactory(cli hostruntime.ContainerInspector) (hostConfigFactory, error) {
-	fspc, err := newFSPathConverter(cli)
+func newHostConfigFactory(
+	dockerClient dockerClientPkg.CommonAPIClient,
+) (hostConfigFactory, error) {
+	fspc, err := newFSPathConverter(dockerClient)
 	if err != nil {
 		return _hostConfigFactory{}, err
 	}

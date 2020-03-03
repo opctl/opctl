@@ -8,6 +8,7 @@ inputs:
   path:
     string:
       description: relative path to file containing a 'go:generate ...' pre-processing directive
+      default: ./...
 outputs:
   srcDir:
     dir:
@@ -22,5 +23,5 @@ run:
       /src: $(srcDir)
     envVars:
       GOFLAGS: -mod=vendor
-    image: { ref: 'golang:1.13' }
+    image: { ref: 'golang:1.14' }
     workDir: /src/cli

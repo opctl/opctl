@@ -4,11 +4,12 @@ import (
 	"errors"
 	"fmt"
 
+	. "github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/unbracketed/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/value"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data/coerce"
+	coerceFakes "github.com/opctl/opctl/sdks/go/data/coerce/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -24,7 +25,7 @@ var _ = Context("Interpreter", func() {
 			/* arrange */
 			providedData := model.Value{String: new(string)}
 
-			fakeCoerce := new(coerce.Fake)
+			fakeCoerce := new(coerceFakes.FakeCoerce)
 			// err to trigger immediate return
 			fakeCoerce.ToObjectReturns(nil, errors.New("dummyErr"))
 
@@ -51,7 +52,7 @@ var _ = Context("Interpreter", func() {
 				providedRef := "dummyRef"
 				providedData := model.Value{String: new(string)}
 
-				fakeCoerce := new(coerce.Fake)
+				fakeCoerce := new(coerceFakes.FakeCoerce)
 				toObjectErr := errors.New("toObjectErr")
 				fakeCoerce.ToObjectReturns(nil, toObjectErr)
 
@@ -77,7 +78,7 @@ var _ = Context("Interpreter", func() {
 				/* arrange */
 				providedRef := "dummyRef"
 
-				fakeCoerce := new(coerce.Fake)
+				fakeCoerce := new(coerceFakes.FakeCoerce)
 				// empty Object to trigger immediate return
 				fakeCoerce.ToObjectReturns(&model.Value{Object: new(map[string]interface{})}, nil)
 
@@ -107,7 +108,7 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 					providedRef := "dummyRef"
 
-					fakeCoerce := new(coerce.Fake)
+					fakeCoerce := new(coerceFakes.FakeCoerce)
 					fakeCoerce.ToObjectReturns(&model.Value{Object: new(map[string]interface{})}, nil)
 
 					fakeParser := new(FakeParser)
@@ -137,7 +138,7 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 					identifier := "identifier"
 
-					fakeCoerce := new(coerce.Fake)
+					fakeCoerce := new(coerceFakes.FakeCoerce)
 					object := &map[string]interface{}{identifier: "dummyValue"}
 					objectValue := model.Value{Object: object}
 					fakeCoerce.ToObjectReturns(&objectValue, nil)
@@ -173,7 +174,7 @@ var _ = Context("Interpreter", func() {
 
 						identifier := "identifier"
 
-						fakeCoerce := new(coerce.Fake)
+						fakeCoerce := new(coerceFakes.FakeCoerce)
 						object := &map[string]interface{}{identifier: "dummyValue"}
 						objectValue := model.Value{Object: object}
 						fakeCoerce.ToObjectReturns(&objectValue, nil)
@@ -211,7 +212,7 @@ var _ = Context("Interpreter", func() {
 						identifier := "identifier"
 						refRemainder := "refRemainder"
 
-						fakeCoerce := new(coerce.Fake)
+						fakeCoerce := new(coerceFakes.FakeCoerce)
 						object := &map[string]interface{}{identifier: "dummyValue"}
 						objectValue := model.Value{Object: object}
 						fakeCoerce.ToObjectReturns(&objectValue, nil)

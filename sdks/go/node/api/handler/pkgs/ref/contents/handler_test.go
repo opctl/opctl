@@ -11,20 +11,20 @@ import (
 	"github.com/golang-interfaces/encoding-ijson"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/core"
+	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
 )
 
 var _ = Context("Handler", func() {
 	Context("Handle", func() {
 		It("should call handle.ListDescendants", func() {
 			/* arrange */
-			fakeDataHandle := new(data.FakeHandle)
+			fakeDataHandle := new(modelFakes.FakeDataHandle)
 			// error to trigger immediate return
 			fakeDataHandle.ListDescendantsReturns(nil, errors.New("dummyError"))
 
-			fakeCore := new(core.Fake)
+			fakeCore := new(FakeCore)
 			fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 			objectUnderTest := _handler{
@@ -52,11 +52,11 @@ var _ = Context("Handler", func() {
 				/* arrange */
 				expectedBody := "dummyErrorMsg"
 
-				fakeDataHandle := new(data.FakeHandle)
+				fakeDataHandle := new(modelFakes.FakeDataHandle)
 				// error to trigger immediate return
 				fakeDataHandle.ListDescendantsReturns(nil, errors.New(expectedBody))
 
-				fakeCore := new(core.Fake)
+				fakeCore := new(FakeCore)
 				fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 				objectUnderTest := _handler{
@@ -89,7 +89,7 @@ var _ = Context("Handler", func() {
 					/* arrange */
 					expectedBody := "dummyErrorMsg"
 
-					fakeCore := new(core.Fake)
+					fakeCore := new(FakeCore)
 
 					fakeJSON := new(ijson.Fake)
 					fakeJSON.NewEncoderReturns(json.NewEncoder(errWriter{Msg: expectedBody}))
@@ -111,7 +111,7 @@ var _ = Context("Handler", func() {
 					}
 
 					/* act */
-					objectUnderTest.Handle(new(data.FakeHandle), providedHTTPResp, providedHTTPReq)
+					objectUnderTest.Handle(new(modelFakes.FakeDataHandle), providedHTTPResp, providedHTTPReq)
 
 					/* assert */
 					Expect(providedHTTPResp.Code).To(Equal(http.StatusInternalServerError))
@@ -124,9 +124,9 @@ var _ = Context("Handler", func() {
 				It("should return expected result", func() {
 					/* arrange */
 
-					fakeCore := new(core.Fake)
+					fakeCore := new(FakeCore)
 
-					fakeHandle := new(data.FakeHandle)
+					fakeHandle := new(modelFakes.FakeDataHandle)
 					contentsList := []*model.DirEntry{
 						{Path: "dummyPath"},
 					}
