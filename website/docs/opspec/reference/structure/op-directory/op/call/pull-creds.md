@@ -10,7 +10,7 @@ An object defining credentials for a remote data source
   - [password](#password)
 
 ### username
-A [string initializer](../../../../types/string#initialization) used as the remote data source username.
+A [string initializer](../../../../types/string.md#initialization) used as the remote data source username.
 
 ### password
-A [string initializer](../../../../types/string#initialization) used as the remote data source password.
+A [string initializer](../../../../types/string.md#initialization) used as the remote data source password.

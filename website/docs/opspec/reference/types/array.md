@@ -6,7 +6,7 @@ Array typed values are a container for numerically indexed values (referred to a
 
 Arrays...
 - are immutable, i.e. assigning to an array results in a copy of the original array
-- can be passed in/out of ops via [array parameters](../structure/op-directory/op/parameter/array)
+- can be passed in/out of ops via [array parameters](../structure/op-directory/op/parameter/array.md)
 - can be initialized via [array initialization](#initialization)
 - items can be referenced via [array item referencing](#item-referencing)
 - are coerced according to [array coercion](#coercion)

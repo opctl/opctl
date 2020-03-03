@@ -13,13 +13,13 @@ An object defining a call loop in which each iteration happens in serial (one af
   - [until](#until)
 
 ### range
-A [rangeable value](rangeable-value) to loop over.
+A [rangeable value](rangeable-value.md) to loop over.
 
 ### run
-A [call](../call/index) object defining a call run on each iteration of the loop
+A [call](../call/index.md) object defining a call run on each iteration of the loop
 
 ### until
-An array of [predicates](predicate) which must be true for the loop to exit.
+An array of [predicates](predicate.md) which must be true for the loop to exit.
 
 ### vars
-A [loop-vars](loop-vars) object binding iteration info to variables.
+A [loop-vars](loop-vars.md) object binding iteration info to variables.

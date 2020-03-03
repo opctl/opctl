@@ -6,7 +6,7 @@ String typed values are a string i.e. an array of unicode characters
 
 Strings...
 - are immutable, i.e. assigning to an string results in a copy of the original string
-- can be passed in/out of ops via [string parameters](../structure/op-directory/op/parameter/string)
+- can be passed in/out of ops via [string parameters](../structure/op-directory/op/parameter/string.md)
 - can be initialized via [string initialization](#initialization)
 - are coerced according to [string coercion](#coercion)
 

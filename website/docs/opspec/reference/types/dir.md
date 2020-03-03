@@ -6,7 +6,7 @@ Dir typed values are a filesystem directory entry.
 
 Dirs...
 - are mutable, i.e. making changes to a directory results in the directory being changed everywhere it's referenced
-- can be passed in/out of ops via [dir parameters](../structure/op-directory/op/parameter/dir)
+- can be passed in/out of ops via [dir parameters](../structure/op-directory/op/parameter/dir.md)
 - are coerced according to [coercion](#coercion)
 
 ### Entry Referencing

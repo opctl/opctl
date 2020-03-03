@@ -2,7 +2,7 @@
 title: Dir Parameter [object]
 ---
 
-An object defining a parameter which accepts a [dir typed value](../../../../types/dir).
+An object defining a parameter which accepts a [dir typed value](../../../../types/dir.md).
 
 ## Properties:
 - must have:
@@ -20,7 +20,7 @@ If the value is...
   > relative path defaults are ignored when an op is called from an op as there is no current working directory.
 
 ### description
-A [markdown](../markdown) string defining a human friendly description of the parameter.
+A [markdown](../markdown.md) string defining a human friendly description of the parameter.
 
 ### isSecret
 A boolean indicating if the value of the parameter is secret. This will cause it to be hidden in UI's for example. 
