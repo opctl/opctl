@@ -69,6 +69,7 @@ module.exports = {
                           "opspec/reference/structure/op-directory/op/call/parallel-loop",
                           "opspec/reference/structure/op-directory/op/call/predicate",
                           "opspec/reference/structure/op-directory/op/call/pull-creds",
+                          "opspec/reference/structure/op-directory/op/call/rangeable-value",
                           "opspec/reference/structure/op-directory/op/call/serial-loop"
                         ]
                       },
