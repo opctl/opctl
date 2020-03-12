@@ -5,16 +5,15 @@ import (
 	"context"
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
 )
 
 type FakeValidator struct {
-	ValidateStub        func(context.Context, model.DataHandle) []error
+	ValidateStub        func(context.Context, string) []error
 	validateMutex       sync.RWMutex
 	validateArgsForCall []struct {
 		arg1 context.Context
-		arg2 model.DataHandle
+		arg2 string
 	}
 	validateReturns struct {
 		result1 []error
@@ -26,12 +25,12 @@ type FakeValidator struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeValidator) Validate(arg1 context.Context, arg2 model.DataHandle) []error {
+func (fake *FakeValidator) Validate(arg1 context.Context, arg2 string) []error {
 	fake.validateMutex.Lock()
 	ret, specificReturn := fake.validateReturnsOnCall[len(fake.validateArgsForCall)]
 	fake.validateArgsForCall = append(fake.validateArgsForCall, struct {
 		arg1 context.Context
-		arg2 model.DataHandle
+		arg2 string
 	}{arg1, arg2})
 	fake.recordInvocation("Validate", []interface{}{arg1, arg2})
 	fake.validateMutex.Unlock()
@@ -51,13 +50,13 @@ func (fake *FakeValidator) ValidateCallCount() int {
 	return len(fake.validateArgsForCall)
 }
 
-func (fake *FakeValidator) ValidateCalls(stub func(context.Context, model.DataHandle) []error) {
+func (fake *FakeValidator) ValidateCalls(stub func(context.Context, string) []error) {
 	fake.validateMutex.Lock()
 	defer fake.validateMutex.Unlock()
 	fake.ValidateStub = stub
 }
 
-func (fake *FakeValidator) ValidateArgsForCall(i int) (context.Context, model.DataHandle) {
+func (fake *FakeValidator) ValidateArgsForCall(i int) (context.Context, string) {
 	fake.validateMutex.RLock()
 	defer fake.validateMutex.RUnlock()
 	argsForCall := fake.validateArgsForCall[i]

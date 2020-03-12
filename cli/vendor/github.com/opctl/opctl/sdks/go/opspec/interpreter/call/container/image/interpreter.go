@@ -13,7 +13,6 @@ type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
 		scgContainerCallImage *model.SCGContainerCallImage,
-		opHandle model.DataHandle,
 	) (*model.DCGContainerCallImage, error)
 }
 
@@ -33,7 +32,6 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	scgContainerCallImage *model.SCGContainerCallImage,
-	opHandle model.DataHandle,
 ) (*model.DCGContainerCallImage, error) {
 
 	if nil == scgContainerCallImage {
@@ -44,7 +42,6 @@ func (itp _interpreter) Interpret(
 		src, err := itp.dirInterpreter.Interpret(
 			scope,
 			*scgContainerCallImage.Src,
-			opHandle,
 		)
 		if nil != err {
 			return nil, fmt.Errorf("error encountered interpreting image src; error was: %v", err)
@@ -60,7 +57,6 @@ func (itp _interpreter) Interpret(
 		ref, err := itp.stringInterpreter.Interpret(
 			scope,
 			*scgContainerCallImage.Ref,
-			opHandle,
 		)
 		if nil != err {
 			return nil, err
@@ -70,12 +66,12 @@ func (itp _interpreter) Interpret(
 	}
 
 	if nil != scgContainerCallImage.PullCreds {
-		username, err := itp.stringInterpreter.Interpret(scope, scgContainerCallImage.PullCreds.Username, opHandle)
+		username, err := itp.stringInterpreter.Interpret(scope, scgContainerCallImage.PullCreds.Username)
 		if nil != err {
 			return nil, fmt.Errorf("error encountered interpreting image pullcreds username; error was: %v", err)
 		}
 
-		password, err := itp.stringInterpreter.Interpret(scope, scgContainerCallImage.PullCreds.Password, opHandle)
+		password, err := itp.stringInterpreter.Interpret(scope, scgContainerCallImage.PullCreds.Password)
 		if nil != err {
 			return nil, fmt.Errorf("error encountered interpreting image pullcreds password; error was: %v", err)
 		}

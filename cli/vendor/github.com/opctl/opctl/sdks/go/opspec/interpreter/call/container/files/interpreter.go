@@ -15,7 +15,6 @@ import (
 //counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	Interpret(
-		opHandle model.DataHandle,
 		scope map[string]*model.Value,
 		scgContainerCallFiles map[string]interface{},
 		scratchDirPath string,
@@ -44,7 +43,6 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	opHandle model.DataHandle,
 	scope map[string]*model.Value,
 	scgContainerCallFiles map[string]interface{},
 	scratchDirPath string,
@@ -61,7 +59,6 @@ fileLoop:
 		fileValue, err := itp.fileInterpreter.Interpret(
 			scope,
 			fileExpression,
-			opHandle,
 			scratchDirPath,
 		)
 		if nil != err {

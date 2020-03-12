@@ -19,7 +19,7 @@ type Interpreter interface {
 		scope map[string]*model.Value,
 		scg *model.SCG,
 		id string,
-		opHandle model.DataHandle,
+		opPath string,
 		parentID *string,
 		rootOpID string,
 	) (*model.DCG, error)
@@ -51,7 +51,7 @@ func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	scg *model.SCG,
 	id string,
-	opHandle model.DataHandle,
+	opPath string,
 	parentID *string,
 	rootOpID string,
 ) (*model.DCG, error) {
@@ -63,7 +63,6 @@ func (itp _interpreter) Interpret(
 
 	if nil != scg.If {
 		dcgIf, err := itp.predicatesInterpreter.Interpret(
-			opHandle,
 			*scg.If,
 			scope,
 		)
@@ -86,7 +85,7 @@ func (itp _interpreter) Interpret(
 			scg.Container,
 			id,
 			rootOpID,
-			opHandle,
+			opPath,
 		)
 		return dcg, err
 	case nil != scg.Op:
@@ -94,7 +93,7 @@ func (itp _interpreter) Interpret(
 			scope,
 			scg.Op,
 			id,
-			opHandle,
+			opPath,
 			rootOpID,
 		)
 		return dcg, err
@@ -103,7 +102,6 @@ func (itp _interpreter) Interpret(
 		return dcg, nil
 	case nil != scg.ParallelLoop:
 		dcg.ParallelLoop, err = itp.parallelLoopInterpreter.Interpret(
-			opHandle,
 			*scg.ParallelLoop,
 			scope,
 		)
@@ -113,7 +111,6 @@ func (itp _interpreter) Interpret(
 		return dcg, nil
 	case nil != scg.SerialLoop:
 		dcg.SerialLoop, err = itp.serialLoopInterpreter.Interpret(
-			opHandle,
 			*scg.SerialLoop,
 			scope,
 		)

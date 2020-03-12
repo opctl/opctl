@@ -16,7 +16,6 @@ type Interpreter interface {
 	Interpret(
 		valueExpression interface{},
 		scope map[string]*model.Value,
-		opHandle model.DataHandle,
 	) (model.Value, error)
 }
 
@@ -38,7 +37,6 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	valueExpression interface{},
 	scope map[string]*model.Value,
-	opHandle model.DataHandle,
 ) (model.Value, error) {
 	switch typedValueExpression := valueExpression.(type) {
 	case bool:
@@ -55,7 +53,6 @@ func (itp _interpreter) Interpret(
 			propertyKey, err := itp.interpolater.Interpolate(
 				propertyKeyExpression,
 				scope,
-				opHandle,
 			)
 			if nil != err {
 				return model.Value{}, err
@@ -68,7 +65,6 @@ func (itp _interpreter) Interpret(
 			propertyValue, err := itp.Interpret(
 				propertyValueExpression,
 				scope,
-				opHandle,
 			)
 			if nil != err {
 				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; error was %v", propertyKeyExpression, propertyValueExpression, err)
@@ -104,7 +100,6 @@ func (itp _interpreter) Interpret(
 			itemValue, err := itp.Interpret(
 				itemExpression,
 				scope,
-				opHandle,
 			)
 			if nil != err {
 				return model.Value{}, fmt.Errorf("unable to interpret '%+v' as array initializer item; error was %v", itemExpression, err)
@@ -119,7 +114,6 @@ func (itp _interpreter) Interpret(
 			value, err := itp.referenceInterpreter.Interpret(
 				typedValueExpression,
 				scope,
-				opHandle,
 			)
 			if nil == err {
 				return *value, nil
@@ -131,7 +125,6 @@ func (itp _interpreter) Interpret(
 		valueString, err := itp.interpolater.Interpolate(
 			typedValueExpression,
 			scope,
-			opHandle,
 		)
 		if nil != err {
 			return model.Value{}, err

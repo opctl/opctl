@@ -9,6 +9,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
@@ -20,7 +21,7 @@ type Interpreter interface {
 		scope map[string]*model.Value,
 		scgOpCall *model.SCGOpCall,
 		opID string,
-		parentOpHandle model.DataHandle,
+		parentOpPath string,
 		rootOpID string,
 	) (*model.DCGOpCall, error)
 }
@@ -33,6 +34,7 @@ func NewInterpreter(
 		dcgScratchDir:       filepath.Join(dataDirPath, "dcg"),
 		data:                data.New(),
 		dataCachePath:       filepath.Join(dataDirPath, "ops"),
+		dirInterpreter:      dir.NewInterpreter(),
 		inputsInterpreter:   inputs.NewInterpreter(),
 		opFileGetter:        opfile.NewGetter(),
 		stringInterpreter:   str.NewInterpreter(),
@@ -44,6 +46,7 @@ type _interpreter struct {
 	dcgScratchDir       string
 	data                data.Data
 	dataCachePath       string
+	dirInterpreter      dir.Interpreter
 	inputsInterpreter   inputs.Interpreter
 	opFileGetter        opfile.Getter
 	stringInterpreter   str.Interpreter
@@ -54,7 +57,7 @@ func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	scgOpCall *model.SCGOpCall,
 	opID string,
-	parentOpHandle model.DataHandle,
+	parentOpPath string,
 	rootOpID string,
 ) (*model.DCGOpCall, error) {
 
@@ -62,33 +65,45 @@ func (itp _interpreter) Interpret(
 	if scgPullCreds := scgOpCall.PullCreds; nil != scgPullCreds {
 		pkgPullCreds = &model.PullCreds{}
 		var err error
-		interpretdUsername, err := itp.stringInterpreter.Interpret(scope, scgPullCreds.Username, parentOpHandle)
+		interpretdUsername, err := itp.stringInterpreter.Interpret(scope, scgPullCreds.Username)
 		if nil != err {
 			return nil, err
 		}
 		pkgPullCreds.Username = *interpretdUsername.String
 
-		interpretdPassword, err := itp.stringInterpreter.Interpret(scope, scgPullCreds.Password, parentOpHandle)
+		interpretdPassword, err := itp.stringInterpreter.Interpret(scope, scgPullCreds.Password)
 		if nil != err {
 			return nil, err
 		}
 		pkgPullCreds.Password = *interpretdPassword.String
 	}
 
-	parentOpDirPath := parentOpHandle.Path()
-	opHandle, err := itp.data.Resolve(
-		context.TODO(),
-		scgOpCall.Ref,
-		itp.data.NewFSProvider(filepath.Dir(*parentOpDirPath)),
-		itp.data.NewGitProvider(itp.dataCachePath, pkgPullCreds),
-	)
-	if nil != err {
-		return nil, err
+	var opPath string
+	if nil != scgOpCall.Src {
+		src, err := itp.dirInterpreter.Interpret(
+			scope,
+			*scgOpCall.Src,
+		)
+		if nil != err {
+			return nil, fmt.Errorf("error encountered interpreting image src; error was: %v", err)
+		}
+		opPath = *src.Dir
+	} else {
+		opHandle, err := itp.data.Resolve(
+			context.TODO(),
+			scgOpCall.Ref,
+			itp.data.NewFSProvider(filepath.Dir(parentOpPath)),
+			itp.data.NewGitProvider(itp.dataCachePath, pkgPullCreds),
+		)
+		if nil != err {
+			return nil, err
+		}
+		opPath = *opHandle.Path()
 	}
 
 	opFile, err := itp.opFileGetter.Get(
 		context.TODO(),
-		opHandle,
+		opPath,
 	)
 	if nil != err {
 		return nil, err
@@ -102,7 +117,7 @@ func (itp _interpreter) Interpret(
 	dcgOpCall := &model.DCGOpCall{
 		DCGBaseCall: model.DCGBaseCall{
 			RootOpID: rootOpID,
-			OpHandle: opHandle,
+			OpPath:   opPath,
 		},
 		OpID:         opID,
 		ChildCallID:  childCallID,
@@ -112,8 +127,7 @@ func (itp _interpreter) Interpret(
 	dcgOpCall.Inputs, err = itp.inputsInterpreter.Interpret(
 		scgOpCall.Inputs,
 		opFile.Inputs,
-		parentOpHandle,
-		*opHandle.Path(),
+		opPath,
 		scope,
 		filepath.Join(itp.dcgScratchDir, opID),
 	)

@@ -6,7 +6,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	loopableFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable/fakes"
 )
 
@@ -43,7 +42,6 @@ var _ = Context("scoper", func() {
 							&model.SCGLoopVars{
 								Index: &indexName,
 							},
-							new(modelFakes.FakeDataHandle),
 						)
 
 						/* assert */
@@ -59,7 +57,6 @@ var _ = Context("scoper", func() {
 					providedScope := map[string]*model.Value{
 						"name1": &model.Value{String: new(string)},
 					}
-					providedOpHandle := new(modelFakes.FakeDataHandle)
 
 					fakeLoopableInterpreter := new(loopableFakes.FakeInterpreter)
 					// err to trigger immediate return
@@ -75,17 +72,14 @@ var _ = Context("scoper", func() {
 						providedScope,
 						providedLoopRange,
 						&model.SCGLoopVars{},
-						providedOpHandle,
 					)
 
 					/* assert */
 					actualExpression,
-						actualOpHandle,
 						actualScope := fakeLoopableInterpreter.InterpretArgsForCall(0)
 
 					Expect(actualExpression).To(Equal(providedLoopRange))
 					Expect(actualScope).To(Equal(providedScope))
-					Expect(actualOpHandle).To(Equal(providedOpHandle))
 				})
 				Context("loopableInterpreter errs", func() {
 
@@ -96,7 +90,6 @@ var _ = Context("scoper", func() {
 						providedScope := map[string]*model.Value{
 							"name1": &model.Value{String: new(string)},
 						}
-						providedOpHandle := new(modelFakes.FakeDataHandle)
 
 						fakeLoopableInterpreter := new(loopableFakes.FakeInterpreter)
 						expectedErr := errors.New("expectedErr")
@@ -114,7 +107,6 @@ var _ = Context("scoper", func() {
 							&model.SCGLoopVars{
 								Index: new(string),
 							},
-							providedOpHandle,
 						)
 
 						/* assert */

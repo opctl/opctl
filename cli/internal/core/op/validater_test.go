@@ -53,7 +53,9 @@ var _ = Context("Validater", func() {
 			fakeOpValidator := new(FakeValidator)
 
 			fakeDataResolver := new(dataresolver.Fake)
+			opPath := "opPath"
 			fakeOpHandle := new(FakeDataHandle)
+			fakeOpHandle.PathReturns(&opPath)
 			fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 			objectUnderTest := _validater{
@@ -70,10 +72,10 @@ var _ = Context("Validater", func() {
 
 			/* assert */
 			actualCtx,
-				actualOpHandle := fakeOpValidator.ValidateArgsForCall(0)
+				actualOpPath := fakeOpValidator.ValidateArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
-			Expect(actualOpHandle).To(Equal(fakeOpHandle))
+			Expect(actualOpPath).To(Equal(opPath))
 		})
 		Context("pkg.Validate returns errors", func() {
 			It("should call cliExiter.Exit w/ expected args", func() {
@@ -83,6 +85,7 @@ var _ = Context("Validater", func() {
 				fakeDataResolver := new(dataresolver.Fake)
 
 				fakeOpHandle := new(FakeDataHandle)
+				fakeOpHandle.PathReturns(new(string))
 				fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 				errsReturnedFromValidate := []error{errors.New("dummyError")}
@@ -122,6 +125,7 @@ var _ = Context("Validater", func() {
 				fakeOpValidator := new(FakeValidator)
 
 				fakeOpHandle := new(FakeDataHandle)
+				fakeOpHandle.PathReturns(new(string))
 				opRef := "dummyPkgRef"
 				fakeOpHandle.RefReturns(opRef)
 

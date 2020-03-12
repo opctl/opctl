@@ -14,10 +14,23 @@
       "description": "Reference to an op",
       "type": "string",
       "format": "uri-reference"
+    },
+    "src": {
+      "description": "Source code of the op to run. MUST be a valid op directory.",
+      "type": "string"
     }
   },
-  "required": [
-    "ref"
+  "oneOf": [
+    {
+      "required": [
+        "ref"
+      ]
+    },
+    {
+      "required": [
+        "src"
+      ]
+    }
   ],
   "additionalProperties": false
 }

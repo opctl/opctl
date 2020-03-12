@@ -6,7 +6,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	strFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/str/fakes"
 )
 
@@ -25,7 +24,6 @@ var _ = Context("Interpreter", func() {
 				"expression1",
 			}
 
-			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedScope := map[string]*model.Value{}
 
 			fakeStrInterpreter := new(strFakes.FakeInterpreter)
@@ -41,26 +39,21 @@ var _ = Context("Interpreter", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				providedExpressions,
-				providedOpHandle,
 				providedScope,
 			)
 
 			/* assert */
 			actualScope0,
-				actualExpression0,
-				actualOpHandle0 := fakeStrInterpreter.InterpretArgsForCall(0)
+				actualExpression0 := fakeStrInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope0).To(Equal(providedScope))
 			Expect(actualExpression0).To(Equal(providedExpressions[0]))
-			Expect(actualOpHandle0).To(Equal(providedOpHandle))
 
 			actualScope1,
-				actualExpression1,
-				actualOpHandle1 := fakeStrInterpreter.InterpretArgsForCall(1)
+				actualExpression1 := fakeStrInterpreter.InterpretArgsForCall(1)
 
 			Expect(actualScope1).To(Equal(providedScope))
 			Expect(actualExpression1).To(Equal(providedExpressions[1]))
-			Expect(actualOpHandle1).To(Equal(providedOpHandle))
 		})
 		Context("stringInterpreter.Interpret errs", func() {
 			It("should return expected result", func() {
@@ -80,7 +73,6 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				_, actualError := objectUnderTest.Interpret(
 					[]interface{}{"dummyExpression"},
-					new(modelFakes.FakeDataHandle),
 					map[string]*model.Value{},
 				)
 
@@ -109,7 +101,6 @@ var _ = Context("Interpreter", func() {
 						"expression0",
 						"expression1",
 					},
-					new(modelFakes.FakeDataHandle),
 					map[string]*model.Value{},
 				)
 
@@ -146,7 +137,6 @@ var _ = Context("Interpreter", func() {
 						"expression0",
 						"expression1",
 					},
-					new(modelFakes.FakeDataHandle),
 					map[string]*model.Value{},
 				)
 

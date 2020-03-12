@@ -132,6 +132,8 @@ var _ = Context("core", func() {
 				providedCtx := context.Background()
 				fakeData := new(FakeData)
 				fakeDataHandle := new(modelFakes.FakeDataHandle)
+				opPath := "opPath"
+				fakeDataHandle.PathReturns(&opPath)
 				fakeData.ResolveReturns(fakeDataHandle, nil)
 
 				fakeOpFileGetter := new(FakeGetter)
@@ -152,16 +154,17 @@ var _ = Context("core", func() {
 
 				/* assert */
 				actualCtx,
-					actualDataHandle := fakeOpFileGetter.GetArgsForCall(0)
+					actualOpPath := fakeOpFileGetter.GetArgsForCall(0)
 
 				Expect(actualCtx).To(Equal(providedCtx))
-				Expect(actualDataHandle).To(Equal(fakeDataHandle))
+				Expect(actualOpPath).To(Equal(opPath))
 			})
 			Context("data.Get errs", func() {
 				It("should return expected error", func() {
 					/* arrange */
 					fakeData := new(FakeData)
 					fakeDataHandle := new(modelFakes.FakeDataHandle)
+					fakeDataHandle.PathReturns(new(string))
 					fakeData.ResolveReturns(fakeDataHandle, nil)
 
 					fakeOpFileGetter := new(FakeGetter)
@@ -192,6 +195,7 @@ var _ = Context("core", func() {
 					providedArg2Dir := "dummyArg2Value"
 					providedArg3Dir := "dummyArg3Value"
 					providedArg4Dir := "dummyArg4Value"
+					opRef := "opRef"
 					providedReq := model.StartOpReq{
 						Args: map[string]*model.Value{
 							"dummyArg1Name": {String: &providedArg1String},
@@ -200,13 +204,16 @@ var _ = Context("core", func() {
 							"dummyArg4Name": {Dir: &providedArg4Dir},
 						},
 						Op: model.StartOpReqOp{
-							Ref: "dummyOpRef",
+							Ref: opRef,
 						},
 					}
 
 					fakeData := new(FakeData)
-					expectedOpHandle := new(modelFakes.FakeDataHandle)
-					fakeData.ResolveReturns(expectedOpHandle, nil)
+					fakeDataHandle := new(modelFakes.FakeDataHandle)
+					opPath := "opPath"
+					fakeDataHandle.PathReturns(&opPath)
+					fakeDataHandle.RefReturns(opRef)
+					fakeData.ResolveReturns(fakeDataHandle, nil)
 
 					opFile := &model.OpFile{
 						Outputs: map[string]*model.Param{
@@ -219,7 +226,7 @@ var _ = Context("core", func() {
 					fakeOpFileGetter.GetReturns(opFile, nil)
 
 					expectedSCGOpCall := &model.SCGOpCall{
-						Ref:     expectedOpHandle.Ref(),
+						Ref:     opRef,
 						Inputs:  map[string]interface{}{},
 						Outputs: map[string]string{},
 					}
@@ -258,7 +265,7 @@ var _ = Context("core", func() {
 						actualID,
 						actualScope,
 						actualSCG,
-						actualOpHandle,
+						actualOpPath,
 						actualParentCallID,
 						actualRootOpID := fakeCaller.CallArgsForCall(0)
 
@@ -266,7 +273,7 @@ var _ = Context("core", func() {
 					Expect(actualID).To(Equal(expectedID))
 					Expect(actualScope).To(Equal(providedReq.Args))
 					Expect(actualSCG).To(Equal(&model.SCG{Op: expectedSCGOpCall}))
-					Expect(actualOpHandle).To(Equal(expectedOpHandle))
+					Expect(actualOpPath).To(Equal(opPath))
 					Expect(actualParentCallID).To(BeNil())
 					Expect(actualRootOpID).To(Equal(expectedRootOpID))
 				})

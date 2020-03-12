@@ -9,7 +9,6 @@ import (
 type Interpreter interface {
 	Interpret(
 		expressions []interface{},
-		opHandle model.DataHandle,
 		scope map[string]*model.Value,
 	) (bool, error)
 }
@@ -27,13 +26,12 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	expressions []interface{},
-	opHandle model.DataHandle,
 	scope map[string]*model.Value,
 ) (bool, error) {
 	var itemsAsStrings []string
 	for _, expression := range expressions {
 		// interpret items as strings since everything is coercible to string
-		item, err := itp.stringInterpreter.Interpret(scope, expression, opHandle)
+		item, err := itp.stringInterpreter.Interpret(scope, expression)
 		if nil != err {
 			return false, err
 		}

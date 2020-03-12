@@ -19,6 +19,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	inputsFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs/fakes"
+	dirFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/dir/fakes"
 	strFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/str/fakes"
 	. "github.com/opctl/opctl/sdks/go/opspec/opfile/fakes"
 )
@@ -94,7 +95,7 @@ var _ = Context("Interpreter", func() {
 											scenario.Interpret.Scope,
 											scgOpCall,
 											"",
-											opHandle,
+											*opHandle.Path(),
 											"",
 										)
 
@@ -116,8 +117,7 @@ var _ = Context("Interpreter", func() {
 		})
 		It("should call pkg.NewFSProvider w/ expected args", func() {
 			/* arrange */
-			providedParentOpHandle := new(modelFakes.FakeDataHandle)
-			providedParentOpHandle.PathReturns(new(string))
+			providedOpPath := "providedOpPath"
 
 			fakeData := new(FakeData)
 			// error to trigger immediate return
@@ -134,19 +134,16 @@ var _ = Context("Interpreter", func() {
 					Ref: "dummyOpRef",
 				},
 				"dummyOpID",
-				providedParentOpHandle,
+				providedOpPath,
 				"dummyRootOpID",
 			)
 
 			/* assert */
-			Expect(fakeData.NewFSProviderArgsForCall(0)).To(ConsistOf(filepath.Dir(providedParentOpHandle.Ref())))
+			Expect(fakeData.NewFSProviderArgsForCall(0)).To(ConsistOf(filepath.Dir(providedOpPath)))
 		})
-		Context("scgOpCall.Pkg.PullCreds is nil", func() {
+		Context("scgOpCall.PullCreds is nil", func() {
 			It("should call pkg.NewGitProvider w/ expected args", func() {
 				/* arrange */
-				providedParentOpHandle := new(modelFakes.FakeDataHandle)
-				providedParentOpHandle.PathReturns(new(string))
-
 				providedDataCachePath := "dummyDataCachePath"
 
 				fakeData := new(FakeData)
@@ -165,7 +162,7 @@ var _ = Context("Interpreter", func() {
 						Ref: "dummyOpRef",
 					},
 					"dummyOpID",
-					providedParentOpHandle,
+					"dummyOpPath",
 					"dummyRootOpID",
 				)
 
@@ -177,7 +174,7 @@ var _ = Context("Interpreter", func() {
 				Expect(actualPullCreds).To(BeNil())
 			})
 		})
-		Context("scgOpCall.Pkg.PullCreds isn't nil", func() {
+		Context("scgOpCall.PullCreds isn't nil", func() {
 			Context("stringInterpreter.Interpret errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
@@ -196,7 +193,7 @@ var _ = Context("Interpreter", func() {
 							PullCreds: &model.SCGPullCreds{},
 						},
 						"dummyOpID",
-						new(modelFakes.FakeDataHandle),
+						"dummyOpPath",
 						"dummyRootOpID",
 					)
 
@@ -207,9 +204,6 @@ var _ = Context("Interpreter", func() {
 			Context("stringInterpreter.Interpret doesn't err", func() {
 				It("should call pkg.NewGitProvider w/ expected args", func() {
 					/* arrange */
-					providedParentOpHandle := new(modelFakes.FakeDataHandle)
-					providedParentOpHandle.PathReturns(new(string))
-
 					providedDataCachePath := "dummyDataCachePath"
 
 					fakeStrInterpreter := new(strFakes.FakeInterpreter)
@@ -235,7 +229,7 @@ var _ = Context("Interpreter", func() {
 							PullCreds: &model.SCGPullCreds{},
 						},
 						"dummyOpID",
-						providedParentOpHandle,
+						"dummyOpPath",
 						"dummyRootOpID",
 					)
 
@@ -248,99 +242,20 @@ var _ = Context("Interpreter", func() {
 				})
 			})
 		})
-		It("should call pkg.Resolve w/ expected args", func() {
-			/* arrange */
-			providedParentOpHandle := new(modelFakes.FakeDataHandle)
-			providedParentOpHandle.PathReturns(new(string))
-
-			provideddataDirPath := "dummydataDirPath"
-			providedSCGOpCall := &model.SCGOpCall{
-				Ref: "dummyOpRef",
-			}
-
-			expectedOpRef := providedSCGOpCall.Ref
-
-			fakeData := new(FakeData)
-
-			expectedPkgProviders := []provider.Provider{
-				new(FakeProvider),
-				new(FakeProvider),
-			}
-			fakeData.NewFSProviderReturns(expectedPkgProviders[0])
-			fakeData.NewGitProviderReturns(expectedPkgProviders[1])
-
-			// error to trigger immediate return
-			fakeData.ResolveReturns(nil, errors.New("dummyError"))
-
-			objectUnderTest := _interpreter{
-				data:          fakeData,
-				dataCachePath: filepath.Join(provideddataDirPath, "ops"),
-			}
-
-			/* act */
-			objectUnderTest.Interpret(
-				map[string]*model.Value{},
-				providedSCGOpCall,
-				"dummyOpID",
-				providedParentOpHandle,
-				"dummyRootOpID",
-			)
-
-			/* assert */
-			actualCtx,
-				actualOpRef,
-				actualPkgProviders := fakeData.ResolveArgsForCall(0)
-
-			Expect(actualCtx).To(Equal(context.TODO()))
-			Expect(actualOpRef).To(Equal(expectedOpRef))
-			Expect(actualPkgProviders).To(Equal(expectedPkgProviders))
-		})
-		Context("pkg.Resolve errs", func() {
-			It("should return err", func() {
+		Context("scgOpCall.Src truthy", func() {
+			It("should call opfile.Get w/ expected args", func() {
 				/* arrange */
-				providedParentOpHandle := new(modelFakes.FakeDataHandle)
-				providedParentOpHandle.PathReturns(new(string))
+				opPath := "opPath"
 
-				expectedErr := errors.New("dummyError")
-				fakeData := new(FakeData)
-				fakeData.ResolveReturns(nil, expectedErr)
-
-				objectUnderTest := _interpreter{
-					data:                fakeData,
-					uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
-				}
-
-				/* act */
-				_, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGOpCall{},
-					"dummyOpID",
-					providedParentOpHandle,
-					"dummyRootOpID",
-				)
-
-				/* assert */
-				Expect(actualErr).To(Equal(expectedErr))
-			})
-		})
-		Context("pkg.Resolve doesn't err", func() {
-			It("should call pkg.GetManifest w/ expected args", func() {
-				/* arrange */
-				providedParentOpHandle := new(modelFakes.FakeDataHandle)
-				providedParentOpHandle.PathReturns(new(string))
-
-				fakeDataHandle := new(modelFakes.FakeDataHandle)
-
-				fakeData := new(FakeData)
-				fakeData.ResolveReturns(fakeDataHandle, nil)
+				fakeDirInterpreter := new(dirFakes.FakeInterpreter)
+				fakeDirInterpreter.InterpretReturns(&model.Value{Dir: &opPath}, nil)
 
 				fakeOpFileGetter := new(FakeGetter)
-				expectedErr := errors.New("dummyError")
 				// err to trigger immediate return
-				fakeOpFileGetter.GetReturns(nil, expectedErr)
+				fakeOpFileGetter.GetReturns(nil, errors.New("dummyErr"))
 
 				objectUnderTest := _interpreter{
-					data:                fakeData,
+					dirInterpreter:      fakeDirInterpreter,
 					opFileGetter:        fakeOpFileGetter,
 					uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
 				}
@@ -348,32 +263,76 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.SCGOpCall{},
+					&model.SCGOpCall{
+						Src: new(string),
+					},
 					"dummyOpID",
-					providedParentOpHandle,
+					"dummyOpPath",
 					"dummyRootOpID",
 				)
 
 				/* assert */
 				actualCtx,
-					actualHandle := fakeOpFileGetter.GetArgsForCall(0)
+					actualOpPath := fakeOpFileGetter.GetArgsForCall(0)
 
 				Expect(actualCtx).To(Equal(context.TODO()))
-				Expect(actualHandle).To(Equal(fakeDataHandle))
+				Expect(actualOpPath).To(Equal(opPath))
 			})
-			Context("pkg.GetManifest errs", func() {
+		})
+		Context("scgOpCall.Src falsy", func() {
+			It("should call data.Resolve w/ expected args", func() {
+				/* arrange */
+				providedOpPath := "providedOpPath"
+
+				provideddataDirPath := "dummydataDirPath"
+				providedSCGOpCall := &model.SCGOpCall{
+					Ref: providedOpPath,
+				}
+
+				fakeData := new(FakeData)
+
+				expectedPkgProviders := []provider.Provider{
+					new(FakeProvider),
+					new(FakeProvider),
+				}
+				fakeData.NewFSProviderReturns(expectedPkgProviders[0])
+				fakeData.NewGitProviderReturns(expectedPkgProviders[1])
+
+				// error to trigger immediate return
+				fakeData.ResolveReturns(nil, errors.New("dummyError"))
+
+				objectUnderTest := _interpreter{
+					data:          fakeData,
+					dataCachePath: filepath.Join(provideddataDirPath, "ops"),
+				}
+
+				/* act */
+				objectUnderTest.Interpret(
+					map[string]*model.Value{},
+					providedSCGOpCall,
+					"dummyOpID",
+					providedOpPath,
+					"dummyRootOpID",
+				)
+
+				/* assert */
+				actualCtx,
+					actualOpRef,
+					actualPkgProviders := fakeData.ResolveArgsForCall(0)
+
+				Expect(actualCtx).To(Equal(context.TODO()))
+				Expect(actualOpRef).To(Equal(providedOpPath))
+				Expect(actualPkgProviders).To(Equal(expectedPkgProviders))
+			})
+			Context("data.Resolve errs", func() {
 				It("should return err", func() {
 					/* arrange */
-					providedParentOpHandle := new(modelFakes.FakeDataHandle)
-					providedParentOpHandle.PathReturns(new(string))
-
 					expectedErr := errors.New("dummyError")
-					fakeOpFileGetter := new(FakeGetter)
-					fakeOpFileGetter.GetReturns(nil, expectedErr)
+					fakeData := new(FakeData)
+					fakeData.ResolveReturns(nil, expectedErr)
 
 					objectUnderTest := _interpreter{
-						data:                new(FakeData),
-						opFileGetter:        fakeOpFileGetter,
+						data:                fakeData,
 						uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
 					}
 
@@ -382,7 +341,7 @@ var _ = Context("Interpreter", func() {
 						map[string]*model.Value{},
 						&model.SCGOpCall{},
 						"dummyOpID",
-						providedParentOpHandle,
+						"dummyOpPath",
 						"dummyRootOpID",
 					)
 
@@ -390,81 +349,142 @@ var _ = Context("Interpreter", func() {
 					Expect(actualErr).To(Equal(expectedErr))
 				})
 			})
-			Context("pkg.GetManifest doesn't err", func() {
-				It("should call inputsFakes.Interpret w/ expected inputs", func() {
-					/* arrange */
-					providedScope := map[string]*model.Value{
-						"dummyScopeRef1Name": {String: new(string)},
-					}
-					expectedScope := providedScope
+		})
+		It("should call opfile.Get w/ expected args", func() {
+			/* arrange */
+			fakeDataHandle := new(modelFakes.FakeDataHandle)
+			opPath := "opPath"
+			fakeDataHandle.PathReturns(&opPath)
 
-					expectedInputArgs := map[string]interface{}{"dummySCGOpCallInputName": "dummyScgOpCallInputValue"}
+			fakeData := new(FakeData)
+			fakeData.ResolveReturns(fakeDataHandle, nil)
 
-					providedSCGOpCall := &model.SCGOpCall{
-						Inputs: expectedInputArgs,
-					}
+			fakeOpFileGetter := new(FakeGetter)
+			// err to trigger immediate return
+			fakeOpFileGetter.GetReturns(nil, errors.New("dummyErr"))
 
-					providedOpID := "dummyOpID"
+			objectUnderTest := _interpreter{
+				data:                fakeData,
+				opFileGetter:        fakeOpFileGetter,
+				uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
+			}
 
-					providedParentOpHandle := new(modelFakes.FakeDataHandle)
-					parentOpDirPath := "dummyParentOpDirPath"
-					providedParentOpHandle.PathReturns(&parentOpDirPath)
+			/* act */
+			objectUnderTest.Interpret(
+				map[string]*model.Value{},
+				&model.SCGOpCall{},
+				"dummyOpID",
+				"dummyOpPath",
+				"dummyRootOpID",
+			)
 
-					fakeDataHandle := new(modelFakes.FakeDataHandle)
-					opPath := "dummyOpPath"
-					fakeDataHandle.PathReturns(&opPath)
+			/* assert */
+			actualCtx,
+				actualOpPath := fakeOpFileGetter.GetArgsForCall(0)
 
-					fakeData := new(FakeData)
-					fakeData.ResolveReturns(fakeDataHandle, nil)
+			Expect(actualCtx).To(Equal(context.TODO()))
+			Expect(actualOpPath).To(Equal(opPath))
+		})
+		Context("opfile.Get errs", func() {
+			It("should return err", func() {
+				/* arrange */
+				expectedErr := errors.New("dummyError")
+				fakeOpFileGetter := new(FakeGetter)
+				fakeOpFileGetter.GetReturns(nil, expectedErr)
 
-					expectedInputParams := map[string]*model.Param{
-						"dummyParam1Name": {String: &model.StringParam{}},
-					}
+				fakeDataHandle := new(modelFakes.FakeDataHandle)
+				fakeDataHandle.PathReturns(new(string))
 
-					fakeOpFileGetter := new(FakeGetter)
-					returnedManifest := &model.OpFile{
-						Inputs: expectedInputParams,
-					}
-					fakeOpFileGetter.GetReturns(returnedManifest, nil)
+				fakeData := new(FakeData)
+				fakeData.ResolveReturns(fakeDataHandle, nil)
 
-					fakeInputsInterpreter := new(inputsFakes.FakeInterpreter)
+				objectUnderTest := _interpreter{
+					data:                fakeData,
+					opFileGetter:        fakeOpFileGetter,
+					uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
+				}
 
-					dcgScratchDir := "dummyDCGScratchDir"
+				/* act */
+				_, actualErr := objectUnderTest.Interpret(
+					map[string]*model.Value{},
+					&model.SCGOpCall{},
+					"dummyOpID",
+					"dummyOpPath",
+					"dummyRootOpID",
+				)
 
-					objectUnderTest := _interpreter{
-						dcgScratchDir:       dcgScratchDir,
-						data:                fakeData,
-						opFileGetter:        fakeOpFileGetter,
-						uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
-						inputsInterpreter:   fakeInputsInterpreter,
-					}
-
-					/* act */
-					objectUnderTest.Interpret(
-						providedScope,
-						providedSCGOpCall,
-						providedOpID,
-						providedParentOpHandle,
-						"dummyRootOpID",
-					)
-
-					/* assert */
-					actualSCGArgs,
-						actualSCGInputs,
-						actualParentOpHandle,
-						actualOpRef,
-						actualScope,
-						actualOpScratchDir := fakeInputsInterpreter.InterpretArgsForCall(0)
-
-					Expect(actualScope).To(Equal(expectedScope))
-					Expect(actualSCGArgs).To(Equal(expectedInputArgs))
-					Expect(actualParentOpHandle).To(Equal(providedParentOpHandle))
-					Expect(actualOpRef).To(Equal(opPath))
-					Expect(actualSCGInputs).To(Equal(expectedInputParams))
-					Expect(actualOpScratchDir).To(Equal(filepath.Join(dcgScratchDir, providedOpID)))
-
-				})
+				/* assert */
+				Expect(actualErr).To(Equal(expectedErr))
 			})
+		})
+		It("should call inputsFakes.Interpret w/ expected inputs", func() {
+			/* arrange */
+			providedScope := map[string]*model.Value{
+				"dummyScopeRef1Name": {String: new(string)},
+			}
+			expectedScope := providedScope
+
+			expectedInputArgs := map[string]interface{}{"dummySCGOpCallInputName": "dummyScgOpCallInputValue"}
+
+			providedSCGOpCall := &model.SCGOpCall{
+				Inputs: expectedInputArgs,
+			}
+
+			providedOpID := "dummyOpID"
+
+			providedParentOpPath := "providedParentOpPath"
+
+			fakeDataHandle := new(modelFakes.FakeDataHandle)
+			opPath := "dummyOpPath"
+			fakeDataHandle.PathReturns(&opPath)
+
+			fakeData := new(FakeData)
+			fakeData.ResolveReturns(fakeDataHandle, nil)
+
+			expectedInputParams := map[string]*model.Param{
+				"dummyParam1Name": {String: &model.StringParam{}},
+			}
+
+			fakeOpFileGetter := new(FakeGetter)
+			returnedManifest := &model.OpFile{
+				Inputs: expectedInputParams,
+			}
+			fakeOpFileGetter.GetReturns(returnedManifest, nil)
+
+			fakeInputsInterpreter := new(inputsFakes.FakeInterpreter)
+
+			dcgScratchDir := "dummyDCGScratchDir"
+
+			objectUnderTest := _interpreter{
+				dcgScratchDir:       dcgScratchDir,
+				data:                fakeData,
+				opFileGetter:        fakeOpFileGetter,
+				uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
+				inputsInterpreter:   fakeInputsInterpreter,
+			}
+
+			/* act */
+			objectUnderTest.Interpret(
+				providedScope,
+				providedSCGOpCall,
+				providedOpID,
+				providedParentOpPath,
+				"dummyRootOpID",
+			)
+
+			/* assert */
+			actualSCGArgs,
+				actualSCGInputs,
+				actualOpPath,
+				actualScope,
+				actualOpScratchDir := fakeInputsInterpreter.InterpretArgsForCall(0)
+
+			Expect(actualScope).To(Equal(expectedScope))
+			Expect(actualSCGArgs).To(Equal(expectedInputArgs))
+			Expect(actualOpPath).To(Equal(opPath))
+			Expect(actualSCGInputs).To(Equal(expectedInputParams))
+			Expect(actualOpScratchDir).To(Equal(filepath.Join(dcgScratchDir, providedOpID)))
+
 		})
 	})
 })

@@ -11,7 +11,6 @@ import (
 	. "github.com/onsi/gomega"
 	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	serialloopFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/serialloop/fakes"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
@@ -52,7 +51,7 @@ var _ = Context("serialLoopCaller", func() {
 					"id",
 					map[string]*model.Value{},
 					model.SCGSerialLoopCall{},
-					new(modelFakes.FakeDataHandle),
+					"dummyOpPath",
 					nil,
 					"rootOpID",
 				)
@@ -91,7 +90,7 @@ var _ = Context("serialLoopCaller", func() {
 					"id",
 					map[string]*model.Value{},
 					model.SCGSerialLoopCall{},
-					new(modelFakes.FakeDataHandle),
+					"dummyOpPath",
 					nil,
 					"rootOpID",
 				)
@@ -114,7 +113,7 @@ var _ = Context("serialLoopCaller", func() {
 						Index: &index,
 					},
 				}
-				providedOpHandle := new(modelFakes.FakeDataHandle)
+				providedOpPath := "providedOpPath"
 				providedParentCallIDValue := "providedParentCallID"
 				providedParentCallID := &providedParentCallIDValue
 				providedRootOpID := "providedRootOpID"
@@ -175,7 +174,7 @@ var _ = Context("serialLoopCaller", func() {
 					"id",
 					providedScope,
 					providedSCGSerialLoopCall,
-					providedOpHandle,
+					providedOpPath,
 					providedParentCallID,
 					providedRootOpID,
 				)
@@ -185,7 +184,7 @@ var _ = Context("serialLoopCaller", func() {
 					actualCallID,
 					actualScope,
 					actualSCG,
-					actualOpHandle,
+					actualOpPath,
 					actualParentCallID,
 					actualRootOpID := fakeCaller.CallArgsForCall(0)
 
@@ -193,7 +192,7 @@ var _ = Context("serialLoopCaller", func() {
 				Expect(actualCallID).To(Equal(callID))
 				Expect(actualScope).To(Equal(expectedScope))
 				Expect(actualSCG).To(Equal(&providedSCGSerialLoopCall.Run))
-				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualParentCallID).To(Equal(providedParentCallID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 			})

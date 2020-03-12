@@ -24,5 +24,6 @@ run:
       GOFLAGS: -mod=vendor -tags=containers_image_openpgp 
     dirs:
       /src: $(srcDir)
-    image: { ref: 'golang:1.14' }
+    # @TODO: identify why fake generation breaks on 1.14
+    image: { ref: 'golang:1.13' }
     workDir: /src/sdks/go

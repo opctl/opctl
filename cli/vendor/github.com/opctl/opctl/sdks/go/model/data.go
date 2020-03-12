@@ -60,6 +60,31 @@ type Value struct {
 	String  *string                 `json:"string,omitempty"`
 }
 
+// // ValueNode interfaces with a value of any type
+// type ValueNode interface {
+// 	// ID returns a globally unique id for this value
+// 	ID() string
+// }
+
+// // FileValue interfaces with a file typed value
+// type FileValue interface {
+// 	GetReadSeekCloser() (ReadSeekCloser, error)
+
+// 	ValueNode
+// }
+
+// // DirValue interfaces with a directory typed value
+// type DirValue interface {
+// 	GetDescendant(
+// 		ref string,
+// 	) (
+// 		Value,
+// 		error,
+// 	)
+
+// 	ValueNode
+// }
+
 // Unbox unboxes a Value into a native go type
 func (vlu Value) Unbox() (interface{}, error) {
 	if nil != vlu.Array {

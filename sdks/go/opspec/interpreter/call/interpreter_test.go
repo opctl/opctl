@@ -6,7 +6,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	containerFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/fakes"
 	opFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/fakes"
 	predicatesFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/fakes"
@@ -32,8 +31,6 @@ var _ = Context("Interpreter", func() {
 					If: providedIf,
 				}
 
-				providedOpHandle := new(modelFakes.FakeDataHandle)
-
 				fakePredicatesInterpreter := new(predicatesFakes.FakeInterpreter)
 				fakePredicatesInterpreter.InterpretReturns(
 					true,
@@ -49,17 +46,15 @@ var _ = Context("Interpreter", func() {
 					providedScope,
 					providedSCG,
 					"providedID",
-					providedOpHandle,
+					"dummyOpPath",
 					nil,
 					"providedRootOpID",
 				)
 
 				/* assert */
-				actualOpHandle,
-					actualSCG,
+				actualSCG,
 					actualScope := fakePredicatesInterpreter.InterpretArgsForCall(0)
 
-				Expect(actualOpHandle).To(Equal(providedOpHandle))
 				Expect(actualSCG).To(Equal(providedSCG))
 				Expect(actualScope).To(Equal(providedScope))
 			})
@@ -84,7 +79,7 @@ var _ = Context("Interpreter", func() {
 							If: new([]*model.SCGPredicate),
 						},
 						"providedID",
-						new(modelFakes.FakeDataHandle),
+						"dummyOpPath",
 						nil,
 						"providedRootOpID",
 					)
@@ -104,7 +99,7 @@ var _ = Context("Interpreter", func() {
 				}
 
 				providedID := "providedID"
-				providedOpHandle := new(modelFakes.FakeDataHandle)
+				providedOpPath := "providedOpPath"
 				providedRootOpID := "providedRootOpID"
 
 				fakeContainerCallInterpreter := new(containerFakes.FakeInterpreter)
@@ -118,7 +113,7 @@ var _ = Context("Interpreter", func() {
 					providedScope,
 					providedSCG,
 					providedID,
-					providedOpHandle,
+					providedOpPath,
 					nil,
 					providedRootOpID,
 				)
@@ -128,13 +123,13 @@ var _ = Context("Interpreter", func() {
 					actualSCGContainerCall,
 					actualContainerID,
 					actualRootOpID,
-					actualOpHandle := fakeContainerCallInterpreter.InterpretArgsForCall(0)
+					actualOpPath := fakeContainerCallInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualSCGContainerCall).To(Equal(providedSCG.Container))
 				Expect(actualContainerID).To(Equal(providedID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
-				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualOpPath).To(Equal(providedOpPath))
 
 			})
 			It("should return expected result", func() {
@@ -167,7 +162,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					providedSCG,
 					providedID,
-					new(modelFakes.FakeDataHandle),
+					"dummyOpPath",
 					providedParentID,
 					"providedRootOpID",
 				)
@@ -188,7 +183,7 @@ var _ = Context("Interpreter", func() {
 				}
 
 				providedID := "providedID"
-				providedOpHandle := new(modelFakes.FakeDataHandle)
+				providedOpPath := "providedOpPath"
 				providedRootOpID := "providedRootOpID"
 
 				fakeOpCallInterpreter := new(opFakes.FakeInterpreter)
@@ -202,7 +197,7 @@ var _ = Context("Interpreter", func() {
 					providedScope,
 					providedSCG,
 					providedID,
-					providedOpHandle,
+					providedOpPath,
 					nil,
 					providedRootOpID,
 				)
@@ -211,13 +206,13 @@ var _ = Context("Interpreter", func() {
 				actualScope,
 					actualSCGOpCall,
 					actualOpID,
-					actualParentOpHandle,
+					actualOpPath,
 					actualRootOpID := fakeOpCallInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualSCGOpCall).To(Equal(providedSCG.Op))
 				Expect(actualOpID).To(Equal(providedID))
-				Expect(actualParentOpHandle).To(Equal(providedOpHandle))
+				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 
 			})
@@ -250,7 +245,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					providedSCG,
 					providedID,
-					new(modelFakes.FakeDataHandle),
+					"dummyOpPath",
 					&providedParentID,
 					"providedRootOpID",
 				)
@@ -286,7 +281,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					providedSCG,
 					providedID,
-					new(modelFakes.FakeDataHandle),
+					"dummyOpPath",
 					&providedParentID,
 					"providedRootOpID",
 				)
@@ -322,7 +317,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					providedSCG,
 					providedID,
-					new(modelFakes.FakeDataHandle),
+					"dummyOpPath",
 					&providedParentID,
 					"providedRootOpID",
 				)

@@ -23,5 +23,6 @@ run:
       /src: $(srcDir)
     envVars:
       GOFLAGS: -mod=vendor
-    image: { ref: 'golang:1.14' }
+    # @TODO: identify why fake generation breaks on 1.14
+    image: { ref: 'golang:1.13' }
     workDir: /src/cli

@@ -9,7 +9,6 @@ import (
 type Interpreter interface {
 	Interpret(
 		expression string,
-		opHandle model.DataHandle,
 		scope map[string]*model.Value,
 	) (bool, error)
 }
@@ -27,7 +26,6 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	expression string,
-	opHandle model.DataHandle,
 	scope map[string]*model.Value,
 ) (bool, error) {
 
@@ -35,7 +33,6 @@ func (itp _interpreter) Interpret(
 	_, err := itp.reference.Interpret(
 		expression,
 		scope,
-		opHandle,
 	)
 
 	return nil == err, nil

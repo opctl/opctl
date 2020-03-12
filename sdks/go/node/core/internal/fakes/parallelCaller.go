@@ -9,21 +9,21 @@ import (
 )
 
 type FakeParallelCaller struct {
-	CallStub        func(context.Context, string, map[string]*model.Value, string, model.DataHandle, []*model.SCG)
+	CallStub        func(context.Context, string, map[string]*model.Value, string, string, []*model.SCG)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
 		arg3 map[string]*model.Value
 		arg4 string
-		arg5 model.DataHandle
+		arg5 string
 		arg6 []*model.SCG
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeParallelCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 string, arg5 model.DataHandle, arg6 []*model.SCG) {
+func (fake *FakeParallelCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 string, arg5 string, arg6 []*model.SCG) {
 	var arg6Copy []*model.SCG
 	if arg6 != nil {
 		arg6Copy = make([]*model.SCG, len(arg6))
@@ -35,7 +35,7 @@ func (fake *FakeParallelCaller) Call(arg1 context.Context, arg2 string, arg3 map
 		arg2 string
 		arg3 map[string]*model.Value
 		arg4 string
-		arg5 model.DataHandle
+		arg5 string
 		arg6 []*model.SCG
 	}{arg1, arg2, arg3, arg4, arg5, arg6Copy})
 	fake.recordInvocation("Call", []interface{}{arg1, arg2, arg3, arg4, arg5, arg6Copy})
@@ -51,13 +51,13 @@ func (fake *FakeParallelCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *FakeParallelCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, string, model.DataHandle, []*model.SCG)) {
+func (fake *FakeParallelCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, string, string, []*model.SCG)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
 }
 
-func (fake *FakeParallelCaller) CallArgsForCall(i int) (context.Context, string, map[string]*model.Value, string, model.DataHandle, []*model.SCG) {
+func (fake *FakeParallelCaller) CallArgsForCall(i int) (context.Context, string, map[string]*model.Value, string, string, []*model.SCG) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]

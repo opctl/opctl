@@ -6,7 +6,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	arrayFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/array/fakes"
 	objectFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/object/fakes"
 )
@@ -23,7 +22,6 @@ var _ = Context("Interpreter", func() {
 			/* arrange */
 			providedExpression := "providedExpression"
 
-			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedScope := map[string]*model.Value{}
 
 			fakeArrayInterpreter := new(arrayFakes.FakeInterpreter)
@@ -35,18 +33,15 @@ var _ = Context("Interpreter", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				providedExpression,
-				providedOpHandle,
 				providedScope,
 			)
 
 			/* assert */
 			actualScope,
-				actualExpression,
-				actualOpHandle := fakeArrayInterpreter.InterpretArgsForCall(0)
+				actualExpression := fakeArrayInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualExpression).To(Equal(providedExpression))
-			Expect(actualOpHandle).To(Equal(providedOpHandle))
 		})
 		Context("arrayInterpreter.Interpret doesn't err", func() {
 			It("should return expected result", func() {
@@ -68,7 +63,6 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
 					"dummyExpression",
-					new(modelFakes.FakeDataHandle),
 					map[string]*model.Value{},
 				)
 
@@ -81,7 +75,6 @@ var _ = Context("Interpreter", func() {
 				/* arrange */
 				providedExpression := "providedExpression"
 
-				providedOpHandle := new(modelFakes.FakeDataHandle)
 				providedScope := map[string]*model.Value{}
 
 				fakeArrayInterpreter := new(arrayFakes.FakeInterpreter)
@@ -100,18 +93,15 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					providedExpression,
-					providedOpHandle,
 					providedScope,
 				)
 
 				/* assert */
 				actualScope,
-					actualExpression,
-					actualOpHandle := fakeObjectInterpreter.InterpretArgsForCall(0)
+					actualExpression := fakeObjectInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualExpression).To(Equal(providedExpression))
-				Expect(actualOpHandle).To(Equal(providedOpHandle))
 			})
 			It("should return expected result", func() {
 				/* arrange */
@@ -139,7 +129,6 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
 					"dummyExpression",
-					new(modelFakes.FakeDataHandle),
 					map[string]*model.Value{},
 				)
 

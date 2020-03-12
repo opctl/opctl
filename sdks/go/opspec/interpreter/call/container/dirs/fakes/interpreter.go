@@ -9,13 +9,12 @@ import (
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func(model.DataHandle, map[string]*model.Value, map[string]string, string) (map[string]string, error)
+	InterpretStub        func(map[string]*model.Value, map[string]string, string) (map[string]string, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
-		arg1 model.DataHandle
-		arg2 map[string]*model.Value
-		arg3 map[string]string
-		arg4 string
+		arg1 map[string]*model.Value
+		arg2 map[string]string
+		arg3 string
 	}
 	interpretReturns struct {
 		result1 map[string]string
@@ -29,19 +28,18 @@ type FakeInterpreter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(arg1 model.DataHandle, arg2 map[string]*model.Value, arg3 map[string]string, arg4 string) (map[string]string, error) {
+func (fake *FakeInterpreter) Interpret(arg1 map[string]*model.Value, arg2 map[string]string, arg3 string) (map[string]string, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
-		arg1 model.DataHandle
-		arg2 map[string]*model.Value
-		arg3 map[string]string
-		arg4 string
-	}{arg1, arg2, arg3, arg4})
-	fake.recordInvocation("Interpret", []interface{}{arg1, arg2, arg3, arg4})
+		arg1 map[string]*model.Value
+		arg2 map[string]string
+		arg3 string
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("Interpret", []interface{}{arg1, arg2, arg3})
 	fake.interpretMutex.Unlock()
 	if fake.InterpretStub != nil {
-		return fake.InterpretStub(arg1, arg2, arg3, arg4)
+		return fake.InterpretStub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -56,17 +54,17 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *FakeInterpreter) InterpretCalls(stub func(model.DataHandle, map[string]*model.Value, map[string]string, string) (map[string]string, error)) {
+func (fake *FakeInterpreter) InterpretCalls(stub func(map[string]*model.Value, map[string]string, string) (map[string]string, error)) {
 	fake.interpretMutex.Lock()
 	defer fake.interpretMutex.Unlock()
 	fake.InterpretStub = stub
 }
 
-func (fake *FakeInterpreter) InterpretArgsForCall(i int) (model.DataHandle, map[string]*model.Value, map[string]string, string) {
+func (fake *FakeInterpreter) InterpretArgsForCall(i int) (map[string]*model.Value, map[string]string, string) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
 	argsForCall := fake.interpretArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
 func (fake *FakeInterpreter) InterpretReturns(result1 map[string]string, result2 error) {

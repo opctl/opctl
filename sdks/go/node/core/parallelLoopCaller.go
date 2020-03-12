@@ -23,7 +23,7 @@ type parallelLoopCaller interface {
 		id string,
 		inboundScope map[string]*model.Value,
 		scgParallelLoop model.SCGParallelLoopCall,
-		opHandle model.DataHandle,
+		opPath string,
 		parentCallID *string,
 		rootOpID string,
 	)
@@ -59,7 +59,7 @@ func (plpr _parallelLoopCaller) Call(
 	id string,
 	inboundScope map[string]*model.Value,
 	scgParallelLoop model.SCGParallelLoopCall,
-	opHandle model.DataHandle,
+	opPath string,
 	parentCallID *string,
 	rootOpID string,
 ) {
@@ -96,7 +96,6 @@ func (plpr _parallelLoopCaller) Call(
 		inboundScope,
 		scgParallelLoop.Range,
 		scgParallelLoop.Vars,
-		opHandle,
 	)
 	if nil != err {
 		return
@@ -105,7 +104,6 @@ func (plpr _parallelLoopCaller) Call(
 	// interpret initial iteration of the loop
 	var dcgParallelLoop *model.DCGParallelLoopCall
 	dcgParallelLoop, err = plpr.parallelLoopInterpreter.Interpret(
-		opHandle,
 		scgParallelLoop,
 		outboundScope,
 	)
@@ -132,7 +130,7 @@ func (plpr _parallelLoopCaller) Call(
 			childCallID,
 			outboundScope,
 			&scgParallelLoop.Run,
-			opHandle,
+			opPath,
 			parentCallID,
 			rootOpID,
 		)
@@ -148,7 +146,6 @@ func (plpr _parallelLoopCaller) Call(
 			outboundScope,
 			scgParallelLoop.Range,
 			scgParallelLoop.Vars,
-			opHandle,
 		)
 		if nil != err {
 			return
@@ -156,7 +153,6 @@ func (plpr _parallelLoopCaller) Call(
 
 		// interpret next iteration of the loop
 		dcgParallelLoop, err = plpr.parallelLoopInterpreter.Interpret(
-			opHandle,
 			scgParallelLoop,
 			outboundScope,
 		)

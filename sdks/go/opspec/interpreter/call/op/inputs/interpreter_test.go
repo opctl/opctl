@@ -6,7 +6,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	inputFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs/input/fakes"
 	paramsFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/fakes"
 )
@@ -35,8 +34,6 @@ var _ = Context("Interpreter", func() {
 
 				expectedParam := providedInputParams[providedArgName]
 
-				providedParentOpHandle := new(modelFakes.FakeDataHandle)
-
 				providedScope := map[string]*model.Value{
 					"scopeRef1Name": {},
 				}
@@ -57,7 +54,6 @@ var _ = Context("Interpreter", func() {
 				objectUnderTest.Interpret(
 					providedInputArgs,
 					providedInputParams,
-					providedParentOpHandle,
 					"dummyOpPath",
 					providedScope,
 					providedOpScratchDir,
@@ -67,14 +63,12 @@ var _ = Context("Interpreter", func() {
 				actualArgName,
 					actualArgValue,
 					actualParam,
-					actualParentOpHandle,
 					actualScope,
 					actualOpScratchDir := fakeInputInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualArgName).To(Equal(providedArgName))
 				Expect(actualArgValue).To(Equal(providedArgValue))
 				Expect(actualParam).To(Equal(expectedParam))
-				Expect(actualParentOpHandle).To(Equal(providedParentOpHandle))
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualOpScratchDir).To(Equal(providedOpScratchDir))
 
@@ -114,7 +108,6 @@ var _ = Context("Interpreter", func() {
 					objectUnderTest.Interpret(
 						providedInputArgs,
 						providedParams,
-						new(modelFakes.FakeDataHandle),
 						providedOpPath,
 						map[string]*model.Value{},
 						"dummyOpScratchDir",
@@ -159,7 +152,6 @@ var _ = Context("Interpreter", func() {
 					objectUnderTest.Interpret(
 						providedInputArgs,
 						providedInputParams,
-						new(modelFakes.FakeDataHandle),
 						"dummyOpPath",
 						map[string]*model.Value{},
 						"dummyOpScratchDir",

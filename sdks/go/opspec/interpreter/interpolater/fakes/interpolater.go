@@ -9,12 +9,11 @@ import (
 )
 
 type FakeInterpolater struct {
-	InterpolateStub        func(string, map[string]*model.Value, model.DataHandle) (string, error)
+	InterpolateStub        func(string, map[string]*model.Value) (string, error)
 	interpolateMutex       sync.RWMutex
 	interpolateArgsForCall []struct {
 		arg1 string
 		arg2 map[string]*model.Value
-		arg3 model.DataHandle
 	}
 	interpolateReturns struct {
 		result1 string
@@ -28,18 +27,17 @@ type FakeInterpolater struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpolater) Interpolate(arg1 string, arg2 map[string]*model.Value, arg3 model.DataHandle) (string, error) {
+func (fake *FakeInterpolater) Interpolate(arg1 string, arg2 map[string]*model.Value) (string, error) {
 	fake.interpolateMutex.Lock()
 	ret, specificReturn := fake.interpolateReturnsOnCall[len(fake.interpolateArgsForCall)]
 	fake.interpolateArgsForCall = append(fake.interpolateArgsForCall, struct {
 		arg1 string
 		arg2 map[string]*model.Value
-		arg3 model.DataHandle
-	}{arg1, arg2, arg3})
-	fake.recordInvocation("Interpolate", []interface{}{arg1, arg2, arg3})
+	}{arg1, arg2})
+	fake.recordInvocation("Interpolate", []interface{}{arg1, arg2})
 	fake.interpolateMutex.Unlock()
 	if fake.InterpolateStub != nil {
-		return fake.InterpolateStub(arg1, arg2, arg3)
+		return fake.InterpolateStub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -54,17 +52,17 @@ func (fake *FakeInterpolater) InterpolateCallCount() int {
 	return len(fake.interpolateArgsForCall)
 }
 
-func (fake *FakeInterpolater) InterpolateCalls(stub func(string, map[string]*model.Value, model.DataHandle) (string, error)) {
+func (fake *FakeInterpolater) InterpolateCalls(stub func(string, map[string]*model.Value) (string, error)) {
 	fake.interpolateMutex.Lock()
 	defer fake.interpolateMutex.Unlock()
 	fake.InterpolateStub = stub
 }
 
-func (fake *FakeInterpolater) InterpolateArgsForCall(i int) (string, map[string]*model.Value, model.DataHandle) {
+func (fake *FakeInterpolater) InterpolateArgsForCall(i int) (string, map[string]*model.Value) {
 	fake.interpolateMutex.RLock()
 	defer fake.interpolateMutex.RUnlock()
 	argsForCall := fake.interpolateArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeInterpolater) InterpolateReturns(result1 string, result2 error) {

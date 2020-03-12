@@ -8,7 +8,6 @@ import (
 //counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	Interpret(
-		opHandle model.DataHandle,
 		scgPredicates []*model.SCGPredicate,
 		scope map[string]*model.Value,
 	) (bool, error)
@@ -26,13 +25,11 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	opHandle model.DataHandle,
 	scgPredicates []*model.SCGPredicate,
 	scope map[string]*model.Value,
 ) (bool, error) {
 	for _, scgPredicate := range scgPredicates {
 		dcgPredicate, err := itp.predicateInterpreter.Interpret(
-			opHandle,
 			scgPredicate,
 			scope,
 		)

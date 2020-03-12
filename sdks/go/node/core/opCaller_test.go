@@ -8,7 +8,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	outputsFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs/fakes"
 	. "github.com/opctl/opctl/sdks/go/opspec/opfile/fakes"
@@ -30,13 +29,11 @@ var _ = Context("opCaller", func() {
 	Context("Call", func() {
 		It("should call pubSub.Publish w/ expected args", func() {
 			/* arrange */
-			providedOpHandleRef := "dummyOpRef"
-			fakeOpHandle := new(modelFakes.FakeDataHandle)
-			fakeOpHandle.RefReturns(providedOpHandleRef)
+			providedOpPath := "providedOpPath"
 
 			providedDCGOpCall := &model.DCGOpCall{
 				DCGBaseCall: model.DCGBaseCall{
-					OpHandle: fakeOpHandle,
+					OpPath:   providedOpPath,
 					RootOpID: "providedRootID",
 				},
 				OpID: "providedOpId",
@@ -48,7 +45,7 @@ var _ = Context("opCaller", func() {
 				Timestamp: time.Now().UTC(),
 				OpStarted: &model.OpStartedEvent{
 					OpID:     providedDCGOpCall.OpID,
-					OpRef:    providedOpHandleRef,
+					OpRef:    providedOpPath,
 					RootOpID: providedDCGOpCall.RootOpID,
 				},
 			}
@@ -91,11 +88,13 @@ var _ = Context("opCaller", func() {
 		})
 		It("should call caller.Call w/ expected args", func() {
 			/* arrange */
+			providedOpPath := "providedOpPath"
+
 			dummyString := "dummyString"
 			providedCtx := context.Background()
 			providedDCGOpCall := &model.DCGOpCall{
 				DCGBaseCall: model.DCGBaseCall{
-					OpHandle: new(modelFakes.FakeDataHandle),
+					OpPath:   providedOpPath,
 					RootOpID: "providedRootID",
 				},
 				ChildCallID: "dummyChildCallID",
@@ -110,6 +109,13 @@ var _ = Context("opCaller", func() {
 					"dummyScopeName": {String: &dummyString},
 				},
 				OpID: "providedOpID",
+			}
+
+			expectedChildCallScope := map[string]*model.Value{
+				"dummyScopeName": providedDCGOpCall.Inputs["dummyScopeName"],
+				"/": &model.Value{
+					Dir: &providedOpPath,
+				},
 			}
 
 			fakePubSub := new(FakePubSub)
@@ -145,29 +151,26 @@ var _ = Context("opCaller", func() {
 				actualChildCallID,
 				actualChildCallScope,
 				actualChildSCG,
-				actualOpRef,
+				actualOpPath,
 				actualParentCallID,
 				actualRootOpID := fakeCaller.CallArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualChildCallID).To(Equal(providedDCGOpCall.ChildCallID))
-			Expect(actualChildCallScope).To(Equal(providedDCGOpCall.Inputs))
+			Expect(actualChildCallScope).To(Equal(expectedChildCallScope))
 			Expect(actualChildSCG).To(Equal(providedDCGOpCall.ChildCallSCG))
-			Expect(actualOpRef).To(Equal(providedDCGOpCall.OpHandle))
+			Expect(actualOpPath).To(Equal(providedOpPath))
 			Expect(actualParentCallID).To(Equal(&providedDCGOpCall.OpID))
 			Expect(actualRootOpID).To(Equal(providedDCGOpCall.RootOpID))
 		})
 		Context("callStore.Get(callID).IsKilled returns true", func() {
 			It("should call pubSub.Publish w/ expected args", func() {
 				/* arrange */
-				providedOpHandleRef := "dummyOpRef"
-				fakeOpHandle := new(modelFakes.FakeDataHandle)
-				fakeOpHandle.RefReturns(providedOpHandleRef)
-				fakeOpHandle.PathReturns(new(string))
+				providedOpPath := "providedOpPath"
 
 				providedDCGOpCall := &model.DCGOpCall{
 					DCGBaseCall: model.DCGBaseCall{
-						OpHandle: fakeOpHandle,
+						OpPath:   providedOpPath,
 						RootOpID: "providedRootID",
 					},
 					OpID: "providedOpID",
@@ -181,7 +184,7 @@ var _ = Context("opCaller", func() {
 						OpID:     providedDCGOpCall.OpID,
 						Outcome:  model.OpOutcomeKilled,
 						RootOpID: providedDCGOpCall.RootOpID,
-						OpRef:    providedOpHandleRef,
+						OpRef:    providedOpPath,
 						Outputs:  map[string]*model.Value{},
 					},
 				}
@@ -231,14 +234,11 @@ var _ = Context("opCaller", func() {
 			Context("caller.Call errs", func() {
 				It("should call pubSub.Publish w/ expected args", func() {
 					/* arrange */
-					providedOpHandleRef := "dummyOpRef"
-					fakeOpHandle := new(modelFakes.FakeDataHandle)
-					fakeOpHandle.RefReturns(providedOpHandleRef)
-					fakeOpHandle.PathReturns(new(string))
+					providedOpPath := "providedOpPath"
 
 					providedDCGOpCall := &model.DCGOpCall{
 						DCGBaseCall: model.DCGBaseCall{
-							OpHandle: fakeOpHandle,
+							OpPath:   providedOpPath,
 							RootOpID: "providedRootID",
 						},
 						OpID: "providedOpId",
@@ -254,7 +254,7 @@ var _ = Context("opCaller", func() {
 								Message: errMsg,
 							},
 							OpID:     providedDCGOpCall.OpID,
-							OpRef:    providedOpHandleRef,
+							OpRef:    providedOpPath,
 							Outcome:  model.OpOutcomeFailed,
 							RootOpID: providedDCGOpCall.RootOpID,
 							Outputs:  map[string]*model.Value{},
@@ -302,14 +302,11 @@ var _ = Context("opCaller", func() {
 		Context("caller.Call didn't error", func() {
 			It("should call pubSub.Publish w/ expected args", func() {
 				/* arrange */
-				providedOpHandleRef := "dummyOpRef"
-				fakeOpHandle := new(modelFakes.FakeDataHandle)
-				fakeOpHandle.RefReturns(providedOpHandleRef)
-				fakeOpHandle.PathReturns(new(string))
+				providedOpPath := "providedOpPath"
 
 				providedDCGOpCall := &model.DCGOpCall{
 					DCGBaseCall: model.DCGBaseCall{
-						OpHandle: fakeOpHandle,
+						OpPath:   providedOpPath,
 						RootOpID: "providedRootID",
 					},
 					OpID: "providedOpId",
@@ -335,7 +332,7 @@ var _ = Context("opCaller", func() {
 					Timestamp: time.Now().UTC(),
 					OpEnded: &model.OpEndedEvent{
 						OpID:     providedDCGOpCall.OpID,
-						OpRef:    providedOpHandleRef,
+						OpRef:    providedOpPath,
 						Outcome:  model.OpOutcomeSucceeded,
 						RootOpID: providedDCGOpCall.RootOpID,
 						Outputs: map[string]*model.Value{

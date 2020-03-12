@@ -23,7 +23,7 @@ type serialLoopCaller interface {
 		id string,
 		inboundScope map[string]*model.Value,
 		scgSerialLoop model.SCGSerialLoopCall,
-		opHandle model.DataHandle,
+		opPath string,
 		parentCallID *string,
 		rootOpID string,
 	)
@@ -59,7 +59,7 @@ func (lpr _serialLoopCaller) Call(
 	id string,
 	inboundScope map[string]*model.Value,
 	scgSerialLoop model.SCGSerialLoopCall,
-	opHandle model.DataHandle,
+	opPath string,
 	parentCallID *string,
 	rootOpID string,
 ) {
@@ -92,7 +92,6 @@ func (lpr _serialLoopCaller) Call(
 		inboundScope,
 		scgSerialLoop.Range,
 		scgSerialLoop.Vars,
-		opHandle,
 	)
 	if nil != err {
 		return
@@ -101,7 +100,6 @@ func (lpr _serialLoopCaller) Call(
 	// interpret initial iteration of the loop
 	var dcgSerialLoop *model.DCGSerialLoopCall
 	dcgSerialLoop, err = lpr.serialLoopInterpreter.Interpret(
-		opHandle,
 		scgSerialLoop,
 		outboundScope,
 	)
@@ -123,7 +121,7 @@ func (lpr _serialLoopCaller) Call(
 			callID,
 			outboundScope,
 			&scgSerialLoop.Run,
-			opHandle,
+			opPath,
 			parentCallID,
 			rootOpID,
 		)
@@ -165,7 +163,6 @@ func (lpr _serialLoopCaller) Call(
 			outboundScope,
 			scgSerialLoop.Range,
 			scgSerialLoop.Vars,
-			opHandle,
 		)
 		if nil != err {
 			return
@@ -173,7 +170,6 @@ func (lpr _serialLoopCaller) Call(
 
 		// interpret next iteration of the loop
 		dcgSerialLoop, err = lpr.serialLoopInterpreter.Interpret(
-			opHandle,
 			scgSerialLoop,
 			outboundScope,
 		)

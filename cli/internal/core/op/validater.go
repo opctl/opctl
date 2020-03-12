@@ -47,7 +47,7 @@ func (ivkr _validater) Validate(
 
 	errs := ivkr.opValidator.Validate(
 		ctx,
-		opDirHandle,
+		*opDirHandle.Path(),
 	)
 	if len(errs) > 0 {
 		messageBuffer := bytes.NewBufferString(

@@ -696,7 +696,7 @@
                   "$ref": "#/properties/run/properties/op/properties/pullCreds"
                 },
                 "src": {
-                  "description": "Source of image. MUST be a valid [v1.0.1 OCI (Open Container Initiative) `image-layout`](https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md) tar or directory.",
+                  "description": "Source of image. MUST be a valid [v1.0.1 OCI (Open Container Initiative) `image-layout`](https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md) directory.",
                   "type": "string"
                 }
               },
@@ -884,10 +884,23 @@
               "description": "Reference to an op",
               "type": "string",
               "format": "uri-reference"
+            },
+            "src": {
+              "description": "Source of op. MUST be a valid op directory.",
+              "type": "string"
             }
           },
-          "required": [
-            "ref"
+          "oneOf": [
+            {
+              "required": [
+                "ref"
+              ]
+            },
+            {
+              "required": [
+                "src"
+              ]
+            }
           ],
           "additionalProperties": false
         },

@@ -47,7 +47,7 @@ func (this _core) StartOp(
 
 	opFile, err := this.opFileGetter.Get(
 		ctx,
-		opHandle,
+		*opHandle.Path(),
 	)
 	if nil != err {
 		return "", err
@@ -66,7 +66,7 @@ func (this _core) StartOp(
 			&model.SCG{
 				Op: scgOpCall,
 			},
-			opHandle,
+			*opHandle.Path(),
 			nil,
 			opID,
 		)

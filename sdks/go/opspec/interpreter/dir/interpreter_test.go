@@ -8,7 +8,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater"
 	referenceFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/fakes"
 )
@@ -20,7 +19,6 @@ var _ = Context("Interpret", func() {
 			providedScope := map[string]*model.Value{"": new(model.Value)}
 
 			providedExpression := "$(providedReference)"
-			providedOpRef := new(modelFakes.FakeDataHandle)
 
 			expectedReference := strings.TrimSuffix(strings.TrimPrefix(providedExpression, interpolater.RefStart), interpolater.RefEnd)
 
@@ -36,17 +34,14 @@ var _ = Context("Interpret", func() {
 			objectUnderTest.Interpret(
 				providedScope,
 				providedExpression,
-				providedOpRef,
 			)
 
 			/* assert */
 			expectedReference,
-				actualScope,
-				actualOpRef := fakeReferenceInterpreter.InterpretArgsForCall(0)
+				actualScope := fakeReferenceInterpreter.InterpretArgsForCall(0)
 
 			Expect(expectedReference).To(Equal(expectedReference))
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualOpRef).To(Equal(providedOpRef))
 		})
 		Context("referenceInterpreter.Interpret errs", func() {
 			It("should return expected result", func() {
@@ -70,7 +65,6 @@ var _ = Context("Interpret", func() {
 				actualValue, actualErr := objectUnderTest.Interpret(
 					providedScope,
 					providedExpression,
-					new(modelFakes.FakeDataHandle),
 				)
 
 				/* assert */
@@ -96,7 +90,6 @@ var _ = Context("Interpret", func() {
 					actualValue, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
 						providedExpression,
-						new(modelFakes.FakeDataHandle),
 					)
 
 					/* assert */
@@ -121,7 +114,6 @@ var _ = Context("Interpret", func() {
 					actualValue, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
 						"$(providedReference)",
-						new(modelFakes.FakeDataHandle),
 					)
 
 					/* assert */

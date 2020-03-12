@@ -7,7 +7,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	arrayFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/array/fakes"
 	booleanFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/boolean/fakes"
 	dirFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/dir/fakes"
@@ -40,7 +39,6 @@ var _ = Context("Interpreter", func() {
 					"dummyName",
 					"dummyValue",
 					nil,
-					new(modelFakes.FakeDataHandle),
 					map[string]*model.Value{},
 					"dummyScratchDir",
 				)
@@ -64,7 +62,6 @@ var _ = Context("Interpreter", func() {
 						providedName,
 						"",
 						&model.Param{},
-						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						"dummyScratchDir",
 					)
@@ -80,7 +77,6 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 					providedScope := map[string]*model.Value{"dummyValue": new(model.Value)}
 					providedExpression := "[dummyItem]"
-					providedOpHandle := new(modelFakes.FakeDataHandle)
 
 					fakeArrayInterpreter := new(arrayFakes.FakeInterpreter)
 
@@ -95,19 +91,16 @@ var _ = Context("Interpreter", func() {
 						"dummyName",
 						providedExpression,
 						&model.Param{Array: &model.ArrayParam{}},
-						providedOpHandle,
 						providedScope,
 						"dummyScratchDir",
 					)
 
 					/* assert */
 					actualScope,
-						actualExpression,
-						actualOpHandle := fakeArrayInterpreter.InterpretArgsForCall(0)
+						actualExpression := fakeArrayInterpreter.InterpretArgsForCall(0)
 
 					Expect(actualScope).To(Equal(providedScope))
 					Expect(actualExpression).To(Equal(providedExpression))
-					Expect(actualOpHandle).To(Equal(providedOpHandle))
 
 				})
 				It("should return expected results", func() {
@@ -125,7 +118,6 @@ var _ = Context("Interpreter", func() {
 						"dummyName",
 						"dummyValue",
 						&model.Param{Array: &model.ArrayParam{}},
-						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						"dummyScratchDir",
 					)
@@ -152,7 +144,6 @@ var _ = Context("Interpreter", func() {
 						"dummyName",
 						"dummyExpression",
 						&model.Param{Boolean: &model.BooleanParam{}},
-						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						"dummyScratchDir",
 					)
@@ -179,7 +170,6 @@ var _ = Context("Interpreter", func() {
 						"dummyName",
 						"$(/somePkgDir)",
 						&model.Param{Dir: &model.DirParam{}},
-						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						"dummyScratchDir",
 					)
@@ -194,7 +184,6 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 					providedScope := map[string]*model.Value{"dummyValue": new(model.Value)}
 					providedExpression := "$(/somePkgFile)"
-					providedOpHandle := new(modelFakes.FakeDataHandle)
 					providedScratchDir := "dummyScratchDir"
 
 					fakeFileInterpreter := new(fileFakes.FakeInterpreter)
@@ -210,7 +199,6 @@ var _ = Context("Interpreter", func() {
 						"dummyName",
 						providedExpression,
 						&model.Param{File: &model.FileParam{}},
-						providedOpHandle,
 						providedScope,
 						providedScratchDir,
 					)
@@ -218,12 +206,10 @@ var _ = Context("Interpreter", func() {
 					/* assert */
 					actualScope,
 						actualExpression,
-						actualOpHandle,
 						actualScratchDir := fakeFileInterpreter.InterpretArgsForCall(0)
 
 					Expect(actualScope).To(Equal(providedScope))
 					Expect(actualExpression).To(Equal(providedExpression))
-					Expect(actualOpHandle).To(Equal(providedOpHandle))
 					Expect(actualScratchDir).To(Equal(providedScratchDir))
 
 				})
@@ -242,7 +228,6 @@ var _ = Context("Interpreter", func() {
 						"dummyName",
 						"dummyValue",
 						&model.Param{File: &model.FileParam{}},
-						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						"dummyScratchDir",
 					)
@@ -268,7 +253,6 @@ var _ = Context("Interpreter", func() {
 						"dummyName",
 						"dummyValue",
 						&model.Param{Number: &model.NumberParam{}},
-						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						"dummyScratchDir",
 					)
@@ -296,7 +280,6 @@ var _ = Context("Interpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						"dummyScratchDir",
 					)
@@ -324,7 +307,6 @@ var _ = Context("Interpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						"dummyScratchDir",
 					)
@@ -352,7 +334,6 @@ var _ = Context("Interpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						"dummyScratchDir",
 					)
@@ -383,7 +364,6 @@ var _ = Context("Interpreter", func() {
 							providedName,
 							"dummyValue",
 							&model.Param{Socket: &model.SocketParam{}},
-							new(modelFakes.FakeDataHandle),
 							map[string]*model.Value{},
 							"dummyScratchDir",
 						)

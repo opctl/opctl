@@ -72,7 +72,7 @@ func (ivkr _runer) Run(
 
 	opFile, err := ivkr.opFileGetter.Get(
 		ctx,
-		opHandle,
+		opHandle.Ref(),
 	)
 	if nil != err {
 		ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
@@ -153,7 +153,7 @@ func (ivkr _runer) Run(
 		select {
 
 		case <-sigIntChannel:
-			if aSigIntWasReceivedAlready {
+			if !aSigIntWasReceivedAlready {
 				fmt.Println(ivkr.cliColorer.Error("Gracefully stopping... (signal Control-C again to force)"))
 				aSigIntWasReceivedAlready = true
 

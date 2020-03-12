@@ -18,7 +18,6 @@ type Scoper interface {
 		scope map[string]*model.Value,
 		scgLoopRange interface{},
 		scgLoopVars *model.SCGLoopVars,
-		opHandle model.DataHandle,
 	) (
 		map[string]*model.Value,
 		error,
@@ -54,7 +53,6 @@ func (lpr _scoper) Scope(
 	scope map[string]*model.Value,
 	scgLoopRange interface{},
 	scgLoopVars *model.SCGLoopVars,
-	opHandle model.DataHandle,
 ) (
 	map[string]*model.Value,
 	error,
@@ -85,7 +83,6 @@ func (lpr _scoper) Scope(
 	var err error
 	loopable, err = lpr.loopableInterpreter.Interpret(
 		scgLoopRange,
-		opHandle,
 		outboundScope,
 	)
 	if nil != err {
@@ -119,7 +116,6 @@ func (lpr _scoper) Scope(
 		value, err = lpr.valueInterpreter.Interpret(
 			rawValue,
 			outboundScope,
-			opHandle,
 		)
 		if nil != err {
 			return nil, err

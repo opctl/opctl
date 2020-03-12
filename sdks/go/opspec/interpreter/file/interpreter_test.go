@@ -8,7 +8,6 @@ import (
 	. "github.com/onsi/gomega"
 	coerceFakes "github.com/opctl/opctl/sdks/go/data/coerce/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	referenceFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/fakes"
 	valueFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/value/fakes"
 )
@@ -21,7 +20,6 @@ var _ = Context("Interpret", func() {
 			providedScope := map[string]*model.Value{"dummyName": {}}
 
 			providedExpression := "$(providedExpression)"
-			providedOpHandle := new(modelFakes.FakeDataHandle)
 
 			fakeReferenceInterpreter := new(referenceFakes.FakeInterpreter)
 			// err to trigger immediate return
@@ -35,18 +33,15 @@ var _ = Context("Interpret", func() {
 			objectUnderTest.Interpret(
 				providedScope,
 				providedExpression,
-				providedOpHandle,
 				"dummyScratchDir",
 			)
 
 			/* assert */
 			actualExpression,
-				actualScope,
-				actualOpHandle := fakeReferenceInterpreter.InterpretArgsForCall(0)
+				actualScope := fakeReferenceInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualExpression).To(Equal(providedExpression))
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualOpHandle).To(Equal(providedOpHandle))
 		})
 		Context("referenceInterpreter.Interpret errs", func() {
 			It("should return expected result", func() {
@@ -71,7 +66,6 @@ var _ = Context("Interpret", func() {
 				actualValue, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedExpression,
-					new(modelFakes.FakeDataHandle),
 					"providedScratchDir",
 				)
 
@@ -102,7 +96,6 @@ var _ = Context("Interpret", func() {
 				actualResultValue, actualResultErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					"$(providedExpression)",
-					new(modelFakes.FakeDataHandle),
 					providedScratchDir,
 				)
 
@@ -124,7 +117,6 @@ var _ = Context("Interpret", func() {
 		providedExpression := map[string]interface{}{
 			"prop1Name": "prop1Value",
 		}
-		providedOpHandle := new(modelFakes.FakeDataHandle)
 
 		fakeValueInterpreter := new(valueFakes.FakeInterpreter)
 		// err to trigger immediate return
@@ -139,18 +131,15 @@ var _ = Context("Interpret", func() {
 		objectUnderTest.Interpret(
 			providedScope,
 			providedExpression,
-			new(modelFakes.FakeDataHandle),
 			"dummyScratchDir",
 		)
 
 		/* assert */
 		actualExpression,
-			actualScope,
-			actualOpHandle := fakeValueInterpreter.InterpretArgsForCall(0)
+			actualScope := fakeValueInterpreter.InterpretArgsForCall(0)
 
 		Expect(actualExpression).To(Equal(providedExpression))
 		Expect(actualScope).To(Equal(providedScope))
-		Expect(actualOpHandle).To(Equal(providedOpHandle))
 
 	})
 	Context("valueInterpreter.Interpret errs", func() {
@@ -176,7 +165,6 @@ var _ = Context("Interpret", func() {
 			_, actualErr := objectUnderTest.Interpret(
 				map[string]*model.Value{},
 				providedExpression,
-				new(modelFakes.FakeDataHandle),
 				"dummyScratchDir",
 			)
 
@@ -204,7 +192,6 @@ var _ = Context("Interpret", func() {
 			objectUnderTest.Interpret(
 				map[string]*model.Value{},
 				map[string]interface{}{},
-				new(modelFakes.FakeDataHandle),
 				providedScratchDir,
 			)
 
@@ -231,7 +218,6 @@ var _ = Context("Interpret", func() {
 			actualValue, actualErr := objectUnderTest.Interpret(
 				map[string]*model.Value{},
 				map[string]interface{}{},
-				new(modelFakes.FakeDataHandle),
 				"dummyScratchDir",
 			)
 

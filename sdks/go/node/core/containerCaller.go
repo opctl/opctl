@@ -58,7 +58,7 @@ func (cc _containerCaller) Call(
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerID: dcgContainerCall.ContainerID,
-				OpRef:       dcgContainerCall.OpHandle.Ref(),
+				OpRef:       dcgContainerCall.OpPath,
 				RootOpID:    dcgContainerCall.RootOpID,
 				ExitCode:    exitCode,
 				Outputs:     outputs,
@@ -79,7 +79,7 @@ func (cc _containerCaller) Call(
 			Timestamp: time.Now().UTC(),
 			ContainerStarted: &model.ContainerStartedEvent{
 				ContainerID: dcgContainerCall.ContainerID,
-				OpRef:       dcgContainerCall.OpHandle.Ref(),
+				OpRef:       dcgContainerCall.OpPath,
 				RootOpID:    dcgContainerCall.RootOpID,
 			},
 		},
@@ -145,7 +145,7 @@ func (this _containerCaller) interpretLogs(
 						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
 							Data:        chunk,
 							ContainerID: dcgContainerCall.ContainerID,
-							OpRef:       dcgContainerCall.OpHandle.Ref(),
+							OpRef:       dcgContainerCall.OpPath,
 							RootOpID:    dcgContainerCall.RootOpID,
 						},
 					},
@@ -165,7 +165,7 @@ func (this _containerCaller) interpretLogs(
 						ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
 							Data:        chunk,
 							ContainerID: dcgContainerCall.ContainerID,
-							OpRef:       dcgContainerCall.OpHandle.Ref(),
+							OpRef:       dcgContainerCall.OpPath,
 							RootOpID:    dcgContainerCall.RootOpID,
 						},
 					},

@@ -16,7 +16,6 @@ type Interpreter interface {
 	Interpret(
 		inputArgs map[string]interface{},
 		inputParams map[string]*model.Param,
-		parentOpHandle model.DataHandle,
 		opPath string,
 		scope map[string]*model.Value,
 		opScratchDir string,
@@ -41,7 +40,6 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	inputArgs map[string]interface{},
 	inputParams map[string]*model.Param,
-	parentOpHandle model.DataHandle,
 	opPath string,
 	scope map[string]*model.Value,
 	opScratchDir string,
@@ -56,7 +54,6 @@ func (itp _interpreter) Interpret(
 			argName,
 			argValue,
 			inputParams[argName],
-			parentOpHandle,
 			scope,
 			opScratchDir,
 		)

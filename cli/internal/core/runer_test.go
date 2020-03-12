@@ -51,7 +51,7 @@ var _ = Context("Runer", func() {
 			Expect(actualOpRef).To(Equal(providedOpRef))
 			Expect(actualPullCreds).To(BeNil())
 		})
-		It("should call data.Get w/ expected args", func() {
+		It("should call opfile.Get w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
 
@@ -60,6 +60,9 @@ var _ = Context("Runer", func() {
 			fakeOpFileGetter.GetReturns(nil, errors.New("dummyError"))
 
 			fakeOpHandle := new(FakeDataHandle)
+			opRef := "opRef"
+			fakeOpHandle.RefReturns(opRef)
+
 			fakeDataResolver := new(dataresolver.Fake)
 			fakeDataResolver.ResolveReturns(fakeOpHandle)
 
@@ -79,12 +82,12 @@ var _ = Context("Runer", func() {
 
 			/* assert */
 			actualCtx,
-				actualOpHandle := fakeOpFileGetter.GetArgsForCall(0)
+				actualOpRef := fakeOpFileGetter.GetArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
-			Expect(actualOpHandle).To(Equal(fakeOpHandle))
+			Expect(actualOpRef).To(Equal(fakeOpHandle.Ref()))
 		})
-		Context("data.Get errors", func() {
+		Context("opfile.Get errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
 				getManifestErr := errors.New("dummyError")
@@ -113,7 +116,7 @@ var _ = Context("Runer", func() {
 					To(Equal(cliexiter.ExitReq{Message: getManifestErr.Error(), Code: 1}))
 			})
 		})
-		Context("data.Get doesn't error", func() {
+		Context("opfile.Get doesn't error", func() {
 			It("should call paramSatisfier.Satisfy w/ expected args", func() {
 				/* arrange */
 				param1Name := "DUMMY_PARAM1_NAME"

@@ -13,7 +13,6 @@ import (
 //counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	Interpret(
-		opHandle model.DataHandle,
 		scgPredicate *model.SCGPredicate,
 		scope map[string]*model.Value,
 	) (bool, error)
@@ -37,7 +36,6 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	opHandle model.DataHandle,
 	scgPredicate *model.SCGPredicate,
 	scope map[string]*model.Value,
 ) (bool, error) {
@@ -45,25 +43,21 @@ func (itp _interpreter) Interpret(
 	case nil != scgPredicate.Eq:
 		return itp.eqInterpreter.Interpret(
 			*scgPredicate.Eq,
-			opHandle,
 			scope,
 		)
 	case nil != scgPredicate.Exists:
 		return itp.existsInterpreter.Interpret(
 			*scgPredicate.Exists,
-			opHandle,
 			scope,
 		)
 	case nil != scgPredicate.Ne:
 		return itp.neInterpreter.Interpret(
 			*scgPredicate.Ne,
-			opHandle,
 			scope,
 		)
 	case nil != scgPredicate.NotExists:
 		return itp.notExistsInterpreter.Interpret(
 			*scgPredicate.NotExists,
-			opHandle,
 			scope,
 		)
 	default:

@@ -22,7 +22,7 @@ type Interpreter interface {
 		scgContainerCall *model.SCGContainerCall,
 		containerID string,
 		rootOpID string,
-		opHandle model.DataHandle,
+		opPath string,
 	) (*model.DCGContainerCall, error)
 }
 
@@ -60,13 +60,13 @@ func (itp _interpreter) Interpret(
 	scgContainerCall *model.SCGContainerCall,
 	containerID string,
 	rootOpID string,
-	opHandle model.DataHandle,
+	opPath string,
 ) (*model.DCGContainerCall, error) {
 
 	dcgContainerCall := &model.DCGContainerCall{
 		DCGBaseCall: model.DCGBaseCall{
 			RootOpID: rootOpID,
-			OpHandle: opHandle,
+			OpPath:   opPath,
 		},
 		Dirs:        map[string]string{},
 		EnvVars:     map[string]string{},
@@ -92,38 +92,38 @@ func (itp _interpreter) Interpret(
 
 	// interpret cmd
 	var err error
-	dcgContainerCall.Cmd, err = itp.cmdInterpreter.Interpret(scope, scgContainerCall.Cmd, opHandle)
+	dcgContainerCall.Cmd, err = itp.cmdInterpreter.Interpret(scope, scgContainerCall.Cmd)
 	if nil != err {
 		return nil, err
 	}
 
 	// interpret dirs
-	dcgContainerCall.Dirs, err = itp.dirsInterpreter.Interpret(opHandle, scope, scgContainerCall.Dirs, scratchDirPath)
+	dcgContainerCall.Dirs, err = itp.dirsInterpreter.Interpret(scope, scgContainerCall.Dirs, scratchDirPath)
 	if nil != err {
 		return nil, err
 	}
 
 	// interpret envVars
-	dcgContainerCall.EnvVars, err = itp.envVarsInterpreter.Interpret(scope, scgContainerCall.EnvVars, opHandle)
+	dcgContainerCall.EnvVars, err = itp.envVarsInterpreter.Interpret(scope, scgContainerCall.EnvVars)
 	if nil != err {
 		return nil, err
 	}
 
 	// interpret files
-	dcgContainerCall.Files, err = itp.filesInterpreter.Interpret(opHandle, scope, scgContainerCall.Files, scratchDirPath)
+	dcgContainerCall.Files, err = itp.filesInterpreter.Interpret(scope, scgContainerCall.Files, scratchDirPath)
 	if nil != err {
 		return nil, err
 	}
 
 	// interpret image
-	dcgContainerCall.Image, err = itp.imageInterpreter.Interpret(scope, scgContainerCall.Image, opHandle)
+	dcgContainerCall.Image, err = itp.imageInterpreter.Interpret(scope, scgContainerCall.Image)
 	if nil != err {
 		return nil, err
 	}
 
 	// interpret name as string
 	if nil != scgContainerCall.Name {
-		dcgContainerCallName, err := itp.stringInterpreter.Interpret(scope, *scgContainerCall.Name, opHandle)
+		dcgContainerCallName, err := itp.stringInterpreter.Interpret(scope, *scgContainerCall.Name)
 		if nil != err {
 			return nil, err
 		}
@@ -132,7 +132,7 @@ func (itp _interpreter) Interpret(
 
 	// interpret workDir
 	if "" != scgContainerCall.WorkDir {
-		dcgContainerCallWorkDir, err := itp.stringInterpreter.Interpret(scope, scgContainerCall.WorkDir, opHandle)
+		dcgContainerCallWorkDir, err := itp.stringInterpreter.Interpret(scope, scgContainerCall.WorkDir)
 		if nil != err {
 			return nil, err
 		}
