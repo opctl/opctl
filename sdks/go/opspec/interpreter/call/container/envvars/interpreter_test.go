@@ -7,7 +7,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	objectFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/object/fakes"
 	strFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/str/fakes"
 )
@@ -27,7 +26,6 @@ var _ = Context("Interpreter", func() {
 				envVarName: nil,
 			}
 			providedSCGContainerCallEnvVars := "providedSCGContainerCallEnvVars"
-			providedOpHandle := new(modelFakes.FakeDataHandle)
 
 			fakeObjectInterpreter := new(objectFakes.FakeInterpreter)
 			// err to trigger immediate return
@@ -41,17 +39,14 @@ var _ = Context("Interpreter", func() {
 			objectUnderTest.Interpret(
 				providedScope,
 				providedSCGContainerCallEnvVars,
-				providedOpHandle,
 			)
 
 			/* assert */
 			actualScope,
-				actualExpression,
-				actualOpHandle := fakeObjectInterpreter.InterpretArgsForCall(0)
+				actualExpression := fakeObjectInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualExpression).To(Equal(providedSCGContainerCallEnvVars))
-			Expect(actualOpHandle).To(Equal(actualOpHandle))
 		})
 		Context("objectInterpreter.Interpret errs", func() {
 			It("should return expected result", func() {
@@ -77,7 +72,6 @@ var _ = Context("Interpreter", func() {
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedSCGContainerCallEnvVars,
-					new(modelFakes.FakeDataHandle),
 				)
 
 				/* assert */
@@ -91,8 +85,6 @@ var _ = Context("Interpreter", func() {
 				providedScope := map[string]*model.Value{
 					envVarName: nil,
 				}
-
-				providedOpHandle := new(modelFakes.FakeDataHandle)
 
 				fakeObjectInterpreter := new(objectFakes.FakeInterpreter)
 
@@ -116,17 +108,14 @@ var _ = Context("Interpreter", func() {
 				objectUnderTest.Interpret(
 					providedScope,
 					map[string]interface{}{},
-					providedOpHandle,
 				)
 
 				/* assert */
 				actualScope,
-					actualExpression,
-					actualOpHandle := fakeStrInterpreter.InterpretArgsForCall(0)
+					actualExpression := fakeStrInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualExpression).To(Equal(expectedEnvVarValue))
-				Expect(actualOpHandle).To(Equal(providedOpHandle))
 			})
 			Context("stringInterpreter.Interpret errs", func() {
 
@@ -136,8 +125,6 @@ var _ = Context("Interpreter", func() {
 					providedScope := map[string]*model.Value{
 						envVarName: nil,
 					}
-
-					providedOpHandle := new(modelFakes.FakeDataHandle)
 
 					fakeObjectInterpreter := new(objectFakes.FakeInterpreter)
 
@@ -169,7 +156,6 @@ var _ = Context("Interpreter", func() {
 					_, actualErr := objectUnderTest.Interpret(
 						providedScope,
 						map[string]interface{}{},
-						providedOpHandle,
 					)
 
 					/* assert */
@@ -183,8 +169,6 @@ var _ = Context("Interpreter", func() {
 					providedScope := map[string]*model.Value{
 						envVarName: nil,
 					}
-
-					providedOpHandle := new(modelFakes.FakeDataHandle)
 
 					fakeObjectInterpreter := new(objectFakes.FakeInterpreter)
 
@@ -213,7 +197,6 @@ var _ = Context("Interpreter", func() {
 					actualResult, _ := objectUnderTest.Interpret(
 						providedScope,
 						map[string]interface{}{},
-						providedOpHandle,
 					)
 
 					/* assert */

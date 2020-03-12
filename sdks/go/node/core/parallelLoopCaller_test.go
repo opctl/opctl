@@ -12,7 +12,6 @@ import (
 	. "github.com/onsi/gomega"
 	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
@@ -58,7 +57,7 @@ var _ = Context("parallelLoopCaller", func() {
 					"id",
 					map[string]*model.Value{},
 					model.SCGParallelLoopCall{},
-					new(modelFakes.FakeDataHandle),
+					"dummyOpPath",
 					nil,
 					"rootOpID",
 				)
@@ -80,7 +79,7 @@ var _ = Context("parallelLoopCaller", func() {
 					Container: new(model.SCGContainerCall),
 				},
 			}
-			providedOpHandle := new(modelFakes.FakeDataHandle)
+			providedOpPath := "providedOpPath"
 			providedParentCallIDValue := "providedParentCallID"
 			providedParentCallID := &providedParentCallIDValue
 			providedRootOpID := "providedRootOpID"
@@ -124,7 +123,7 @@ var _ = Context("parallelLoopCaller", func() {
 
 			fakeCaller := new(FakeCaller)
 			eventChannel := make(chan model.Event, 100)
-			fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string) {
+			fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, string, *string, string) {
 				eventChannel <- model.Event{
 					CallEnded: &model.CallEndedEvent{
 						CallID: callID,
@@ -156,7 +155,7 @@ var _ = Context("parallelLoopCaller", func() {
 				"id",
 				providedScope,
 				providedSCGParallelLoopCall,
-				providedOpHandle,
+				providedOpPath,
 				providedParentCallID,
 				providedRootOpID,
 			)
@@ -166,14 +165,14 @@ var _ = Context("parallelLoopCaller", func() {
 				actualCallID,
 				actualScope,
 				actualSCG,
-				actualOpHandle,
+				actualOpPath,
 				actualParentCallID,
 				actualRootOpID := fakeCaller.CallArgsForCall(0)
 
 			Expect(actualCallID).To(Equal(callID))
 			Expect(actualScope).To(Equal(expectedScope))
 			Expect(actualSCG).To(Equal(&providedSCGParallelLoopCall.Run))
-			Expect(actualOpHandle).To(Equal(providedOpHandle))
+			Expect(actualOpPath).To(Equal(providedOpPath))
 			Expect(actualParentCallID).To(Equal(providedParentCallID))
 			Expect(actualRootOpID).To(Equal(providedRootOpID))
 		})

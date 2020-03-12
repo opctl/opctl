@@ -10,11 +10,11 @@ import (
 )
 
 type FakeGetter struct {
-	GetStub        func(context.Context, model.DataHandle) (*model.OpFile, error)
+	GetStub        func(context.Context, string) (*model.OpFile, error)
 	getMutex       sync.RWMutex
 	getArgsForCall []struct {
 		arg1 context.Context
-		arg2 model.DataHandle
+		arg2 string
 	}
 	getReturns struct {
 		result1 *model.OpFile
@@ -28,12 +28,12 @@ type FakeGetter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeGetter) Get(arg1 context.Context, arg2 model.DataHandle) (*model.OpFile, error) {
+func (fake *FakeGetter) Get(arg1 context.Context, arg2 string) (*model.OpFile, error) {
 	fake.getMutex.Lock()
 	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
 		arg1 context.Context
-		arg2 model.DataHandle
+		arg2 string
 	}{arg1, arg2})
 	fake.recordInvocation("Get", []interface{}{arg1, arg2})
 	fake.getMutex.Unlock()
@@ -53,13 +53,13 @@ func (fake *FakeGetter) GetCallCount() int {
 	return len(fake.getArgsForCall)
 }
 
-func (fake *FakeGetter) GetCalls(stub func(context.Context, model.DataHandle) (*model.OpFile, error)) {
+func (fake *FakeGetter) GetCalls(stub func(context.Context, string) (*model.OpFile, error)) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = stub
 }
 
-func (fake *FakeGetter) GetArgsForCall(i int) (context.Context, model.DataHandle) {
+func (fake *FakeGetter) GetArgsForCall(i int) (context.Context, string) {
 	fake.getMutex.RLock()
 	defer fake.getMutex.RUnlock()
 	argsForCall := fake.getArgsForCall[i]

@@ -18,7 +18,7 @@ type DCG struct {
 
 type DCGBaseCall struct {
 	RootOpID string `json:"rootOpId"`
-	OpHandle DataHandle
+	OpPath   string `json:"opPath"`
 }
 
 type DCGContainerCall struct {
@@ -40,7 +40,8 @@ type DCGContainerCall struct {
 }
 
 type DCGContainerCallImage struct {
-	Src       *Value     `json:"src,omitempty"`
+	Src *Value `json:"src,omitempty"`
+	// @TODO: deprecate in favor of Src
 	Ref       *string    `json:"ref"`
 	PullCreds *PullCreds `json:"pullCreds,omitempty"`
 }
@@ -57,11 +58,6 @@ type DCGOpCall struct {
 	Inputs       map[string]*Value `json:"inputs"`
 	ChildCallSCG *SCG              `json:"childCallScg"`
 	ChildCallID  string            `json:"childCallId"`
-}
-
-type DCGOpCallPkg struct {
-	Ref       string     `json:"ref"`
-	PullCreds *PullCreds `json:"pullCreds,omitempty"`
 }
 
 type DCGParallelLoopCall struct {

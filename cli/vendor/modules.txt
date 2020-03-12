@@ -336,13 +336,13 @@ github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/sockets
 github.com/opctl/opctl/sdks/go/opspec/interpreter/str
 github.com/opctl/opctl/sdks/go/opspec/interpreter/value
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs
+github.com/opctl/opctl/sdks/go/opspec/interpreter/dir
 github.com/opctl/opctl/sdks/go/opspec/interpreter/array
 github.com/opctl/opctl/sdks/go/opspec/interpreter/object
 github.com/opctl/opctl/sdks/go/data/provider/git/internal
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/constraints
 github.com/opctl/opctl/sdks/go/node/api/handler/pkgs/ref/contents
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate
-github.com/opctl/opctl/sdks/go/opspec/interpreter/dir
 github.com/opctl/opctl/sdks/go/opspec/interpreter/file
 github.com/opctl/opctl/sdks/go/opspec/interpreter/reference
 github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater

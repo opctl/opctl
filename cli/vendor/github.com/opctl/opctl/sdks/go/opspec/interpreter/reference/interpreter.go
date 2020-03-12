@@ -40,7 +40,6 @@ type Interpreter interface {
 	Interpret(
 		ref string,
 		scope map[string]*model.Value,
-		opHandle model.DataHandle,
 	) (*model.Value, error)
 }
 
@@ -66,7 +65,6 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	ref string,
 	scope map[string]*model.Value,
-	opHandle model.DataHandle,
 ) (*model.Value, error) {
 
 	var data *model.Value
@@ -76,7 +74,6 @@ func (itp _interpreter) Interpret(
 	ref, err = itp.interpolate(
 		ref,
 		scope,
-		opHandle,
 	)
 	if nil != err {
 		return nil, err
@@ -85,7 +82,6 @@ func (itp _interpreter) Interpret(
 	data, ref, err = itp.getRootValue(
 		ref,
 		scope,
-		opHandle,
 	)
 	if nil != err {
 		return nil, err
@@ -102,7 +98,6 @@ func (itp _interpreter) Interpret(
 func (itp _interpreter) interpolate(
 	ref string,
 	scope map[string]*model.Value,
-	opHandle model.DataHandle,
 ) (string, error) {
 	refBuffer := []byte{}
 	i := 0
@@ -124,7 +119,6 @@ func (itp _interpreter) interpolate(
 			nestedRefRootValue, nestedRef, err = itp.getRootValue(
 				nestedRef,
 				scope,
-				opHandle,
 			)
 			if nil != err {
 				return "", err
@@ -155,11 +149,9 @@ func (itp _interpreter) interpolate(
 func (itp _interpreter) getRootValue(
 	ref string,
 	scope map[string]*model.Value,
-	opHandle model.DataHandle,
 ) (*model.Value, string, error) {
 	if strings.HasPrefix(ref, "/") {
-		// op path ref
-		return &model.Value{Dir: opHandle.Path()}, ref, nil
+		return scope["/"], ref, nil
 	}
 
 	// scope ref

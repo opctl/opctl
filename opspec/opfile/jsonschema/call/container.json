@@ -85,7 +85,7 @@
           "$ref": "pullCreds.json"
         },
         "src": {
-          "description": "Source of image. MUST be a valid [v1.0.1 OCI (Open Container Initiative) `image-layout`](https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md) tar or directory.",
+          "description": "Source of image. MUST be a valid [v1.0.1 OCI (Open Container Initiative) `image-layout`](https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md) directory.",
           "type": "string"
         }
       },

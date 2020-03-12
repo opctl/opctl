@@ -13,7 +13,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	dirFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/dir/fakes"
 )
 
@@ -38,7 +37,6 @@ var _ = Context("Dirs", func() {
 				// implicitly bound
 				containerDirPath: "",
 			}
-			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedScope := map[string]*model.Value{}
 			providedScratchDir := "dummyScratchDir"
 
@@ -55,7 +53,6 @@ var _ = Context("Dirs", func() {
 
 			/* act */
 			objectUnderTest.Interpret(
-				providedOpHandle,
 				providedScope,
 				providedSCGContainerCallDirs,
 				providedScratchDir,
@@ -63,12 +60,10 @@ var _ = Context("Dirs", func() {
 
 			/* assert */
 			actualScope,
-				actualExpression,
-				actualOpHandle := fakeDirInterpreter.InterpretArgsForCall(0)
+				actualExpression := fakeDirInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualExpression).To(Equal(fmt.Sprintf("$(%v)", containerDirPath)))
-			Expect(actualOpHandle).To(Equal(providedOpHandle))
 		})
 		Context("dirInterpreter.Interpret errs", func() {
 			It("should call os.MkdirAll w/ expected args", func() {
@@ -97,7 +92,6 @@ var _ = Context("Dirs", func() {
 
 				/* act */
 				objectUnderTest.Interpret(
-					new(modelFakes.FakeDataHandle),
 					map[string]*model.Value{},
 					providedSCGContainerCallDirs,
 					providedScratchDirPath,
@@ -132,7 +126,6 @@ var _ = Context("Dirs", func() {
 
 					/* act */
 					actualDCGContainerCallDirs, actualErr := objectUnderTest.Interpret(
-						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						map[string]string{
 							// implicitly bound
@@ -171,7 +164,6 @@ var _ = Context("Dirs", func() {
 
 					/* act */
 					objectUnderTest.Interpret(
-						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						map[string]string{
 							// implicitly bound
@@ -218,7 +210,6 @@ var _ = Context("Dirs", func() {
 
 						/* act */
 						_, actualErr := objectUnderTest.Interpret(
-							new(modelFakes.FakeDataHandle),
 							map[string]*model.Value{},
 							map[string]string{
 								// implicitly bound

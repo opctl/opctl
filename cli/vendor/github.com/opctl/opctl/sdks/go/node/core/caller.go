@@ -19,7 +19,7 @@ type caller interface {
 		id string,
 		scope map[string]*model.Value,
 		scg *model.SCG,
-		opHandle model.DataHandle,
+		opPath string,
 		parentCallID *string,
 		rootOpID string,
 	)
@@ -87,7 +87,7 @@ func (clr _caller) Call(
 	id string,
 	scope map[string]*model.Value,
 	scg *model.SCG,
-	opHandle model.DataHandle,
+	opPath string,
 	parentCallID *string,
 	rootOpID string,
 ) {
@@ -191,7 +191,7 @@ func (clr _caller) Call(
 		scope,
 		scg,
 		id,
-		opHandle,
+		opPath,
 		parentCallID,
 		rootOpID,
 	)
@@ -231,7 +231,7 @@ func (clr _caller) Call(
 			id,
 			scope,
 			rootOpID,
-			opHandle,
+			opPath,
 			scg.Parallel,
 		)
 		return
@@ -241,7 +241,7 @@ func (clr _caller) Call(
 			id,
 			scope,
 			*scg.ParallelLoop,
-			opHandle,
+			opPath,
 			parentCallID,
 			rootOpID,
 		)
@@ -252,7 +252,7 @@ func (clr _caller) Call(
 			id,
 			scope,
 			rootOpID,
-			opHandle,
+			opPath,
 			scg.Serial,
 		)
 		return
@@ -262,7 +262,7 @@ func (clr _caller) Call(
 			id,
 			scope,
 			*scg.SerialLoop,
-			opHandle,
+			opPath,
 			parentCallID,
 			rootOpID,
 		)

@@ -2,7 +2,7 @@ package opspec
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
+
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
 
@@ -11,7 +11,7 @@ type Validator interface {
 	// Validate validates an op
 	Validate(
 		ctx context.Context,
-		opHandle model.DataHandle,
+		opPath string,
 	) []error
 }
 
@@ -28,12 +28,12 @@ type _validator struct {
 
 func (vdr _validator) Validate(
 	ctx context.Context,
-	opHandle model.DataHandle,
+	opPath string,
 ) []error {
 	errs := []error{}
 	if _, err := vdr.opFileGetter.Get(
 		ctx,
-		opHandle,
+		opPath,
 	); nil != err {
 		errs = append(errs, err)
 	}

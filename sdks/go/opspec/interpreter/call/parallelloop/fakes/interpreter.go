@@ -9,12 +9,11 @@ import (
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func(model.DataHandle, model.SCGParallelLoopCall, map[string]*model.Value) (*model.DCGParallelLoopCall, error)
+	InterpretStub        func(model.SCGParallelLoopCall, map[string]*model.Value) (*model.DCGParallelLoopCall, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
-		arg1 model.DataHandle
-		arg2 model.SCGParallelLoopCall
-		arg3 map[string]*model.Value
+		arg1 model.SCGParallelLoopCall
+		arg2 map[string]*model.Value
 	}
 	interpretReturns struct {
 		result1 *model.DCGParallelLoopCall
@@ -28,18 +27,17 @@ type FakeInterpreter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(arg1 model.DataHandle, arg2 model.SCGParallelLoopCall, arg3 map[string]*model.Value) (*model.DCGParallelLoopCall, error) {
+func (fake *FakeInterpreter) Interpret(arg1 model.SCGParallelLoopCall, arg2 map[string]*model.Value) (*model.DCGParallelLoopCall, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
-		arg1 model.DataHandle
-		arg2 model.SCGParallelLoopCall
-		arg3 map[string]*model.Value
-	}{arg1, arg2, arg3})
-	fake.recordInvocation("Interpret", []interface{}{arg1, arg2, arg3})
+		arg1 model.SCGParallelLoopCall
+		arg2 map[string]*model.Value
+	}{arg1, arg2})
+	fake.recordInvocation("Interpret", []interface{}{arg1, arg2})
 	fake.interpretMutex.Unlock()
 	if fake.InterpretStub != nil {
-		return fake.InterpretStub(arg1, arg2, arg3)
+		return fake.InterpretStub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -54,17 +52,17 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *FakeInterpreter) InterpretCalls(stub func(model.DataHandle, model.SCGParallelLoopCall, map[string]*model.Value) (*model.DCGParallelLoopCall, error)) {
+func (fake *FakeInterpreter) InterpretCalls(stub func(model.SCGParallelLoopCall, map[string]*model.Value) (*model.DCGParallelLoopCall, error)) {
 	fake.interpretMutex.Lock()
 	defer fake.interpretMutex.Unlock()
 	fake.InterpretStub = stub
 }
 
-func (fake *FakeInterpreter) InterpretArgsForCall(i int) (model.DataHandle, model.SCGParallelLoopCall, map[string]*model.Value) {
+func (fake *FakeInterpreter) InterpretArgsForCall(i int) (model.SCGParallelLoopCall, map[string]*model.Value) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
 	argsForCall := fake.interpretArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeInterpreter) InterpretReturns(result1 *model.DCGParallelLoopCall, result2 error) {

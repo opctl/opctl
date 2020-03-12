@@ -14,7 +14,6 @@ import (
 //counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	Interpret(
-		opHandle model.DataHandle,
 		scope map[string]*model.Value,
 		scgContainerCallFiles map[string]string,
 		scratchDirPath string,
@@ -41,7 +40,6 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	opHandle model.DataHandle,
 	scope map[string]*model.Value,
 	scgContainerCallDirs map[string]string,
 	scratchDirPath string,
@@ -59,7 +57,6 @@ dirLoop:
 		dirValue, err := itp.dirInterpreter.Interpret(
 			scope,
 			dirExpression,
-			opHandle,
 		)
 		if nil != err {
 			// @TODO: return existence from fileInterpreter.Interpret (rather than treating all errors as due to non-existence) so we unambiguously know this is an assignment

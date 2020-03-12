@@ -10,7 +10,6 @@ type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
 		scgContainerCallCmd []interface{},
-		opHandle model.DataHandle,
 	) ([]string, error)
 }
 
@@ -28,13 +27,12 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	scgContainerCallCmd []interface{},
-	opHandle model.DataHandle,
 ) ([]string, error) {
 	dcgContainerCallCmd := []string{}
 
 	for _, cmdEntryExpression := range scgContainerCallCmd {
 		// interpret each entry as string
-		cmdEntry, err := itp.stringInterpreter.Interpret(scope, cmdEntryExpression, opHandle)
+		cmdEntry, err := itp.stringInterpreter.Interpret(scope, cmdEntryExpression)
 		if nil != err {
 			return nil, err
 		}

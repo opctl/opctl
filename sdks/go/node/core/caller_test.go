@@ -8,7 +8,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	callFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/fakes"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
@@ -53,7 +52,7 @@ var _ = Context("caller", func() {
 					"dummyCallID",
 					map[string]*model.Value{},
 					nil,
-					new(modelFakes.FakeDataHandle),
+					"dummyOpPath",
 					nil,
 					"dummyRootOpID",
 				)
@@ -65,7 +64,7 @@ var _ = Context("caller", func() {
 			providedCallID := "dummyCallID"
 			providedScope := map[string]*model.Value{}
 			providedSCG := &model.SCG{}
-			providedOpHandle := new(modelFakes.FakeDataHandle)
+			providedOpPath := "providedOpPath"
 			providedParentIDValue := "providedParentID"
 			providedParentID := &providedParentIDValue
 			providedRootOpID := "dummyRootOpID"
@@ -93,7 +92,7 @@ var _ = Context("caller", func() {
 				providedCallID,
 				providedScope,
 				providedSCG,
-				providedOpHandle,
+				providedOpPath,
 				providedParentID,
 				providedRootOpID,
 			)
@@ -102,14 +101,14 @@ var _ = Context("caller", func() {
 			actualScope,
 				actualSCG,
 				actualID,
-				actualOpHandle,
+				actualOpPath,
 				actualParentID,
 				actualRootOpID := fakeCallInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualSCG).To(Equal(providedSCG))
 			Expect(actualID).To(Equal(providedCallID))
-			Expect(actualOpHandle).To(Equal(providedOpHandle))
+			Expect(actualOpPath).To(Equal(providedOpPath))
 			Expect(actualParentID).To(Equal(providedParentID))
 			Expect(actualRootOpID).To(Equal(providedRootOpID))
 		})
@@ -152,7 +151,7 @@ var _ = Context("caller", func() {
 					providedCallID,
 					map[string]*model.Value{},
 					&model.SCG{},
-					new(modelFakes.FakeDataHandle),
+					"dummyOpPath",
 					nil,
 					providedRootOpID,
 				)
@@ -202,7 +201,7 @@ var _ = Context("caller", func() {
 					"dummyCallID",
 					providedScope,
 					providedSCG,
-					new(modelFakes.FakeDataHandle),
+					"dummyOpPath",
 					nil,
 					"dummyRootOpID",
 				)
@@ -240,7 +239,7 @@ var _ = Context("caller", func() {
 						Ref: "dummyOpRef",
 					},
 				}
-				providedOpHandle := new(modelFakes.FakeDataHandle)
+				providedOpPath := "providedOpPath"
 				providedParentID := "providedParentID"
 				providedRootOpID := "dummyRootOpID"
 
@@ -261,7 +260,7 @@ var _ = Context("caller", func() {
 					providedCallID,
 					providedScope,
 					providedSCG,
-					providedOpHandle,
+					providedOpPath,
 					&providedParentID,
 					providedRootOpID,
 				)
@@ -292,7 +291,7 @@ var _ = Context("caller", func() {
 						{Container: &model.SCGContainerCall{}},
 					},
 				}
-				providedOpHandle := new(modelFakes.FakeDataHandle)
+				providedOpPath := "providedOpPath"
 				providedRootOpID := "dummyRootOpID"
 
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
@@ -318,7 +317,7 @@ var _ = Context("caller", func() {
 					providedCallID,
 					providedScope,
 					providedSCG,
-					providedOpHandle,
+					providedOpPath,
 					nil,
 					providedRootOpID,
 				)
@@ -328,13 +327,13 @@ var _ = Context("caller", func() {
 					actualCallID,
 					actualScope,
 					actualRootOpID,
-					actualOpHandle,
+					actualOpPath,
 					actualSCG := fakeParallelCaller.CallArgsForCall(0)
 
 				Expect(actualCallID).To(Equal(providedCallID))
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
-				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualSCG).To(Equal(providedSCG.Parallel))
 			})
 		})
@@ -349,7 +348,7 @@ var _ = Context("caller", func() {
 				providedSCG := &model.SCG{
 					ParallelLoop: &model.SCGParallelLoopCall{},
 				}
-				providedOpHandle := new(modelFakes.FakeDataHandle)
+				providedOpPath := "providedOpPath"
 				providedRootOpID := "dummyRootOpID"
 				providedParentID := "providedParentID"
 
@@ -376,7 +375,7 @@ var _ = Context("caller", func() {
 					providedCallID,
 					providedScope,
 					providedSCG,
-					providedOpHandle,
+					providedOpPath,
 					&providedParentID,
 					providedRootOpID,
 				)
@@ -386,14 +385,14 @@ var _ = Context("caller", func() {
 					actualID,
 					actualScope,
 					actualSCGParallelLoopCall,
-					actualOpHandle,
+					actualOpPath,
 					actualParentID,
 					actualRootOpID := fakeParallelLoopCaller.CallArgsForCall(0)
 
 				Expect(actualID).To(Equal(providedCallID))
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualSCGParallelLoopCall).To(Equal(*providedSCG.ParallelLoop))
-				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(*actualParentID).To(Equal(providedParentID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 			})
@@ -412,7 +411,7 @@ var _ = Context("caller", func() {
 						{Container: &model.SCGContainerCall{}},
 					},
 				}
-				providedOpHandle := new(modelFakes.FakeDataHandle)
+				providedOpPath := "providedOpPath"
 				providedRootOpID := "dummyRootOpID"
 
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
@@ -439,7 +438,7 @@ var _ = Context("caller", func() {
 					providedCallID,
 					providedScope,
 					providedSCG,
-					providedOpHandle,
+					providedOpPath,
 					nil,
 					providedRootOpID,
 				)
@@ -449,13 +448,13 @@ var _ = Context("caller", func() {
 					actualCallID,
 					actualScope,
 					actualRootOpID,
-					actualOpHandle,
+					actualOpPath,
 					actualSCG := fakeSerialCaller.CallArgsForCall(0)
 
 				Expect(actualCallID).To(Equal(providedCallID))
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
-				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualSCG).To(Equal(providedSCG.Serial))
 			})
 		})
@@ -470,7 +469,7 @@ var _ = Context("caller", func() {
 				providedSCG := &model.SCG{
 					SerialLoop: &model.SCGSerialLoopCall{},
 				}
-				providedOpHandle := new(modelFakes.FakeDataHandle)
+				providedOpPath := "providedOpPath"
 				providedRootOpID := "dummyRootOpID"
 				providedParentID := "providedParentID"
 
@@ -497,7 +496,7 @@ var _ = Context("caller", func() {
 					providedCallID,
 					providedScope,
 					providedSCG,
-					providedOpHandle,
+					providedOpPath,
 					&providedParentID,
 					providedRootOpID,
 				)
@@ -507,14 +506,14 @@ var _ = Context("caller", func() {
 					actualID,
 					actualScope,
 					actualSCGSerialLoopCall,
-					actualOpHandle,
+					actualOpPath,
 					actualParentID,
 					actualRootOpID := fakeSerialLoopCaller.CallArgsForCall(0)
 
 				Expect(actualID).To(Equal(providedCallID))
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualSCGSerialLoopCall).To(Equal(*providedSCG.SerialLoop))
-				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(*actualParentID).To(Equal(providedParentID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 			})
@@ -526,8 +525,6 @@ var _ = Context("caller", func() {
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
 				providedSCG := &model.SCG{}
-				providedOpHandle := new(modelFakes.FakeDataHandle)
-				providedRootOpID := "dummyRootOpID"
 				expectedError := fmt.Errorf("Invalid call graph %+v\n", providedSCG)
 
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
@@ -552,9 +549,9 @@ var _ = Context("caller", func() {
 					providedCallID,
 					providedScope,
 					providedSCG,
-					providedOpHandle,
+					"providedOpPath",
 					nil,
-					providedRootOpID,
+					"dummyRootOpID",
 				)
 
 				/* assert */

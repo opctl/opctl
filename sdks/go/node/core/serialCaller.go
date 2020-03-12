@@ -18,7 +18,7 @@ type serialCaller interface {
 		callID string,
 		inboundScope map[string]*model.Value,
 		rootOpID string,
-		opHandle model.DataHandle,
+		opPath string,
 		scgSerialCall []*model.SCG,
 	)
 }
@@ -47,7 +47,7 @@ func (sc _serialCaller) Call(
 	callID string,
 	inboundScope map[string]*model.Value,
 	rootOpID string,
-	opHandle model.DataHandle,
+	opPath string,
 	scgSerialCall []*model.SCG,
 ) {
 	outputs := map[string]*model.Value{}
@@ -102,7 +102,7 @@ func (sc _serialCaller) Call(
 			childCallID,
 			outputs,
 			scgCall,
-			opHandle,
+			opPath,
 			&callID,
 			rootOpID,
 		)

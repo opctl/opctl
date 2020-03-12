@@ -4,7 +4,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	strFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/str/fakes"
 )
 
@@ -23,7 +22,6 @@ var _ = Context("Interpreter", func() {
 				providedCurrentScope := map[string]*model.Value{
 					"name1": {String: &providedString1},
 				}
-				providedOpHandle := new(modelFakes.FakeDataHandle)
 
 				providedSCGContainerCallCmd := []interface{}{
 					"dummy1",
@@ -41,18 +39,15 @@ var _ = Context("Interpreter", func() {
 				objectUnderTest.Interpret(
 					providedCurrentScope,
 					providedSCGContainerCallCmd,
-					providedOpHandle,
 				)
 
 				/* assert */
 				for expectedCmdIndex, expectedCmdEntry := range providedSCGContainerCallCmd {
 					actualScope,
-						actualCmdEntry,
-						actualOpHandle := fakeStrInterpreter.InterpretArgsForCall(expectedCmdIndex)
+						actualCmdEntry := fakeStrInterpreter.InterpretArgsForCall(expectedCmdIndex)
 
 					Expect(actualScope).To(Equal(providedCurrentScope))
 					Expect(actualCmdEntry).To(Equal(expectedCmdEntry))
-					Expect(actualOpHandle).To(Equal(providedOpHandle))
 				}
 			})
 			It("should return expected dcg.Cmd", func() {
@@ -79,7 +74,6 @@ var _ = Context("Interpreter", func() {
 				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedSCGContainerCallCmd,
-					new(modelFakes.FakeDataHandle),
 				)
 
 				/* assert */

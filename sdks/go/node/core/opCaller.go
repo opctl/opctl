@@ -71,7 +71,7 @@ func (oc _opCaller) Call(
 					OpErred: &model.OpErredEvent{
 						Msg:      err.Error(),
 						OpID:     dcgOpCall.OpID,
-						OpRef:    dcgOpCall.OpHandle.Ref(),
+						OpRef:    dcgOpCall.OpPath,
 						RootOpID: dcgOpCall.RootOpID,
 					},
 				},
@@ -85,7 +85,7 @@ func (oc _opCaller) Call(
 			Timestamp: time.Now().UTC(),
 			OpEnded: &model.OpEndedEvent{
 				OpID:     dcgOpCall.OpID,
-				OpRef:    dcgOpCall.OpHandle.Ref(),
+				OpRef:    dcgOpCall.OpPath,
 				Outcome:  opOutcome,
 				RootOpID: dcgOpCall.RootOpID,
 				Outputs:  outboundScope,
@@ -109,18 +109,27 @@ func (oc _opCaller) Call(
 			Timestamp: opStartedTime,
 			OpStarted: &model.OpStartedEvent{
 				OpID:     dcgOpCall.OpID,
-				OpRef:    dcgOpCall.OpHandle.Ref(),
+				OpRef:    dcgOpCall.OpPath,
 				RootOpID: dcgOpCall.RootOpID,
 			},
 		},
 	)
 
+	// form scope for op call by combining defined inputs & op dir
+	opCallScope := map[string]*model.Value{}
+	for varName, varData := range dcgOpCall.Inputs {
+		opCallScope[varName] = varData
+	}
+	opCallScope["/"] = &model.Value{
+		Dir: &dcgOpCall.OpPath,
+	}
+
 	oc.caller.Call(
 		ctx,
 		dcgOpCall.ChildCallID,
-		dcgOpCall.Inputs,
+		opCallScope,
 		dcgOpCall.ChildCallSCG,
-		dcgOpCall.OpHandle,
+		dcgOpCall.OpPath,
 		&dcgOpCall.OpID,
 		dcgOpCall.RootOpID,
 	)
@@ -158,16 +167,15 @@ eventLoop:
 	var opFile *model.OpFile
 	opFile, err = oc.opFileGetter.Get(
 		ctx,
-		dcgOpCall.OpHandle,
+		dcgOpCall.OpPath,
 	)
 	if nil != err {
 		return
 	}
-	opPath := dcgOpCall.OpHandle.Path()
 	opOutputs, err = oc.outputsInterpreter.Interpret(
 		opOutputs,
 		opFile.Outputs,
-		*opPath,
+		dcgOpCall.OpPath,
 		filepath.Join(oc.dcgScratchDir, dcgOpCall.OpID),
 	)
 

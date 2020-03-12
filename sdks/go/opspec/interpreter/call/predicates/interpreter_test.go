@@ -6,7 +6,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	predicateFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/fakes"
 )
 
@@ -25,7 +24,6 @@ var _ = Context("Interpreter", func() {
 				&model.SCGPredicate{Ne: new([]interface{})},
 			}
 
-			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedScope := map[string]*model.Value{}
 
 			fakePredicateInterpreter := new(predicateFakes.FakeInterpreter)
@@ -40,25 +38,20 @@ var _ = Context("Interpreter", func() {
 
 			/* act */
 			objectUnderTest.Interpret(
-				providedOpHandle,
 				providedSCGPredicates,
 				providedScope,
 			)
 
 			/* assert */
-			actualOpHandle0,
-				actualSCGPredicates0,
+			actualSCGPredicates0,
 				actualScope0 := fakePredicateInterpreter.InterpretArgsForCall(0)
 
-			Expect(actualOpHandle0).To(Equal(providedOpHandle))
 			Expect(actualSCGPredicates0).To(Equal(providedSCGPredicates[0]))
 			Expect(actualScope0).To(Equal(providedScope))
 
-			actualOpHandle1,
-				actualSCGPredicates1,
+			actualSCGPredicates1,
 				actualScope1 := fakePredicateInterpreter.InterpretArgsForCall(1)
 
-			Expect(actualOpHandle1).To(Equal(providedOpHandle))
 			Expect(actualSCGPredicates1).To(Equal(providedSCGPredicates[1]))
 			Expect(actualScope1).To(Equal(providedScope))
 		})
@@ -79,7 +72,6 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualError := objectUnderTest.Interpret(
-					new(modelFakes.FakeDataHandle),
 					[]*model.SCGPredicate{
 						&model.SCGPredicate{Eq: new([]interface{})},
 					},
@@ -106,7 +98,6 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
-					new(modelFakes.FakeDataHandle),
 					[]*model.SCGPredicate{
 						&model.SCGPredicate{Eq: new([]interface{})},
 						&model.SCGPredicate{Ne: new([]interface{})},
@@ -134,7 +125,6 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
-					new(modelFakes.FakeDataHandle),
 					[]*model.SCGPredicate{
 						&model.SCGPredicate{Eq: new([]interface{})},
 						&model.SCGPredicate{Ne: new([]interface{})},

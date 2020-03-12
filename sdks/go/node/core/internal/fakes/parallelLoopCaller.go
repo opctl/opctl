@@ -9,14 +9,14 @@ import (
 )
 
 type FakeParallelLoopCaller struct {
-	CallStub        func(context.Context, string, map[string]*model.Value, model.SCGParallelLoopCall, model.DataHandle, *string, string)
+	CallStub        func(context.Context, string, map[string]*model.Value, model.SCGParallelLoopCall, string, *string, string)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
 		arg3 map[string]*model.Value
 		arg4 model.SCGParallelLoopCall
-		arg5 model.DataHandle
+		arg5 string
 		arg6 *string
 		arg7 string
 	}
@@ -24,14 +24,14 @@ type FakeParallelLoopCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeParallelLoopCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 model.SCGParallelLoopCall, arg5 model.DataHandle, arg6 *string, arg7 string) {
+func (fake *FakeParallelLoopCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 model.SCGParallelLoopCall, arg5 string, arg6 *string, arg7 string) {
 	fake.callMutex.Lock()
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
 		arg3 map[string]*model.Value
 		arg4 model.SCGParallelLoopCall
-		arg5 model.DataHandle
+		arg5 string
 		arg6 *string
 		arg7 string
 	}{arg1, arg2, arg3, arg4, arg5, arg6, arg7})
@@ -48,13 +48,13 @@ func (fake *FakeParallelLoopCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *FakeParallelLoopCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, model.SCGParallelLoopCall, model.DataHandle, *string, string)) {
+func (fake *FakeParallelLoopCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, model.SCGParallelLoopCall, string, *string, string)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
 }
 
-func (fake *FakeParallelLoopCaller) CallArgsForCall(i int) (context.Context, string, map[string]*model.Value, model.SCGParallelLoopCall, model.DataHandle, *string, string) {
+func (fake *FakeParallelLoopCaller) CallArgsForCall(i int) (context.Context, string, map[string]*model.Value, model.SCGParallelLoopCall, string, *string, string) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]

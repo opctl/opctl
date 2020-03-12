@@ -9,7 +9,6 @@ import (
 type Interpreter interface {
 	Interpret(
 		expression interface{},
-		opHandle model.DataHandle,
 		scope map[string]*model.Value,
 	) (*model.Value, error)
 }
@@ -30,14 +29,12 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	expression interface{},
-	opHandle model.DataHandle,
 	scope map[string]*model.Value,
 ) (*model.Value, error) {
 	// try interpreting as array
 	if dcgForEach, err := itp.arrayInterpreter.Interpret(
 		scope,
 		expression,
-		opHandle,
 	); nil == err {
 		return dcgForEach, err
 	}
@@ -46,6 +43,5 @@ func (itp _interpreter) Interpret(
 	return itp.objectInterpreter.Interpret(
 		scope,
 		expression,
-		opHandle,
 	)
 }

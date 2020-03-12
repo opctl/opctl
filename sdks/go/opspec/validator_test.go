@@ -11,8 +11,6 @@ import (
 	"github.com/ghodss/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	. "github.com/opctl/opctl/sdks/go/opspec/opfile/fakes"
 )
 
@@ -53,15 +51,10 @@ var _ = Describe("Validator", func() {
 								for _, scenario := range scenarioOpFile {
 									if nil != scenario.Validate {
 										/* act */
-										fakeHandle := new(modelFakes.FakeDataHandle)
-										fakeHandle.GetContentStub = func(ctx context.Context, contentPath string) (model.ReadSeekCloser, error) {
-											return os.Open(filepath.Join(path, contentPath))
-										}
-
 										objectUnderTest := NewValidator()
 										actualErrs := objectUnderTest.Validate(
 											context.Background(),
-											fakeHandle,
+											path,
 										)
 
 										/* assert */
@@ -82,7 +75,7 @@ var _ = Describe("Validator", func() {
 		It("should call opFileGetter.Get w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
-			providedOpHandle := new(modelFakes.FakeDataHandle)
+			providedOpPath := "providedOpPath"
 
 			fakeOpFileGetter := new(FakeGetter)
 			// error to trigger immediate return
@@ -95,7 +88,7 @@ var _ = Describe("Validator", func() {
 			/* act */
 			objectUnderTest.Validate(
 				providedCtx,
-				providedOpHandle,
+				providedOpPath,
 			)
 
 			/* assert */
@@ -103,7 +96,7 @@ var _ = Describe("Validator", func() {
 				actualOpHandle := fakeOpFileGetter.GetArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
-			Expect(actualOpHandle).To(Equal(providedOpHandle))
+			Expect(actualOpHandle).To(Equal(providedOpPath))
 		})
 		Context("opFileGetter.Get errs", func() {
 			It("should return expected result", func() {
@@ -120,7 +113,7 @@ var _ = Describe("Validator", func() {
 				/* act */
 				actualErrors := objectUnderTest.Validate(
 					context.Background(),
-					new(modelFakes.FakeDataHandle),
+					"dummyOpPath",
 				)
 
 				/* assert */
@@ -139,7 +132,7 @@ var _ = Describe("Validator", func() {
 				/* act */
 				actualErrs := objectUnderTest.Validate(
 					context.Background(),
-					new(modelFakes.FakeDataHandle),
+					"dummyOpPath",
 				)
 
 				/* assert */

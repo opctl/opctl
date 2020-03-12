@@ -8,7 +8,8 @@ accordance with
 
 ### Added
 
-- UI: Workspace page (explorer, op visualizer with pan/zoom) 
+- UI: Workspace page (explorer, op visualizer with pan/zoom)
+- [Support in scope dir as op src](https://github.com/opctl/opctl/issues/646)
 
 ### Removed
 

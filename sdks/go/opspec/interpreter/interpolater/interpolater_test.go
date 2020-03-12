@@ -3,14 +3,15 @@ package interpolater
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+
 	"github.com/ghodss/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	"io/ioutil"
-	"os"
-	"path/filepath"
 )
 
 var _ = Context("Interpolate", func() {
@@ -52,6 +53,12 @@ var _ = Context("Interpolate", func() {
 							}
 
 							for _, scenario := range scenarioOpFile {
+								// add op dir to scope
+								if 0 == len(scenario.Scope) {
+									scenario.Scope = map[string]*model.Value{}
+								}
+								scenario.Scope["/"] = &model.Value{Dir: opHandle.Path()}
+
 								for name, value := range scenario.Scope {
 									// make file refs absolute
 									if nil != value.File {
@@ -59,12 +66,12 @@ var _ = Context("Interpolate", func() {
 										scenario.Scope[name] = &model.Value{File: &absFilePath}
 									}
 								}
+
 								/* act */
 								objectUnderTest := New()
 								actualResult, actualErr := objectUnderTest.Interpolate(
 									scenario.Template,
 									scenario.Scope,
-									opHandle,
 								)
 
 								/* assert */

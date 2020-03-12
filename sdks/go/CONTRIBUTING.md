@@ -9,6 +9,9 @@ The go SDK is maintained as a go module.
 ## (Re)Vendor
 1. `go mod vendor` from this directory will (re)vendor all go dependencies.
 
+## (Re)Embed current opspec json schema
+1. `opctl run generate` from this directory will (re)embed [opspec/opfile/validator_schema.go](opspec/opfile/validator_schema.go) from [../../opspec/opfile/jsonschema.json](../../opspec/opfile/jsonschema.json).
+
 ## Test
 1. `opctl run test` from this directory to compile and test the SDK.
 

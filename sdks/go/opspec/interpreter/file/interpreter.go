@@ -26,7 +26,6 @@ type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
 		expression interface{},
-		opHandle model.DataHandle,
 		scratchDir string,
 	) (*model.Value, error)
 }
@@ -49,7 +48,6 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	expression interface{},
-	opHandle model.DataHandle,
 	scratchDir string,
 ) (*model.Value, error) {
 	expressionAsString, expressionIsString := expression.(string)
@@ -59,7 +57,6 @@ func (itp _interpreter) Interpret(
 		value, err := itp.referenceInterpreter.Interpret(
 			expressionAsString,
 			scope,
-			opHandle,
 		)
 		if nil != err {
 			return nil, fmt.Errorf("unable to interpret %+v to file; error was %v", expression, err)
@@ -70,7 +67,6 @@ func (itp _interpreter) Interpret(
 	value, err := itp.valueInterpreter.Interpret(
 		expression,
 		scope,
-		opHandle,
 	)
 	if nil != err {
 		return nil, fmt.Errorf("unable to interpret %+v to file; error was %v", expression, err)

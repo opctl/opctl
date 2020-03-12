@@ -5,7 +5,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	. "github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater/fakes"
 )
 
@@ -21,7 +20,6 @@ var _ = Context("Interpret", func() {
 				actualValue, _ := objectUnderTest.Interpret(
 					providedValueExpression,
 					map[string]*model.Value{},
-					new(modelFakes.FakeDataHandle),
 				)
 
 				/* assert */
@@ -38,7 +36,6 @@ var _ = Context("Interpret", func() {
 				actualValue, _ := objectUnderTest.Interpret(
 					providedValueExpression,
 					map[string]*model.Value{},
-					new(modelFakes.FakeDataHandle),
 				)
 
 				/* assert */
@@ -56,7 +53,6 @@ var _ = Context("Interpret", func() {
 				actualValue, _ := objectUnderTest.Interpret(
 					providedValueExpression,
 					map[string]*model.Value{},
-					new(modelFakes.FakeDataHandle),
 				)
 
 				/* assert */
@@ -72,7 +68,6 @@ var _ = Context("Interpret", func() {
 				/* arrange */
 				providedScope := map[string]*model.Value{"dummyName": {}}
 				providedExpression := "dummyExpression"
-				providedOpRef := new(modelFakes.FakeDataHandle)
 
 				fakeInterpolater := new(FakeInterpolater)
 				// err to trigger immediate return
@@ -86,17 +81,14 @@ var _ = Context("Interpret", func() {
 				objectUnderTest.Interpret(
 					providedExpression,
 					providedScope,
-					providedOpRef,
 				)
 
 				/* assert */
 				actualExpression,
-					actualScope,
-					actualOpRef := fakeInterpolater.InterpolateArgsForCall(0)
+					actualScope := fakeInterpolater.InterpolateArgsForCall(0)
 
 				Expect(actualExpression).To(Equal(providedExpression))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualOpRef).To(Equal(providedOpRef))
 
 			})
 			Context("interpolaterFakes.Interpolate errs", func() {
@@ -114,7 +106,6 @@ var _ = Context("Interpret", func() {
 					_, actualErr := objectUnderTest.Interpret(
 						"dummyExpression",
 						map[string]*model.Value{},
-						new(modelFakes.FakeDataHandle),
 					)
 
 					/* assert */
@@ -138,7 +129,6 @@ var _ = Context("Interpret", func() {
 			actualValue, actualErr := objectUnderTest.Interpret(
 				"dummyExpression",
 				map[string]*model.Value{},
-				new(modelFakes.FakeDataHandle),
 			)
 
 			/* assert */

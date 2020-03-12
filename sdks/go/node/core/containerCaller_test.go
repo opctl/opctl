@@ -10,7 +10,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
@@ -19,9 +18,6 @@ var _ = Context("containerCaller", func() {
 	closedPipeReader, closedPipeWriter := io.Pipe()
 	closedPipeReader.Close()
 	closedPipeWriter.Close()
-	opHandleRef := "dummyOpRef"
-	fakeOpHandle := new(modelFakes.FakeDataHandle)
-	fakeOpHandle.RefReturns(opHandleRef)
 
 	Context("newContainerCaller", func() {
 		It("should return containerCaller", func() {
@@ -35,9 +31,10 @@ var _ = Context("containerCaller", func() {
 	Context("Call", func() {
 		It("should call pubSub.Publish w/ expected ContainerStartedEvent", func() {
 			/* arrange */
+			providedOpPath := "providedOpPath"
 			providedDCGContainerCall := &model.DCGContainerCall{
 				DCGBaseCall: model.DCGBaseCall{
-					OpHandle: fakeOpHandle,
+					OpPath:   providedOpPath,
 					RootOpID: "providedRootID",
 				},
 				ContainerID: "providedContainerID",
@@ -49,7 +46,7 @@ var _ = Context("containerCaller", func() {
 				Timestamp: time.Now().UTC(),
 				ContainerStarted: &model.ContainerStartedEvent{
 					ContainerID: providedDCGContainerCall.ContainerID,
-					OpRef:       providedDCGContainerCall.OpHandle.Ref(),
+					OpRef:       providedOpPath,
 					RootOpID:    providedDCGContainerCall.RootOpID,
 				},
 			}
@@ -87,9 +84,7 @@ var _ = Context("containerCaller", func() {
 			/* arrange */
 			providedCtx := context.Background()
 			providedDCGContainerCall := &model.DCGContainerCall{
-				DCGBaseCall: model.DCGBaseCall{
-					OpHandle: fakeOpHandle,
-				},
+				DCGBaseCall: model.DCGBaseCall{},
 			}
 			fakeContainerRuntime := new(FakeContainerRuntime)
 
@@ -143,9 +138,7 @@ var _ = Context("containerCaller", func() {
 				objectUnderTest.Call(
 					context.Background(),
 					&model.DCGContainerCall{
-						DCGBaseCall: model.DCGBaseCall{
-							OpHandle: fakeOpHandle,
-						},
+						DCGBaseCall: model.DCGBaseCall{},
 					},
 					map[string]*model.Value{},
 					&model.SCGContainerCall{},
@@ -161,9 +154,10 @@ var _ = Context("containerCaller", func() {
 
 	It("should call pubSub.Publish w/ expected ContainerExitedEvent", func() {
 		/* arrange */
+		providedOpPath := "providedOpPath"
 		providedDCGContainerCall := &model.DCGContainerCall{
 			DCGBaseCall: model.DCGBaseCall{
-				OpHandle: fakeOpHandle,
+				OpPath:   providedOpPath,
 				RootOpID: "providedRootID",
 			},
 			ContainerID: "providedContainerID",
@@ -178,7 +172,7 @@ var _ = Context("containerCaller", func() {
 				Error: &model.CallEndedEventError{
 					Message: "io: read/write on closed pipe",
 				},
-				OpRef:    providedDCGContainerCall.OpHandle.Ref(),
+				OpRef:    providedOpPath,
 				Outputs:  map[string]*model.Value{},
 				RootOpID: providedDCGContainerCall.RootOpID,
 			},
@@ -215,9 +209,10 @@ var _ = Context("containerCaller", func() {
 	})
 	It("should call pubSub.Publish w/ expected ContainerExitedEvent", func() {
 		/* arrange */
+		providedOpPath := "providedOpPath"
 		providedDCGContainerCall := &model.DCGContainerCall{
 			DCGBaseCall: model.DCGBaseCall{
-				OpHandle: fakeOpHandle,
+				OpPath:   providedOpPath,
 				RootOpID: "providedRootID",
 			},
 			ContainerID: "providedContainerID",
@@ -232,7 +227,7 @@ var _ = Context("containerCaller", func() {
 				Error: &model.CallEndedEventError{
 					Message: "io: read/write on closed pipe",
 				},
-				OpRef:    providedDCGContainerCall.OpHandle.Ref(),
+				OpRef:    providedOpPath,
 				Outputs:  map[string]*model.Value{},
 				RootOpID: providedDCGContainerCall.RootOpID,
 			},

@@ -13,7 +13,6 @@ import (
 	. "github.com/onsi/gomega"
 	coerceFakes "github.com/opctl/opctl/sdks/go/data/coerce/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	fileFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/file/fakes"
 )
 
@@ -38,7 +37,6 @@ var _ = Context("Files", func() {
 				// implicitly bound
 				containerFilePath: nil,
 			}
-			providedOpHandle := new(modelFakes.FakeDataHandle)
 			providedScope := map[string]*model.Value{}
 			providedScratchDir := "dummyScratchDir"
 
@@ -57,7 +55,6 @@ var _ = Context("Files", func() {
 
 			/* act */
 			objectUnderTest.Interpret(
-				providedOpHandle,
 				providedScope,
 				providedSCGContainerCallFiles,
 				providedScratchDir,
@@ -66,12 +63,10 @@ var _ = Context("Files", func() {
 			/* assert */
 			actualScope,
 				actualExpression,
-				actualOpHandle,
 				actualScratchDir := fakeFileInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualExpression).To(Equal(fmt.Sprintf("$(%v)", containerFilePath)))
-			Expect(actualOpHandle).To(Equal(providedOpHandle))
 			Expect(actualScratchDir).To(Equal(providedScratchDir))
 		})
 		Context("fileInterpreter.Interpret errs", func() {
@@ -105,7 +100,6 @@ var _ = Context("Files", func() {
 
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
-						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						providedSCGContainerCallFiles,
 						"dummyScratchDirPath",
@@ -137,7 +131,6 @@ var _ = Context("Files", func() {
 
 					/* act */
 					actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
-						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						map[string]interface{}{
 							// implicitly bound
@@ -176,7 +169,6 @@ var _ = Context("Files", func() {
 
 					/* act */
 					objectUnderTest.Interpret(
-						new(modelFakes.FakeDataHandle),
 						map[string]*model.Value{},
 						map[string]interface{}{
 							// implicitly bound
@@ -221,7 +213,6 @@ var _ = Context("Files", func() {
 
 						/* act */
 						_, actualErr := objectUnderTest.Interpret(
-							new(modelFakes.FakeDataHandle),
 							map[string]*model.Value{},
 							map[string]interface{}{
 								// implicitly bound
@@ -259,7 +250,6 @@ var _ = Context("Files", func() {
 
 						/* act */
 						objectUnderTest.Interpret(
-							new(modelFakes.FakeDataHandle),
 							map[string]*model.Value{},
 							map[string]interface{}{
 								// implicitly bound
@@ -307,7 +297,6 @@ var _ = Context("Files", func() {
 
 							/* act */
 							_, actualErr := objectUnderTest.Interpret(
-								new(modelFakes.FakeDataHandle),
 								map[string]*model.Value{},
 								map[string]interface{}{
 									// implicitly bound

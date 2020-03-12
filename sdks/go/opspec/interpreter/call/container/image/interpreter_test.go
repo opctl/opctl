@@ -5,7 +5,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	strFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/str/fakes"
 )
 
@@ -26,7 +25,6 @@ var _ = Context("Interpreter", func() {
 				_, actualError := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					nil,
-					new(modelFakes.FakeDataHandle),
 				)
 
 				/* assert */
@@ -40,8 +38,6 @@ var _ = Context("Interpreter", func() {
 				providedCurrentScope := map[string]*model.Value{
 					"name1": {String: &providedString1},
 				}
-
-				providedOpHandle := new(modelFakes.FakeDataHandle)
 
 				providedSCGContainerCallImage := &model.SCGContainerCallImage{
 					Ref: new(string),
@@ -62,30 +58,23 @@ var _ = Context("Interpreter", func() {
 				objectUnderTest.Interpret(
 					providedCurrentScope,
 					providedSCGContainerCallImage,
-					providedOpHandle,
 				)
 
 				/* assert */
 				actualImageRefScope,
-					actualImageRef,
-					actualImageRefOpHandle := fakeStrInterpreter.InterpretArgsForCall(0)
+					actualImageRef := fakeStrInterpreter.InterpretArgsForCall(0)
 				Expect(actualImageRef).To(Equal(*providedSCGContainerCallImage.Ref))
 				Expect(actualImageRefScope).To(Equal(providedCurrentScope))
-				Expect(actualImageRefOpHandle).To(Equal(providedOpHandle))
 
 				actualUsernameScope,
-					actualUsername,
-					actualUsernameOpHandle := fakeStrInterpreter.InterpretArgsForCall(1)
+					actualUsername := fakeStrInterpreter.InterpretArgsForCall(1)
 				Expect(actualUsername).To(Equal(providedSCGContainerCallImage.PullCreds.Username))
 				Expect(actualUsernameScope).To(Equal(providedCurrentScope))
-				Expect(actualUsernameOpHandle).To(Equal(providedOpHandle))
 
 				actualPasswordScope,
-					actualPassword,
-					actualPasswordOpHandle := fakeStrInterpreter.InterpretArgsForCall(2)
+					actualPassword := fakeStrInterpreter.InterpretArgsForCall(2)
 				Expect(actualPassword).To(Equal(providedSCGContainerCallImage.PullCreds.Password))
 				Expect(actualPasswordScope).To(Equal(providedCurrentScope))
-				Expect(actualPasswordOpHandle).To(Equal(providedOpHandle))
 			})
 			It("should return expected dcg.Image", func() {
 
@@ -122,7 +111,6 @@ var _ = Context("Interpreter", func() {
 				actualDCGContainerCallImage, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedSCGContainerCallImage,
-					new(modelFakes.FakeDataHandle),
 				)
 
 				/* assert */

@@ -6,7 +6,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
-	stringpkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
 )
 
 //counterfeiter:generate -o fakes/interpreter.go . Interpreter
@@ -14,7 +14,6 @@ type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
 		scgContainerCallEnvVars interface{},
-		opHandle model.DataHandle,
 	) (map[string]string, error)
 }
 
@@ -22,7 +21,7 @@ type Interpreter interface {
 func NewInterpreter() Interpreter {
 	return _interpreter{
 		objectInterpreter: object.NewInterpreter(),
-		stringInterpreter: stringpkg.NewInterpreter(),
+		stringInterpreter: str.NewInterpreter(),
 		coerce:            coerce.New(),
 	}
 }
@@ -30,13 +29,12 @@ func NewInterpreter() Interpreter {
 type _interpreter struct {
 	coerce            coerce.Coerce
 	objectInterpreter object.Interpreter
-	stringInterpreter stringpkg.Interpreter
+	stringInterpreter str.Interpreter
 }
 
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	scgContainerCallEnvVars interface{},
-	opHandle model.DataHandle,
 ) (map[string]string, error) {
 	if nil == scgContainerCallEnvVars {
 		return nil, nil
@@ -45,7 +43,6 @@ func (itp _interpreter) Interpret(
 	envVarsMap, err := itp.objectInterpreter.Interpret(
 		scope,
 		scgContainerCallEnvVars,
-		opHandle,
 	)
 	if nil != err {
 		return nil, fmt.Errorf(
@@ -57,7 +54,7 @@ func (itp _interpreter) Interpret(
 
 	envVarsStringMap := map[string]string{}
 	for envVarName, envVarValue := range *envVarsMap.Object {
-		envVarValueString, err := itp.stringInterpreter.Interpret(scope, envVarValue, opHandle)
+		envVarValueString, err := itp.stringInterpreter.Interpret(scope, envVarValue)
 		if nil != err {
 			return nil, fmt.Errorf(
 				"unable to interpret %+v as value of env var '%v'; error was %v",

@@ -8,7 +8,6 @@ import (
 	. "github.com/onsi/gomega"
 	coerceFakes "github.com/opctl/opctl/sdks/go/data/coerce/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	valueFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/value/fakes"
 )
 
@@ -17,7 +16,6 @@ var _ = Context("Interpret", func() {
 		/* arrange */
 		providedScope := map[string]*model.Value{"dummyName": {}}
 		providedExpression := "dummyExpression"
-		providedOpRef := new(modelFakes.FakeDataHandle)
 
 		fakeValueInterpreter := new(valueFakes.FakeInterpreter)
 		// err to trigger immediate return
@@ -31,17 +29,14 @@ var _ = Context("Interpret", func() {
 		objectUnderTest.Interpret(
 			providedScope,
 			providedExpression,
-			providedOpRef,
 		)
 
 		/* assert */
 		actualExpression,
-			actualScope,
-			actualOpRef := fakeValueInterpreter.InterpretArgsForCall(0)
+			actualScope := fakeValueInterpreter.InterpretArgsForCall(0)
 
 		Expect(actualExpression).To(Equal(providedExpression))
 		Expect(actualScope).To(Equal(providedScope))
-		Expect(actualOpRef).To(Equal(providedOpRef))
 
 	})
 	Context("valueInterpreter.Interpret errs", func() {
@@ -63,7 +58,6 @@ var _ = Context("Interpret", func() {
 			_, actualErr := objectUnderTest.Interpret(
 				map[string]*model.Value{},
 				"dummyExpression",
-				new(modelFakes.FakeDataHandle),
 			)
 
 			/* assert */
@@ -93,7 +87,6 @@ var _ = Context("Interpret", func() {
 			actualArray, actualErr := objectUnderTest.Interpret(
 				map[string]*model.Value{},
 				"dummyExpression",
-				new(modelFakes.FakeDataHandle),
 			)
 
 			/* assert */

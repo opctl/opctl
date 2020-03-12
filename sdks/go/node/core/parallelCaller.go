@@ -18,7 +18,7 @@ type parallelCaller interface {
 		callID string,
 		inboundScope map[string]*model.Value,
 		rootOpID string,
-		opHandle model.DataHandle,
+		opPath string,
 		scgParallelCall []*model.SCG,
 	)
 }
@@ -47,7 +47,7 @@ func (pc _parallelCaller) Call(
 	callID string,
 	inboundScope map[string]*model.Value,
 	rootOpID string,
-	opHandle model.DataHandle,
+	opPath string,
 	scgParallelCall []*model.SCG,
 ) {
 	// setup cancellation
@@ -98,7 +98,7 @@ func (pc _parallelCaller) Call(
 			childCallID,
 			inboundScope,
 			childCall,
-			opHandle,
+			opPath,
 			&callID,
 			rootOpID,
 		)

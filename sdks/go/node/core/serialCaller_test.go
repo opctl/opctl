@@ -8,7 +8,6 @@ import (
 	. "github.com/onsi/gomega"
 	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
@@ -30,7 +29,7 @@ var _ = Context("serialCaller", func() {
 			providedCallID := "providedCallID"
 			providedInboundScope := map[string]*model.Value{}
 			providedRootOpID := "providedRootOpID"
-			providedOpHandle := new(modelFakes.FakeDataHandle)
+			providedOpPath := "providedOpPath"
 			providedSCGSerialCalls := []*model.SCG{
 				{
 					Container: &model.SCGContainerCall{},
@@ -82,7 +81,7 @@ var _ = Context("serialCaller", func() {
 				providedCallID,
 				providedInboundScope,
 				providedRootOpID,
-				providedOpHandle,
+				providedOpPath,
 				providedSCGSerialCalls,
 			)
 
@@ -92,7 +91,7 @@ var _ = Context("serialCaller", func() {
 					actualNodeID,
 					actualChildOutboundScope,
 					actualSCG,
-					actualOpHandle,
+					actualOpPath,
 					actualParentCallID,
 					actualRootOpID := fakeCaller.CallArgsForCall(expectedSCGIndex)
 
@@ -100,7 +99,7 @@ var _ = Context("serialCaller", func() {
 				Expect(actualNodeID).To(Equal(fmt.Sprintf("%v", expectedSCGIndex)))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 				Expect(actualSCG).To(Equal(expectedSCG))
-				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualParentCallID).To(Equal(&providedCallID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 			}
@@ -111,7 +110,6 @@ var _ = Context("serialCaller", func() {
 				providedCallID := "dummyCallID"
 				providedInboundScope := map[string]*model.Value{}
 				providedRootOpID := "dummyRootOpID"
-				providedOpHandle := new(modelFakes.FakeDataHandle)
 				providedSCGSerialCalls := []*model.SCG{
 					{
 						Container: &model.SCGContainerCall{},
@@ -153,7 +151,7 @@ var _ = Context("serialCaller", func() {
 					providedCallID,
 					providedInboundScope,
 					providedRootOpID,
-					providedOpHandle,
+					"dummyOpPath",
 					providedSCGSerialCalls,
 				)
 
@@ -176,7 +174,7 @@ var _ = Context("serialCaller", func() {
 					}
 					expectedInboundScopeToSecondChild := providedInboundScope
 					providedRootOpID := "dummyRootOpID"
-					providedOpHandle := new(modelFakes.FakeDataHandle)
+					providedOpPath := "providedOpPath"
 					providedSCGSerialCalls := []*model.SCG{
 						{
 							Container: &model.SCGContainerCall{},
@@ -223,7 +221,7 @@ var _ = Context("serialCaller", func() {
 						providedCallID,
 						providedInboundScope,
 						providedRootOpID,
-						providedOpHandle,
+						providedOpPath,
 						providedSCGSerialCalls,
 					)
 
@@ -259,7 +257,6 @@ var _ = Context("serialCaller", func() {
 						"dummyVar3Name": providedInboundScope["dummyVar3Name"],
 					}
 					providedRootOpID := "dummyRootOpID"
-					providedOpHandle := new(modelFakes.FakeDataHandle)
 					providedSCGSerialCalls := []*model.SCG{
 						{
 							Container: &model.SCGContainerCall{},
@@ -308,7 +305,7 @@ var _ = Context("serialCaller", func() {
 						providedCallID,
 						providedInboundScope,
 						providedRootOpID,
-						providedOpHandle,
+						"dummyOpPath",
 						providedSCGSerialCalls,
 					)
 

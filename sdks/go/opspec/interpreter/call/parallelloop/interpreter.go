@@ -9,7 +9,6 @@ import (
 //counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	Interpret(
-		opHandle model.DataHandle,
 		scgParallelLoop model.SCGParallelLoopCall,
 		scope map[string]*model.Value,
 	) (*model.DCGParallelLoopCall, error)
@@ -29,7 +28,6 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	opHandle model.DataHandle,
 	scgParallelLoop model.SCGParallelLoopCall,
 	scope map[string]*model.Value,
 ) (*model.DCGParallelLoopCall, error) {
@@ -39,7 +37,6 @@ func (itp _interpreter) Interpret(
 	if nil != scgLoopRange {
 		dcgLoopRange, err := itp.loopableInterpreter.Interpret(
 			scgLoopRange,
-			opHandle,
 			scope,
 		)
 		if nil != err {
