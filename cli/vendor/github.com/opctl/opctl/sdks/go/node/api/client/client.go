@@ -59,6 +59,11 @@ type Client interface {
 		error,
 	)
 
+	// Liveness ensures liveness of the node
+	Liveness(
+		ctx context.Context,
+	) error
+
 	StartOp(
 		ctx context.Context,
 		req model.StartOpReq,

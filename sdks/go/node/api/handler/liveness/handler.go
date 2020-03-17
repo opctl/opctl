@@ -36,7 +36,7 @@ func (hdlr _handler) Handle(
 		return
 	}
 
-	if "" != httpReq.URL.Path || pathSegment != "liveness" {
+	if "" != pathSegment {
 		http.NotFoundHandler().ServeHTTP(httpResp, httpReq)
 		return
 	}
