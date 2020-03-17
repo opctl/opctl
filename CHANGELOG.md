@@ -9,7 +9,13 @@ accordance with
 ### Added
 
 - UI: Workspace page (explorer, op visualizer with pan/zoom)
-- [Support in scope dir as op src](https://github.com/opctl/opctl/issues/646)
+- [Support in scope dir as op](https://github.com/opctl/opctl/issues/646)
+- Liveness method to node API Client
+
+### Fixed
+
+- API Liveness endpoint incorrectly returning 404
+- Node taking longer than 3 sec to start returns "Error encountered creating opctl daemon; error was: listen tcp :42224: bind: address already in use"
 
 ### Removed
 

@@ -32,10 +32,10 @@ An object for which each key is an absolute path in the container and each value
 |value|meaning|
 |--|--|
 |null|Mount dir embedded in op w/ same path (equivalent to `$(/absolute/path)`)|
-|[dir](../../../../../types/dir.md) [reference](../../../reference.md)|Mount dir|
+|[dir](../../../../../types/dir.md) [reference](../../reference.md)|Mount dir|
 
 ### envVars
-An [object initializer](../../../../../types/object.md#initialization) or [reference](../../../reference.md), whos properties represent the name and value of an environment variable to be set in the container.
+An [object initializer](../../../../../types/object.md#initialization) or [reference](../../reference.md), whos properties represent the name and value of an environment variable to be set in the container.
 
 > upon evaluation, the key and value of each property will be coerced to a string.
 
@@ -45,7 +45,7 @@ An object for which each key is an absolute path in the container and each value
 |value|meaning|
 |--|--|
 |null|Mount file embedded in op w/ same path (equivalent to `$(/absolute/path)`)|
-|[file](../../../../../types/file.md) [reference](../../../reference.md)|Mount file|
+|[file](../../../../../types/file.md) [reference](../../reference.md)|Mount file|
 |[file initializer](../../../../../types/file.md#initialization)|Evaluate and mount|
 
 ### name
@@ -59,7 +59,7 @@ An object defining container ports exposed on the opctl host where:
 - each value is a corresponding opctl host port or range of ports matching `[0-9]+(-[0-9]+)?`
 
 ### sockets
-An object for which each key is an absolute path in the container and and each value is a [socket](../../../../../types/socket.md) [reference](../../../reference.md) to mount. 
+An object for which each key is an absolute path in the container and and each value is a [socket](../../../../../types/socket.md) [reference](../../reference.md) to mount. 
 
 ### workDir
 A [string initializer](../../../../../types/string.md#initialization) defining absolute path from which [cmd](#cmd) will be executed.

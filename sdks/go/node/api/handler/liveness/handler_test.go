@@ -10,11 +10,13 @@ import (
 
 var _ = Context("Handler", func() {
 	Context("Handle", func() {
-		Context("url path isn't liveness", func() {
+		Context("next URL path segment is empty", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				objectUnderTest := _handler{}
+
 				providedHTTPResp := httptest.NewRecorder()
+
+				objectUnderTest := _handler{}
 
 				providedHTTPReq, err := http.NewRequest("dummyMethod", "", nil)
 				if nil != err {
@@ -25,19 +27,16 @@ var _ = Context("Handler", func() {
 				objectUnderTest.Handle(providedHTTPResp, providedHTTPReq)
 
 				/* assert */
-				Expect(providedHTTPResp.Code).To(Equal(http.StatusNotFound))
+				Expect(providedHTTPResp.Code).To(Equal(http.StatusOK))
 			})
 		})
-		Context("url path is liveness", func() {
+		Context("next URL path segment not empty", func() {
 			It("should return expected result", func() {
 				/* arrange */
-
+				objectUnderTest := _handler{}
 				providedHTTPResp := httptest.NewRecorder()
 
-				objectUnderTest := _handler{}
-
-				providedPath := "liveness"
-				providedHTTPReq, err := http.NewRequest("dummyMethod", providedPath, nil)
+				providedHTTPReq, err := http.NewRequest("dummyMethod", "blah", nil)
 				if nil != err {
 					panic(err.Error())
 				}
@@ -46,7 +45,7 @@ var _ = Context("Handler", func() {
 				objectUnderTest.Handle(providedHTTPResp, providedHTTPReq)
 
 				/* assert */
-				Expect(providedHTTPResp.Code).To(Equal(http.StatusOK))
+				Expect(providedHTTPResp.Code).To(Equal(http.StatusNotFound))
 			})
 		})
 	})

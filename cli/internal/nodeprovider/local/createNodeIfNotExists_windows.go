@@ -1,12 +1,12 @@
 package local
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"syscall"
-	"time"
 
 	"github.com/opctl/opctl/cli/internal/datadir"
 	"github.com/opctl/opctl/cli/internal/model"
@@ -18,8 +18,13 @@ func (np nodeProvider) CreateNodeIfNotExists() (model.NodeHandle, error) {
 		return nil, err
 	}
 
+	nodeHandle, err := newNodeHandle()
+	if nil != err {
+		return nil, err
+	}
+
 	if len(nodes) > 0 {
-		return newNodeHandle()
+		return nodeHandle, nil
 	}
 
 	pathToOpctlBin, err := os.Executable()
@@ -43,8 +48,7 @@ func (np nodeProvider) CreateNodeIfNotExists() (model.NodeHandle, error) {
 		CreationFlags: syscall.CREATE_NEW_PROCESS_GROUP,
 	}
 
-	err = nodeCmd.Start()
-	if nil != err {
+	if err := nodeCmd.Start(); nil != err {
 		return nil, err
 	}
 
@@ -53,13 +57,11 @@ func (np nodeProvider) CreateNodeIfNotExists() (model.NodeHandle, error) {
 		return nil, err
 	}
 
-	// Because the command is exec'd as a parentless process, error's aren't available to us.
-	// To work around this the 'node create' call writes errors to the data dir, which we poll here and panic if found.
-	time.Sleep(3 * time.Second)
-	nodeCreateErr := dataDir.TryGetNodeCreateError()
-	if nil != nodeCreateErr {
-		return nil, fmt.Errorf("Error encountered creating opctl daemon; error was: %v", nodeCreateErr)
+	if err := nodeHandle.APIClient().Liveness(context.TODO()); nil != err {
+		// Because the command is exec'd as a parentless process, error's aren't available to us.
+		// To work around this the 'node create' call writes errors to the data dir, which we obtain here and error if found.
+		return nil, fmt.Errorf("Error encountered creating opctl daemon; error was: %v", dataDir.TryGetNodeCreateError())
 	}
 
-	return newNodeHandle()
+	return nodeHandle, nil
 }

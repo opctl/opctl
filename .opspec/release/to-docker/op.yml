@@ -36,44 +36,27 @@ run:
           /entrypoint.sh:
         dirs:
           /context: $(context)
-    - parallel:
-      # dind
-      - serial:
-        - op:
-            ref: github.com/opspec-pkgs/docker.image.build#2.1.0
-            inputs:
-              imageName: $(imageRefPrefix)-dind
-              dockerfile: $(/dind.Dockerfile)
-              context:
-              username: $(dockerUsername)
-              password: $(dockerPassword)
-              registry: https://docker.io
-            outputs:
-              imageTar:
-        - op:
-            ref: github.com/opspec-pkgs/docker.image.push#2.1.0
-            inputs:
-              imageTar:
-              imageName: $(imageRefPrefix)-dind
-              username: $(dockerUsername)
-              password: $(dockerPassword)
-      # dood
-      - serial:
-        - op:
-            ref: github.com/opspec-pkgs/docker.image.build#2.1.0
-            inputs:
-              imageName: $(imageRefPrefix)-dood
-              dockerfile: $(/dood.Dockerfile)
-              context:
-              username: $(dockerUsername)
-              password: $(dockerPassword)
-              registry: https://docker.io
-            outputs:
-              imageTar:
-        - op:
-            ref: github.com/opspec-pkgs/docker.image.push#2.1.0
-            inputs:
-              imageTar:
-              imageName: $(imageRefPrefix)-dood
-              username: $(dockerUsername)
-              password: $(dockerPassword)
+    - parallelLoop:
+        range: [dind, dood]
+        vars:
+          value: imageRefVariant
+        run:
+          serial:
+            - op:
+                ref: github.com/opspec-pkgs/docker.image.build#2.1.0
+                inputs:
+                  imageName: $(imageRefPrefix)-$(imageRefVariant)
+                  dockerfile: $(/$(imageRefVariant).Dockerfile)
+                  context:
+                  username: $(dockerUsername)
+                  password: $(dockerPassword)
+                  registry: https://docker.io
+                outputs:
+                  imageTar:
+            - op:
+                ref: github.com/opspec-pkgs/docker.image.push#2.1.0
+                inputs:
+                  imageTar:
+                  imageName: $(imageRefPrefix)-$(imageRefVariant)
+                  username: $(dockerUsername)
+                  password: $(dockerPassword)
