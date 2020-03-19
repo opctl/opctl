@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/signal"
 	"syscall"
@@ -38,24 +39,24 @@ func newRuner(
 	nodeProvider nodeprovider.NodeProvider,
 ) Runer {
 	return _runer{
-		cliColorer:        cliColorer,
-		cliExiter:         cliExiter,
-		cliOutput:         cliOutput,
-		cliParamSatisfier: cliParamSatisfier,
-		dataResolver:      dataResolver,
-		nodeProvider:      nodeProvider,
-		opFileGetter:      opfile.NewGetter(),
+		cliColorer:         cliColorer,
+		cliExiter:          cliExiter,
+		cliOutput:          cliOutput,
+		cliParamSatisfier:  cliParamSatisfier,
+		dataResolver:       dataResolver,
+		nodeProvider:       nodeProvider,
+		opFileUnmarshaller: opfile.NewUnmarshaller(),
 	}
 }
 
 type _runer struct {
-	dataResolver      dataresolver.DataResolver
-	cliColorer        clicolorer.CliColorer
-	cliExiter         cliexiter.CliExiter
-	cliOutput         clioutput.CliOutput
-	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier
-	nodeProvider      nodeprovider.NodeProvider
-	opFileGetter      opfile.Getter
+	dataResolver       dataresolver.DataResolver
+	cliColorer         clicolorer.CliColorer
+	cliExiter          cliexiter.CliExiter
+	cliOutput          clioutput.CliOutput
+	cliParamSatisfier  cliparamsatisfier.CLIParamSatisfier
+	nodeProvider       nodeprovider.NodeProvider
+	opFileUnmarshaller opfile.Unmarshaller
 }
 
 func (ivkr _runer) Run(
@@ -70,9 +71,23 @@ func (ivkr _runer) Run(
 		nil,
 	)
 
-	opFile, err := ivkr.opFileGetter.Get(
+	opFileReader, err := opHandle.GetContent(
 		ctx,
-		opHandle.Ref(),
+		opfile.FileName,
+	)
+	if nil != err {
+		ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
+		return // support fake exiter
+	}
+
+	opFileBytes, err := ioutil.ReadAll(opFileReader)
+	if nil != err {
+		ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
+		return // support fake exiter
+	}
+
+	opFile, err := ivkr.opFileUnmarshaller.Unmarshal(
+		opFileBytes,
 	)
 	if nil != err {
 		ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})

@@ -284,6 +284,7 @@ github.com/opctl/opctl/sdks/go/internal/uniquestring
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param
 github.com/opctl/opctl/sdks/go/data/coerce/fakes
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/fakes
+github.com/opctl/opctl/sdks/go/data/provider/fs
 github.com/opctl/opctl/sdks/go/model/fakes
 github.com/opctl/opctl/sdks/go/node/api/client/fakes
 github.com/opctl/opctl/sdks/go/opspec/fakes
@@ -307,7 +308,6 @@ github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable
 github.com/opctl/opctl/sdks/go/internal/iruntime
 github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/hostruntime
 github.com/opctl/opctl/sdks/go/data/provider
-github.com/opctl/opctl/sdks/go/data/provider/fs
 github.com/opctl/opctl/sdks/go/data/provider/git
 github.com/opctl/opctl/sdks/go/data/provider/node
 github.com/opctl/opctl/sdks/go/data/fakes

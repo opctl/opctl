@@ -1,34 +1,41 @@
 package local
 
 import (
+	"path/filepath"
+
 	"github.com/golang-utils/lockfile"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opctl/opctl/cli/internal/datadir"
 	"github.com/opctl/opctl/cli/internal/model"
 )
 
 var _ = Context("listNodes", func() {
+	dataDir, newDataDirErr := datadir.New(nil)
+	if nil != newDataDirErr {
+		panic(newDataDirErr)
+	}
+
 	It("should call lockfile.PIdOfOwner w/ expected args", func() {
 		/* arrange */
 		fakeLockFile := new(lockfile.Fake)
 
-		expectedFilePath := "dummyLockFilePath"
-
 		objectUnderTest := nodeProvider{
-			lockfile:     fakeLockFile,
-			lockFilePath: expectedFilePath,
+			dataDir:  dataDir,
+			lockfile: fakeLockFile,
 		}
 
 		/* act */
 		objectUnderTest.ListNodes()
 
 		/* assert */
-		Expect(fakeLockFile.PIdOfOwnerArgsForCall(0)).To(Equal(expectedFilePath))
+		Expect(fakeLockFile.PIdOfOwnerArgsForCall(0)).To(Equal(filepath.Join(dataDir.Path(), "pid.lock")))
 	})
 	Context("lockfile.PIdOfOwner == 0", func() {
 		It("should return expected results", func() {
 			/* arrange */
 			objectUnderTest := nodeProvider{
+				dataDir:  dataDir,
 				lockfile: new(lockfile.Fake),
 			}
 
@@ -52,6 +59,7 @@ var _ = Context("listNodes", func() {
 			fakeLockFile.PIdOfOwnerReturns(333)
 
 			objectUnderTest := nodeProvider{
+				dataDir:  dataDir,
 				lockfile: fakeLockFile,
 			}
 
