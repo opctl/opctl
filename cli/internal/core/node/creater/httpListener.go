@@ -13,6 +13,10 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/api/handler"
 	"github.com/opctl/opctl/sdks/go/node/core"
 	"github.com/rakyll/statik/fs"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 /**
@@ -21,7 +25,7 @@ listener is a generic interface for things which expose opctl via some protocol
 type listener interface {
 	Listen(
 		ctx context.Context,
-	) <-chan error
+	) error
 }
 
 /**
@@ -43,7 +47,7 @@ type _httpListener struct {
 
 func (hd _httpListener) Listen(
 	ctx context.Context,
-) <-chan error {
+) error {
 	router := mux.NewRouter()
 	router.UseEncodedPath()
 
@@ -56,35 +60,36 @@ func (hd _httpListener) Listen(
 		),
 	)
 
-	errChan := make(chan error, 1)
+	statikFS, err := fs.New()
+	if nil != err {
+		return err
+	}
+	router.PathPrefix("/").Handler(http.FileServer(statikFS))
+
+	httpServer := http.Server{Addr: ":42224", Handler: handlers.CORS()(router)}
+
+	// catch signals to ensure shutdown properly happens
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
-		defer close(errChan)
+		<-done
+		ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
-		statikFS, err := fs.New()
-		if nil != err {
-			errChan <- err
-			return
-		}
-		router.PathPrefix("/").Handler(http.FileServer(statikFS))
-
-		httpServer := http.Server{Addr: ":42224", Handler: handlers.CORS()(router)}
-
-		ctx, cancel := context.WithCancel(ctx)
-		go func() {
-			err := httpServer.ListenAndServe()
-			if nil != err {
-				errChan <- err
-				cancel()
-			}
-		}()
-
-		<-ctx.Done()
+		// little hammer
 		httpServer.Shutdown(ctx)
+
+		// big hammer
+		httpServer.Close()
 	}()
 
-	fmt.Println(hd.cliColorer.Info("http listener bound to 0.0.0.0:42224"))
-	return errChan
+	fmt.Println(hd.cliColorer.Info("Binding opctl API to 0.0.0.0:42224"))
+
+	if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
+		return err
+	}
+
+	return nil
 }
 
 // StripPrefix returns a handler that serves HTTP requests

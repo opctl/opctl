@@ -12,10 +12,13 @@ accordance with
 - [Support in scope dir as op](https://github.com/opctl/opctl/issues/646)
 - Liveness method to node API Client
 
+### Changed
+
+- When daemonizing opctl node, parent process env vars no longer inherited by daemonized process. This for example thwarts Jenkins ProcessTreeKiller's killing abilities.
+
 ### Fixed
 
 - API Liveness endpoint incorrectly returning 404
-- Node taking longer than 3 sec to start returns "Error encountered creating opctl daemon; error was: listen tcp :42224: bind: address already in use"
 
 ### Removed
 

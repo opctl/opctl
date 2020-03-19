@@ -3,6 +3,7 @@
 package local
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os"
@@ -10,7 +11,6 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"github.com/opctl/opctl/cli/internal/datadir"
 	"github.com/opctl/opctl/cli/internal/model"
 )
 
@@ -45,25 +45,29 @@ func (np nodeProvider) CreateNodeIfNotExists() (model.NodeHandle, error) {
 		"create",
 	)
 
+	// don't inherit env; some things like jenkins track and kill processes via injecting env vars
+	nodeCmd.Env = []string{
+		fmt.Sprintf("OPCTL_DATA_DIR=%v", np.dataDir.Path()),
+	}
+
+	// ensure node gets it's own process group
 	nodeCmd.SysProcAttr = &syscall.SysProcAttr{
-		// ensure node gets it's own process group
 		Setpgid: true,
 	}
+
+	nodeCmdOutput := &bytes.Buffer{}
+	nodeCmd.Stdout = nodeCmdOutput
+	nodeCmd.Stderr = nodeCmdOutput
 
 	if err := nodeCmd.Start(); nil != err {
 		return nil, err
 	}
 
-	dataDir, newDataDirErr := datadir.New(nil)
-	if nil != newDataDirErr {
-		return nil, newDataDirErr
-	}
-
 	if err := nodeHandle.APIClient().Liveness(context.TODO()); nil != err {
-		// Because the command is exec'd as a parentless process, error's aren't available to us.
-		// To work around this the 'node create' call writes errors to the data dir, which we obtain here and error if found.
-		return nil, fmt.Errorf("Error encountered creating opctl daemon; error was: %v", dataDir.TryGetNodeCreateError())
+		fmt.Print(string(nodeCmdOutput.Bytes()))
+		return nil, fmt.Errorf("Error encountered creating opctl daemon")
 	}
 
+	fmt.Print(string(nodeCmdOutput.Bytes()))
 	return nodeHandle, nil
 }

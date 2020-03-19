@@ -13,28 +13,17 @@ import (
 
 // DataDir is an interface exposing the functionality we require in conjunction with our "data dir".
 type DataDir interface {
-	// ClearNodeCreateErrorIfExists clears any recorded error which previously occured during node creation
-	ClearNodeCreateErrorIfExists() error
-
 	// InitAndLock initializes and locks an opctl data dir
 	// - if dataDirPath is explicitly provided it will be used
 	// - else if OPCTL_DATA_DIR env var is set it will be used
 	// - else the OS specific "per user" app data path will be used.
 	InitAndLock() error
 
-	// RecordNodeCreateError records an error which occured during node creation
-	RecordNodeCreateError(
-		err error,
-	) error
-
 	// Path resolves the data dir path
 	Path() string
 
 	// EventDBPath resolves the eventdb path
 	EventDBPath() string
-
-	// TryGetNodeCreateError records an error which occured during node creation
-	TryGetNodeCreateError() error
 }
 
 // resolvePath resolves the data dir path
@@ -101,36 +90,6 @@ func (dd _datadir) Path() string {
 
 func (dd _datadir) EventDBPath() string {
 	return filepath.Join(dd.resolvedPath, "dcg", "event.db")
-}
-
-func (dd _datadir) TryGetNodeCreateError() error {
-	errBytes, err := ioutil.ReadFile(dd.nodeCreateErrorPath())
-	if os.IsNotExist(err) {
-		return nil
-	} else if nil != err {
-		return err
-	}
-
-	return fmt.Errorf(string(errBytes))
-}
-
-func (dd _datadir) RecordNodeCreateError(
-	err error,
-) error {
-	return ioutil.WriteFile(dd.nodeCreateErrorPath(), []byte(err.Error()), 0775)
-}
-
-func (dd _datadir) ClearNodeCreateErrorIfExists() error {
-	removeErr := os.Remove(dd.nodeCreateErrorPath())
-	if !os.IsNotExist(removeErr) {
-		return removeErr
-	}
-
-	return nil
-}
-
-func (dd _datadir) nodeCreateErrorPath() string {
-	return filepath.Join(dd.resolvedPath, "node-create-error")
 }
 
 func (dd _datadir) InitAndLock() error {

@@ -25,16 +25,6 @@ func New() Creater {
 	return _creater{}
 }
 
-// recordErrorAndPanic records errors encountered creating the node to the data dir in order to enable
-// access them across process boundaries such as when it's daemonized.
-func recordErrorAndPanic(
-	dataDir datadir.DataDir,
-	err error,
-) {
-	dataDir.RecordNodeCreateError(err)
-	panic(err)
-}
-
 type _creater struct{}
 
 func (ivkr _creater) Create(
@@ -46,40 +36,29 @@ func (ivkr _creater) Create(
 	}
 
 	if err := dataDir.InitAndLock(); nil != err {
-		recordErrorAndPanic(dataDir, err)
+		panic(err)
 	}
 
 	containerRuntime, err := docker.New()
 	if nil != err {
-		recordErrorAndPanic(dataDir, err)
+		panic(err)
 	}
 
-	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
-	httpErrChannel :=
-		newHTTPListener(
-			core.New(
-				pubsub.New(
-					pubsub.NewBadgerDBEventStore(
-						dataDir.EventDBPath(),
-					),
+	err = newHTTPListener(
+		core.New(
+			pubsub.New(
+				pubsub.NewBadgerDBEventStore(
+					dataDir.EventDBPath(),
 				),
-				containerRuntime,
-				dataDir.Path(),
 			),
-		).
-			Listen(ctx)
+			containerRuntime,
+			dataDir.Path(),
+		),
+	).
+		Listen(context.Background())
 
-	err = dataDir.ClearNodeCreateErrorIfExists()
 	if nil != err {
-		recordErrorAndPanic(dataDir, err)
-	}
-
-	select {
-	case httpErr := <-httpErrChannel:
-		recordErrorAndPanic(dataDir, httpErr)
+		panic(err)
 	}
 
 }
