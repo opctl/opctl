@@ -11,7 +11,7 @@ Strings...
 - are coerced according to [string coercion](#coercion)
 
 ### Initialization
-String typed values can be constructed from a literal or templated object.
+String typed values can be constructed from a literal or templated string.
  
 A templated string is a string which includes one or more value reference.
 At runtime, each reference gets evaluated and replaced with it's corresponding value.
@@ -23,15 +23,10 @@ i'm a string
 ```
 
 #### Initialization Example (templated)
-given:
-- someObject
-  - is in scope
-  - is object
-
 ```yaml
-# $(someObject) replaced w/ JSON representation of someObject
-# $(dir/file.txt) replaced w/ contents of file.txt
-pre $(someObject) $(dir/file.txt)
+# JSON representation of in scope object "someObject", replaces $(someObject) in the string
+# contents of in scope file "someDir/file.txt" replaces $(someDir/file.txt) in the string
+pre $(someObject) $(someDir/file.txt)
 ```
 
 ### Coercion
