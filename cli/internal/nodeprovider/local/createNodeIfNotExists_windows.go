@@ -1,9 +1,9 @@
 package local
 
 import (
-	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -53,20 +53,25 @@ func (np nodeProvider) CreateNodeIfNotExists() (model.NodeHandle, error) {
 		CreationFlags: syscall.CREATE_NEW_PROCESS_GROUP,
 	}
 
-	nodeCmdOutput := &bytes.Buffer{}
-	nodeCmd.Stdout = nodeCmdOutput
-	nodeCmd.Stderr = nodeCmdOutput
+	nodeLogFilePath := filepath.Join(np.dataDir.Path(), "node.log")
+	nodeLogFile, err := os.Create(nodeLogFilePath)
+	if nil != err {
+		return nil, err
+	}
+
+	nodeCmd.Stderr = nodeLogFile
+	nodeCmd.Stdout = nodeLogFile
 
 	if err := nodeCmd.Start(); nil != err {
 		return nil, err
 	}
 
-	if err := nodeHandle.APIClient().Liveness(context.TODO()); nil != err {
-		fmt.Print(string(nodeCmdOutput.Bytes()))
-		return nil, fmt.Errorf("Error encountered creating opctl daemon")
+	err = nodeHandle.APIClient().Liveness(context.TODO())
+	nodeLogBytes, _ := ioutil.ReadFile(nodeLogFilePath)
+	fmt.Println(string(nodeLogBytes))
+	if nil != err {
+		return nil, fmt.Errorf("Error encountered creating daemonized opctl node")
 	}
-
-	fmt.Print(string(nodeCmdOutput.Bytes()))
 
 	return nodeHandle, nil
 }
