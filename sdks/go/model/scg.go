@@ -31,8 +31,8 @@ type SCGContainerCall struct {
 }
 
 type SCGContainerCallImage struct {
-	Src *string `json:"src,omitempty"`
-	// @TODO: deprecate in favor of Src
+	// @TODO: remove after release 0.1.28 in favor of image.ref
+	Src       *string       `json:"src,omitempty"`
 	Ref       *string       `json:"ref,omitempty"`
 	PullCreds *SCGPullCreds `json:"pullCreds,omitempty"`
 }
@@ -44,11 +44,8 @@ type SCGLoopVars struct {
 }
 
 type SCGOpCall struct {
-	Src *string `json:"src,omitempty"`
-
-	// Ref represents a references to the op; will be interpolated
-	// @TODO: deprecate in favor of Src
-	Ref string `json:"ref,omitempty"`
+	// Ref represents a references to an op; will be interpolated
+	Ref string `json:"ref"`
 	// PullCreds represent creds for pulling the op from a provider
 	PullCreds *SCGPullCreds `json:"pullCreds,omitempty"`
 	// binds scope to inputs of referenced op

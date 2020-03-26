@@ -115,7 +115,7 @@ var _ = Context("Interpreter", func() {
 					})
 			})
 		})
-		It("should call pkg.NewFSProvider w/ expected args", func() {
+		It("should call data.NewFSProvider w/ expected args", func() {
 			/* arrange */
 			providedOpPath := "providedOpPath"
 
@@ -142,7 +142,7 @@ var _ = Context("Interpreter", func() {
 			Expect(fakeData.NewFSProviderArgsForCall(0)).To(ConsistOf(filepath.Dir(providedOpPath)))
 		})
 		Context("scgOpCall.PullCreds is nil", func() {
-			It("should call pkg.NewGitProvider w/ expected args", func() {
+			It("should call data.NewGitProvider w/ expected args", func() {
 				/* arrange */
 				providedDataCachePath := "dummyDataCachePath"
 
@@ -202,7 +202,7 @@ var _ = Context("Interpreter", func() {
 				})
 			})
 			Context("stringInterpreter.Interpret doesn't err", func() {
-				It("should call pkg.NewGitProvider w/ expected args", func() {
+				It("should call data.NewGitProvider w/ expected args", func() {
 					/* arrange */
 					providedDataCachePath := "dummyDataCachePath"
 
@@ -242,7 +242,7 @@ var _ = Context("Interpreter", func() {
 				})
 			})
 		})
-		Context("scgOpCall.Src truthy", func() {
+		Context("scgOpCall.Ref is value referency", func() {
 			It("should call opfile.Get w/ expected args", func() {
 				/* arrange */
 				opPath := "opPath"
@@ -264,7 +264,7 @@ var _ = Context("Interpreter", func() {
 				objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					&model.SCGOpCall{
-						Src: new(string),
+						Ref: "$(dummyVar)",
 					},
 					"dummyOpID",
 					"dummyOpPath",
@@ -279,7 +279,7 @@ var _ = Context("Interpreter", func() {
 				Expect(actualOpPath).To(Equal(opPath))
 			})
 		})
-		Context("scgOpCall.Src falsy", func() {
+		Context("scgOpCall.Ref not value referency", func() {
 			It("should call data.Resolve w/ expected args", func() {
 				/* arrange */
 				providedOpPath := "providedOpPath"

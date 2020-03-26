@@ -11,10 +11,10 @@ An object binding variables to iteration info (index, key, value) assigned to ea
   - [value](#value)
 
 ### index
-A string defining the name of a variable to set equal to the current loop index.
+A [variable-reference [string]](../variable-reference.md) designating a variable to bind each iterations index to.
 
 ### key
-A string defining the name of a variable to set equal to the current loop key.
+A [variable-reference [string]](../variable-reference.md) designating a variable to bind each iterations key to.
 
 Behavior varies based on the range value:  
 
@@ -25,7 +25,7 @@ Behavior varies based on the range value:
 |object|Variable set to current property name|
 
 ### value
-A string defining the name of a variable to set equal to the current loop value.
+A [variable-reference [string]](../variable-reference.md) designating a variable to bind each iterations value to.
 
 Behavior varies based on the range value:  
 

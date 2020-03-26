@@ -13,13 +13,13 @@ An object defining a parameter which accepts an [object typed value](../../../..
   - [isSecret](#issecret)
 
 ### constraints
-A [JSON Schema v4](https://tools.ietf.org/html/draft-wright-json-schema-00) object defining constraints on the parameters value.
+A [JSON Schema v4 [object]](https://tools.ietf.org/html/draft-wright-json-schema-00) defining constraints on the parameters value.
 
 ### default
 An object to use as the value of the parameter when no argument is provided.
 
 ### description
-A [markdown](../markdown.md) string defining a human friendly description of the parameter.
+A [markdown [string]](../markdown.md) defining a human friendly description of the parameter.
 
 ### isSecret
 A boolean indicating if the value of the parameter is secret. This will cause it to be hidden in UI's for example. 

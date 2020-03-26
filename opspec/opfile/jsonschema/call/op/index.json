@@ -11,26 +11,12 @@
       "$ref": "../pullCreds.json"
     },
     "ref": {
-      "description": "Reference to an op",
-      "type": "string",
-      "format": "uri-reference"
-    },
-    "src": {
-      "description": "Source code of the op to run. MUST be a valid op directory.",
+      "description": "References the op to run. MUST be a 'git-repo#{SEMVER_GIT_TAG}/path' or 'variable reference' string",
       "type": "string"
     }
   },
-  "oneOf": [
-    {
-      "required": [
-        "ref"
-      ]
-    },
-    {
-      "required": [
-        "src"
-      ]
-    }
+  "required": [
+    "ref"
   ],
   "additionalProperties": false
 }

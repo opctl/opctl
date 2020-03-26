@@ -15,7 +15,7 @@ An object defining a call loop in which all iterations happen in parallel (all a
 A [rangeable value](rangeable-value.md) to loop over.
 
 ### run
-A [call](../call/index.md) object defining a call run on each iteration of the loop
+A [call [object]](../call/index.md) defining a call run on each iteration of the loop
 
 ### vars
-A [loop-vars](loop-vars.md) object binding iteration info to variables.
+A [loop-vars [object]](loop-vars.md) binding iteration info to variables.

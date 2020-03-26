@@ -5,9 +5,9 @@ title: Dir
 Dir typed values are a filesystem directory entry.
 
 Dirs...
-- are mutable, i.e. making changes to a directory results in the directory being changed everywhere it's referenced
-- can be passed in/out of ops via [dir parameters](../structure/op-directory/op/parameter/dir.md)
-- are coerced according to [coercion](#coercion)
+- are mutable, i.e. making changes to a directory results in the directory being changed everywhere it's referenced.
+- can be passed in/out of ops via [dir parameters](../structure/op-directory/op/parameter/dir.md).
+- are not coercible to any other type.
 
 ### Entry Referencing
 Dir entries (child files/directories) can be referenced via `$(ROOT/ENTRY)` syntax.
@@ -29,8 +29,3 @@ given:
 ```yaml
 $(someDir/file2.txt)
 ```
-
-### Coercion
-Object typed values are coercible to:
-
-- [boolean](boolean.md) (dirs which are empty coerce to false; all else coerce to true)

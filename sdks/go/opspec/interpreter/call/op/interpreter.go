@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
+	"regexp"
 
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
@@ -79,15 +80,16 @@ func (itp _interpreter) Interpret(
 	}
 
 	var opPath string
-	if nil != scgOpCall.Src {
-		src, err := itp.dirInterpreter.Interpret(
+	if regexp.MustCompile("^\\$\\(.+\\)$").MatchString(scgOpCall.Ref) {
+		// attempt to process as a variable reference since its variable reference like.
+		dirValue, err := itp.dirInterpreter.Interpret(
 			scope,
-			*scgOpCall.Src,
+			scgOpCall.Ref,
 		)
 		if nil != err {
 			return nil, fmt.Errorf("error encountered interpreting image src; error was: %v", err)
 		}
-		opPath = *src.Dir
+		opPath = *dirValue.Dir
 	} else {
 		opHandle, err := itp.data.Resolve(
 			context.TODO(),

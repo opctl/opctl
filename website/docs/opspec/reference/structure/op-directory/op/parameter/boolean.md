@@ -15,4 +15,4 @@ An object defining a parameter which accepts a [boolean typed value](../../../..
 A boolean to use as the value of the parameter when no argument is provided.
 
 ### description
-A [markdown](../markdown.md) string defining a human friendly description of the parameter.
+A [markdown [string]](../markdown.md) defining a human friendly description of the parameter.
