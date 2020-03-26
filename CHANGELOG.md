@@ -4,17 +4,24 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
-## \[Unreleased]
+## 0.1.28 - 2020-03-26
 
 ### Added
 
 - UI: Workspace page (explorer, op visualizer with pan/zoom)
 - [Support in scope dir as op](https://github.com/opctl/opctl/issues/646)
 - Liveness method to node API Client
+- Binding loop vars with variable reference syntax i.e. `index: $(indexVar)`.
+- Variable reference as `image.ref`.
 
 ### Changed
 
 - When daemonizing opctl node, parent process env vars no longer inherited by daemonized process. This for example thwarts Jenkins ProcessTreeKiller's killing abilities.
+
+### Deprecated
+
+- Binding loop vars without variable reference syntax i.e. instead of `index: indexVar`, use `index: $(indexVar)`.
+- `image.src`; use `image.ref`
 
 ### Fixed
 
@@ -37,6 +44,7 @@ accordance with
 - [Support in scope dir as container image](https://github.com/opctl/opctl/issues/498)
 - [Pass thru errors encountered when cli auto daemonizes a node](https://github.com/opctl/opctl/issues/368)
 - [Allow Interpolating Container `workDir`](https://github.com/opctl/opctl/issues/648)
+- `Container.sockets` bindings with variable reference syntax i.e. `/my/socket: $(mySocket)`
 
 ### Changed
 
@@ -44,7 +52,7 @@ accordance with
 
 ### Deprecated
 
-- `Container.sockets` bindings without reference syntax i.e. instead of `/my/socket: mySocket`, use `/my/socket: $(mySocket)`.
+- `Container.sockets` bindings without variable reference syntax i.e. instead of `/my/socket: mySocket`, use `/my/socket: $(mySocket)`.
 
 ### Fixed
 

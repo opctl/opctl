@@ -2,6 +2,7 @@ package iteration
 
 import (
 	"sort"
+	"strings"
 
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
 
@@ -29,6 +30,10 @@ func NewScoper() Scoper {
 		loopableInterpreter: loopable.NewInterpreter(),
 		valueInterpreter:    value.NewInterpreter(),
 	}
+}
+
+func refToVariable(ref *string) string {
+	return strings.TrimSuffix(strings.TrimPrefix(*ref, "$("), ")")
 }
 
 type _scoper struct {
@@ -69,7 +74,7 @@ func (lpr _scoper) Scope(
 	if nil != scgLoopVars.Index {
 		// assign iteration index to requested inboundScope variable
 		indexAsFloat64 := float64(index)
-		outboundScope[*scgLoopVars.Index] = &model.Value{
+		outboundScope[refToVariable(scgLoopVars.Index)] = &model.Value{
 			Number: &indexAsFloat64,
 		}
 	}
@@ -107,7 +112,7 @@ func (lpr _scoper) Scope(
 
 		if nil != scgLoopVars.Key {
 			// only add key to scope if declared
-			outboundScope[*scgLoopVars.Key] = &model.Value{String: &name}
+			outboundScope[refToVariable(scgLoopVars.Key)] = &model.Value{String: &name}
 		}
 	}
 
@@ -121,7 +126,7 @@ func (lpr _scoper) Scope(
 			return nil, err
 		}
 
-		outboundScope[*scgLoopVars.Value] = &value
+		outboundScope[refToVariable(scgLoopVars.Value)] = &value
 	}
 
 	return outboundScope, nil

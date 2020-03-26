@@ -881,26 +881,12 @@
               "additionalProperties": false
             },
             "ref": {
-              "description": "Reference to an op",
-              "type": "string",
-              "format": "uri-reference"
-            },
-            "src": {
-              "description": "Source of op. MUST be a valid op directory.",
+              "description": "References the op to run. MUST be a 'git-repo#{SEMVER_GIT_TAG}/path' or 'variable reference' string",
               "type": "string"
             }
           },
-          "oneOf": [
-            {
-              "required": [
-                "ref"
-              ]
-            },
-            {
-              "required": [
-                "src"
-              ]
-            }
+          "required": [
+            "ref"
           ],
           "additionalProperties": false
         },
@@ -982,16 +968,40 @@
               "properties": {
                 "index": {
                   "description": "Variable each iterations associated index will be made available through",
-                  "$ref": "#/properties/run/properties/serialLoop/properties/vars/properties/key"
+                  "oneOf": [
+                    {
+                      "$ref": "#/properties/run/properties/serialLoop/properties/vars/properties/key/oneOf/0"
+                    },
+                    {
+                      "$ref": "#/properties/run/properties/serialLoop/properties/vars/properties/key/oneOf/1"
+                    }
+                  ]
                 },
                 "key": {
                   "description": "Variable each iterations associated key will be made available through",
-                  "type": "string",
-                  "pattern": "^[-_.a-zA-Z0-9]+$"
+                  "oneOf": [
+                    {
+                      "description": "Name of a variable",
+                      "type": "string",
+                      "pattern": "^[-_.a-zA-Z0-9]+$"
+                    },
+                    {
+                      "description": "Reference to a variable",
+                      "type": "string",
+                      "pattern": "^\\$\\([-_.a-zA-Z0-9]+\\)$"
+                    }
+                  ]
                 },
                 "value": {
                   "description": "Variable each iterations associated value will be made available through",
-                  "$ref": "#/properties/run/properties/serialLoop/properties/vars/properties/key"
+                  "oneOf": [
+                    {
+                      "$ref": "#/properties/run/properties/serialLoop/properties/vars/properties/key/oneOf/0"
+                    },
+                    {
+                      "$ref": "#/properties/run/properties/serialLoop/properties/vars/properties/key/oneOf/1"
+                    }
+                  ]
                 }
               },
               "type": "object"

@@ -2,7 +2,6 @@ package parallelloop
 
 import (
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
 )
 
@@ -17,14 +16,12 @@ type Interpreter interface {
 // NewInterpreter returns an initialized Interpreter instance
 func NewInterpreter() Interpreter {
 	return &_interpreter{
-		loopableInterpreter:   loopable.NewInterpreter(),
-		predicatesInterpreter: predicates.NewInterpreter(),
+		loopableInterpreter: loopable.NewInterpreter(),
 	}
 }
 
 type _interpreter struct {
-	loopableInterpreter   loopable.Interpreter
-	predicatesInterpreter predicates.Interpreter
+	loopableInterpreter loopable.Interpreter
 }
 
 func (itp _interpreter) Interpret(

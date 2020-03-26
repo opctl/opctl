@@ -65,6 +65,7 @@ module.exports = {
                               "opspec/reference/structure/op-directory/op/call/container/image",
                             ]
                           },
+                          "opspec/reference/structure/op-directory/op/call/loop-vars",
                           "opspec/reference/structure/op-directory/op/call/op",
                           "opspec/reference/structure/op-directory/op/call/parallel-loop",
                           "opspec/reference/structure/op-directory/op/call/predicate",
@@ -90,7 +91,7 @@ module.exports = {
                       },
                       "opspec/reference/structure/op-directory/op/initializer",
                       "opspec/reference/structure/op-directory/op/markdown",
-                      "opspec/reference/structure/op-directory/op/reference",
+                      "opspec/reference/structure/op-directory/op/variable-reference",
                       "opspec/reference/structure/op-directory/op/variable-name"
                     ]
                   }

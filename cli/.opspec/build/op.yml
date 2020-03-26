@@ -38,7 +38,7 @@ run:
           - linux
           - windows
         vars:
-          value: GOOS
+          value: $(GOOS)
         run:
           op:
             ref: github.com/opspec-pkgs/golang.build.bin#2.0.0

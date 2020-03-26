@@ -2,6 +2,7 @@ package image
 
 import (
 	"fmt"
+	"regexp"
 
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
@@ -38,10 +39,19 @@ func (itp _interpreter) Interpret(
 		return nil, fmt.Errorf("image required")
 	}
 
+	var imageSrcOrRefVar *string
 	if nil != scgContainerCallImage.Src {
+		// @TODO: remove image.src after release 0.1.28 in favor of image.ref
+		imageSrcOrRefVar = scgContainerCallImage.Src
+	} else if regexp.MustCompile("^\\$\\(.+\\)$").MatchString(*scgContainerCallImage.Ref) {
+		// attempt to process as a variable reference since its variable reference like.
+		imageSrcOrRefVar = scgContainerCallImage.Ref
+	}
+
+	if nil != imageSrcOrRefVar {
 		src, err := itp.dirInterpreter.Interpret(
 			scope,
-			*scgContainerCallImage.Src,
+			*imageSrcOrRefVar,
 		)
 		if nil != err {
 			return nil, fmt.Errorf("error encountered interpreting image src; error was: %v", err)

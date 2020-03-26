@@ -4,15 +4,36 @@
   "properties": {
     "index": {
       "description": "Variable each iterations associated index will be made available through",
-      "$ref": "../../variableName.json"
+      "oneOf": [
+        {
+          "$ref": "../../variableName.json"
+        },
+        {
+          "$ref": "../../variableReference.json"
+        }
+      ]
     },
     "key": {
       "description": "Variable each iterations associated key will be made available through",
-      "$ref": "../../variableName.json"
+      "oneOf": [
+        {
+          "$ref": "../../variableName.json"
+        },
+        {
+          "$ref": "../../variableReference.json"
+        }
+      ]
     },
     "value": {
       "description": "Variable each iterations associated value will be made available through",
-      "$ref": "../../variableName.json"
+      "oneOf": [
+        {
+          "$ref": "../../variableName.json"
+        },
+        {
+          "$ref": "../../variableReference.json"
+        }
+      ]
     }
   },
   "type": "object"

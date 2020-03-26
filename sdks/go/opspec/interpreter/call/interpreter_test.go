@@ -26,9 +26,8 @@ var _ = Context("Interpreter", func() {
 			It("should call predicatesInterpreter.Interpret w/ expected args", func() {
 				/* arrange */
 				providedScope := map[string]*model.Value{}
-				providedIf := new([]*model.SCGPredicate)
 				providedSCG := &model.SCG{
-					If: providedIf,
+					If: new([]*model.SCGPredicate),
 				}
 
 				fakePredicatesInterpreter := new(predicatesFakes.FakeInterpreter)
@@ -52,10 +51,10 @@ var _ = Context("Interpreter", func() {
 				)
 
 				/* assert */
-				actualSCG,
+				actualSCGIf,
 					actualScope := fakePredicatesInterpreter.InterpretArgsForCall(0)
 
-				Expect(actualSCG).To(Equal(providedSCG))
+				Expect(actualSCGIf).To(Equal(*providedSCG.If))
 				Expect(actualScope).To(Equal(providedScope))
 			})
 			Context("predicatesInterpreter returns err", func() {
@@ -145,6 +144,7 @@ var _ = Context("Interpreter", func() {
 
 				fakeContainerCallInterpreter := new(containerFakes.FakeInterpreter)
 				expectedDCGContainerCall := &model.DCGContainerCall{}
+				fakeContainerCallInterpreter.InterpretReturns(expectedDCGContainerCall, nil)
 
 				expectedDCG := &model.DCG{
 					Container: expectedDCGContainerCall,
@@ -228,6 +228,7 @@ var _ = Context("Interpreter", func() {
 
 				fakeOpCallInterpreter := new(opFakes.FakeInterpreter)
 				expectedDCGOpCall := &model.DCGOpCall{}
+				fakeOpCallInterpreter.InterpretReturns(expectedDCGOpCall, nil)
 
 				expectedDCG := &model.DCG{
 					Id:       providedID,
@@ -270,7 +271,9 @@ var _ = Context("Interpreter", func() {
 				providedParentID := "providedParentID"
 
 				expectedDCG := &model.DCG{
+					Id:       providedID,
 					Parallel: providedSCG.Parallel,
+					ParentID: &providedParentID,
 				}
 
 				objectUnderTest := _interpreter{}
@@ -287,7 +290,7 @@ var _ = Context("Interpreter", func() {
 				)
 
 				/* assert */
-				Expect(actualDCG).To(Equal(expectedDCG))
+				Expect(*actualDCG).To(Equal(*expectedDCG))
 				Expect(actualError).To(BeNil())
 
 			})
@@ -306,7 +309,9 @@ var _ = Context("Interpreter", func() {
 				providedParentID := "providedParentID"
 
 				expectedDCG := &model.DCG{
-					Serial: providedSCG.Serial,
+					Id:       providedID,
+					ParentID: &providedParentID,
+					Serial:   providedSCG.Serial,
 				}
 
 				objectUnderTest := _interpreter{}
@@ -323,7 +328,7 @@ var _ = Context("Interpreter", func() {
 				)
 
 				/* assert */
-				Expect(actualDCG).To(Equal(expectedDCG))
+				Expect(*actualDCG).To(Equal(*expectedDCG))
 				Expect(actualError).To(BeNil())
 
 			})
