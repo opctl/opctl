@@ -1,5 +1,5 @@
 {
-  "title": "containerCall",
+  "title": "callContainer",
   "type": "object",
   "properties": {
     "cmd": {
@@ -50,7 +50,7 @@
           "type": "object"
         },
         {
-          "$ref": "../reference.json"
+          "$ref": "../variableReference.json"
         }
       ],
       "description": "Environment variables in the container"

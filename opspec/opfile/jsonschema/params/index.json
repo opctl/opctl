@@ -1,6 +1,6 @@
 {
   "additionalProperties": false,
-  "description": "Parameter of an op",
+  "description": "Input or output parameters of an op",
   "patternProperties": {
     "[-_a-zA-Z0-9]+": {
       "oneOf": [

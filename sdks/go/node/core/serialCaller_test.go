@@ -30,18 +30,26 @@ var _ = Context("serialCaller", func() {
 			providedInboundScope := map[string]*model.Value{}
 			providedRootOpID := "providedRootOpID"
 			providedOpPath := "providedOpPath"
-			providedSCGSerialCalls := []*model.SCG{
+			providedSCGSerialCalls := []model.NamedSCG{
 				{
-					Container: &model.SCGContainerCall{},
+					"": {
+						Container: &model.SCGContainerCall{},
+					},
 				},
 				{
-					Op: &model.SCGOpCall{},
+					"": {
+						Op: &model.SCGOpCall{},
+					},
 				},
 				{
-					Parallel: []*model.SCG{},
+					"": {
+						Parallel: []model.NamedSCG{},
+					},
 				},
 				{
-					Serial: []*model.SCG{},
+					"": {
+						Serial: []model.NamedSCG{},
+					},
 				},
 			}
 
@@ -98,7 +106,9 @@ var _ = Context("serialCaller", func() {
 				Expect(actualCtx).To(Equal(actualCtx))
 				Expect(actualNodeID).To(Equal(fmt.Sprintf("%v", expectedSCGIndex)))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
-				Expect(actualSCG).To(Equal(expectedSCG))
+				Expect(expectedSCG).To(Equal(model.NamedSCG{
+					"": *actualSCG,
+				}))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualParentCallID).To(Equal(&providedCallID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
@@ -110,9 +120,11 @@ var _ = Context("serialCaller", func() {
 				providedCallID := "dummyCallID"
 				providedInboundScope := map[string]*model.Value{}
 				providedRootOpID := "dummyRootOpID"
-				providedSCGSerialCalls := []*model.SCG{
+				providedSCGSerialCalls := []model.NamedSCG{
 					{
-						Container: &model.SCGContainerCall{},
+						"container": {
+							Container: &model.SCGContainerCall{},
+						},
 					},
 				}
 
@@ -175,12 +187,16 @@ var _ = Context("serialCaller", func() {
 					expectedInboundScopeToSecondChild := providedInboundScope
 					providedRootOpID := "dummyRootOpID"
 					providedOpPath := "providedOpPath"
-					providedSCGSerialCalls := []*model.SCG{
+					providedSCGSerialCalls := []model.NamedSCG{
 						{
-							Container: &model.SCGContainerCall{},
+							"": {
+								Container: &model.SCGContainerCall{},
+							},
 						},
 						{
-							Container: &model.SCGContainerCall{},
+							"": {
+								Container: &model.SCGContainerCall{},
+							},
 						},
 					}
 
@@ -257,12 +273,16 @@ var _ = Context("serialCaller", func() {
 						"dummyVar3Name": providedInboundScope["dummyVar3Name"],
 					}
 					providedRootOpID := "dummyRootOpID"
-					providedSCGSerialCalls := []*model.SCG{
+					providedSCGSerialCalls := []model.NamedSCG{
 						{
-							Container: &model.SCGContainerCall{},
+							"": {
+								Container: &model.SCGContainerCall{},
+							},
 						},
 						{
-							Container: &model.SCGContainerCall{},
+							"": {
+								Container: &model.SCGContainerCall{},
+							},
 						},
 					}
 
