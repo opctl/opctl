@@ -2,10 +2,12 @@ package opspec
 
 import (
 	"context"
+	"io"
+	"os"
+	"path/filepath"
+
 	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/sdks/go/model"
-	"io"
-	"path/filepath"
 )
 
 //counterfeiter:generate -o fakes/installer.go . Installer
@@ -43,6 +45,13 @@ func (inst _installer) Install(
 	for _, content := range contentsList {
 
 		dstPath := filepath.Join(path, content.Path)
+
+		if _, statErr := os.Stat(dstPath); nil == statErr {
+			// don't overwrite existing content
+			continue
+		} else if !os.IsNotExist(statErr) {
+			return statErr
+		}
 
 		if content.Mode.IsDir() {
 			// ensure content path exists
