@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## 0.1.29 - 2020-04-02
+
+### Fixed
+
+- [Running `op install` twice wipes out op file contents](https://github.com/opctl/opctl/issues/718)
+
 ## 0.1.28 - 2020-03-26
 
 ### Added
