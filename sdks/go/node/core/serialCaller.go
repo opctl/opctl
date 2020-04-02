@@ -19,7 +19,7 @@ type serialCaller interface {
 		inboundScope map[string]*model.Value,
 		rootOpID string,
 		opPath string,
-		scgSerialCall []*model.SCG,
+		scgSerialCall []model.NamedSCG,
 	)
 }
 
@@ -48,7 +48,7 @@ func (sc _serialCaller) Call(
 	inboundScope map[string]*model.Value,
 	rootOpID string,
 	opPath string,
-	scgSerialCall []*model.SCG,
+	scgSerialCall []model.NamedSCG,
 ) {
 	outputs := map[string]*model.Value{}
 	for varName, varData := range inboundScope {
@@ -88,7 +88,7 @@ func (sc _serialCaller) Call(
 		},
 	)
 
-	for _, scgCall := range scgSerialCall {
+	for _, scgNamedCall := range scgSerialCall {
 
 		var childCallID string
 		childCallID, err = sc.uniqueStringFactory.Construct()
@@ -97,15 +97,27 @@ func (sc _serialCaller) Call(
 			return
 		}
 
-		sc.caller.Call(
-			ctx,
-			childCallID,
-			outputs,
-			scgCall,
-			opPath,
-			&callID,
-			rootOpID,
-		)
+		for scgCallName, scgUnNamedCall := range scgNamedCall {
+			// add call to scope
+			if "" != scgCallName {
+				outputs[scgCallName] = &model.Value{
+					String: &childCallID,
+				}
+			}
+
+			// loop vars same address each loop; need to copy
+			scgUnNamedCall := scgUnNamedCall
+
+			sc.caller.Call(
+				ctx,
+				childCallID,
+				outputs,
+				&scgUnNamedCall,
+				opPath,
+				&callID,
+				rootOpID,
+			)
+		}
 
 	eventLoop:
 		for event := range eventChannel {

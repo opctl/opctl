@@ -14,7 +14,7 @@
     },
     "inputs": {
       "additionalProperties": false,
-      "description": "Parameter of an op",
+      "description": "Input or output parameters of an op",
       "patternProperties": {
         "[-_a-zA-Z0-9]+": {
           "oneOf": [
@@ -572,445 +572,464 @@
       "$ref": "#/properties/inputs"
     },
     "run": {
-      "additionalProperties": false,
       "description": "A single node of the [call graph](https://en.wikipedia.org/wiki/Call_graph)",
       "oneOf": [
         {
-          "required": [
-            "container"
-          ]
+          "additionalProperties": false,
+          "maxProperties": 1,
+          "minProperties": 1,
+          "patternProperties": {
+            "[-_a-zA-Z0-9]+": {
+              "$ref": "#/properties/run/oneOf/1"
+            }
+          },
+          "type": "object"
         },
         {
-          "required": [
-            "op"
-          ]
-        },
-        {
-          "required": [
-            "parallel"
-          ]
-        },
-        {
-          "required": [
-            "parallelLoop"
-          ]
-        },
-        {
-          "required": [
-            "serial"
-          ]
-        },
-        {
-          "required": [
-            "serialLoop"
-          ]
-        }
-      ],
-      "properties": {
-        "container": {
-          "title": "containerCall",
-          "type": "object",
+          "additionalProperties": false,
+          "oneOf": [
+            {
+              "required": [
+                "container"
+              ]
+            },
+            {
+              "required": [
+                "op"
+              ]
+            },
+            {
+              "required": [
+                "parallel"
+              ]
+            },
+            {
+              "required": [
+                "parallelLoop"
+              ]
+            },
+            {
+              "required": [
+                "serial"
+              ]
+            },
+            {
+              "required": [
+                "serialLoop"
+              ]
+            }
+          ],
           "properties": {
-            "cmd": {
-              "description": "Command run by a container; overrides any set at the image level",
-              "type": "array",
-              "items": {
-                "description": "Expression coercible to string value",
-                "$ref": "#/properties/run/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
-              }
-            },
-            "dirs": {
+            "container": {
+              "title": "callContainer",
               "type": "object",
-              "description": "Directories in the container",
-              "patternProperties": {
-                "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
-                  "oneOf": [
-                    {
-                      "description": "(will be bound to same path in op)",
-                      "type": "null"
-                    },
-                    {
-                      "description": "Expression coercible to dir value &/or scope ref to set upon exit",
-                      "$ref": "#/properties/run/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
-                    }
-                  ]
-                }
-              },
-              "additionalProperties": false
-            },
-            "envVars": {
-              "oneOf": [
-                {
-                  "additionalProperties": false,
+              "properties": {
+                "cmd": {
+                  "description": "Command run by a container; overrides any set at the image level",
+                  "type": "array",
+                  "items": {
+                    "description": "Expression coercible to string value",
+                    "$ref": "#/properties/run/oneOf/1/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                  }
+                },
+                "dirs": {
+                  "type": "object",
+                  "description": "Directories in the container",
                   "patternProperties": {
-                    "^[^=]+$": {
+                    "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
                       "oneOf": [
                         {
-                          "description": "(will be bound to in scope ref w/ same name)",
+                          "description": "(will be bound to same path in op)",
                           "type": "null"
                         },
                         {
-                          "description": "Expression coercible to string value",
-                          "$ref": "#/properties/run/properties/container/properties/name"
+                          "description": "Expression coercible to dir value &/or scope ref to set upon exit",
+                          "$ref": "#/properties/run/oneOf/1/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "envVars": {
+                  "oneOf": [
+                    {
+                      "additionalProperties": false,
+                      "patternProperties": {
+                        "^[^=]+$": {
+                          "oneOf": [
+                            {
+                              "description": "(will be bound to in scope ref w/ same name)",
+                              "type": "null"
+                            },
+                            {
+                              "description": "Expression coercible to string value",
+                              "$ref": "#/properties/run/oneOf/1/properties/container/properties/name"
+                            }
+                          ]
+                        }
+                      },
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/properties/run/oneOf/1/properties/needs/items"
+                    }
+                  ],
+                  "description": "Environment variables in the container"
+                },
+                "files": {
+                  "type": "object",
+                  "description": "Files in the container",
+                  "patternProperties": {
+                    "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
+                      "oneOf": [
+                        {
+                          "description": "(will be bound to same path in op)",
+                          "type": "null"
+                        },
+                        {
+                          "description": "Expression coercible to file value &/or scope ref to set upon exit",
+                          "$ref": "#/properties/run/oneOf/1/properties/container/properties/name"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "ref": {
+                      "description": "Image reference to resolve from network.",
+                      "$ref": "#/properties/run/oneOf/1/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                    },
+                    "pullCreds": {
+                      "$ref": "#/properties/run/oneOf/1/properties/op/properties/pullCreds"
+                    },
+                    "src": {
+                      "description": "Source of image. MUST be a valid [v1.0.1 OCI (Open Container Initiative) `image-layout`](https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md) directory.",
+                      "type": "string"
+                    }
+                  },
+                  "oneOf": [
+                    {
+                      "required": [
+                        "ref"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "src"
+                      ]
+                    }
+                  ],
+                  "additionalProperties": false
+                },
+                "name": {
+                  "description": "Name the container can be referenced by from other containers",
+                  "type": [
+                    "array",
+                    "boolean",
+                    "number",
+                    "object",
+                    "string"
+                  ]
+                },
+                "ports": {
+                  "description": "Ports bound from the container to the host",
+                  "type": "object",
+                  "patternProperties": {
+                    "[0-9]+(-[0-9]+)?(tcp|udp)?": {
+                      "description": "Host port(s) to bind to",
+                      "type": [
+                        "string",
+                        "number"
+                      ],
+                      "pattern": "[0-9]+(-[0-9]+)?"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "sockets": {
+                  "type": "object",
+                  "patternProperties": {
+                    "[:a-zA-Z0-9]+": {
+                      "description": "Container socket address mapped to a socket ref",
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "workDir": {
+                  "description": "Working directory path (overrides any defined by image)",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "image"
+              ],
+              "additionalProperties": false
+            },
+            "if": {
+              "description": "If any predicate evaluates to false, the call will be skipped.",
+              "type": "array",
+              "items": {
+                "description": "Condition which evaluates to true or false",
+                "oneOf": [
+                  {
+                    "required": [
+                      "eq"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "exists"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "ne"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "notExists"
+                    ]
+                  }
+                ],
+                "properties": {
+                  "eq": {
+                    "description": "True if all items are equal",
+                    "type": "array",
+                    "items": {
+                      "description": "Expression coercible to string value",
+                      "$ref": "#/properties/run/oneOf/1/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                    }
+                  },
+                  "exists": {
+                    "description": "True if value exists w/ reference",
+                    "type": "string",
+                    "pattern": "^\\$\\([-/_.a-zA-Z0-9]+\\)$"
+                  },
+                  "ne": {
+                    "description": "True if any items aren't equal",
+                    "type": "array",
+                    "items": {
+                      "description": "Expression coercible to string value",
+                      "$ref": "#/properties/run/oneOf/1/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                    }
+                  },
+                  "notExists": {
+                    "description": "True if no value exists w/ reference",
+                    "type": "string",
+                    "pattern": "^\\$\\([-/_.a-zA-Z0-9]+\\)$"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "needs": {
+              "type": "array",
+              "description": "Call variable-reference [string]s referencing calls the current call needs.",
+              "items": {
+                "description": "Reference to a variable",
+                "type": "string",
+                "pattern": "^\\$\\([-/_.a-zA-Z0-9]+\\)$"
+              }
+            },
+            "op": {
+              "type": "object",
+              "properties": {
+                "inputs": {
+                  "description": "Initializes INPUT_NAME from VALUE in format 'INPUT_NAME: VALUE'. If VALUE is null, it MUST be assumed VALUE == $(INPUT_NAME)",
+                  "type": "object",
+                  "patternProperties": {
+                    "[-_.a-zA-Z0-9]+": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "description": "Expression which evaluates to a value",
+                          "type": [
+                            "array",
+                            "boolean",
+                            "number",
+                            "object",
+                            "string"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "outputs": {
+                  "description": "Initializes NAME from OUTPUT_NAME in format 'NAME: OUTPUT_NAME'. If OUTPUT_NAME is null, it MUST be assumed NAME == OUTPUT_NAME",
+                  "type": "object",
+                  "patternProperties": {
+                    "[-_.a-zA-Z0-9]+": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "pullCreds": {
+                  "type": "object",
+                  "description": "Credentials used during authentication with the source of an image or op",
+                  "properties": {
+                    "username": {
+                      "description": "Expression coercible to string value",
+                      "$ref": "#/properties/run/oneOf/1/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                    },
+                    "password": {
+                      "description": "Expression coercible to string value",
+                      "$ref": "#/properties/run/oneOf/1/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ],
+                  "additionalProperties": false
+                },
+                "ref": {
+                  "description": "References the op to run. MUST be a 'git-repo#{SEMVER_GIT_TAG}/path' or 'variable reference' string",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "ref"
+              ],
+              "additionalProperties": false
+            },
+            "parallel": {
+              "title": "callParallel",
+              "type": "array",
+              "items": {
+                "$ref": "#/properties/run"
+              }
+            },
+            "parallelLoop": {
+              "additionalProperties": false,
+              "description": "Loop in which all iterations are called simultaneously.",
+              "properties": {
+                "range": {
+                  "$ref": "#/properties/run/oneOf/1/properties/serialLoop/properties/range"
+                },
+                "run": {
+                  "description": "What gets run on each iteration of the loop",
+                  "$ref": "#/properties/run/oneOf/1"
+                },
+                "vars": {
+                  "$ref": "#/properties/run/oneOf/1/properties/serialLoop/properties/vars"
+                }
+              },
+              "required": [
+                "range",
+                "run"
+              ],
+              "type": "object"
+            },
+            "serial": {
+              "title": "serialCall",
+              "type": "array",
+              "items": {
+                "$ref": "#/properties/run"
+              }
+            },
+            "serialLoop": {
+              "additionalProperties": false,
+              "description": "Loop in which each iteration gets called sequentially.",
+              "oneOf": [
+                {
+                  "required": [
+                    "range",
+                    "run"
+                  ]
+                },
+                {
+                  "required": [
+                    "until",
+                    "run"
+                  ]
+                }
+              ],
+              "properties": {
+                "range": {
+                  "description": "Range of the loop, i.e. the value to loop over",
+                  "type": [
+                    "array",
+                    "object",
+                    "string"
+                  ]
+                },
+                "run": {
+                  "description": "What gets run on each iteration of the loop",
+                  "$ref": "#/properties/run/oneOf/1"
+                },
+                "until": {
+                  "description": "Exit condition of the loop; evaluated before each iteration.",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/properties/run/oneOf/1/properties/if/items"
+                  }
+                },
+                "vars": {
+                  "additionalProperties": false,
+                  "description": "Variables added to scope on each iteration",
+                  "properties": {
+                    "index": {
+                      "description": "Variable each iterations associated index will be made available through",
+                      "oneOf": [
+                        {
+                          "$ref": "#/properties/run/oneOf/1/properties/serialLoop/properties/vars/properties/key/oneOf/0"
+                        },
+                        {
+                          "$ref": "#/properties/run/oneOf/1/properties/needs/items"
+                        }
+                      ]
+                    },
+                    "key": {
+                      "description": "Variable each iterations associated key will be made available through",
+                      "oneOf": [
+                        {
+                          "description": "Name of a variable",
+                          "type": "string",
+                          "pattern": "^[-_.a-zA-Z0-9]+$"
+                        },
+                        {
+                          "$ref": "#/properties/run/oneOf/1/properties/needs/items"
+                        }
+                      ]
+                    },
+                    "value": {
+                      "description": "Variable each iterations associated value will be made available through",
+                      "oneOf": [
+                        {
+                          "$ref": "#/properties/run/oneOf/1/properties/serialLoop/properties/vars/properties/key/oneOf/0"
+                        },
+                        {
+                          "$ref": "#/properties/run/oneOf/1/properties/needs/items"
                         }
                       ]
                     }
                   },
                   "type": "object"
-                },
-                {
-                  "description": "Reference to a value",
-                  "type": "string",
-                  "pattern": "^\\$\\(.+\\)$"
-                }
-              ],
-              "description": "Environment variables in the container"
-            },
-            "files": {
-              "type": "object",
-              "description": "Files in the container",
-              "patternProperties": {
-                "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
-                  "oneOf": [
-                    {
-                      "description": "(will be bound to same path in op)",
-                      "type": "null"
-                    },
-                    {
-                      "description": "Expression coercible to file value &/or scope ref to set upon exit",
-                      "$ref": "#/properties/run/properties/container/properties/name"
-                    }
-                  ]
-                }
-              },
-              "additionalProperties": false
-            },
-            "image": {
-              "type": "object",
-              "properties": {
-                "ref": {
-                  "description": "Image reference to resolve from network.",
-                  "$ref": "#/properties/run/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
-                },
-                "pullCreds": {
-                  "$ref": "#/properties/run/properties/op/properties/pullCreds"
-                },
-                "src": {
-                  "description": "Source of image. MUST be a valid [v1.0.1 OCI (Open Container Initiative) `image-layout`](https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md) directory.",
-                  "type": "string"
-                }
-              },
-              "oneOf": [
-                {
-                  "required": [
-                    "ref"
-                  ]
-                },
-                {
-                  "required": [
-                    "src"
-                  ]
-                }
-              ],
-              "additionalProperties": false
-            },
-            "name": {
-              "description": "Name the container can be referenced by from other containers",
-              "type": [
-                "array",
-                "boolean",
-                "number",
-                "object",
-                "string"
-              ]
-            },
-            "ports": {
-              "description": "Ports bound from the container to the host",
-              "type": "object",
-              "patternProperties": {
-                "[0-9]+(-[0-9]+)?(tcp|udp)?": {
-                  "description": "Host port(s) to bind to",
-                  "type": [
-                    "string",
-                    "number"
-                  ],
-                  "pattern": "[0-9]+(-[0-9]+)?"
-                }
-              },
-              "additionalProperties": false
-            },
-            "sockets": {
-              "type": "object",
-              "patternProperties": {
-                "[:a-zA-Z0-9]+": {
-                  "description": "Container socket address mapped to a socket ref",
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false
-            },
-            "workDir": {
-              "description": "Working directory path (overrides any defined by image)",
-              "type": "string"
-            }
-          },
-          "required": [
-            "image"
-          ],
-          "additionalProperties": false
-        },
-        "if": {
-          "description": "If any predicate evaluates to false, the call will be skipped.",
-          "type": "array",
-          "items": {
-            "description": "Condition which evaluates to true or false",
-            "oneOf": [
-              {
-                "required": [
-                  "eq"
-                ]
-              },
-              {
-                "required": [
-                  "exists"
-                ]
-              },
-              {
-                "required": [
-                  "ne"
-                ]
-              },
-              {
-                "required": [
-                  "notExists"
-                ]
-              }
-            ],
-            "properties": {
-              "eq": {
-                "description": "True if all items are equal",
-                "type": "array",
-                "items": {
-                  "description": "Expression coercible to string value",
-                  "$ref": "#/properties/run/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
-                }
-              },
-              "exists": {
-                "description": "True if value exists w/ reference",
-                "type": "string",
-                "pattern": "^\\$\\(.+\\)$"
-              },
-              "ne": {
-                "description": "True if any items aren't equal",
-                "type": "array",
-                "items": {
-                  "description": "Expression coercible to string value",
-                  "$ref": "#/properties/run/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
-                }
-              },
-              "notExists": {
-                "description": "True if no value exists w/ reference",
-                "type": "string",
-                "pattern": "^\\$\\(.+\\)$"
-              }
-            },
-            "type": "object"
-          }
-        },
-        "op": {
-          "type": "object",
-          "properties": {
-            "inputs": {
-              "description": "Initializes INPUT_NAME from VALUE in format 'INPUT_NAME: VALUE'. If VALUE is null, it MUST be assumed VALUE == $(INPUT_NAME)",
-              "type": "object",
-              "patternProperties": {
-                "[-_.a-zA-Z0-9]+": {
-                  "oneOf": [
-                    {
-                      "type": "null"
-                    },
-                    {
-                      "description": "Expression which evaluates to a value",
-                      "type": [
-                        "array",
-                        "boolean",
-                        "number",
-                        "object",
-                        "string"
-                      ]
-                    }
-                  ]
-                }
-              },
-              "additionalProperties": false
-            },
-            "outputs": {
-              "description": "Initializes NAME from OUTPUT_NAME in format 'NAME: OUTPUT_NAME'. If OUTPUT_NAME is null, it MUST be assumed NAME == OUTPUT_NAME",
-              "type": "object",
-              "patternProperties": {
-                "[-_.a-zA-Z0-9]+": {
-                  "oneOf": [
-                    {
-                      "type": "null"
-                    },
-                    {
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "additionalProperties": false
-            },
-            "pullCreds": {
-              "type": "object",
-              "description": "Credentials used during authentication with the source of an image or op",
-              "properties": {
-                "username": {
-                  "description": "Expression coercible to string value",
-                  "$ref": "#/properties/run/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
-                },
-                "password": {
-                  "description": "Expression coercible to string value",
-                  "$ref": "#/properties/run/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
-                }
-              },
-              "required": [
-                "username",
-                "password"
-              ],
-              "additionalProperties": false
-            },
-            "ref": {
-              "description": "References the op to run. MUST be a 'git-repo#{SEMVER_GIT_TAG}/path' or 'variable reference' string",
-              "type": "string"
-            }
-          },
-          "required": [
-            "ref"
-          ],
-          "additionalProperties": false
-        },
-        "parallel": {
-          "title": "parallelCall",
-          "type": "array",
-          "items": {
-            "$ref": "#/properties/run"
-          }
-        },
-        "parallelLoop": {
-          "additionalProperties": false,
-          "description": "Loop in which all iterations are called simultaneously.",
-          "properties": {
-            "range": {
-              "$ref": "#/properties/run/properties/serialLoop/properties/range"
-            },
-            "run": {
-              "description": "What gets run on each iteration of the loop",
-              "$ref": "#/properties/run"
-            },
-            "vars": {
-              "$ref": "#/properties/run/properties/serialLoop/properties/vars"
-            }
-          },
-          "required": [
-            "range",
-            "run"
-          ],
-          "type": "object"
-        },
-        "serial": {
-          "title": "serialCall",
-          "type": "array",
-          "items": {
-            "$ref": "#/properties/run"
-          }
-        },
-        "serialLoop": {
-          "additionalProperties": false,
-          "description": "Loop in which each iteration gets called sequentially.",
-          "oneOf": [
-            {
-              "required": [
-                "range",
-                "run"
-              ]
-            },
-            {
-              "required": [
-                "until",
-                "run"
-              ]
-            }
-          ],
-          "properties": {
-            "range": {
-              "description": "Range of the loop, i.e. the value to loop over",
-              "type": [
-                "array",
-                "object",
-                "string"
-              ]
-            },
-            "run": {
-              "description": "What gets run on each iteration of the loop",
-              "$ref": "#/properties/run"
-            },
-            "until": {
-              "description": "Exit condition of the loop; evaluated before each iteration.",
-              "type": "array",
-              "items": {
-                "$ref": "#/properties/run/properties/if/items"
-              }
-            },
-            "vars": {
-              "additionalProperties": false,
-              "description": "Variables added to scope on each iteration",
-              "properties": {
-                "index": {
-                  "description": "Variable each iterations associated index will be made available through",
-                  "oneOf": [
-                    {
-                      "$ref": "#/properties/run/properties/serialLoop/properties/vars/properties/key/oneOf/0"
-                    },
-                    {
-                      "$ref": "#/properties/run/properties/serialLoop/properties/vars/properties/key/oneOf/1"
-                    }
-                  ]
-                },
-                "key": {
-                  "description": "Variable each iterations associated key will be made available through",
-                  "oneOf": [
-                    {
-                      "description": "Name of a variable",
-                      "type": "string",
-                      "pattern": "^[-_.a-zA-Z0-9]+$"
-                    },
-                    {
-                      "description": "Reference to a variable",
-                      "type": "string",
-                      "pattern": "^\\$\\([-_.a-zA-Z0-9]+\\)$"
-                    }
-                  ]
-                },
-                "value": {
-                  "description": "Variable each iterations associated value will be made available through",
-                  "oneOf": [
-                    {
-                      "$ref": "#/properties/run/properties/serialLoop/properties/vars/properties/key/oneOf/0"
-                    },
-                    {
-                      "$ref": "#/properties/run/properties/serialLoop/properties/vars/properties/key/oneOf/1"
-                    }
-                  ]
                 }
               },
               "type": "object"
             }
-          },
-          "type": "object"
+          }
         }
-      },
-      "title": "call"
+      ]
     },
     "version": {
       "description": "Version of the op",

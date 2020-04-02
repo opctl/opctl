@@ -13,13 +13,13 @@
       "$ref": "markdown.json"
     },
     "inputs": {
-      "$ref": "param/index.json"
+      "$ref": "params/index.json"
     },
     "outputs": {
-      "$ref": "param/index.json"
+      "$ref": "params/index.json"
     },
     "run": {
-      "$ref": "call/index.json"
+      "$ref": "call.json"
     },
     "version": {
       "description": "Version of the op",

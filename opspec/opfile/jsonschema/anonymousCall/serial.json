@@ -2,6 +2,6 @@
   "title": "serialCall",
   "type": "array",
   "items": {
-    "$ref": "index.json"
+    "$ref": "../call.json"
   }
 }

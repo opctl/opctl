@@ -33,7 +33,7 @@ var _ = Context("Interpreter", func() {
 	})
 	Context("Interpret", func() {
 		Context("called w/ opspec ../../test-suite scenarios", func() {
-			It("should return result fulfilling scenario.call.expect", func() {
+			XIt("should return result fulfilling scenario.call.expect", func() {
 				tempDir, err := ioutil.TempDir("", "")
 				if nil != err {
 					panic(err)

@@ -263,8 +263,12 @@ var _ = Context("Interpreter", func() {
 				providedID := "providedID"
 
 				providedSCG := &model.SCG{
-					Parallel: []*model.SCG{
-						&model.SCG{},
+					Parallel: []model.NamedSCG{
+						{
+							"container": {
+								Container: &model.SCGContainerCall{},
+							},
+						},
 					},
 				}
 
@@ -301,8 +305,12 @@ var _ = Context("Interpreter", func() {
 				providedID := "providedID"
 
 				providedSCG := &model.SCG{
-					Serial: []*model.SCG{
-						&model.SCG{},
+					Serial: []model.NamedSCG{
+						{
+							"container": {
+								Container: &model.SCGContainerCall{},
+							},
+						},
 					},
 				}
 

@@ -63,7 +63,7 @@ var _ = Context("unmarshaller", func() {
 		})
 		Context("Validator.Validate doesn't return errors", func() {
 
-			XIt("should return expected opFile", func() {
+			It("should return expected opFile", func() {
 
 				/* arrange */
 				paramDefault := "dummyDefault"
@@ -71,11 +71,8 @@ var _ = Context("unmarshaller", func() {
 					"dummyName": {
 						String: &model.StringParam{
 							Constraints: map[string]interface{}{
-								"MinLength": 0,
-								"MaxLength": 1000,
-								"Pattern":   "dummyPattern",
-								"Format":    "dummyFormat",
-								"Enum":      []interface{}{"dummyEnumItem1"},
+								"Pattern": "dummyPattern",
+								"Format":  "dummyFormat",
 							},
 							Default:     &paramDefault,
 							Description: "dummyDescription",
@@ -84,7 +81,7 @@ var _ = Context("unmarshaller", func() {
 					},
 				}
 
-				expectedOpFile := &model.OpFile{
+				expectedOpFile := model.OpFile{
 					Description: "dummyDescription",
 					Inputs:      dummyParams,
 					Name:        "dummyName",
@@ -109,7 +106,7 @@ var _ = Context("unmarshaller", func() {
 				actualOpFile, _ := objectUnderTest.Unmarshal(providedBytes)
 
 				/* assert */
-				Expect(*actualOpFile).To(Equal(*expectedOpFile))
+				Expect(expectedOpFile.Inputs["dummyName"].String.Constraints).To(BeEquivalentTo(actualOpFile.Inputs["dummyName"].String.Constraints))
 
 			})
 		})
