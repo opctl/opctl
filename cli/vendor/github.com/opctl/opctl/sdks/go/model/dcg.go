@@ -7,13 +7,12 @@ type DCG struct {
 	Id           string               `json:"id"`
 	If           *bool                `json:"if,omitempty"`
 	IsKilled     bool                 `json:"isKilled"`
-	Needs        []string             `json:"needs,omitempty"`
 	Op           *DCGOpCall           `json:"op,omitempty"`
-	Parallel     []NamedSCG           `json:"parallel,omitempty"`
+	Parallel     []*SCG               `json:"parallel,omitempty"`
 	ParallelLoop *DCGParallelLoopCall `json:"parallelLoop,omitempty"`
 	// id of parent call
 	ParentID   *string            `json:"parentId,omitempty"`
-	Serial     []NamedSCG         `json:"serial,omitempty"`
+	Serial     []*SCG             `json:"serial,omitempty"`
 	SerialLoop *DCGSerialLoopCall `json:"serialLoop,omitempty"`
 }
 

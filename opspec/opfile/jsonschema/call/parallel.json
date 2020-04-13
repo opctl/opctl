@@ -1,0 +1,7 @@
+{
+  "title": "parallelCall",
+  "type": "array",
+  "items": {
+    "$ref": "index.json"
+  }
+}

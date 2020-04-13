@@ -1,0 +1,5 @@
+{
+  "description": "Reference to a value",
+  "type": "string",
+  "pattern": "^\\$\\(.+\\)$"
+}

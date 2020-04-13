@@ -48,7 +48,6 @@ func newCaller(
 	)
 
 	instance.parallelCaller = newParallelCaller(
-		callKiller,
 		instance,
 		pubSub,
 	)

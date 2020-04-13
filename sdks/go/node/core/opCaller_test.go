@@ -99,11 +99,9 @@ var _ = Context("opCaller", func() {
 				},
 				ChildCallID: "dummyChildCallID",
 				ChildCallSCG: &model.SCG{
-					Parallel: []model.NamedSCG{
+					Parallel: []*model.SCG{
 						{
-							"Name": {
-								Container: &model.SCGContainerCall{},
-							},
+							Container: &model.SCGContainerCall{},
 						},
 					},
 				},
