@@ -1,81 +1,13 @@
 package model
 
-import (
-	"encoding/json"
-	"fmt"
-	"strings"
-
-	"github.com/ghodss/yaml"
-)
-
-// NamedSCG represents a named SCG (as opposed to an anonymous SCG)
-type NamedSCG map[string]SCG
-
-func (s *NamedSCG) UnmarshalJSON(b []byte) error {
-	rawSCGMap := make(map[string]json.RawMessage)
-	err := yaml.Unmarshal(b, &rawSCGMap)
-	if nil != err {
-		return err
-	}
-
-	var scgBytesParts []string
-	for key, value := range rawSCGMap {
-		// if known call type found, consider anonymous and convert it to named.
-		switch key {
-		case "container":
-			scgBytesParts = append(scgBytesParts, fmt.Sprintf("\"%v\": %s", key, value))
-		case "if":
-			scgBytesParts = append(scgBytesParts, fmt.Sprintf("\"%v\": %s", key, value))
-		case "needs":
-			scgBytesParts = append(scgBytesParts, fmt.Sprintf("\"%v\": %s", key, value))
-		case "op":
-			scgBytesParts = append(scgBytesParts, fmt.Sprintf("\"%v\": %s", key, value))
-		case "parallel":
-			scgBytesParts = append(scgBytesParts, fmt.Sprintf("\"%v\": %s", key, value))
-		case "parallelLoop":
-			scgBytesParts = append(scgBytesParts, fmt.Sprintf("\"%v\": %s", key, value))
-		case "serial":
-			scgBytesParts = append(scgBytesParts, fmt.Sprintf("\"%v\": %s", key, value))
-		case "serialLoop":
-			scgBytesParts = append(scgBytesParts, fmt.Sprintf("\"%v\": %s", key, value))
-		}
-	}
-
-	var scgBytes []byte
-	scgName := ""
-	if nil != scgBytesParts {
-		scgBytes = []byte(fmt.Sprintf("{%v}", strings.Join(scgBytesParts, ",")))
-	} else {
-		for key, value := range rawSCGMap {
-			scgName = key
-			scgBytes = value
-			// named calls only have one map entry i.e. their name.
-			break
-		}
-	}
-
-	scg := SCG{}
-	err = yaml.Unmarshal(
-		scgBytes,
-		&scg,
-	)
-
-	*s = map[string]SCG{
-		scgName: scg,
-	}
-
-	return err
-}
-
-//SCG models a static call graph; see https://en.wikipedia.org/wiki/Call_graph
+// static call graph; see https://en.wikipedia.org/wiki/Call_graph
 type SCG struct {
 	Container    *SCGContainerCall    `json:"container,omitempty"`
 	If           *[]*SCGPredicate     `json:"if,omitempty"`
-	Needs        []string             `json:"needs,omitempty"`
 	Op           *SCGOpCall           `json:"op,omitempty"`
-	Parallel     []NamedSCG           `json:"parallel,omitempty"`
+	Parallel     []*SCG               `json:"parallel,omitempty"`
 	ParallelLoop *SCGParallelLoopCall `json:"parallelLoop,omitempty"`
-	Serial       []NamedSCG           `json:"serial,omitempty"`
+	Serial       []*SCG               `json:"serial,omitempty"`
 	SerialLoop   *SCGSerialLoopCall   `json:"serialLoop,omitempty"`
 }
 

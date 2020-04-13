@@ -14,10 +14,10 @@ type Param struct {
 
 // ArrayParam represents a parameter of type object
 type ArrayParam struct {
-	Constraints map[string]interface{} `json:"constraints,omitempty"`
-	Default     *[]interface{}         `json:"default,omitempty"`
-	Description string                 `json:"description,omitempty"`
-	IsSecret    bool                   `json:"isSecret,omitempty"`
+	Constraints Constraints    `json:"constraints,omitempty"`
+	Default     *[]interface{} `json:"default,omitempty"`
+	Description string         `json:"description,omitempty"`
+	IsSecret    bool           `json:"isSecret,omitempty"`
 }
 
 // BooleanParam represents a parameter of type boolean
@@ -45,7 +45,7 @@ type FileParam struct {
 
 // NumberParam represents a parameter of type number
 type NumberParam struct {
-	Constraints map[string]interface{} `json:"constraints,omitempty"`
+	Constraints Constraints `json:"constraints,omitempty"`
 	// Default is *float64 instead of float64 so we know if default was explicitly provided
 	Default     *float64 `json:"default,omitempty"`
 	Description string   `json:"description,omitempty"`
@@ -54,7 +54,7 @@ type NumberParam struct {
 
 // ObjectParam represents a parameter of type object
 type ObjectParam struct {
-	Constraints map[string]interface{}  `json:"constraints,omitempty"`
+	Constraints Constraints             `json:"constraints,omitempty"`
 	Default     *map[string]interface{} `json:"default,omitempty"`
 	Description string                  `json:"description,omitempty"`
 	IsSecret    bool                    `json:"isSecret,omitempty"`
@@ -68,9 +68,11 @@ type SocketParam struct {
 
 // StringParam represents a parameter of type string
 type StringParam struct {
-	Constraints map[string]interface{} `json:"constraints,omitempty"`
+	Constraints Constraints `json:"constraints,omitempty"`
 	// Default is *string instead of string so we know if default was explicitly provided
 	Default     *string `json:"default,omitempty"`
 	Description string  `json:"description,omitempty"`
 	IsSecret    bool    `json:"isSecret,omitempty"`
 }
+
+type Constraints map[string]interface{}

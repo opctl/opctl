@@ -287,12 +287,8 @@ var _ = Context("caller", func() {
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
 				providedSCG := &model.SCG{
-					Parallel: []model.NamedSCG{
-						{
-							"container": {
-								Container: &model.SCGContainerCall{},
-							},
-						},
+					Parallel: []*model.SCG{
+						{Container: &model.SCGContainerCall{}},
 					},
 				}
 				providedOpPath := "providedOpPath"
@@ -411,12 +407,8 @@ var _ = Context("caller", func() {
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
 				providedSCG := &model.SCG{
-					Serial: []model.NamedSCG{
-						{
-							"container": {
-								Container: &model.SCGContainerCall{},
-							},
-						},
+					Serial: []*model.SCG{
+						{Container: &model.SCGContainerCall{}},
 					},
 				}
 				providedOpPath := "providedOpPath"

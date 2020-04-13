@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
@@ -20,18 +19,16 @@ type parallelCaller interface {
 		inboundScope map[string]*model.Value,
 		rootOpID string,
 		opPath string,
-		scgParallelCall []model.NamedSCG,
+		scgParallelCall []*model.SCG,
 	)
 }
 
 func newParallelCaller(
-	callKiller callKiller,
 	caller caller,
 	pubSub pubsub.PubSub,
 ) parallelCaller {
 
 	return _parallelCaller{
-		callKiller:          callKiller,
 		caller:              caller,
 		pubSub:              pubSub,
 		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
@@ -39,12 +36,7 @@ func newParallelCaller(
 
 }
 
-func refToVariable(ref string) string {
-	return strings.TrimSuffix(strings.TrimPrefix(ref, "$("), ")")
-}
-
 type _parallelCaller struct {
-	callKiller          callKiller
 	caller              caller
 	pubSub              pubsub.PubSub
 	uniqueStringFactory uniquestring.UniqueStringFactory
@@ -56,12 +48,13 @@ func (pc _parallelCaller) Call(
 	inboundScope map[string]*model.Value,
 	rootOpID string,
 	opPath string,
-	scgParallelCall []model.NamedSCG,
+	scgParallelCall []*model.SCG,
 ) {
+	// setup cancellation
+	ctxOfChildren, cancelChildren := context.WithCancel(ctx)
+	defer cancelChildren()
+
 	outputs := map[string]*model.Value{}
-	for varName, varData := range inboundScope {
-		outputs[varName] = varData
-	}
 	var err error
 
 	defer func() {
@@ -86,55 +79,29 @@ func (pc _parallelCaller) Call(
 	}()
 
 	startTime := time.Now().UTC()
+	childCallIDIndexMap := map[string]int{}
+	callIndexOutputsMap := map[int]map[string]*model.Value{}
 
-	childCallIndexByID := map[string]int{}
-	for scgCallIndex, scgNamedCall := range scgParallelCall {
-		for scgCallName := range scgNamedCall {
-			var childCallID string
-			childCallID, err = pc.uniqueStringFactory.Construct()
-			if nil != err {
-				return
-			}
-			childCallIndexByID[childCallID] = scgCallIndex
+	// perform calls in parallel w/ cancellation
+	for childCallIndex, childCall := range scgParallelCall {
 
-			if "" != scgCallName {
-				// add named calls to scope
-				outputs[scgCallName] = &model.Value{
-					String: &childCallID,
-				}
-			}
+		var childCallID string
+		childCallID, err = pc.uniqueStringFactory.Construct()
+		if nil != err {
+			// cancel all children on any error
+			cancelChildren()
 		}
-	}
+		childCallIDIndexMap[childCallID] = childCallIndex
 
-	neededByCountByID := map[string]int{}
-	for _, scgNamedCall := range scgParallelCall {
-		for _, scgUnNamedCall := range scgNamedCall {
-			// increment needed by counts for any needs
-			for _, need := range scgUnNamedCall.Needs {
-				neededByCountByID[*outputs[refToVariable(need)].String]++
-			}
-		}
-	}
-
-	// setup cancellation
-	ctxOfChildren, cancelChildren := context.WithCancel(ctx)
-	defer cancelChildren()
-
-	for childCallID, childCallIndex := range childCallIndexByID {
-		for _, scgUnNamedCall := range scgParallelCall[childCallIndex] {
-			// loop vars same address each loop; need to copy
-			scgUnNamedCall := scgUnNamedCall
-
-			go pc.caller.Call(
-				ctxOfChildren,
-				childCallID,
-				inboundScope,
-				&scgUnNamedCall,
-				opPath,
-				&callID,
-				rootOpID,
-			)
-		}
+		go pc.caller.Call(
+			ctxOfChildren,
+			childCallID,
+			inboundScope,
+			childCall,
+			opPath,
+			&callID,
+			rootOpID,
+		)
 	}
 
 	// subscribe to events
@@ -148,32 +115,18 @@ func (pc _parallelCaller) Call(
 	)
 
 	childErrorMessages := []string{}
-	callIndexOutputsMap := map[int]map[string]*model.Value{}
 	for event := range eventChannel {
 		if nil != event.CallEnded {
-			if childCallIndex, isChildCall := childCallIndexByID[event.CallEnded.CallID]; isChildCall {
+			if childCallIndex, isChildCallEnded := childCallIDIndexMap[event.CallEnded.CallID]; isChildCallEnded {
 				callIndexOutputsMap[childCallIndex] = event.CallEnded.Outputs
 				if nil != event.CallEnded.Error {
 					// cancel all children on any error
 					cancelChildren()
 					childErrorMessages = append(childErrorMessages, event.CallEnded.Error.Message)
 				}
-
-				for _, scgUnNamedCall := range scgParallelCall[childCallIndex] {
-					// decrement needed by counts for any needs
-					for _, need := range scgUnNamedCall.Needs {
-						neededByCountByID[*outputs[refToVariable(need)].String]--
-					}
-
-					for neededCallID, neededByCount := range neededByCountByID {
-						if 1 > neededByCount {
-							pc.callKiller.Kill(neededCallID, rootOpID)
-						}
-					}
-				}
 			}
 
-			if len(callIndexOutputsMap) == len(childCallIndexByID) {
+			if len(callIndexOutputsMap) == len(childCallIDIndexMap) {
 				// all calls have ended
 
 				// construct parallel outputs

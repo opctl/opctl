@@ -1,7 +1,0 @@
-{
-  "title": "callParallel",
-  "type": "array",
-  "items": {
-    "$ref": "../call.json"
-  }
-}

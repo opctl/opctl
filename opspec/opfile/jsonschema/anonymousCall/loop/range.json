@@ -1,4 +1,0 @@
-{
-  "description": "Range of the loop, i.e. the value to loop over",
-  "$ref": "../../loopableExpression.json"
-}

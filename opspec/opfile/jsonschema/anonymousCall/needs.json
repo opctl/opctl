@@ -1,7 +1,0 @@
-{
-  "type": "array",
-  "description": "Call variable-reference [string]s referencing calls the current call needs.",
-  "items": {
-    "$ref": "../variableReference.json"
-  }
-}

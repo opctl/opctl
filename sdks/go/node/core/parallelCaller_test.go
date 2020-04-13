@@ -18,7 +18,6 @@ var _ = Context("parallelCaller", func() {
 		It("should return parallelCaller", func() {
 			/* arrange/act/assert */
 			Expect(newParallelCaller(
-				new(FakeCallKiller),
 				new(FakeCaller),
 				new(FakePubSub),
 			)).To(Not(BeNil()))
@@ -31,26 +30,18 @@ var _ = Context("parallelCaller", func() {
 			providedInboundScope := map[string]*model.Value{}
 			providedRootOpID := "dummyRootOpID"
 			providedOpPath := "providedOpPath"
-			providedSCGParallelCalls := []model.NamedSCG{
+			providedSCGParallelCalls := []*model.SCG{
 				{
-					"": {
-						Container: &model.SCGContainerCall{},
-					},
+					Container: &model.SCGContainerCall{},
 				},
 				{
-					"": {
-						Container: &model.SCGContainerCall{},
-					},
+					Op: &model.SCGOpCall{},
 				},
 				{
-					"": {
-						Parallel: []model.NamedSCG{},
-					},
+					Parallel: []*model.SCG{},
 				},
 				{
-					"": {
-						Serial: []model.NamedSCG{},
-					},
+					Serial: []*model.SCG{},
 				},
 			}
 
@@ -120,9 +111,7 @@ var _ = Context("parallelCaller", func() {
 
 				// handle unordered asserts because call order can't be relied on within go statement
 				Expect(expectedChildCallIds).To(ContainElement(actualNodeID))
-				Expect(providedSCGParallelCalls).To(ContainElement(model.NamedSCG{
-					"": *actualSCG,
-				}))
+				Expect(providedSCGParallelCalls).To(ContainElement(actualSCG))
 			}
 		})
 		Context("CallEnded event received w/ Error", func() {
@@ -132,26 +121,18 @@ var _ = Context("parallelCaller", func() {
 				providedInboundScope := map[string]*model.Value{}
 				providedRootOpID := "dummyRootOpID"
 				providedOpPath := "providedOpPath"
-				providedSCGParallelCalls := []model.NamedSCG{
+				providedSCGParallelCalls := []*model.SCG{
 					{
-						"container": {
-							Container: &model.SCGContainerCall{},
-						},
+						Container: &model.SCGContainerCall{},
 					},
 					{
-						"op": {
-							Op: &model.SCGOpCall{},
-						},
+						Op: &model.SCGOpCall{},
 					},
 					{
-						"parallel": {
-							Parallel: []model.NamedSCG{},
-						},
+						Parallel: []*model.SCG{},
 					},
 					{
-						"serial": {
-							Serial: []model.NamedSCG{},
-						},
+						Serial: []*model.SCG{},
 					},
 				}
 
@@ -236,26 +217,18 @@ var _ = Context("parallelCaller", func() {
 				providedInboundScope := map[string]*model.Value{}
 				providedRootOpID := "dummyRootOpID"
 				providedOpPath := "providedOpPath"
-				providedSCGParallelCalls := []model.NamedSCG{
+				providedSCGParallelCalls := []*model.SCG{
 					{
-						"": {
-							Container: &model.SCGContainerCall{},
-						},
+						Container: &model.SCGContainerCall{},
 					},
 					{
-						"": {
-							Op: &model.SCGOpCall{},
-						},
+						Op: &model.SCGOpCall{},
 					},
 					{
-						"": {
-							Parallel: []model.NamedSCG{},
-						},
+						Parallel: []*model.SCG{},
 					},
 					{
-						"": {
-							Serial: []model.NamedSCG{},
-						},
+						Serial: []*model.SCG{},
 					},
 				}
 
@@ -325,9 +298,7 @@ var _ = Context("parallelCaller", func() {
 
 					// handle unordered asserts because call order can't be relied on within go statement
 					Expect(expectedChildCallIds).To(ContainElement(actualNodeID))
-					Expect(providedSCGParallelCalls).To(ContainElement(model.NamedSCG{
-						"": *actualSCG,
-					}))
+					Expect(providedSCGParallelCalls).To(ContainElement(actualSCG))
 				}
 			})
 		})
