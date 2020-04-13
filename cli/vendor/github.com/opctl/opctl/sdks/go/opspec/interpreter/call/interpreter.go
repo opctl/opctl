@@ -57,6 +57,8 @@ func (itp _interpreter) Interpret(
 ) (*model.DCG, error) {
 	dcg := &model.DCG{
 		Id:       id,
+		Name:     scg.Name,
+		Needs:    scg.Needs,
 		ParentID: parentID,
 	}
 	var err error

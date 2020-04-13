@@ -11,11 +11,11 @@ outputs:
 run:
   serial:
     - op:
+        ref: ../test
         inputs:
           srcDir:
         outputs:
           srcDir:
-        ref: test
     - container:
         cmd: [ yarn, run, build ]
         image: { ref: 'node:12.8.1-alpine' }

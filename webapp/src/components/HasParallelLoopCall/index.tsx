@@ -16,7 +16,7 @@ export default (
 ) => <Fragment>
         <div
             style={{
-                width: '5rem',
+                minWidth: '5rem',
                 border: `solid thin ${brandColors.lightGray}`,
             }}
         >

@@ -4,6 +4,8 @@ package model
 type SCG struct {
 	Container    *SCGContainerCall    `json:"container,omitempty"`
 	If           *[]*SCGPredicate     `json:"if,omitempty"`
+	Name         *string              `json:"name,omitempty"`
+	Needs        []string             `json:"needs,omitempty"`
 	Op           *SCGOpCall           `json:"op,omitempty"`
 	Parallel     []*SCG               `json:"parallel,omitempty"`
 	ParallelLoop *SCGParallelLoopCall `json:"parallelLoop,omitempty"`

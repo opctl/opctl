@@ -7,6 +7,8 @@ type DCG struct {
 	Id           string               `json:"id"`
 	If           *bool                `json:"if,omitempty"`
 	IsKilled     bool                 `json:"isKilled"`
+	Name         *string              `json:"name,omitempty"`
+	Needs        []string             `json:"needs,omitempty"`
 	Op           *DCGOpCall           `json:"op,omitempty"`
 	Parallel     []*SCG               `json:"parallel,omitempty"`
 	ParallelLoop *DCGParallelLoopCall `json:"parallelLoop,omitempty"`
