@@ -22,13 +22,13 @@ outputs:
 run:
   serial:
     - op:
-        ref: test
+        ref: ../test
         inputs:
           srcDir: $(srcDir/cli)
         outputs:
           coverprofile:
     - op:
-        ref: set-version
+        ref: ../setVersion
         inputs:
           srcDir: $(srcDir/cli)
           version:

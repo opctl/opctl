@@ -22,7 +22,7 @@ outputs:
 run:
   serial:
     - op:
-        ref: ../webapp/.opspec/build
+        ref: ../../webapp/.opspec/build
         inputs:
           srcDir: $(srcDir)
     # embed webapp in node
@@ -38,7 +38,7 @@ run:
         image: { ref: 'golang:1.13' }
         workDir: /src/cli
     - op:
-        ref: ../cli/.opspec/build
+        ref: ../../cli/.opspec/build
         inputs:
           gitBranch:
           srcDir:

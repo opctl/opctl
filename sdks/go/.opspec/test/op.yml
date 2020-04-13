@@ -18,7 +18,27 @@ run:
     - op:
         ref: github.com/opspec-pkgs/golang.fmt#1.2.0
         inputs: { srcDir: $(srcDir/sdks/go) }
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            echo "unit testing code"
+            go test -coverprofile=coverprofile ./...
+
+            echo "stripping generated code"
+            sed '/fake/d' -i coverprofile
+            sed '/bindata/d' -i coverprofile
+
+            cat coverprofile > /coverprofile
+        files:
+          /coverprofile: $(coverprofile)
+        dirs:
+          /src: $(srcDir)
+        envVars:
+          GOFLAGS: -mod=vendor -tags=containers_image_openpgp 
+        image: { ref: 'golang:1.13' }
+        workDir: /src/sdks/go
     - op:
-        ref: test/unit
-        inputs: { srcDir }
-        outputs: { srcDir, coverprofile}
+        ref: github.com/opspec-pkgs/golang.coverprofile.assert#1.1.0
+        inputs: { coverprofile, minCoverage: 42 }

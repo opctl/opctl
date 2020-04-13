@@ -50,7 +50,7 @@
           "type": "object"
         },
         {
-          "$ref": "../reference.json"
+          "$ref": "../variableReference.json"
         }
       ],
       "description": "Environment variables in the container"

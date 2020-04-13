@@ -29,14 +29,6 @@ export default (
         >
             <div
                 style={{
-                    width: '5rem',
-                    border: `solid thin ${brandColors.lightGray}`,
-                }}
-            >
-                Parallel
-            </div>
-            <div
-                style={{
                     // https://stackoverflow.com/questions/29503227/how-to-make-flexbox-items-the-same-size
                     display: 'grid',
                     gridTemplateColumns: `repeat(${spliced.length},1fr)`,

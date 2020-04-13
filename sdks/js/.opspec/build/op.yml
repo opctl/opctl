@@ -18,7 +18,7 @@ opspec: 0.1.6
 run:
   serial:
     - op:
-        ref: test
+        ref: ../test
         inputs: { srcDir }
         outputs: { srcDir, coverageReport }
     - container:

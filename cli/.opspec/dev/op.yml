@@ -10,7 +10,7 @@ inputs:
 run:
   serial:
     - op:
-        ref: build
+        ref: ../build
         inputs:
           srcDir:
     - container:

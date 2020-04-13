@@ -21,7 +21,7 @@ inputs:
 run:
   serial:
     - op:
-        ref: init
+        ref: ../init
         inputs:
           srcDir:
     - container:

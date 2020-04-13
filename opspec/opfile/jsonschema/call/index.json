@@ -40,6 +40,13 @@
     "if": {
       "$ref": "if.json"
     },
+    "name": {
+      "description": "Name of the current call. Can be used to identify the call from UI's or to list as needed by other calls.",
+      "type": "string"
+    },
+    "needs": {
+      "$ref": "needs.json"
+    },
     "op": {
       "$ref": "op/index.json"
     },

@@ -18,11 +18,11 @@ opspec: 0.1.6
 run:
   serial:
     - op:
-        ref: clean
+        ref: ../clean
         inputs: { srcDir }
         outputs: { srcDir }
     - op:
-        ref: test
+        ref: ../test
         inputs: { srcDir }
         outputs: { srcDir, coverprofile }
     - op:

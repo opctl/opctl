@@ -20,7 +20,7 @@ opspec: 0.1.6
 run:
   serial:
     - op:
-        ref: build
+        ref: ../build
         inputs: { srcDir }
         outputs: { srcDir }
     - op:

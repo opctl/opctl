@@ -1,10 +1,9 @@
 import React, { CSSProperties } from 'react'
-import HasContainerCall from '../HasContainerCall'
-import HasOpCall from '../HasOpCall'
 import HasSerialCall from '../HasSerialCall'
 import HasParallelCall from '../HasParallelCall'
 import HasParallelLoopCall from '../HasParallelLoopCall'
 import HasSerialLoopCall from '../HasSerialLoopCall'
+import HasCallName from '../HasCallName'
 
 export interface PullCreds {
     username: string
@@ -64,13 +63,16 @@ export interface CallSerialLoop {
     range: LoopRange
     vars?: LoopVars
     run: Call
-    until?: Predicate[] 
+    until?: Predicate[]
 }
 
 export type CallSerial = Call[]
 
 export interface Call {
     container?: CallContainer
+    if?: Predicate[]
+    name?: string
+    needs?: string[]
     op?: CallOp
     parallel?: CallParallel
     parallelLoop?: CallParallelLoop
@@ -90,15 +92,7 @@ export default (
 ) => {
     let callComponent: any = null
 
-    if (call.container) {
-        callComponent = <HasContainerCall
-            call={call}
-        />
-    } else if (call.op) {
-        callComponent = <HasOpCall
-            call={call}
-        />
-    } else if (call.parallel) {
+    if (call.parallel) {
         callComponent = <HasParallelCall
             call={call}
         />
@@ -115,7 +109,7 @@ export default (
             call={call}
         />
     } else {
-        throw new Error(`unexpected call ${JSON.stringify(call)}`)
+        callComponent = null
     }
 
     return (
@@ -126,6 +120,9 @@ export default (
                 flexDirection: 'column'
             }}
         >
+            <HasCallName
+                call={call}
+            />
             {callComponent}
         </div>
     )
