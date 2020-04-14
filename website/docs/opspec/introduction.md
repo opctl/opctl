@@ -52,6 +52,9 @@ Reference:
                     - [isSecret](reference/structure/op-directory/op/parameter/string.md#issecret)
         - [opspec](reference/structure/op-directory/op/index.md#opspec)
         - [run](reference/structure/op-directory/op/index.md#run)
+            - [if](reference/structure/op-directory/op/call/index.md#if)
+            - [name](reference/structure/op-directory/op/call/index.md#name)
+            - [needs](reference/structure/op-directory/op/call/index.md#needs)
             > one of...
 
             - [container](reference/structure/op-directory/op/call/container/index.md)

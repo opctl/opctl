@@ -825,7 +825,7 @@
           "description": "An array of sibling call names which the current call needs. Sibling calls will be killed once no longer needed.",
           "type": "array",
           "items": {
-            "description": "Name of a variable",
+            "description": "A string safe for use as an identifier",
             "type": "string",
             "pattern": "^[-_a-zA-Z0-9]+$"
           }

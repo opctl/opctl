@@ -41,7 +41,7 @@ run:
           - dind
           - dood
         vars:
-          value: $(imageRefVariant)
+          value: imageRefVariant
         run:
           serial:
             - op:

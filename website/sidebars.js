@@ -89,10 +89,10 @@ module.exports = {
                           "opspec/reference/structure/op-directory/op/parameter/string",
                         ]
                       },
+                      "opspec/reference/structure/op-directory/op/identifier",
                       "opspec/reference/structure/op-directory/op/initializer",
                       "opspec/reference/structure/op-directory/op/markdown",
-                      "opspec/reference/structure/op-directory/op/variable-reference",
-                      "opspec/reference/structure/op-directory/op/variable-name"
+                      "opspec/reference/structure/op-directory/op/variable-reference"
                     ]
                   }
                 ]

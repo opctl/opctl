@@ -1,0 +1,5 @@
+{
+    "description": "A string safe for use as an identifier",
+    "type": "string",
+    "pattern": "^[-_a-zA-Z0-9]+$"
+  }

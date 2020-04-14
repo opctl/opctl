@@ -6,6 +6,8 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.30 - 2020-04-15
+
 ### Added
 
 - [Named calls and needs](https://github.com/opctl/opctl/issues/643)
@@ -23,7 +25,6 @@ accordance with
 - UI: Workspace page (explorer, op visualizer with pan/zoom)
 - [Support in scope dir as op](https://github.com/opctl/opctl/issues/646)
 - Liveness method to node API Client
-- Binding loop vars with variable reference syntax i.e. `index: $(indexVar)`.
 - Variable reference as `image.ref`.
 
 ### Changed
@@ -32,7 +33,6 @@ accordance with
 
 ### Deprecated
 
-- Binding loop vars without variable reference syntax i.e. instead of `index: indexVar`, use `index: $(indexVar)`.
 - `image.src`; use `image.ref`
 
 ### Fixed

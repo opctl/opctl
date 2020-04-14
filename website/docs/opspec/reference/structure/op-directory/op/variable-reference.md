@@ -1,9 +1,12 @@
 ---
 title: Variable Reference [string]
 ---
-A string used to reference a variable in the form of `$(VARIABLE)` where `VARIABLE` MUST be a valid [variable name [string]](variable-name.md).
+A string referencing the location of/for a value in the form of `$(REFERENCE)` where `REFERENCE` MUST start with an [identifier [string]](identifier.md) and MAY end with one or more:
+- [array item references](../../../types/array.md#item-referencing)
+- [object property references](../../../types/object.md#property-referencing)
+- [dir entry references](../../../types/dir.md#entry-referencing)
 
-Variable references can be used to either define or access variables in the current scope. 
+References can be used to either define or access values in the current scope. 
 
 When an op starts, it's initial scope includes:
 
