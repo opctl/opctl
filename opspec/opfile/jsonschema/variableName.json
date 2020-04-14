@@ -1,5 +1,0 @@
-{
-    "description": "Name of a variable",
-    "type": "string",
-    "pattern": "^[-_a-zA-Z0-9]+$"
-  }

@@ -2,7 +2,7 @@
 title: Loop Vars [object]
 ---
 
-An object binding variables to iteration info (index, key, value) assigned to each iteration.
+An object naming variables to assign each iterations info to.
 
 ## Properties
 - may have
@@ -11,10 +11,10 @@ An object binding variables to iteration info (index, key, value) assigned to ea
   - [value](#value)
 
 ### index
-A [variable-reference [string]](../variable-reference.md) designating a variable to bind each iterations index to.
+An [identifier [string]](../identifier.md) naming a variable to bind each iterations index to.
 
 ### key
-A [variable-reference [string]](../variable-reference.md) designating a variable to bind each iterations key to.
+An [identifier [string]](../identifier.md) naming a variable to bind each iterations key to.
 
 Behavior varies based on the range value:  
 
@@ -25,7 +25,7 @@ Behavior varies based on the range value:
 |object|Variable set to current property name|
 
 ### value
-A [variable-reference [string]](../variable-reference.md) designating a variable to bind each iterations value to.
+An [identifier [string]](../identifier.md) naming a variable to bind each iterations value to.
 
 Behavior varies based on the range value:  
 

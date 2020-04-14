@@ -7,22 +7,32 @@ Official opctl images are [published to docker hub](https://hub.docker.com/r/opc
 
 # Image Variants
 
-## dind variant
+## DinD variant
 
-The `opctl:0.1.29-dind` variant leverates Docker In Docker (dind) and requires a `--privileged` flag.
+The `opctl:0.1.30-dind` variant leverates Docker in Docker (DinD) and requires a `--privileged` flag.
 
-### Examples
+### Example run github.com/opspec-pkgs/uuid.v4.generate#1.1.0 with DinD
 
 ```shell
-docker run --privileged opctl/opctl:0.1.29-dind opctl run github.com/opspec-pkgs/uuid.v4.generate#1.1.0
+docker run \
+    --privileged \
+    opctl/opctl:0.1.30-dind \
+    opctl run github.com/opspec-pkgs/uuid.v4.generate#1.1.0
 ```
 
-## dood variant (experimental; paths might not be found)
+## dood variant
 
-The `opctl:0.1.29-dood` variant leverages Docker out of Docker (dood) and requires a `-v /var/run/docker.sock:/var/run/docker.sock` arg. 
+The `opctl:0.1.30-dood` variant leverages Docker out of Docker (DooD) and requires:
+- `-v /var/run/docker.sock:/var/run/docker.sock`
+  to mount the socket of the external docker daemon.
+- `-v opctl_data_dir:/root/opctl`
+  to mount an external directory as opctl's data dir.
 
-### Examples
-
+### Example run github.com/opspec-pkgs/uuid.v4.generate#1.1.0 with DooD
 ```shell
-docker run -v /var/run/docker.sock:/var/run/docker.sock opctl/opctl:0.1.29-dood opctl run github.com/opspec-pkgs/uuid.v4.generate#1.1.0
+docker run \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v ~/opctl:/root/opctl \
+    opctl/opctl:0.1.30-dood \
+    opctl run github.com/opspec-pkgs/uuid.v4.generate#1.1.0
 ```

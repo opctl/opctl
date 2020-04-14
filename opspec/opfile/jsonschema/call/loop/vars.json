@@ -6,7 +6,7 @@
       "description": "Variable each iterations associated index will be made available through",
       "oneOf": [
         {
-          "$ref": "../../variableName.json"
+          "$ref": "../../identifier.json"
         },
         {
           "$ref": "../../variableReference.json"
@@ -17,7 +17,7 @@
       "description": "Variable each iterations associated key will be made available through",
       "oneOf": [
         {
-          "$ref": "../../variableName.json"
+          "$ref": "../../identifier.json"
         },
         {
           "$ref": "../../variableReference.json"
@@ -28,7 +28,7 @@
       "description": "Variable each iterations associated value will be made available through",
       "oneOf": [
         {
-          "$ref": "../../variableName.json"
+          "$ref": "../../identifier.json"
         },
         {
           "$ref": "../../variableReference.json"

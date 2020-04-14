@@ -36,14 +36,14 @@ A [markdown [string]](markdown.md) defining a human friendly description of the 
 An object defining input parameters of the operation.
 
 For each property:
-- key is a [variable name [string]](variable-name.md) defining the name of the input.
+- key is an [identifier [string]](identifier.md) defining the name of the input.
 - value is a [parameter [object]](parameter/index.md) defining the output. 
 
 ### outputs
 An object defining output parameters of the operation.
 
 For each property:
-- key is a [variable name [string]](variable-name.md) defining the name of the output.
+- key is an [identifier [string]](identifier.md) defining the name of the output.
 - value is a [parameter [object]](parameter/index.md) defining the output.
 
 ### opspec
