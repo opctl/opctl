@@ -11,7 +11,7 @@ export default (
 ) =>
   <a
     style={style}
-    href={`//${window.location.hostname}`}
+    href={`//${window.location.host}`}
   >
     <img
       alt='opctl logo'

@@ -6,6 +6,12 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.34 - 2020-04-23
+
+## Added
+
+- [UI: visualize referenced ops](https://github.com/opctl/opctl/issues/739)
+
 ## 0.1.33 - 2020-04-20
 
 ### Fixed 

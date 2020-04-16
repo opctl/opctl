@@ -6,11 +6,13 @@ import { ReactComponent as PlusIcon } from '../../icons/Plus.svg'
 
 interface Props {
     call: Call
+    opRef: string
 }
 
 export default (
     {
-        call
+        call,
+        opRef
     }: Props
 ) => {
     return (
@@ -33,6 +35,7 @@ export default (
                             <HasCall
                                 key={index}
                                 call={childCall}
+                                opRef={opRef}
                             />
                             {
                                 index + 1 < array.length

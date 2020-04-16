@@ -19,6 +19,6 @@ run:
         inputs: { srcDir }
         outputs: { srcDir }
     - op:
-        ref: test/unit
+        ref: ../test/unit
         inputs: { srcDir }
         outputs: { srcDir, coverprofile }

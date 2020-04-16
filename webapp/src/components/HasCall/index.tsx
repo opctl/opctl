@@ -4,6 +4,8 @@ import HasParallelCall from '../HasParallelCall'
 import HasParallelLoopCall from '../HasParallelLoopCall'
 import HasSerialLoopCall from '../HasSerialLoopCall'
 import HasCallName from '../HasCallName'
+import HasOpCall from '../HasOpCall'
+import path from 'path'
 
 export interface PullCreds {
     username: string
@@ -82,31 +84,43 @@ export interface Call {
 
 interface Props {
     call: Call
+    opRef: string
     style?: CSSProperties
 }
 
 export default (
     {
-        call
+        call,
+        opRef
     }: Props
 ) => {
     let callComponent: any = null
 
-    if (call.parallel) {
+    if (call.op) {
+        callComponent = <HasOpCall
+            opRef={
+                path.join(call.op.ref.startsWith('.') ? path.dirname(opRef) : '', call.op.ref, 'op.yml')
+            }
+        />
+    } else if (call.parallel) {
         callComponent = <HasParallelCall
             call={call}
+            opRef={opRef}
         />
     } else if (call.parallelLoop) {
         callComponent = <HasParallelLoopCall
             call={call}
+            opRef={opRef}
         />
     } else if (call.serial) {
         callComponent = <HasSerialCall
             call={call}
+            opRef={opRef}
         />
     } else if (call.serialLoop) {
         callComponent = <HasSerialLoopCall
             call={call}
+            opRef={opRef}
         />
     } else {
         callComponent = null

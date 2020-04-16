@@ -7,11 +7,13 @@ import AddCallPopper from '../AddCallPopper'
 
 interface Props {
     call: Call
+    opRef: string
 }
 
 export default (
     {
-        call
+        call,
+        opRef
     }: Props
 ) => <Fragment>
         <div
@@ -62,6 +64,7 @@ export default (
                 ></div>
                 <HasCall
                     call={call.parallelLoop!.run}
+                    opRef={opRef}
                 />
                 <div
                     style={{

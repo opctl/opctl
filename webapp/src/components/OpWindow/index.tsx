@@ -7,6 +7,7 @@ import brandColors from '../../brandColors'
 import AddCallPopper from '../AddCallPopper'
 import { ReactComponent as PlusIcon } from '../../icons/Plus.svg'
 import ReactEasyPanzoom from 'react-easy-panzoom'
+import { toast } from 'react-toastify'
 
 interface Props {
     window: Window
@@ -18,18 +19,22 @@ interface Props {
 export default (
     {
         window
-    }: Props 
+    }: Props
 ) => {
     const [op, setOp] = useState(null as any)
 
     useEffect(
         () => {
             const load = async () => {
-                setOp(
-                    jsYaml.safeLoad(
-                        await getFsEntryData(window.fsEntry.path)
+                try {
+                    setOp(
+                        jsYaml.safeLoad(
+                            await getFsEntryData(window.fsEntry.path)
+                        )
                     )
-                )
+                } catch (err) {
+                    toast.error(err)
+                }
             }
 
             load()
@@ -79,6 +84,7 @@ export default (
                 ></div>
                 <HasCall
                     call={op.run}
+                    opRef={window.fsEntry.path}
                 />
                 <div
                     style={{
