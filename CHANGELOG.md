@@ -6,6 +6,13 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.31 - 2020-04-15
+
+### Fixed
+
+- variable reference validation triggered for valid refs
+- failure interpreting needed call panics
+
 ## 0.1.30 - 2020-04-15
 
 ### Added
