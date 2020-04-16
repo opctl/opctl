@@ -16,18 +16,18 @@ The default container runtime interface implementation relies on API access to a
 ### OSX
 
 ```bash
-curl -L https://github.com/opctl/opctl/releases/download/0.1.33/opctl0.1.33.darwin.tgz | tar -xzv -C /usr/local/bin
+curl -L https://github.com/opctl/opctl/releases/download/0.1.34/opctl0.1.34.darwin.tgz | tar -xzv -C /usr/local/bin
 ```
 
 ### Linux
 
 ```bash
-curl -L https://github.com/opctl/opctl/releases/download/0.1.33/opctl0.1.33.linux.tgz | sudo tar -xzv -C /usr/local/bin
+curl -L https://github.com/opctl/opctl/releases/download/0.1.34/opctl0.1.34.linux.tgz | sudo tar -xzv -C /usr/local/bin
 ```
 
 ### Windows
 
-download and run the [windows installer](https://github.com/opctl/opctl/releases/download/0.1.33/opctl0.1.33.windows.msi)
+download and run the [windows installer](https://github.com/opctl/opctl/releases/download/0.1.34/opctl0.1.34.windows.msi)
 
 ## Updating
 to get the newest release of opctl

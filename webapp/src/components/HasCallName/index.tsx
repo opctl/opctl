@@ -33,7 +33,8 @@ export default (
                 border: `solid thin ${brandColors.lightGray}`,
                 minWidth: '5rem',
                 textAlign: 'center',
-                padding: '0 .5rem'
+                padding: '0 .5rem',
+                margin: '0 .5rem'
             }}
         >
             {

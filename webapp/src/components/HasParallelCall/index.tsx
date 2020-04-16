@@ -7,17 +7,20 @@ import AddCallPopper from '../AddCallPopper'
 
 interface Props {
     call: Call
+    opRef: string
 }
 
 export default (
     {
-        call
+        call,
+        opRef
     }: Props
 ) => {
     // splice a dummy call into the middle
-    const middle = Math.round(call.parallel!.length / 2)
+    // @TODO: re-enable once edit supported
+    //const middle = Math.round(call.parallel!.length / 2)
     let spliced = [...call.parallel!]
-    spliced.splice(middle, 0, {})
+    //spliced.splice(middle, 0, {})
 
     return (
         <div
@@ -83,6 +86,7 @@ export default (
                                                 <HasCall
                                                     key={index}
                                                     call={childCall}
+                                                    opRef={opRef}
                                                 />
                                                 <div
                                                     style={{

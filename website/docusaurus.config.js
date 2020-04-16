@@ -7,6 +7,11 @@ module.exports = {
   organizationName: 'opctl', // Usually your GitHub org/user name.
   projectName: 'opctl', // Usually your repo name.
   themeConfig: {
+    algolia: {
+      appId: 'opctl',
+      apiKey: '247689f43002ed0c3902fbd034630a7a',
+      indexName: 'opctl'
+    },
     disableDarkMode: true,    
     googleAnalytics: {
       trackingID: 'UA-94109316-1',
@@ -18,7 +23,7 @@ module.exports = {
         src: 'img/logo.svg',
       },
       links: [
-        { to: 'docs/zero-to-hero/hello-world', label: 'Docs', position: 'left' },
+        { to: 'docs/introduction', label: 'Docs', position: 'left' },
         {
           href: 'https://opctl-slackin.herokuapp.com/',
           label: 'Slack',
