@@ -55,7 +55,12 @@ func (cs *_callStore) ListWithParentID(parentID string) []*model.DCG {
 }
 
 func (cs *_callStore) SetIsKilled(id string) {
-	cs.callsByID[id].IsKilled = true
+	cs.mux.RLock()
+	defer cs.mux.RUnlock()
+
+	if _, ok := cs.callsByID[id]; ok {
+		cs.callsByID[id].IsKilled = true
+	}
 }
 
 func (cs *_callStore) Get(
