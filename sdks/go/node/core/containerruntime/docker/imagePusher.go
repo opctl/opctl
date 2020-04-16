@@ -9,18 +9,14 @@ import (
 	"github.com/containers/image/v5/oci/layout"
 	"github.com/containers/image/v5/signature"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 //counterfeiter:generate -o internal/fakes/imagePusher.go . imagePusher
 type imagePusher interface {
 	Push(
 		ctx context.Context,
-		containerID string,
 		imageRef string,
 		imageSrc *model.Value,
-		rootOpID string,
-		eventPublisher pubsub.EventPublisher,
 	) error
 }
 
@@ -32,11 +28,8 @@ type _imagePusher struct{}
 
 func (ip _imagePusher) Push(
 	ctx context.Context,
-	containerID string,
 	imageRef string,
 	imageSrc *model.Value,
-	rootOpID string,
-	eventPublisher pubsub.EventPublisher,
 ) error {
 
 	policyCtx, policyCtxErr := signature.NewPolicyContext(

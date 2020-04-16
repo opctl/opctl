@@ -9,7 +9,7 @@ import (
 type containerLogStreamer interface {
 	Stream(
 		ctx context.Context,
-		containerID string,
+		containerName string,
 		dst io.Writer,
 	) error
 }

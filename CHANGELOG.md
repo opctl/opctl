@@ -6,6 +6,16 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.32 - 2020-04-16
+
+### Added
+
+- [Prefix opctl managed container names with opctl_](https://github.com/opctl/opctl/issues/735)
+
+### Fixed
+
+- variable reference validation triggered for valid refs
+
 ## 0.1.31 - 2020-04-15
 
 ### Fixed

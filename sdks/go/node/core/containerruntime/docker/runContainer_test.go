@@ -3,6 +3,7 @@ package docker
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/docker/docker/api/types"
@@ -58,8 +59,8 @@ var _ = Context("RunContainer", func() {
 		)
 
 		/* assert */
-		_, actualContainerID, actualContainerRemoveOptions := fakeDockerClient.ContainerRemoveArgsForCall(0)
-		Expect(actualContainerID).To(Equal(providedReq.ContainerID))
+		_, actualContainerName, actualContainerRemoveOptions := fakeDockerClient.ContainerRemoveArgsForCall(0)
+		Expect(actualContainerName).To(Equal(fmt.Sprintf("opctl_%s", providedReq.ContainerID)))
 		Expect(actualContainerRemoveOptions).To(Equal(expectedContainerRemoveOptions))
 
 	})
@@ -366,7 +367,7 @@ var _ = Context("RunContainer", func() {
 			Expect(actualContainerConfig).To(Equal(expectedContainerConfig))
 			Expect(actualHostConfig).To(Equal(expectedHostConfig))
 			Expect(actualNetworkingConfig).To(Equal(expectedNetworkingConfig))
-			Expect(actualContainerName).To(Equal(providedReq.ContainerID))
+			Expect(actualContainerName).To(Equal(fmt.Sprintf("opctl_%s", providedReq.ContainerID)))
 		})
 	})
 })

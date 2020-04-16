@@ -65,13 +65,16 @@ func (cr _runContainer) RunContainer(
 	stdout io.WriteCloser,
 	stderr io.WriteCloser,
 ) (*int64, error) {
+	// for docker, we prefix name with opctl_ in order to allow external tools to know it's an opctl managed container
+	// do not change this prefix as it might break external consumers
+	containerName := fmt.Sprintf("opctl_%s", req.ContainerID)
 	defer stdout.Close()
 	defer stderr.Close()
 	defer func() {
 		// ensure container always cleaned up
 		cr.dockerClient.ContainerRemove(
 			context.Background(),
-			req.ContainerID,
+			containerName,
 			types.ContainerRemoveOptions{
 				RemoveVolumes: true,
 				Force:         true,
@@ -86,11 +89,8 @@ func (cr _runContainer) RunContainer(
 
 		pullErr = cr.imagePusher.Push(
 			ctx,
-			req.ContainerID,
 			imageRef,
 			req.Image.Src,
-			req.RootOpID,
-			eventPublisher,
 		)
 	} else {
 		// always pull latest version of image
@@ -146,7 +146,7 @@ func (cr _runContainer) RunContainer(
 		containerConfig,
 		hostConfig,
 		networkingConfig,
-		req.ContainerID,
+		containerName,
 	)
 	if nil != createErr {
 		select {
@@ -178,7 +178,7 @@ func (cr _runContainer) RunContainer(
 	go func() {
 		if err := cr.containerStdErrStreamer.Stream(
 			ctx,
-			req.ContainerID,
+			containerName,
 			stderr,
 		); nil != err {
 			errChan <- err
@@ -189,7 +189,7 @@ func (cr _runContainer) RunContainer(
 	go func() {
 		if err := cr.containerStdOutStreamer.Stream(
 			ctx,
-			req.ContainerID,
+			containerName,
 			stdout,
 		); nil != err {
 			errChan <- err
@@ -200,7 +200,7 @@ func (cr _runContainer) RunContainer(
 	var exitCode int64
 	waitOkChan, waitErrChan := cr.dockerClient.ContainerWait(
 		ctx,
-		req.ContainerID,
+		containerName,
 		container.WaitConditionNotRunning,
 	)
 	select {

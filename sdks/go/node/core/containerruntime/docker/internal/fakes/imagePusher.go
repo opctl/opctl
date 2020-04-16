@@ -6,19 +6,15 @@ import (
 	"sync"
 
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 type FakeImagePusher struct {
-	PushStub        func(context.Context, string, string, *model.Value, string, pubsub.EventPublisher) error
+	PushStub        func(context.Context, string, *model.Value) error
 	pushMutex       sync.RWMutex
 	pushArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 string
-		arg4 *model.Value
-		arg5 string
-		arg6 pubsub.EventPublisher
+		arg3 *model.Value
 	}
 	pushReturns struct {
 		result1 error
@@ -30,21 +26,18 @@ type FakeImagePusher struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeImagePusher) Push(arg1 context.Context, arg2 string, arg3 string, arg4 *model.Value, arg5 string, arg6 pubsub.EventPublisher) error {
+func (fake *FakeImagePusher) Push(arg1 context.Context, arg2 string, arg3 *model.Value) error {
 	fake.pushMutex.Lock()
 	ret, specificReturn := fake.pushReturnsOnCall[len(fake.pushArgsForCall)]
 	fake.pushArgsForCall = append(fake.pushArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 string
-		arg4 *model.Value
-		arg5 string
-		arg6 pubsub.EventPublisher
-	}{arg1, arg2, arg3, arg4, arg5, arg6})
-	fake.recordInvocation("Push", []interface{}{arg1, arg2, arg3, arg4, arg5, arg6})
+		arg3 *model.Value
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("Push", []interface{}{arg1, arg2, arg3})
 	fake.pushMutex.Unlock()
 	if fake.PushStub != nil {
-		return fake.PushStub(arg1, arg2, arg3, arg4, arg5, arg6)
+		return fake.PushStub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1
@@ -59,17 +52,17 @@ func (fake *FakeImagePusher) PushCallCount() int {
 	return len(fake.pushArgsForCall)
 }
 
-func (fake *FakeImagePusher) PushCalls(stub func(context.Context, string, string, *model.Value, string, pubsub.EventPublisher) error) {
+func (fake *FakeImagePusher) PushCalls(stub func(context.Context, string, *model.Value) error) {
 	fake.pushMutex.Lock()
 	defer fake.pushMutex.Unlock()
 	fake.PushStub = stub
 }
 
-func (fake *FakeImagePusher) PushArgsForCall(i int) (context.Context, string, string, *model.Value, string, pubsub.EventPublisher) {
+func (fake *FakeImagePusher) PushArgsForCall(i int) (context.Context, string, *model.Value) {
 	fake.pushMutex.RLock()
 	defer fake.pushMutex.RUnlock()
 	argsForCall := fake.pushArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5, argsForCall.arg6
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
 func (fake *FakeImagePusher) PushReturns(result1 error) {

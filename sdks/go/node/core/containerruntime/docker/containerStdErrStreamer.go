@@ -21,12 +21,12 @@ type _containerStdErrStreamer struct {
 
 func (cses _containerStdErrStreamer) Stream(
 	ctx context.Context,
-	containerID string,
+	containerName string,
 	dst io.Writer,
 ) error {
 	src, err := cses.dockerClient.ContainerLogs(
 		ctx,
-		containerID,
+		containerName,
 		types.ContainerLogsOptions{
 			Follow:     true,
 			ShowStderr: true,

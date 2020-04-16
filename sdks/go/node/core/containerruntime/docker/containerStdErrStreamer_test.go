@@ -24,7 +24,7 @@ var _ = Context("containerStdErrStreamer", func() {
 		It("should call dockerClient.ContainerLogs w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
-			providedContainerID := "dummyContainerID"
+			providedContainerName := "dummyContainerName"
 
 			fakeDockerClient := new(FakeCommonAPIClient)
 			// err to trigger immediate return
@@ -42,17 +42,17 @@ var _ = Context("containerStdErrStreamer", func() {
 			/* act */
 			objectUnderTest.Stream(
 				providedCtx,
-				providedContainerID,
+				providedContainerName,
 				nopWriteCloser{ioutil.Discard},
 			)
 
 			/* assert */
 			actualContext,
-				actualContainerID,
+				actualContainerName,
 				actualOptions := fakeDockerClient.ContainerLogsArgsForCall(0)
 
 			Expect(actualContext).To(Equal(providedCtx))
-			Expect(actualContainerID).To(Equal(providedContainerID))
+			Expect(actualContainerName).To(Equal(providedContainerName))
 			Expect(actualOptions).To(Equal(expectedOptions))
 		})
 		Context("dockerClient.ContainerLogs errs", func() {
@@ -69,7 +69,7 @@ var _ = Context("containerStdErrStreamer", func() {
 				/* act */
 				actualErr := objectUnderTest.Stream(
 					context.Background(),
-					"dummyContainerID",
+					"dummyContainerName",
 					nopWriteCloser{ioutil.Discard},
 				)
 
@@ -102,7 +102,7 @@ var _ = Context("containerStdErrStreamer", func() {
 				/* act */
 				objectUnderTest.Stream(
 					context.Background(),
-					"dummyContainerID",
+					"dummyContainerName",
 					providedWriter,
 				)
 
