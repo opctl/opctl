@@ -14,8 +14,8 @@ var _ = Context("DeleteContainerIfExists", func() {
 		/* arrange */
 		fakeDockerClient := new(FakeCommonAPIClient)
 
-		providedContainerID := "dummyContainerID"
-		expectedContainerID := providedContainerID
+		providedContainerName := "dummyContainerName"
+		expectedContainerName := providedContainerName
 		expectedContainerRemoveOptions := types.ContainerRemoveOptions{
 			RemoveVolumes: true,
 			Force:         true,
@@ -26,11 +26,11 @@ var _ = Context("DeleteContainerIfExists", func() {
 		}
 
 		/* act */
-		objectUnderTest.DeleteContainerIfExists(providedContainerID)
+		objectUnderTest.DeleteContainerIfExists(providedContainerName)
 
 		/* assert */
-		_, actualContainerID, actualContainerRemoveOptions := fakeDockerClient.ContainerRemoveArgsForCall(0)
-		Expect(actualContainerID).To(Equal(expectedContainerID))
+		_, actualContainerName, actualContainerRemoveOptions := fakeDockerClient.ContainerRemoveArgsForCall(0)
+		Expect(actualContainerName).To(Equal(expectedContainerName))
 		Expect(actualContainerRemoveOptions).To(Equal(expectedContainerRemoveOptions))
 	})
 	Context("dockerClient.ContainerRemove errors", func() {
