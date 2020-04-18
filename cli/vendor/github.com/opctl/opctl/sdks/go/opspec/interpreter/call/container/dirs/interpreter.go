@@ -57,16 +57,16 @@ dirLoop:
 		dirValue, err := itp.dirInterpreter.Interpret(
 			scope,
 			dirExpression,
+			scratchDirPath,
+			true,
 		)
 		if nil != err {
-			// @TODO: return existence from fileInterpreter.Interpret (rather than treating all errors as due to non-existence) so we unambiguously know this is an assignment
-			if err := itp.os.MkdirAll(
-				dcgContainerCallDirs[scgContainerDirPath],
-				0700,
-			); nil != err {
-				return nil, err
-			}
-			continue dirLoop
+			return nil, fmt.Errorf(
+				"unable to bind %v to %v; error was %v",
+				scgContainerDirPath,
+				dirExpression,
+				err,
+			)
 		}
 
 		if "" != *dirValue.Dir && !strings.HasPrefix(*dirValue.Dir, itp.dataDirPath) {

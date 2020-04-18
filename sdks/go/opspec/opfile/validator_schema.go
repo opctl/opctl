@@ -213,7 +213,7 @@ var _escData = map[string]*_escFile{
 		name:    "jsonschema.json",
 		local:   "../../../../opspec/opfile/jsonschema.json",
 		size:    42783,
-		modtime: 1587082938,
+		modtime: 1587241275,
 		compressed: `
 H4sIAAAAAAAC/+w9aXPbtrbf+yswavpivViUncW9dSeTcZO0L2+aZZrlzVxJzYXIIwvXJMAAoJf2+b/f
 AcBNFHeRUhZ9skUCB8DZz8Eh8Pd3CA3uCHsJHh6cosFSSv90PP63YHRknlqMn48djhdydPTj2Dz7fnCo

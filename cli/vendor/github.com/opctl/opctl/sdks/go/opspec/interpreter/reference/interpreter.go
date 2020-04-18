@@ -2,8 +2,11 @@ package reference
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 
+	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/direntry"
 	unbracketedIdentifier "github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/unbracketed"
 
@@ -40,7 +43,7 @@ type Interpreter interface {
 	Interpret(
 		ref string,
 		scope map[string]*model.Value,
-		createTypeIfNotExists *string,
+		opts *model.ReferenceOpts,
 	) (*model.Value, error)
 }
 
@@ -52,6 +55,7 @@ func NewInterpreter() Interpreter {
 		bracketedIdentifierInterpreter:   bracketedIdentifier.NewInterpreter(),
 		unbracketedIdentifierInterpreter: unbracketedIdentifier.NewInterpreter(),
 		unbracketedIdentifierParser:      unbracketedIdentifier.NewParser(),
+		uniqueString:                     uniquestring.NewUniqueStringFactory(),
 	}
 }
 
@@ -61,12 +65,13 @@ type _interpreter struct {
 	bracketedIdentifierInterpreter   bracketedIdentifier.Interpreter
 	unbracketedIdentifierInterpreter unbracketedIdentifier.Interpreter
 	unbracketedIdentifierParser      unbracketedIdentifier.Parser
+	uniqueString                     uniquestring.UniqueStringFactory
 }
 
 func (itp _interpreter) Interpret(
 	ref string,
 	scope map[string]*model.Value,
-	createTypeIfNotExists *string,
+	opts *model.ReferenceOpts,
 ) (*model.Value, error) {
 
 	var data *model.Value
@@ -84,6 +89,7 @@ func (itp _interpreter) Interpret(
 	data, ref, err = itp.getRootValue(
 		ref,
 		scope,
+		opts,
 	)
 	if nil != err {
 		return nil, err
@@ -92,7 +98,7 @@ func (itp _interpreter) Interpret(
 	_, data, err = itp.rInterpret(
 		ref,
 		data,
-		createTypeIfNotExists,
+		opts,
 	)
 	return data, err
 }
@@ -122,6 +128,7 @@ func (itp _interpreter) interpolate(
 			nestedRefRootValue, nestedRef, err = itp.getRootValue(
 				nestedRef,
 				scope,
+				nil,
 			)
 			if nil != err {
 				return "", err
@@ -153,6 +160,7 @@ func (itp _interpreter) interpolate(
 func (itp _interpreter) getRootValue(
 	ref string,
 	scope map[string]*model.Value,
+	opts *model.ReferenceOpts,
 ) (*model.Value, string, error) {
 	if strings.HasPrefix(ref, "/") {
 		return scope["/"], ref, nil
@@ -165,6 +173,21 @@ func (itp _interpreter) getRootValue(
 
 	if value, ok := scope[identifier]; ok {
 		return value, refRemainder, nil
+	}
+
+	if nil != opts {
+		uuid, _ := itp.uniqueString.Construct()
+		fsPath := filepath.Join(opts.ScratchDir, uuid)
+
+		switch opts.Type {
+		case "Dir":
+			os.MkdirAll(fsPath, 0700)
+			return &model.Value{Dir: &fsPath}, "", nil
+		case "File":
+			os.MkdirAll(filepath.Dir(fsPath), 0700)
+			os.Create(fsPath)
+			return &model.Value{File: &fsPath}, "", nil
+		}
 	}
 
 	return nil, "", fmt.Errorf("unable to interpret '%v' as reference; '%v' not in scope", ref, identifier)
@@ -180,7 +203,7 @@ func (itp _interpreter) getRootValue(
 func (itp _interpreter) rInterpret(
 	ref string,
 	data *model.Value,
-	createTypeIfNotExists *string,
+	opts *model.ReferenceOpts,
 ) (string, *model.Value, error) {
 
 	if "" == ref {
@@ -194,21 +217,25 @@ func (itp _interpreter) rInterpret(
 			return "", nil, err
 		}
 
-		return itp.rInterpret(ref, data, createTypeIfNotExists)
+		return itp.rInterpret(ref, data, opts)
 	case '.':
 		ref, data, err := itp.unbracketedIdentifierInterpreter.Interpret(ref[1:], data)
 		if nil != err {
 			return "", nil, err
 		}
 
-		return itp.rInterpret(ref, data, createTypeIfNotExists)
+		return itp.rInterpret(ref, data, opts)
 	case '/':
-		ref, data, err := itp.dirEntryInterpreter.Interpret(ref, data, createTypeIfNotExists)
+		var createType *string
+		if nil != opts {
+			createType = &opts.Type
+		}
+		ref, data, err := itp.dirEntryInterpreter.Interpret(ref, data, createType)
 		if nil != err {
 			return "", nil, err
 		}
 
-		return itp.rInterpret(ref, data, createTypeIfNotExists)
+		return itp.rInterpret(ref, data, opts)
 	default:
 		return "", nil, fmt.Errorf("unable to interpret '%v' as reference; expected '[', '.', or '/'", ref)
 	}

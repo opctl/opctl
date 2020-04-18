@@ -79,12 +79,16 @@ func (itp _interpreter) Interpret(
 		pkgPullCreds.Password = *interpretdPassword.String
 	}
 
+	scratchDir := filepath.Join(itp.dcgScratchDir, opID)
+
 	var opPath string
 	if regexp.MustCompile("^\\$\\(.+\\)$").MatchString(scgOpCall.Ref) {
 		// attempt to process as a variable reference since its variable reference like.
 		dirValue, err := itp.dirInterpreter.Interpret(
 			scope,
 			scgOpCall.Ref,
+			scratchDir,
+			false,
 		)
 		if nil != err {
 			return nil, fmt.Errorf("error encountered interpreting image src; error was: %v", err)
@@ -131,7 +135,7 @@ func (itp _interpreter) Interpret(
 		opFile.Inputs,
 		opPath,
 		scope,
-		filepath.Join(itp.dcgScratchDir, opID),
+		scratchDir,
 	)
 	if nil != err {
 		return nil, fmt.Errorf("unable to interpret call to %v; error was: %v", scgOpCall.Ref, err)

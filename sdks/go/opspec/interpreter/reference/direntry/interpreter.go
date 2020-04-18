@@ -18,7 +18,7 @@ type Interpreter interface {
 	Interpret(
 		ref string,
 		data *model.Value,
-		createTypeIfNotExists *string,
+		opts *string,
 	) (string, *model.Value, error)
 }
 
@@ -35,7 +35,7 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	ref string,
 	data *model.Value,
-	createTypeIfNotExists *string,
+	opts *string,
 ) (string, *model.Value, error) {
 
 	if !strings.HasPrefix(ref, "/") {
@@ -51,9 +51,9 @@ func (itp _interpreter) Interpret(
 		}
 
 		return "", &model.Value{File: &valuePath}, nil
-	} else if nil != createTypeIfNotExists && os.IsNotExist(err) {
+	} else if nil != opts && os.IsNotExist(err) {
 
-		if "Dir" == *createTypeIfNotExists {
+		if "Dir" == *opts {
 			err := os.MkdirAll(valuePath, 0700)
 			if nil != err {
 				return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref; error was %v", ref, err)

@@ -11,7 +11,6 @@ import (
 	"github.com/golang-utils/filecopier"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	coerceFakes "github.com/opctl/opctl/sdks/go/data/coerce/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
 	fileFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/file/fakes"
 )
@@ -44,12 +43,7 @@ var _ = Context("Files", func() {
 			// error to trigger immediate return
 			fakeFileInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 
-			fakeCoerce := new(coerceFakes.FakeCoerce)
-			// error to trigger immediate return
-			fakeCoerce.ToFileReturns(nil, errors.New("dummyError"))
-
 			objectUnderTest := _interpreter{
-				coerce:          fakeCoerce,
 				fileInterpreter: fakeFileInterpreter,
 			}
 
@@ -63,11 +57,13 @@ var _ = Context("Files", func() {
 			/* assert */
 			actualScope,
 				actualExpression,
-				actualScratchDir := fakeFileInterpreter.InterpretArgsForCall(0)
+				actualScratchDir,
+				actualCreateIfNotExists := fakeFileInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualExpression).To(Equal(fmt.Sprintf("$(%v)", containerFilePath)))
 			Expect(actualScratchDir).To(Equal(providedScratchDir))
+			Expect(actualCreateIfNotExists).To(BeTrue())
 		})
 		Context("fileInterpreter.Interpret errs", func() {
 			Context("coerce.ToFile errs", func() {
@@ -80,21 +76,17 @@ var _ = Context("Files", func() {
 					}
 
 					fakeFileInterpreter := new(fileFakes.FakeInterpreter)
-					fakeFileInterpreter.InterpretReturns(nil, fmt.Errorf("interpretErr"))
-
-					toFileErr := fmt.Errorf("toFileErr")
-					fakeCoerce := new(coerceFakes.FakeCoerce)
-					fakeCoerce.ToFileReturns(nil, toFileErr)
+					interpretErr := fmt.Errorf("interpretErr")
+					fakeFileInterpreter.InterpretReturns(nil, interpretErr)
 
 					expectedErr := fmt.Errorf(
 						"unable to bind %v to %v; error was %v",
 						containerFilePath,
 						fmt.Sprintf("$(%v)", containerFilePath),
-						toFileErr,
+						interpretErr,
 					)
 
 					objectUnderTest := _interpreter{
-						coerce:          fakeCoerce,
 						fileInterpreter: fakeFileInterpreter,
 					}
 

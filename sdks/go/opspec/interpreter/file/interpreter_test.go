@@ -20,6 +20,7 @@ var _ = Context("Interpret", func() {
 			providedScope := map[string]*model.Value{"dummyName": {}}
 
 			providedExpression := "$(providedExpression)"
+			providedScratchDir := "providedScratchDir"
 
 			fakeReferenceInterpreter := new(referenceFakes.FakeInterpreter)
 			// err to trigger immediate return
@@ -33,7 +34,8 @@ var _ = Context("Interpret", func() {
 			objectUnderTest.Interpret(
 				providedScope,
 				providedExpression,
-				"dummyScratchDir",
+				providedScratchDir,
+				true,
 			)
 
 			/* assert */
@@ -43,7 +45,10 @@ var _ = Context("Interpret", func() {
 
 			Expect(actualExpression).To(Equal(providedExpression))
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualCreateTypeIfNotExists).To(Equal(&fileType))
+			Expect(actualCreateTypeIfNotExists).To(Equal(&model.ReferenceOpts{
+				Type:       "File",
+				ScratchDir: providedScratchDir,
+			}))
 		})
 		Context("referenceInterpreter.Interpret errs", func() {
 			It("should return expected result", func() {
@@ -69,6 +74,7 @@ var _ = Context("Interpret", func() {
 					map[string]*model.Value{},
 					providedExpression,
 					"providedScratchDir",
+					false,
 				)
 
 				/* assert */
@@ -99,6 +105,7 @@ var _ = Context("Interpret", func() {
 					map[string]*model.Value{},
 					"$(providedExpression)",
 					providedScratchDir,
+					false,
 				)
 
 				/* assert */
@@ -134,6 +141,7 @@ var _ = Context("Interpret", func() {
 			providedScope,
 			providedExpression,
 			"dummyScratchDir",
+			false,
 		)
 
 		/* assert */
@@ -168,6 +176,7 @@ var _ = Context("Interpret", func() {
 				map[string]*model.Value{},
 				providedExpression,
 				"dummyScratchDir",
+				false,
 			)
 
 			/* assert */
@@ -195,6 +204,7 @@ var _ = Context("Interpret", func() {
 				map[string]*model.Value{},
 				map[string]interface{}{},
 				providedScratchDir,
+				false,
 			)
 
 			/* assert */
@@ -221,6 +231,7 @@ var _ = Context("Interpret", func() {
 				map[string]*model.Value{},
 				map[string]interface{}{},
 				"dummyScratchDir",
+				false,
 			)
 
 			/* assert */

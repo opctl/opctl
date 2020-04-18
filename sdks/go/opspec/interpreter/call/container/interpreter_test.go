@@ -520,6 +520,7 @@ var _ = Context("Interpreter", func() {
 			/* arrange */
 			containerFileBind := "dummyContainerFileBind"
 
+			providedDataDirPath := "providedDataDirPath"
 			providedScope := map[string]*model.Value{
 				containerFileBind: {String: new(string)},
 			}
@@ -533,10 +534,23 @@ var _ = Context("Interpreter", func() {
 				},
 			}
 
+			providedRootOpID := "providedRootOpID"
+			providedContainerID := "providedContainerID"
+
+			expectedScratchDir := filepath.Join(
+				providedDataDirPath,
+				"dcg",
+				providedRootOpID,
+				"containers",
+				providedContainerID,
+				"fs",
+			)
+
 			fakeImageInterpreter := new(imageFakes.FakeInterpreter)
 
 			objectUnderTest := _interpreter{
 				cmdInterpreter:     new(cmdFakes.FakeInterpreter),
+				dataDirPath:        providedDataDirPath,
 				dirsInterpreter:    new(dirsFakes.FakeInterpreter),
 				envVarsInterpreter: new(envvarsFakes.FakeInterpreter),
 				filesInterpreter:   new(filesFakes.FakeInterpreter),
@@ -549,17 +563,19 @@ var _ = Context("Interpreter", func() {
 			objectUnderTest.Interpret(
 				providedScope,
 				providedSCGContainerCall,
-				"dummyContainerID",
-				"dummyRootOpID",
+				providedContainerID,
+				providedRootOpID,
 				"dummyOpPath",
 			)
 
 			/* assert */
 			actualScope,
-				actualScgContainerCallImage := fakeImageInterpreter.InterpretArgsForCall(0)
+				actualScgContainerCallImage,
+				actualScratchDir := fakeImageInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualScgContainerCallImage).To(Equal(providedSCGContainerCall.Image))
+			Expect(actualScratchDir).To(Equal(expectedScratchDir))
 
 		})
 		Context("imageFakes.Interpret errors", func() {

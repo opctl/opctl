@@ -17,6 +17,7 @@ var _ = Context("Interpret", func() {
 			providedScope := map[string]*model.Value{"": new(model.Value)}
 
 			providedExpression := "$(providedReference)"
+			providedScratchDir := "providedScratchDir"
 
 			fakeReferenceInterpreter := new(referenceFakes.FakeInterpreter)
 			// err to trigger immediate return
@@ -30,6 +31,8 @@ var _ = Context("Interpret", func() {
 			objectUnderTest.Interpret(
 				providedScope,
 				providedExpression,
+				providedScratchDir,
+				true,
 			)
 
 			/* assert */
@@ -39,7 +42,10 @@ var _ = Context("Interpret", func() {
 
 			Expect(actualReference).To(Equal(providedExpression))
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualCreateTypeIfNotExists).To(Equal(&dirType))
+			Expect(actualCreateTypeIfNotExists).To(Equal(&model.ReferenceOpts{
+				Type:       "Dir",
+				ScratchDir: providedScratchDir,
+			}))
 		})
 		Context("referenceInterpreter.Interpret errs", func() {
 			It("should return expected result", func() {
@@ -63,6 +69,8 @@ var _ = Context("Interpret", func() {
 				actualValue, actualErr := objectUnderTest.Interpret(
 					providedScope,
 					providedExpression,
+					"dummyScratchDir",
+					false,
 				)
 
 				/* assert */
@@ -88,6 +96,8 @@ var _ = Context("Interpret", func() {
 					actualValue, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
 						providedExpression,
+						"dummyScratchDir",
+						false,
 					)
 
 					/* assert */
@@ -112,6 +122,8 @@ var _ = Context("Interpret", func() {
 					actualValue, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
 						"$(providedReference)",
+						"dummyScratchDir",
+						false,
 					)
 
 					/* assert */

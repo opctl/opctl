@@ -206,11 +206,13 @@ var _ = Context("Interpreter", func() {
 					/* assert */
 					actualScope,
 						actualExpression,
-						actualScratchDir := fakeFileInterpreter.InterpretArgsForCall(0)
+						actualScratchDir,
+						actualCreateIfNotExists := fakeFileInterpreter.InterpretArgsForCall(0)
 
 					Expect(actualScope).To(Equal(providedScope))
 					Expect(actualExpression).To(Equal(providedExpression))
 					Expect(actualScratchDir).To(Equal(providedScratchDir))
+					Expect(actualCreateIfNotExists).To(BeTrue())
 
 				})
 				It("should return expected results", func() {
