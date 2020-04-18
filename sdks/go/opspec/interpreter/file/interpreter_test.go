@@ -38,10 +38,12 @@ var _ = Context("Interpret", func() {
 
 			/* assert */
 			actualExpression,
-				actualScope := fakeReferenceInterpreter.InterpretArgsForCall(0)
+				actualScope,
+				actualCreateTypeIfNotExists := fakeReferenceInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualExpression).To(Equal(providedExpression))
 			Expect(actualScope).To(Equal(providedScope))
+			Expect(actualCreateTypeIfNotExists).To(Equal(&fileType))
 		})
 		Context("referenceInterpreter.Interpret errs", func() {
 			It("should return expected result", func() {

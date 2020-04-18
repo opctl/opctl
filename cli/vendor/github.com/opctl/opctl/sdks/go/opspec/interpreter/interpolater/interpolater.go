@@ -105,7 +105,7 @@ func (itp _Interpolater) tryDeRef(
 		switch possibleRef[i] {
 		case refCloser:
 			if len(refBuffer) > 0 && refOpener == refBuffer[0] {
-				value, err := itp.referenceInterpreter.Interpret(fmt.Sprintf("$(%v)", string(refBuffer[1:])), scope)
+				value, err := itp.referenceInterpreter.Interpret(fmt.Sprintf("$(%v)", string(refBuffer[1:])), scope, nil)
 				if nil != err {
 					return "", 0, err
 				}

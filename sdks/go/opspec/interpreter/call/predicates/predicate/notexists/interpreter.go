@@ -32,6 +32,7 @@ func (itp _interpreter) Interpret(
 	_, err := itp.reference.Interpret(
 		expression,
 		scope,
+		nil,
 	)
 
 	return nil != err, nil

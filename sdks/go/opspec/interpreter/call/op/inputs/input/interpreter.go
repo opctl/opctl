@@ -120,7 +120,7 @@ func (itp _interpreter) Interpret(
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; sockets must be passed by reference", name, valueExpression)
 		}
 
-		socketValue, err := itp.referenceInterpreter.Interpret(stringValueExpression, scope)
+		socketValue, err := itp.referenceInterpreter.Interpret(stringValueExpression, scope, nil)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}

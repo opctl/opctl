@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: opctl
-          image: opctl/opctl:0.1.31-dind
+          image: opctl/opctl:0.1.32-dind
           ports:
             # expose to other containers
             - name: http

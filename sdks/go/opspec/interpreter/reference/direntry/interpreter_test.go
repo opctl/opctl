@@ -31,6 +31,7 @@ var _ = Context("Interpreter", func() {
 				_, _, actualErr := objectUnderTest.Interpret(
 					providedRef,
 					nil,
+					nil,
 				)
 
 				/* assert */
@@ -69,6 +70,7 @@ var _ = Context("Interpreter", func() {
 				actualRefRemainder, actualValue, actualErr := objectUnderTest.Interpret(
 					providedRef,
 					&model.Value{Dir: &value},
+					nil,
 				)
 
 				/* assert */
@@ -110,6 +112,7 @@ var _ = Context("Interpreter", func() {
 				actualRefRemainder, actualValue, actualErr := objectUnderTest.Interpret(
 					providedRef,
 					&model.Value{Dir: &value},
+					nil,
 				)
 
 				/* assert */

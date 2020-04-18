@@ -45,6 +45,8 @@ type _interpreter struct {
 	valueInterpreter     value.Interpreter
 }
 
+var fileType = "File"
+
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	expression interface{},
@@ -57,6 +59,7 @@ func (itp _interpreter) Interpret(
 		value, err := itp.referenceInterpreter.Interpret(
 			expressionAsString,
 			scope,
+			&fileType,
 		)
 		if nil != err {
 			return nil, fmt.Errorf("unable to interpret %+v to file; error was %v", expression, err)

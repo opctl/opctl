@@ -40,6 +40,7 @@ type Interpreter interface {
 	Interpret(
 		ref string,
 		scope map[string]*model.Value,
+		createTypeIfNotExists *string,
 	) (*model.Value, error)
 }
 
@@ -65,6 +66,7 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	ref string,
 	scope map[string]*model.Value,
+	createTypeIfNotExists *string,
 ) (*model.Value, error) {
 
 	var data *model.Value
@@ -90,6 +92,7 @@ func (itp _interpreter) Interpret(
 	_, data, err = itp.rInterpret(
 		ref,
 		data,
+		createTypeIfNotExists,
 	)
 	return data, err
 }
@@ -127,6 +130,7 @@ func (itp _interpreter) interpolate(
 			_, nestedRefValue, err := itp.rInterpret(
 				nestedRef,
 				nestedRefRootValue,
+				nil,
 			)
 			if nil != err {
 				return "", err
@@ -176,6 +180,7 @@ func (itp _interpreter) getRootValue(
 func (itp _interpreter) rInterpret(
 	ref string,
 	data *model.Value,
+	createTypeIfNotExists *string,
 ) (string, *model.Value, error) {
 
 	if "" == ref {
@@ -189,21 +194,21 @@ func (itp _interpreter) rInterpret(
 			return "", nil, err
 		}
 
-		return itp.rInterpret(ref, data)
+		return itp.rInterpret(ref, data, createTypeIfNotExists)
 	case '.':
 		ref, data, err := itp.unbracketedIdentifierInterpreter.Interpret(ref[1:], data)
 		if nil != err {
 			return "", nil, err
 		}
 
-		return itp.rInterpret(ref, data)
+		return itp.rInterpret(ref, data, createTypeIfNotExists)
 	case '/':
-		ref, data, err := itp.dirEntryInterpreter.Interpret(ref, data)
+		ref, data, err := itp.dirEntryInterpreter.Interpret(ref, data, createTypeIfNotExists)
 		if nil != err {
 			return "", nil, err
 		}
 
-		return itp.rInterpret(ref, data)
+		return itp.rInterpret(ref, data, createTypeIfNotExists)
 	default:
 		return "", nil, fmt.Errorf("unable to interpret '%v' as reference; expected '[', '.', or '/'", ref)
 	}

@@ -36,6 +36,8 @@ type _interpreter struct {
 	referenceInterpreter reference.Interpreter
 }
 
+var dirType = "Dir"
+
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	expression interface{},
@@ -48,6 +50,7 @@ func (itp _interpreter) Interpret(
 			value, err := itp.referenceInterpreter.Interpret(
 				expression,
 				scope,
+				&dirType,
 			)
 			if nil != err {
 				return nil, fmt.Errorf("unable to interpret %+v to dir; error was %v", expression, err)
