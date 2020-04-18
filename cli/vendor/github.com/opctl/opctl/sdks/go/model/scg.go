@@ -82,3 +82,9 @@ type SCGSerialLoopCall struct {
 	Until []*SCGPredicate `json:"until,omitempty"`
 	Vars  *SCGLoopVars    `json:"vars,omitempty"`
 }
+
+type ReferenceOpts struct {
+	Type string
+	// for creating dirs/files
+	ScratchDir string
+}

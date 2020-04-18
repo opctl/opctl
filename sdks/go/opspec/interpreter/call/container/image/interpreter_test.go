@@ -1,10 +1,12 @@
 package image
 
 import (
+	"errors"
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
+	dirFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/dir/fakes"
 	strFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/str/fakes"
 )
 
@@ -25,6 +27,7 @@ var _ = Context("Interpreter", func() {
 				_, actualError := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					nil,
+					"dummyScratchDir",
 				)
 
 				/* assert */
@@ -47,10 +50,14 @@ var _ = Context("Interpreter", func() {
 					},
 				}
 
+				fakeDirInterpreter := new(dirFakes.FakeInterpreter)
+				fakeDirInterpreter.InterpretReturns(nil, errors.New("dummyError"))
+
 				fakeStrInterpreter := new(strFakes.FakeInterpreter)
 				fakeStrInterpreter.InterpretReturns(&model.Value{String: new(string)}, nil)
 
 				objectUnderTest := _interpreter{
+					dirInterpreter:    fakeDirInterpreter,
 					stringInterpreter: fakeStrInterpreter,
 				}
 
@@ -58,6 +65,7 @@ var _ = Context("Interpreter", func() {
 				objectUnderTest.Interpret(
 					providedCurrentScope,
 					providedSCGContainerCallImage,
+					"dummyScratchDir",
 				)
 
 				/* assert */
@@ -84,6 +92,9 @@ var _ = Context("Interpreter", func() {
 					PullCreds: &model.SCGPullCreds{},
 				}
 
+				fakeDirInterpreter := new(dirFakes.FakeInterpreter)
+				fakeDirInterpreter.InterpretReturns(nil, errors.New("dummyError"))
+
 				fakeStrInterpreter := new(strFakes.FakeInterpreter)
 
 				expectedImageRef := "expectedImageRef"
@@ -104,6 +115,7 @@ var _ = Context("Interpreter", func() {
 				}
 
 				objectUnderTest := _interpreter{
+					dirInterpreter:    fakeDirInterpreter,
 					stringInterpreter: fakeStrInterpreter,
 				}
 
@@ -111,6 +123,7 @@ var _ = Context("Interpreter", func() {
 				actualDCGContainerCallImage, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedSCGContainerCallImage,
+					"dummyScratchDir",
 				)
 
 				/* assert */

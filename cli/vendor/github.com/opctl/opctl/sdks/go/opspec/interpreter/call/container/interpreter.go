@@ -116,7 +116,7 @@ func (itp _interpreter) Interpret(
 	}
 
 	// interpret image
-	dcgContainerCall.Image, err = itp.imageInterpreter.Interpret(scope, scgContainerCall.Image)
+	dcgContainerCall.Image, err = itp.imageInterpreter.Interpret(scope, scgContainerCall.Image, scratchDirPath)
 	if nil != err {
 		return nil, err
 	}

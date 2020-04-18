@@ -22,6 +22,8 @@ type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
 		expression interface{},
+		scratchDir string,
+		createIfNotExist bool,
 	) (*model.Value, error)
 }
 
@@ -36,21 +38,28 @@ type _interpreter struct {
 	referenceInterpreter reference.Interpreter
 }
 
-var dirType = "Dir"
-
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	expression interface{},
+	scratchDir string,
+	createIfNotExist bool,
 ) (*model.Value, error) {
 	switch expression := expression.(type) {
 	case string:
 		// @TODO: this incorrectly treats $(inScope)$(inScope) as ref
 		if strings.HasPrefix(expression, interpolater.RefStart) && strings.HasSuffix(expression, interpolater.RefEnd) {
+			var opts *model.ReferenceOpts
+			if createIfNotExist {
+				opts = &model.ReferenceOpts{
+					Type:       "Dir",
+					ScratchDir: scratchDir,
+				}
+			}
 
 			value, err := itp.referenceInterpreter.Interpret(
 				expression,
 				scope,
-				&dirType,
+				opts,
 			)
 			if nil != err {
 				return nil, fmt.Errorf("unable to interpret %+v to dir; error was %v", expression, err)

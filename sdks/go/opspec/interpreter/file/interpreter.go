@@ -27,6 +27,7 @@ type Interpreter interface {
 		scope map[string]*model.Value,
 		expression interface{},
 		scratchDir string,
+		createIfNotExist bool,
 	) (*model.Value, error)
 }
 
@@ -51,15 +52,24 @@ func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	expression interface{},
 	scratchDir string,
+	createIfNotExist bool,
 ) (*model.Value, error) {
 	expressionAsString, expressionIsString := expression.(string)
 
 	// @TODO: this incorrectly treats $(inScope)$(inScope) as ref
 	if expressionIsString && strings.HasPrefix(expressionAsString, interpolater.RefStart) && strings.HasSuffix(expressionAsString, interpolater.RefEnd) {
+		var opts *model.ReferenceOpts
+		if createIfNotExist {
+			opts = &model.ReferenceOpts{
+				Type:       "File",
+				ScratchDir: scratchDir,
+			}
+		}
+
 		value, err := itp.referenceInterpreter.Interpret(
 			expressionAsString,
 			scope,
-			&fileType,
+			opts,
 		)
 		if nil != err {
 			return nil, fmt.Errorf("unable to interpret %+v to file; error was %v", expression, err)

@@ -85,13 +85,13 @@ func (itp _interpreter) Interpret(
 		}
 		return booleanValue, nil
 	case nil != param.File:
-		fileValue, err := itp.fileInterpreter.Interpret(scope, valueExpression, opScratchDir)
+		fileValue, err := itp.fileInterpreter.Interpret(scope, valueExpression, opScratchDir, true)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return fileValue, nil
 	case nil != param.Dir:
-		dirValue, err := itp.dirInterpreter.Interpret(scope, valueExpression)
+		dirValue, err := itp.dirInterpreter.Interpret(scope, valueExpression, opScratchDir, true)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, valueExpression, err.Error())
 		}

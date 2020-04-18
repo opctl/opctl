@@ -2,8 +2,6 @@ package image
 
 import (
 	"fmt"
-	"regexp"
-
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
@@ -14,6 +12,7 @@ type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
 		scgContainerCallImage *model.SCGContainerCallImage,
+		scratchDir string,
 	) (*model.DCGContainerCallImage, error)
 }
 
@@ -33,35 +32,27 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	scgContainerCallImage *model.SCGContainerCallImage,
+	scratchDir string,
 ) (*model.DCGContainerCallImage, error) {
 
 	if nil == scgContainerCallImage {
 		return nil, fmt.Errorf("image required")
 	}
 
-	var imageSrcOrRefVar *string
-	if nil != scgContainerCallImage.Src {
-		// @TODO: remove image.src after release 0.1.28 in favor of image.ref
-		imageSrcOrRefVar = scgContainerCallImage.Src
-	} else if regexp.MustCompile("^\\$\\(.+\\)$").MatchString(*scgContainerCallImage.Ref) {
-		// attempt to process as a variable reference since its variable reference like.
-		imageSrcOrRefVar = scgContainerCallImage.Ref
-	}
-
-	if nil != imageSrcOrRefVar {
-		src, err := itp.dirInterpreter.Interpret(
-			scope,
-			*imageSrcOrRefVar,
-		)
-		if nil != err {
-			return nil, fmt.Errorf("error encountered interpreting image src; error was: %v", err)
-		}
-
+	// try to interpret as dir
+	src, err := itp.dirInterpreter.Interpret(
+		scope,
+		scgContainerCallImage.Ref,
+		scratchDir,
+		false,
+	)
+	if nil == err {
 		return &model.DCGContainerCallImage{
 			Src: src,
 		}, nil
 	}
 
+	// fallback to string
 	dcgContainerCallImage := &model.DCGContainerCallImage{}
 	if nil != scgContainerCallImage.Ref {
 		ref, err := itp.stringInterpreter.Interpret(
