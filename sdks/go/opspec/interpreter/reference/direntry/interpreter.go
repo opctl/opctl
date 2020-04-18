@@ -2,6 +2,7 @@ package direntry
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -17,6 +18,7 @@ type Interpreter interface {
 	Interpret(
 		ref string,
 		data *model.Value,
+		createTypeIfNotExists *string,
 	) (string, *model.Value, error)
 }
 
@@ -33,6 +35,7 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	ref string,
 	data *model.Value,
+	createTypeIfNotExists *string,
 ) (string, *model.Value, error) {
 
 	if !strings.HasPrefix(ref, "/") {
@@ -42,14 +45,39 @@ func (itp _interpreter) Interpret(
 	valuePath := filepath.Join(*data.Dir, ref)
 
 	fileInfo, err := itp.os.Stat(valuePath)
-	if nil != err {
-		return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref; error was %v", ref, err)
+	if nil == err {
+		if fileInfo.IsDir() {
+			return "", &model.Value{Dir: &valuePath}, nil
+		}
+
+		return "", &model.Value{File: &valuePath}, nil
+	} else if nil != createTypeIfNotExists && os.IsNotExist(err) {
+
+		if "Dir" == *createTypeIfNotExists {
+			err := os.MkdirAll(valuePath, 0700)
+			if nil != err {
+				return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref; error was %v", ref, err)
+			}
+
+			return "", &model.Value{Dir: &valuePath}, nil
+		}
+
+		// handle file ref
+		err := os.MkdirAll(filepath.Dir(valuePath), 0700)
+		if nil != err {
+			return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref; error was %v", ref, err)
+		}
+
+		file, err := os.Create(valuePath)
+		file.Close()
+		if nil != err {
+			return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref; error was %v", ref, err)
+		}
+
+		return "", &model.Value{File: &valuePath}, nil
+
 	}
 
-	if fileInfo.IsDir() {
-		return "", &model.Value{Dir: &valuePath}, nil
-	}
-
-	return "", &model.Value{File: &valuePath}, nil
+	return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref; error was %v", ref, err)
 
 }

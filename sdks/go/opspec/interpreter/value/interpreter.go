@@ -114,6 +114,7 @@ func (itp _interpreter) Interpret(
 			value, err := itp.referenceInterpreter.Interpret(
 				typedValueExpression,
 				scope,
+				nil,
 			)
 			if nil == err {
 				return *value, nil
