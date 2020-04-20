@@ -6,6 +6,13 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.33 - 2020-04-20
+
+### Fixed 
+
+- [Nonexistent sub dirs bound to containers aren't sync'd](https://github.com/opctl/opctl/issues/725)
+- [image.ref with multi-variable templated string not working since v0.1.28](https://github.com/opctl/opctl/issues/722)
+
 ## 0.1.32 - 2020-04-16
 
 ### Added
