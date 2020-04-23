@@ -1,32 +1,32 @@
 import React, { Fragment } from 'react'
-import HasCall, { Call } from '../HasCall'
+import HasCall, { CallParallelLoop } from '../HasCall'
 import { ReactComponent as PlusIcon } from '../../icons/Plus.svg'
 import brandColors from '../../brandColors'
 import AddCallPopper from '../AddCallPopper'
 
 
 interface Props {
-    call: Call
-    opRef: string
+    callParallelLoop: CallParallelLoop
+    parentOpRef: string
 }
 
 export default (
     {
-        call,
-        opRef
+        callParallelLoop,
+        parentOpRef
     }: Props
 ) => <Fragment>
         <div
             style={{
                 minWidth: '5rem',
-                border: `solid thin ${brandColors.lightGray}`,
+                border: `solid .1rem ${brandColors.lightGray}`,
             }}
         >
-            Serial Loop
+            Parallel Loop
         </div>
         <div
             style={{
-                border: `solid thin ${brandColors.lightGray}`
+                border: `solid .1rem ${brandColors.lightGray}`
             }}
         >
             <div
@@ -63,8 +63,8 @@ export default (
                     }}
                 ></div>
                 <HasCall
-                    call={call.serialLoop!.run}
-                    opRef={opRef}
+                    call={callParallelLoop!.run}
+                    parentOpRef={parentOpRef}
                 />
                 <div
                     style={{

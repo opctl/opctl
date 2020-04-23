@@ -69,7 +69,7 @@ export default (
       title || onClose || onComplete
         ? <div
           className={css({
-            borderBottom: `solid thin ${brandColors.lightGray}`,
+            borderBottom: `solid .1rem ${brandColors.lightGray}`,
             display: 'flex',
             alignItems: 'center',
             height: '3rem',

@@ -76,7 +76,6 @@ export default (
             load()
         },
         [
-            fsEntries,
             mount
         ]
     )
@@ -118,7 +117,7 @@ export default (
                                     <h3>Welcome!</h3>
                                     <p>Add a "mount=/filesystem/path" query parameter to explore</p>
                                     <h4>Example</h4>
-                                    <p>http://localhost:42224/?mount=/Users/source/repos/github.com/opctl</p>
+                                    <p>http://{window.location.host}/?mount=/Users/source/repos/github.com/opctl</p>
                                 </div>
                         }
                     </div>

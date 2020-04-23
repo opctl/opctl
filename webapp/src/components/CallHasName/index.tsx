@@ -30,7 +30,7 @@ export default (
     return (
         <div
             style={{
-                border: `solid thin ${brandColors.lightGray}`,
+                border: `solid .1rem ${brandColors.lightGray}`,
                 minWidth: '5rem',
                 textAlign: 'center',
                 padding: '0 .5rem',

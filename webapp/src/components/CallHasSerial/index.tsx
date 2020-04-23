@@ -1,24 +1,24 @@
 import React, { Fragment } from 'react'
-import HasCall, { Call } from '../HasCall'
+import HasCall, { CallSerial } from '../HasCall'
 import brandColors from '../../brandColors'
 import AddCallPopper from '../AddCallPopper'
 import { ReactComponent as PlusIcon } from '../../icons/Plus.svg'
 
 interface Props {
-    call: Call
-    opRef: string
+    callSerial: CallSerial
+    parentOpRef: string
 }
 
 export default (
     {
-        call,
-        opRef
+        callSerial,
+        parentOpRef
     }: Props
 ) => {
     return (
         <div>
             {
-                call.serial!.map(
+                callSerial!.map(
                     (childCall, index, array) =>
                         <div
                             key={index}
@@ -35,7 +35,7 @@ export default (
                             <HasCall
                                 key={index}
                                 call={childCall}
-                                opRef={opRef}
+                                parentOpRef={parentOpRef}
                             />
                             {
                                 index + 1 < array.length

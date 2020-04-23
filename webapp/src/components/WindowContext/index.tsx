@@ -13,11 +13,6 @@ interface ContextProps {
     openWindows: Window[]
 
     /**
-     * the currently active window
-     */
-    activeWindow?: Window
-
-    /**
      * makes the named window active;
      * note; named window must already be open
      */
@@ -42,7 +37,6 @@ export const WindowProvider = ({ children }) => {
     return (
         <WindowContext.Provider value={{
             openWindows,
-            activeWindow: openWindows.find(window => window.isActive),
             setActiveWindow: path => {
                 // ensure window w/ name is open
                 if (openWindows.find(openWindow => openWindow.fsEntry.path === path)) {

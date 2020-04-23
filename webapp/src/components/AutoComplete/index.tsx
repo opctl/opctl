@@ -60,7 +60,7 @@ export default function<TOption>(
           className={css({
             display: 'flex',
             alignItems: 'center',
-            border: `solid thin ${brandColors.lightGray} !important`,
+            border: `solid .1rem ${brandColors.lightGray} !important`,
             borderRadius: '.5rem',
             ...options.length
               ? {

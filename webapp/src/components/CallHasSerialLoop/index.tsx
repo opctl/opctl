@@ -1,70 +1,39 @@
-import React, { useState, useEffect } from 'react'
-import getFsEntryData from '../../queries/getFsEntryData'
-import jsYaml from 'js-yaml'
-import HasCall from '../HasCall'
+import React, { Fragment } from 'react'
+import HasCall, { CallSerialLoop } from '../HasCall'
+import { ReactComponent as PlusIcon } from '../../icons/Plus.svg'
 import brandColors from '../../brandColors'
 import AddCallPopper from '../AddCallPopper'
-import { ReactComponent as PlusIcon } from '../../icons/Plus.svg'
-import { toast } from 'react-toastify'
+
 
 interface Props {
-    opRef: string
+    callSerialLoop: CallSerialLoop
+    parentOpRef: string
 }
 
 export default (
     {
-        opRef
+        callSerialLoop,
+        parentOpRef
     }: Props
-) => {
-    const [op, setOp] = useState(null as any)
-
-    useEffect(
-        () => {
-            const load = async () => {
-                try {
-                    setOp(
-                        jsYaml.safeLoad(
-                            await getFsEntryData(opRef)
-                        )
-                    )
-                } catch (err) {
-                    if (err.message.includes('authentication')) {
-                        toast.warn(`Loading ${opRef} skipped; because it requires authentication.`)
-                    } else if (err.message.includes('no such host')) {
-                        const ref = opRef.replace('/op.yml', '')
-                        toast.warn(`Loading 'ref: ${ref}' skipped because you're using deprecated syntax! To fix, use 'ref: ../${ref.replace('/op.yml', '')}'.`)
-                    } else {
-                        toast.error(err)
-                    }
-                }
-            }
-
-            load()
-        },
-        [
-            opRef
-        ]
-    )
-
-    if (!op) {
-        return null
-    }
-
-    return (
+) => <Fragment>
         <div
             style={{
-                border: `solid thin ${brandColors.lightGray}`
+                minWidth: '5rem',
+                border: `solid .1rem ${brandColors.lightGray}`,
+            }}
+        >
+            Serial Loop
+        </div>
+        <div
+            style={{
+                border: `solid .1rem ${brandColors.lightGray}`
             }}
         >
             <div
                 style={{
                     display: 'flex',
-                    justifyContent: 'center',
                     alignItems: 'center',
-                    flexDirection: 'column',
-                    width: 'max-content',
-                    minWidth: '100%',
-                    minHeight: '100%',
+                    flexDirection: 'column'
                 }}
             >
                 <div
@@ -88,18 +57,20 @@ export default (
                 <div
                     style={{
                         backgroundColor: brandColors.lightGray,
-                        height: '2.5rem',
+                        minHeight: '2.5rem',
+                        height: '100%',
                         width: '.1rem'
                     }}
                 ></div>
                 <HasCall
-                    call={op.run}
-                    opRef={opRef}
+                    call={callSerialLoop!.run}
+                    parentOpRef={parentOpRef}
                 />
                 <div
                     style={{
                         backgroundColor: brandColors.lightGray,
-                        height: '2.5rem',
+                        minHeight: '2.5rem',
+                        height: '100%',
                         width: '.1rem'
                     }}
                 ></div>
@@ -123,5 +94,4 @@ export default (
                 ></div>
             </div>
         </div>
-    )
-}
+    </Fragment>

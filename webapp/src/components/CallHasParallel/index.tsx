@@ -1,25 +1,25 @@
 import React, { Fragment } from 'react'
-import HasCall, { Call } from '../HasCall'
+import HasCall, { CallParallel } from '../HasCall'
 import { ReactComponent as PlusIcon } from '../../icons/Plus.svg'
 import brandColors from '../../brandColors'
 import AddCallPopper from '../AddCallPopper'
 
 
 interface Props {
-    call: Call
-    opRef: string
+    callParallel: CallParallel
+    parentOpRef: string
 }
 
 export default (
     {
-        call,
-        opRef
+        callParallel,
+        parentOpRef
     }: Props
 ) => {
     // splice a dummy call into the middle
     // @TODO: re-enable once edit supported
     //const middle = Math.round(call.parallel!.length / 2)
-    let spliced = [...call.parallel!]
+    let spliced = [...callParallel!]
     //spliced.splice(middle, 0, {})
 
     return (
@@ -35,8 +35,8 @@ export default (
                     // https://stackoverflow.com/questions/29503227/how-to-make-flexbox-items-the-same-size
                     display: 'grid',
                     gridTemplateColumns: `repeat(${spliced.length},1fr)`,
-                    borderTop: `solid thin ${brandColors.lightGray}`,
-                    borderBottom: `solid thin ${brandColors.lightGray}`
+                    borderTop: `solid .1rem ${brandColors.lightGray}`,
+                    borderBottom: `solid .1rem ${brandColors.lightGray}`
                 }}
             >
                 {
@@ -86,7 +86,7 @@ export default (
                                                 <HasCall
                                                     key={index}
                                                     call={childCall}
-                                                    opRef={opRef}
+                                                    parentOpRef={parentOpRef}
                                                 />
                                                 <div
                                                     style={{
