@@ -20,7 +20,7 @@ export default (
       css({
         backgroundColor: brandColors.white,
         borderRadius: '1000vh',
-        border: `thin solid`,
+        border: `.1rem solid`,
         color: brandColors.active,
         cursor: 'pointer',
         display: 'inline-block',

@@ -27,7 +27,7 @@ export default (
         backgroundColor: brandColors.white,
         color: brandColors.black,
         padding: '1rem 1.2rem',
-        border: `solid thin ${brandColors.lightGray} !important`,
+        border: `solid .1rem ${brandColors.lightGray} !important`,
         width: '100%'
       }),
       props.className

@@ -9,7 +9,7 @@ export default props =>
   <div
     className={css({
       width: '100%',
-      borderTop: `solid thin ${brandColors.reallyLightGray} !important`
+      borderTop: `solid .1rem ${brandColors.reallyLightGray} !important`
     })}
   >
     {props.children}

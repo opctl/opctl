@@ -15,14 +15,14 @@ export default () => {
             <div
                 style={{
                     flexShrink: 0,
-                    borderBottom: `solid thin ${brandColors.reallyLightGray}`,
+                    borderBottom: `solid .1rem ${brandColors.reallyLightGray}`,
                 }}
             >
                 <h3>Explorer</h3>
             </div>
             <Fs
                 style={{
-                    borderBottom: `solid thin ${brandColors.reallyLightGray}`
+                    borderBottom: `solid .1rem ${brandColors.reallyLightGray}`
                 }}
             />
         </Container>

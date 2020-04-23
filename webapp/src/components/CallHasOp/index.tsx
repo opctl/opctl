@@ -1,39 +1,77 @@
-import React, { Fragment } from 'react'
-import HasCall, { Call } from '../HasCall'
-import { ReactComponent as PlusIcon } from '../../icons/Plus.svg'
+import React, { useState, useEffect } from 'react'
+import getFsEntryData from '../../queries/getFsEntryData'
+import jsYaml from 'js-yaml'
+import HasCall, { CallOp } from '../HasCall'
 import brandColors from '../../brandColors'
 import AddCallPopper from '../AddCallPopper'
-
+import { ReactComponent as PlusIcon } from '../../icons/Plus.svg'
+import { toast } from 'react-toastify'
+import path from 'path'
 
 interface Props {
-    call: Call
-    opRef: string
+    callOp: CallOp
+    parentOpRef?: string
 }
 
 export default (
     {
-        call,
-        opRef
+        callOp,
+        parentOpRef
     }: Props
-) => <Fragment>
+) => {
+    const opRef = callOp.ref.startsWith('.') && parentOpRef
+        ? path.join(parentOpRef, callOp.ref)
+        : callOp.ref
+
+    const [op, setOp] = useState(null as any)
+ 
+    useEffect(
+        () => {
+            const load = async () => {
+                try {
+                    setOp(
+                        jsYaml.safeLoad(
+                            await getFsEntryData(path.join(opRef, 'op.yml'))
+                        )
+                    )
+                } catch (err) {
+                    if (err.message.includes('authentication')) {
+                        toast.warn(`Loading ${opRef} skipped; because it requires authentication.`)
+                    } else if (err.message.includes('service=git-upload-pack')) {
+                        toast.warn(`Loading 'ref: ${opRef}' skipped because you're using deprecated syntax! To fix, use 'ref: ../${opRef}'.`)
+                    } else {
+                        toast.error(err.toString())
+                    }
+                }
+            }
+
+            load()
+        },
+        [
+            parentOpRef,
+            opRef
+        ]
+    )
+
+    if (!op) {
+        return null
+    }
+
+    return (
         <div
             style={{
-                minWidth: '5rem',
-                border: `solid thin ${brandColors.lightGray}`,
-            }}
-        >
-            Parallel Loop
-        </div>
-        <div
-            style={{
-                border: `solid thin ${brandColors.lightGray}`
+                border: `solid .1rem ${brandColors.lightGray}`
             }}
         >
             <div
                 style={{
                     display: 'flex',
+                    justifyContent: 'center',
                     alignItems: 'center',
-                    flexDirection: 'column'
+                    flexDirection: 'column',
+                    width: 'max-content',
+                    minWidth: '100%',
+                    minHeight: '100%',
                 }}
             >
                 <div
@@ -57,20 +95,18 @@ export default (
                 <div
                     style={{
                         backgroundColor: brandColors.lightGray,
-                        minHeight: '2.5rem',
-                        height: '100%',
+                        height: '2.5rem',
                         width: '.1rem'
                     }}
                 ></div>
                 <HasCall
-                    call={call.parallelLoop!.run}
-                    opRef={opRef}
+                    call={op.run}
+                    parentOpRef={opRef}
                 />
                 <div
                     style={{
                         backgroundColor: brandColors.lightGray,
-                        minHeight: '2.5rem',
-                        height: '100%',
+                        height: '2.5rem',
                         width: '.1rem'
                     }}
                 ></div>
@@ -94,4 +130,5 @@ export default (
                 ></div>
             </div>
         </div>
-    </Fragment>
+    )
+}

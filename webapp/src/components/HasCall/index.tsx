@@ -1,11 +1,10 @@
 import React, { CSSProperties } from 'react'
-import HasSerialCall from '../HasSerialCall'
-import HasParallelCall from '../HasParallelCall'
-import HasParallelLoopCall from '../HasParallelLoopCall'
-import HasSerialLoopCall from '../HasSerialLoopCall'
-import HasCallName from '../HasCallName'
-import HasOpCall from '../HasOpCall'
-import path from 'path'
+import CallHasSerial from '../CallHasSerial'
+import CallHasParallel from '../CallHasParallel'
+import CallHasParallelLoop from '../CallHasParallelLoop'
+import CallHasSerialLoop from '../CallHasSerialLoop'
+import CallHasName from '../CallHasName'
+import CallHasOp from '../CallHasOp'
 
 export interface PullCreds {
     username: string
@@ -13,8 +12,7 @@ export interface PullCreds {
 }
 
 export interface CallContainerImage {
-    ref?: string
-    src?: string
+    ref: string
     pullCreds?: PullCreds
 }
 
@@ -29,7 +27,7 @@ export interface CallOpInputs {
 
 export interface CallOp {
     ref: string
-    inputs: CallOpInputs
+    inputs?: CallOpInputs
 }
 
 export type CallParallel = Call[]
@@ -84,43 +82,42 @@ export interface Call {
 
 interface Props {
     call: Call
-    opRef: string
+    parentOpRef: string
     style?: CSSProperties
 }
 
 export default (
     {
         call,
-        opRef
+        parentOpRef
     }: Props
 ) => {
     let callComponent: any = null
 
     if (call.op) {
-        callComponent = <HasOpCall
-            opRef={
-                path.join(call.op.ref.startsWith('.') ? path.dirname(opRef) : '', call.op.ref, 'op.yml')
-            }
+        callComponent = <CallHasOp
+            callOp={call.op}
+            parentOpRef={parentOpRef}
         />
     } else if (call.parallel) {
-        callComponent = <HasParallelCall
-            call={call}
-            opRef={opRef}
+        callComponent = <CallHasParallel
+            callParallel={call.parallel}
+            parentOpRef={parentOpRef}
         />
     } else if (call.parallelLoop) {
-        callComponent = <HasParallelLoopCall
-            call={call}
-            opRef={opRef}
+        callComponent = <CallHasParallelLoop
+            callParallelLoop={call.parallelLoop}
+            parentOpRef={parentOpRef}
         />
     } else if (call.serial) {
-        callComponent = <HasSerialCall
-            call={call}
-            opRef={opRef}
+        callComponent = <CallHasSerial
+            callSerial={call.serial}
+            parentOpRef={parentOpRef}
         />
     } else if (call.serialLoop) {
-        callComponent = <HasSerialLoopCall
-            call={call}
-            opRef={opRef}
+        callComponent = <CallHasSerialLoop
+            callSerialLoop={call.serialLoop}
+            parentOpRef={parentOpRef}
         />
     } else {
         callComponent = null
@@ -134,7 +131,7 @@ export default (
                 flexDirection: 'column'
             }}
         >
-            <HasCallName
+            <CallHasName
                 call={call}
             />
             {callComponent}

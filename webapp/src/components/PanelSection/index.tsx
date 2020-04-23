@@ -24,7 +24,7 @@ export default (props) =>
       className={cx(
         commonCss,
         css({
-          borderBottom: `solid thin ${brandColors.reallyLightGray} !important`,
+          borderBottom: `solid .1rem ${brandColors.reallyLightGray} !important`,
           paddingBottom: '1rem',
           paddingTop: '1rem'
         })

@@ -7,7 +7,6 @@ import path from 'path'
 
 export default () => {
     const {
-        activeWindow,
         closeWindow,
         openWindows,
         setActiveWindow
@@ -29,7 +28,7 @@ export default () => {
                     display: 'flex',
                     height: '2.4rem',
                     flexShrink: 0,
-                    borderBottom: `solid thin ${brandColors.reallyLightGray}`,
+                    borderBottom: `solid .1rem ${brandColors.reallyLightGray}`,
                     backgroundColor: brandColors.reallyReallyLightGray
                 }}
             >
@@ -48,7 +47,7 @@ export default () => {
                                     backgroundColor: window.isActive
                                         ? brandColors.white
                                         : brandColors.reallyReallyLightGray,
-                                    borderRight: `solid thin ${brandColors.reallyLightGray}`,
+                                    borderRight: `solid .1rem ${brandColors.reallyLightGray}`,
                                     minWidth: 0
                                 }}
                                 onClick={() => setActiveWindow(window.fsEntry.path)}
@@ -79,21 +78,25 @@ export default () => {
                     )
                 }
             </div>
-            {
-                activeWindow
-                    ?
-                    <div
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            overflow: 'auto'
-                        }}
-                    >
-                        <Window
-                            window={activeWindow}
-                        />
-                    </div>
-                    : null
+            { 
+                openWindows.map(
+                    window =>
+                        <div
+                            key={window.fsEntry.path}
+                            style={{
+                                ...!window.isActive
+                                    ? { display: 'none' }
+                                    : {},
+                                width: '100%',
+                                height: '100%',
+                                overflow: 'auto'
+                            }}
+                        >
+                            <Window
+                                window={window}
+                            />
+                        </div>
+                )
             }
         </div>
     )

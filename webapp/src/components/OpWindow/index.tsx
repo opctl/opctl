@@ -1,13 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import getFsEntryData from '../../queries/getFsEntryData'
+import React from 'react'
 import { Window } from '../WindowContext'
-import jsYaml from 'js-yaml'
-import HasCall from '../HasCall'
-import brandColors from '../../brandColors'
-import AddCallPopper from '../AddCallPopper'
-import { ReactComponent as PlusIcon } from '../../icons/Plus.svg'
 import ReactEasyPanzoom from 'react-easy-panzoom'
-import { toast } from 'react-toastify'
+import CallHasOp from '../CallHasOp'
+import CallHasName from '../CallHasName'
+import path from 'path'
 
 interface Props {
     window: Window
@@ -21,31 +17,10 @@ export default (
         window
     }: Props
 ) => {
-    const [op, setOp] = useState(null as any)
-
-    useEffect(
-        () => {
-            const load = async () => {
-                try {
-                    setOp(
-                        jsYaml.safeLoad(
-                            await getFsEntryData(window.fsEntry.path)
-                        )
-                    )
-                } catch (err) {
-                    toast.error(err)
-                }
-            }
-
-            load()
-        },
-        [
-            window.fsEntry.path
-        ]
-    )
-
-    if (!op) {
-        return null
+    const call = {
+        op: {
+            ref: path.dirname(window.fsEntry.path)
+        }
     }
 
     return (
@@ -56,53 +31,17 @@ export default (
         >
             <div
                 style={{
-                    display: 'flex',
-                    justifyContent: 'center',
                     alignItems: 'center',
-                    flexDirection: 'column',
-                    width: 'max-content',
-                    minWidth: '100%',
-                    minHeight: '100%',
+                    display: 'flex',
+                    flexDirection: 'column'
                 }}
             >
-                <AddCallPopper>
-                    <PlusIcon
-                        style={{
-                            backgroundColor: brandColors.white,
-                            cursor: 'pointer',
-                            fill: brandColors.active,
-                            display: 'block'
-                        }}
-                    />
-                </AddCallPopper>
-                <div
-                    style={{
-                        backgroundColor: brandColors.lightGray,
-                        height: '2.5rem',
-                        width: '.1rem'
-                    }}
-                ></div>
-                <HasCall
-                    call={op.run}
-                    opRef={window.fsEntry.path}
+                <CallHasName
+                    call={call}
                 />
-                <div
-                    style={{
-                        backgroundColor: brandColors.lightGray,
-                        height: '2.5rem',
-                        width: '.1rem'
-                    }}
-                ></div>
-                <AddCallPopper>
-                    <PlusIcon
-                        style={{
-                            backgroundColor: brandColors.white,
-                            cursor: 'pointer',
-                            fill: brandColors.active,
-                            display: 'block'
-                        }}
-                    />
-                </AddCallPopper>
+                <CallHasOp
+                    callOp={call.op}
+                />
             </div>
         </ReactEasyPanzoom>
     )

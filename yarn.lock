@@ -1674,7 +1674,12 @@ accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.7:
     mime-types "~2.1.24"
     negotiator "0.6.2"
 
-ace-builds@^1.4.6, ace-builds@^1.4.8:
+ace-builds@^1.4.11:
+  version "1.4.11"
+  resolved "https://registry.yarnpkg.com/ace-builds/-/ace-builds-1.4.11.tgz#b1f19a891afcef1d26522473082baf80067e855f"
+  integrity sha512-keACH1d7MvAh72fE/us36WQzOFQPJbHphNpj33pXwVZOM84pTWcdFzIAvngxOGIGLTm7gtUP2eJ4Ku6VaPo8bw==
+
+ace-builds@^1.4.6:
   version "1.4.8"
   resolved "https://registry.yarnpkg.com/ace-builds/-/ace-builds-1.4.8.tgz#d14be41d30294a2a12581f0bcfee4b696481ffdd"
   integrity sha512-8ZVAxwyCGAxQX8mOp9imSXH0hoSPkGfy8igJy+WO/7axL30saRhKgg1XPACSmxxPA7nfHVwM+ShWXT+vKsNuFg==
@@ -4018,6 +4023,11 @@ es6-iterator@2.0.3, es6-iterator@~2.0.3:
     d "1"
     es5-ext "^0.10.35"
     es6-symbol "^3.1.1"
+
+es6-promise@^4.2.8:
+  version "4.2.8"
+  resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-4.2.8.tgz#4eb21594c972bc40553d276e510539143db53e0a"
+  integrity sha512-HJDGx5daxeIvxdBxvG2cb9g4tEvwIk3i8+nhX0yGrYmZUzbkdg8QbDevheDB8gd0//uPj4c1EQua8Q+MViT0/w==
 
 es6-symbol@^3.1.1, es6-symbol@~3.1.3:
   version "3.1.3"
@@ -9071,10 +9081,10 @@ react-ace@^7.0.2:
     lodash.isequal "^4.5.0"
     prop-types "^15.7.2"
 
-react-ace@^8.0.0:
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/react-ace/-/react-ace-8.0.0.tgz#e6fc155ec3cf240e92bdf2e156a50458a78ed0a4"
-  integrity sha512-EvU14vXbZpAenb1ZVKdn8yTQs/shZ9RghFulHtt67bBXT6sjrNHcfOEXHYtSEmwMb6pQVVNNuulzzd8o+Uouig==
+react-ace@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/react-ace/-/react-ace-8.1.0.tgz#6680accb7306a1850e6ef4370a00f0007eadc8b4"
+  integrity sha512-n3rm9gRNZjLGlXJQ587RASOQCPn6WlcV2gjRYwvG3gyVpBf4pY6lh/uI9tDkx2zYdEKJUfnGbTmzEGL5yyDWuw==
   dependencies:
     ace-builds "^1.4.6"
     diff-match-patch "^1.0.4"
@@ -9094,16 +9104,17 @@ react-app-polyfill@^1.0.6:
     regenerator-runtime "^0.13.3"
     whatwg-fetch "^3.0.0"
 
-react-autosuggest@^9.4.3:
-  version "9.4.3"
-  resolved "https://registry.yarnpkg.com/react-autosuggest/-/react-autosuggest-9.4.3.tgz#eb46852422a48144ab9f39fb5470319222f26c7c"
-  integrity sha512-wFbp5QpgFQRfw9cwKvcgLR8theikOUkv8PFsuLYqI2PUgVlx186Cz8MYt5bLxculi+jxGGUUVt+h0esaBZZouw==
+react-autosuggest@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/react-autosuggest/-/react-autosuggest-10.0.0.tgz#49c69a5053d7b98b14f28716875883d11c95e945"
+  integrity sha512-WFCeRuYv6YCY9Ch4BodXPASWJXDh32ehQQHA2eLNhOBhu3Xcank+5W4wcEN+oqdAX1fvKROZRQRF2fpNZaZaxA==
   dependencies:
-    prop-types "^15.5.10"
-    react-autowhatever "^10.1.2"
-    shallow-equal "^1.0.0"
+    es6-promise "^4.2.8"
+    prop-types "^15.7.2"
+    react-autowhatever "^10.2.1"
+    shallow-equal "^1.2.1"
 
-react-autowhatever@^10.1.2:
+react-autowhatever@^10.2.1:
   version "10.2.1"
   resolved "https://registry.yarnpkg.com/react-autowhatever/-/react-autowhatever-10.2.1.tgz#a6d421dc6135173efedc249ab7216e4f5b691bcc"
   integrity sha512-5gQyoETyBH6GmuW1N1J81CuoAV+Djeg66DEo03xiZOl3WOwJHBP5LisKUvCGOakjrXU4M3hcIvCIqMBYGUmqOA==
@@ -9142,7 +9153,17 @@ react-dev-utils@^10.1.0:
     strip-ansi "6.0.0"
     text-table "0.2.0"
 
-react-dom@^16.12.0, react-dom@^16.8.6:
+react-dom@^16.13.1:
+  version "16.13.1"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.13.1.tgz#c1bd37331a0486c078ee54c4740720993b2e0e7f"
+  integrity sha512-81PIMmVLnCNLO/fFOQxdQkvEq/+Hfpv24XNJfpyZhTRfO0QcmQIF/PgCa1zCOj2w1hrn12MFLyaJ/G0+Mxtfag==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
+    scheduler "^0.19.1"
+
+react-dom@^16.8.6:
   version "16.12.0"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.12.0.tgz#0da4b714b8d13c2038c9396b54a92baea633fe11"
   integrity sha512-LMxFfAGrcS3kETtQaCkTKjMiifahaMySFDn71fZUNpPHZQEzmk/GiAeIT8JSOrHB23fnuCOMruL2a8NYlw+8Gw==
@@ -9361,7 +9382,16 @@ react-virtualized@^9.21.0:
     prop-types "^15.6.0"
     react-lifecycles-compat "^3.0.4"
 
-react@^16.12.0, react@^16.8.6:
+react@^16.13.1:
+  version "16.13.1"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.13.1.tgz#2e818822f1a9743122c063d6410d85c1e3afe48e"
+  integrity sha512-YMZQQq32xHLX0bz5Mnibv1/LHb3Sqzngu7xstSM+vrkE5Kzr9xE0yMByK5kMoTK30YVJE61WfbxIFFvfeDKT1w==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
+
+react@^16.8.6:
   version "16.12.0"
   resolved "https://registry.yarnpkg.com/react/-/react-16.12.0.tgz#0c0a9c6a142429e3614834d5a778e18aa78a0b83"
   integrity sha512-fglqy3k5E+81pA8s+7K0/T3DBCF0ZDOher1elBFzF7O6arXJgzyu/FW+COxFvAWXJoJN9KIZbT2LXlukwphYTA==
@@ -9927,6 +9957,14 @@ scheduler@^0.18.0:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
 
+scheduler@^0.19.1:
+  version "0.19.1"
+  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.19.1.tgz#4f3e2ed2c1a7d65681f4c854fa8c5a1ccb40f196"
+  integrity sha512-n/zwRWRYSUj0/3g/otKDRPMh6qv2SYMWNq85IEa8iZyAv8od9zDYpGSnpBEjNgcMNq6Scbu5KfIPxNF72R/2EA==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+
 schema-utils@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-1.0.0.tgz#0b79a93204d7b600d4b2850d1f66c2a34951c770"
@@ -10078,7 +10116,7 @@ shallow-clone@^3.0.0:
   dependencies:
     kind-of "^6.0.2"
 
-shallow-equal@^1.0.0:
+shallow-equal@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/shallow-equal/-/shallow-equal-1.2.1.tgz#4c16abfa56043aa20d050324efa68940b0da79da"
   integrity sha512-S4vJDjHHMBaiZuT9NPb616CSmLf618jawtv3sufLl6ivK8WocjAo58cXwbRV1cgqxH0Qbv+iUt6m05eqEa2IRA==
@@ -11005,10 +11043,15 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.4.3, typescript@^3.7.5:
+typescript@^3.4.3:
   version "3.7.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.5.tgz#0692e21f65fd4108b9330238aac11dd2e177a1ae"
   integrity sha512-/P5lkRXkWHNAbcJIiHPfRoKqyd7bsyCma1hZNUGfn20qm64T6ZBlrzprymeu918H+mB/0rIg2gGK/BXkhhYgBw==
+
+typescript@^3.8.3:
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
+  integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
 
 ultron@~1.1.0:
   version "1.1.1"

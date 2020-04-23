@@ -20,7 +20,7 @@ export default (
     className={cx(
       css({
         backgroundColor: brandColors.white,
-        borderBottom: `solid thin ${brandColors.reallyLightGray} !important`,
+        borderBottom: `solid .1rem ${brandColors.reallyLightGray} !important`,
         color: brandColors.black,
         padding: '1rem 1.2rem',
         width: '100%'
