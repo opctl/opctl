@@ -15,7 +15,7 @@ Ops are defined in a language called opspec (portmanteau of operation specificat
 ## CLI
 The opctl CLI allows managing ops, nodes, events (logs), and opctl updates. See [reference docs](reference/cli.md) for full details.
 
-![opctl CLI](/docs/assets/opctl-cli.png)
+![opctl CLI](/img/opctl-cli.png)
 
 ## UI
 The opctl UI allows visualizing local or remote ops.
@@ -23,7 +23,7 @@ The opctl UI allows visualizing local or remote ops.
 When visualizing an op, it's call graph is expanded recursively and you can zoom or pan around to focus where needed.
 The call graph is rendered from top to bottom in order of execution. 
 
-![opctl UI](/docs/assets/opctl-ui.png)
+![opctl UI](/img/opctl-ui.png)
 
 ## Opspec
 Opspec is a language designed to portably and fully define operations (ops). See [reference docs](reference/opspec/index.md) for full details.
