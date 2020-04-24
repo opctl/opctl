@@ -8,7 +8,6 @@ module.exports = {
   projectName: 'opctl', // Usually your repo name.
   themeConfig: {
     algolia: {
-      appId: 'opctl',
       apiKey: '247689f43002ed0c3902fbd034630a7a',
       indexName: 'opctl'
     },
