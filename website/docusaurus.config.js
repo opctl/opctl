@@ -43,7 +43,7 @@ module.exports = {
           items: [
             {
               label: 'Docs',
-              to: 'docs/zero-to-hero/hello-world',
+              to: 'docs/introduction',
             },
           ],
         },
