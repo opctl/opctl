@@ -3,13 +3,14 @@ package pubsub
 import (
 	"context"
 	"encoding/json"
-	"github.com/dgraph-io/badger"
-	"github.com/opctl/opctl/sdks/go/model"
 	"log"
 	"os"
 	"path"
 	"runtime"
 	"time"
+
+	"github.com/dgraph-io/badger/v2"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 /**
@@ -27,9 +28,7 @@ func NewBadgerDBEventStore(
 	// per badger README.MD#FAQ "maximizes throughput"
 	runtime.GOMAXPROCS(128)
 
-	opts := badger.DefaultOptions
-	opts.Dir = eventDbDirPath
-	opts.ValueDir = eventDbDirPath
+	opts := badger.DefaultOptions(eventDbDirPath).WithLogger(nil)
 	db, err := badger.Open(opts)
 	if err != nil {
 		log.Fatal(err)
@@ -78,31 +77,26 @@ func (er badgerDBEventStore) List(
 				sinceTime = filter.Since
 			}
 
-			itOpts := badger.DefaultIteratorOptions
-			// per badger README.MD#FAQ "avoids deadlocks"
-			itOpts.PrefetchValues = true
-
-			it := txn.NewIterator(itOpts)
+			it := txn.NewIterator(badger.DefaultIteratorOptions)
 			defer it.Close()
 			sinceBytes := []byte(sinceTime.Format(sortableRFC3339Nano))
 			for it.Seek(sinceBytes); it.Valid(); it.Next() {
-				value, err := it.Item().Value()
-				if nil != err {
-					return err
-				}
-
-				event := model.Event{}
-				if err := json.Unmarshal(value, &event); nil != err {
-					return err
-				}
-
-				if !isRootOpIDExcludedByFilter(getEventRootOpID(event), filter) {
-					select {
-					case <-ctx.Done():
-						return ctx.Err()
-					case eventChannel <- event:
+				item := it.Item()
+				item.Value(func(v []byte) error {
+					event := model.Event{}
+					if err := json.Unmarshal(v, &event); nil != err {
+						return err
 					}
-				}
+
+					if !isRootOpIDExcludedByFilter(getEventRootOpID(event), filter) {
+						select {
+						case <-ctx.Done():
+							return ctx.Err()
+						case eventChannel <- event:
+						}
+					}
+					return nil
+				})
 			}
 
 			return nil

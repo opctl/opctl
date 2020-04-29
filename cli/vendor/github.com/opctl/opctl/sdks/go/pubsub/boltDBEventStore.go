@@ -9,6 +9,7 @@ import (
 	"path"
 	"sync"
 	"time"
+	"fmt"
 )
 
 /**
@@ -17,7 +18,13 @@ NewBoltDBEventStore returns an EventStore implementation leveraging [Bolt DB](ht
 func NewBoltDBEventStore(
 	eventDbFilePath string,
 ) EventStore {
-	err := os.MkdirAll(path.Dir(eventDbFilePath), 0700)
+	// clear previous data
+	err := os.RemoveAll(eventDbFilePath)
+	if nil != err {
+		panic(fmt.Sprintf("Unable to cleanup event db %s; %s", eventDbFilePath, err))
+	}
+
+	err = os.MkdirAll(path.Dir(eventDbFilePath), 0700)
 	if nil != err {
 		panic(err)
 	}
