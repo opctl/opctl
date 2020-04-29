@@ -89,17 +89,8 @@
           "type": "string"
         }
       },
-      "oneOf": [
-        {
-          "required": [
-            "ref"
-          ]
-        },
-        {
-          "required": [
-            "src"
-          ]
-        }
+      "required": [
+        "ref"
       ],
       "additionalProperties": false
     },

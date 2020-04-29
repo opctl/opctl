@@ -6,6 +6,8 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.35 - 2020-04-29
+
 ### Changed
 - [Stop logging "Replaying from value pointer: {Fid:0 Len:0 Offset:0}"](https://github.com/opctl/opctl/issues/754)
 

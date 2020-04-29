@@ -15,7 +15,7 @@ just a matter of defining your `.gitlab-ci.yml` as follows:
 
 .gitlab-ci.yml
 ```yaml
-image: opctl/opctl:0.1.34-dind
+image: opctl/opctl:0.1.35-dind
 stages:
   - build
   - deploy
