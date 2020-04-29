@@ -20,7 +20,7 @@ require (
 	github.com/onsi/gomega v1.5.0
 	github.com/opctl/opctl/sdks/go v0.0.0-00010101000000-000000000000
 	github.com/peterh/liner v1.1.0
-	github.com/pkg/errors v0.8.1
+	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7-0.20191104211043-6b2f3ee522b6
 )
 
