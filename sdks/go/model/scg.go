@@ -33,9 +33,7 @@ type SCGContainerCall struct {
 }
 
 type SCGContainerCallImage struct {
-	// @TODO: remove after release 0.1.28 in favor of image.ref
-	Src       *string       `json:"src,omitempty"`
-	Ref       *string       `json:"ref,omitempty"`
+	Ref       string        `json:"ref"`
 	PullCreds *SCGPullCreds `json:"pullCreds,omitempty"`
 }
 

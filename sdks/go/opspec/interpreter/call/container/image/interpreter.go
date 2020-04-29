@@ -54,17 +54,15 @@ func (itp _interpreter) Interpret(
 
 	// fallback to string
 	dcgContainerCallImage := &model.DCGContainerCallImage{}
-	if nil != scgContainerCallImage.Ref {
-		ref, err := itp.stringInterpreter.Interpret(
-			scope,
-			*scgContainerCallImage.Ref,
-		)
-		if nil != err {
-			return nil, err
-		}
-
-		dcgContainerCallImage.Ref = ref.String
+	ref, err := itp.stringInterpreter.Interpret(
+		scope,
+		scgContainerCallImage.Ref,
+	)
+	if nil != err {
+		return nil, err
 	}
+
+	dcgContainerCallImage.Ref = ref.String
 
 	if nil != scgContainerCallImage.PullCreds {
 		username, err := itp.stringInterpreter.Interpret(scope, scgContainerCallImage.PullCreds.Username)

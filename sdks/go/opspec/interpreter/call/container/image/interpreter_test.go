@@ -43,7 +43,7 @@ var _ = Context("Interpreter", func() {
 				}
 
 				providedSCGContainerCallImage := &model.SCGContainerCallImage{
-					Ref: new(string),
+					Ref: "dummyRef",
 					PullCreds: &model.SCGPullCreds{
 						Username: "dummyUsername",
 						Password: "dummyPassword",
@@ -71,7 +71,7 @@ var _ = Context("Interpreter", func() {
 				/* assert */
 				actualImageRefScope,
 					actualImageRef := fakeStrInterpreter.InterpretArgsForCall(0)
-				Expect(actualImageRef).To(Equal(*providedSCGContainerCallImage.Ref))
+				Expect(actualImageRef).To(Equal(providedSCGContainerCallImage.Ref))
 				Expect(actualImageRefScope).To(Equal(providedCurrentScope))
 
 				actualUsernameScope,
@@ -88,7 +88,7 @@ var _ = Context("Interpreter", func() {
 
 				/* arrange */
 				providedSCGContainerCallImage := &model.SCGContainerCallImage{
-					Ref:       new(string),
+					Ref:       "dummyRef",
 					PullCreds: &model.SCGPullCreds{},
 				}
 

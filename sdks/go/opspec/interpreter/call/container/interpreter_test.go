@@ -526,7 +526,7 @@ var _ = Context("Interpreter", func() {
 			}
 			providedSCGContainerCall := &model.SCGContainerCall{
 				Image: &model.SCGContainerCallImage{
-					Ref: new(string),
+					Ref: "dummyRef",
 					PullCreds: &model.SCGPullCreds{
 						Username: "dummyUsername",
 						Password: "dummyPassword",
