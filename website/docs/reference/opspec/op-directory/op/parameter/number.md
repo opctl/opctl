@@ -2,7 +2,7 @@
 title: Number Parameter [object]
 ---
 
-An object defining a parameter which accepts a [number typed value](../../../../types/number.md).
+An object defining a parameter which accepts a [number typed value](../../../types/number.md).
 
 ## Properties:
 - must have:

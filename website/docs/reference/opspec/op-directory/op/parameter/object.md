@@ -2,7 +2,7 @@
 title: Object Parameter [object]
 ---
 
-An object defining a parameter which accepts an [object typed value](../../../../types/object.md).
+An object defining a parameter which accepts an [object typed value](../../../types/object.md).
 
 ## Properties:
 - must have:

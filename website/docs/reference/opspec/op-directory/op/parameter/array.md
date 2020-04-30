@@ -2,7 +2,7 @@
 title: Array Parameter [object]
 ---
 
-An object defining a parameter which accepts an [array typed value](../../../../types/array.md).
+An object defining a parameter which accepts an [array typed value](../../../types/array.md).
 
 ## Properties:
 - must have:
