@@ -2,7 +2,7 @@
 title: File Parameter [object]
 ---
 
-An object defining a parameter which accepts a [file typed value](../../../../types/file.md).
+An object defining a parameter which accepts a [file typed value](../../../types/file.md).
 
 ## Properties:
 - must have:

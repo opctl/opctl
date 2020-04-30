@@ -2,7 +2,7 @@
 title: String Parameter [object]
 ---
 
-An object defining a parameter which accepts a [string typed value](../../../../types/string.md).
+An object defining a parameter which accepts a [string typed value](../../../types/string.md).
 
 ## Properties:
 - must have:

@@ -2,7 +2,7 @@
 title: Socket Parameter [object]
 ---
 
-An object defining a parameter which accepts a [socket typed value](../../../../types/socket.md).
+An object defining a parameter which accepts a [socket typed value](../../../types/socket.md).
 
 ## Socket Properties:
 - must have:

@@ -2,7 +2,7 @@
 title: Dir Parameter [object]
 ---
 
-An object defining a parameter which accepts a [dir typed value](../../../../types/dir.md).
+An object defining a parameter which accepts a [dir typed value](../../../types/dir.md).
 
 ## Properties:
 - must have:

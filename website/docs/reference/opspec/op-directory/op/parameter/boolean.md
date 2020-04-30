@@ -2,7 +2,7 @@
 title: Boolean Parameter [object]
 ---
 
-An object defining a parameter which accepts a [boolean typed value](../../../../types/boolean.md).
+An object defining a parameter which accepts a [boolean typed value](../../../types/boolean.md).
 
 ## Boolean Properties:
 - must have:
