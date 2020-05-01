@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import HasCall, { CallSerialLoop } from '../HasCall'
 import { ReactComponent as PlusIcon } from '../../icons/Plus.svg'
 import brandColors from '../../brandColors'
@@ -15,83 +15,67 @@ export default (
         callSerialLoop,
         parentOpRef
     }: Props
-) => <Fragment>
+) => <div
+        style={{
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'column'
+        }}
+    >
         <div
             style={{
-                minWidth: '5rem',
-                border: `solid .1rem ${brandColors.lightGray}`,
+                backgroundColor: brandColors.lightGray,
+                minHeight: '2.5rem',
+                height: '100%',
+                width: '.1rem'
             }}
-        >
-            Serial Loop
-        </div>
-        <div
-            style={{
-                border: `solid .1rem ${brandColors.lightGray}`
-            }}
-        >
-            <div
+        ></div>
+        <AddCallPopper>
+            <PlusIcon
                 style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexDirection: 'column'
+                    backgroundColor: brandColors.white,
+                    cursor: 'pointer',
+                    fill: brandColors.active,
+                    display: 'block'
                 }}
-            >
-                <div
-                    style={{
-                        backgroundColor: brandColors.lightGray,
-                        minHeight: '2.5rem',
-                        height: '100%',
-                        width: '.1rem'
-                    }}
-                ></div>
-                <AddCallPopper>
-                    <PlusIcon
-                        style={{
-                            backgroundColor: brandColors.white,
-                            cursor: 'pointer',
-                            fill: brandColors.active,
-                            display: 'block'
-                        }}
-                    />
-                </AddCallPopper>
-                <div
-                    style={{
-                        backgroundColor: brandColors.lightGray,
-                        minHeight: '2.5rem',
-                        height: '100%',
-                        width: '.1rem'
-                    }}
-                ></div>
-                <HasCall
-                    call={callSerialLoop!.run}
-                    parentOpRef={parentOpRef}
-                />
-                <div
-                    style={{
-                        backgroundColor: brandColors.lightGray,
-                        minHeight: '2.5rem',
-                        height: '100%',
-                        width: '.1rem'
-                    }}
-                ></div>
-                <AddCallPopper>
-                    <PlusIcon
-                        style={{
-                            backgroundColor: brandColors.white,
-                            cursor: 'pointer',
-                            fill: brandColors.active,
-                            display: 'block'
-                        }}
-                    />
-                </AddCallPopper>
-                <div
-                    style={{
-                        backgroundColor: brandColors.lightGray,
-                        minHeight: '2.5rem',
-                        height: '100%',
-                        width: '.1rem'
-                    }}
-                ></div>
-            </div>
-        </div>
-    </Fragment>
+            />
+        </AddCallPopper>
+        <div
+            style={{
+                backgroundColor: brandColors.lightGray,
+                minHeight: '2.5rem',
+                height: '100%',
+                width: '.1rem'
+            }}
+        ></div>
+        <HasCall
+            call={callSerialLoop!.run}
+            parentOpRef={parentOpRef}
+        />
+        <div
+            style={{
+                backgroundColor: brandColors.lightGray,
+                minHeight: '2.5rem',
+                height: '100%',
+                width: '.1rem'
+            }}
+        ></div>
+        <AddCallPopper>
+            <PlusIcon
+                style={{
+                    backgroundColor: brandColors.white,
+                    cursor: 'pointer',
+                    fill: brandColors.active,
+                    display: 'block'
+                }}
+            />
+        </AddCallPopper>
+        <div
+            style={{
+                backgroundColor: brandColors.lightGray,
+                minHeight: '2.5rem',
+                height: '100%',
+                width: '.1rem'
+            }}
+        ></div>
+    </div>

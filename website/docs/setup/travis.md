@@ -19,7 +19,7 @@ travis.yml
 language: generic
 sudo: required
 before_script:
-- curl -L https://github.com/opctl/opctl/releases/download/0.1.35/opctl0.1.35.linux.tgz | sudo tar -xzv -C /usr/local/bin
+- curl -L https://github.com/opctl/opctl/releases/download/0.1.36/opctl0.1.36.linux.tgz | sudo tar -xzv -C /usr/local/bin
 services:
 - docker
 script:

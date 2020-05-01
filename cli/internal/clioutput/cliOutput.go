@@ -4,30 +4,31 @@ package clioutput
 
 import (
 	"fmt"
-	"github.com/opctl/opctl/cli/internal/clicolorer"
-	"github.com/opctl/opctl/sdks/go/model"
 	"io"
 	"time"
+
+	"github.com/opctl/opctl/cli/internal/clicolorer"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 //CliOutput allows mocking/faking output
 //counterfeiter:generate -o fakes/cliOutput.go . CliOutput
 type CliOutput interface {
 	// outputs a msg requiring attention
-	Attention(format string, values ...interface{})
+	Attention(s string)
 
 	// outputs an error msg
-	Error(format string, values ...interface{})
+	Error(s string)
 
 	// outputs an event
 	// @TODO: not generic
 	Event(event *model.Event)
 
 	// outputs an info msg
-	Info(format string, values ...interface{})
+	Info(s string)
 
 	// outputs a success msg
-	Success(format string, values ...interface{})
+	Success(s string)
 }
 
 func New(
@@ -48,12 +49,22 @@ type _cliOutput struct {
 	stdWriter  io.Writer
 }
 
-func (this _cliOutput) Attention(format string, values ...interface{}) {
-	fmt.Fprintln(this.stdWriter, this.cliColorer.Attention(format, values...))
+func (this _cliOutput) Attention(s string) {
+	io.WriteString(
+		this.stdWriter,
+		fmt.Sprintln(
+			this.cliColorer.Attention(s),
+		),
+	)
 }
 
-func (this _cliOutput) Error(format string, values ...interface{}) {
-	fmt.Fprintln(this.errWriter, this.cliColorer.Error(format, values...))
+func (this _cliOutput) Error(s string) {
+	io.WriteString(
+		this.errWriter,
+		fmt.Sprintln(
+			this.cliColorer.Error(s),
+		),
+	)
 }
 
 func (this _cliOutput) Event(event *model.Event) {
@@ -77,38 +88,44 @@ func (this _cliOutput) Event(event *model.Event) {
 
 func (this _cliOutput) containerExited(event *model.Event) {
 	this.Info(
-		"ContainerExited Id='%v' OpRef='%v' ExitCode='%v' Timestamp='%v'\n",
-		event.ContainerExited.ContainerID,
-		event.ContainerExited.OpRef,
-		event.ContainerExited.ExitCode,
-		event.Timestamp.Format(time.RFC3339),
+		fmt.Sprintf(
+			"ContainerExited Id='%v' OpRef='%v' ExitCode='%v' Timestamp='%v'\n",
+			event.ContainerExited.ContainerID,
+			event.ContainerExited.OpRef,
+			event.ContainerExited.ExitCode,
+			event.Timestamp.Format(time.RFC3339),
+		),
 	)
 }
 
 func (this _cliOutput) containerStarted(event *model.Event) {
 	this.Info(
-		"ContainerStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-		event.ContainerStarted.ContainerID,
-		event.ContainerStarted.OpRef,
-		event.Timestamp.Format(time.RFC3339),
+		fmt.Sprintf(
+			"ContainerStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
+			event.ContainerStarted.ContainerID,
+			event.ContainerStarted.OpRef,
+			event.Timestamp.Format(time.RFC3339),
+		),
 	)
 }
 
 func (this _cliOutput) containerStdErrWrittenTo(event *model.Event) {
-	fmt.Fprint(this.errWriter, string(event.ContainerStdErrWrittenTo.Data))
+	io.WriteString(this.errWriter, string(event.ContainerStdErrWrittenTo.Data))
 }
 
 func (this _cliOutput) containerStdOutWrittenTo(event *model.Event) {
-	fmt.Fprint(this.stdWriter, string(event.ContainerStdOutWrittenTo.Data))
+	io.WriteString(this.stdWriter, string(event.ContainerStdOutWrittenTo.Data))
 }
 
 func (this _cliOutput) opErred(event *model.Event) {
 	this.Error(
-		"OpErred Id='%v' OpRef='%v' Timestamp='%v' Msg='%v'\n",
-		event.OpErred.OpID,
-		event.OpErred.OpRef,
-		event.Timestamp.Format(time.RFC3339),
-		event.OpErred.Msg,
+		fmt.Sprintf(
+			"OpErred Id='%v' OpRef='%v' Timestamp='%v' Msg='%v'\n",
+			event.OpErred.OpID,
+			event.OpErred.OpRef,
+			event.Timestamp.Format(time.RFC3339),
+			event.OpErred.Msg,
+		),
 	)
 }
 
@@ -132,17 +149,29 @@ func (this _cliOutput) opEnded(event *model.Event) {
 
 func (this _cliOutput) opStarted(event *model.Event) {
 	this.Info(
-		"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-		event.OpStarted.OpID,
-		event.OpStarted.OpRef,
-		event.Timestamp.Format(time.RFC3339),
+		fmt.Sprintf(
+			"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
+			event.OpStarted.OpID,
+			event.OpStarted.OpRef,
+			event.Timestamp.Format(time.RFC3339),
+		),
 	)
 }
 
-func (this _cliOutput) Info(format string, values ...interface{}) {
-	fmt.Fprintln(this.stdWriter, this.cliColorer.Info(format, values...))
+func (this _cliOutput) Info(s string) {
+	io.WriteString(
+		this.stdWriter,
+		fmt.Sprintln(
+			this.cliColorer.Info(s),
+		),
+	)
 }
 
-func (this _cliOutput) Success(format string, values ...interface{}) {
-	fmt.Fprintln(this.stdWriter, this.cliColorer.Success(format, values...))
+func (this _cliOutput) Success(s string) {
+	io.WriteString(
+		this.stdWriter,
+		fmt.Sprintln(
+			this.cliColorer.Success(s),
+		),
+	)
 }

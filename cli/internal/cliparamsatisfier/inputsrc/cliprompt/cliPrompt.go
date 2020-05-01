@@ -1,12 +1,14 @@
 package cliprompt
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/opctl/opctl/cli/internal/clicolorer"
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier/inputsrc"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/peterh/liner"
-	"os"
 )
 
 func New(
@@ -59,11 +61,16 @@ func (this cliPromptInputSrc) ReadString(
 		defer line.Close()
 		line.SetCtrlCAborts(true)
 
-		this.cliOutput.Attention(`
+		this.cliOutput.Attention(
+			fmt.Sprintf(`
 -
   Please provide "%v".
   Description: %v
--`, inputName, description)
+-`,
+				inputName,
+				description,
+			),
+		)
 
 		// liner has inconsistent behavior if non empty prompt arg passed so use ""
 		var (

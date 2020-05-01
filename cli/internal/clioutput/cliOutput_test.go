@@ -2,12 +2,13 @@ package clioutput
 
 import (
 	"fmt"
+	"time"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/clicolorer"
 	clicolorerFakes "github.com/opctl/opctl/cli/internal/clicolorer/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	"time"
 )
 
 var _ = Context("output", func() {
@@ -24,10 +25,13 @@ var _ = Context("output", func() {
 	_cliColorer := clicolorer.New()
 	Context("Attention", func() {
 		providedFormat := "dummyFormat %v %v"
-		providedValues := []interface{}{"v1", "v2"}
 		It("should call stdWriter w/ expected args", func() {
 			/* arrange */
-			expectedWriteArg := []byte(fmt.Sprintln(_cliColorer.Attention(providedFormat, providedValues...)))
+			expectedWriteArg := []byte(
+				fmt.Sprintln(
+					_cliColorer.Attention(providedFormat),
+				),
+			)
 
 			fakeStdWriter := new(fakeWriter)
 			objectUnderTest := New(
@@ -37,7 +41,7 @@ var _ = Context("output", func() {
 			)
 
 			/* act */
-			objectUnderTest.Attention(providedFormat, providedValues...)
+			objectUnderTest.Attention(providedFormat)
 
 			/* assert */
 			Expect(fakeStdWriter.WriteArgsForCall(0)).
@@ -46,10 +50,13 @@ var _ = Context("output", func() {
 	})
 	Context("Error", func() {
 		providedFormat := "dummyFormat %v %v"
-		providedValues := []interface{}{"v1", "v2"}
 		It("should call errWriter w/ expected args", func() {
 			/* arrange */
-			expectedWriteArg := []byte(fmt.Sprintln(_cliColorer.Error(providedFormat, providedValues...)))
+			expectedWriteArg := []byte(
+				fmt.Sprintln(
+					_cliColorer.Error(providedFormat),
+				),
+			)
 
 			fakeErrWriter := new(fakeWriter)
 			objectUnderTest := New(
@@ -59,7 +66,7 @@ var _ = Context("output", func() {
 			)
 
 			/* act */
-			objectUnderTest.Error(providedFormat, providedValues...)
+			objectUnderTest.Error(providedFormat)
 
 			/* assert */
 			Expect(fakeErrWriter.WriteArgsForCall(0)).
@@ -78,15 +85,19 @@ var _ = Context("output", func() {
 					},
 					Timestamp: time.Now(),
 				}
-				expectedWriteArg := []byte(fmt.Sprintln(
-					_cliColorer.Info(
-						"ContainerExited Id='%v' OpRef='%v' ExitCode='%v' Timestamp='%v'\n",
-						providedEvent.ContainerExited.ContainerID,
-						providedEvent.ContainerExited.OpRef,
-						providedEvent.ContainerExited.ExitCode,
-						providedEvent.Timestamp.Format(time.RFC3339),
+				expectedWriteArg := []byte(
+					fmt.Sprintln(
+						_cliColorer.Info(
+							fmt.Sprintf(
+								"ContainerExited Id='%v' OpRef='%v' ExitCode='%v' Timestamp='%v'\n",
+								providedEvent.ContainerExited.ContainerID,
+								providedEvent.ContainerExited.OpRef,
+								providedEvent.ContainerExited.ExitCode,
+								providedEvent.Timestamp.Format(time.RFC3339),
+							),
+						),
 					),
-				))
+				)
 
 				fakeStdWriter := new(fakeWriter)
 				objectUnderTest := New(
@@ -113,14 +124,18 @@ var _ = Context("output", func() {
 					},
 					Timestamp: time.Now(),
 				}
-				expectedWriteArg := []byte(fmt.Sprintln(
-					_cliColorer.Info(
-						"ContainerStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-						providedEvent.ContainerStarted.ContainerID,
-						providedEvent.ContainerStarted.OpRef,
-						providedEvent.Timestamp.Format(time.RFC3339),
+				expectedWriteArg := []byte(
+					fmt.Sprintln(
+						_cliColorer.Info(
+							fmt.Sprintf(
+								"ContainerStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
+								providedEvent.ContainerStarted.ContainerID,
+								providedEvent.ContainerStarted.OpRef,
+								providedEvent.Timestamp.Format(time.RFC3339),
+							),
+						),
 					),
-				))
+				)
 
 				fakeStdWriter := new(fakeWriter)
 				objectUnderTest := New(
@@ -146,7 +161,7 @@ var _ = Context("output", func() {
 					},
 					Timestamp: time.Now(),
 				}
-				expectedWriteArg := []byte(fmt.Sprint(string(providedEvent.ContainerStdErrWrittenTo.Data)))
+				expectedWriteArg := []byte(string(providedEvent.ContainerStdErrWrittenTo.Data))
 
 				fakeErrWriter := new(fakeWriter)
 				objectUnderTest := New(
@@ -172,7 +187,7 @@ var _ = Context("output", func() {
 					},
 					Timestamp: time.Now(),
 				}
-				expectedWriteArg := []byte(fmt.Sprint(string(providedEvent.ContainerStdOutWrittenTo.Data)))
+				expectedWriteArg := []byte(string(providedEvent.ContainerStdOutWrittenTo.Data))
 
 				fakeStdWriter := new(fakeWriter)
 				objectUnderTest := New(
@@ -200,15 +215,19 @@ var _ = Context("output", func() {
 					},
 					Timestamp: time.Now(),
 				}
-				expectedWriteArg := []byte(fmt.Sprintln(
-					_cliColorer.Error(
-						"OpErred Id='%v' OpRef='%v' Timestamp='%v' Msg='%v'\n",
-						providedEvent.OpErred.OpID,
-						providedEvent.OpErred.OpRef,
-						providedEvent.Timestamp.Format(time.RFC3339),
-						providedEvent.OpErred.Msg,
+				expectedWriteArg := []byte(
+					fmt.Sprintln(
+						_cliColorer.Error(
+							fmt.Sprintf(
+								"OpErred Id='%v' OpRef='%v' Timestamp='%v' Msg='%v'\n",
+								providedEvent.OpErred.OpID,
+								providedEvent.OpErred.OpRef,
+								providedEvent.Timestamp.Format(time.RFC3339),
+								providedEvent.OpErred.Msg,
+							),
+						),
 					),
-				))
+				)
 
 				fakeErrWriter := new(fakeWriter)
 				objectUnderTest := New(
@@ -237,15 +256,19 @@ var _ = Context("output", func() {
 						},
 						Timestamp: time.Now(),
 					}
-					expectedWriteArg := []byte(fmt.Sprintln(
-						_cliColorer.Success(
-							"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
-							providedEvent.OpEnded.OpID,
-							providedEvent.OpEnded.OpRef,
-							providedEvent.OpEnded.Outcome,
-							providedEvent.Timestamp.Format(time.RFC3339),
+					expectedWriteArg := []byte(
+						fmt.Sprintln(
+							_cliColorer.Success(
+								fmt.Sprintf(
+									"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
+									providedEvent.OpEnded.OpID,
+									providedEvent.OpEnded.OpRef,
+									providedEvent.OpEnded.Outcome,
+									providedEvent.Timestamp.Format(time.RFC3339),
+								),
+							),
 						),
-					))
+					)
 
 					fakeStdWriter := new(fakeWriter)
 					objectUnderTest := New(
@@ -273,15 +296,19 @@ var _ = Context("output", func() {
 						},
 						Timestamp: time.Now(),
 					}
-					expectedWriteArg := []byte(fmt.Sprintln(
-						_cliColorer.Info(
-							"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
-							providedEvent.OpEnded.OpID,
-							providedEvent.OpEnded.OpRef,
-							providedEvent.OpEnded.Outcome,
-							providedEvent.Timestamp.Format(time.RFC3339),
+					expectedWriteArg := []byte(
+						fmt.Sprintln(
+							_cliColorer.Info(
+								fmt.Sprintf(
+									"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
+									providedEvent.OpEnded.OpID,
+									providedEvent.OpEnded.OpRef,
+									providedEvent.OpEnded.Outcome,
+									providedEvent.Timestamp.Format(time.RFC3339),
+								),
+							),
 						),
-					))
+					)
 
 					fakeStdWriter := new(fakeWriter)
 					objectUnderTest := New(
@@ -309,15 +336,19 @@ var _ = Context("output", func() {
 						},
 						Timestamp: time.Now(),
 					}
-					expectedWriteArg := []byte(fmt.Sprintln(
-						_cliColorer.Error(
-							"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
-							providedEvent.OpEnded.OpID,
-							providedEvent.OpEnded.OpRef,
-							providedEvent.OpEnded.Outcome,
-							providedEvent.Timestamp.Format(time.RFC3339),
+					expectedWriteArg := []byte(
+						fmt.Sprintln(
+							_cliColorer.Error(
+								fmt.Sprintf(
+									"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
+									providedEvent.OpEnded.OpID,
+									providedEvent.OpEnded.OpRef,
+									providedEvent.OpEnded.Outcome,
+									providedEvent.Timestamp.Format(time.RFC3339),
+								),
+							),
 						),
-					))
+					)
 
 					fakeErrWriter := new(fakeWriter)
 					objectUnderTest := New(
@@ -345,14 +376,18 @@ var _ = Context("output", func() {
 					},
 					Timestamp: time.Now(),
 				}
-				expectedWriteArg := []byte(fmt.Sprintln(
-					_cliColorer.Info(
-						"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-						providedEvent.OpStarted.OpID,
-						providedEvent.OpStarted.OpRef,
-						providedEvent.Timestamp.Format(time.RFC3339),
+				expectedWriteArg := []byte(
+					fmt.Sprintln(
+						_cliColorer.Info(
+							fmt.Sprintf(
+								"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
+								providedEvent.OpStarted.OpID,
+								providedEvent.OpStarted.OpRef,
+								providedEvent.Timestamp.Format(time.RFC3339),
+							),
+						),
 					),
-				))
+				)
 
 				fakeStdWriter := new(fakeWriter)
 				objectUnderTest := New(
@@ -372,12 +407,13 @@ var _ = Context("output", func() {
 	})
 	Context("Info", func() {
 		providedFormat := "dummyFormat %v %v"
-		providedValues := []interface{}{"v1", "v2"}
 		It("should call stdWriter w/ expected args", func() {
 			/* arrange */
-			expectedWriteArg := []byte(fmt.Sprintln(
-				_cliColorer.Info(providedFormat, providedValues...),
-			))
+			expectedWriteArg := []byte(
+				fmt.Sprintln(
+					_cliColorer.Info(providedFormat),
+				),
+			)
 
 			fakeStdWriter := new(fakeWriter)
 			objectUnderTest := New(
@@ -387,7 +423,7 @@ var _ = Context("output", func() {
 			)
 
 			/* act */
-			objectUnderTest.Info(providedFormat, providedValues...)
+			objectUnderTest.Info(providedFormat)
 
 			/* assert */
 			Expect(fakeStdWriter.WriteArgsForCall(0)).
@@ -396,12 +432,13 @@ var _ = Context("output", func() {
 	})
 	Context("Success", func() {
 		providedFormat := "dummyFormat %v %v"
-		providedValues := []interface{}{"v1", "v2"}
 		It("should call stdWriter w/ expected args", func() {
 			/* arrange */
-			expectedWriteArg := []byte(fmt.Sprintln(
-				_cliColorer.Success(providedFormat, providedValues...),
-			))
+			expectedWriteArg := []byte(
+				fmt.Sprintln(
+					_cliColorer.Success(providedFormat),
+				),
+			)
 
 			fakeStdWriter := new(fakeWriter)
 			objectUnderTest := New(
@@ -411,7 +448,7 @@ var _ = Context("output", func() {
 			)
 
 			/* act */
-			objectUnderTest.Success(providedFormat, providedValues...)
+			objectUnderTest.Success(providedFormat)
 
 			/* assert */
 			Expect(fakeStdWriter.WriteArgsForCall(0)).

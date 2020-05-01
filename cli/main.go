@@ -12,7 +12,11 @@ func main() {
 	cliColorer := clicolorer.New()
 	defer func() {
 		if panicArg := recover(); panicArg != nil {
-			fmt.Println(cliColorer.Error("%v", panicArg))
+			fmt.Println(
+				cliColorer.Error(
+					fmt.Sprint(panicArg),
+				),
+			)
 			os.Exit(1)
 		}
 	}()

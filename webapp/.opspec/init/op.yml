@@ -5,15 +5,14 @@ inputs:
     dir:
       default: ..
 run:
-  serial:
-    - container:
-        cmd:
-          - sh
-          - -ce
-          - |
-            echo "installing deps"
-            yarn install -q
-        image: { ref: 'node:12.8.1-alpine' }
-        dirs:
-          /src: $(srcDir)
-        workDir: /src/webapp
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "installing deps"
+        yarn install -q
+    image: { ref: 'node:12.8.1-alpine' }
+    dirs:
+      /src: $(srcDir)
+    workDir: /src/webapp

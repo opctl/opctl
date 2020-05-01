@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 
+	"path/filepath"
+
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -75,7 +77,7 @@ var _ = Context("dataResolver", func() {
 				objectUnderTest.Resolve("dummyDataRef", &model.PullCreds{})
 
 				/* assert */
-				Expect(fakeData.NewFSProviderArgsForCall(0)).To(ConsistOf(workDir))
+				Expect(fakeData.NewFSProviderArgsForCall(0)).To(ConsistOf(filepath.Join(workDir, ".opspec"), workDir))
 			})
 			It("should call data.NewNodeProvider w/ expected args", func() {
 				/* arrange */

@@ -41,10 +41,10 @@ func newCli(
 	})
 
 	cli.Command(
-		"ls", "List operations (only opspec 0.1.6 compatible operations will be listed)", func(lsCmd *mow.Cmd) {
-			const DirRefArgName = "DIR_REF"
-			lsCmd.Spec = fmt.Sprintf("[%v]", DirRefArgName)
-			dirRef := lsCmd.StringArg(DirRefArgName, op.DotOpspecDirName, "Reference to dir ops will be listed from")
+		"ls", "List operations (only valid ops will be listed)", func(lsCmd *mow.Cmd) {
+			const dirRefArgName = "DIR_REF"
+			lsCmd.Spec = fmt.Sprintf("[%v]", dirRefArgName)
+			dirRef := lsCmd.StringArg(dirRefArgName, op.DotOpspecDirName, "Reference to dir ops will be listed from")
 			lsCmd.Action = func() {
 				core.Ls(context.TODO(), *dirRef)
 			}
@@ -53,7 +53,7 @@ func newCli(
 	cli.Command("node", "Manage nodes", func(nodeCmd *mow.Cmd) {
 
 		nodeCmd.Command("create", "Creates a node", func(createCmd *mow.Cmd) {
-			dataDir := createCmd.StringOpt("data-dir", "", "Path of dir used to store node data (since v0.1.25)")
+			dataDir := createCmd.StringOpt("data-dir", "", "Path of dir used to store node data")
 			if "" == *dataDir {
 				dataDir = nil
 			}
@@ -93,7 +93,7 @@ func newCli(
 			func(installCmd *mow.Cmd) {
 				defaultPath := fmt.Sprintf("%v/OP_REF", op.DotOpspecDirName)
 				path := installCmd.StringOpt("path", defaultPath, "Path the op will be installed at")
-				opRef := installCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path` (since v0.1.24))")
+				opRef := installCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 				username := installCmd.StringOpt("u username", "", "Username used to auth w/ the pkg source")
 				password := installCmd.StringOpt("p password", "", "Password used to auth w/ the pkg source")
 
@@ -116,7 +116,7 @@ func newCli(
 		opCmd.Command(
 			"validate", "Validates an op",
 			func(validateCmd *mow.Cmd) {
-				opRef := validateCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path` (since v0.1.24))")
+				opRef := validateCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
 				validateCmd.Action = func() {
 					core.Op().Validate(context.TODO(), *opRef)
@@ -128,7 +128,7 @@ func newCli(
 	cli.Command("run", "Start and wait on an op", func(runCmd *mow.Cmd) {
 		args := runCmd.StringsOpt("a", []string{}, "Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`")
 		argFile := runCmd.StringOpt("arg-file", filepath.Join(op.DotOpspecDirName, "args.yml"), "Read in a file of args in yml format")
-		opRef := runCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path` (since v0.1.24))")
+		opRef := runCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
 		runCmd.Action = func() {
 			core.Run(context.TODO(), *opRef, &model.RunOpts{Args: *args, ArgFile: *argFile})
@@ -136,9 +136,19 @@ func newCli(
 	})
 
 	cli.Command("self-update", "Update opctl", func(selfUpdateCmd *mow.Cmd) {
-		channel := selfUpdateCmd.StringOpt("c channel ", "stable", "Release channel to update from (either `stable`, `alpha`, or `beta`)")
+		channel := selfUpdateCmd.StringOpt("c channel", "stable", "Release channel to update from (either `stable`, `alpha`, or `beta`)")
 		selfUpdateCmd.Action = func() {
 			core.SelfUpdate(*channel)
+		}
+	})
+
+	cli.Command("ui", "Open the opctl web UI and mount a reference.", func(uiCmd *mow.Cmd) {
+		const mountRefArgName = "MOUNT_REF"
+		uiCmd.Spec = fmt.Sprintf("[%v]", mountRefArgName)
+		mountRefArg := uiCmd.StringArg(mountRefArgName, ".", "Reference to mount (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
+
+		uiCmd.Action = func() {
+			core.UI(*mountRefArg)
 		}
 	})
 

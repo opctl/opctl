@@ -486,4 +486,49 @@ var _ = Context("cli", func() {
 
 	})
 
+	Context("ui", func() {
+		Context("w/ mountRef", func() {
+
+			It("should call coreFakes.Ui w/ expected args", func() {
+				/* arrange */
+				fakeCore := new(coreFakes.FakeCore)
+
+				expectedDirRef := "dummyPath"
+				objectUnderTest := newCli(
+					new(cliColorerFakes.FakeCliColorer),
+					fakeCore,
+				)
+
+				/* act */
+				objectUnderTest.Run([]string{"opctl", "ui", expectedDirRef})
+
+				/* assert */
+				actualDirRef := fakeCore.UIArgsForCall(0)
+
+				Expect(actualDirRef).To(Equal(expectedDirRef))
+			})
+		})
+		Context("w/out mountRef", func() {
+
+			It("should call coreFakes.Ui w/ expected args", func() {
+				/* arrange */
+				fakeCore := new(coreFakes.FakeCore)
+
+				expectedDirRef := "."
+				objectUnderTest := newCli(
+					new(cliColorerFakes.FakeCliColorer),
+					fakeCore,
+				)
+
+				/* act */
+				objectUnderTest.Run([]string{"opctl", "ui"})
+
+				/* assert */
+				actualDirRef := fakeCore.UIArgsForCall(0)
+
+				Expect(actualDirRef).To(Equal(expectedDirRef))
+			})
+		})
+	})
+
 })

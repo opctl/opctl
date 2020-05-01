@@ -22,6 +22,7 @@ require (
 	github.com/peterh/liner v1.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7-0.20191104211043-6b2f3ee522b6
+	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 )
 
 replace github.com/opctl/opctl/sdks/go => ../sdks/go

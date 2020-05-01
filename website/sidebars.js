@@ -27,7 +27,7 @@ module.exports = {
             "run-a-react-app"
           ]
         },
-        "training/ui"
+        "training/visualization",
       ]
     },
     {
@@ -110,6 +110,7 @@ module.exports = {
             }
           ]
         },
+        'reference/ui',
         'reference/cli',
         {
           type: "category",

@@ -55,6 +55,11 @@ type FakeCore struct {
 	selfUpdateArgsForCall []struct {
 		arg1 string
 	}
+	UIStub        func(string)
+	uIMutex       sync.RWMutex
+	uIArgsForCall []struct {
+		arg1 string
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -290,6 +295,37 @@ func (fake *FakeCore) SelfUpdateArgsForCall(i int) string {
 	return argsForCall.arg1
 }
 
+func (fake *FakeCore) UI(arg1 string) {
+	fake.uIMutex.Lock()
+	fake.uIArgsForCall = append(fake.uIArgsForCall, struct {
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("UI", []interface{}{arg1})
+	fake.uIMutex.Unlock()
+	if fake.UIStub != nil {
+		fake.UIStub(arg1)
+	}
+}
+
+func (fake *FakeCore) UICallCount() int {
+	fake.uIMutex.RLock()
+	defer fake.uIMutex.RUnlock()
+	return len(fake.uIArgsForCall)
+}
+
+func (fake *FakeCore) UICalls(stub func(string)) {
+	fake.uIMutex.Lock()
+	defer fake.uIMutex.Unlock()
+	fake.UIStub = stub
+}
+
+func (fake *FakeCore) UIArgsForCall(i int) string {
+	fake.uIMutex.RLock()
+	defer fake.uIMutex.RUnlock()
+	argsForCall := fake.uIArgsForCall[i]
+	return argsForCall.arg1
+}
+
 func (fake *FakeCore) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -305,6 +341,8 @@ func (fake *FakeCore) Invocations() map[string][][]interface{} {
 	defer fake.runMutex.RUnlock()
 	fake.selfUpdateMutex.RLock()
 	defer fake.selfUpdateMutex.RUnlock()
+	fake.uIMutex.RLock()
+	defer fake.uIMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

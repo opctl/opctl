@@ -26,51 +26,54 @@ export default (
 
                 const rawFsEntries = await listFsEntries(mount)
 
-                const nextFsEntries = rawFsEntries.reduce(
-                    (fsEntries, rawFsEntry) => {
-                        const absoluteRawPath = path.join(mount, rawFsEntry.Path)
-                        const pathParts = absoluteRawPath.split("/")
-                        pathParts[0] = '/'
+                setFsEntries(
+                    // reduce (flat) rawFsEntries to tree structure
+                    rawFsEntries.reduce(
+                        (fsEntries, rawFsEntry) => {
+                            const absoluteRawPath = path.join(mount, rawFsEntry.Path)
+                            const pathParts = absoluteRawPath.split("/")
+                            if ('' === pathParts[0]) {
+                                pathParts[0] = '/'
+                            }
 
-                        let currentFsEntries = fsEntries
+                            let currentFsEntries = fsEntries
 
-                        // walk the parts
-                        pathParts.forEach(
-                            (pathPart, pathPartsIndex, pathPartsArray) => {
-                                let currentFsEntry = currentFsEntries.find(fsEntry => pathPart === fsEntry.name)
+                            // walk the parts
+                            pathParts.forEach(
+                                (pathPart, pathPartsIndex, pathPartsArray) => {
+                                    let currentFsEntry = currentFsEntries.find(fsEntry => pathPart === fsEntry.name)
 
-                                if (rawFsEntry.Size === 96 || pathPartsIndex + 1 !== pathPartsArray.length) {
-                                    // handle dir
-                                    // @TODO: replace this method of identifying dirs
-                                    if (!currentFsEntry) {
-                                        currentFsEntry = {
-                                            dir: [],
-                                            name: pathPart,
-                                            path: rawFsEntry.Path
+                                    if (rawFsEntry.Size === 96 || pathPartsIndex + 1 !== pathPartsArray.length) {
+                                        // handle dir
+                                        // @TODO: replace this method of identifying dirs
+                                        if (!currentFsEntry) {
+                                            currentFsEntry = {
+                                                dir: [],
+                                                name: pathPart,
+                                                path: '/' + pathPartsArray.slice(1, pathPartsIndex + 1).join('/')
+                                            }
+                                            currentFsEntries.push(currentFsEntry)
                                         }
-                                        currentFsEntries.push(currentFsEntry)
-                                    }
-                                    currentFsEntries = currentFsEntry.dir!
-                                } else {
-                                    // handle file
-                                    if (!currentFsEntry) {
-                                        currentFsEntry = {
-                                            file: '',
-                                            name: pathPart,
-                                            path: absoluteRawPath
+                                        currentFsEntries = currentFsEntry.dir!
+                                    } else {
+                                        // handle file
+                                        if (!currentFsEntry) {
+                                            currentFsEntry = {
+                                                file: '',
+                                                name: pathPart,
+                                                path: absoluteRawPath
+                                            }
+                                            currentFsEntries.push(currentFsEntry)
                                         }
-                                        currentFsEntries.push(currentFsEntry)
                                     }
                                 }
-                            }
-                        )
+                            )
 
-                        return fsEntries
-                    },
-                    [...fsEntries]
+                            return fsEntries
+                        },
+                        [] as FsEntry[]
+                    )
                 )
-
-                setFsEntries(nextFsEntries)
             }
 
             load()

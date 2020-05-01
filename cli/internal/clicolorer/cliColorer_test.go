@@ -18,60 +18,53 @@ var _ = Context("cliColorer", func() {
 			It("should cause calls to Attention() to not color string", func() {
 				/* arrange */
 				objectUnderTest := New()
-				providedFormatString := "%v"
-				providedValue1 := "dummyString"
-				expectedString := fmt.Sprintf(providedFormatString, providedValue1)
+				providedString := "providedString"
+				expectedString := providedString
 
 				/* act */
 				objectUnderTest.Disable()
 
 				/* assert */
-				Expect(objectUnderTest.Attention(providedFormatString, providedValue1)).To(Equal(expectedString))
+				Expect(objectUnderTest.Attention(providedString)).To(Equal(expectedString))
 			})
 		})
 		Context("Error", func() {
 			It("should cause calls to Error() to not color string", func() {
 				/* arrange */
 				objectUnderTest := New()
-				providedFormatString := "%v"
-				providedValue1 := "dummyString"
-				expectedString := fmt.Sprintf(providedFormatString, providedValue1)
+				providedString := "providedString"
 
 				/* act */
 				objectUnderTest.Disable()
 
 				/* assert */
-				Expect(objectUnderTest.Error(providedFormatString, providedValue1)).To(Equal(expectedString))
+				Expect(objectUnderTest.Error(providedString)).To(Equal(providedString))
 			})
 		})
 		Context("Info", func() {
 			It("should cause calls to Info() to not color string", func() {
 				/* arrange */
 				objectUnderTest := New()
-				providedFormatString := "%v"
-				providedValue1 := "dummyString"
-				expectedString := fmt.Sprintf(providedFormatString, providedValue1)
+				providedString := "providedString"
 
 				/* act */
 				objectUnderTest.Disable()
 
 				/* assert */
-				Expect(objectUnderTest.Info(providedFormatString, providedValue1)).To(Equal(expectedString))
+				Expect(objectUnderTest.Info(providedString)).To(Equal(providedString))
 			})
 		})
 		Context("Success", func() {
 			It("should cause calls to Success() to not color string", func() {
 				/* arrange */
 				objectUnderTest := New()
-				providedFormatString := "%v"
-				providedValue1 := "dummyString"
-				expectedString := fmt.Sprintf(providedFormatString, providedValue1)
+				providedString := "providedString"
 
 				/* act */
 				objectUnderTest.Disable()
 
 				/* assert */
-				Expect(objectUnderTest.Success(providedFormatString, providedValue1)).To(Equal(expectedString))
+				Expect(objectUnderTest.Success(providedString)).To(Equal(providedString))
 			})
 		})
 	})
@@ -79,12 +72,11 @@ var _ = Context("cliColorer", func() {
 		It("should return expected string", func() {
 			/* arrange */
 			objectUnderTest := New()
-			providedFormatString := "%v"
-			providedValue1 := "dummyString"
-			expectedString := fmt.Sprintf("\x1b[93;1m%s\x1b[0m", fmt.Sprintf(providedFormatString, providedValue1))
+			providedString := "providedString"
+			expectedString := fmt.Sprintf("\x1b[93;1m%s\x1b[0m", fmt.Sprint(providedString))
 
 			/* act */
-			actualString := objectUnderTest.Attention(providedFormatString, providedValue1)
+			actualString := objectUnderTest.Attention(providedString)
 
 			/* assert */
 			Expect(fmt.Sprintf("%+q", actualString)).To(Equal(fmt.Sprintf("%+q", expectedString)))
@@ -94,12 +86,11 @@ var _ = Context("cliColorer", func() {
 		It("should return expected string", func() {
 			/* arrange */
 			objectUnderTest := New()
-			providedFormatString := "%v"
-			providedValue1 := "dummyString"
-			expectedString := fmt.Sprintf("\x1b[91;1m%s\x1b[0m", fmt.Sprintf(providedFormatString, providedValue1))
+			providedString := "providedString"
+			expectedString := fmt.Sprintf("\x1b[91;1m%s\x1b[0m", fmt.Sprint(providedString))
 
 			/* act */
-			actualString := objectUnderTest.Error(providedFormatString, providedValue1)
+			actualString := objectUnderTest.Error(providedString)
 
 			/* assert */
 			Expect(fmt.Sprintf("%+q", actualString)).To(Equal(fmt.Sprintf("%+q", expectedString)))
@@ -109,12 +100,11 @@ var _ = Context("cliColorer", func() {
 		It("should return expected string", func() {
 			/* arrange */
 			objectUnderTest := New()
-			providedFormatString := "%v"
-			providedValue1 := "dummyString"
-			expectedString := fmt.Sprintf("\x1b[96;1m%s\x1b[0m", fmt.Sprintf(providedFormatString, providedValue1))
+			providedString := "providedString"
+			expectedString := fmt.Sprintf("\x1b[96;1m%s\x1b[0m", fmt.Sprint(providedString))
 
 			/* act */
-			actualString := objectUnderTest.Info(providedFormatString, providedValue1)
+			actualString := objectUnderTest.Info(providedString)
 
 			/* assert */
 			Expect(fmt.Sprintf("%+q", actualString)).To(Equal(fmt.Sprintf("%+q", expectedString)))
@@ -124,12 +114,11 @@ var _ = Context("cliColorer", func() {
 		It("should return expected string", func() {
 			/* arrange */
 			objectUnderTest := New()
-			providedFormatString := "%v"
-			providedValue1 := "dummyString"
-			expectedString := fmt.Sprintf("\x1b[92;1m%s\x1b[0m", fmt.Sprintf(providedFormatString, providedValue1))
+			providedString := "providedString"
+			expectedString := fmt.Sprintf("\x1b[92;1m%s\x1b[0m", providedString)
 
 			/* act */
-			actualString := objectUnderTest.Success(providedFormatString, providedValue1)
+			actualString := objectUnderTest.Success(providedString)
 
 			/* assert */
 			Expect(fmt.Sprintf("%+q", actualString)).To(Equal(fmt.Sprintf("%+q", expectedString)))

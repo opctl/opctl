@@ -5,6 +5,7 @@ package dataresolver
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 
 	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
@@ -55,7 +56,10 @@ func (dtr _dataResolver) Resolve(
 		return nil // support fake exiter
 	}
 
-	fsProvider := dtr.data.NewFSProvider(cwd)
+	fsProvider := dtr.data.NewFSProvider(
+		filepath.Join(cwd, ".opspec"),
+		cwd,
+	)
 
 	nodeHandle, createNodeIfNotExistsErr := dtr.nodeProvider.CreateNodeIfNotExists()
 	if nil != createNodeIfNotExistsErr {

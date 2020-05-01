@@ -13,27 +13,21 @@ type CliColorer interface {
 
 	// attention colors
 	Attention(
-		format string,
-		values ...interface{},
+		s string,
 	) string
 
 	// errors colors
 	Error(
-		format string,
-		values ...interface{},
+		s string,
 	) string
 
 	// info colors
 	Info(
-		format string,
-		values ...interface{},
+		s string,
 	) string
 
 	// success colors
-	Success(
-		format string,
-		values ...interface{},
-	) string
+	Success(s string) string
 }
 
 func New() CliColorer {
@@ -72,29 +66,25 @@ func (this *cliColorer) Disable() {
 }
 
 func (this cliColorer) Attention(
-	format string,
-	values ...interface{},
+	s string,
 ) string {
-	return this.attentionCliColorer.SprintfFunc()(format, values...)
+	return this.attentionCliColorer.SprintfFunc()(s)
 }
 
 func (this cliColorer) Error(
-	format string,
-	values ...interface{},
+	s string,
 ) string {
-	return this.errorCliColorer.SprintfFunc()(format, values...)
+	return this.errorCliColorer.SprintFunc()(s)
 }
 
 func (this cliColorer) Info(
-	format string,
-	values ...interface{},
+	s string,
 ) string {
-	return this.infoCliColorer.SprintfFunc()(format, values...)
+	return this.infoCliColorer.SprintFunc()(s)
 }
 
 func (this cliColorer) Success(
-	format string,
-	values ...interface{},
+	s string,
 ) string {
-	return this.successCliColorer.SprintfFunc()(format, values...)
+	return this.successCliColorer.SprintFunc()(s)
 }

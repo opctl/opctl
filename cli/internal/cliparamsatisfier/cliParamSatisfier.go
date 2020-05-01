@@ -189,11 +189,22 @@ func (this _CLIParamSatisfier) notifyOfArgErrors(
   %v invalid; provide valid value to proceed.
   Error(s):`, paramName),
 	)
+
 	for _, validationError := range errors {
-		messageBuffer.WriteString(fmt.Sprintf(`
-    - %v`, validationError.Error()))
+		messageBuffer.WriteString(
+			fmt.Sprintf(`
+	- %v`,
+				validationError.Error(),
+			),
+		)
 	}
-	this.cliOutput.Error(`
+
+	messageBuffer.WriteString(
+		fmt.Sprintf(`
 %v
--`, messageBuffer.String())
+-`,
+			messageBuffer.String(),
+		),
+	)
+	this.cliOutput.Error(messageBuffer.String())
 }

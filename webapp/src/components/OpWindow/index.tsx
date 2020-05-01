@@ -2,8 +2,9 @@ import React from 'react'
 import { Window } from '../WindowContext'
 import ReactEasyPanzoom from 'react-easy-panzoom'
 import CallHasOp from '../CallHasOp'
-import CallHasName from '../CallHasName'
+import CallHasSummary from '../CallHasSummary'
 import path from 'path'
+import brandColors from '../../brandColors'
 
 interface Props {
     window: Window
@@ -32,11 +33,15 @@ export default (
             <div
                 style={{
                     alignItems: 'center',
+                    //justifyContent: 'center',
                     display: 'flex',
-                    flexDirection: 'column'
+                    flexDirection: 'column',
+                    border: `solid .1rem ${brandColors.lightGray}`,
+                    marginLeft: '1rem',
+                    marginRight: '1rem'
                 }}
             >
-                <CallHasName
+                <CallHasSummary
                     call={call}
                 />
                 <CallHasOp

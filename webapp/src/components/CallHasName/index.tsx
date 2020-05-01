@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { Call } from '../HasCall'
-import brandColors from '../../brandColors'
 
 interface Props {
     call: Call
@@ -13,6 +12,10 @@ function getName(call: Call): string | null {
         return call.container.image?.ref || 'Container'
     } else if (call.op) {
         return call.op.ref || 'Op'
+    } else if (call.serialLoop) {
+        return 'Serial Loop'
+    } else if (call.parallelLoop) {
+        return 'Parallel Loop'
     }
     return null
 }
@@ -28,18 +31,8 @@ export default (
     }
 
     return (
-        <div
-            style={{
-                border: `solid .1rem ${brandColors.lightGray}`,
-                minWidth: '5rem',
-                textAlign: 'center',
-                padding: '0 .5rem',
-                margin: '0 .5rem'
-            }}
-        >
-            {
-                name
-            }
-        </div>
+        <Fragment>
+            {name}
+        </Fragment>
     )
 }
