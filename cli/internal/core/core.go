@@ -23,6 +23,7 @@ type Core interface {
 	Oper
 	Runer
 	SelfUpdater
+	UIer
 }
 
 // New returns initialized cli core
@@ -73,6 +74,11 @@ func New(
 			cliExiter,
 			nodeProvider,
 		),
+		UIer: newUIer(
+			cliExiter,
+			dataResolver,
+			nodeProvider,
+		),
 	}
 }
 
@@ -83,4 +89,5 @@ type _core struct {
 	Oper
 	Runer
 	SelfUpdater
+	UIer
 }

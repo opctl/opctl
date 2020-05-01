@@ -24,7 +24,7 @@ export default (
         : callOp.ref
 
     const [op, setOp] = useState(null as any)
- 
+
     useEffect(
         () => {
             const load = async () => {
@@ -60,75 +60,69 @@ export default (
     return (
         <div
             style={{
-                border: `solid .1rem ${brandColors.lightGray}`
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'column',
+                width: 'max-content',
+                minWidth: '100%',
+                minHeight: '100%',
             }}
         >
             <div
                 style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flexDirection: 'column',
-                    width: 'max-content',
-                    minWidth: '100%',
-                    minHeight: '100%',
+                    backgroundColor: brandColors.lightGray,
+                    minHeight: '2.5rem',
+                    height: '100%',
+                    width: '.1rem'
                 }}
-            >
-                <div
+            ></div>
+            <AddCallPopper>
+                <PlusIcon
                     style={{
-                        backgroundColor: brandColors.lightGray,
-                        minHeight: '2.5rem',
-                        height: '100%',
-                        width: '.1rem'
+                        backgroundColor: brandColors.white,
+                        cursor: 'pointer',
+                        fill: brandColors.active,
+                        display: 'block'
                     }}
-                ></div>
-                <AddCallPopper>
-                    <PlusIcon
-                        style={{
-                            backgroundColor: brandColors.white,
-                            cursor: 'pointer',
-                            fill: brandColors.active,
-                            display: 'block'
-                        }}
-                    />
-                </AddCallPopper>
-                <div
-                    style={{
-                        backgroundColor: brandColors.lightGray,
-                        height: '2.5rem',
-                        width: '.1rem'
-                    }}
-                ></div>
-                <HasCall
-                    call={op.run}
-                    parentOpRef={opRef}
                 />
-                <div
+            </AddCallPopper>
+            <div
+                style={{
+                    backgroundColor: brandColors.lightGray,
+                    height: '2.5rem',
+                    width: '.1rem'
+                }}
+            ></div>
+            <HasCall
+                call={op.run}
+                parentOpRef={opRef}
+            />
+            <div
+                style={{
+                    backgroundColor: brandColors.lightGray,
+                    height: '2.5rem',
+                    width: '.1rem'
+                }}
+            ></div>
+            <AddCallPopper>
+                <PlusIcon
                     style={{
-                        backgroundColor: brandColors.lightGray,
-                        height: '2.5rem',
-                        width: '.1rem'
+                        backgroundColor: brandColors.white,
+                        cursor: 'pointer',
+                        fill: brandColors.active,
+                        display: 'block'
                     }}
-                ></div>
-                <AddCallPopper>
-                    <PlusIcon
-                        style={{
-                            backgroundColor: brandColors.white,
-                            cursor: 'pointer',
-                            fill: brandColors.active,
-                            display: 'block'
-                        }}
-                    />
-                </AddCallPopper>
-                <div
-                    style={{
-                        backgroundColor: brandColors.lightGray,
-                        minHeight: '2.5rem',
-                        height: '100%',
-                        width: '.1rem'
-                    }}
-                ></div>
-            </div>
+                />
+            </AddCallPopper>
+            <div
+                style={{
+                    backgroundColor: brandColors.lightGray,
+                    minHeight: '2.5rem',
+                    height: '100%',
+                    width: '.1rem'
+                }}
+            ></div>
         </div>
     )
 }

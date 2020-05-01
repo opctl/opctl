@@ -1,4 +1,5 @@
-import React, { CSSProperties, Fragment, useContext, useState } from 'react'
+import React, { CSSProperties, Fragment, useContext, useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { ReactComponent as NotesIcon } from '../../icons/Notes.svg'
 import { ReactComponent as ArrowDownIcon } from '../../icons/ArrowDown.svg'
 import { ReactComponent as ArrowRightIcon } from '../../icons/ArrowRight.svg'
@@ -26,6 +27,21 @@ const FsHasEntry = (
 ) => {
     const [isOpen, setIsOpen] = useState(false)
     const { openWindow } = useContext(WindowContext)
+    const location = useLocation()
+    const urlSearchParams = new window.URLSearchParams(location.search)
+    const mount = urlSearchParams.get('mount')
+
+    useEffect(
+        () => {
+            if (mount && mount.length >= fsEntry.path.length) {
+                setIsOpen(true)
+            }
+        },
+        [
+            mount,
+            fsEntry
+        ]
+    )
 
     return (
         <div
@@ -104,7 +120,7 @@ const FsHasEntry = (
                         visibility: 'hidden',
                         flexShrink: 0,
                         cursor: 'pointer',
-                        fill: brandColors.active 
+                        fill: brandColors.active
                     }}
                 />
             </div>

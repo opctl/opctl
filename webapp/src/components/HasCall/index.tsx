@@ -3,8 +3,9 @@ import CallHasSerial from '../CallHasSerial'
 import CallHasParallel from '../CallHasParallel'
 import CallHasParallelLoop from '../CallHasParallelLoop'
 import CallHasSerialLoop from '../CallHasSerialLoop'
-import CallHasName from '../CallHasName'
 import CallHasOp from '../CallHasOp'
+import CallHasSummary from '../CallHasSummary'
+import brandColors from '../../brandColors'
 
 export interface PullCreds {
     username: string
@@ -128,11 +129,20 @@ export default (
             style={{
                 alignItems: 'center',
                 display: 'flex',
-                flexDirection: 'column'
+                justifyContent: 'center',
+                flexDirection: 'column',
+                ...!(call.container || call.serial || call.parallel)
+                    ? {
+                        border: `solid .1rem ${brandColors.lightGray}`
+                    }
+                    : null,
+                marginLeft: '1rem',
+                marginRight: '1rem'
             }}
         >
-            <CallHasName
+            <CallHasSummary
                 call={call}
+                parentOpRef={parentOpRef}
             />
             {callComponent}
         </div>

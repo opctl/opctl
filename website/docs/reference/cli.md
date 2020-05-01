@@ -7,7 +7,7 @@ sidebar_label: CLI
 
 ### Options
 
-#### `--no-color` (since v0.1.15)
+#### `--no-color`
 
 To disable color, include a `--no-color` flag w/ your
 command.
@@ -45,7 +45,7 @@ listen to node events.
 ### Examples
 
 #### Event Replay
-Events are persisted to disk and can be replayed (since v0.1.15).
+Events are persisted to disk and can be replayed.
 > events are not held across node restarts; any time a node starts it
 > clears its event db.
 
@@ -84,9 +84,9 @@ List ops in a directory.
 
 ### Arguments
 
-#### `DIR_REF` *default: `.opspec`* (since v0.1.24)
+#### `DIR_REF` *default: `.opspec`*
 
-Reference to dir ops will be listed from (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path` (since v0.1.24))
+Reference to dir ops will be listed from (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)
 
 ### Examples
 
@@ -116,7 +116,7 @@ Start and wait on an op
 
 #### `OP_REF`
 
-Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path` (since v0.1.24))
+Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)
 
 ### Options
 
@@ -124,7 +124,7 @@ Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (si
 
 Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`
 
-#### `--arg-file` *default: `.opspec/args.yml`* (since v0.1.19)
+#### `--arg-file` *default: `.opspec/args.yml`*
 
 Read in a file of args in yml format
 
@@ -158,7 +158,7 @@ password.
 Input sources are checked according to the following precedence:
 
 - arg provided via `-a` option
-- arg file (since v0.1.19)
+- arg file
 - env var
 - default
 - prompt
@@ -183,7 +183,7 @@ example:
 -
 ```
 
-##### validation (since v0.1.15)
+##### validation
 
 When inputs don't meet constraints, the cli will (re)prompt for the
 input until a satisfactory value is obtained.
@@ -196,7 +196,7 @@ input until a satisfactory value is obtained.
 
 All pulled image layers will be cached
 
-###### image updates (since v0.1.22)
+###### image updates
 
 Prior to container creation, updates to the referenced image will be
 pulled and applied.
@@ -215,13 +215,7 @@ network.
 
 Containers will be removed as they exit.
 
----
-id: commands-self-update
-title: self-update
-sidebar_label: self-update
----
-
-## `opctl node create` (since v0.1.15)
+## `opctl node create`
 
 Create an in-process node which inherits current
 stderr/stdout/stdin/PGId (process group id) and blocks until killed.
@@ -230,7 +224,7 @@ stderr/stdout/stdin/PGId (process group id) and blocks until killed.
 
 ### Options
 
-#### `--data-dir` (since v0.1.25)
+#### `--data-dir`
 Path of dir used to store node data
 
 ### Notes
@@ -259,11 +253,11 @@ During creation, `DATA_DIR` will be
 cleaned of any existing events, ops, and temp files/dirs to ensure
 the created node starts from a clean slate.
 
-## `opctl node kill` (since v0.1.15)
+## `opctl node kill`
 
 Kill the running node.
 
-## `opctl op create [OPTIONS] NAME` (since v0.1.15)
+## `opctl op create [OPTIONS] NAME`
 
 Creates an op
 
@@ -286,7 +280,7 @@ Path to create the op at
 opctl op create -d "my awesome op description" --path some/path my-awesome-op-name
 ```
 
-## `op install [OPTIONS] OP_REF` (since v0.1.19)
+## `op install [OPTIONS] OP_REF`
 
 Installs an op
 
@@ -294,8 +288,7 @@ Installs an op
 
 #### `OP_REF`
 
-Op reference (`host/path/repo#tag`, or `host/path/repo#tag/path`
-(since v0.1.24))
+Op reference (`host/path/repo#tag`, or `host/path/repo#tag/path`)
 
 ### Options
 
@@ -327,7 +320,7 @@ password.
 > in non-interactive terminals, the cli will note that it can't prompt
 > and exit with a non zero exit code.
 
-## `op kill OP_ID` (since v0.1.15)
+## `op kill OP_ID`
 
 Kill an op. 
 
@@ -336,7 +329,7 @@ Kill an op.
 #### `OP_ID`
 Id of the op to kill
 
-## `op validate OP_REF` (since v0.1.15)
+## `op validate OP_REF`
 
 Validates an op according to:
 
@@ -348,9 +341,7 @@ Validates an op according to:
 
 #### `OP_REF`
 
-Op reference (either `relative/path`, `/absolute/path`,
-`host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path`
-(since v0.1.24))
+Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`).
 
 ### Examples
 
@@ -362,11 +353,9 @@ opctl op validate myop
 
 #### op source username/password prompt
 
-If auth w/ the op source fails the cli will (re)prompt for username &
-password.
+If auth w/ the op source fails the cli will (re)prompt for username & password.
 
-> in non-interactive terminals, the cli will note that it can't prompt
-> and exit with a non zero exit code.
+> in non-interactive terminals, the cli will note that it can't prompt and exit with a non zero exit code.
 
 ## `opctl self-update [OPTIONS]`
 
@@ -401,4 +390,25 @@ play times over; switch back to latest stable release
 ```sh
 opctl self-update
 # output: Updated to new version: 0.1.24!
+```
+
+## `ui [MOUNT_REF]`
+
+Opens the opctl web UI to the current working directory.
+
+### Arguments
+
+#### `MOUNT_REF` *default: `.`*
+Reference to mount (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`).
+
+### Examples
+
+Open web UI to current working directory
+```sh
+opctl ui
+```
+
+Open web UI to remote op (github.com/opspec-pkgs/_.op.create#3.3.1)
+```sh
+opctl ui github.com/opspec-pkgs/_.op.create#3.3.1
 ```

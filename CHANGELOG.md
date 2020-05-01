@@ -6,6 +6,13 @@ accordance with
 
 ## [Unreleased]
 
+### Added
+
+- [ui subcommand to open webui](https://github.com/opctl/opctl/issues/758)
+- render op icons in UI
+- automatically expand mount ancestors in UI
+- call summary layout improvements in UI
+
 ## 0.1.35 - 2020-04-29
 
 ### Changed
