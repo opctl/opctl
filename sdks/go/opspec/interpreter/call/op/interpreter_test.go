@@ -139,7 +139,8 @@ var _ = Context("Interpreter", func() {
 			)
 
 			/* assert */
-			Expect(fakeData.NewFSProviderArgsForCall(0)).To(ConsistOf(filepath.Dir(providedOpPath)))
+			Expect(fakeData.NewFSProviderArgsForCall(0)).
+				To(ConsistOf(providedOpPath, filepath.Dir(providedOpPath)))
 		})
 		Context("scgOpCall.PullCreds is nil", func() {
 			It("should call data.NewGitProvider w/ expected args", func() {
