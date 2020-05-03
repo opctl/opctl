@@ -2,10 +2,12 @@ package opspec
 
 import (
 	"context"
+	"fmt"
+	"path/filepath"
+
 	"github.com/golang-interfaces/iioutil"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
-	"path/filepath"
 )
 
 //counterfeiter:generate -o fakes/lister.go . Lister
@@ -46,23 +48,23 @@ func (ls _lister) List(
 
 			opFileReader, err := dirHandle.GetContent(ctx, content.Path)
 			if nil != err {
-				// ignore errors for now;
-				continue
+				return nil, fmt.Errorf("error opening %s%s; %s", dirHandle.Ref(), content.Path, err)
 			}
 
 			opFileBytes, err := ls.ioUtil.ReadAll(opFileReader)
 			opFileReader.Close()
 			if nil != err {
-				// ignore errors for now;
-				continue
+				return nil, fmt.Errorf("error reading %s%s; %s", dirHandle.Ref(), content.Path, err)
 			}
 
-			if opFile, err := ls.opFileUnmarshaller.Unmarshal(
+			opFile, err := ls.opFileUnmarshaller.Unmarshal(
 				opFileBytes,
-			); nil == err {
-				// ignore invalid ops
-				ops = append(ops, opFile)
+			)
+			if nil != err {
+				return nil, fmt.Errorf("error unmarshalling %s%s; %s", dirHandle.Ref(), content.Path, err)
 			}
+
+			ops = append(ops, opFile)
 		}
 
 	}

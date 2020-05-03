@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -55,6 +56,8 @@ var _ = Context("Installer", func() {
 			providedCtx := context.Background()
 			providedPath := "dummyPath"
 
+			providedPkgRef := "providedPkgRef"
+
 			fakeHandle := new(FakeDataHandle)
 
 			fakeDataResolver := new(dataresolver.Fake)
@@ -71,7 +74,7 @@ var _ = Context("Installer", func() {
 			objectUnderTest.Install(
 				providedCtx,
 				providedPath,
-				"dummyPkgRef",
+				providedPkgRef,
 				"dummyUsername",
 				"dummyPassword",
 			)
@@ -82,7 +85,7 @@ var _ = Context("Installer", func() {
 				actualHandle := fakeInstaller.InstallArgsForCall(0)
 
 			Expect(actualContext).To(Equal(providedCtx))
-			Expect(actualPath).To(Equal(providedPath))
+			Expect(actualPath).To(Equal(filepath.Join(providedPath, providedPkgRef)))
 			Expect(actualHandle).To(Equal(fakeHandle))
 		})
 		Context("pkg.Install errs", func() {

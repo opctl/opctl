@@ -3,6 +3,7 @@ package opspec
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -95,7 +96,12 @@ var _ = Context("Lister", func() {
 						It("should return expected result", func() {
 							/* arrange */
 							providedDirHandle := new(modelFakes.FakeDataHandle)
-							providedDirHandle.ListDescendantsReturns([]*model.DirEntry{{}}, nil)
+
+							expectedRef := "expectedRef"
+							providedDirHandle.RefReturns(expectedRef)
+
+							expectedPath := "op.yml"
+							providedDirHandle.ListDescendantsReturns([]*model.DirEntry{{Path: expectedPath}}, nil)
 
 							getContentErr := errors.New("getContentErr")
 							providedDirHandle.GetContentReturns(nil, getContentErr)
@@ -110,7 +116,8 @@ var _ = Context("Lister", func() {
 
 							/* assert */
 							Expect(actualOpYmls).To(BeEmpty())
-							Expect(actualErr).To(BeNil())
+							Expect(actualErr).
+								To(Equal(fmt.Errorf("error opening %s%s; %s", expectedRef, expectedPath, getContentErr)))
 						})
 					})
 				})

@@ -3,6 +3,7 @@ package op
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/opctl/opctl/cli/internal/cliexiter"
@@ -68,7 +69,7 @@ func (ivkr _installer) Install(
 
 	if err := ivkr.opInstaller.Install(
 		ctx,
-		path,
+		filepath.Join(path, pkgRef),
 		opDirHandle,
 	); nil != err {
 		ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
