@@ -6,6 +6,9 @@ accordance with
 
 ## [Unreleased]
 
+## Changed
+- [Make opctl ls error if invalid ops are encountered](https://github.com/opctl/opctl/issues/708)
+
 ## Fixed
 
 - [Nested ops can't be referenced using relative path](https://github.com/opctl/opctl/issues/762)

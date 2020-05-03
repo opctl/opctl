@@ -91,16 +91,12 @@ func newCli(
 		opCmd.Command(
 			"install", "Installs an op",
 			func(installCmd *mow.Cmd) {
-				defaultPath := fmt.Sprintf("%v/OP_REF", op.DotOpspecDirName)
-				path := installCmd.StringOpt("path", defaultPath, "Path the op will be installed at")
+				path := installCmd.StringOpt("path", op.DotOpspecDirName, "Path the op will be installed at")
 				opRef := installCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 				username := installCmd.StringOpt("u username", "", "Username used to auth w/ the pkg source")
 				password := installCmd.StringOpt("p password", "", "Password used to auth w/ the pkg source")
 
 				installCmd.Action = func() {
-					if *path == defaultPath {
-						*path = filepath.Join(op.DotOpspecDirName, *opRef)
-					}
 					core.Op().Install(context.TODO(), *path, *opRef, *username, *password)
 				}
 			})
