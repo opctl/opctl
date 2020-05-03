@@ -2,6 +2,8 @@ package op
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
@@ -45,9 +47,19 @@ func (ivkr _installer) Install(
 	username,
 	password string,
 ) {
+	// install the whole pkg in case relative (intra pkg) refs exist
+	opRefParts := strings.SplitN(opRef, "#", 2)
+	var pkgRef string
+	if len(opRefParts) == 1 {
+		pkgRef = opRefParts[0]
+	} else {
+		if verAndPathParts := strings.SplitN(opRefParts[1], "/", 2); len(verAndPathParts) != 1 {
+			pkgRef = fmt.Sprintf("%s#%s", opRefParts[0], verAndPathParts[0])
+		}
+	}
 
 	opDirHandle := ivkr.dataResolver.Resolve(
-		opRef,
+		pkgRef,
 		&model.PullCreds{
 			Username: username,
 			Password: password,

@@ -9,6 +9,7 @@ accordance with
 ## Fixed
 
 - [Nested ops can't be referenced using relative path](https://github.com/opctl/opctl/issues/762)
+- [Inconsistent behavior when running locally installed vs remotely referenced ops.](https://github.com/opctl/opctl/issues/732)
 
 ## 0.1.37 - 2020-05-03
 
