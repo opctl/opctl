@@ -80,7 +80,7 @@ Events are streamed in realtime as they occur. They can be streamed in parallel 
 
 ## `opctl ls [DIR_REF]`
 
-List ops in a directory.
+List ops in a local or remote directory.
 
 ### Arguments
 
@@ -394,7 +394,7 @@ opctl self-update
 
 ## `ui [MOUNT_REF]`
 
-Opens the opctl web UI to the current working directory.
+Opens the opctl web UI and mounts a reference.
 
 ### Arguments
 

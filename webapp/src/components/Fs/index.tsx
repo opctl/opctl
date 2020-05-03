@@ -50,7 +50,7 @@ export default (
                                             currentFsEntry = {
                                                 dir: [],
                                                 name: pathPart,
-                                                path: '/' + pathPartsArray.slice(1, pathPartsIndex + 1).join('/')
+                                                path: path.normalize(pathPartsArray.slice(0,pathPartsIndex + 1).join('/'))
                                             }
                                             currentFsEntries.push(currentFsEntry)
                                         }
