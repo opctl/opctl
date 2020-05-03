@@ -41,20 +41,9 @@ func (fp _fs) TryResolve(
 
 	for _, basePath := range fp.basePaths {
 
-		// attempt to resolve from basePath/.opspec dir
-		testPath := filepath.Join(basePath, provider.DotOpspecDirName, dataRef)
-		_, err := fp.os.Stat(testPath)
-		if err == nil {
-			return newHandle(testPath), nil
-		}
-		if nil != err && !os.IsNotExist(err) {
-			// return actual errors
-			return nil, err
-		}
-
 		// attempt to resolve from basePath
-		testPath = filepath.Join(basePath, dataRef)
-		_, err = fp.os.Stat(testPath)
+		testPath := filepath.Join(basePath, dataRef)
+		_, err := fp.os.Stat(testPath)
 		if err == nil {
 			return newHandle(testPath), nil
 		}

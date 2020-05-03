@@ -98,7 +98,7 @@ func (itp _interpreter) Interpret(
 		opHandle, err := itp.data.Resolve(
 			context.TODO(),
 			scgOpCall.Ref,
-			itp.data.NewFSProvider(filepath.Dir(parentOpPath)),
+			itp.data.NewFSProvider(parentOpPath, filepath.Dir(parentOpPath)),
 			itp.data.NewGitProvider(itp.dataCachePath, pkgPullCreds),
 		)
 		if nil != err {

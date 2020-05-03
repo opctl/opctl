@@ -6,6 +6,10 @@ accordance with
 
 ## [Unreleased]
 
+## Fixed
+
+- [Nested ops can't be referenced using relative path](https://github.com/opctl/opctl/issues/762)
+
 ## 0.1.37 - 2020-05-03
 
 ### Added
@@ -19,6 +23,7 @@ accordance with
 ## 0.1.35 - 2020-04-29
 
 ### Changed
+
 - [Stop logging "Replaying from value pointer: {Fid:0 Len:0 Offset:0}"](https://github.com/opctl/opctl/issues/754)
 
 ## 0.1.34 - 2020-04-23
