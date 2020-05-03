@@ -3,6 +3,7 @@ package op
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -18,7 +19,8 @@ var _ = Context("Installer", func() {
 	Context("Install", func() {
 		It("should call dataResolver w/ expected args", func() {
 			/* arrange */
-			providedPkgRef := "dummyPkgRef"
+			providedPkgRef := "providedPkgRef#0.0.0"
+			providedOpRef := fmt.Sprintf("%s/subpath", providedPkgRef)
 			providedPullCreds := &model.PullCreds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",
@@ -36,7 +38,7 @@ var _ = Context("Installer", func() {
 			objectUnderTest.Install(
 				context.Background(),
 				"dummyPath",
-				providedPkgRef,
+				providedOpRef,
 				providedPullCreds.Username,
 				providedPullCreds.Password,
 			)
