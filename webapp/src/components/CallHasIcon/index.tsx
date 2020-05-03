@@ -52,7 +52,7 @@ export default (
         <img
             src={url}
             alt={'icon'}
-            style={{ height: '3rem', width: '3rem', marginRight: '.5rem' }}
+            style={{ height: '2.8rem', width: '2.8rem', marginRight: '.5rem' }}
         />
     )
 }

@@ -6,12 +6,15 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.37 - 2020-05-03
+
 ### Added
 
 - [ui subcommand to open webui](https://github.com/opctl/opctl/issues/758)
-- render op icons in UI
-- automatically expand mount ancestors in UI
-- call summary layout improvements in UI
+- Render op icons in UI
+- Automatically expand mount ancestors in explorer UI
+- Make call bounding box extend from call summary rather than start below in UI
+- Remove extraneous lines extending from top and bottom of parallel call in UI
 
 ## 0.1.35 - 2020-04-29
 

@@ -4,7 +4,7 @@ title: Visualization
 
 ## Local Op
 1. Open a terminal and `cd` to any directory that contains ops somewhere in it's subtree.
-1. Use the [opctl ui subcommand](../reference/ui.md#ui) to open the web UI to the current directory.
+1. Use the [opctl ui subcommand](../reference/cli.md#ui-mount_ref) to open the web UI to the current directory.
    ```sh
    opctl ui
    ```
@@ -13,7 +13,7 @@ title: Visualization
 
 ## Remote Op
 1. Open a terminal and `cd` to a location that has some ops.
-1. Use the [opctl ui subcommand](../reference/ui.md#ui) to open the web UI to the remote git tag [github.com/opspec-pkgs/_.op.create#3.3.1](https://github.com/opspec-pkgs/_.op.create/tree/3.3.1).
+1. Use the [opctl ui subcommand](../reference/cli.md#ui-mount_ref) to open the web UI to the remote git tag [github.com/opspec-pkgs/_.op.create#3.3.1](https://github.com/opspec-pkgs/_.op.create/tree/3.3.1).
    ```sh
    opctl ui github.com/opspec-pkgs/_.op.create#3.3.1
    ```

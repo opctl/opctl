@@ -34,15 +34,15 @@ export default (
                 style={{
                     // https://stackoverflow.com/questions/29503227/how-to-make-flexbox-items-the-same-size
                     display: 'grid',
-                    gridTemplateColumns: `repeat(${spliced.length},1fr)`,
-                    borderTop: `solid .1rem ${brandColors.lightGray}`,
-                    borderBottom: `solid .1rem ${brandColors.lightGray}`
+                    gridTemplateColumns: `repeat(${spliced.length},1fr)`
                 }}
             >
                 {
                     spliced.map(
                         (childCall, index) => {
                             const isDummyCall = !(childCall.container || childCall.op || childCall.parallel || childCall.serial)
+                            const isFirst = index === 0
+                            const isLast = index + 1 === spliced.length
 
                             return (
                                 <div
@@ -50,9 +50,35 @@ export default (
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        flexDirection: 'column'
+                                        flexDirection: 'column',
+                                        position: 'relative'
                                     }}
                                 >
+                                    <div
+                                        style={{
+                                            ...!(isFirst || isLast)
+                                                ? {
+                                                    width: '100%'
+                                                }
+                                                : null,
+                                            ...isFirst
+                                                ? {
+                                                    right: 0,
+                                                    width: '50%'
+                                                }
+                                                : null,
+                                            ...isLast
+                                                ? {
+                                                    left: 0,
+                                                    width: '50%'
+                                                }
+                                                : null,
+                                            position: 'absolute',
+                                            top: 0,
+                                            height: '.1rem',
+                                            backgroundColor: brandColors.lightGray
+                                        }}
+                                    ></div>
                                     <div
                                         style={{
                                             backgroundColor: brandColors.lightGray,
@@ -116,6 +142,31 @@ export default (
                                                 ></div>
                                             </Fragment>
                                     }
+                                    <div
+                                        style={{
+                                            ...!(isFirst || isLast)
+                                                ? {
+                                                    width: '100%'
+                                                }
+                                                : null,
+                                            ...isFirst
+                                                ? {
+                                                    right: 0,
+                                                    width: '50%'
+                                                }
+                                                : null,
+                                            ...isLast
+                                                ? {
+                                                    left: 0,
+                                                    width: '50%'
+                                                }
+                                                : null,
+                                            position: 'absolute',
+                                            bottom: 0,
+                                            height: '.1rem',
+                                            backgroundColor: brandColors.lightGray
+                                        }}
+                                    ></div>
                                 </div>
                             )
                         }
