@@ -6,11 +6,14 @@ accordance with
 
 ## [Unreleased]
 
-## Changed
+## 0.1.38 - 2020-05-03
+
+### Changed
+
 - [Make opctl ls error if invalid ops are encountered](https://github.com/opctl/opctl/issues/708)
 - [Return ref instead of name from opctl ls](https://github.com/opctl/opctl/issues/634)
 
-## Fixed
+### Fixed
 
 - [Nested ops can't be referenced using relative path](https://github.com/opctl/opctl/issues/762)
 - [Inconsistent behavior when running locally installed vs remotely referenced ops.](https://github.com/opctl/opctl/issues/732)
