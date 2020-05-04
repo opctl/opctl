@@ -8,6 +8,7 @@ accordance with
 
 ## Changed
 - [Make opctl ls error if invalid ops are encountered](https://github.com/opctl/opctl/issues/708)
+- [Return ref instead of name from opctl ls](https://github.com/opctl/opctl/issues/634)
 
 ## Fixed
 

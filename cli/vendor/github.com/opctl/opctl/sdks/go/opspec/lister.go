@@ -12,11 +12,11 @@ import (
 
 //counterfeiter:generate -o fakes/lister.go . Lister
 type Lister interface {
-	// List recursively lists ops within a directory
+	// List recursively lists ops within a directory, returning discovered op files by path.
 	List(
 		ctx context.Context,
 		dirHandle model.DataHandle,
-	) ([]*model.OpFile, error)
+	) (map[string]*model.OpFile, error)
 }
 
 // NewLister returns an initialized Lister instance
@@ -35,14 +35,14 @@ type _lister struct {
 func (ls _lister) List(
 	ctx context.Context,
 	dirHandle model.DataHandle,
-) ([]*model.OpFile, error) {
+) (map[string]*model.OpFile, error) {
 
 	contents, err := dirHandle.ListDescendants(ctx)
 	if nil != err {
 		return nil, err
 	}
 
-	var ops []*model.OpFile
+	opsByPath := map[string]*model.OpFile{}
 	for _, content := range contents {
 		if filepath.Base(content.Path) == opfile.FileName {
 
@@ -64,10 +64,10 @@ func (ls _lister) List(
 				return nil, fmt.Errorf("error unmarshalling %s%s; %s", dirHandle.Ref(), content.Path, err)
 			}
 
-			ops = append(ops, opFile)
+			opsByPath[filepath.Dir(content.Path)] = opFile
 		}
 
 	}
 
-	return ops, nil
+	return opsByPath, nil
 }
