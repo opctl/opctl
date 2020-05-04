@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"path"
 	"runtime"
 	"time"
 
@@ -19,7 +18,8 @@ NewBadgerDBEventStore returns an EventStore implementation leveraging [Badger DB
 func NewBadgerDBEventStore(
 	eventDbFilePath string,
 ) EventStore {
-	eventDbDirPath := path.Dir(eventDbFilePath)
+	eventDbDirPath := eventDbFilePath
+
 	err := os.MkdirAll(eventDbDirPath, 0700)
 	if nil != err {
 		panic(err)
