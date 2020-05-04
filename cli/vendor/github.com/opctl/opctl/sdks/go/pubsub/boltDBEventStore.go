@@ -3,7 +3,6 @@ package pubsub
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/boltdb/bolt"
 	"github.com/opctl/opctl/sdks/go/model"
 	"os"
@@ -18,13 +17,7 @@ NewBoltDBEventStore returns an EventStore implementation leveraging [Bolt DB](ht
 func NewBoltDBEventStore(
 	eventDbFilePath string,
 ) EventStore {
-	// clear previous data
-	err := os.RemoveAll(eventDbFilePath)
-	if nil != err {
-		panic(fmt.Sprintf("Unable to cleanup event db %s; %s", eventDbFilePath, err))
-	}
-
-	err = os.MkdirAll(path.Dir(eventDbFilePath), 0700)
+	err := os.MkdirAll(path.Dir(eventDbFilePath), 0700)
 	if nil != err {
 		panic(err)
 	}

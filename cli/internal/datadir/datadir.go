@@ -89,7 +89,7 @@ func (dd _datadir) Path() string {
 }
 
 func (dd _datadir) EventDBPath() string {
-	return filepath.Join(dd.resolvedPath, "dcg", "event.db")
+	return filepath.Join(dd.resolvedPath, "dcg", "events")
 }
 
 func (dd _datadir) InitAndLock() error {

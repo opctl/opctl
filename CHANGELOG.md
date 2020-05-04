@@ -6,6 +6,12 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.39 - 2020-05-04
+
+### Fixed
+
+- ["manifest has unsupported version: 4" errors on newer versions of opctl](https://github.com/opctl/opctl/issues/768)
+
 ## 0.1.38 - 2020-05-03
 
 ### Changed
