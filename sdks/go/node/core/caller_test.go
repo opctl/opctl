@@ -287,7 +287,7 @@ var _ = Context("caller", func() {
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
 				providedSCG := &model.SCG{
-					Parallel: []*model.SCG{
+					Parallel: &[]*model.SCG{
 						{Container: &model.SCGContainerCall{}},
 					},
 				}
@@ -334,7 +334,7 @@ var _ = Context("caller", func() {
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 				Expect(actualOpPath).To(Equal(providedOpPath))
-				Expect(actualSCG).To(Equal(providedSCG.Parallel))
+				Expect(actualSCG).To(Equal(*providedSCG.Parallel))
 			})
 		})
 
@@ -407,7 +407,7 @@ var _ = Context("caller", func() {
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
 				providedSCG := &model.SCG{
-					Serial: []*model.SCG{
+					Serial: &[]*model.SCG{
 						{Container: &model.SCGContainerCall{}},
 					},
 				}
@@ -455,7 +455,7 @@ var _ = Context("caller", func() {
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 				Expect(actualOpPath).To(Equal(providedOpPath))
-				Expect(actualSCG).To(Equal(providedSCG.Serial))
+				Expect(actualSCG).To(Equal(*providedSCG.Serial))
 			})
 		})
 

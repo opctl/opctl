@@ -1,0 +1,6 @@
+name: run/serialLoop/object/range/array/empty
+run:
+  serialLoop:
+    range: []
+    run:
+      serial: []

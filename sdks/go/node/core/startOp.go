@@ -2,6 +2,10 @@ package core
 
 import (
 	"context"
+	"fmt"
+	"runtime/debug"
+	"time"
+
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -57,18 +61,58 @@ func (this _core) StartOp(
 		scgOpCall.Outputs[name] = ""
 	}
 
+	dcgOpCall, err := this.opInterpreter.Interpret(
+		req.Args,
+		scgOpCall,
+		opID,
+		*opHandle.Path(),
+		opID,
+	)
+	if nil != err {
+		return "", err
+	}
+
 	go func() {
-		this.caller.Call(
-			// call in background context
+		defer func() {
+			if panicArg := recover(); panicArg != nil {
+				// recover from panics; treat as errors
+				msg := fmt.Sprint(panicArg, debug.Stack())
+
+				this.pubSub.Publish(
+					model.Event{
+						Timestamp: time.Now().UTC(),
+						OpErred: &model.OpErredEvent{
+							Msg:      msg,
+							OpID:     dcgOpCall.OpID,
+							OpRef:    dcgOpCall.OpPath,
+							RootOpID: dcgOpCall.RootOpID,
+						},
+					},
+				)
+
+				this.pubSub.Publish(
+					model.Event{
+						Timestamp: time.Now().UTC(),
+						OpEnded: &model.OpEndedEvent{
+							Error: &model.CallEndedEventError{
+								Message: msg,
+							},
+							OpID:     dcgOpCall.OpID,
+							OpRef:    dcgOpCall.OpPath,
+							Outcome:  model.OpOutcomeFailed,
+							RootOpID: dcgOpCall.RootOpID,
+						},
+					},
+				)
+			}
+		}()
+
+		this.opCaller.Call(
 			context.Background(),
-			opID,
+			dcgOpCall,
 			req.Args,
-			&model.SCG{
-				Op: scgOpCall,
-			},
-			*opHandle.Path(),
-			nil,
-			opID,
+			&opID,
+			scgOpCall,
 		)
 	}()
 

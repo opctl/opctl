@@ -100,7 +100,7 @@ func (itp _interpreter) Interpret(
 		)
 		return dcg, err
 	case nil != scg.Parallel:
-		dcg.Parallel = scg.Parallel
+		dcg.Parallel = *scg.Parallel
 		return dcg, nil
 	case nil != scg.ParallelLoop:
 		dcg.ParallelLoop, err = itp.parallelLoopInterpreter.Interpret(
@@ -109,7 +109,7 @@ func (itp _interpreter) Interpret(
 		)
 		return dcg, err
 	case nil != scg.Serial:
-		dcg.Serial = scg.Serial
+		dcg.Serial = *scg.Serial
 		return dcg, nil
 	case nil != scg.SerialLoop:
 		dcg.SerialLoop, err = itp.serialLoopInterpreter.Interpret(

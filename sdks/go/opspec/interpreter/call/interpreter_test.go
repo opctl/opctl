@@ -263,7 +263,7 @@ var _ = Context("Interpreter", func() {
 				providedID := "providedID"
 
 				providedSCG := &model.SCG{
-					Parallel: []*model.SCG{
+					Parallel: &[]*model.SCG{
 						&model.SCG{},
 					},
 				}
@@ -272,7 +272,7 @@ var _ = Context("Interpreter", func() {
 
 				expectedDCG := &model.DCG{
 					Id:       providedID,
-					Parallel: providedSCG.Parallel,
+					Parallel: *providedSCG.Parallel,
 					ParentID: &providedParentID,
 				}
 
@@ -301,7 +301,7 @@ var _ = Context("Interpreter", func() {
 				providedID := "providedID"
 
 				providedSCG := &model.SCG{
-					Serial: []*model.SCG{
+					Serial: &[]*model.SCG{
 						&model.SCG{},
 					},
 				}
@@ -311,7 +311,7 @@ var _ = Context("Interpreter", func() {
 				expectedDCG := &model.DCG{
 					Id:       providedID,
 					ParentID: &providedParentID,
-					Serial:   providedSCG.Serial,
+					Serial:   *providedSCG.Serial,
 				}
 
 				objectUnderTest := _interpreter{}

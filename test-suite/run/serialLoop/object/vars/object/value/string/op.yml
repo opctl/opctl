@@ -1,8 +1,8 @@
 name: run/serialLoop/object/vars/object/value/string
 run:
   serialLoop:
-    range: []
+    range: [1]
     vars:
-      value: value
+      value: $(value)
     run:
       serial: []

@@ -3,7 +3,10 @@ package core
 import (
 	"context"
 	"errors"
+	"io/ioutil"
 	"time"
+
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -188,14 +191,21 @@ var _ = Context("core", func() {
 				})
 			})
 			Context("data.Get doesn't err", func() {
-				It("should call caller.Call w/ expected args", func() {
+				It("should call opCaller.Call w/ expected args", func() {
 					/* arrange */
+					tmpDir, err := ioutil.TempDir("", "")
+					if nil != err {
+						panic(err)
+					}
+
 					providedCtx := context.Background()
 					providedArg1String := "dummyArg1Value"
-					providedArg2Dir := "dummyArg2Value"
-					providedArg3Dir := "dummyArg3Value"
-					providedArg4Dir := "dummyArg4Value"
-					opRef := "opRef"
+					providedArg2Dir := "/"
+					providedArg3Dir := "/"
+					providedArg4Dir := "/"
+
+					// use local op
+					opRef := "testdata/startOp"
 					providedReq := model.StartOpReq{
 						Args: map[string]*model.Value{
 							"dummyArg1Name": {String: &providedArg1String},
@@ -238,17 +248,31 @@ var _ = Context("core", func() {
 					}
 
 					expectedID := "expectedID"
-					expectedRootOpID := expectedID
 					fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 					fakeUniqueStringFactory.ConstructReturns(expectedID, nil)
 
-					fakeCaller := new(FakeCaller)
+					fakeOpCaller := new(FakeOpCaller)
+
+					opInterpreter := op.NewInterpreter(tmpDir)
+
+					// use real interpreter
+					expectedDCGOpCall, err := opInterpreter.Interpret(
+						providedReq.Args,
+						expectedSCGOpCall,
+						expectedID,
+						opPath,
+						expectedID,
+					)
+					if nil != err {
+						panic(err)
+					}
 
 					objectUnderTest := _core{
-						caller:              fakeCaller,
+						opCaller:            fakeOpCaller,
 						pubSub:              new(FakePubSub),
 						data:                fakeData,
 						opFileGetter:        fakeOpFileGetter,
+						opInterpreter:       opInterpreter,
 						uniqueStringFactory: fakeUniqueStringFactory,
 					}
 
@@ -262,20 +286,19 @@ var _ = Context("core", func() {
 					// Call happens in go routine; wait 500ms to allow it to occur
 					time.Sleep(time.Millisecond * 500)
 					actualCtx,
-						actualID,
+						actualDCGOpCall,
 						actualScope,
-						actualSCG,
-						actualOpPath,
-						actualParentCallID,
-						actualRootOpID := fakeCaller.CallArgsForCall(0)
+						actualOpID,
+						actualSCGOpCall := fakeOpCaller.CallArgsForCall(0)
+
+					// ignore ChildCallID
+					actualDCGOpCall.ChildCallID = expectedDCGOpCall.ChildCallID
 
 					Expect(actualCtx).To(Equal(providedCtx))
-					Expect(actualID).To(Equal(expectedID))
+					Expect(*actualDCGOpCall).To(BeEquivalentTo(*expectedDCGOpCall))
+					Expect(actualOpID).To(Equal(&expectedID))
 					Expect(actualScope).To(Equal(providedReq.Args))
-					Expect(actualSCG).To(Equal(&model.SCG{Op: expectedSCGOpCall}))
-					Expect(actualOpPath).To(Equal(opPath))
-					Expect(actualParentCallID).To(BeNil())
-					Expect(actualRootOpID).To(Equal(expectedRootOpID))
+					Expect(actualSCGOpCall).To(Equal(expectedSCGOpCall))
 				})
 			})
 		})

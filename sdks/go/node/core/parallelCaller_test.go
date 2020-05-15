@@ -39,10 +39,10 @@ var _ = Context("parallelCaller", func() {
 					Op: &model.SCGOpCall{},
 				},
 				{
-					Parallel: []*model.SCG{},
+					Parallel: &[]*model.SCG{},
 				},
 				{
-					Serial: []*model.SCG{},
+					Serial: &[]*model.SCG{},
 				},
 			}
 
@@ -130,10 +130,10 @@ var _ = Context("parallelCaller", func() {
 						Op: &model.SCGOpCall{},
 					},
 					{
-						Parallel: []*model.SCG{},
+						Parallel: &[]*model.SCG{},
 					},
 					{
-						Serial: []*model.SCG{},
+						Serial: &[]*model.SCG{},
 					},
 				}
 
@@ -226,10 +226,10 @@ var _ = Context("parallelCaller", func() {
 						Op: &model.SCGOpCall{},
 					},
 					{
-						Parallel: []*model.SCG{},
+						Parallel: &[]*model.SCG{},
 					},
 					{
-						Serial: []*model.SCG{},
+						Serial: &[]*model.SCG{},
 					},
 				}
 

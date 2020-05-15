@@ -188,7 +188,7 @@ var _ = Context("serialLoopCaller", func() {
 					actualParentCallID,
 					actualRootOpID := fakeCaller.CallArgsForCall(0)
 
-				Expect(actualCtx).To(Equal(providedCtx))
+				Expect(actualCtx).To(Not(BeNil()))
 				Expect(actualCallID).To(Equal(callID))
 				Expect(actualScope).To(Equal(expectedScope))
 				Expect(actualSCG).To(Equal(&providedSCGSerialLoopCall.Run))

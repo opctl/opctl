@@ -80,13 +80,13 @@ func (cps _CLIParamSatisfier) Satisfy(
 				break paramLoop
 			case nil != param.Array:
 				argValue := &[]interface{}{}
-				argJsonBytes, err := yaml.YAMLToJSON([]byte(*rawArg))
+				argJSONBytes, err := yaml.YAMLToJSON([]byte(*rawArg))
 				if nil != err {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				err = json.Unmarshal(argJsonBytes, argValue)
+				err = json.Unmarshal(argJSONBytes, argValue)
 				if nil != err {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
@@ -125,13 +125,13 @@ func (cps _CLIParamSatisfier) Satisfy(
 				}
 			case nil != param.Object:
 				argValue := &map[string]interface{}{}
-				argJsonBytes, err := yaml.YAMLToJSON([]byte(*rawArg))
+				argJSONBytes, err := yaml.YAMLToJSON([]byte(*rawArg))
 				if nil != err {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				err = json.Unmarshal(argJsonBytes, argValue)
+				err = json.Unmarshal(argJSONBytes, argValue)
 				if nil != err {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)

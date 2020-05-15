@@ -2,6 +2,6 @@ name: run/serialLoop/object/until/array/eq/booleans
 run:
   serialLoop:
     until:
-      - eq: [true,false]
+      - eq: [true,true]
     run:
       serial: []

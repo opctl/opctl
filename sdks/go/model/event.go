@@ -29,6 +29,7 @@ const (
 // CallEndedEvent represents a call ended; no further events will occur for the call
 type CallEndedEvent struct {
 	CallID     string               `json:"callId"`
+	Ref        string               `json:"ref"`
 	Error      *CallEndedEventError `json:"error,omitempty"`
 	Outputs    map[string]*Value    `json:"outputs"`
 	RootCallID string               `json:"rootCallId"`

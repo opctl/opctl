@@ -88,12 +88,19 @@ func New(
 	)
 
 	core = _core{
-		caller:              caller,
-		callKiller:          callKiller,
-		containerRuntime:    containerRuntime,
-		data:                data.New(),
-		dataCachePath:       filepath.Join(dataDirPath, "ops"),
+		caller:           caller,
+		callKiller:       callKiller,
+		containerRuntime: containerRuntime,
+		data:             data.New(),
+		dataCachePath:    filepath.Join(dataDirPath, "ops"),
+		opCaller: newOpCaller(
+			callStore,
+			pubSub,
+			caller,
+			dataDirPath,
+		),
 		opFileGetter:        opfile.NewGetter(),
+		opInterpreter:       op.NewInterpreter(dataDirPath),
 		pubSub:              pubSub,
 		uniqueStringFactory: uniqueStringFactory,
 	}
@@ -107,6 +114,7 @@ type _core struct {
 	containerRuntime    containerruntime.ContainerRuntime
 	data                data.Data
 	dataCachePath       string
+	opCaller            opCaller
 	opFileGetter        opfile.Getter
 	opInterpreter       op.Interpreter
 	pubSub              pubsub.PubSub

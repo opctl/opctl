@@ -32,8 +32,8 @@ run:
         dirs:
           /src: $(srcDir)
         envVars:
-          GOFLAGS: -mod=vendor -tags=containers_image_openpgp 
-        image: { ref: 'golang:1.13' }
+          GOFLAGS: -mod=vendor -tags=containers_image_openpgp
+        image: { ref: 'golang:1.14' }
         workDir: /src
     - op:
         ref: github.com/opspec-pkgs/golang.coverprofile.assert#1.1.0

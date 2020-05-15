@@ -1,0 +1,12 @@
+name: testOp
+inputs:
+  dummyArg1Name:
+    string: {}
+  dummyArg2Name:
+    dir: {}
+  dummyArg3Name:
+    dir: {}
+  dummyArg4Name:
+    dir: {}
+run:
+  serial: []

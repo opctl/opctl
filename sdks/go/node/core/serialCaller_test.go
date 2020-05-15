@@ -38,10 +38,10 @@ var _ = Context("serialCaller", func() {
 					Op: &model.SCGOpCall{},
 				},
 				{
-					Parallel: []*model.SCG{},
+					Parallel: &[]*model.SCG{},
 				},
 				{
-					Serial: []*model.SCG{},
+					Serial: &[]*model.SCG{},
 				},
 			}
 
