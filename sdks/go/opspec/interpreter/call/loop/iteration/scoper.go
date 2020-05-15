@@ -98,6 +98,11 @@ func (lpr _scoper) Scope(
 
 	if nil != loopable.Array {
 		// loopable is array
+		if index >= len(*loopable.Array) {
+			// beyond range
+			return outboundScope, nil
+		}
+
 		rawValue = (*loopable.Array)[index]
 	} else {
 		// loopable is object

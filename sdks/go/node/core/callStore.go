@@ -15,7 +15,7 @@ type callStore interface {
 	ListWithParentID(parentID string) []*model.DCG
 	// sets IsKilled to true
 	SetIsKilled(id string)
-	Get(id string) model.DCG
+	TryGet(id string) *model.DCG
 }
 
 func newCallStore() callStore {
@@ -63,11 +63,15 @@ func (cs *_callStore) SetIsKilled(id string) {
 	}
 }
 
-func (cs *_callStore) Get(
+func (cs *_callStore) TryGet(
 	id string,
-) model.DCG {
+) *model.DCG {
 	cs.mux.RLock()
 	defer cs.mux.RUnlock()
 
-	return *cs.callsByID[id]
+	if dcg, ok := cs.callsByID[id]; ok {
+		return dcg
+	}
+
+	return nil
 }

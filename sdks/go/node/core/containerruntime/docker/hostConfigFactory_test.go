@@ -2,6 +2,7 @@ package docker
 
 import (
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/go-connections/nat"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -34,13 +35,41 @@ var _ = Context("hostConfigFactory", func() {
 			}
 
 			expectedHostConfig := &container.HostConfig{
-				Binds: []string{
-					"/unixSocket1HostAddress:/unixSocket1ContainerAddress",
-					"/unixSocket2HostAddress:/unixSocket2ContainerAddress",
-					"dir1HostPath:dir1ContainerPath:cached",
-					"dir2HostPath:dir2ContainerPath:cached",
-					"file1HostPath:file1ContainerPath:cached",
-					"file2HostPath:file2ContainerPath:cached",
+				Mounts: []mount.Mount{
+					mount.Mount{
+						Type:        mount.TypeBind,
+						Source:      "file1HostPath",
+						Target:      "file1ContainerPath",
+						Consistency: mount.ConsistencyCached,
+					},
+					mount.Mount{
+						Type:        mount.TypeBind,
+						Source:      "file2HostPath",
+						Target:      "file2ContainerPath",
+						Consistency: mount.ConsistencyCached,
+					},
+					mount.Mount{
+						Type:        mount.TypeBind,
+						Source:      "dir1HostPath",
+						Target:      "dir1ContainerPath",
+						Consistency: mount.ConsistencyCached,
+					},
+					mount.Mount{
+						Type:        mount.TypeBind,
+						Source:      "dir2HostPath",
+						Target:      "dir2ContainerPath",
+						Consistency: mount.ConsistencyCached,
+					},
+					mount.Mount{
+						Type:   mount.TypeBind,
+						Source: "/unixSocket1HostAddress",
+						Target: "/unixSocket1ContainerAddress",
+					},
+					mount.Mount{
+						Type:   mount.TypeBind,
+						Source: "/unixSocket2HostAddress",
+						Target: "/unixSocket2ContainerAddress",
+					},
 				},
 				PortBindings: providedPortBindings,
 				Privileged:   true,
@@ -59,6 +88,11 @@ var _ = Context("hostConfigFactory", func() {
 			)
 
 			/* assert */
+			// assert mounts separately since ranged inputs won't produce deterministic output order
+			Expect(actualHostConfig.Mounts).To(ConsistOf(expectedHostConfig.Mounts))
+			actualHostConfig.Mounts = nil
+			expectedHostConfig.Mounts = nil
+
 			Expect(actualHostConfig).To(Equal(expectedHostConfig))
 		})
 	})

@@ -1,11 +1,10 @@
 package docker
 
 import (
-	"fmt"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
-	"sort"
 	"strings"
 )
 
@@ -51,41 +50,41 @@ func (hcf _hostConfigFactory) Construct(
 		Privileged: true,
 	}
 	for containerFilePath, hostFilePath := range containerCallFiles {
-		hostConfig.Binds = append(
-			hostConfig.Binds,
-			fmt.Sprintf(
-				"%v:%v:cached",
-				hcf.fsPathConverter.LocalToEngine(hostFilePath),
-				containerFilePath,
-			),
+		hostConfig.Mounts = append(
+			hostConfig.Mounts,
+			mount.Mount{
+				Type:        mount.TypeBind,
+				Source:      hcf.fsPathConverter.LocalToEngine(hostFilePath),
+				Target:      containerFilePath,
+				Consistency: mount.ConsistencyCached,
+			},
 		)
 	}
 	for containerDirPath, hostDirPath := range containerCallDirs {
-		hostConfig.Binds = append(
-			hostConfig.Binds,
-			fmt.Sprintf(
-				"%v:%v:cached",
-				hcf.fsPathConverter.LocalToEngine(hostDirPath),
-				containerDirPath,
-			),
+		hostConfig.Mounts = append(
+			hostConfig.Mounts,
+			mount.Mount{
+				Type:        mount.TypeBind,
+				Source:      hcf.fsPathConverter.LocalToEngine(hostDirPath),
+				Target:      containerDirPath,
+				Consistency: mount.ConsistencyCached,
+			},
 		)
 	}
 	for containerSocketAddress, hostSocketAddress := range containerCallSockets {
 		const unixSocketAddressDiscriminationChars = `/\`
 		// note: this mechanism for determining the type of socket is naive; higher level of sophistication may be required
 		if strings.ContainsAny(hostSocketAddress, unixSocketAddressDiscriminationChars) {
-			hostConfig.Binds = append(
-				hostConfig.Binds,
-				fmt.Sprintf(
-					"%v:%v",
-					hcf.fsPathConverter.LocalToEngine(hostSocketAddress),
-					containerSocketAddress,
-				),
+			hostConfig.Mounts = append(
+				hostConfig.Mounts,
+				mount.Mount{
+					Type:   mount.TypeBind,
+					Source: hcf.fsPathConverter.LocalToEngine(hostSocketAddress),
+					Target: containerSocketAddress,
+				},
 			)
 		}
 	}
-	// sort binds to make order deterministic; useful for testing
-	sort.Strings(hostConfig.Binds)
 
 	return hostConfig
 }

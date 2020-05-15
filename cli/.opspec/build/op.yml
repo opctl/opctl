@@ -12,7 +12,7 @@ inputs:
       description: directory containing the projects source code
   version:
     string:
-      default: 0.0.0
+      default: 0.0.1
       constraints:
         format: semver
 outputs:
@@ -27,11 +27,6 @@ run:
           srcDir: $(srcDir/cli)
         outputs:
           coverprofile:
-    - op:
-        ref: ../setVersion
-        inputs:
-          srcDir: $(srcDir/cli)
-          version:
     - parallelLoop:
         range:
           - darwin
@@ -46,12 +41,14 @@ run:
               name: opctl.$(GOOS)
               srcDir: $(srcDir/cli)
               GOOS:
-              GOFLAGS: -mod=vendor -tags=containers_image_openpgp
-    # re-enable once lockup issue resolved
-    # - op:
-    #     ref: ../test/system/opspec
-    #     inputs:
-    #       srcDir: $(srcDir)
+              GOFLAGS: 
+                -mod=vendor
+                -tags=containers_image_openpgp
+                -ldflags=-X=main.version=$(version)
+    - op:
+        ref: ../test/system/opspec
+        inputs:
+          srcDir: $(srcDir)
     - op:
         ref: github.com/opspec-pkgs/git.resolve-commit#1.0.2
         inputs: { dotGitDir: $(srcDir/.git) }

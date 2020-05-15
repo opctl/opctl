@@ -1,6 +1,7 @@
 package core
 
 import (
+	"runtime/debug"
 	"context"
 	"errors"
 	"fmt"
@@ -15,7 +16,7 @@ import (
 type caller interface {
 	// Call executes a call
 	Call(
-		ctx context.Context,
+		parentCtx context.Context,
 		id string,
 		scope map[string]*model.Value,
 		scg *model.SCG,
@@ -84,7 +85,7 @@ type _caller struct {
 }
 
 func (clr _caller) Call(
-	ctx context.Context,
+	parentCtx context.Context,
 	id string,
 	scope map[string]*model.Value,
 	scg *model.SCG,
@@ -92,44 +93,78 @@ func (clr _caller) Call(
 	parentCallID *string,
 	rootOpID string,
 ) {
-	ctx, cancel := context.WithCancel(ctx)
+	// setup cancellation
+	callCtx, cancelCall := context.WithCancel(parentCtx)
+	defer cancelCall()
+
 	var err error
 	var outputs map[string]*model.Value
 	callStartTime := time.Now().UTC()
 
 	defer func() {
-		<-ctx.Done()
-
 		// defer must be defined before conditional return statements so it always runs
-		event := model.Event{
-			CallEnded: &model.CallEndedEvent{
-				CallID:     id,
-				Outputs:    outputs,
-				RootCallID: rootOpID,
-			},
-			Timestamp: time.Now().UTC(),
-		}
+		select {
+		case <-parentCtx.Done():
+			// if parent context cancelled; NOOP
+		default:
+			<-callCtx.Done()
 
-		if nil != err {
-			event.CallEnded.Error = &model.CallEndedEventError{
-				Message: err.Error(),
+			// defer must be defined before conditional return statements so it always runs
+			event := model.Event{
+				CallEnded: &model.CallEndedEvent{
+					CallID:     id,
+					Outputs:    outputs,
+					RootCallID: rootOpID,
+				},
+				Timestamp: time.Now().UTC(),
 			}
-		}
 
-		clr.pubSub.Publish(event)
+			if nil != err {
+				event.CallEnded.Error = &model.CallEndedEventError{
+					Message: err.Error(),
+				}
+			}
+
+			clr.pubSub.Publish(event)
+		}
 	}()
 
 	if nil == scg {
-		cancel()
-		// No Op
+		cancelCall()
+		// NOOP
+		return
+	}
+
+	var dcg *model.DCG
+	dcg, err = clr.callInterpreter.Interpret(
+		scope,
+		scg,
+		id,
+		opPath,
+		parentCallID,
+		rootOpID,
+	)
+	if nil != err {
+		cancelCall()
+		return
+	}
+
+	if nil != dcg.If && !*dcg.If {
+		cancelCall()
 		return
 	}
 
 	go func() {
-		defer cancel()
+		defer func() {
+			if panicArg := recover(); panicArg != nil {
+				// recover from panics; treat as errors
+				err = fmt.Errorf("%v\n%v", panicArg, debug.Stack())
+			}
+		}()
+		defer cancelCall()
 
 		eventChannel, _ := clr.pubSub.Subscribe(
-			ctx,
+			callCtx,
 			model.EventFilter{
 				Roots: []string{rootOpID},
 				Since: &callStartTime,
@@ -180,38 +215,20 @@ func (clr _caller) Call(
 				}
 				outputs = event.ParallelCallEnded.Outputs
 				return
-			// if call killed, propogate to context
-			case nil != event.CallKilled && event.CallKilled.CallID == id:
+			case nil != event.CallKilled:
+				// if any call killed, propogate to context
+				cancelCall()
 				return
 			}
 		}
 	}()
-
-	var dcg *model.DCG
-	dcg, err = clr.callInterpreter.Interpret(
-		scope,
-		scg,
-		id,
-		opPath,
-		parentCallID,
-		rootOpID,
-	)
-	if nil != err {
-		cancel()
-		return
-	}
-
-	if nil != dcg.If && !*dcg.If {
-		cancel()
-		return
-	}
 
 	clr.callStore.Add(dcg)
 
 	switch {
 	case nil != scg.Container:
 		clr.containerCaller.Call(
-			ctx,
+			callCtx,
 			dcg.Container,
 			scope,
 			scg.Container,
@@ -219,26 +236,26 @@ func (clr _caller) Call(
 		return
 	case nil != scg.Op:
 		clr.opCaller.Call(
-			ctx,
+			callCtx,
 			dcg.Op,
 			scope,
 			parentCallID,
 			scg.Op,
 		)
 		return
-	case len(scg.Parallel) > 0:
+	case nil != scg.Parallel:
 		clr.parallelCaller.Call(
-			ctx,
+			callCtx,
 			id,
 			scope,
 			rootOpID,
 			opPath,
-			scg.Parallel,
+			*scg.Parallel,
 		)
 		return
 	case nil != scg.ParallelLoop:
 		clr.parallelLoopCaller.Call(
-			ctx,
+			callCtx,
 			id,
 			scope,
 			*scg.ParallelLoop,
@@ -247,19 +264,19 @@ func (clr _caller) Call(
 			rootOpID,
 		)
 		return
-	case len(scg.Serial) > 0:
+	case nil != scg.Serial:
 		clr.serialCaller.Call(
-			ctx,
+			callCtx,
 			id,
 			scope,
 			rootOpID,
 			opPath,
-			scg.Serial,
+			*scg.Serial,
 		)
 		return
 	case nil != scg.SerialLoop:
 		clr.serialLoopCaller.Call(
-			ctx,
+			callCtx,
 			id,
 			scope,
 			*scg.SerialLoop,
@@ -270,7 +287,7 @@ func (clr _caller) Call(
 		return
 	default:
 		err = fmt.Errorf("Invalid call graph %+v\n", scg)
-		cancel()
+		cancelCall()
 		return
 	}
 

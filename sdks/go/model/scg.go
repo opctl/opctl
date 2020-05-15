@@ -7,9 +7,9 @@ type SCG struct {
 	Name         *string              `json:"name,omitempty"`
 	Needs        []string             `json:"needs,omitempty"`
 	Op           *SCGOpCall           `json:"op,omitempty"`
-	Parallel     []*SCG               `json:"parallel,omitempty"`
+	Parallel     *[]*SCG              `json:"parallel,omitempty"`
 	ParallelLoop *SCGParallelLoopCall `json:"parallelLoop,omitempty"`
-	Serial       []*SCG               `json:"serial,omitempty"`
+	Serial       *[]*SCG              `json:"serial,omitempty"`
 	SerialLoop   *SCGSerialLoopCall   `json:"serialLoop,omitempty"`
 }
 

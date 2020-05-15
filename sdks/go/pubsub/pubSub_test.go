@@ -10,11 +10,11 @@ import (
 )
 
 var _ = Context("pubSub", func() {
-	tempFilePath, err := ioutil.TempFile("", "")
+	tempDirPath, err := ioutil.TempDir("", "")
 	if nil != err {
 		panic(err)
 	}
-	tempEventStore := NewBadgerDBEventStore(tempFilePath.Name())
+	tempEventStore := NewBadgerDBEventStore(tempDirPath)
 
 	Context("New", func() {
 		It("should return PubSub", func() {

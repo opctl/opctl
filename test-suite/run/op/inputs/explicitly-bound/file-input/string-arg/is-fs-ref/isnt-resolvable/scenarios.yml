@@ -1,5 +1,5 @@
 - call:
-    expect: failure
+    expect: success
 - interpret:
     expect: success
 - validate:

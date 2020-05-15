@@ -55,7 +55,7 @@ func (hd _httpListener) Listen(
 	router.UseEncodedPath()
 
 	router.PathPrefix("/api/").Handler(
-		hd.StripPrefix(
+		hd.StripPrefixAndRecover(
 			"/api/",
 			handler.New(
 				hd.opspecNodeCore,
@@ -105,7 +105,14 @@ func (hd _httpListener) Listen(
 // and invoking the handler h. StripPrefix handles a
 // request for a path that doesn't begin with prefix by
 // replying with an HTTP 404 not found error.
-func (hd _httpListener) StripPrefix(prefix string, h http.Handler) http.Handler {
+func (hd _httpListener) StripPrefixAndRecover(prefix string, h http.Handler) http.Handler {
+	defer func() {
+		// don't let panics from any operation kill the server.
+		if panic := recover(); panic != nil {
+			fmt.Printf("recovered from panic: %s\n", panic)
+		}
+	}()
+
 	if prefix == "" {
 		return h
 	}

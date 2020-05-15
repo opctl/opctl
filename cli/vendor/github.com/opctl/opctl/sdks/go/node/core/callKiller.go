@@ -1,6 +1,8 @@
 package core
 
 import (
+	"runtime/debug"
+	"fmt"
 	"sync"
 
 	"github.com/opctl/opctl/sdks/go/model"
@@ -55,6 +57,11 @@ func (ckr _callKiller) Kill(
 		// recursively kill all child calls
 		waitGroup.Add(1)
 		go func(childCallGraph *model.DCG) {
+			defer func() {
+				if panicArg := recover(); panicArg != nil {
+					fmt.Println(panicArg, debug.Stack())
+				}
+			}()
 			defer waitGroup.Done()
 
 			ckr.Kill(

@@ -17,7 +17,7 @@ import (
 type containerCaller interface {
 	// Executes a container call
 	Call(
-		ctx context.Context,
+		parentCtx context.Context,
 		dcgContainerCall *model.DCGContainerCall,
 		inboundScope map[string]*model.Value,
 		scgContainerCall *model.SCGContainerCall,
@@ -44,34 +44,44 @@ type _containerCaller struct {
 }
 
 func (cc _containerCaller) Call(
-	ctx context.Context,
+	parentCtx context.Context,
 	dcgContainerCall *model.DCGContainerCall,
 	inboundScope map[string]*model.Value,
 	scgContainerCall *model.SCGContainerCall,
 ) {
+	// setup cancellation
+	containerCtx, cancelContainer := context.WithCancel(parentCtx)
+	defer cancelContainer()
+
 	var err error
 	outputs := map[string]*model.Value{}
 	var exitCode int64
 
 	defer func() {
-		event := model.Event{
-			Timestamp: time.Now().UTC(),
-			ContainerExited: &model.ContainerExitedEvent{
-				ContainerID: dcgContainerCall.ContainerID,
-				OpRef:       dcgContainerCall.OpPath,
-				RootOpID:    dcgContainerCall.RootOpID,
-				ExitCode:    exitCode,
-				Outputs:     outputs,
-			},
-		}
-
-		if nil != err {
-			event.ContainerExited.Error = &model.CallEndedEventError{
-				Message: err.Error(),
+		// defer must be defined before conditional return statements so it always runs
+		select {
+		case <-parentCtx.Done():
+			// if parent context cancelled; NOOP
+		default:
+			event := model.Event{
+				Timestamp: time.Now().UTC(),
+				ContainerExited: &model.ContainerExitedEvent{
+					ContainerID: dcgContainerCall.ContainerID,
+					OpRef:       dcgContainerCall.OpPath,
+					RootOpID:    dcgContainerCall.RootOpID,
+					ExitCode:    exitCode,
+					Outputs:     outputs,
+				},
 			}
-		}
 
-		cc.pubSub.Publish(event)
+			if nil != err {
+				event.ContainerExited.Error = &model.CallEndedEventError{
+					Message: err.Error(),
+				}
+			}
+
+			cc.pubSub.Publish(event)
+		}
 	}()
 
 	cc.pubSub.Publish(
@@ -105,7 +115,7 @@ func (cc _containerCaller) Call(
 
 	var rawExitCode *int64
 	rawExitCode, err = cc.containerRuntime.RunContainer(
-		ctx,
+		containerCtx,
 		dcgContainerCall,
 		cc.pubSub,
 		logStdOutPW,

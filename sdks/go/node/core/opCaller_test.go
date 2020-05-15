@@ -99,7 +99,7 @@ var _ = Context("opCaller", func() {
 				},
 				ChildCallID: "dummyChildCallID",
 				ChildCallSCG: &model.SCG{
-					Parallel: []*model.SCG{
+					Parallel: &[]*model.SCG{
 						{
 							Container: &model.SCGContainerCall{},
 						},
@@ -155,7 +155,7 @@ var _ = Context("opCaller", func() {
 				actualParentCallID,
 				actualRootOpID := fakeCaller.CallArgsForCall(0)
 
-			Expect(actualCtx).To(Equal(providedCtx))
+			Expect(actualCtx).To(Not(BeNil()))
 			Expect(actualChildCallID).To(Equal(providedDCGOpCall.ChildCallID))
 			Expect(actualChildCallScope).To(Equal(expectedChildCallScope))
 			Expect(actualChildSCG).To(Equal(providedDCGOpCall.ChildCallSCG))
@@ -190,7 +190,7 @@ var _ = Context("opCaller", func() {
 				}
 
 				fakeCallStore := new(FakeCallStore)
-				fakeCallStore.GetReturns(model.DCG{IsKilled: true})
+				fakeCallStore.TryGetReturns(&model.DCG{IsKilled: true})
 
 				fakeOpFileGetter := new(FakeGetter)
 				fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)

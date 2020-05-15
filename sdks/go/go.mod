@@ -33,13 +33,13 @@ require (
 	github.com/klauspost/compress v1.8.6 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
-	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2
+	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.3
 	github.com/mitchellh/copystructure v1.0.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.1 // indirect
 	github.com/mjibson/esc v0.2.0
 	github.com/morikuni/aec v0.0.0-20170113033406-39771216ff4c // indirect
 	github.com/onsi/ginkgo v1.8.0
-	github.com/onsi/gomega v1.5.0
+	github.com/onsi/gomega v1.9.0
 	github.com/pkg/errors v0.9.1
 	github.com/satori/go.uuid v0.0.0-20181028125025-b2ce2384e17b
 	github.com/sethgrid/pester v0.0.0-20180430140037-03e26c9abbbf
@@ -54,11 +54,12 @@ require (
 	github.com/tidwall/tinyqueue v0.0.0-20180302190814-1e39f5511563 // indirect
 	github.com/xanzy/ssh-agent v0.2.1 // indirect
 	github.com/xeipuuv/gojsonschema v1.1.0
-	golang.org/x/crypto v0.0.0-20190621222207-cc06ce4a13d4 // indirect
+	golang.org/x/mod v0.3.0 // indirect
 	golang.org/x/net v0.0.0-20200425230154-ff2c4b7c35a0
-	golang.org/x/sync v0.0.0-20190423024810-112230192c58
+	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	golang.org/x/sys v0.0.0-20200428200454-593003d681fa // indirect
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
+	golang.org/x/tools v0.0.0-20200528171350-af9456bb6365 // indirect
 	google.golang.org/genproto v0.0.0-20190605220351-eb0b1bdb6ae6 // indirect
 	google.golang.org/grpc v1.21.1 // indirect
 	gopkg.in/src-d/go-billy.v4 v4.3.0 // indirect

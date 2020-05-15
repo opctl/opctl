@@ -1,6 +1,7 @@
 package core
 
 import (
+	"runtime/debug"
 	"context"
 	"fmt"
 	"strings"
@@ -15,7 +16,7 @@ import (
 type parallelCaller interface {
 	// Executes a parallel call
 	Call(
-		ctx context.Context,
+		parentCtx context.Context,
 		callID string,
 		inboundScope map[string]*model.Value,
 		rootOpID string,
@@ -51,7 +52,7 @@ type _parallelCaller struct {
 }
 
 func (pc _parallelCaller) Call(
-	ctx context.Context,
+	parentCtx context.Context,
 	callID string,
 	inboundScope map[string]*model.Value,
 	rootOpID string,
@@ -59,31 +60,34 @@ func (pc _parallelCaller) Call(
 	scgParallelCall []*model.SCG,
 ) {
 	// setup cancellation
-	ctxOfChildren, cancelChildren := context.WithCancel(ctx)
-	defer cancelChildren()
+	parallelCtx, cancelParallel := context.WithCancel(parentCtx)
+	defer cancelParallel()
 
 	outputs := map[string]*model.Value{}
 	var err error
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-		event := model.Event{
-			ParallelCallEnded: &model.ParallelCallEndedEvent{
-				CallID:   callID,
-				Outputs:  outputs,
-				RootOpID: rootOpID,
-			},
-			Timestamp: time.Now().UTC(),
-		}
-
-		if nil != err {
-			event.ParallelCallEnded.Error = &model.CallEndedEventError{
-				Message: err.Error(),
+		select {
+		case <-parentCtx.Done():
+			// if parent context cancelled; NOOP
+		default:
+			event := model.Event{
+				ParallelCallEnded: &model.ParallelCallEndedEvent{
+					CallID:   callID,
+					Outputs:  outputs,
+					RootOpID: rootOpID,
+				},
+				Timestamp: time.Now().UTC(),
 			}
+
+			if nil != err {
+				event.ParallelCallEnded.Error = &model.CallEndedEventError{
+					Message: err.Error(),
+				}
+			}
+			pc.pubSub.Publish(event)
 		}
-		pc.pubSub.Publish(
-			event,
-		)
 	}()
 
 	childCallNeededCountByName := map[string]int{}
@@ -106,7 +110,7 @@ func (pc _parallelCaller) Call(
 		childCallID, err = pc.uniqueStringFactory.Construct()
 		if nil != err {
 			// cancel all children on any error
-			cancelChildren()
+			cancelParallel()
 		}
 		childCallIndexByID[childCallID] = childCallIndex
 
@@ -114,21 +118,34 @@ func (pc _parallelCaller) Call(
 			childCallIDByName[*childCall.Name] = childCallID
 		}
 
-		go pc.caller.Call(
-			ctxOfChildren,
-			childCallID,
-			inboundScope,
-			childCall,
-			opPath,
-			&callID,
-			rootOpID,
-		)
+		go func(childCall *model.SCG) {
+			defer func() {
+				if panicArg := recover(); panicArg != nil {
+					// recover from panics; treat as errors
+					err = fmt.Errorf("%v\n%v", panicArg, debug.Stack())
+
+					// cancel all children on any error
+					cancelParallel()
+				}
+			}()
+
+			pc.caller.Call(
+				parallelCtx,
+				childCallID,
+				inboundScope,
+				childCall,
+				opPath,
+				&callID,
+				rootOpID,
+			)
+
+		}(childCall)
 	}
 
 	// subscribe to events
 	// @TODO: handle err channel
 	eventChannel, _ := pc.pubSub.Subscribe(
-		ctx,
+		parallelCtx,
 		model.EventFilter{
 			Roots: []string{rootOpID},
 			Since: &startTime,
@@ -142,7 +159,7 @@ func (pc _parallelCaller) Call(
 				childCallOutputsByIndex[childCallIndex] = event.CallEnded.Outputs
 				if nil != event.CallEnded.Error {
 					// cancel all children on any error
-					cancelChildren()
+					cancelParallel()
 					childErrorMessages = append(childErrorMessages, event.CallEnded.Error.Message)
 				}
 
