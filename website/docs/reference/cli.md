@@ -7,26 +7,48 @@ sidebar_label: CLI
 
 ### Options
 
-#### `--no-color`
-
-To disable color, include a `--no-color` flag w/ your
-command.
-> this may increase readability in environments not supporting
-> color escape codes or piping output to another program
+#### `-v` or `--version`
+To print the version and exit, specify a `-v` (or `--version`) flag.
 
 ##### Examples
+```sh
+opctl -v
+```
 
+### `--data-dir` or `OPCTL_DATA_DIR` *default: OS dependent per user app data*
+To specify the path of the directory used to store opctl data, include a `--data-dir` or set an `OPCTL_DATA_DIR` env var.
+to a relative or absolute path. 
+
+#### Examples
+```sh
+opctl --data-dir . node create
+```
+
+```sh
+export OPCTL_DATA_DIR=. && opctl node create
+```
+
+### `--listen-address` or `OPCTL_LISTEN_ADDRESS` *default: 127.0.0.1:42224*
+To specify the HOST:PORT on which the node will listen, include a `--listen-address` or set an `OPCTL_LISTEN_ADDRESS` env var.
+
+#### Examples
+```sh
+opctl --listen-address 0.0.0.0:42224
+```
+
+#### `--nc`
+To disable color, include a `--nc` flag w/ your command.
+> this may increase readability in environments not supporting color escape codes or piping output to another program.
+
+##### Examples
 ```sh
 opctl --no-color events
 ```
 
 #### `-h` or `--help`
-
-For context specific help, include a `-h` (or `--help`) flag w/ your
-command.
+For context specific help, include a `-h` (or `--help`) flag w/ your command.
 
 ##### Examples
-
 ```sh
 opctl node create -h
 
@@ -36,7 +58,6 @@ Creates a node
 ```
 
 ## `opctl events`
-
 listen to node events.
 
 > if a node isn't running, one will be automatically created.
@@ -79,19 +100,16 @@ Events are streamed in realtime as they occur. They can be streamed in parallel 
    ```
 
 ## `opctl ls [DIR_REF]`
-
 List ops in a local or remote directory.
 
 ### Arguments
 
 #### `DIR_REF` *default: `.opspec`*
-
 Reference to dir ops will be listed from (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)
 
 ### Examples
 
 #### `.opspec` dir
-
 lists ops from `./.opspec`
 
 ```sh
@@ -99,7 +117,6 @@ opctl ls
 ```
 
 #### remote dir
-
 lists ops from [github.com/opctl/opctl#0.1.24](https://github.com/opctl/opctl/tree/0.1.24)
 
 ```sh
@@ -107,7 +124,6 @@ opctl ls github.com/opctl/opctl#0.1.24/
 ```
 
 ## `opctl run [OPTIONS] OP_REF`
-
 Start and wait on an op
 
 > if a node isn't running, one will be automatically created
@@ -115,29 +131,24 @@ Start and wait on an op
 ### Arguments
 
 #### `OP_REF`
-
 Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)
 
 ### Options
 
 #### `-a`
-
 Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`
 
 #### `--arg-file` *default: `.opspec/args.yml`*
-
 Read in a file of args in yml format
 
 ### Examples
 
 #### local op ref w/out args
-
 ```sh
 opctl run myop
 ```
 
 #### remote op ref w/ args
-
 ```sh
 opctl run -a apiToken="my-token" -a channelName="my-channel" -a msg="hello!" github.com/opspec-pkgs/slack.chat.post-message#0.1.1
 ```
@@ -145,7 +156,6 @@ opctl run -a apiToken="my-token" -a channelName="my-channel" -a msg="hello!" git
 ### Notes
 
 #### op source username/password prompt
-
 If auth w/ the op source fails the cli will (re)prompt for username &
 password.
 
@@ -154,7 +164,6 @@ password.
 > exit code.
 
 #### input sources
-
 Input sources are checked according to the following precedence:
 
 - arg provided via `-a` option
@@ -164,7 +173,6 @@ Input sources are checked according to the following precedence:
 - prompt
 
 #### input prompts
-
 Inputs which are invalid or missing will result in the cli prompting for
 them.
 
@@ -184,7 +192,6 @@ example:
 ```
 
 ##### validation
-
 When inputs don't meet constraints, the cli will (re)prompt for the
 input until a satisfactory value is obtained.
 
@@ -193,11 +200,9 @@ input until a satisfactory value is obtained.
 ##### image
 
 ###### image layer caching
-
 All pulled image layers will be cached
 
 ###### image updates
-
 Prior to container creation, updates to the referenced image will be
 pulled and applied.
 
@@ -205,18 +210,15 @@ If checking for or applying updated image layers fails, graceful
 fallback to cached image layers will occur
 
 ##### networking
-
 All containers created by opctl will be attached to a single managed
 network.
 
 > the network is visible from `docker network ls` as `opctl`.
 
 ##### cleanup
-
 Containers will be removed as they exit.
 
 ## `opctl node create`
-
 Create an in-process node which inherits current
 stderr/stdout/stdin/PGId (process group id) and blocks until killed.
 
@@ -230,12 +232,10 @@ Path of dir used to store node data
 ### Notes
 
 #### lockfile
-
 Upon creation, nodes populate a lockfile at `DATA_DIR/lockfile.pid`
 containing their PId (process id).
 
 #### concurrency
-
 Prior to node creation, if a lockfile exists, the existing lock holder
 will be liveness tested.
 
@@ -243,22 +243,18 @@ Only in the event the existing lock holder is dead will creation of a
 new node occur.
 
 #### debugging
-
 Debugging can be accomplished by running `node create` from a terminal
 where it's output is easily monitored.
 
 #### cleanup
-
 During creation, `DATA_DIR` will be
 cleaned of any existing events, ops, and temp files/dirs to ensure
 the created node starts from a clean slate.
 
 ## `opctl node kill`
-
 Kill the running node.
 
 ## `opctl op create [OPTIONS] NAME`
-
 Creates an op
 
 ### Arguments
@@ -275,37 +271,30 @@ Description of the op
 Path to create the op at
 
 ### Examples
-
 ```sh
 opctl op create -d "my awesome op description" --path some/path my-awesome-op-name
 ```
 
 ## `op install [OPTIONS] OP_REF`
-
 Installs an op
 
 ### Arguments
 
 #### `OP_REF`
-
 Op reference (`host/path/repo#tag`, or `host/path/repo#tag/path`)
 
 ### Options
 
 #### `--path` *default: `.opspec/OP_REF`*
-
 Path to install the op at
 
 #### `-u` or `--username`
-
 Username used to auth w/ the op source
 
 #### `-p` or `--password`
-
 Password used to auth w/ the op source
 
 ### Examples
-
 ```sh
 opctl op install -u someUser -p somePass host/path/repo#tag
 ```
@@ -313,7 +302,6 @@ opctl op install -u someUser -p somePass host/path/repo#tag
 ### Notes
 
 #### op source username/password prompt
-
 If auth w/ the op source fails the cli will (re)prompt for username &
 password.
 
@@ -321,7 +309,6 @@ password.
 > and exit with a non zero exit code.
 
 ## `op kill OP_ID`
-
 Kill an op. 
 
 ### Arguments
@@ -330,7 +317,6 @@ Kill an op.
 Id of the op to kill
 
 ## `op validate OP_REF`
-
 Validates an op according to:
 
 - existence of `op.yml`
@@ -340,11 +326,9 @@ Validates an op according to:
 ### Arguments
 
 #### `OP_REF`
-
 Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`).
 
 ### Examples
-
 ```sh
 opctl op validate myop
 ```
@@ -352,13 +336,11 @@ opctl op validate myop
 ### Notes
 
 #### op source username/password prompt
-
 If auth w/ the op source fails the cli will (re)prompt for username & password.
 
 > in non-interactive terminals, the cli will note that it can't prompt and exit with a non zero exit code.
 
 ## `opctl self-update [OPTIONS]`
-
 Updates the current version of opctl.
 
 > if a node is running, it will be automatically killed
@@ -373,7 +355,6 @@ The release channel to update from
 - `alpha` (all bets are off)
 
 ### Examples
-
 get latest stable release
 ```sh
 opctl self-update
@@ -393,7 +374,6 @@ opctl self-update
 ```
 
 ## `ui [MOUNT_REF]`
-
 Opens the opctl web UI and mounts a reference.
 
 ### Arguments
@@ -402,7 +382,6 @@ Opens the opctl web UI and mounts a reference.
 Reference to mount (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`).
 
 ### Examples
-
 Open web UI to current working directory
 ```sh
 opctl ui
