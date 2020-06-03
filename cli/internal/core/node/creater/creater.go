@@ -55,7 +55,10 @@ func (ivkr _creater) Create(
 			dataDir.Path(),
 		),
 	).
-		Listen(context.Background())
+		Listen(
+			context.Background(),
+			opts.ListenAddress,
+		)
 
 	if nil != err {
 		panic(err)

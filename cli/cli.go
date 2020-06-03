@@ -7,10 +7,13 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/appdataspec/sdk-golang/appdatapath"
 	mow "github.com/jawher/mow.cli"
 	"github.com/opctl/opctl/cli/internal/clicolorer"
-	core "github.com/opctl/opctl/cli/internal/core"
+	corePkg "github.com/opctl/opctl/cli/internal/core"
 	"github.com/opctl/opctl/cli/internal/model"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	localNodeProvider "github.com/opctl/opctl/cli/internal/nodeprovider/local"
 	op "github.com/opctl/opctl/sdks/go/opspec"
 )
 
@@ -19,15 +22,57 @@ type cli interface {
 	Run(args []string) error
 }
 
+// newCorer allows swapping out corePkg.New for unit tests
+type newCorer func(
+	cliColorer clicolorer.CliColorer,
+	nodeProvider nodeprovider.NodeProvider,
+) corePkg.Core
+
 func newCli(
 	cliColorer clicolorer.CliColorer,
-	core core.Core,
+	newCorer newCorer,
 ) cli {
 
-	cli := mow.App("opctl", "Opctl is a free and open source distributed operation control system.")
+	cli := mow.App(
+		"opctl",
+		"Opctl is a free and open source distributed operation control system.",
+	)
 	cli.Version("v version", version)
 
+	perUserAppDataPath, err := appdatapath.New().PerUser()
+	if nil != err {
+		panic(err)
+	}
+
+	dataDir := cli.String(
+		mow.StringOpt{
+			Desc:   "Path of dir used to store opctl data",
+			EnvVar: "OPCTL_DATA_DIR",
+			Name:   "data-dir",
+			Value:  filepath.Join(perUserAppDataPath, "opctl"),
+		},
+	)
+
+	listenAddress := cli.String(
+		mow.StringOpt{
+			Desc:   "HOST:PORT on which the node will listen",
+			EnvVar: "OPCTL_LISTEN_ADDRESS",
+			Name:   "listen-address",
+			Value:  "127.0.0.1:42224",
+		},
+	)
+	nodeCreateOpts := model.NodeCreateOpts{
+		DataDir:       *dataDir,
+		ListenAddress: *listenAddress,
+	}
+
+	core := newCorer(
+		cliColorer,
+		localNodeProvider.New(nodeCreateOpts),
+	)
+
 	noColor := cli.BoolOpt("nc no-color", false, "Disable output coloring")
+
 	cli.Before = func() {
 		if *noColor {
 			cliColorer.Disable()
@@ -53,17 +98,8 @@ func newCli(
 	cli.Command("node", "Manage nodes", func(nodeCmd *mow.Cmd) {
 
 		nodeCmd.Command("create", "Creates a node", func(createCmd *mow.Cmd) {
-			dataDir := createCmd.StringOpt("data-dir", "", "Path of dir used to store node data")
-			if "" == *dataDir {
-				dataDir = nil
-			}
-
 			createCmd.Action = func() {
-				core.Node().Create(
-					model.NodeCreateOpts{
-						DataDir: dataDir,
-					},
-				)
+				core.Node().Create(nodeCreateOpts)
 			}
 		})
 

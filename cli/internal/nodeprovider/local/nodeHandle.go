@@ -1,19 +1,17 @@
 package local
 
 import (
+	"fmt"
 	"net/url"
-	"os"
 
 	"github.com/opctl/opctl/cli/internal/model"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
 )
 
-func newNodeHandle() (model.NodeHandle, error) {
-	apiBaseURLStr := os.Getenv("OPCTL_CLI_API_BASEURL")
-	if "" == apiBaseURLStr {
-		apiBaseURLStr = "http://localhost:42224/api"
-	}
-	apiBaseURL, err := url.Parse(apiBaseURLStr)
+func newNodeHandle(
+	listenAddress string,
+) (model.NodeHandle, error) {
+	apiBaseURL, err := url.Parse(fmt.Sprintf("http://%s/api", listenAddress))
 	if nil != err {
 		return nil, err
 	}

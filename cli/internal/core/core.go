@@ -11,7 +11,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
-	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
 )
 
 // Core exposes all cli commands
@@ -29,13 +29,13 @@ type Core interface {
 // New returns initialized cli core
 func New(
 	cliColorer clicolorer.CliColorer,
+	nodeProvider nodeprovider.NodeProvider,
 ) Core {
 	_os := ios.New()
 	cliOutput := clioutput.New(cliColorer, os.Stderr, os.Stdout)
 	cliExiter := cliexiter.New(cliOutput, _os)
-	nodeProvider := local.New()
-
 	cliParamSatisfier := cliparamsatisfier.New(cliExiter, cliOutput)
+
 	dataResolver := dataresolver.New(
 		cliExiter,
 		cliParamSatisfier,

@@ -6,6 +6,11 @@ import (
 	"net/http"
 	"strings"
 
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/opctl/opctl/cli/internal/clicolorer"
@@ -13,10 +18,6 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/api/handler"
 	"github.com/opctl/opctl/sdks/go/node/core"
 	"github.com/rakyll/statik/fs"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 /**
@@ -25,6 +26,7 @@ listener is a generic interface for things which expose opctl via some protocol
 type listener interface {
 	Listen(
 		ctx context.Context,
+		address string,
 	) error
 }
 
@@ -47,6 +49,7 @@ type _httpListener struct {
 
 func (hd _httpListener) Listen(
 	ctx context.Context,
+	address string,
 ) error {
 	router := mux.NewRouter()
 	router.UseEncodedPath()
@@ -66,7 +69,10 @@ func (hd _httpListener) Listen(
 	}
 	router.PathPrefix("/").Handler(http.FileServer(statikFS))
 
-	httpServer := http.Server{Addr: ":42224", Handler: handlers.CORS()(router)}
+	httpServer := http.Server{
+		Addr:    address,
+		Handler: handlers.CORS()(router),
+	}
 
 	// catch signals to ensure shutdown properly happens
 	done := make(chan os.Signal, 1)
@@ -83,7 +89,9 @@ func (hd _httpListener) Listen(
 		httpServer.Close()
 	}()
 
-	fmt.Println(hd.cliColorer.Info("Binding opctl API to 0.0.0.0:42224"))
+	fmt.Println(
+		hd.cliColorer.Info(fmt.Sprintf("Binding opctl API to %s", address)),
+	)
 
 	if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
 		return err
