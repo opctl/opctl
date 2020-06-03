@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/opctl/opctl/cli/internal/clicolorer"
-	"github.com/opctl/opctl/cli/internal/core"
+	corePkg "github.com/opctl/opctl/cli/internal/core"
 )
 
 func main() {
@@ -23,7 +23,8 @@ func main() {
 
 	newCli(
 		cliColorer,
-		core.New(cliColorer),
-	).Run(os.Args)
+		corePkg.New,
+	).
+		Run(os.Args)
 
 }

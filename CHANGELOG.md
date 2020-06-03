@@ -6,6 +6,12 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.41 - 2020-06-03
+
+### Changed
+
+- [Listen on localhost by default](https://github.com/opctl/opctl/issues/738)
+
 ## 0.1.39 - 2020-05-04
 
 ### Fixed

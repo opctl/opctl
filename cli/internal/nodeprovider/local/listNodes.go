@@ -13,7 +13,7 @@ func (np nodeProvider) ListNodes() ([]model.NodeHandle, error) {
 		),
 	)
 	if 0 != pIDOfLockOwner {
-		nodeHandle, err := newNodeHandle()
+		nodeHandle, err := newNodeHandle(np.listenAddress)
 		if nil != err {
 			return nil, err
 		}

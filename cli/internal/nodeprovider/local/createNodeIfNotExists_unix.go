@@ -20,7 +20,7 @@ func (np nodeProvider) CreateNodeIfNotExists() (model.NodeHandle, error) {
 		return nil, err
 	}
 
-	nodeHandle, err := newNodeHandle()
+	nodeHandle, err := newNodeHandle(np.listenAddress)
 	if nil != err {
 		return nil, err
 	}
@@ -41,13 +41,17 @@ func (np nodeProvider) CreateNodeIfNotExists() (model.NodeHandle, error) {
 
 	nodeCmd := exec.Command(
 		pathToOpctlBin,
+		"--data-dir",
+		np.dataDir.Path(),
+		"--listen-address",
+		np.listenAddress,
 		"node",
 		"create",
 	)
 
 	// don't inherit env; some things like jenkins track and kill processes via injecting env vars
 	nodeCmd.Env = []string{
-		fmt.Sprintf("OPCTL_DATA_DIR=%v", np.dataDir.Path()),
+		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
 	}
 
 	// ensure node gets it's own process group

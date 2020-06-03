@@ -1,6 +1,7 @@
 package local
 
 import (
+	"io/ioutil"
 	"path/filepath"
 
 	"github.com/golang-utils/lockfile"
@@ -11,7 +12,12 @@ import (
 )
 
 var _ = Context("listNodes", func() {
-	dataDir, newDataDirErr := datadir.New(nil)
+	tmpDir, err := ioutil.TempDir("", "")
+	if nil != err {
+		panic(err)
+	}
+
+	dataDir, newDataDirErr := datadir.New(tmpDir)
 	if nil != newDataDirErr {
 		panic(newDataDirErr)
 	}
@@ -50,7 +56,8 @@ var _ = Context("listNodes", func() {
 	Context("lockfile.PIdOfOwner != 0", func() {
 		It("should return expected results", func() {
 			/* arrange */
-			nodeHandle, _ := newNodeHandle()
+			listenAddress := "127.0.0.1:42224"
+			nodeHandle, _ := newNodeHandle(listenAddress)
 			expectedNodes := []model.NodeHandle{
 				nodeHandle,
 			}
@@ -59,8 +66,9 @@ var _ = Context("listNodes", func() {
 			fakeLockFile.PIdOfOwnerReturns(333)
 
 			objectUnderTest := nodeProvider{
-				dataDir:  dataDir,
-				lockfile: fakeLockFile,
+				dataDir:       dataDir,
+				lockfile:      fakeLockFile,
+				listenAddress: listenAddress,
 			}
 
 			/* act */

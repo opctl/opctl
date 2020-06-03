@@ -7,7 +7,6 @@ import (
 
 	"io/ioutil"
 
-	"github.com/appdataspec/sdk-golang/appdatapath"
 	"github.com/golang-utils/lockfile"
 )
 
@@ -26,23 +25,6 @@ type DataDir interface {
 	EventDBPath() string
 }
 
-// resolvePath resolves the data dir path
-func resolvePath(
-	dataDirPath *string,
-) (string, error) {
-	if nil != dataDirPath {
-		return filepath.Abs(*dataDirPath)
-	} else if dataDirEnvVar, ok := os.LookupEnv("OPCTL_DATA_DIR"); ok {
-		return filepath.Abs(dataDirEnvVar)
-	}
-
-	perUserAppDataPath, err := appdatapath.New().PerUser()
-	return filepath.Join(
-		perUserAppDataPath,
-		"opctl",
-	), err
-}
-
 // ensureExists ensures resolvedDataDirPath exists
 func ensureExists(
 	resolvedDataDirPath string,
@@ -55,9 +37,9 @@ func ensureExists(
 
 // New returns an initialized data dir instance
 func New(
-	dataDirPath *string,
+	dataDirPath string,
 ) (DataDir, error) {
-	resolvedDataDirPath, err := resolvePath(dataDirPath)
+	resolvedDataDirPath, err := filepath.Abs(dataDirPath)
 	if nil != err {
 		return nil, fmt.Errorf("error initializing opctl data dir; error was %v", err)
 	}

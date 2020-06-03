@@ -5,11 +5,14 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opctl/opctl/cli/internal/clicolorer"
 	cliColorerFakes "github.com/opctl/opctl/cli/internal/clicolorer/fakes"
+	corePkg "github.com/opctl/opctl/cli/internal/core"
 	coreFakes "github.com/opctl/opctl/cli/internal/core/fakes"
 	nodeFakes "github.com/opctl/opctl/cli/internal/core/node/fakes"
 	opFakes "github.com/opctl/opctl/cli/internal/core/op/fakes"
 	"github.com/opctl/opctl/cli/internal/model"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
 )
 
 var _ = Context("cli", func() {
@@ -22,7 +25,12 @@ var _ = Context("cli", func() {
 
 				objectUnderTest := newCli(
 					fakeCliColorer,
-					new(coreFakes.FakeCore),
+					func(
+						cliColorer clicolorer.CliColorer,
+						nodeProvider nodeprovider.NodeProvider,
+					) corePkg.Core {
+						return new(coreFakes.FakeCore)
+					},
 				)
 
 				/* act */
@@ -41,7 +49,12 @@ var _ = Context("cli", func() {
 
 				objectUnderTest := newCli(
 					new(cliColorerFakes.FakeCliColorer),
-					fakeCore,
+					func(
+						cliColorer clicolorer.CliColorer,
+						nodeProvider nodeprovider.NodeProvider,
+					) corePkg.Core {
+						return fakeCore
+					},
 				)
 
 				/* act */
@@ -63,7 +76,12 @@ var _ = Context("cli", func() {
 					expectedDirRef := "dummyPath"
 					objectUnderTest := newCli(
 						new(cliColorerFakes.FakeCliColorer),
-						fakeCore,
+						func(
+							cliColorer clicolorer.CliColorer,
+							nodeProvider nodeprovider.NodeProvider,
+						) corePkg.Core {
+							return fakeCore
+						},
 					)
 
 					/* act */
@@ -86,7 +104,12 @@ var _ = Context("cli", func() {
 					expectedDirRef := ".opspec"
 					objectUnderTest := newCli(
 						new(cliColorerFakes.FakeCliColorer),
-						fakeCore,
+						func(
+							cliColorer clicolorer.CliColorer,
+							nodeProvider nodeprovider.NodeProvider,
+						) corePkg.Core {
+							return fakeCore
+						},
 					)
 
 					/* act */
@@ -115,7 +138,12 @@ var _ = Context("cli", func() {
 
 					objectUnderTest := newCli(
 						new(cliColorerFakes.FakeCliColorer),
-						fakeCore,
+						func(
+							cliColorer clicolorer.CliColorer,
+							nodeProvider nodeprovider.NodeProvider,
+						) corePkg.Core {
+							return fakeCore
+						},
 					)
 
 					/* act */
@@ -138,7 +166,12 @@ var _ = Context("cli", func() {
 
 					objectUnderTest := newCli(
 						new(cliColorerFakes.FakeCliColorer),
-						fakeCore,
+						func(
+							cliColorer clicolorer.CliColorer,
+							nodeProvider nodeprovider.NodeProvider,
+						) corePkg.Core {
+							return fakeCore
+						},
 					)
 
 					/* act */
@@ -167,7 +200,12 @@ var _ = Context("cli", func() {
 
 						objectUnderTest := newCli(
 							new(cliColorerFakes.FakeCliColorer),
-							fakeCore,
+							func(
+								cliColorer clicolorer.CliColorer,
+								nodeProvider nodeprovider.NodeProvider,
+							) corePkg.Core {
+								return fakeCore
+							},
 						)
 
 						/* act */
@@ -194,7 +232,12 @@ var _ = Context("cli", func() {
 
 						objectUnderTest := newCli(
 							new(cliColorerFakes.FakeCliColorer),
-							fakeCore,
+							func(
+								cliColorer clicolorer.CliColorer,
+								nodeProvider nodeprovider.NodeProvider,
+							) corePkg.Core {
+								return fakeCore
+							},
 						)
 
 						/* act */
@@ -221,7 +264,12 @@ var _ = Context("cli", func() {
 
 						objectUnderTest := newCli(
 							new(cliColorerFakes.FakeCliColorer),
-							fakeCore,
+							func(
+								cliColorer clicolorer.CliColorer,
+								nodeProvider nodeprovider.NodeProvider,
+							) corePkg.Core {
+								return fakeCore
+							},
 						)
 
 						/* act */
@@ -248,7 +296,12 @@ var _ = Context("cli", func() {
 
 						objectUnderTest := newCli(
 							new(cliColorerFakes.FakeCliColorer),
-							fakeCore,
+							func(
+								cliColorer clicolorer.CliColorer,
+								nodeProvider nodeprovider.NodeProvider,
+							) corePkg.Core {
+								return fakeCore
+							},
 						)
 
 						/* act */
@@ -278,7 +331,12 @@ var _ = Context("cli", func() {
 
 					objectUnderTest := newCli(
 						new(cliColorerFakes.FakeCliColorer),
-						fakeCore,
+						func(
+							cliColorer clicolorer.CliColorer,
+							nodeProvider nodeprovider.NodeProvider,
+						) corePkg.Core {
+							return fakeCore
+						},
 					)
 
 					/* act */
@@ -322,7 +380,12 @@ var _ = Context("cli", func() {
 
 					objectUnderTest := newCli(
 						new(cliColorerFakes.FakeCliColorer),
-						fakeCore,
+						func(
+							cliColorer clicolorer.CliColorer,
+							nodeProvider nodeprovider.NodeProvider,
+						) corePkg.Core {
+							return fakeCore
+						},
 					)
 
 					/* act */
@@ -350,7 +413,12 @@ var _ = Context("cli", func() {
 
 					objectUnderTest := newCli(
 						new(cliColorerFakes.FakeCliColorer),
-						fakeCore,
+						func(
+							cliColorer clicolorer.CliColorer,
+							nodeProvider nodeprovider.NodeProvider,
+						) corePkg.Core {
+							return fakeCore
+						},
 					)
 
 					/* act */
@@ -382,7 +450,12 @@ var _ = Context("cli", func() {
 
 					objectUnderTest := newCli(
 						new(cliColorerFakes.FakeCliColorer),
-						fakeCore,
+						func(
+							cliColorer clicolorer.CliColorer,
+							nodeProvider nodeprovider.NodeProvider,
+						) corePkg.Core {
+							return fakeCore
+						},
 					)
 
 					/* act */
@@ -418,7 +491,12 @@ var _ = Context("cli", func() {
 
 					objectUnderTest := newCli(
 						new(cliColorerFakes.FakeCliColorer),
-						fakeCore,
+						func(
+							cliColorer clicolorer.CliColorer,
+							nodeProvider nodeprovider.NodeProvider,
+						) corePkg.Core {
+							return fakeCore
+						},
 					)
 
 					/* act */
@@ -449,7 +527,12 @@ var _ = Context("cli", func() {
 
 				objectUnderTest := newCli(
 					new(cliColorerFakes.FakeCliColorer),
-					fakeCore,
+					func(
+						cliColorer clicolorer.CliColorer,
+						nodeProvider nodeprovider.NodeProvider,
+					) corePkg.Core {
+						return fakeCore
+					},
 				)
 
 				/* act */
@@ -472,7 +555,12 @@ var _ = Context("cli", func() {
 
 				objectUnderTest := newCli(
 					new(cliColorerFakes.FakeCliColorer),
-					fakeCore,
+					func(
+						cliColorer clicolorer.CliColorer,
+						nodeProvider nodeprovider.NodeProvider,
+					) corePkg.Core {
+						return fakeCore
+					},
 				)
 
 				/* act */
@@ -496,7 +584,12 @@ var _ = Context("cli", func() {
 				expectedDirRef := "dummyPath"
 				objectUnderTest := newCli(
 					new(cliColorerFakes.FakeCliColorer),
-					fakeCore,
+					func(
+						cliColorer clicolorer.CliColorer,
+						nodeProvider nodeprovider.NodeProvider,
+					) corePkg.Core {
+						return fakeCore
+					},
 				)
 
 				/* act */
@@ -517,7 +610,12 @@ var _ = Context("cli", func() {
 				expectedDirRef := "."
 				objectUnderTest := newCli(
 					new(cliColorerFakes.FakeCliColorer),
-					fakeCore,
+					func(
+						cliColorer clicolorer.CliColorer,
+						nodeProvider nodeprovider.NodeProvider,
+					) corePkg.Core {
+						return fakeCore
+					},
 				)
 
 				/* act */
