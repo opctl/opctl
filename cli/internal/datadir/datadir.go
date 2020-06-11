@@ -13,9 +13,6 @@ import (
 // DataDir is an interface exposing the functionality we require in conjunction with our "data dir".
 type DataDir interface {
 	// InitAndLock initializes and locks an opctl data dir
-	// - if dataDirPath is explicitly provided it will be used
-	// - else if OPCTL_DATA_DIR env var is set it will be used
-	// - else the OS specific "per user" app data path will be used.
 	InitAndLock() error
 
 	// Path resolves the data dir path

@@ -1,8 +1,8 @@
 package core
 
 import (
-	"runtime/debug"
 	"fmt"
+	"runtime/debug"
 	"sync"
 
 	"github.com/opctl/opctl/sdks/go/model"

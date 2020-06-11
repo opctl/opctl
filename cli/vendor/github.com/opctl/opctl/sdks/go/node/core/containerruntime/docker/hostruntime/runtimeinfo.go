@@ -43,7 +43,7 @@ func newContainerRuntimeInfo(ctx context.Context, cli containerInspector, cu con
 
 		if exists {
 			cri.InAContainer = true
-			cri.HostPathMap = newHostPathMap(info.HostConfig.Binds)
+			cri.HostPathMap = newHostPathMap(info.HostConfig.Mounts)
 		}
 	}
 

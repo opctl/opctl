@@ -1,9 +1,9 @@
 package core
 
 import (
-	"runtime/debug"
 	"context"
 	"fmt"
+	"runtime/debug"
 	"time"
 
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop"

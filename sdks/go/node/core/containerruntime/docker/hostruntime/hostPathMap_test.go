@@ -1,13 +1,14 @@
 package hostruntime
 
 import (
+	"github.com/docker/docker/api/types/mount"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Context("HostPathMap", func() {
 	Context("when empty", func() {
-		objectUnderTest := newHostPathMap([]string{})
+		objectUnderTest := newHostPathMap([]mount.Mount{})
 
 		It("should return original path", func() {
 			/* arrange */
@@ -22,7 +23,12 @@ var _ = Context("HostPathMap", func() {
 	})
 
 	Context("when set", func() {
-		objectUnderTest := newHostPathMap([]string{"/host/some/dummy/path:/some/dummy/path"})
+		objectUnderTest := newHostPathMap([]mount.Mount{
+			mount.Mount{
+				Source: "/host/some/dummy/path",
+				Target: "/some/dummy/path",
+			},
+		})
 
 		It("should remap path", func() {
 			/* arrange */

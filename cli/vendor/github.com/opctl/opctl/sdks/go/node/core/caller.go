@@ -1,10 +1,10 @@
 package core
 
 import (
-	"runtime/debug"
 	"context"
 	"errors"
 	"fmt"
+	"runtime/debug"
 	"time"
 
 	"github.com/opctl/opctl/sdks/go/model"
