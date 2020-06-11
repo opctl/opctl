@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/hostruntime/internal/fakes"
@@ -54,7 +55,7 @@ var _ = Context("RuntimeInfo", func() {
 			containerJSON := types.ContainerJSON{
 				ContainerJSONBase: &types.ContainerJSONBase{
 					HostConfig: &container.HostConfig{
-						Binds: []string{"/host/app:/app"},
+						Mounts: []mount.Mount{mount.Mount{}},
 					},
 				},
 			}

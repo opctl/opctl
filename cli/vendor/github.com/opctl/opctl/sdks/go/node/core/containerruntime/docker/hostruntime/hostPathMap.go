@@ -1,17 +1,17 @@
 package hostruntime
 
 import (
+	"github.com/docker/docker/api/types/mount"
 	"strings"
 )
 
 type HostPathMap map[string]string
 
-func newHostPathMap(binds []string) HostPathMap {
+func newHostPathMap(mounts []mount.Mount) HostPathMap {
 	mappings := make(map[string]string)
 
-	for _, b := range binds {
-		tokens := strings.Split(b, ":")
-		mappings[tokens[0]] = tokens[1]
+	for _, m := range mounts {
+		mappings[m.Source] = m.Target
 	}
 
 	return mappings

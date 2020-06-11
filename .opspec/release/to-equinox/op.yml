@@ -53,6 +53,9 @@ run:
     envVars:
       EQUINOX_SIGNING_KEY: $(equinoxSigningKey)
       CGO_ENABLED: '0'
-      GOFLAGS: -mod=vendor -tags=containers_image_openpgp
+      GOFLAGS: 
+        -mod=vendor
+        -tags=containers_image_openpgp
+        -ldflags=-X=main.version=$(version)
     image: { ref: 'golang:1.14' }
     workDir: /go/src/github.com/opctl/opctl
