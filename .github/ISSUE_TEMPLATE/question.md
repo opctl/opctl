@@ -10,5 +10,5 @@ labels: 'questions, needs triage'
 
 Please contact us instead. We have a few channels:
 
-- [![Slack](https://opctl-slackin.herokuapp.com/badge.svg)](https://opctl-slackin.herokuapp.com/)
+- [![Slack](https://img.shields.io/badge/slack-opctl-E01563.svg)](https://join.slack.com/t/opctl/shared_invite/zt-51zodvjn-Ul_UXfkhqYLWZPQTvNPp5w)
 

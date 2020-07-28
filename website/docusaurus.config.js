@@ -24,7 +24,7 @@ module.exports = {
       links: [
         { to: 'docs/introduction', label: 'Docs', position: 'left' },
         {
-          href: 'https://opctl-slackin.herokuapp.com/',
+          href: 'https://join.slack.com/t/opctl/shared_invite/zt-51zodvjn-Ul_UXfkhqYLWZPQTvNPp5w',
           label: 'Slack',
           position: 'right',
         },
@@ -52,7 +52,7 @@ module.exports = {
           items: [
             {
               label: 'Slack',
-              href: 'https://opctl-slackin.herokuapp.com/',
+              href: 'https://join.slack.com/t/opctl/shared_invite/zt-51zodvjn-Ul_UXfkhqYLWZPQTvNPp5w',
             },
           ],
         },
@@ -74,7 +74,7 @@ module.exports = {
       '@docusaurus/preset-classic',
       {
         docs: {
-          editUrl: "https://github.com/opctl/opctl/edit/master/docs/",
+          editUrl: "https://github.com/opctl/opctl/edit/master/website/",
           sidebarPath: require.resolve('./sidebars.js'),
           // Equivalent to `enableUpdateBy`.
           showLastUpdateAuthor: true,
