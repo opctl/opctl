@@ -5,7 +5,7 @@ labels: 'feature, needs triage'
 ---
 
 <!--
-    If you like to follow up or discuss the feature with us, post a message in our [![Slack](https://opctl-slackin.herokuapp.com/badge.svg)](https://opctl-slackin.herokuapp.com/) channel. 
+    If you like to follow up or discuss the feature with us, post a message in our [![Slack](https://img.shields.io/badge/slack-opctl-E01563.svg)](https://join.slack.com/t/opctl/shared_invite/zt-51zodvjn-Ul_UXfkhqYLWZPQTvNPp5w) channel. 
 -->
 
 ## 🚀 Feature
