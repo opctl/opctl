@@ -9,14 +9,14 @@ import (
 	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/internal/fakes"
 )
 
-var _ = Context("EnsureNetworkExists", func() {
+var _ = Context("EnsureNetworkExistser", func() {
 	It("should call dockerClient.NetworkInspect w/ expected args", func() {
 		/* arrange */
 		fakeDockerClient := new(FakeCommonAPIClient)
 
 		providedContainerID := "dummyContainerID"
 
-		objectUnderTest := _containerRuntime{
+		objectUnderTest := _ensureNetworkExistser{
 			dockerClient: fakeDockerClient,
 		}
 
@@ -35,7 +35,7 @@ var _ = Context("EnsureNetworkExists", func() {
 
 			providedContainerID := "dummyContainerID"
 
-			objectUnderTest := _containerRuntime{
+			objectUnderTest := _ensureNetworkExistser{
 				dockerClient: fakeDockerClient,
 			}
 
@@ -67,7 +67,7 @@ var _ = Context("EnsureNetworkExists", func() {
 					CheckDuplicate: true,
 				}
 
-				objectUnderTest := _containerRuntime{
+				objectUnderTest := _ensureNetworkExistser{
 					dockerClient: fakeDockerClient,
 				}
 
@@ -100,7 +100,7 @@ var _ = Context("EnsureNetworkExists", func() {
 						errorReturnedFromNetworkCreate.Error(),
 					)
 
-					objectUnderTest := _containerRuntime{
+					objectUnderTest := _ensureNetworkExistser{
 						dockerClient: fakeDockerClient,
 					}
 
@@ -123,7 +123,7 @@ var _ = Context("EnsureNetworkExists", func() {
 						},
 					)
 
-					objectUnderTest := _containerRuntime{
+					objectUnderTest := _ensureNetworkExistser{
 						dockerClient: fakeDockerClient,
 					}
 
@@ -148,7 +148,7 @@ var _ = Context("EnsureNetworkExists", func() {
 					errorReturnedFromNetworkInspect.Error(),
 				)
 
-				objectUnderTest := _containerRuntime{
+				objectUnderTest := _ensureNetworkExistser{
 					dockerClient: fakeDockerClient,
 				}
 

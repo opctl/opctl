@@ -2,16 +2,35 @@ package docker
 
 import (
 	"fmt"
+
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+	dockerClientPkg "github.com/docker/docker/client"
 	"golang.org/x/net/context"
 )
 
-func (ctp _containerRuntime) EnsureNetworkExists(
+//counterfeiter:generate -o internal/fakes/ensureNetworkExistser.go . ensureNetworkExistser
+type ensureNetworkExistser interface {
+	EnsureNetworkExists(
+		networkID string,
+	) (err error)
+}
+
+func newEnsureNetworkExistser(dockerClient dockerClientPkg.CommonAPIClient) ensureNetworkExistser {
+	return _ensureNetworkExistser{
+		dockerClient: dockerClient,
+	}
+}
+
+type _ensureNetworkExistser struct {
+	dockerClient dockerClientPkg.CommonAPIClient
+}
+
+func (ene _ensureNetworkExistser) EnsureNetworkExists(
 	networkID string,
 ) (err error) {
 
-	_, networkInspectErr := ctp.dockerClient.NetworkInspect(
+	_, networkInspectErr := ene.dockerClient.NetworkInspect(
 		context.Background(),
 		networkID,
 		types.NetworkInspectOptions{},
@@ -26,7 +45,7 @@ func (ctp _containerRuntime) EnsureNetworkExists(
 		return
 	}
 
-	_, err = ctp.dockerClient.NetworkCreate(
+	_, err = ene.dockerClient.NetworkCreate(
 		context.Background(),
 		networkID,
 		types.NetworkCreate{
