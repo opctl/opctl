@@ -27,24 +27,11 @@ run:
           srcDir: $(srcDir/cli)
         outputs:
           coverprofile:
-    - parallelLoop:
-        range:
-          - darwin
-          - linux
-          - windows
-        vars:
-          value: GOOS
-        run:
-          op:
-            ref: github.com/opspec-pkgs/golang.build.bin#2.0.0
-            inputs:
-              name: opctl.$(GOOS)
-              srcDir: $(srcDir/cli)
-              GOOS:
-              GOFLAGS: 
-                -mod=vendor
-                -tags=containers_image_openpgp
-                -ldflags=-X=main.version=$(version)
+    - op:
+        ref: ../compile
+        inputs:
+          srcDir: $(srcDir)
+          version:
     - op:
         ref: ../test/system/opspec
         inputs:
