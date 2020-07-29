@@ -28,18 +28,11 @@ func New() (
 		return
 	}
 
-	objectUnderConstruction := _containerRuntime{
+	return _containerRuntime{
 		runContainer: rc,
 		dockerClient: dockerClient,
 		os:           ios.New(),
-	}
-	containerRuntime = objectUnderConstruction
-
-	// ensure user defined network exists to allow inter container resolution via name
-	// @TODO: remove when socket outputs supported
-	err = objectUnderConstruction.EnsureNetworkExists(dockerNetworkName)
-
-	return
+	}, nil
 }
 
 type _containerRuntime struct {

@@ -21,6 +21,33 @@ var _ = Context("RunContainer", func() {
 	closedContainerWaitOkBodyChan := make(chan container.ContainerWaitOKBody)
 	close(closedContainerWaitOkBodyChan)
 
+	It("should call containerConfigFactory.Construct w expected args", func() {
+		/* arrange */
+
+		fakeEnsureNetworkExistser := new(FakeEnsureNetworkExistser)
+		expectedErr := errors.New("dummyErr")
+		fakeEnsureNetworkExistser.EnsureNetworkExistsReturnsOnCall(0, expectedErr)
+
+		objectUnderTest := _runContainer{
+			ensureNetworkExistser: fakeEnsureNetworkExistser,
+		}
+
+		/* act */
+		_, actualErr := objectUnderTest.RunContainer(
+			context.Background(),
+			&model.DCGContainerCall{},
+			new(FakeEventPublisher),
+			nopWriteCloser{ioutil.Discard},
+			nopWriteCloser{ioutil.Discard},
+		)
+
+		/* assert */
+		actualNetworkName := fakeEnsureNetworkExistser.EnsureNetworkExistsArgsForCall(0)
+
+		Expect(actualErr).To(Equal(expectedErr))
+		Expect(actualNetworkName).To(Equal(dockerNetworkName))
+	})
+
 	It("should call dockerClient.ContainerRemove w/ expected args", func() {
 		/* arrange */
 		providedReq := &model.DCGContainerCall{
@@ -46,6 +73,7 @@ var _ = Context("RunContainer", func() {
 			containerStdOutStreamer: new(FakeContainerLogStreamer),
 			dockerClient:            fakeDockerClient,
 			imagePuller:             new(FakeImagePuller),
+			ensureNetworkExistser:   new(FakeEnsureNetworkExistser),
 			portBindingsFactory:     fakePortBindingsFactory,
 		}
 
@@ -85,6 +113,7 @@ var _ = Context("RunContainer", func() {
 			containerStdErrStreamer: new(FakeContainerLogStreamer),
 			containerStdOutStreamer: new(FakeContainerLogStreamer),
 			dockerClient:            fakeDockerClient,
+			ensureNetworkExistser:   new(FakeEnsureNetworkExistser),
 			hostConfigFactory:       new(FakeHostConfigFactory),
 			imagePuller:             new(FakeImagePuller),
 			portBindingsFactory:     fakePortBindingsFactory,
@@ -115,6 +144,7 @@ var _ = Context("RunContainer", func() {
 				containerStdErrStreamer: new(FakeContainerLogStreamer),
 				containerStdOutStreamer: new(FakeContainerLogStreamer),
 				dockerClient:            new(FakeCommonAPIClient),
+				ensureNetworkExistser:   new(FakeEnsureNetworkExistser),
 				hostConfigFactory:       new(FakeHostConfigFactory),
 				imagePuller:             new(FakeImagePuller),
 				portBindingsFactory:     fakePortBindingsFactory,
@@ -164,6 +194,7 @@ var _ = Context("RunContainer", func() {
 				containerStdErrStreamer: new(FakeContainerLogStreamer),
 				containerStdOutStreamer: new(FakeContainerLogStreamer),
 				dockerClient:            fakeDockerClient,
+				ensureNetworkExistser:   new(FakeEnsureNetworkExistser),
 				hostConfigFactory:       new(FakeHostConfigFactory),
 				imagePuller:             new(FakeImagePuller),
 				portBindingsFactory:     fakePortBindingsFactory,
@@ -225,6 +256,7 @@ var _ = Context("RunContainer", func() {
 				containerStdErrStreamer: new(FakeContainerLogStreamer),
 				containerStdOutStreamer: new(FakeContainerLogStreamer),
 				dockerClient:            fakeDockerClient,
+				ensureNetworkExistser:   new(FakeEnsureNetworkExistser),
 				hostConfigFactory:       fakeHostConfigFactory,
 				imagePuller:             new(FakeImagePuller),
 				portBindingsFactory:     fakePortBindingsFactory,
@@ -274,6 +306,7 @@ var _ = Context("RunContainer", func() {
 				containerStdErrStreamer: new(FakeContainerLogStreamer),
 				containerStdOutStreamer: new(FakeContainerLogStreamer),
 				dockerClient:            fakeDockerClient,
+				ensureNetworkExistser:   new(FakeEnsureNetworkExistser),
 				hostConfigFactory:       new(FakeHostConfigFactory),
 				imagePuller:             fakeImagePuller,
 				portBindingsFactory:     new(FakePortBindingsFactory),
@@ -342,6 +375,7 @@ var _ = Context("RunContainer", func() {
 				containerStdErrStreamer: new(FakeContainerLogStreamer),
 				containerStdOutStreamer: new(FakeContainerLogStreamer),
 				dockerClient:            fakeDockerClient,
+				ensureNetworkExistser:   new(FakeEnsureNetworkExistser),
 				hostConfigFactory:       fakeHostConfigFactory,
 				imagePuller:             new(FakeImagePuller),
 				portBindingsFactory:     new(FakePortBindingsFactory),

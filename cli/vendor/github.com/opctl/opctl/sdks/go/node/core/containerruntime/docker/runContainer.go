@@ -39,6 +39,7 @@ func newRunContainer(
 		containerStdErrStreamer: newContainerStdErrStreamer(dockerClient),
 		containerStdOutStreamer: newContainerStdOutStreamer(dockerClient),
 		dockerClient:            dockerClient,
+		ensureNetworkExistser:   newEnsureNetworkExistser(dockerClient),
 		hostConfigFactory:       hcf,
 		imagePuller:             newImagePuller(dockerClient),
 		imagePusher:             newImagePusher(),
@@ -52,6 +53,7 @@ type _runContainer struct {
 	containerStdErrStreamer containerLogStreamer
 	containerStdOutStreamer containerLogStreamer
 	dockerClient            dockerClientPkg.CommonAPIClient
+	ensureNetworkExistser   ensureNetworkExistser
 	hostConfigFactory       hostConfigFactory
 	imagePuller             imagePuller
 	imagePusher             imagePusher
@@ -65,6 +67,12 @@ func (cr _runContainer) RunContainer(
 	stdout io.WriteCloser,
 	stderr io.WriteCloser,
 ) (*int64, error) {
+	// ensure user defined network exists to allow inter container resolution via name
+	// @TODO: remove when socket outputs supported
+	if err := cr.ensureNetworkExistser.EnsureNetworkExists(dockerNetworkName); nil != err {
+		return nil, err
+	}
+
 	// for docker, we prefix name with opctl_ in order to allow external tools to know it's an opctl managed container
 	// do not change this prefix as it might break external consumers
 	containerName := fmt.Sprintf("opctl_%s", req.ContainerID)
