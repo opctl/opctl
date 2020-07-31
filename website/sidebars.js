@@ -27,7 +27,21 @@ module.exports = {
             "run-a-react-app"
           ]
         },
-        "training/visualization",
+        {
+          type: "category",
+          label: "Containers",
+          items: [
+            "training/containers/how-do-i-communicate-with-an-opctl-container",
+            "training/containers/how-do-i-get-opctl-containers-to-communicate"
+          ]
+        },
+        {
+          type: "category",
+          label: "UI",
+          items: [
+            "training/ui/how-do-i-visualize-an-op"
+          ]
+        }
       ]
     },
     {
