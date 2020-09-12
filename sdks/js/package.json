@@ -3,7 +3,7 @@
     "@codefresh-io/docker-reference": "^0.0.5",
     "@types/node-fetch": "^2.3.2",
     "ajv": "^5.2.3",
-    "node-fetch": "^1.7.3",
+    "node-fetch": "^2.6.1",
     "typescript": "^3.4.3",
     "universal-websocket-client": "^1.0.1"
   },
