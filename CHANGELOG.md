@@ -6,6 +6,11 @@ accordance with
 
 ## [Unreleased]
 
+### Fixed
+
+- [Gracefully handle docker restarts](https://github.com/opctl/opctl/issues/678)
+- [Running an op should never kill a node](https://github.com/opctl/opctl/issues/756)
+
 ## 0.1.41 - 2020-06-03
 
 ### Changed

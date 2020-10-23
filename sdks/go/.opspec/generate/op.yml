@@ -25,5 +25,5 @@ run:
     dirs:
       /src: $(srcDir)
     # @TODO: identify why fake generation breaks on 1.14
-    image: { ref: 'golang:1.14' }
+    image: { ref: 'golang:1.15' }
     workDir: /src/sdks/go

@@ -19,7 +19,7 @@ import (
 type serialLoopCaller interface {
 	// Executes a serial loop call
 	Call(
-		parentCtx context.Context,
+		ctx context.Context,
 		id string,
 		inboundScope map[string]*model.Value,
 		scgSerialLoop model.SCGSerialLoopCall,
@@ -55,7 +55,7 @@ type _serialLoopCaller struct {
 }
 
 func (lpr _serialLoopCaller) Call(
-	parentCtx context.Context,
+	ctx context.Context,
 	id string,
 	inboundScope map[string]*model.Value,
 	scgSerialLoop model.SCGSerialLoopCall,
@@ -63,36 +63,27 @@ func (lpr _serialLoopCaller) Call(
 	parentCallID *string,
 	rootOpID string,
 ) {
-	// setup cancellation
-	serialLoopCtx, cancelSerialLoop := context.WithCancel(parentCtx)
-	defer cancelSerialLoop()
-
 	var err error
 	outboundScope := map[string]*model.Value{}
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-		select {
-		case <-parentCtx.Done():
-			// if parent context cancelled; NOOP
-		default:
-			event := model.Event{
-				Timestamp: time.Now().UTC(),
-				SerialLoopCallEnded: &model.SerialLoopCallEndedEvent{
-					CallID:   id,
-					RootOpID: rootOpID,
-					Outputs:  outboundScope,
-				},
-			}
-
-			if nil != err {
-				event.SerialLoopCallEnded.Error = &model.CallEndedEventError{
-					Message: err.Error(),
-				}
-			}
-
-			lpr.pubSub.Publish(event)
+		event := model.Event{
+			Timestamp: time.Now().UTC(),
+			SerialLoopCallEnded: &model.SerialLoopCallEndedEvent{
+				CallID:   id,
+				RootOpID: rootOpID,
+				Outputs:  outboundScope,
+			},
 		}
+
+		if nil != err {
+			event.SerialLoopCallEnded.Error = &model.CallEndedEventError{
+				Message: err.Error(),
+			}
+		}
+
+		lpr.pubSub.Publish(event)
 	}()
 
 	index := 0
@@ -126,7 +117,7 @@ func (lpr _serialLoopCaller) Call(
 		}
 
 		lpr.caller.Call(
-			serialLoopCtx,
+			ctx,
 			callID,
 			outboundScope,
 			&scgSerialLoop.Run,
@@ -138,7 +129,7 @@ func (lpr _serialLoopCaller) Call(
 		// subscribe to events
 		// @TODO: handle err channel
 		eventChannel, _ := lpr.pubSub.Subscribe(
-			serialLoopCtx,
+			ctx,
 			model.EventFilter{
 				Roots: []string{rootOpID},
 				Since: &eventFilterSince,

@@ -6,13 +6,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/transport"
+	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/sdks/go/model"
-	"gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing"
-	"gopkg.in/src-d/go-git.v4/plumbing/transport"
-	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 )
 
 //counterfeiter:generate -o internal/fakes/puller.go . puller
@@ -33,14 +32,12 @@ type puller interface {
 
 func newPuller() puller {
 	return _puller{
-		git:       igit.New(),
 		os:        ios.New(),
 		refParser: newRefParser(),
 	}
 }
 
 type _puller struct {
-	git       igit.IGit
 	os        ios.IOS
 	refParser refParser
 }
@@ -73,26 +70,20 @@ func (plr _puller) Pull(
 		}
 	}
 
-	if _, err := plr.git.PlainClone(
+	if _, err := git.PlainClone(
 		opPath,
 		false,
 		cloneOptions,
 	); nil != err {
 		switch err.Error() {
 		case transport.ErrAuthenticationRequired.Error():
-			// clone failed; cleanup remnants
-			plr.os.RemoveAll(opPath)
 			return model.ErrDataProviderAuthentication{}
 		case transport.ErrAuthorizationFailed.Error():
-			// clone failed; cleanup remnants
-			plr.os.RemoveAll(opPath)
 			return model.ErrDataProviderAuthorization{}
 		case git.ErrRepositoryAlreadyExists.Error():
 			return nil
 			// NoOp on repo already exists
 		default:
-			// clone failed; cleanup remnants
-			plr.os.RemoveAll(opPath)
 			return err
 		}
 	}

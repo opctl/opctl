@@ -68,26 +68,21 @@ func (pc _parallelCaller) Call(
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-		select {
-		case <-parentCtx.Done():
-			// if parent context cancelled; NOOP
-		default:
-			event := model.Event{
-				ParallelCallEnded: &model.ParallelCallEndedEvent{
-					CallID:   callID,
-					Outputs:  outputs,
-					RootOpID: rootOpID,
-				},
-				Timestamp: time.Now().UTC(),
-			}
-
-			if nil != err {
-				event.ParallelCallEnded.Error = &model.CallEndedEventError{
-					Message: err.Error(),
-				}
-			}
-			pc.pubSub.Publish(event)
+		event := model.Event{
+			ParallelCallEnded: &model.ParallelCallEndedEvent{
+				CallID:   callID,
+				Outputs:  outputs,
+				RootOpID: rootOpID,
+			},
+			Timestamp: time.Now().UTC(),
 		}
+
+		if nil != err {
+			event.ParallelCallEnded.Error = &model.CallEndedEventError{
+				Message: err.Error(),
+			}
+		}
+		pc.pubSub.Publish(event)
 	}()
 
 	childCallNeededCountByName := map[string]int{}

@@ -1,6 +1,6 @@
 module github.com/opctl/opctl/cli
 
-go 1.12
+go 1.15
 
 require (
 	github.com/appdataspec/sdk-golang v0.0.0-20170917062448-0c0ade7a92f7
