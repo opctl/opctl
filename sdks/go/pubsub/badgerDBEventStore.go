@@ -12,14 +12,10 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
-/**
-NewBadgerDBEventStore returns an EventStore implementation leveraging [Badger DB](https://github.com/dgraph-io/badger)
-*/
+//NewBadgerDBEventStore returns an EventStore implementation leveraging [Badger DB](https://github.com/dgraph-io/badger)
 func NewBadgerDBEventStore(
-	eventDbFilePath string,
+	eventDbDirPath string,
 ) EventStore {
-	eventDbDirPath := eventDbFilePath
-
 	err := os.MkdirAll(eventDbDirPath, 0700)
 	if nil != err {
 		panic(err)

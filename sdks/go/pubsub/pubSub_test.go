@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	"io/ioutil"
+	"os"
 	"time"
 )
 
@@ -156,11 +157,8 @@ var _ = Context("pubSub", func() {
 						Timestamp: time.Now().Add(time.Second),
 					}
 
-					tempFilePath, err := ioutil.TempFile("", "")
-					if nil != err {
-						panic(err)
-					}
-					tempEventStore := NewBuntDBEventStore(tempFilePath.Name())
+					tempDirPath := os.TempDir()
+					tempEventStore := NewBadgerDBEventStore(tempDirPath)
 
 					objectUnderTest := New(tempEventStore)
 					objectUnderTest.Publish(expectedEvent1)

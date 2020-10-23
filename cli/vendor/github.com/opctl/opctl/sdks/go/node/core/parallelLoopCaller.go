@@ -73,27 +73,22 @@ func (plpr _parallelLoopCaller) Call(
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-		select {
-		case <-parentCtx.Done():
-			// if parent context cancelled; NOOP
-		default:
-			event := model.Event{
-				Timestamp: time.Now().UTC(),
-				ParallelLoopCallEnded: &model.ParallelLoopCallEndedEvent{
-					CallID:   id,
-					RootOpID: rootOpID,
-					Outputs:  outboundScope,
-				},
-			}
-
-			if nil != err {
-				event.ParallelLoopCallEnded.Error = &model.CallEndedEventError{
-					Message: err.Error(),
-				}
-			}
-
-			plpr.pubSub.Publish(event)
+		event := model.Event{
+			Timestamp: time.Now().UTC(),
+			ParallelLoopCallEnded: &model.ParallelLoopCallEndedEvent{
+				CallID:   id,
+				RootOpID: rootOpID,
+				Outputs:  outboundScope,
+			},
 		}
+
+		if nil != err {
+			event.ParallelLoopCallEnded.Error = &model.CallEndedEventError{
+				Message: err.Error(),
+			}
+		}
+
+		plpr.pubSub.Publish(event)
 	}()
 
 	childCallIndex := 0

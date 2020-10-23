@@ -59,6 +59,7 @@ func (ckr _callKiller) Kill(
 		go func(childCallGraph *model.DCG) {
 			defer func() {
 				if panicArg := recover(); panicArg != nil {
+					// recover from panics; treat as errors
 					fmt.Println(panicArg, debug.Stack())
 				}
 			}()

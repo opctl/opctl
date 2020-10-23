@@ -7,17 +7,12 @@ import (
 	"os"
 	"path/filepath"
 
-	igit "github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data/provider/git/internal"
 	. "github.com/opctl/opctl/sdks/go/data/provider/git/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	"gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing"
-	"gopkg.in/src-d/go-git.v4/plumbing/transport"
-	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 )
 
 var _ = Context("puller", func() {
@@ -70,120 +65,66 @@ var _ = Context("puller", func() {
 			})
 		})
 		Context("refParser.Parse doesn't err", func() {
-			It("should call git.PlainClone w/ expected args", func() {
-
-				/* arrange */
-				providedCtx := context.Background()
-				providedPath := "dummyPath"
-				providedPullCreds := &model.PullCreds{
-					Username: "dummyUsername",
-					Password: "dummyPassword",
-				}
-
-				ref := &internal.Ref{
-					Name:    "dummyDataRef",
-					Version: "0.0.0",
-				}
-
-				fakeRefParser := new(FakeRefParser)
-				fakeRefParser.ParseReturns(ref, nil)
-
-				expectedCloneOptions := &git.CloneOptions{
-					Auth: &http.BasicAuth{
-						Username: providedPullCreds.Username,
-						Password: providedPullCreds.Password,
-					},
-					URL:           fmt.Sprintf("https://%v", ref.Name),
-					ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", ref.Version)),
-					Depth:         1,
-					Progress:      os.Stdout,
-				}
-
-				fakeGit := new(igit.Fake)
-
-				objectUnderTest := _puller{
-					git:       fakeGit,
-					os:        new(ios.Fake),
-					refParser: fakeRefParser,
-				}
-
-				/* act */
-				objectUnderTest.Pull(
-					providedCtx,
-					providedPath,
-					"dummyDataRef",
-					providedPullCreds,
-				)
-
-				/* assert */
-				actualPath,
-					actualIsBare,
-					actualCloneOptions := fakeGit.PlainCloneArgsForCall(0)
-
-				Expect(actualPath).To(Equal(ref.ToPath(providedPath)))
-				Expect(actualIsBare).To(BeFalse())
-				Expect(actualCloneOptions).To(Equal(expectedCloneOptions))
-			})
 			Context("git.PlainClone errors", func() {
 				Context("err.Error() returns git.ErrRepositoryAlreadyExists", func() {
-					It("shouldn't call fs.RemoveAll or error", func() {
+					It("shouldn't error", func() {
 
 						/* arrange */
+						providedPath := os.TempDir()
+
 						fakeRefParser := new(FakeRefParser)
-						fakeRefParser.ParseReturns(&internal.Ref{}, nil)
-
-						fakeOS := new(ios.Fake)
-
-						fakeGit := new(igit.Fake)
-						fakeGit.PlainCloneReturns(nil, git.ErrRepositoryAlreadyExists)
+						fakeRefParser.ParseReturns(&internal.Ref{
+							// some public repo that's relatively small
+							Name:    "github.com/opspec-pkgs/_.op.create",
+							Version: "3.2.0",
+						}, nil)
 
 						objectUnderTest := _puller{
-							git:       fakeGit,
-							os:        fakeOS,
+							os:        new(ios.Fake),
 							refParser: fakeRefParser,
 						}
 
 						/* act */
+						firstErr := objectUnderTest.Pull(
+							context.Background(),
+							providedPath,
+							"dummyRef",
+							nil,
+						)
+						if nil != firstErr {
+							panic(firstErr)
+						}
+
 						actualError := objectUnderTest.Pull(
 							context.Background(),
-							"dummyPath",
-							"dummyDataRef",
+							providedPath,
+							"dummyRef",
 							nil,
 						)
 
 						/* assert */
 						Expect(actualError).To(BeNil())
-						Expect(fakeOS.RemoveAllCallCount()).To(Equal(0))
 					})
 				})
 				Context("err.Error() returns transport.ErrAuthenticationRequired error", func() {
-					It("should call fs.RemoveAll w/ expected args & return expected error", func() {
+					It("should return expected error", func() {
 
 						/* arrange */
-						providedPath := "dummyPath"
+						providedPath := os.TempDir()
 
 						ref := &internal.Ref{
-							Name:    "dummyDataRef",
-							Version: "0.0.0",
+							// use some private repo
+							Name:    "github.com/Remitly/infra-ops",
+							Version: "9.1.6",
 						}
 
 						fakeRefParser := new(FakeRefParser)
 						fakeRefParser.ParseReturns(ref, nil)
 
-						expectedPath := filepath.Join(
-							providedPath,
-							fmt.Sprintf("%v#%v", ref.Name, ref.Version),
-						)
-
-						fakeOS := new(ios.Fake)
 						expectedError := model.ErrDataProviderAuthentication{}
 
-						fakeGit := new(igit.Fake)
-						fakeGit.PlainCloneReturns(nil, transport.ErrAuthenticationRequired)
-
 						objectUnderTest := _puller{
-							git:       fakeGit,
-							os:        fakeOS,
+							os:        new(ios.Fake),
 							refParser: fakeRefParser,
 						}
 
@@ -191,43 +132,33 @@ var _ = Context("puller", func() {
 						actualError := objectUnderTest.Pull(
 							context.Background(),
 							providedPath,
-							"dummyDataRef",
+							"dummyRef",
 							nil,
 						)
 
 						/* assert */
-						Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
 						Expect(actualError).To(Equal(expectedError))
 					})
 				})
 				Context("err.Error() returns transport.ErrAuthorizationFailed error", func() {
-					It("should call fs.RemoveAll w/ expected args & return expected error", func() {
+					It("should return expected error", func() {
 
 						/* arrange */
-						providedPath := "dummyPath"
+						providedPath := os.TempDir()
 
 						ref := &internal.Ref{
-							Name:    "dummyDataRef",
+							// use gitlab cuz github returns 404 not 403
+							Name:    "gitlab.com/joetesterperson1/private",
 							Version: "0.0.0",
 						}
 
 						fakeRefParser := new(FakeRefParser)
 						fakeRefParser.ParseReturns(ref, nil)
 
-						expectedPath := filepath.Join(
-							providedPath,
-							fmt.Sprintf("%v#%v", ref.Name, ref.Version),
-						)
-
-						fakeOS := new(ios.Fake)
 						expectedError := model.ErrDataProviderAuthorization{}
 
-						fakeGit := new(igit.Fake)
-						fakeGit.PlainCloneReturns(nil, transport.ErrAuthorizationFailed)
-
 						objectUnderTest := _puller{
-							git:       fakeGit,
-							os:        fakeOS,
+							os:        new(ios.Fake),
 							refParser: fakeRefParser,
 						}
 
@@ -236,37 +167,33 @@ var _ = Context("puller", func() {
 							context.Background(),
 							providedPath,
 							"dummyDataRef",
-							nil,
+							&model.PullCreds{
+								Username: "joetesterperson",
+								Password: "MWgQpun9TWUx2iFQctyJ",
+							},
 						)
 
 						/* assert */
-						Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
 						Expect(actualError).To(Equal(expectedError))
 					})
 				})
 				Context("err.Error() returns other error", func() {
-					It("should call fs.RemoveAll w/ expected args & return error", func() {
+					It("should return error", func() {
 
 						/* arrange */
-						providedPath := "dummypath"
+						providedPath := os.TempDir()
 						ref := &internal.Ref{
 							Name:    "dummyDataRef",
 							Version: "0.0.0",
 						}
 
+						expectedMsg := fmt.Sprintf(`Get "https://%s/info/refs?service=git-upload-pack": dial tcp: lookup dummyDataRef on 127.0.0.11:53: no such host`, ref.Name)
+
 						fakeRefParser := new(FakeRefParser)
 						fakeRefParser.ParseReturns(ref, nil)
 
-						fakeOS := new(ios.Fake)
-
-						expectedError := errors.New("dummyError")
-
-						fakeGit := new(igit.Fake)
-						fakeGit.PlainCloneReturns(nil, expectedError)
-
 						objectUnderTest := _puller{
-							git:       fakeGit,
-							os:        fakeOS,
+							os:        new(ios.Fake),
 							refParser: fakeRefParser,
 						}
 
@@ -279,43 +206,20 @@ var _ = Context("puller", func() {
 						)
 
 						/* assert */
-						Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(ref.ToPath(providedPath)))
-						Expect(actualError).To(Equal(expectedError))
+						Expect(actualError.Error()).To(Equal(expectedMsg))
 					})
 				})
 			})
 			Context("git.PlainClone doesn't error", func() {
-				It("shouldn't err", func() {
-					/* arrange */
-					fakeRefParser := new(FakeRefParser)
-					fakeRefParser.ParseReturns(&internal.Ref{}, nil)
-
-					objectUnderTest := _puller{
-						git:       new(igit.Fake),
-						os:        new(ios.Fake),
-						refParser: fakeRefParser,
-					}
-
-					/* act */
-					actualErr := objectUnderTest.Pull(
-						context.Background(),
-						"dummyPath",
-						"dummyDataRef",
-						nil,
-					)
-
-					/* assert */
-					Expect(actualErr).To(BeNil())
-				})
-
 				It("should remove pkg '.git' sub dir & return errors", func() {
 
 					/* arrange */
-					providedPath := "dummypath"
+					providedPath := os.TempDir()
 
 					ref := &internal.Ref{
-						Name:    "dummyDataRef",
-						Version: "0.0.0",
+						// some public repo that's relatively small
+						Name:    "github.com/opspec-pkgs/_.op.create",
+						Version: "3.3.1",
 					}
 
 					fakeRefParser := new(FakeRefParser)
@@ -328,7 +232,6 @@ var _ = Context("puller", func() {
 					fakeOS.RemoveAllReturns(expectedError)
 
 					objectUnderTest := _puller{
-						git:       new(igit.Fake),
 						os:        fakeOS,
 						refParser: fakeRefParser,
 					}
@@ -342,8 +245,8 @@ var _ = Context("puller", func() {
 					)
 
 					/* assert */
-					Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
 					Expect(actualError).To(Equal(expectedError))
+					Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
 				})
 			})
 		})

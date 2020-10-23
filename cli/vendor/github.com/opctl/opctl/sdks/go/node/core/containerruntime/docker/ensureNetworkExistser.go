@@ -7,13 +7,17 @@ import (
 	"github.com/docker/docker/client"
 	dockerClientPkg "github.com/docker/docker/client"
 	"golang.org/x/net/context"
+	"golang.org/x/sync/singleflight"
 )
+
+// singleFlightGroup is used to ensure creates don't race across calls
+var createSingleFlightGroup singleflight.Group
 
 //counterfeiter:generate -o internal/fakes/ensureNetworkExistser.go . ensureNetworkExistser
 type ensureNetworkExistser interface {
 	EnsureNetworkExists(
 		networkID string,
-	) (err error)
+	) error
 }
 
 func newEnsureNetworkExistser(dockerClient dockerClientPkg.CommonAPIClient) ensureNetworkExistser {
@@ -28,7 +32,7 @@ type _ensureNetworkExistser struct {
 
 func (ene _ensureNetworkExistser) EnsureNetworkExists(
 	networkID string,
-) (err error) {
+) error {
 
 	_, networkInspectErr := ene.dockerClient.NetworkInspect(
 		context.Background(),
@@ -37,24 +41,30 @@ func (ene _ensureNetworkExistser) EnsureNetworkExists(
 	)
 	if nil == networkInspectErr {
 		// if network exists, we're done
-		return
+		return nil
 	}
 
 	if !client.IsErrNotFound(networkInspectErr) {
-		err = fmt.Errorf("unable to inspect network. Response from docker was: %v", networkInspectErr.Error())
-		return
+		return fmt.Errorf("unable to inspect network. Response from docker was: %v", networkInspectErr.Error())
 	}
 
-	_, err = ene.dockerClient.NetworkCreate(
-		context.Background(),
+	// attempt to resolve within singleFlight.Group to ensure concurrent creates don't race
+	_, err, _ := createSingleFlightGroup.Do(
 		networkID,
-		types.NetworkCreate{
-			CheckDuplicate: true,
-			Attachable:     true,
+		func() (interface{}, error) {
+			return ene.dockerClient.NetworkCreate(
+				context.Background(),
+				networkID,
+				types.NetworkCreate{
+					CheckDuplicate: true,
+					Attachable:     true,
+				},
+			)
 		},
 	)
 	if nil != err {
-		err = fmt.Errorf("unable to create network. Response from docker was: %v", err.Error())
+		return fmt.Errorf("unable to create network. Response from docker was: %v", err.Error())
 	}
-	return
+
+	return nil
 }

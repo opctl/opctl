@@ -57,5 +57,5 @@ run:
         -mod=vendor
         -tags=containers_image_openpgp
         -ldflags=-X=main.version=$(version)
-    image: { ref: 'golang:1.14' }
+    image: { ref: 'golang:1.15' }
     workDir: /go/src/github.com/opctl/opctl

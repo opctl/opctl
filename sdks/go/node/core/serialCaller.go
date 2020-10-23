@@ -14,7 +14,7 @@ import (
 type serialCaller interface {
 	// Executes a serial call
 	Call(
-		parentCtx context.Context,
+		ctx context.Context,
 		callID string,
 		inboundScope map[string]*model.Value,
 		rootOpID string,
@@ -43,17 +43,13 @@ type _serialCaller struct {
 }
 
 func (sc _serialCaller) Call(
-	parentCtx context.Context,
+	ctx context.Context,
 	callID string,
 	inboundScope map[string]*model.Value,
 	rootOpID string,
 	opPath string,
 	scgSerialCall []*model.SCG,
 ) {
-	// setup cancellation
-	serialCtx, cancelSerial := context.WithCancel(parentCtx)
-	defer cancelSerial()
-
 	outputs := map[string]*model.Value{}
 	for varName, varData := range inboundScope {
 		outputs[varName] = varData
@@ -62,35 +58,30 @@ func (sc _serialCaller) Call(
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-		select {
-		case <-parentCtx.Done():
-			// if parent context cancelled; NOOP
-		default:
-			event := model.Event{
-				SerialCallEnded: &model.SerialCallEndedEvent{
-					CallID:   callID,
-					Outputs:  outputs,
-					RootOpID: rootOpID,
-				},
-				Timestamp: time.Now().UTC(),
-			}
-
-			if nil != err {
-				event.SerialCallEnded.Error = &model.CallEndedEventError{
-					Message: err.Error(),
-				}
-			}
-			sc.pubSub.Publish(
-				event,
-			)
+		event := model.Event{
+			SerialCallEnded: &model.SerialCallEndedEvent{
+				CallID:   callID,
+				Outputs:  outputs,
+				RootOpID: rootOpID,
+			},
+			Timestamp: time.Now().UTC(),
 		}
+
+		if nil != err {
+			event.SerialCallEnded.Error = &model.CallEndedEventError{
+				Message: err.Error(),
+			}
+		}
+		sc.pubSub.Publish(
+			event,
+		)
 	}()
 
 	// subscribe to events
 	// @TODO: handle err channel
 	eventFilterSince := time.Now().UTC()
 	eventChannel, _ := sc.pubSub.Subscribe(
-		serialCtx,
+		ctx,
 		model.EventFilter{
 			Roots: []string{rootOpID},
 			Since: &eventFilterSince,
@@ -107,7 +98,7 @@ func (sc _serialCaller) Call(
 		}
 
 		sc.caller.Call(
-			serialCtx,
+			ctx,
 			childCallID,
 			outputs,
 			scgCall,

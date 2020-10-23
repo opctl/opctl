@@ -28,6 +28,7 @@ run:
         inputs:
           name: opctl.$(GOOS)
           srcDir: $(srcDir/cli)
+          goVersion: 1.15
           GOOS:
           GOFLAGS: 
             -mod=vendor
