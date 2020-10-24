@@ -10,6 +10,7 @@ type Event struct {
 	ContainerStarted         *ContainerStartedEvent         `json:"containerStarted,omitempty"`
 	ContainerStdErrWrittenTo *ContainerStdErrWrittenToEvent `json:"containerStdErrWrittenTo,omitempty"`
 	ContainerStdOutWrittenTo *ContainerStdOutWrittenToEvent `json:"containerStdOutWrittenTo,omitempty"`
+	OpKillRequested          *OpKillRequested               `json:"opKillRequested,omitempty"`
 	OpEnded                  *OpEndedEvent                  `json:"opEnded,omitempty"`
 	OpStarted                *OpStartedEvent                `json:"opStarted,omitempty"`
 	OpErred                  *OpErredEvent                  `json:"opErred,omitempty"`
@@ -25,6 +26,11 @@ const (
 	OpOutcomeFailed    = "FAILED"
 	OpOutcomeKilled    = "KILLED"
 )
+
+// OpKillRequested represents a request was made to kill an op; a CallKilledEvent may follow
+type OpKillRequested struct {
+	Request KillOpReq `request:"request"`
+}
 
 // CallEndedEvent represents a call ended; no further events will occur for the call
 type CallEndedEvent struct {

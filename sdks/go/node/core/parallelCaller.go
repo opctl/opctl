@@ -26,13 +26,11 @@ type parallelCaller interface {
 }
 
 func newParallelCaller(
-	callKiller callKiller,
 	caller caller,
 	pubSub pubsub.PubSub,
 ) parallelCaller {
 
 	return _parallelCaller{
-		callKiller:          callKiller,
 		caller:              caller,
 		pubSub:              pubSub,
 		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
@@ -45,7 +43,6 @@ func refToName(ref string) string {
 }
 
 type _parallelCaller struct {
-	callKiller          callKiller
 	caller              caller
 	pubSub              pubsub.PubSub
 	uniqueStringFactory uniquestring.UniqueStringFactory
@@ -166,7 +163,17 @@ func (pc _parallelCaller) Call(
 				for neededCallName, neededCount := range childCallNeededCountByName {
 					if 1 > neededCount {
 						if neededCallID, ok := childCallIDByName[neededCallName]; ok {
-							pc.callKiller.Kill(neededCallID, rootOpID)
+							pc.pubSub.Publish(
+								model.Event{
+									OpKillRequested: &model.OpKillRequested{
+										Request: model.KillOpReq{
+											OpID:     neededCallID,
+											RootOpID: rootOpID,
+										},
+									},
+									Timestamp: time.Now().UTC(),
+								},
+							)
 						}
 					}
 				}

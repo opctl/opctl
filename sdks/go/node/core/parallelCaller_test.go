@@ -18,7 +18,6 @@ var _ = Context("parallelCaller", func() {
 		It("should return parallelCaller", func() {
 			/* arrange/act/assert */
 			Expect(newParallelCaller(
-				new(FakeCallKiller),
 				new(FakeCaller),
 				new(FakePubSub),
 			)).To(Not(BeNil()))

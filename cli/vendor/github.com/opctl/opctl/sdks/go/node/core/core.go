@@ -6,6 +6,7 @@ package core
 import (
 	"context"
 	"path/filepath"
+	"time"
 
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
@@ -61,16 +62,10 @@ func New(
 	pubSub pubsub.PubSub,
 	containerRuntime containerruntime.ContainerRuntime,
 	dataDirPath string,
-) (core Core) {
+) Core {
 	uniqueStringFactory := uniquestring.NewUniqueStringFactory()
 
 	callStore := newCallStore()
-
-	callKiller := newCallKiller(
-		callStore,
-		containerRuntime,
-		pubSub,
-	)
 
 	caller := newCaller(
 		call.NewInterpreter(
@@ -83,13 +78,36 @@ func New(
 		),
 		dataDirPath,
 		callStore,
-		callKiller,
 		pubSub,
 	)
 
-	core = _core{
+	go func() {
+		// process events in background
+		opKiller := newOpKiller(
+			callStore,
+			containerRuntime,
+			pubSub,
+		)
+
+		since := time.Now().UTC()
+		eventChannel, _ := pubSub.Subscribe(
+			context.Background(),
+			model.EventFilter{
+				Since: &since,
+			},
+		)
+
+		for event := range eventChannel {
+			switch {
+			case nil != event.OpKillRequested:
+				req := event.OpKillRequested.Request
+				opKiller.Kill(req.OpID, req.OpID)
+			}
+		}
+	}()
+
+	return _core{
 		caller:           caller,
-		callKiller:       callKiller,
 		containerRuntime: containerRuntime,
 		data:             data.New(),
 		dataCachePath:    filepath.Join(dataDirPath, "ops"),
@@ -104,13 +122,10 @@ func New(
 		pubSub:              pubSub,
 		uniqueStringFactory: uniqueStringFactory,
 	}
-
-	return
 }
 
 type _core struct {
 	caller              caller
-	callKiller          callKiller
 	containerRuntime    containerruntime.ContainerRuntime
 	data                data.Data
 	dataCachePath       string

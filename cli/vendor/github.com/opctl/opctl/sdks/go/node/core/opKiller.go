@@ -11,33 +11,33 @@ import (
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
-//counterfeiter:generate -o internal/fakes/killer.go . callKiller
-type callKiller interface {
+//counterfeiter:generate -o internal/fakes/opKiller.go . opKiller
+type opKiller interface {
 	Kill(
 		callID string,
 		rootCallID string,
 	)
 }
 
-func newCallKiller(
+func newOpKiller(
 	callStore callStore,
 	containerRuntime containerruntime.ContainerRuntime,
 	eventPublisher pubsub.EventPublisher,
-) callKiller {
-	return _callKiller{
+) opKiller {
+	return _opKiller{
 		callStore:        callStore,
 		containerRuntime: containerRuntime,
 		eventPublisher:   eventPublisher,
 	}
 }
 
-type _callKiller struct {
+type _opKiller struct {
 	callStore        callStore
 	containerRuntime containerruntime.ContainerRuntime
 	eventPublisher   pubsub.EventPublisher
 }
 
-func (ckr _callKiller) Kill(
+func (ckr _opKiller) Kill(
 	callID string,
 	rootCallID string,
 ) {

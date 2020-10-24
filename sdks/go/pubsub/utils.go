@@ -2,6 +2,7 @@ package pubsub
 
 import (
 	"fmt"
+
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -40,6 +41,8 @@ func getEventRootOpID(
 		return event.ContainerStdErrWrittenTo.RootOpID
 	case nil != event.ContainerStdOutWrittenTo:
 		return event.ContainerStdOutWrittenTo.RootOpID
+	case nil != event.OpKillRequested:
+		return event.OpKillRequested.Request.RootOpID
 	case nil != event.OpErred:
 		return event.OpErred.RootOpID
 	case nil != event.OpEnded:

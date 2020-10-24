@@ -6,6 +6,10 @@ accordance with
 
 ## [Unreleased]
 
+### Changed
+
+- [Make OpKill Event Driven](https://github.com/opctl/opctl/issues/809)
+
 ### Fixed
 
 - [Gracefully handle docker restarts](https://github.com/opctl/opctl/issues/678)
