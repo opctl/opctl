@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-type FakeCallKiller struct {
+type FakeOpKiller struct {
 	KillStub        func(string, string)
 	killMutex       sync.RWMutex
 	killArgsForCall []struct {
@@ -16,7 +16,7 @@ type FakeCallKiller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeCallKiller) Kill(arg1 string, arg2 string) {
+func (fake *FakeOpKiller) Kill(arg1 string, arg2 string) {
 	fake.killMutex.Lock()
 	fake.killArgsForCall = append(fake.killArgsForCall, struct {
 		arg1 string
@@ -29,26 +29,26 @@ func (fake *FakeCallKiller) Kill(arg1 string, arg2 string) {
 	}
 }
 
-func (fake *FakeCallKiller) KillCallCount() int {
+func (fake *FakeOpKiller) KillCallCount() int {
 	fake.killMutex.RLock()
 	defer fake.killMutex.RUnlock()
 	return len(fake.killArgsForCall)
 }
 
-func (fake *FakeCallKiller) KillCalls(stub func(string, string)) {
+func (fake *FakeOpKiller) KillCalls(stub func(string, string)) {
 	fake.killMutex.Lock()
 	defer fake.killMutex.Unlock()
 	fake.KillStub = stub
 }
 
-func (fake *FakeCallKiller) KillArgsForCall(i int) (string, string) {
+func (fake *FakeOpKiller) KillArgsForCall(i int) (string, string) {
 	fake.killMutex.RLock()
 	defer fake.killMutex.RUnlock()
 	argsForCall := fake.killArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCallKiller) Invocations() map[string][][]interface{} {
+func (fake *FakeOpKiller) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.killMutex.RLock()
@@ -60,7 +60,7 @@ func (fake *FakeCallKiller) Invocations() map[string][][]interface{} {
 	return copiedInvocations
 }
 
-func (fake *FakeCallKiller) recordInvocation(key string, args []interface{}) {
+func (fake *FakeOpKiller) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {

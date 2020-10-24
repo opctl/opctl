@@ -23,7 +23,6 @@ var _ = Context("caller", func() {
 					new(FakeContainerCaller),
 					"dummyDataDir",
 					new(FakeCallStore),
-					new(FakeCallKiller),
 					new(FakePubSub),
 				),
 			).To(Not(BeNil()))

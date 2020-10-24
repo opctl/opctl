@@ -2,9 +2,9 @@ package core
 
 import (
 	"context"
-	"runtime/debug"
 	"errors"
 	"fmt"
+	"runtime/debug"
 	"time"
 
 	"github.com/opctl/opctl/sdks/go/model"
@@ -31,7 +31,6 @@ func newCaller(
 	containerCaller containerCaller,
 	dataDirPath string,
 	callStore callStore,
-	callKiller callKiller,
 	pubSub pubsub.PubSub,
 ) caller {
 	instance := &_caller{
@@ -49,7 +48,6 @@ func newCaller(
 	)
 
 	instance.parallelCaller = newParallelCaller(
-		callKiller,
 		instance,
 		pubSub,
 	)
@@ -212,7 +210,7 @@ func (clr _caller) Call(
 				}
 				outputs = event.ParallelCallEnded.Outputs
 				return
-			case nil != event.CallKilled:
+			case nil != event.OpKillRequested:
 				return
 			}
 		}

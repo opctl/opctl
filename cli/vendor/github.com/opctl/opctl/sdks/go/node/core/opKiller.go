@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"runtime/debug"
 	"sync"
+	"time"
 
 	"github.com/opctl/opctl/sdks/go/model"
 
@@ -11,42 +12,47 @@ import (
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
-//counterfeiter:generate -o internal/fakes/killer.go . callKiller
-type callKiller interface {
+//counterfeiter:generate -o internal/fakes/opKiller.go . opKiller
+type opKiller interface {
 	Kill(
 		callID string,
 		rootCallID string,
 	)
 }
 
-func newCallKiller(
+func newOpKiller(
 	callStore callStore,
 	containerRuntime containerruntime.ContainerRuntime,
 	eventPublisher pubsub.EventPublisher,
-) callKiller {
-	return _callKiller{
+) opKiller {
+	return _opKiller{
 		callStore:        callStore,
 		containerRuntime: containerRuntime,
 		eventPublisher:   eventPublisher,
 	}
 }
 
-type _callKiller struct {
+type _opKiller struct {
 	callStore        callStore
 	containerRuntime containerruntime.ContainerRuntime
 	eventPublisher   pubsub.EventPublisher
 }
 
-func (ckr _callKiller) Kill(
+func (ckr _opKiller) Kill(
 	callID string,
 	rootCallID string,
 ) {
-	ckr.eventPublisher.Publish(model.Event{
-		CallKilled: &model.CallKilledEvent{
-			CallID:     callID,
-			RootCallID: rootCallID,
+	ckr.eventPublisher.Publish(
+		model.Event{
+			OpKillRequested: &model.OpKillRequested{
+				Request: model.KillOpReq{
+					OpID:     callID,
+					RootOpID: rootCallID,
+				},
+			},
+			Timestamp: time.Now().UTC(),
 		},
-	})
+	)
 
 	ckr.callStore.SetIsKilled(callID)
 	ckr.containerRuntime.DeleteContainerIfExists(callID)

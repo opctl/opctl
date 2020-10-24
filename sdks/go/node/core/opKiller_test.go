@@ -9,7 +9,7 @@ import (
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
-var _ = Context("core", func() {
+var _ = Context("_opKiller", func() {
 	Context("Kill", func() {
 		It("should call callStore.SetIsKilled w/ expected args", func() {
 			/* arrange */
@@ -17,7 +17,7 @@ var _ = Context("core", func() {
 
 			fakeCallStore := new(FakeCallStore)
 
-			objectUnderTest := _callKiller{
+			objectUnderTest := _opKiller{
 				containerRuntime: new(FakeContainerRuntime),
 				callStore:        fakeCallStore,
 				eventPublisher:   new(FakeEventPublisher),
@@ -38,7 +38,7 @@ var _ = Context("core", func() {
 
 			fakeCallStore := new(FakeCallStore)
 
-			objectUnderTest := _callKiller{
+			objectUnderTest := _opKiller{
 				containerRuntime: new(FakeContainerRuntime),
 				callStore:        fakeCallStore,
 				eventPublisher:   new(FakeEventPublisher),
@@ -74,7 +74,7 @@ var _ = Context("core", func() {
 					nodesReturnedFromCallStore[2].Id: true,
 				}
 
-				objectUnderTest := _callKiller{
+				objectUnderTest := _opKiller{
 					containerRuntime: new(FakeContainerRuntime),
 					callStore:        fakeCallStore,
 					eventPublisher:   new(FakeEventPublisher),
@@ -118,7 +118,7 @@ var _ = Context("core", func() {
 
 				fakeContainerRuntime := new(FakeContainerRuntime)
 
-				objectUnderTest := &_callKiller{
+				objectUnderTest := &_opKiller{
 					containerRuntime: fakeContainerRuntime,
 					callStore:        fakeCallStore,
 					eventPublisher:   new(FakeEventPublisher),

@@ -5,11 +5,11 @@ import "time"
 // Event represents a distributed state change
 type Event struct {
 	CallEnded                *CallEndedEvent                `json:"callEnded,omitempty"`
-	CallKilled               *CallKilledEvent               `json:"callKilled,omitempty"`
 	ContainerExited          *ContainerExitedEvent          `json:"containerExited,omitempty"`
 	ContainerStarted         *ContainerStartedEvent         `json:"containerStarted,omitempty"`
 	ContainerStdErrWrittenTo *ContainerStdErrWrittenToEvent `json:"containerStdErrWrittenTo,omitempty"`
 	ContainerStdOutWrittenTo *ContainerStdOutWrittenToEvent `json:"containerStdOutWrittenTo,omitempty"`
+	OpKillRequested          *OpKillRequested               `json:"opKillRequested,omitempty"`
 	OpEnded                  *OpEndedEvent                  `json:"opEnded,omitempty"`
 	OpStarted                *OpStartedEvent                `json:"opStarted,omitempty"`
 	OpErred                  *OpErredEvent                  `json:"opErred,omitempty"`
@@ -26,6 +26,11 @@ const (
 	OpOutcomeKilled    = "KILLED"
 )
 
+// OpKillRequested represents a request was made to kill an op; a CallKilledEvent may follow
+type OpKillRequested struct {
+	Request KillOpReq `json:"request"`
+}
+
 // CallEndedEvent represents a call ended; no further events will occur for the call
 type CallEndedEvent struct {
 	CallID     string               `json:"callId"`
@@ -38,12 +43,6 @@ type CallEndedEvent struct {
 // CallEndedEventError represents an error of associated w/ an ended call
 type CallEndedEventError struct {
 	Message string `json:"message"`
-}
-
-// CallKilledEvent represents a call was killed; a CallEndedEvent will follow
-type CallKilledEvent struct {
-	CallID     string `json:"callId"`
-	RootCallID string `json:"rootCallId"`
 }
 
 // ContainerExitedEvent represents the exit of a containerized process; no further events will occur for the container

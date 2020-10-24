@@ -175,7 +175,8 @@ func (ivkr _runer) Run(
 				nodeHandle.APIClient().KillOp(
 					ctx,
 					model.KillOpReq{
-						OpID: rootOpID,
+						OpID:     rootOpID,
+						RootOpID: rootOpID,
 					},
 				)
 			} else {
@@ -189,7 +190,8 @@ func (ivkr _runer) Run(
 			nodeHandle.APIClient().KillOp(
 				ctx,
 				model.KillOpReq{
-					OpID: rootOpID,
+					OpID:     rootOpID,
+					RootOpID: rootOpID,
 				},
 			)
 			return // support fake exiter

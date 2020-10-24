@@ -29,7 +29,8 @@ type ListDescendantsReq struct {
 }
 
 type KillOpReq struct {
-	OpID string `json:"opId"`
+	OpID     string `json:"opId"`
+	RootOpID string `json:"rootOpId"`
 }
 
 type StartOpReq struct {
