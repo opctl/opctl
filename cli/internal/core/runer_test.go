@@ -428,13 +428,13 @@ var _ = Context("Runer", func() {
 					Context("event channel doesn't close", func() {
 						Context("event received", func() {
 							rootOpID := "dummyRootOpID"
-							Context("OpEndedEvent", func() {
+							Context("OpEnded", func() {
 								Context("Outcome==SUCCEEDED", func() {
 									It("should call exiter w/ expected args", func() {
 										/* arrange */
-										opEndedEvent := model.Event{
+										opEnded := model.Event{
 											Timestamp: time.Now(),
-											OpEnded: &model.OpEndedEvent{
+											OpEnded: &model.OpEnded{
 												OpID:     rootOpID,
 												OpRef:    "dummyOpRef",
 												Outcome:  model.OpOutcomeSucceeded,
@@ -454,10 +454,10 @@ var _ = Context("Runer", func() {
 
 										fakeAPIClient := new(clientFakes.FakeClient)
 										eventChannel := make(chan model.Event, 10)
-										eventChannel <- opEndedEvent
+										eventChannel <- opEnded
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
+										fakeAPIClient.StartOpReturns(opEnded.OpEnded.RootOpID, nil)
 
 										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)
@@ -484,9 +484,9 @@ var _ = Context("Runer", func() {
 								Context("Outcome==KILLED", func() {
 									It("should call exiter w/ expected args", func() {
 										/* arrange */
-										opEndedEvent := model.Event{
+										opEnded := model.Event{
 											Timestamp: time.Now(),
-											OpEnded: &model.OpEndedEvent{
+											OpEnded: &model.OpEnded{
 												OpID:     rootOpID,
 												OpRef:    "dummyOpRef",
 												Outcome:  model.OpOutcomeKilled,
@@ -506,10 +506,10 @@ var _ = Context("Runer", func() {
 
 										fakeAPIClient := new(clientFakes.FakeClient)
 										eventChannel := make(chan model.Event, 10)
-										eventChannel <- opEndedEvent
+										eventChannel <- opEnded
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
+										fakeAPIClient.StartOpReturns(opEnded.OpEnded.RootOpID, nil)
 
 										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)
@@ -537,9 +537,9 @@ var _ = Context("Runer", func() {
 								Context("Outcome==FAILED", func() {
 									It("should call exiter w/ expected args", func() {
 										/* arrange */
-										opEndedEvent := model.Event{
+										opEnded := model.Event{
 											Timestamp: time.Now(),
-											OpEnded: &model.OpEndedEvent{
+											OpEnded: &model.OpEnded{
 												OpID:     rootOpID,
 												OpRef:    "dummyOpRef",
 												Outcome:  model.OpOutcomeFailed,
@@ -559,10 +559,10 @@ var _ = Context("Runer", func() {
 
 										fakeAPIClient := new(clientFakes.FakeClient)
 										eventChannel := make(chan model.Event, 10)
-										eventChannel <- opEndedEvent
+										eventChannel <- opEnded
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
+										fakeAPIClient.StartOpReturns(opEnded.OpEnded.RootOpID, nil)
 
 										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)
@@ -589,9 +589,9 @@ var _ = Context("Runer", func() {
 								Context("Outcome==?", func() {
 									It("should call exiter w/ expected args", func() {
 										/* arrange */
-										opEndedEvent := model.Event{
+										opEnded := model.Event{
 											Timestamp: time.Now(),
-											OpEnded: &model.OpEndedEvent{
+											OpEnded: &model.OpEnded{
 												OpID:     rootOpID,
 												OpRef:    "dummyOpRef",
 												Outcome:  "some unexpected outcome",
@@ -611,10 +611,10 @@ var _ = Context("Runer", func() {
 
 										fakeAPIClient := new(clientFakes.FakeClient)
 										eventChannel := make(chan model.Event, 10)
-										eventChannel <- opEndedEvent
+										eventChannel <- opEnded
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
+										fakeAPIClient.StartOpReturns(opEnded.OpEnded.RootOpID, nil)
 
 										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)

@@ -59,7 +59,7 @@ func (sc _serialCaller) Call(
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 		event := model.Event{
-			SerialCallEnded: &model.SerialCallEndedEvent{
+			SerialCallEnded: &model.SerialCallEnded{
 				CallID:   callID,
 				Outputs:  outputs,
 				RootOpID: rootOpID,
@@ -68,7 +68,7 @@ func (sc _serialCaller) Call(
 		}
 
 		if nil != err {
-			event.SerialCallEnded.Error = &model.CallEndedEventError{
+			event.SerialCallEnded.Error = &model.CallEndedError{
 				Message: err.Error(),
 			}
 		}

@@ -72,7 +72,7 @@ func (oc _opCaller) Call(
 
 		event := model.Event{
 			Timestamp: time.Now().UTC(),
-			OpEnded: &model.OpEndedEvent{
+			OpEnded: &model.OpEnded{
 				OpID:     dcgOpCall.OpID,
 				OpRef:    dcgOpCall.OpPath,
 				Outcome:  opOutcome,
@@ -82,7 +82,7 @@ func (oc _opCaller) Call(
 		}
 
 		if nil != err {
-			event.OpEnded.Error = &model.CallEndedEventError{
+			event.OpEnded.Error = &model.CallEndedError{
 				Message: err.Error(),
 			}
 		}
@@ -96,7 +96,7 @@ func (oc _opCaller) Call(
 	oc.pubSub.Publish(
 		model.Event{
 			Timestamp: opStartedTime,
-			OpStarted: &model.OpStartedEvent{
+			OpStarted: &model.OpStarted{
 				OpID:     dcgOpCall.OpID,
 				OpRef:    dcgOpCall.OpPath,
 				RootOpID: dcgOpCall.RootOpID,

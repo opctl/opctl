@@ -75,7 +75,7 @@ func (plpr _parallelLoopCaller) Call(
 		// defer must be defined before conditional return statements so it always runs
 		event := model.Event{
 			Timestamp: time.Now().UTC(),
-			ParallelLoopCallEnded: &model.ParallelLoopCallEndedEvent{
+			ParallelLoopCallEnded: &model.ParallelLoopCallEnded{
 				CallID:   id,
 				RootOpID: rootOpID,
 				Outputs:  outboundScope,
@@ -83,7 +83,7 @@ func (plpr _parallelLoopCaller) Call(
 		}
 
 		if nil != err {
-			event.ParallelLoopCallEnded.Error = &model.CallEndedEventError{
+			event.ParallelLoopCallEnded.Error = &model.CallEndedError{
 				Message: err.Error(),
 			}
 		}

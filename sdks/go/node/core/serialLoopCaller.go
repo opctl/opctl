@@ -70,7 +70,7 @@ func (lpr _serialLoopCaller) Call(
 		// defer must be defined before conditional return statements so it always runs
 		event := model.Event{
 			Timestamp: time.Now().UTC(),
-			SerialLoopCallEnded: &model.SerialLoopCallEndedEvent{
+			SerialLoopCallEnded: &model.SerialLoopCallEnded{
 				CallID:   id,
 				RootOpID: rootOpID,
 				Outputs:  outboundScope,
@@ -78,7 +78,7 @@ func (lpr _serialLoopCaller) Call(
 		}
 
 		if nil != err {
-			event.SerialLoopCallEnded.Error = &model.CallEndedEventError{
+			event.SerialLoopCallEnded.Error = &model.CallEndedError{
 				Message: err.Error(),
 			}
 		}

@@ -30,7 +30,7 @@ var _ = Context("pubSub", func() {
 				It("receives event", func() {
 					/* arrange */
 					expectedEvent := model.Event{
-						OpStarted: &model.OpStartedEvent{
+						OpStarted: &model.OpStarted{
 							RootOpID: "dummyRootOpID",
 							OpID:     "dummyOpID",
 							OpRef:    "dummyOpRef",
@@ -56,7 +56,7 @@ var _ = Context("pubSub", func() {
 					subscriberEventFilter := model.EventFilter{Roots: []string{"notPublishedRootOpID"}}
 
 					publishedEvent := model.Event{
-						OpStarted: &model.OpStartedEvent{
+						OpStarted: &model.OpStarted{
 							RootOpID: "dummyRootOpID",
 							OpID:     "dummyOpID",
 							OpRef:    "dummyOpRef",
@@ -82,7 +82,7 @@ var _ = Context("pubSub", func() {
 				It("should receive published event", func() {
 					/* arrange */
 					expectedEvent := model.Event{
-						ContainerStarted: &model.ContainerStartedEvent{
+						ContainerStarted: &model.ContainerStarted{
 							RootOpID:    "dummyRootOpID",
 							ContainerID: "dummyContainerID",
 							OpRef:       "dummyOpRef",
@@ -107,7 +107,7 @@ var _ = Context("pubSub", func() {
 				It("should receive published event", func() {
 					/* arrange */
 					expectedEvent := model.Event{
-						OpStarted: &model.OpStartedEvent{
+						OpStarted: &model.OpStarted{
 							RootOpID: "dummyRootOpID",
 							OpID:     "dummyOpID",
 							OpRef:    "dummyOpRef",
@@ -140,7 +140,7 @@ var _ = Context("pubSub", func() {
 				It("should receive published events", func() {
 					/* arrange */
 					expectedEvent1 := model.Event{
-						ContainerStarted: &model.ContainerStartedEvent{
+						ContainerStarted: &model.ContainerStarted{
 							RootOpID:    "dummyRootOpID",
 							ContainerID: "dummyContainerID",
 							OpRef:       "dummyOpRef",
@@ -149,7 +149,7 @@ var _ = Context("pubSub", func() {
 					}
 
 					expectedEvent2 := model.Event{
-						OpStarted: &model.OpStartedEvent{
+						OpStarted: &model.OpStarted{
 							RootOpID: "dummyRootOpID",
 							OpID:     "dummyOpID",
 							OpRef:    "dummyOpRef",

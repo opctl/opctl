@@ -43,7 +43,7 @@ var _ = Context("opCaller", func() {
 
 			expectedEvent := model.Event{
 				Timestamp: time.Now().UTC(),
-				OpStarted: &model.OpStartedEvent{
+				OpStarted: &model.OpStarted{
 					OpID:     providedDCGOpCall.OpID,
 					OpRef:    providedOpPath,
 					RootOpID: providedDCGOpCall.RootOpID,
@@ -180,7 +180,7 @@ var _ = Context("opCaller", func() {
 
 				expectedEvent := model.Event{
 					Timestamp: time.Now().UTC(),
-					OpEnded: &model.OpEndedEvent{
+					OpEnded: &model.OpEnded{
 						OpID:     providedDCGOpCall.OpID,
 						Outcome:  model.OpOutcomeKilled,
 						RootOpID: providedDCGOpCall.RootOpID,
@@ -249,8 +249,8 @@ var _ = Context("opCaller", func() {
 
 					expectedEvent := model.Event{
 						Timestamp: time.Now().UTC(),
-						OpEnded: &model.OpEndedEvent{
-							Error: &model.CallEndedEventError{
+						OpEnded: &model.OpEnded{
+							Error: &model.CallEndedError{
 								Message: errMsg,
 							},
 							OpID:     providedDCGOpCall.OpID,
@@ -330,7 +330,7 @@ var _ = Context("opCaller", func() {
 
 				expectedEvent := model.Event{
 					Timestamp: time.Now().UTC(),
-					OpEnded: &model.OpEndedEvent{
+					OpEnded: &model.OpEnded{
 						OpID:     providedDCGOpCall.OpID,
 						OpRef:    providedOpPath,
 						Outcome:  model.OpOutcomeSucceeded,

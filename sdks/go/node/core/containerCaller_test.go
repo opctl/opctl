@@ -29,7 +29,7 @@ var _ = Context("containerCaller", func() {
 		})
 	})
 	Context("Call", func() {
-		It("should call pubSub.Publish w/ expected ContainerStartedEvent", func() {
+		It("should call pubSub.Publish w/ expected ContainerStarted", func() {
 			/* arrange */
 			providedOpPath := "providedOpPath"
 			providedDCGContainerCall := &model.DCGContainerCall{
@@ -44,7 +44,7 @@ var _ = Context("containerCaller", func() {
 
 			expectedEvent := model.Event{
 				Timestamp: time.Now().UTC(),
-				ContainerStarted: &model.ContainerStartedEvent{
+				ContainerStarted: &model.ContainerStarted{
 					ContainerID: providedDCGContainerCall.ContainerID,
 					OpRef:       providedOpPath,
 					RootOpID:    providedDCGContainerCall.RootOpID,
@@ -117,7 +117,7 @@ var _ = Context("containerCaller", func() {
 			Expect(actualEventPublisher).To(Equal(fakePubSub))
 		})
 		Context("containerRuntime.RunContainer errors", func() {
-			It("should publish expected ContainerExitedEvent", func() {
+			It("should publish expected ContainerExited", func() {
 				/* arrange */
 				expectedErrorMessage := "expectedErrorMessage"
 				fakePubSub := new(FakePubSub)
@@ -152,7 +152,7 @@ var _ = Context("containerCaller", func() {
 		})
 	})
 
-	It("should call pubSub.Publish w/ expected ContainerExitedEvent", func() {
+	It("should call pubSub.Publish w/ expected ContainerExited", func() {
 		/* arrange */
 		providedOpPath := "providedOpPath"
 		providedDCGContainerCall := &model.DCGContainerCall{
@@ -167,9 +167,9 @@ var _ = Context("containerCaller", func() {
 
 		expectedEvent := model.Event{
 			Timestamp: time.Now().UTC(),
-			ContainerExited: &model.ContainerExitedEvent{
+			ContainerExited: &model.ContainerExited{
 				ContainerID: providedDCGContainerCall.ContainerID,
-				Error: &model.CallEndedEventError{
+				Error: &model.CallEndedError{
 					Message: "io: read/write on closed pipe",
 				},
 				OpRef:    providedOpPath,
@@ -207,7 +207,7 @@ var _ = Context("containerCaller", func() {
 
 		Expect(actualEvent).To(Equal(expectedEvent))
 	})
-	It("should call pubSub.Publish w/ expected ContainerExitedEvent", func() {
+	It("should call pubSub.Publish w/ expected ContainerExited", func() {
 		/* arrange */
 		providedOpPath := "providedOpPath"
 		providedDCGContainerCall := &model.DCGContainerCall{
@@ -222,9 +222,9 @@ var _ = Context("containerCaller", func() {
 
 		expectedEvent := model.Event{
 			Timestamp: time.Now().UTC(),
-			ContainerExited: &model.ContainerExitedEvent{
+			ContainerExited: &model.ContainerExited{
 				ContainerID: providedDCGContainerCall.ContainerID,
-				Error: &model.CallEndedEventError{
+				Error: &model.CallEndedError{
 					Message: "io: read/write on closed pipe",
 				},
 				OpRef:    providedOpPath,
