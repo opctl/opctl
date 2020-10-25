@@ -29,8 +29,8 @@ func (this _core) StartOp(
 		return "", err
 	}
 
-	// construct callOpSpec
-	callOpSpec := &model.CallOpSpec{
+	// construct opCallSpec
+	opCallSpec := &model.OpCallSpec{
 		Ref:     opHandle.Ref(),
 		Inputs:  map[string]interface{}{},
 		Outputs: map[string]string{},
@@ -38,7 +38,7 @@ func (this _core) StartOp(
 
 	// pull Creds
 	if nil != req.Op.PullCreds {
-		callOpSpec.PullCreds = &model.PullCredsSpec{
+		opCallSpec.PullCreds = &model.PullCredsSpec{
 			Username: req.Op.PullCreds.Username,
 			Password: req.Op.PullCreds.Password,
 		}
@@ -46,7 +46,7 @@ func (this _core) StartOp(
 
 	for name := range req.Args {
 		// implicitly bind
-		callOpSpec.Inputs[name] = ""
+		opCallSpec.Inputs[name] = ""
 	}
 
 	opFile, err := this.opFileGetter.Get(
@@ -58,12 +58,12 @@ func (this _core) StartOp(
 	}
 	for name := range opFile.Outputs {
 		// implicitly bind
-		callOpSpec.Outputs[name] = ""
+		opCallSpec.Outputs[name] = ""
 	}
 
-	dcgOpCall, err := this.opInterpreter.Interpret(
+	opCall, err := this.opInterpreter.Interpret(
 		req.Args,
-		callOpSpec,
+		opCallSpec,
 		opID,
 		*opHandle.Path(),
 		opID,
@@ -85,10 +85,10 @@ func (this _core) StartOp(
 							Error: &model.CallEndedError{
 								Message: msg,
 							},
-							OpID:     dcgOpCall.OpID,
-							OpRef:    dcgOpCall.OpPath,
+							OpID:     opCall.OpID,
+							OpRef:    opCall.OpPath,
 							Outcome:  model.OpOutcomeFailed,
-							RootOpID: dcgOpCall.RootOpID,
+							RootOpID: opCall.RootOpID,
 						},
 					},
 				)
@@ -97,10 +97,10 @@ func (this _core) StartOp(
 
 		this.opCaller.Call(
 			context.Background(),
-			dcgOpCall,
+			opCall,
 			req.Args,
 			&opID,
-			callOpSpec,
+			opCallSpec,
 		)
 	}()
 

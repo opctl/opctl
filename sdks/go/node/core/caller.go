@@ -125,7 +125,7 @@ func (clr _caller) Call(
 		return
 	}
 
-	var dcg *model.DCG
+	var dcg *model.Call
 	dcg, err = clr.callInterpreter.Interpret(
 		scope,
 		callSpec,

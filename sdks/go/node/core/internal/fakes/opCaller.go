@@ -9,27 +9,27 @@ import (
 )
 
 type FakeOpCaller struct {
-	CallStub        func(context.Context, *model.DCGOpCall, map[string]*model.Value, *string, *model.CallOpSpec)
+	CallStub        func(context.Context, *model.OpCall, map[string]*model.Value, *string, *model.OpCallSpec)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		arg1 context.Context
-		arg2 *model.DCGOpCall
+		arg2 *model.OpCall
 		arg3 map[string]*model.Value
 		arg4 *string
-		arg5 *model.CallOpSpec
+		arg5 *model.OpCallSpec
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeOpCaller) Call(arg1 context.Context, arg2 *model.DCGOpCall, arg3 map[string]*model.Value, arg4 *string, arg5 *model.CallOpSpec) {
+func (fake *FakeOpCaller) Call(arg1 context.Context, arg2 *model.OpCall, arg3 map[string]*model.Value, arg4 *string, arg5 *model.OpCallSpec) {
 	fake.callMutex.Lock()
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		arg1 context.Context
-		arg2 *model.DCGOpCall
+		arg2 *model.OpCall
 		arg3 map[string]*model.Value
 		arg4 *string
-		arg5 *model.CallOpSpec
+		arg5 *model.OpCallSpec
 	}{arg1, arg2, arg3, arg4, arg5})
 	fake.recordInvocation("Call", []interface{}{arg1, arg2, arg3, arg4, arg5})
 	fake.callMutex.Unlock()
@@ -44,13 +44,13 @@ func (fake *FakeOpCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *FakeOpCaller) CallCalls(stub func(context.Context, *model.DCGOpCall, map[string]*model.Value, *string, *model.CallOpSpec)) {
+func (fake *FakeOpCaller) CallCalls(stub func(context.Context, *model.OpCall, map[string]*model.Value, *string, *model.OpCallSpec)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
 }
 
-func (fake *FakeOpCaller) CallArgsForCall(i int) (context.Context, *model.DCGOpCall, map[string]*model.Value, *string, *model.CallOpSpec) {
+func (fake *FakeOpCaller) CallArgsForCall(i int) (context.Context, *model.OpCall, map[string]*model.Value, *string, *model.OpCallSpec) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]

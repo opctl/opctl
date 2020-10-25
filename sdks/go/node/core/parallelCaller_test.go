@@ -32,10 +32,10 @@ var _ = Context("parallelCaller", func() {
 			providedOpPath := "providedOpPath"
 			providedCallSpecParallelCalls := []*model.CallSpec{
 				{
-					Container: &model.CallContainerSpec{},
+					Container: &model.ContainerCallSpec{},
 				},
 				{
-					Op: &model.CallOpSpec{},
+					Op: &model.OpCallSpec{},
 				},
 				{
 					Parallel: &[]*model.CallSpec{},
@@ -123,10 +123,10 @@ var _ = Context("parallelCaller", func() {
 				providedOpPath := "providedOpPath"
 				providedCallSpecParallelCalls := []*model.CallSpec{
 					{
-						Container: &model.CallContainerSpec{},
+						Container: &model.ContainerCallSpec{},
 					},
 					{
-						Op: &model.CallOpSpec{},
+						Op: &model.OpCallSpec{},
 					},
 					{
 						Parallel: &[]*model.CallSpec{},
@@ -219,10 +219,10 @@ var _ = Context("parallelCaller", func() {
 				providedOpPath := "providedOpPath"
 				providedCallSpecParallelCalls := []*model.CallSpec{
 					{
-						Container: &model.CallContainerSpec{},
+						Container: &model.ContainerCallSpec{},
 					},
 					{
-						Op: &model.CallOpSpec{},
+						Op: &model.OpCallSpec{},
 					},
 					{
 						Parallel: &[]*model.CallSpec{},

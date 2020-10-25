@@ -8,9 +8,9 @@ import (
 //counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	Interpret(
-		callParallelLoopSpec model.CallParallelLoopSpec,
+		parallelLoopCallSpec model.ParallelLoopCallSpec,
 		scope map[string]*model.Value,
-	) (*model.DCGParallelLoopCall, error)
+	) (*model.ParallelLoopCall, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -25,12 +25,12 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	callParallelLoopSpec model.CallParallelLoopSpec,
+	parallelLoopCallSpec model.ParallelLoopCallSpec,
 	scope map[string]*model.Value,
-) (*model.DCGParallelLoopCall, error) {
-	dcgParallelLoop := model.DCGParallelLoopCall{}
+) (*model.ParallelLoopCall, error) {
+	dcgParallelLoop := model.ParallelLoopCall{}
 
-	loopRangeSpec := callParallelLoopSpec.Range
+	loopRangeSpec := parallelLoopCallSpec.Range
 	if nil != loopRangeSpec {
 		dcgLoopRange, err := itp.loopableInterpreter.Interpret(
 			loopRangeSpec,

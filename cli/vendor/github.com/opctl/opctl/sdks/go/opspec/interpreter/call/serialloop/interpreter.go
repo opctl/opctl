@@ -9,9 +9,9 @@ import (
 //counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	Interpret(
-		callSerialLoopSpec model.CallSerialLoopSpec,
+		serialLoopCallSpec model.SerialLoopCallSpec,
 		scope map[string]*model.Value,
-	) (*model.DCGSerialLoopCall, error)
+	) (*model.SerialLoopCall, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -28,12 +28,12 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	callSerialLoopSpec model.CallSerialLoopSpec,
+	serialLoopCallSpec model.SerialLoopCallSpec,
 	scope map[string]*model.Value,
-) (*model.DCGSerialLoopCall, error) {
-	dcgSerialLoop := model.DCGSerialLoopCall{}
+) (*model.SerialLoopCall, error) {
+	dcgSerialLoop := model.SerialLoopCall{}
 
-	loopRangeSpec := callSerialLoopSpec.Range
+	loopRangeSpec := serialLoopCallSpec.Range
 	if nil != loopRangeSpec {
 		dcgLoopRange, err := itp.loopableInterpreter.Interpret(
 			loopRangeSpec,
@@ -46,7 +46,7 @@ func (itp _interpreter) Interpret(
 		dcgSerialLoop.Range = dcgLoopRange
 	}
 
-	callSpecLoopUntil := callSerialLoopSpec.Until
+	callSpecLoopUntil := serialLoopCallSpec.Until
 	if nil != callSpecLoopUntil {
 		dcgLoopUntil, err := itp.predicatesInterpreter.Interpret(
 			callSpecLoopUntil,

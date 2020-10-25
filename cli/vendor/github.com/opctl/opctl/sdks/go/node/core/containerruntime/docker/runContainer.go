@@ -19,7 +19,7 @@ import (
 type runContainer interface {
 	RunContainer(
 		ctx context.Context,
-		req *model.DCGContainerCall,
+		req *model.ContainerCall,
 		eventPublisher pubsub.EventPublisher,
 		stdout io.WriteCloser,
 		stderr io.WriteCloser,
@@ -62,7 +62,7 @@ type _runContainer struct {
 
 func (cr _runContainer) RunContainer(
 	ctx context.Context,
-	req *model.DCGContainerCall,
+	req *model.ContainerCall,
 	eventPublisher pubsub.EventPublisher,
 	stdout io.WriteCloser,
 	stderr io.WriteCloser,

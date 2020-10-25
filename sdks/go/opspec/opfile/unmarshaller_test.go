@@ -90,7 +90,7 @@ var _ = Context("unmarshaller", func() {
 					Name:        "dummyName",
 					Outputs:     dummyParams,
 					Run: &model.CallSpec{
-						Op: &model.CallOpSpec{
+						Op: &model.OpCallSpec{
 							Ref: "dummyOpRef",
 						},
 					},

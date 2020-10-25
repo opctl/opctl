@@ -21,7 +21,7 @@ type ContainerRuntime interface {
 	// RunContainer creates, starts, and waits on a container. ExitCode &/Or an error will be returned
 	RunContainer(
 		ctx context.Context,
-		req *model.DCGContainerCall,
+		req *model.ContainerCall,
 		eventPublisher pubsub.EventPublisher,
 		stdout io.WriteCloser,
 		stderr io.WriteCloser,

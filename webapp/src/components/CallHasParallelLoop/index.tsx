@@ -1,18 +1,18 @@
 import React from 'react'
-import HasCall, { CallParallelLoop } from '../HasCall'
+import HasCall, { ParallelLoopCall } from '../HasCall'
 import { ReactComponent as PlusIcon } from '../../icons/Plus.svg'
 import brandColors from '../../brandColors'
 import AddCallPopper from '../AddCallPopper'
 
 
 interface Props {
-    callParallelLoop: CallParallelLoop
+    parallelLoopCall: ParallelLoopCall
     parentOpRef: string
 }
 
 export default (
     {
-        callParallelLoop,
+        parallelLoopCall,
         parentOpRef
     }: Props
 ) =>
@@ -50,7 +50,7 @@ export default (
             }}
         ></div>
         <HasCall
-            call={callParallelLoop!.run}
+            call={parallelLoopCall!.run}
             parentOpRef={parentOpRef}
         />
         <div

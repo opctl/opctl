@@ -25,7 +25,7 @@ var _ = Context("Interpreter", func() {
 			providedScope := map[string]*model.Value{
 				envVarName: nil,
 			}
-			providedCallContainerSpecEnvVars := "providedCallContainerSpecEnvVars"
+			providedContainerCallSpecEnvVars := "providedContainerCallSpecEnvVars"
 
 			fakeObjectInterpreter := new(objectFakes.FakeInterpreter)
 			// err to trigger immediate return
@@ -38,7 +38,7 @@ var _ = Context("Interpreter", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				providedScope,
-				providedCallContainerSpecEnvVars,
+				providedContainerCallSpecEnvVars,
 			)
 
 			/* assert */
@@ -46,12 +46,12 @@ var _ = Context("Interpreter", func() {
 				actualExpression := fakeObjectInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualExpression).To(Equal(providedCallContainerSpecEnvVars))
+			Expect(actualExpression).To(Equal(providedContainerCallSpecEnvVars))
 		})
 		Context("objectInterpreter.Interpret errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				providedCallContainerSpecEnvVars := "providedCallContainerSpecEnvVars"
+				providedContainerCallSpecEnvVars := "providedContainerCallSpecEnvVars"
 
 				fakeObjectInterpreter := new(objectFakes.FakeInterpreter)
 
@@ -60,7 +60,7 @@ var _ = Context("Interpreter", func() {
 
 				expectedErr := fmt.Errorf(
 					"unable to interpret '%v' as envVars; error was %v",
-					providedCallContainerSpecEnvVars,
+					providedContainerCallSpecEnvVars,
 					interpretErr,
 				)
 
@@ -71,7 +71,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					providedCallContainerSpecEnvVars,
+					providedContainerCallSpecEnvVars,
 				)
 
 				/* assert */

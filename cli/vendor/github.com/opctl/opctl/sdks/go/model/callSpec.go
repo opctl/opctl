@@ -1,20 +1,20 @@
 package model
 
-//CallSpec is a spec for a call in a call graph; see https://en.wikipedia.org/wiki/Call_graph
+//CallSpec is a spec for a node of a call graph; see https://en.wikipedia.org/wiki/Call_graph
 type CallSpec struct {
-	Container    *CallContainerSpec    `json:"container,omitempty"`
+	Container    *ContainerCallSpec    `json:"container,omitempty"`
 	If           *[]*PredicateSpec     `json:"if,omitempty"`
 	Name         *string               `json:"name,omitempty"`
 	Needs        []string              `json:"needs,omitempty"`
-	Op           *CallOpSpec           `json:"op,omitempty"`
+	Op           *OpCallSpec           `json:"op,omitempty"`
 	Parallel     *[]*CallSpec          `json:"parallel,omitempty"`
-	ParallelLoop *CallParallelLoopSpec `json:"parallelLoop,omitempty"`
+	ParallelLoop *ParallelLoopCallSpec `json:"parallelLoop,omitempty"`
 	Serial       *[]*CallSpec          `json:"serial,omitempty"`
-	SerialLoop   *CallSerialLoopSpec   `json:"serialLoop,omitempty"`
+	SerialLoop   *SerialLoopCallSpec   `json:"serialLoop,omitempty"`
 }
 
-//CallContainerSpec is a spec for calling a container
-type CallContainerSpec struct {
+//ContainerCallSpec is a spec for calling a container
+type ContainerCallSpec struct {
 	// Cmd entries will be evaluated to strings
 	Cmd []interface{} `json:"cmd,omitempty"`
 
@@ -26,15 +26,15 @@ type CallContainerSpec struct {
 
 	// Files entries will be evaluated to files
 	Files   map[string]interface{}  `json:"files,omitempty"`
-	Image   *CallContainerImageSpec `json:"image"`
+	Image   *ContainerCallImageSpec `json:"image"`
 	Sockets map[string]string       `json:"sockets,omitempty"`
 	WorkDir string                  `json:"workDir,omitempty"`
 	Name    *string                 `json:"name,omitempty"`
 	Ports   map[string]string       `json:"ports,omitempty"`
 }
 
-//CallContainerImageSpec is a spec for the image when calling a container
-type CallContainerImageSpec struct {
+//ContainerCallImageSpec is a spec for the image when calling a container
+type ContainerCallImageSpec struct {
 	Ref       string         `json:"ref"`
 	PullCreds *PullCredsSpec `json:"pullCreds,omitempty"`
 }
@@ -46,8 +46,8 @@ type LoopVarsSpec struct {
 	Value *string `json:"value,omitempty"`
 }
 
-//CallOpSpec is a spec for calling an op
-type CallOpSpec struct {
+//OpCallSpec is a spec for calling an op
+type OpCallSpec struct {
 	// Ref represents a references to an op; will be interpolated
 	Ref string `json:"ref"`
 	// PullCreds represent creds for pulling the op from a provider
@@ -58,8 +58,8 @@ type CallOpSpec struct {
 	Outputs map[string]string `json:"outputs,omitempty"`
 }
 
-//CallParallelLoopSpec is a spec for calling a parallel loop
-type CallParallelLoopSpec struct {
+//ParallelLoopCallSpec is a spec for calling a parallel loop
+type ParallelLoopCallSpec struct {
 	Range interface{}   `json:"range,omitempty"`
 	Run   CallSpec      `json:"run,omitempty"`
 	Vars  *LoopVarsSpec `json:"vars,omitempty"`
@@ -81,8 +81,8 @@ type PullCredsSpec struct {
 	Password string `json:"password"`
 }
 
-//CallSerialLoopSpec is a spec for a serial loop call
-type CallSerialLoopSpec struct {
+//SerialLoopCallSpec is a spec for calling a serial loop
+type SerialLoopCallSpec struct {
 	Range interface{}      `json:"range,omitempty"`
 	Run   CallSpec         `json:"run,omitempty"`
 	Until []*PredicateSpec `json:"until,omitempty"`

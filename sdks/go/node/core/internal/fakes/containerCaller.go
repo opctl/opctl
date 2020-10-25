@@ -9,25 +9,25 @@ import (
 )
 
 type FakeContainerCaller struct {
-	CallStub        func(context.Context, *model.DCGContainerCall, map[string]*model.Value, *model.CallContainerSpec)
+	CallStub        func(context.Context, *model.ContainerCall, map[string]*model.Value, *model.ContainerCallSpec)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		arg1 context.Context
-		arg2 *model.DCGContainerCall
+		arg2 *model.ContainerCall
 		arg3 map[string]*model.Value
-		arg4 *model.CallContainerSpec
+		arg4 *model.ContainerCallSpec
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeContainerCaller) Call(arg1 context.Context, arg2 *model.DCGContainerCall, arg3 map[string]*model.Value, arg4 *model.CallContainerSpec) {
+func (fake *FakeContainerCaller) Call(arg1 context.Context, arg2 *model.ContainerCall, arg3 map[string]*model.Value, arg4 *model.ContainerCallSpec) {
 	fake.callMutex.Lock()
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		arg1 context.Context
-		arg2 *model.DCGContainerCall
+		arg2 *model.ContainerCall
 		arg3 map[string]*model.Value
-		arg4 *model.CallContainerSpec
+		arg4 *model.ContainerCallSpec
 	}{arg1, arg2, arg3, arg4})
 	fake.recordInvocation("Call", []interface{}{arg1, arg2, arg3, arg4})
 	fake.callMutex.Unlock()
@@ -42,13 +42,13 @@ func (fake *FakeContainerCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *FakeContainerCaller) CallCalls(stub func(context.Context, *model.DCGContainerCall, map[string]*model.Value, *model.CallContainerSpec)) {
+func (fake *FakeContainerCaller) CallCalls(stub func(context.Context, *model.ContainerCall, map[string]*model.Value, *model.ContainerCallSpec)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
 }
 
-func (fake *FakeContainerCaller) CallArgsForCall(i int) (context.Context, *model.DCGContainerCall, map[string]*model.Value, *model.CallContainerSpec) {
+func (fake *FakeContainerCaller) CallArgsForCall(i int) (context.Context, *model.ContainerCall, map[string]*model.Value, *model.ContainerCallSpec) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]

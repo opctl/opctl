@@ -94,7 +94,7 @@ var _ = Context("Interpreter", func() {
 				providedScope := map[string]*model.Value{}
 
 				providedCallSpec := &model.CallSpec{
-					Container: &model.CallContainerSpec{},
+					Container: &model.ContainerCallSpec{},
 				}
 
 				providedID := "providedID"
@@ -119,13 +119,13 @@ var _ = Context("Interpreter", func() {
 
 				/* assert */
 				actualScope,
-					actualCallContainerSpec,
+					actualContainerCallSpec,
 					actualContainerID,
 					actualRootOpID,
 					actualOpPath := fakeContainerCallInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualCallContainerSpec).To(Equal(providedCallSpec.Container))
+				Expect(actualContainerCallSpec).To(Equal(providedCallSpec.Container))
 				Expect(actualContainerID).To(Equal(providedID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 				Expect(actualOpPath).To(Equal(providedOpPath))
@@ -136,18 +136,18 @@ var _ = Context("Interpreter", func() {
 				providedID := "providedID"
 
 				providedCallSpec := &model.CallSpec{
-					Container: &model.CallContainerSpec{},
+					Container: &model.ContainerCallSpec{},
 				}
 
 				providedParentIDValue := "providedParentID"
 				providedParentID := &providedParentIDValue
 
 				fakeContainerCallInterpreter := new(containerFakes.FakeInterpreter)
-				expectedDCGContainerCall := &model.DCGContainerCall{}
-				fakeContainerCallInterpreter.InterpretReturns(expectedDCGContainerCall, nil)
+				expectedContainerCall := &model.ContainerCall{}
+				fakeContainerCallInterpreter.InterpretReturns(expectedContainerCall, nil)
 
-				expectedDCG := &model.DCG{
-					Container: expectedDCGContainerCall,
+				expectedCall := &model.Call{
+					Container: expectedContainerCall,
 					Id:        providedID,
 					ParentID:  providedParentID,
 				}
@@ -157,7 +157,7 @@ var _ = Context("Interpreter", func() {
 				}
 
 				/* act */
-				actualDCG,
+				actualCall,
 					actualError := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedCallSpec,
@@ -168,7 +168,7 @@ var _ = Context("Interpreter", func() {
 				)
 
 				/* assert */
-				Expect(actualDCG).To(Equal(expectedDCG))
+				Expect(actualCall).To(Equal(expectedCall))
 				Expect(actualError).To(BeNil())
 
 			})
@@ -179,7 +179,7 @@ var _ = Context("Interpreter", func() {
 				providedScope := map[string]*model.Value{}
 
 				providedCallSpec := &model.CallSpec{
-					Op: &model.CallOpSpec{},
+					Op: &model.OpCallSpec{},
 				}
 
 				providedID := "providedID"
@@ -204,13 +204,13 @@ var _ = Context("Interpreter", func() {
 
 				/* assert */
 				actualScope,
-					actualCallOpSpec,
+					actualOpCallSpec,
 					actualOpID,
 					actualOpPath,
 					actualRootOpID := fakeOpCallInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualCallOpSpec).To(Equal(providedCallSpec.Op))
+				Expect(actualOpCallSpec).To(Equal(providedCallSpec.Op))
 				Expect(actualOpID).To(Equal(providedID))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
@@ -221,18 +221,18 @@ var _ = Context("Interpreter", func() {
 				providedID := "providedID"
 
 				providedCallSpec := &model.CallSpec{
-					Op: &model.CallOpSpec{},
+					Op: &model.OpCallSpec{},
 				}
 
 				providedParentID := "providedParentID"
 
 				fakeOpCallInterpreter := new(opFakes.FakeInterpreter)
-				expectedDCGOpCall := &model.DCGOpCall{}
-				fakeOpCallInterpreter.InterpretReturns(expectedDCGOpCall, nil)
+				expectedOpCall := &model.OpCall{}
+				fakeOpCallInterpreter.InterpretReturns(expectedOpCall, nil)
 
-				expectedDCG := &model.DCG{
+				expectedCall := &model.Call{
 					Id:       providedID,
-					Op:       expectedDCGOpCall,
+					Op:       expectedOpCall,
 					ParentID: &providedParentID,
 				}
 
@@ -241,7 +241,7 @@ var _ = Context("Interpreter", func() {
 				}
 
 				/* act */
-				actualDCG,
+				actualCall,
 					actualError := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedCallSpec,
@@ -252,7 +252,7 @@ var _ = Context("Interpreter", func() {
 				)
 
 				/* assert */
-				Expect(actualDCG).To(Equal(expectedDCG))
+				Expect(actualCall).To(Equal(expectedCall))
 				Expect(actualError).To(BeNil())
 
 			})
@@ -270,7 +270,7 @@ var _ = Context("Interpreter", func() {
 
 				providedParentID := "providedParentID"
 
-				expectedDCG := &model.DCG{
+				expectedCall := &model.Call{
 					Id:       providedID,
 					Parallel: *providedCallSpec.Parallel,
 					ParentID: &providedParentID,
@@ -279,7 +279,7 @@ var _ = Context("Interpreter", func() {
 				objectUnderTest := _interpreter{}
 
 				/* act */
-				actualDCG,
+				actualCall,
 					actualError := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedCallSpec,
@@ -290,7 +290,7 @@ var _ = Context("Interpreter", func() {
 				)
 
 				/* assert */
-				Expect(*actualDCG).To(Equal(*expectedDCG))
+				Expect(*actualCall).To(Equal(*expectedCall))
 				Expect(actualError).To(BeNil())
 
 			})
@@ -308,7 +308,7 @@ var _ = Context("Interpreter", func() {
 
 				providedParentID := "providedParentID"
 
-				expectedDCG := &model.DCG{
+				expectedCall := &model.Call{
 					Id:       providedID,
 					ParentID: &providedParentID,
 					Serial:   *providedCallSpec.Serial,
@@ -317,7 +317,7 @@ var _ = Context("Interpreter", func() {
 				objectUnderTest := _interpreter{}
 
 				/* act */
-				actualDCG,
+				actualCall,
 					actualError := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedCallSpec,
@@ -328,7 +328,7 @@ var _ = Context("Interpreter", func() {
 				)
 
 				/* assert */
-				Expect(*actualDCG).To(Equal(*expectedDCG))
+				Expect(*actualCall).To(Equal(*expectedCall))
 				Expect(actualError).To(BeNil())
 
 			})

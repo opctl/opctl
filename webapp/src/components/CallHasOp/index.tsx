@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import getFsEntryData from '../../queries/getFsEntryData'
 import jsYaml from 'js-yaml'
-import HasCall, { CallOp } from '../HasCall'
+import HasCall, { OpCall } from '../HasCall'
 import brandColors from '../../brandColors'
 import AddCallPopper from '../AddCallPopper'
 import { ReactComponent as PlusIcon } from '../../icons/Plus.svg'
@@ -9,19 +9,19 @@ import { toast } from 'react-toastify'
 import path from 'path'
 
 interface Props {
-    callOp: CallOp
+    opCall: OpCall
     parentOpRef?: string
 }
 
 export default (
     {
-        callOp,
+        opCall,
         parentOpRef
     }: Props
 ) => {
-    const opRef = callOp.ref.startsWith('.') && parentOpRef
-        ? path.join(parentOpRef, callOp.ref)
-        : callOp.ref
+    const opRef = opCall.ref.startsWith('.') && parentOpRef
+        ? path.join(parentOpRef, opCall.ref)
+        : opCall.ref
 
     const [op, setOp] = useState(null as any)
 

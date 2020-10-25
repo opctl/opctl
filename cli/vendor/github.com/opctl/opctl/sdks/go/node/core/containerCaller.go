@@ -18,9 +18,9 @@ type containerCaller interface {
 	// Executes a container call
 	Call(
 		ctx context.Context,
-		dcgContainerCall *model.DCGContainerCall,
+		containerCall *model.ContainerCall,
 		inboundScope map[string]*model.Value,
-		callContainerSpec *model.CallContainerSpec,
+		containerCallSpec *model.ContainerCallSpec,
 	)
 }
 
@@ -45,9 +45,9 @@ type _containerCaller struct {
 
 func (cc _containerCaller) Call(
 	ctx context.Context,
-	dcgContainerCall *model.DCGContainerCall,
+	containerCall *model.ContainerCall,
 	inboundScope map[string]*model.Value,
-	callContainerSpec *model.CallContainerSpec,
+	containerCallSpec *model.ContainerCallSpec,
 ) {
 	var err error
 	outputs := map[string]*model.Value{}
@@ -58,9 +58,9 @@ func (cc _containerCaller) Call(
 		event := model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExited{
-				ContainerID: dcgContainerCall.ContainerID,
-				OpRef:       dcgContainerCall.OpPath,
-				RootOpID:    dcgContainerCall.RootOpID,
+				ContainerID: containerCall.ContainerID,
+				OpRef:       containerCall.OpPath,
+				RootOpID:    containerCall.RootOpID,
 				ExitCode:    exitCode,
 				Outputs:     outputs,
 			},
@@ -79,9 +79,9 @@ func (cc _containerCaller) Call(
 		model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerStarted: &model.ContainerStarted{
-				ContainerID: dcgContainerCall.ContainerID,
-				OpRef:       dcgContainerCall.OpPath,
-				RootOpID:    dcgContainerCall.RootOpID,
+				ContainerID: containerCall.ContainerID,
+				OpRef:       containerCall.OpPath,
+				RootOpID:    containerCall.RootOpID,
 			},
 		},
 	)
@@ -95,19 +95,19 @@ func (cc _containerCaller) Call(
 		logChan <- cc.interpretLogs(
 			logStdOutPR,
 			logStdErrPR,
-			dcgContainerCall,
+			containerCall,
 		)
 	}()
 
 	outputs = cc.interpretOutputs(
-		callContainerSpec,
-		dcgContainerCall,
+		containerCallSpec,
+		containerCall,
 	)
 
 	var rawExitCode *int64
 	rawExitCode, err = cc.containerRuntime.RunContainer(
 		ctx,
-		dcgContainerCall,
+		containerCall,
 		cc.pubSub,
 		logStdOutPW,
 		logStdErrPW,
@@ -132,7 +132,7 @@ func (cc _containerCaller) Call(
 func (this _containerCaller) interpretLogs(
 	stdOutReader io.Reader,
 	stdErrReader io.Reader,
-	dcgContainerCall *model.DCGContainerCall,
+	containerCall *model.ContainerCall,
 ) error {
 	stdOutLogChan := make(chan error, 1)
 	go func() {
@@ -145,9 +145,9 @@ func (this _containerCaller) interpretLogs(
 						Timestamp: time.Now().UTC(),
 						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenTo{
 							Data:        chunk,
-							ContainerID: dcgContainerCall.ContainerID,
-							OpRef:       dcgContainerCall.OpPath,
-							RootOpID:    dcgContainerCall.RootOpID,
+							ContainerID: containerCall.ContainerID,
+							OpRef:       containerCall.OpPath,
+							RootOpID:    containerCall.RootOpID,
 						},
 					},
 				)
@@ -165,9 +165,9 @@ func (this _containerCaller) interpretLogs(
 						Timestamp: time.Now().UTC(),
 						ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenTo{
 							Data:        chunk,
-							ContainerID: dcgContainerCall.ContainerID,
-							OpRef:       dcgContainerCall.OpPath,
-							RootOpID:    dcgContainerCall.RootOpID,
+							ContainerID: containerCall.ContainerID,
+							OpRef:       containerCall.OpPath,
+							RootOpID:    containerCall.RootOpID,
 						},
 					},
 				)
@@ -190,25 +190,25 @@ func (this _containerCaller) interpretLogs(
 }
 
 func (this _containerCaller) interpretOutputs(
-	callContainerSpec *model.CallContainerSpec,
-	dcgContainerCall *model.DCGContainerCall,
+	containerCallSpec *model.ContainerCallSpec,
+	containerCall *model.ContainerCall,
 ) map[string]*model.Value {
 	outputs := map[string]*model.Value{}
 
-	for socketAddr, name := range callContainerSpec.Sockets {
+	for socketAddr, name := range containerCallSpec.Sockets {
 		// add socket outputs
 		if "0.0.0.0" == socketAddr {
-			outputs[name] = &model.Value{Socket: &dcgContainerCall.ContainerID}
+			outputs[name] = &model.Value{Socket: &containerCall.ContainerID}
 		}
 	}
-	for callSpecContainerFilePath, name := range callContainerSpec.Files {
+	for callSpecContainerFilePath, name := range containerCallSpec.Files {
 		if "" == name {
 			// skip embedded files
 			continue
 		}
 
 		// add file outputs
-		for dcgContainerFilePath, dcgHostFilePath := range dcgContainerCall.Files {
+		for dcgContainerFilePath, dcgHostFilePath := range containerCall.Files {
 			if callSpecContainerFilePath == dcgContainerFilePath {
 				// copy dcgHostFilePath before taking address; range vars have same address for every iteration
 				value := dcgHostFilePath
@@ -218,14 +218,14 @@ func (this _containerCaller) interpretOutputs(
 			}
 		}
 	}
-	for callSpecContainerDirPath, name := range callContainerSpec.Dirs {
+	for callSpecContainerDirPath, name := range containerCallSpec.Dirs {
 		if "" == name {
 			// skip embedded dirs
 			continue
 		}
 
 		// add dir outputs
-		for dcgContainerDirPath, dcgHostDirPath := range dcgContainerCall.Dirs {
+		for dcgContainerDirPath, dcgHostDirPath := range containerCall.Dirs {
 			if callSpecContainerDirPath == dcgContainerDirPath {
 				// copy dcgHostDirPath before taking address; range vars have same address for every iteration
 				value := dcgHostDirPath

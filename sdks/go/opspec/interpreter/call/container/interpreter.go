@@ -16,14 +16,14 @@ import (
 
 //counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
-	// Interpret interprets an CallContainerSpec into a DCGContainerCall
+	// Interpret interprets an ContainerCallSpec into a ContainerCall
 	Interpret(
 		scope map[string]*model.Value,
-		callContainerSpec *model.CallContainerSpec,
+		containerCallSpec *model.ContainerCallSpec,
 		containerID string,
 		rootOpID string,
 		opPath string,
-	) (*model.DCGContainerCall, error)
+	) (*model.ContainerCall, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -57,14 +57,14 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
-	callContainerSpec *model.CallContainerSpec,
+	containerCallSpec *model.ContainerCallSpec,
 	containerID string,
 	rootOpID string,
 	opPath string,
-) (*model.DCGContainerCall, error) {
+) (*model.ContainerCall, error) {
 
-	dcgContainerCall := &model.DCGContainerCall{
-		DCGBaseCall: model.DCGBaseCall{
+	containerCall := &model.ContainerCall{
+		BaseCall: model.BaseCall{
 			RootOpID: rootOpID,
 			OpPath:   opPath,
 		},
@@ -72,9 +72,9 @@ func (itp _interpreter) Interpret(
 		EnvVars:     map[string]string{},
 		Files:       map[string]string{},
 		Sockets:     map[string]string{},
-		WorkDir:     callContainerSpec.WorkDir,
+		WorkDir:     containerCallSpec.WorkDir,
 		ContainerID: containerID,
-		Ports:       callContainerSpec.Ports,
+		Ports:       containerCallSpec.Ports,
 	}
 
 	// construct dcg container path
@@ -92,57 +92,57 @@ func (itp _interpreter) Interpret(
 
 	// interpret cmd
 	var err error
-	dcgContainerCall.Cmd, err = itp.cmdInterpreter.Interpret(scope, callContainerSpec.Cmd)
+	containerCall.Cmd, err = itp.cmdInterpreter.Interpret(scope, containerCallSpec.Cmd)
 	if nil != err {
 		return nil, err
 	}
 
 	// interpret dirs
-	dcgContainerCall.Dirs, err = itp.dirsInterpreter.Interpret(scope, callContainerSpec.Dirs, scratchDirPath)
+	containerCall.Dirs, err = itp.dirsInterpreter.Interpret(scope, containerCallSpec.Dirs, scratchDirPath)
 	if nil != err {
 		return nil, err
 	}
 
 	// interpret envVars
-	dcgContainerCall.EnvVars, err = itp.envVarsInterpreter.Interpret(scope, callContainerSpec.EnvVars)
+	containerCall.EnvVars, err = itp.envVarsInterpreter.Interpret(scope, containerCallSpec.EnvVars)
 	if nil != err {
 		return nil, err
 	}
 
 	// interpret files
-	dcgContainerCall.Files, err = itp.filesInterpreter.Interpret(scope, callContainerSpec.Files, scratchDirPath)
+	containerCall.Files, err = itp.filesInterpreter.Interpret(scope, containerCallSpec.Files, scratchDirPath)
 	if nil != err {
 		return nil, err
 	}
 
 	// interpret image
-	dcgContainerCall.Image, err = itp.imageInterpreter.Interpret(scope, callContainerSpec.Image, scratchDirPath)
+	containerCall.Image, err = itp.imageInterpreter.Interpret(scope, containerCallSpec.Image, scratchDirPath)
 	if nil != err {
 		return nil, err
 	}
 
 	// interpret name as string
-	if nil != callContainerSpec.Name {
-		dcgContainerCallName, err := itp.stringInterpreter.Interpret(scope, *callContainerSpec.Name)
+	if nil != containerCallSpec.Name {
+		containerCallName, err := itp.stringInterpreter.Interpret(scope, *containerCallSpec.Name)
 		if nil != err {
 			return nil, err
 		}
-		dcgContainerCall.Name = dcgContainerCallName.String
+		containerCall.Name = containerCallName.String
 	}
 
 	// interpret workDir
-	if "" != callContainerSpec.WorkDir {
-		dcgContainerCallWorkDir, err := itp.stringInterpreter.Interpret(scope, callContainerSpec.WorkDir)
+	if "" != containerCallSpec.WorkDir {
+		containerCallWorkDir, err := itp.stringInterpreter.Interpret(scope, containerCallSpec.WorkDir)
 		if nil != err {
 			return nil, err
 		}
 
-		dcgContainerCall.WorkDir = *dcgContainerCallWorkDir.String
+		containerCall.WorkDir = *containerCallWorkDir.String
 	}
 
 	// interpret sockets
-	dcgContainerCall.Sockets, err = itp.socketsInterpreter.Interpret(scope, callContainerSpec.Sockets, scratchDirPath)
+	containerCall.Sockets, err = itp.socketsInterpreter.Interpret(scope, containerCallSpec.Sockets, scratchDirPath)
 
-	return dcgContainerCall, err
+	return containerCall, err
 
 }

@@ -32,7 +32,7 @@ var _ = Context("parallelLoopCaller", func() {
 				/* arrange */
 				fakeParallelLoopInterpreter := new(parallelloopFakes.FakeInterpreter)
 				fakeParallelLoopInterpreter.InterpretReturns(
-					&model.DCGParallelLoopCall{
+					&model.ParallelLoopCall{
 						Range: &model.Value{
 							Array: new([]interface{}),
 						},
@@ -56,7 +56,7 @@ var _ = Context("parallelLoopCaller", func() {
 					context.Background(),
 					"id",
 					map[string]*model.Value{},
-					model.CallParallelLoopSpec{},
+					model.ParallelLoopCallSpec{},
 					"dummyOpPath",
 					nil,
 					"rootOpID",
@@ -71,12 +71,12 @@ var _ = Context("parallelLoopCaller", func() {
 			providedCtx := context.Background()
 			providedScope := map[string]*model.Value{}
 			index := "index"
-			providedCallParallelLoopSpec := model.CallParallelLoopSpec{
+			providedParallelLoopCallSpec := model.ParallelLoopCallSpec{
 				Vars: &model.LoopVarsSpec{
 					Index: &index,
 				},
 				Run: model.CallSpec{
-					Container: new(model.CallContainerSpec),
+					Container: new(model.ContainerCallSpec),
 				},
 			}
 			providedOpPath := "providedOpPath"
@@ -92,9 +92,9 @@ var _ = Context("parallelLoopCaller", func() {
 			fakeParallelLoopInterpreter := new(parallelloopFakes.FakeInterpreter)
 			fakeParallelLoopInterpreter.InterpretReturnsOnCall(
 				0,
-				&model.DCGParallelLoopCall{
+				&model.ParallelLoopCall{
 					Range: loopRange,
-					Vars: &model.DCGLoopVars{
+					Vars: &model.LoopVars{
 						Index: &index,
 					},
 				},
@@ -103,9 +103,9 @@ var _ = Context("parallelLoopCaller", func() {
 
 			fakeParallelLoopInterpreter.InterpretReturnsOnCall(
 				1,
-				&model.DCGParallelLoopCall{
+				&model.ParallelLoopCall{
 					Range: loopRange,
-					Vars: &model.DCGLoopVars{
+					Vars: &model.LoopVars{
 						Index: &index,
 					},
 				},
@@ -154,7 +154,7 @@ var _ = Context("parallelLoopCaller", func() {
 				providedCtx,
 				"id",
 				providedScope,
-				providedCallParallelLoopSpec,
+				providedParallelLoopCallSpec,
 				providedOpPath,
 				providedParentCallID,
 				providedRootOpID,
@@ -171,7 +171,7 @@ var _ = Context("parallelLoopCaller", func() {
 
 			Expect(actualCallID).To(Equal(callID))
 			Expect(actualScope).To(Equal(expectedScope))
-			Expect(actualCallSpec).To(Equal(&providedCallParallelLoopSpec.Run))
+			Expect(actualCallSpec).To(Equal(&providedParallelLoopCallSpec.Run))
 			Expect(actualOpPath).To(Equal(providedOpPath))
 			Expect(actualParentCallID).To(Equal(providedParentCallID))
 			Expect(actualRootOpID).To(Equal(providedRootOpID))

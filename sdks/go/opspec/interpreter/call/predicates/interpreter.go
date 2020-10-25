@@ -29,7 +29,7 @@ func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 ) (bool, error) {
 	for _, predicateSpec := range predicateSpecs {
-		dcgPredicate, err := itp.predicateInterpreter.Interpret(
+		predicate, err := itp.predicateInterpreter.Interpret(
 			predicateSpec,
 			scope,
 		)
@@ -37,7 +37,7 @@ func (itp _interpreter) Interpret(
 			return false, err
 		}
 
-		if !dcgPredicate {
+		if !predicate {
 			return false, nil
 		}
 	}

@@ -1,18 +1,18 @@
 import React from 'react'
-import HasCall, { CallSerialLoop } from '../HasCall'
+import HasCall, { SerialLoopCall } from '../HasCall'
 import { ReactComponent as PlusIcon } from '../../icons/Plus.svg'
 import brandColors from '../../brandColors'
 import AddCallPopper from '../AddCallPopper'
 
 
 interface Props {
-    callSerialLoop: CallSerialLoop
+    serialLoopCall: SerialLoopCall
     parentOpRef: string
 }
 
 export default (
     {
-        callSerialLoop,
+        serialLoopCall,
         parentOpRef
     }: Props
 ) => <div
@@ -49,7 +49,7 @@ export default (
             }}
         ></div>
         <HasCall
-            call={callSerialLoop!.run}
+            call={serialLoopCall!.run}
             parentOpRef={parentOpRef}
         />
         <div
