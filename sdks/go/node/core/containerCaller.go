@@ -20,7 +20,7 @@ type containerCaller interface {
 		ctx context.Context,
 		dcgContainerCall *model.DCGContainerCall,
 		inboundScope map[string]*model.Value,
-		scgContainerCall *model.SCGContainerCall,
+		callContainerSpec *model.CallContainerSpec,
 	)
 }
 
@@ -47,7 +47,7 @@ func (cc _containerCaller) Call(
 	ctx context.Context,
 	dcgContainerCall *model.DCGContainerCall,
 	inboundScope map[string]*model.Value,
-	scgContainerCall *model.SCGContainerCall,
+	callContainerSpec *model.CallContainerSpec,
 ) {
 	var err error
 	outputs := map[string]*model.Value{}
@@ -100,7 +100,7 @@ func (cc _containerCaller) Call(
 	}()
 
 	outputs = cc.interpretOutputs(
-		scgContainerCall,
+		callContainerSpec,
 		dcgContainerCall,
 	)
 
@@ -190,18 +190,18 @@ func (this _containerCaller) interpretLogs(
 }
 
 func (this _containerCaller) interpretOutputs(
-	scgContainerCall *model.SCGContainerCall,
+	callContainerSpec *model.CallContainerSpec,
 	dcgContainerCall *model.DCGContainerCall,
 ) map[string]*model.Value {
 	outputs := map[string]*model.Value{}
 
-	for socketAddr, name := range scgContainerCall.Sockets {
+	for socketAddr, name := range callContainerSpec.Sockets {
 		// add socket outputs
 		if "0.0.0.0" == socketAddr {
 			outputs[name] = &model.Value{Socket: &dcgContainerCall.ContainerID}
 		}
 	}
-	for scgContainerFilePath, name := range scgContainerCall.Files {
+	for callSpecContainerFilePath, name := range callContainerSpec.Files {
 		if "" == name {
 			// skip embedded files
 			continue
@@ -209,7 +209,7 @@ func (this _containerCaller) interpretOutputs(
 
 		// add file outputs
 		for dcgContainerFilePath, dcgHostFilePath := range dcgContainerCall.Files {
-			if scgContainerFilePath == dcgContainerFilePath {
+			if callSpecContainerFilePath == dcgContainerFilePath {
 				// copy dcgHostFilePath before taking address; range vars have same address for every iteration
 				value := dcgHostFilePath
 				if nameAsString, ok := name.(string); ok {
@@ -218,7 +218,7 @@ func (this _containerCaller) interpretOutputs(
 			}
 		}
 	}
-	for scgContainerDirPath, name := range scgContainerCall.Dirs {
+	for callSpecContainerDirPath, name := range callContainerSpec.Dirs {
 		if "" == name {
 			// skip embedded dirs
 			continue
@@ -226,7 +226,7 @@ func (this _containerCaller) interpretOutputs(
 
 		// add dir outputs
 		for dcgContainerDirPath, dcgHostDirPath := range dcgContainerCall.Dirs {
-			if scgContainerDirPath == dcgContainerDirPath {
+			if callSpecContainerDirPath == dcgContainerDirPath {
 				// copy dcgHostDirPath before taking address; range vars have same address for every iteration
 				value := dcgHostDirPath
 				outputs[strings.TrimSuffix(strings.TrimPrefix(name, "$("), ")")] = &model.Value{Dir: &value}

@@ -23,7 +23,7 @@ type parallelLoopCaller interface {
 		parentCtx context.Context,
 		id string,
 		inboundScope map[string]*model.Value,
-		scgParallelLoop model.SCGParallelLoopCall,
+		callSpecParallelLoop model.CallParallelLoopSpec,
 		opPath string,
 		parentCallID *string,
 		rootOpID string,
@@ -59,7 +59,7 @@ func (plpr _parallelLoopCaller) Call(
 	parentCtx context.Context,
 	id string,
 	inboundScope map[string]*model.Value,
-	scgParallelLoop model.SCGParallelLoopCall,
+	callSpecParallelLoop model.CallParallelLoopSpec,
 	opPath string,
 	parentCallID *string,
 	rootOpID string,
@@ -95,8 +95,8 @@ func (plpr _parallelLoopCaller) Call(
 	outboundScope, err = plpr.iterationScoper.Scope(
 		childCallIndex,
 		inboundScope,
-		scgParallelLoop.Range,
-		scgParallelLoop.Vars,
+		callSpecParallelLoop.Range,
+		callSpecParallelLoop.Vars,
 	)
 	if nil != err {
 		return
@@ -105,7 +105,7 @@ func (plpr _parallelLoopCaller) Call(
 	// interpret initial iteration of the loop
 	var dcgParallelLoop *model.DCGParallelLoopCall
 	dcgParallelLoop, err = plpr.parallelLoopInterpreter.Interpret(
-		scgParallelLoop,
+		callSpecParallelLoop,
 		outboundScope,
 	)
 	if nil != err {
@@ -141,7 +141,7 @@ func (plpr _parallelLoopCaller) Call(
 				parallelLoopCtx,
 				childCallID,
 				outboundScope,
-				&scgParallelLoop.Run,
+				&callSpecParallelLoop.Run,
 				opPath,
 				parentCallID,
 				rootOpID,
@@ -157,8 +157,8 @@ func (plpr _parallelLoopCaller) Call(
 		outboundScope, err = plpr.iterationScoper.Scope(
 			childCallIndex,
 			outboundScope,
-			scgParallelLoop.Range,
-			scgParallelLoop.Vars,
+			callSpecParallelLoop.Range,
+			callSpecParallelLoop.Vars,
 		)
 		if nil != err {
 			return
@@ -166,7 +166,7 @@ func (plpr _parallelLoopCaller) Call(
 
 		// interpret next iteration of the loop
 		dcgParallelLoop, err = plpr.parallelLoopInterpreter.Interpret(
-			scgParallelLoop,
+			callSpecParallelLoop,
 			outboundScope,
 		)
 		if nil != err {
@@ -232,8 +232,8 @@ func (plpr _parallelLoopCaller) Call(
 
 	outboundScope = plpr.loopDeScoper.DeScope(
 		inboundScope,
-		scgParallelLoop.Range,
-		scgParallelLoop.Vars,
+		callSpecParallelLoop.Range,
+		callSpecParallelLoop.Vars,
 		outboundScope,
 	)
 }

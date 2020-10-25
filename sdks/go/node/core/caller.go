@@ -19,7 +19,7 @@ type caller interface {
 		ctx context.Context,
 		id string,
 		scope map[string]*model.Value,
-		scg *model.SCG,
+		callSpec *model.CallSpec,
 		opPath string,
 		parentCallID *string,
 		rootOpID string,
@@ -86,7 +86,7 @@ func (clr _caller) Call(
 	ctx context.Context,
 	id string,
 	scope map[string]*model.Value,
-	scg *model.SCG,
+	callSpec *model.CallSpec,
 	opPath string,
 	parentCallID *string,
 	rootOpID string,
@@ -118,7 +118,7 @@ func (clr _caller) Call(
 		clr.pubSub.Publish(event)
 	}()
 
-	if nil == scg {
+	if nil == callSpec {
 		cancelCall()
 
 		// NOOP
@@ -128,7 +128,7 @@ func (clr _caller) Call(
 	var dcg *model.DCG
 	dcg, err = clr.callInterpreter.Interpret(
 		scope,
-		scg,
+		callSpec,
 		id,
 		opPath,
 		parentCallID,
@@ -219,61 +219,61 @@ func (clr _caller) Call(
 	clr.callStore.Add(dcg)
 
 	switch {
-	case nil != scg.Container:
+	case nil != callSpec.Container:
 		clr.containerCaller.Call(
 			callCtx,
 			dcg.Container,
 			scope,
-			scg.Container,
+			callSpec.Container,
 		)
-	case nil != scg.Op:
+	case nil != callSpec.Op:
 		clr.opCaller.Call(
 			callCtx,
 			dcg.Op,
 			scope,
 			parentCallID,
-			scg.Op,
+			callSpec.Op,
 		)
-	case nil != scg.Parallel:
+	case nil != callSpec.Parallel:
 		clr.parallelCaller.Call(
 			callCtx,
 			id,
 			scope,
 			rootOpID,
 			opPath,
-			*scg.Parallel,
+			*callSpec.Parallel,
 		)
-	case nil != scg.ParallelLoop:
+	case nil != callSpec.ParallelLoop:
 		clr.parallelLoopCaller.Call(
 			callCtx,
 			id,
 			scope,
-			*scg.ParallelLoop,
+			*callSpec.ParallelLoop,
 			opPath,
 			parentCallID,
 			rootOpID,
 		)
-	case nil != scg.Serial:
+	case nil != callSpec.Serial:
 		clr.serialCaller.Call(
 			callCtx,
 			id,
 			scope,
 			rootOpID,
 			opPath,
-			*scg.Serial,
+			*callSpec.Serial,
 		)
-	case nil != scg.SerialLoop:
+	case nil != callSpec.SerialLoop:
 		clr.serialLoopCaller.Call(
 			callCtx,
 			id,
 			scope,
-			*scg.SerialLoop,
+			*callSpec.SerialLoop,
 			opPath,
 			parentCallID,
 			rootOpID,
 		)
 	default:
-		err = fmt.Errorf("Invalid call graph %+v\n", scg)
+		err = fmt.Errorf("Invalid call graph %+v\n", callSpec)
 	}
 
 }

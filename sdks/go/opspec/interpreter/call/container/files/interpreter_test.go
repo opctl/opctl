@@ -32,7 +32,7 @@ var _ = Context("Files", func() {
 
 			containerFilePath := "/dummyFile1Path.txt"
 
-			providedSCGContainerCallFiles := map[string]interface{}{
+			providedCallContainerSpecFiles := map[string]interface{}{
 				// implicitly bound
 				containerFilePath: nil,
 			}
@@ -50,7 +50,7 @@ var _ = Context("Files", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				providedScope,
-				providedSCGContainerCallFiles,
+				providedCallContainerSpecFiles,
 				providedScratchDir,
 			)
 
@@ -70,7 +70,7 @@ var _ = Context("Files", func() {
 				It("should return expected error", func() {
 					/* arrange */
 					containerFilePath := "/dummyFile1Path.txt"
-					providedSCGContainerCallFiles := map[string]interface{}{
+					providedCallContainerSpecFiles := map[string]interface{}{
 						// implicitly bound
 						containerFilePath: nil,
 					}
@@ -93,7 +93,7 @@ var _ = Context("Files", func() {
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
-						providedSCGContainerCallFiles,
+						providedCallContainerSpecFiles,
 						"dummyScratchDirPath",
 					)
 

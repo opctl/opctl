@@ -32,7 +32,7 @@ var _ = Context("caller", func() {
 		closedEventChan := make(chan model.Event, 1000)
 		close(closedEventChan)
 
-		Context("Null SCG", func() {
+		Context("Null CallSpec", func() {
 			It("should not throw", func() {
 				/* arrange */
 				fakeContainerCaller := new(FakeContainerCaller)
@@ -62,7 +62,7 @@ var _ = Context("caller", func() {
 			/* arrange */
 			providedCallID := "dummyCallID"
 			providedScope := map[string]*model.Value{}
-			providedSCG := &model.SCG{}
+			providedCallSpec := &model.CallSpec{}
 			providedOpPath := "providedOpPath"
 			providedParentIDValue := "providedParentID"
 			providedParentID := &providedParentIDValue
@@ -90,7 +90,7 @@ var _ = Context("caller", func() {
 				context.Background(),
 				providedCallID,
 				providedScope,
-				providedSCG,
+				providedCallSpec,
 				providedOpPath,
 				providedParentID,
 				providedRootOpID,
@@ -98,14 +98,14 @@ var _ = Context("caller", func() {
 
 			/* assert */
 			actualScope,
-				actualSCG,
+				actualCallSpec,
 				actualID,
 				actualOpPath,
 				actualParentID,
 				actualRootOpID := fakeCallInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualSCG).To(Equal(providedSCG))
+			Expect(actualCallSpec).To(Equal(providedCallSpec))
 			Expect(actualID).To(Equal(providedCallID))
 			Expect(actualOpPath).To(Equal(providedOpPath))
 			Expect(actualParentID).To(Equal(providedParentID))
@@ -149,7 +149,7 @@ var _ = Context("caller", func() {
 					context.Background(),
 					providedCallID,
 					map[string]*model.Value{},
-					&model.SCG{},
+					&model.CallSpec{},
 					"dummyOpPath",
 					nil,
 					providedRootOpID,
@@ -167,14 +167,14 @@ var _ = Context("caller", func() {
 			})
 		})
 
-		Context("Container SCG", func() {
+		Context("Container CallSpec", func() {
 			It("should call containerCaller.Call w/ expected args", func() {
 				/* arrange */
 				fakeContainerCaller := new(FakeContainerCaller)
 
 				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{
-					Container: &model.SCGContainerCall{},
+				providedCallSpec := &model.CallSpec{
+					Container: &model.CallContainerSpec{},
 				}
 
 				expectedDCG := &model.DCG{
@@ -199,7 +199,7 @@ var _ = Context("caller", func() {
 					context.Background(),
 					"dummyCallID",
 					providedScope,
-					providedSCG,
+					providedCallSpec,
 					"dummyOpPath",
 					nil,
 					"dummyRootOpID",
@@ -209,15 +209,15 @@ var _ = Context("caller", func() {
 				_,
 					actualDCGContainerCall,
 					actualScope,
-					actualSCG := fakeContainerCaller.CallArgsForCall(0)
+					actualCallSpec := fakeContainerCaller.CallArgsForCall(0)
 
 				Expect(actualDCGContainerCall).To(Equal(expectedDCG.Container))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualSCG).To(Equal(providedSCG.Container))
+				Expect(actualCallSpec).To(Equal(providedCallSpec.Container))
 			})
 		})
 
-		Context("Op SCG", func() {
+		Context("Op CallSpec", func() {
 			It("should call opCaller.Call w/ expected args", func() {
 				/* arrange */
 				fakeOpCaller := new(FakeOpCaller)
@@ -233,8 +233,8 @@ var _ = Context("caller", func() {
 
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{
-					Op: &model.SCGOpCall{
+				providedCallSpec := &model.CallSpec{
+					Op: &model.CallOpSpec{
 						Ref: "dummyOpRef",
 					},
 				}
@@ -258,7 +258,7 @@ var _ = Context("caller", func() {
 					context.Background(),
 					providedCallID,
 					providedScope,
-					providedSCG,
+					providedCallSpec,
 					providedOpPath,
 					&providedParentID,
 					providedRootOpID,
@@ -269,25 +269,25 @@ var _ = Context("caller", func() {
 					actualDCGOpCall,
 					actualScope,
 					actualParentID,
-					actualSCG := fakeOpCaller.CallArgsForCall(0)
+					actualCallSpec := fakeOpCaller.CallArgsForCall(0)
 
 				Expect(actualDCGOpCall).To(Equal(expectedDCG.Op))
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualParentID).To(Equal(actualParentID))
-				Expect(actualSCG).To(Equal(providedSCG.Op))
+				Expect(actualCallSpec).To(Equal(providedCallSpec.Op))
 			})
 		})
 
-		Context("Parallel SCG", func() {
+		Context("Parallel CallSpec", func() {
 			It("should call parallelCaller.Call w/ expected args", func() {
 				/* arrange */
 				fakeParallelCaller := new(FakeParallelCaller)
 
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{
-					Parallel: &[]*model.SCG{
-						{Container: &model.SCGContainerCall{}},
+				providedCallSpec := &model.CallSpec{
+					Parallel: &[]*model.CallSpec{
+						{Container: &model.CallContainerSpec{}},
 					},
 				}
 				providedOpPath := "providedOpPath"
@@ -315,7 +315,7 @@ var _ = Context("caller", func() {
 					context.Background(),
 					providedCallID,
 					providedScope,
-					providedSCG,
+					providedCallSpec,
 					providedOpPath,
 					nil,
 					providedRootOpID,
@@ -327,25 +327,25 @@ var _ = Context("caller", func() {
 					actualScope,
 					actualRootOpID,
 					actualOpPath,
-					actualSCG := fakeParallelCaller.CallArgsForCall(0)
+					actualCallSpec := fakeParallelCaller.CallArgsForCall(0)
 
 				Expect(actualCallID).To(Equal(providedCallID))
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 				Expect(actualOpPath).To(Equal(providedOpPath))
-				Expect(actualSCG).To(Equal(*providedSCG.Parallel))
+				Expect(actualCallSpec).To(Equal(*providedCallSpec.Parallel))
 			})
 		})
 
-		Context("ParallelLoop SCG", func() {
+		Context("ParallelLoop CallSpec", func() {
 			It("should call parallelLoopCaller.Call w/ expected args", func() {
 				/* arrange */
 				fakeParallelLoopCaller := new(FakeParallelLoopCaller)
 
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{
-					ParallelLoop: &model.SCGParallelLoopCall{},
+				providedCallSpec := &model.CallSpec{
+					ParallelLoop: &model.CallParallelLoopSpec{},
 				}
 				providedOpPath := "providedOpPath"
 				providedRootOpID := "dummyRootOpID"
@@ -373,7 +373,7 @@ var _ = Context("caller", func() {
 					context.Background(),
 					providedCallID,
 					providedScope,
-					providedSCG,
+					providedCallSpec,
 					providedOpPath,
 					&providedParentID,
 					providedRootOpID,
@@ -383,21 +383,21 @@ var _ = Context("caller", func() {
 				_,
 					actualID,
 					actualScope,
-					actualSCGParallelLoopCall,
+					actualCallParallelLoopSpec,
 					actualOpPath,
 					actualParentID,
 					actualRootOpID := fakeParallelLoopCaller.CallArgsForCall(0)
 
 				Expect(actualID).To(Equal(providedCallID))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualSCGParallelLoopCall).To(Equal(*providedSCG.ParallelLoop))
+				Expect(actualCallParallelLoopSpec).To(Equal(*providedCallSpec.ParallelLoop))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(*actualParentID).To(Equal(providedParentID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 			})
 		})
 
-		Context("Serial SCG", func() {
+		Context("Serial CallSpec", func() {
 
 			It("should call serialCaller.Call w/ expected args", func() {
 				/* arrange */
@@ -405,9 +405,9 @@ var _ = Context("caller", func() {
 
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{
-					Serial: &[]*model.SCG{
-						{Container: &model.SCGContainerCall{}},
+				providedCallSpec := &model.CallSpec{
+					Serial: &[]*model.CallSpec{
+						{Container: &model.CallContainerSpec{}},
 					},
 				}
 				providedOpPath := "providedOpPath"
@@ -436,7 +436,7 @@ var _ = Context("caller", func() {
 					context.Background(),
 					providedCallID,
 					providedScope,
-					providedSCG,
+					providedCallSpec,
 					providedOpPath,
 					nil,
 					providedRootOpID,
@@ -448,25 +448,25 @@ var _ = Context("caller", func() {
 					actualScope,
 					actualRootOpID,
 					actualOpPath,
-					actualSCG := fakeSerialCaller.CallArgsForCall(0)
+					actualCallSpec := fakeSerialCaller.CallArgsForCall(0)
 
 				Expect(actualCallID).To(Equal(providedCallID))
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 				Expect(actualOpPath).To(Equal(providedOpPath))
-				Expect(actualSCG).To(Equal(*providedSCG.Serial))
+				Expect(actualCallSpec).To(Equal(*providedCallSpec.Serial))
 			})
 		})
 
-		Context("SerialLoop SCG", func() {
+		Context("SerialLoop CallSpec", func() {
 			It("should call serialLoopCaller.Call w/ expected args", func() {
 				/* arrange */
 				fakeSerialLoopCaller := new(FakeSerialLoopCaller)
 
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{
-					SerialLoop: &model.SCGSerialLoopCall{},
+				providedCallSpec := &model.CallSpec{
+					SerialLoop: &model.CallSerialLoopSpec{},
 				}
 				providedOpPath := "providedOpPath"
 				providedRootOpID := "dummyRootOpID"
@@ -494,7 +494,7 @@ var _ = Context("caller", func() {
 					context.Background(),
 					providedCallID,
 					providedScope,
-					providedSCG,
+					providedCallSpec,
 					providedOpPath,
 					&providedParentID,
 					providedRootOpID,
@@ -504,27 +504,27 @@ var _ = Context("caller", func() {
 				_,
 					actualID,
 					actualScope,
-					actualSCGSerialLoopCall,
+					actualCallSerialLoopSpec,
 					actualOpPath,
 					actualParentID,
 					actualRootOpID := fakeSerialLoopCaller.CallArgsForCall(0)
 
 				Expect(actualID).To(Equal(providedCallID))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualSCGSerialLoopCall).To(Equal(*providedSCG.SerialLoop))
+				Expect(actualCallSerialLoopSpec).To(Equal(*providedCallSpec.SerialLoop))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(*actualParentID).To(Equal(providedParentID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 			})
 		})
 
-		Context("No SCG", func() {
+		Context("No CallSpec", func() {
 			It("should error", func() {
 				/* arrange */
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{}
-				expectedError := fmt.Errorf("Invalid call graph %+v\n", providedSCG)
+				providedCallSpec := &model.CallSpec{}
+				expectedError := fmt.Errorf("Invalid call graph %+v\n", providedCallSpec)
 
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(
@@ -547,7 +547,7 @@ var _ = Context("caller", func() {
 					context.Background(),
 					providedCallID,
 					providedScope,
-					providedSCG,
+					providedCallSpec,
 					"providedOpPath",
 					nil,
 					"dummyRootOpID",

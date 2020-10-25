@@ -9,8 +9,8 @@ type DeScoper interface {
 	// DeScope de-scopes loop vars (index, key, value)
 	DeScope(
 		parentScope map[string]*model.Value,
-		scgLoopRange interface{},
-		scgLoopVars *model.SCGLoopVars,
+		callSpecLoopRange interface{},
+		loopVarsSpec *model.LoopVarsSpec,
 		iterationScope map[string]*model.Value,
 	) map[string]*model.Value
 }
@@ -23,11 +23,11 @@ type _deScoper struct{}
 
 func (ds _deScoper) DeScope(
 	parentScope map[string]*model.Value,
-	scgLoopRange interface{},
-	scgLoopVars *model.SCGLoopVars,
+	callSpecLoopRange interface{},
+	loopVarsSpec *model.LoopVarsSpec,
 	iterationScope map[string]*model.Value,
 ) map[string]*model.Value {
-	if nil == scgLoopVars {
+	if nil == loopVarsSpec {
 		return parentScope
 	}
 
@@ -37,19 +37,19 @@ func (ds _deScoper) DeScope(
 	}
 
 	// restore vars shadowed in the loop
-	if nil != scgLoopVars.Index {
-		outboundScope[*scgLoopVars.Index] = parentScope[*scgLoopVars.Index]
+	if nil != loopVarsSpec.Index {
+		outboundScope[*loopVarsSpec.Index] = parentScope[*loopVarsSpec.Index]
 	}
 
-	if nil != scgLoopRange {
+	if nil != callSpecLoopRange {
 		return outboundScope
 	}
 
-	if nil != scgLoopVars.Key {
-		outboundScope[*scgLoopVars.Key] = parentScope[*scgLoopVars.Key]
+	if nil != loopVarsSpec.Key {
+		outboundScope[*loopVarsSpec.Key] = parentScope[*loopVarsSpec.Key]
 	}
-	if nil != scgLoopVars.Value {
-		outboundScope[*scgLoopVars.Value] = parentScope[*scgLoopVars.Value]
+	if nil != loopVarsSpec.Value {
+		outboundScope[*loopVarsSpec.Value] = parentScope[*loopVarsSpec.Value]
 	}
 
 	return outboundScope

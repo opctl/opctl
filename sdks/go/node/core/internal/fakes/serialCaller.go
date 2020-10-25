@@ -9,7 +9,7 @@ import (
 )
 
 type FakeSerialCaller struct {
-	CallStub        func(context.Context, string, map[string]*model.Value, string, string, []*model.SCG)
+	CallStub        func(context.Context, string, map[string]*model.Value, string, string, []*model.CallSpec)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		arg1 context.Context
@@ -17,16 +17,16 @@ type FakeSerialCaller struct {
 		arg3 map[string]*model.Value
 		arg4 string
 		arg5 string
-		arg6 []*model.SCG
+		arg6 []*model.CallSpec
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeSerialCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 string, arg5 string, arg6 []*model.SCG) {
-	var arg6Copy []*model.SCG
+func (fake *FakeSerialCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 string, arg5 string, arg6 []*model.CallSpec) {
+	var arg6Copy []*model.CallSpec
 	if arg6 != nil {
-		arg6Copy = make([]*model.SCG, len(arg6))
+		arg6Copy = make([]*model.CallSpec, len(arg6))
 		copy(arg6Copy, arg6)
 	}
 	fake.callMutex.Lock()
@@ -36,7 +36,7 @@ func (fake *FakeSerialCaller) Call(arg1 context.Context, arg2 string, arg3 map[s
 		arg3 map[string]*model.Value
 		arg4 string
 		arg5 string
-		arg6 []*model.SCG
+		arg6 []*model.CallSpec
 	}{arg1, arg2, arg3, arg4, arg5, arg6Copy})
 	fake.recordInvocation("Call", []interface{}{arg1, arg2, arg3, arg4, arg5, arg6Copy})
 	fake.callMutex.Unlock()
@@ -51,13 +51,13 @@ func (fake *FakeSerialCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *FakeSerialCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, string, string, []*model.SCG)) {
+func (fake *FakeSerialCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, string, string, []*model.CallSpec)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
 }
 
-func (fake *FakeSerialCaller) CallArgsForCall(i int) (context.Context, string, map[string]*model.Value, string, string, []*model.SCG) {
+func (fake *FakeSerialCaller) CallArgsForCall(i int) (context.Context, string, map[string]*model.Value, string, string, []*model.CallSpec) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]

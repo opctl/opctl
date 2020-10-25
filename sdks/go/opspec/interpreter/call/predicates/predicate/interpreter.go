@@ -13,7 +13,7 @@ import (
 //counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
 	Interpret(
-		scgPredicate *model.SCGPredicate,
+		predicateSpec *model.PredicateSpec,
 		scope map[string]*model.Value,
 	) (bool, error)
 }
@@ -36,31 +36,31 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	scgPredicate *model.SCGPredicate,
+	predicateSpec *model.PredicateSpec,
 	scope map[string]*model.Value,
 ) (bool, error) {
 	switch {
-	case nil != scgPredicate.Eq:
+	case nil != predicateSpec.Eq:
 		return itp.eqInterpreter.Interpret(
-			*scgPredicate.Eq,
+			*predicateSpec.Eq,
 			scope,
 		)
-	case nil != scgPredicate.Exists:
+	case nil != predicateSpec.Exists:
 		return itp.existsInterpreter.Interpret(
-			*scgPredicate.Exists,
+			*predicateSpec.Exists,
 			scope,
 		)
-	case nil != scgPredicate.Ne:
+	case nil != predicateSpec.Ne:
 		return itp.neInterpreter.Interpret(
-			*scgPredicate.Ne,
+			*predicateSpec.Ne,
 			scope,
 		)
-	case nil != scgPredicate.NotExists:
+	case nil != predicateSpec.NotExists:
 		return itp.notExistsInterpreter.Interpret(
-			*scgPredicate.NotExists,
+			*predicateSpec.NotExists,
 			scope,
 		)
 	default:
-		return false, fmt.Errorf("unable to interpret predicate; predicate was unexpected type %+v", scgPredicate)
+		return false, fmt.Errorf("unable to interpret predicate; predicate was unexpected type %+v", predicateSpec)
 	}
 }

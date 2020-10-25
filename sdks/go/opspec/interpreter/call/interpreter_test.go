@@ -22,12 +22,12 @@ var _ = Context("Interpreter", func() {
 		})
 	})
 	Context("Interpret", func() {
-		Context("scg.If not nil", func() {
+		Context("callSpec.If not nil", func() {
 			It("should call predicatesInterpreter.Interpret w/ expected args", func() {
 				/* arrange */
 				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{
-					If: new([]*model.SCGPredicate),
+				providedCallSpec := &model.CallSpec{
+					If: new([]*model.PredicateSpec),
 				}
 
 				fakePredicatesInterpreter := new(predicatesFakes.FakeInterpreter)
@@ -43,7 +43,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					providedScope,
-					providedSCG,
+					providedCallSpec,
 					"providedID",
 					"dummyOpPath",
 					nil,
@@ -51,10 +51,10 @@ var _ = Context("Interpreter", func() {
 				)
 
 				/* assert */
-				actualSCGIf,
+				actualCallSpecIf,
 					actualScope := fakePredicatesInterpreter.InterpretArgsForCall(0)
 
-				Expect(actualSCGIf).To(Equal(*providedSCG.If))
+				Expect(actualCallSpecIf).To(Equal(*providedCallSpec.If))
 				Expect(actualScope).To(Equal(providedScope))
 			})
 			Context("predicatesInterpreter returns err", func() {
@@ -74,8 +74,8 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					_, actualError := objectUnderTest.Interpret(
 						map[string]*model.Value{},
-						&model.SCG{
-							If: new([]*model.SCGPredicate),
+						&model.CallSpec{
+							If: new([]*model.PredicateSpec),
 						},
 						"providedID",
 						"dummyOpPath",
@@ -88,13 +88,13 @@ var _ = Context("Interpreter", func() {
 				})
 			})
 		})
-		Context("scg.Container not nil", func() {
+		Context("callSpec.Container not nil", func() {
 			It("should call containerCallInterpreter.Interpret w/ expected args", func() {
 				/* arrange */
 				providedScope := map[string]*model.Value{}
 
-				providedSCG := &model.SCG{
-					Container: &model.SCGContainerCall{},
+				providedCallSpec := &model.CallSpec{
+					Container: &model.CallContainerSpec{},
 				}
 
 				providedID := "providedID"
@@ -110,7 +110,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					providedScope,
-					providedSCG,
+					providedCallSpec,
 					providedID,
 					providedOpPath,
 					nil,
@@ -119,13 +119,13 @@ var _ = Context("Interpreter", func() {
 
 				/* assert */
 				actualScope,
-					actualSCGContainerCall,
+					actualCallContainerSpec,
 					actualContainerID,
 					actualRootOpID,
 					actualOpPath := fakeContainerCallInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualSCGContainerCall).To(Equal(providedSCG.Container))
+				Expect(actualCallContainerSpec).To(Equal(providedCallSpec.Container))
 				Expect(actualContainerID).To(Equal(providedID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 				Expect(actualOpPath).To(Equal(providedOpPath))
@@ -135,8 +135,8 @@ var _ = Context("Interpreter", func() {
 				/* arrange */
 				providedID := "providedID"
 
-				providedSCG := &model.SCG{
-					Container: &model.SCGContainerCall{},
+				providedCallSpec := &model.CallSpec{
+					Container: &model.CallContainerSpec{},
 				}
 
 				providedParentIDValue := "providedParentID"
@@ -160,7 +160,7 @@ var _ = Context("Interpreter", func() {
 				actualDCG,
 					actualError := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					providedSCG,
+					providedCallSpec,
 					providedID,
 					"dummyOpPath",
 					providedParentID,
@@ -173,13 +173,13 @@ var _ = Context("Interpreter", func() {
 
 			})
 		})
-		Context("scg.Op not nil", func() {
+		Context("callSpec.Op not nil", func() {
 			It("should call opCallInterpreter.Interpret w/ expected args", func() {
 				/* arrange */
 				providedScope := map[string]*model.Value{}
 
-				providedSCG := &model.SCG{
-					Op: &model.SCGOpCall{},
+				providedCallSpec := &model.CallSpec{
+					Op: &model.CallOpSpec{},
 				}
 
 				providedID := "providedID"
@@ -195,7 +195,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					providedScope,
-					providedSCG,
+					providedCallSpec,
 					providedID,
 					providedOpPath,
 					nil,
@@ -204,13 +204,13 @@ var _ = Context("Interpreter", func() {
 
 				/* assert */
 				actualScope,
-					actualSCGOpCall,
+					actualCallOpSpec,
 					actualOpID,
 					actualOpPath,
 					actualRootOpID := fakeOpCallInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualSCGOpCall).To(Equal(providedSCG.Op))
+				Expect(actualCallOpSpec).To(Equal(providedCallSpec.Op))
 				Expect(actualOpID).To(Equal(providedID))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
@@ -220,8 +220,8 @@ var _ = Context("Interpreter", func() {
 				/* arrange */
 				providedID := "providedID"
 
-				providedSCG := &model.SCG{
-					Op: &model.SCGOpCall{},
+				providedCallSpec := &model.CallSpec{
+					Op: &model.CallOpSpec{},
 				}
 
 				providedParentID := "providedParentID"
@@ -244,7 +244,7 @@ var _ = Context("Interpreter", func() {
 				actualDCG,
 					actualError := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					providedSCG,
+					providedCallSpec,
 					providedID,
 					"dummyOpPath",
 					&providedParentID,
@@ -257,14 +257,14 @@ var _ = Context("Interpreter", func() {
 
 			})
 		})
-		Context("scg.Parallel not empty", func() {
+		Context("callSpec.Parallel not empty", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedID := "providedID"
 
-				providedSCG := &model.SCG{
-					Parallel: &[]*model.SCG{
-						&model.SCG{},
+				providedCallSpec := &model.CallSpec{
+					Parallel: &[]*model.CallSpec{
+						&model.CallSpec{},
 					},
 				}
 
@@ -272,7 +272,7 @@ var _ = Context("Interpreter", func() {
 
 				expectedDCG := &model.DCG{
 					Id:       providedID,
-					Parallel: *providedSCG.Parallel,
+					Parallel: *providedCallSpec.Parallel,
 					ParentID: &providedParentID,
 				}
 
@@ -282,7 +282,7 @@ var _ = Context("Interpreter", func() {
 				actualDCG,
 					actualError := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					providedSCG,
+					providedCallSpec,
 					providedID,
 					"dummyOpPath",
 					&providedParentID,
@@ -295,14 +295,14 @@ var _ = Context("Interpreter", func() {
 
 			})
 		})
-		Context("scg.Serial not empty", func() {
+		Context("callSpec.Serial not empty", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedID := "providedID"
 
-				providedSCG := &model.SCG{
-					Serial: &[]*model.SCG{
-						&model.SCG{},
+				providedCallSpec := &model.CallSpec{
+					Serial: &[]*model.CallSpec{
+						&model.CallSpec{},
 					},
 				}
 
@@ -311,7 +311,7 @@ var _ = Context("Interpreter", func() {
 				expectedDCG := &model.DCG{
 					Id:       providedID,
 					ParentID: &providedParentID,
-					Serial:   *providedSCG.Serial,
+					Serial:   *providedCallSpec.Serial,
 				}
 
 				objectUnderTest := _interpreter{}
@@ -320,7 +320,7 @@ var _ = Context("Interpreter", func() {
 				actualDCG,
 					actualError := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					providedSCG,
+					providedCallSpec,
 					providedID,
 					"dummyOpPath",
 					&providedParentID,

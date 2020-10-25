@@ -79,21 +79,21 @@ var _ = Context("Interpreter", func() {
 
 								for _, scenario := range scenarioOpFile {
 									if nil != scenario.Interpret {
-										scgOpCall := &model.SCGOpCall{
+										callOpSpec := &model.CallOpSpec{
 											Ref:    absOpPath,
 											Inputs: map[string]interface{}{},
 										}
 
 										for name := range scenario.Interpret.Scope {
 											// map as passed
-											scgOpCall.Inputs[name] = ""
+											callOpSpec.Inputs[name] = ""
 										}
 
 										/* act */
 										objectUnderTest := NewInterpreter(tempDir)
 										_, actualErr := objectUnderTest.Interpret(
 											scenario.Interpret.Scope,
-											scgOpCall,
+											callOpSpec,
 											"",
 											*opHandle.Path(),
 											"",
@@ -130,7 +130,7 @@ var _ = Context("Interpreter", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				map[string]*model.Value{},
-				&model.SCGOpCall{
+				&model.CallOpSpec{
 					Ref: "dummyOpRef",
 				},
 				"dummyOpID",
@@ -142,7 +142,7 @@ var _ = Context("Interpreter", func() {
 			Expect(fakeData.NewFSProviderArgsForCall(0)).
 				To(ConsistOf(providedOpPath, filepath.Dir(providedOpPath)))
 		})
-		Context("scgOpCall.PullCreds is nil", func() {
+		Context("callOpSpec.PullCreds is nil", func() {
 			It("should call data.NewGitProvider w/ expected args", func() {
 				/* arrange */
 				providedDataCachePath := "dummyDataCachePath"
@@ -159,7 +159,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.SCGOpCall{
+					&model.CallOpSpec{
 						Ref: "dummyOpRef",
 					},
 					"dummyOpID",
@@ -175,7 +175,7 @@ var _ = Context("Interpreter", func() {
 				Expect(actualPullCreds).To(BeNil())
 			})
 		})
-		Context("scgOpCall.PullCreds isn't nil", func() {
+		Context("callOpSpec.PullCreds isn't nil", func() {
 			Context("stringInterpreter.Interpret errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
@@ -190,8 +190,8 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					_, actualError := objectUnderTest.Interpret(
 						map[string]*model.Value{},
-						&model.SCGOpCall{
-							PullCreds: &model.SCGPullCreds{},
+						&model.CallOpSpec{
+							PullCreds: &model.PullCredsSpec{},
 						},
 						"dummyOpID",
 						"dummyOpPath",
@@ -225,9 +225,9 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					objectUnderTest.Interpret(
 						map[string]*model.Value{},
-						&model.SCGOpCall{
+						&model.CallOpSpec{
 							Ref:       "dummyOpRef",
-							PullCreds: &model.SCGPullCreds{},
+							PullCreds: &model.PullCredsSpec{},
 						},
 						"dummyOpID",
 						"dummyOpPath",
@@ -243,7 +243,7 @@ var _ = Context("Interpreter", func() {
 				})
 			})
 		})
-		Context("scgOpCall.Ref is value referency", func() {
+		Context("callOpSpec.Ref is value referency", func() {
 			It("should call opfile.Get w/ expected args", func() {
 				/* arrange */
 				opPath := "opPath"
@@ -264,7 +264,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.SCGOpCall{
+					&model.CallOpSpec{
 						Ref: "$(dummyVar)",
 					},
 					"dummyOpID",
@@ -280,13 +280,13 @@ var _ = Context("Interpreter", func() {
 				Expect(actualOpPath).To(Equal(opPath))
 			})
 		})
-		Context("scgOpCall.Ref not value referency", func() {
+		Context("callOpSpec.Ref not value referency", func() {
 			It("should call data.Resolve w/ expected args", func() {
 				/* arrange */
 				providedOpPath := "providedOpPath"
 
 				provideddataDirPath := "dummydataDirPath"
-				providedSCGOpCall := &model.SCGOpCall{
+				providedCallOpSpec := &model.CallOpSpec{
 					Ref: providedOpPath,
 				}
 
@@ -310,7 +310,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					providedSCGOpCall,
+					providedCallOpSpec,
 					"dummyOpID",
 					providedOpPath,
 					"dummyRootOpID",
@@ -340,7 +340,7 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
-						&model.SCGOpCall{},
+						&model.CallOpSpec{},
 						"dummyOpID",
 						"dummyOpPath",
 						"dummyRootOpID",
@@ -373,7 +373,7 @@ var _ = Context("Interpreter", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				map[string]*model.Value{},
-				&model.SCGOpCall{},
+				&model.CallOpSpec{},
 				"dummyOpID",
 				"dummyOpPath",
 				"dummyRootOpID",
@@ -408,7 +408,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.SCGOpCall{},
+					&model.CallOpSpec{},
 					"dummyOpID",
 					"dummyOpPath",
 					"dummyRootOpID",
@@ -425,9 +425,9 @@ var _ = Context("Interpreter", func() {
 			}
 			expectedScope := providedScope
 
-			expectedInputArgs := map[string]interface{}{"dummySCGOpCallInputName": "dummyScgOpCallInputValue"}
+			expectedInputArgs := map[string]interface{}{"dummyCallOpSpecInputName": "dummyScgOpCallInputValue"}
 
-			providedSCGOpCall := &model.SCGOpCall{
+			providedCallOpSpec := &model.CallOpSpec{
 				Inputs: expectedInputArgs,
 			}
 
@@ -467,23 +467,23 @@ var _ = Context("Interpreter", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				providedScope,
-				providedSCGOpCall,
+				providedCallOpSpec,
 				providedOpID,
 				providedParentOpPath,
 				"dummyRootOpID",
 			)
 
 			/* assert */
-			actualSCGArgs,
-				actualSCGInputs,
+			actualCallSpecArgs,
+				actualCallSpecInputs,
 				actualOpPath,
 				actualScope,
 				actualOpScratchDir := fakeInputsInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(expectedScope))
-			Expect(actualSCGArgs).To(Equal(expectedInputArgs))
+			Expect(actualCallSpecArgs).To(Equal(expectedInputArgs))
 			Expect(actualOpPath).To(Equal(opPath))
-			Expect(actualSCGInputs).To(Equal(expectedInputParams))
+			Expect(actualCallSpecInputs).To(Equal(expectedInputParams))
 			Expect(actualOpScratchDir).To(Equal(filepath.Join(dcgScratchDir, providedOpID)))
 
 		})

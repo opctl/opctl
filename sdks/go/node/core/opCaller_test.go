@@ -39,7 +39,7 @@ var _ = Context("opCaller", func() {
 				OpID: "providedOpId",
 			}
 
-			providedSCGOpCall := &model.SCGOpCall{}
+			providedCallOpSpec := &model.CallOpSpec{}
 
 			expectedEvent := model.Event{
 				Timestamp: time.Now().UTC(),
@@ -73,7 +73,7 @@ var _ = Context("opCaller", func() {
 				providedDCGOpCall,
 				map[string]*model.Value{},
 				nil,
-				providedSCGOpCall,
+				providedCallOpSpec,
 			)
 
 			/* assert */
@@ -98,10 +98,10 @@ var _ = Context("opCaller", func() {
 					RootOpID: "providedRootID",
 				},
 				ChildCallID: "dummyChildCallID",
-				ChildCallSCG: &model.SCG{
-					Parallel: &[]*model.SCG{
+				ChildCallCallSpec: &model.CallSpec{
+					Parallel: &[]*model.CallSpec{
 						{
-							Container: &model.SCGContainerCall{},
+							Container: &model.CallContainerSpec{},
 						},
 					},
 				},
@@ -143,14 +143,14 @@ var _ = Context("opCaller", func() {
 				providedDCGOpCall,
 				map[string]*model.Value{},
 				nil,
-				&model.SCGOpCall{},
+				&model.CallOpSpec{},
 			)
 
 			/* assert */
 			actualCtx,
 				actualChildCallID,
 				actualChildCallScope,
-				actualChildSCG,
+				actualChildCallSpec,
 				actualOpPath,
 				actualParentCallID,
 				actualRootOpID := fakeCaller.CallArgsForCall(0)
@@ -158,7 +158,7 @@ var _ = Context("opCaller", func() {
 			Expect(actualCtx).To(Not(BeNil()))
 			Expect(actualChildCallID).To(Equal(providedDCGOpCall.ChildCallID))
 			Expect(actualChildCallScope).To(Equal(expectedChildCallScope))
-			Expect(actualChildSCG).To(Equal(providedDCGOpCall.ChildCallSCG))
+			Expect(actualChildCallSpec).To(Equal(providedDCGOpCall.ChildCallCallSpec))
 			Expect(actualOpPath).To(Equal(providedOpPath))
 			Expect(actualParentCallID).To(Equal(&providedDCGOpCall.OpID))
 			Expect(actualRootOpID).To(Equal(providedDCGOpCall.RootOpID))
@@ -176,7 +176,7 @@ var _ = Context("opCaller", func() {
 					OpID: "providedOpID",
 				}
 
-				providedSCGOpCall := &model.SCGOpCall{}
+				providedCallOpSpec := &model.CallOpSpec{}
 
 				expectedEvent := model.Event{
 					Timestamp: time.Now().UTC(),
@@ -215,7 +215,7 @@ var _ = Context("opCaller", func() {
 					providedDCGOpCall,
 					map[string]*model.Value{},
 					nil,
-					providedSCGOpCall,
+					providedCallOpSpec,
 				)
 
 				/* assert */
@@ -244,7 +244,7 @@ var _ = Context("opCaller", func() {
 						OpID: "providedOpId",
 					}
 
-					providedSCGOpCall := &model.SCGOpCall{}
+					providedCallOpSpec := &model.CallOpSpec{}
 					errMsg := "errMsg"
 
 					expectedEvent := model.Event{
@@ -284,7 +284,7 @@ var _ = Context("opCaller", func() {
 						providedDCGOpCall,
 						map[string]*model.Value{},
 						nil,
-						providedSCGOpCall,
+						providedCallOpSpec,
 					)
 
 					/* assert */
@@ -314,7 +314,7 @@ var _ = Context("opCaller", func() {
 
 				expectedOutputName := "expectedOutputName"
 
-				providedSCGOpCall := &model.SCGOpCall{
+				providedCallOpSpec := &model.CallOpSpec{
 					Outputs: map[string]string{
 						expectedOutputName: "",
 					},
@@ -364,7 +364,7 @@ var _ = Context("opCaller", func() {
 					providedDCGOpCall,
 					map[string]*model.Value{},
 					nil,
-					providedSCGOpCall,
+					providedCallOpSpec,
 				)
 
 				/* assert */

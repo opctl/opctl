@@ -20,7 +20,7 @@ type opCaller interface {
 		dcgOpCall *model.DCGOpCall,
 		inboundScope map[string]*model.Value,
 		parentCallID *string,
-		scgOpCall *model.SCGOpCall,
+		callOpSpec *model.CallOpSpec,
 	)
 }
 
@@ -54,7 +54,7 @@ func (oc _opCaller) Call(
 	dcgOpCall *model.DCGOpCall,
 	inboundScope map[string]*model.Value,
 	parentCallID *string,
-	scgOpCall *model.SCGOpCall,
+	callOpSpec *model.CallOpSpec,
 ) {
 	var err error
 	outboundScope := map[string]*model.Value{}
@@ -117,7 +117,7 @@ func (oc _opCaller) Call(
 		ctx,
 		dcgOpCall.ChildCallID,
 		opCallScope,
-		dcgOpCall.ChildCallSCG,
+		dcgOpCall.ChildCallCallSpec,
 		dcgOpCall.OpPath,
 		&dcgOpCall.OpID,
 		dcgOpCall.RootOpID,
@@ -169,7 +169,7 @@ eventLoop:
 	)
 
 	// filter op outboundScope to bound call outboundScope
-	for boundName, boundValue := range scgOpCall.Outputs {
+	for boundName, boundValue := range callOpSpec.Outputs {
 		// return bound outboundScope
 		if "" == boundValue {
 			// implicit value

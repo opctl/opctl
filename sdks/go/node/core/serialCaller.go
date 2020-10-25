@@ -19,7 +19,7 @@ type serialCaller interface {
 		inboundScope map[string]*model.Value,
 		rootOpID string,
 		opPath string,
-		scgSerialCall []*model.SCG,
+		callSpecSerialCall []*model.CallSpec,
 	)
 }
 
@@ -48,7 +48,7 @@ func (sc _serialCaller) Call(
 	inboundScope map[string]*model.Value,
 	rootOpID string,
 	opPath string,
-	scgSerialCall []*model.SCG,
+	callSpecSerialCall []*model.CallSpec,
 ) {
 	outputs := map[string]*model.Value{}
 	for varName, varData := range inboundScope {
@@ -88,7 +88,7 @@ func (sc _serialCaller) Call(
 		},
 	)
 
-	for _, scgCall := range scgSerialCall {
+	for _, callSpecCall := range callSpecSerialCall {
 
 		var childCallID string
 		childCallID, err = sc.uniqueStringFactory.Construct()
@@ -101,7 +101,7 @@ func (sc _serialCaller) Call(
 			ctx,
 			childCallID,
 			outputs,
-			scgCall,
+			callSpecCall,
 			opPath,
 			&callID,
 			rootOpID,

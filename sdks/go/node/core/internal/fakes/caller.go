@@ -9,13 +9,13 @@ import (
 )
 
 type FakeCaller struct {
-	CallStub        func(context.Context, string, map[string]*model.Value, *model.SCG, string, *string, string)
+	CallStub        func(context.Context, string, map[string]*model.Value, *model.CallSpec, string, *string, string)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
 		arg3 map[string]*model.Value
-		arg4 *model.SCG
+		arg4 *model.CallSpec
 		arg5 string
 		arg6 *string
 		arg7 string
@@ -24,13 +24,13 @@ type FakeCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 *model.SCG, arg5 string, arg6 *string, arg7 string) {
+func (fake *FakeCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 *model.CallSpec, arg5 string, arg6 *string, arg7 string) {
 	fake.callMutex.Lock()
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
 		arg3 map[string]*model.Value
-		arg4 *model.SCG
+		arg4 *model.CallSpec
 		arg5 string
 		arg6 *string
 		arg7 string
@@ -48,13 +48,13 @@ func (fake *FakeCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *FakeCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, *model.SCG, string, *string, string)) {
+func (fake *FakeCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, *model.CallSpec, string, *string, string)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
 }
 
-func (fake *FakeCaller) CallArgsForCall(i int) (context.Context, string, map[string]*model.Value, *model.SCG, string, *string, string) {
+func (fake *FakeCaller) CallArgsForCall(i int) (context.Context, string, map[string]*model.Value, *model.CallSpec, string, *string, string) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]

@@ -9,27 +9,27 @@ import (
 )
 
 type FakeOpCaller struct {
-	CallStub        func(context.Context, *model.DCGOpCall, map[string]*model.Value, *string, *model.SCGOpCall)
+	CallStub        func(context.Context, *model.DCGOpCall, map[string]*model.Value, *string, *model.CallOpSpec)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		arg1 context.Context
 		arg2 *model.DCGOpCall
 		arg3 map[string]*model.Value
 		arg4 *string
-		arg5 *model.SCGOpCall
+		arg5 *model.CallOpSpec
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeOpCaller) Call(arg1 context.Context, arg2 *model.DCGOpCall, arg3 map[string]*model.Value, arg4 *string, arg5 *model.SCGOpCall) {
+func (fake *FakeOpCaller) Call(arg1 context.Context, arg2 *model.DCGOpCall, arg3 map[string]*model.Value, arg4 *string, arg5 *model.CallOpSpec) {
 	fake.callMutex.Lock()
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		arg1 context.Context
 		arg2 *model.DCGOpCall
 		arg3 map[string]*model.Value
 		arg4 *string
-		arg5 *model.SCGOpCall
+		arg5 *model.CallOpSpec
 	}{arg1, arg2, arg3, arg4, arg5})
 	fake.recordInvocation("Call", []interface{}{arg1, arg2, arg3, arg4, arg5})
 	fake.callMutex.Unlock()
@@ -44,13 +44,13 @@ func (fake *FakeOpCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *FakeOpCaller) CallCalls(stub func(context.Context, *model.DCGOpCall, map[string]*model.Value, *string, *model.SCGOpCall)) {
+func (fake *FakeOpCaller) CallCalls(stub func(context.Context, *model.DCGOpCall, map[string]*model.Value, *string, *model.CallOpSpec)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
 }
 
-func (fake *FakeOpCaller) CallArgsForCall(i int) (context.Context, *model.DCGOpCall, map[string]*model.Value, *string, *model.SCGOpCall) {
+func (fake *FakeOpCaller) CallArgsForCall(i int) (context.Context, *model.DCGOpCall, map[string]*model.Value, *string, *model.CallOpSpec) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]

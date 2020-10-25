@@ -19,9 +19,9 @@ var _ = Context("Interpreter", func() {
 	Context("Interpret", func() {
 		It("should call predicateInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
-			providedSCGPredicates := []*model.SCGPredicate{
-				&model.SCGPredicate{Eq: new([]interface{})},
-				&model.SCGPredicate{Ne: new([]interface{})},
+			providedPredicateSpecs := []*model.PredicateSpec{
+				&model.PredicateSpec{Eq: new([]interface{})},
+				&model.PredicateSpec{Ne: new([]interface{})},
 			}
 
 			providedScope := map[string]*model.Value{}
@@ -38,21 +38,21 @@ var _ = Context("Interpreter", func() {
 
 			/* act */
 			objectUnderTest.Interpret(
-				providedSCGPredicates,
+				providedPredicateSpecs,
 				providedScope,
 			)
 
 			/* assert */
-			actualSCGPredicates0,
+			actualPredicateSpecs0,
 				actualScope0 := fakePredicateInterpreter.InterpretArgsForCall(0)
 
-			Expect(actualSCGPredicates0).To(Equal(providedSCGPredicates[0]))
+			Expect(actualPredicateSpecs0).To(Equal(providedPredicateSpecs[0]))
 			Expect(actualScope0).To(Equal(providedScope))
 
-			actualSCGPredicates1,
+			actualPredicateSpecs1,
 				actualScope1 := fakePredicateInterpreter.InterpretArgsForCall(1)
 
-			Expect(actualSCGPredicates1).To(Equal(providedSCGPredicates[1]))
+			Expect(actualPredicateSpecs1).To(Equal(providedPredicateSpecs[1]))
 			Expect(actualScope1).To(Equal(providedScope))
 		})
 		Context("predicateInterpreter.Interpret errs", func() {
@@ -72,8 +72,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualError := objectUnderTest.Interpret(
-					[]*model.SCGPredicate{
-						&model.SCGPredicate{Eq: new([]interface{})},
+					[]*model.PredicateSpec{
+						&model.PredicateSpec{Eq: new([]interface{})},
 					},
 					map[string]*model.Value{},
 				)
@@ -98,9 +98,9 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
-					[]*model.SCGPredicate{
-						&model.SCGPredicate{Eq: new([]interface{})},
-						&model.SCGPredicate{Ne: new([]interface{})},
+					[]*model.PredicateSpec{
+						&model.PredicateSpec{Eq: new([]interface{})},
+						&model.PredicateSpec{Ne: new([]interface{})},
 					},
 					map[string]*model.Value{},
 				)
@@ -125,9 +125,9 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
-					[]*model.SCGPredicate{
-						&model.SCGPredicate{Eq: new([]interface{})},
-						&model.SCGPredicate{Ne: new([]interface{})},
+					[]*model.PredicateSpec{
+						&model.PredicateSpec{Eq: new([]interface{})},
+						&model.PredicateSpec{Ne: new([]interface{})},
 					},
 					map[string]*model.Value{},
 				)

@@ -32,7 +32,7 @@ var _ = Context("Dirs", func() {
 
 			containerDirPath := "/dummyDir1Path.txt"
 
-			providedSCGContainerCallDirs := map[string]string{
+			providedCallContainerSpecDirs := map[string]string{
 				// implicitly bound
 				containerDirPath: "",
 			}
@@ -53,7 +53,7 @@ var _ = Context("Dirs", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				providedScope,
-				providedSCGContainerCallDirs,
+				providedCallContainerSpecDirs,
 				providedScratchDir,
 			)
 

@@ -15,7 +15,7 @@ var _ = Context("Interpreter", func() {
 		})
 	})
 	Context("Interpret", func() {
-		Context("scgContainerCallCmd not empty", func() {
+		Context("callContainerSpecCmd not empty", func() {
 			It("should call stringInterpreter.Interpret w/ expected args for each container.Cmd entry", func() {
 				/* arrange */
 				providedString1 := "dummyString1"
@@ -23,7 +23,7 @@ var _ = Context("Interpreter", func() {
 					"name1": {String: &providedString1},
 				}
 
-				providedSCGContainerCallCmd := []interface{}{
+				providedCallContainerSpecCmd := []interface{}{
 					"dummy1",
 					"dummy2",
 				}
@@ -38,11 +38,11 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					providedCurrentScope,
-					providedSCGContainerCallCmd,
+					providedCallContainerSpecCmd,
 				)
 
 				/* assert */
-				for expectedCmdIndex, expectedCmdEntry := range providedSCGContainerCallCmd {
+				for expectedCmdIndex, expectedCmdEntry := range providedCallContainerSpecCmd {
 					actualScope,
 						actualCmdEntry := fakeStrInterpreter.InterpretArgsForCall(expectedCmdIndex)
 
@@ -57,7 +57,7 @@ var _ = Context("Interpreter", func() {
 					"dummyCmdEntry2",
 				}
 
-				providedSCGContainerCallCmd := []interface{}{
+				providedCallContainerSpecCmd := []interface{}{
 					"dummy1",
 					"dummy2",
 				}
@@ -73,7 +73,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					providedSCGContainerCallCmd,
+					providedCallContainerSpecCmd,
 				)
 
 				/* assert */

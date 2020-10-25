@@ -40,7 +40,7 @@ var _ = Context("containerCaller", func() {
 				ContainerID: "providedContainerID",
 			}
 			providedInboundScope := map[string]*model.Value{}
-			providedSCGContainerCall := &model.SCGContainerCall{}
+			providedCallContainerSpec := &model.CallContainerSpec{}
 
 			expectedEvent := model.Event{
 				Timestamp: time.Now().UTC(),
@@ -67,7 +67,7 @@ var _ = Context("containerCaller", func() {
 				context.Background(),
 				providedDCGContainerCall,
 				providedInboundScope,
-				providedSCGContainerCall,
+				providedCallContainerSpec,
 			)
 
 			/* assert */
@@ -104,7 +104,7 @@ var _ = Context("containerCaller", func() {
 				providedCtx,
 				providedDCGContainerCall,
 				map[string]*model.Value{},
-				&model.SCGContainerCall{},
+				&model.CallContainerSpec{},
 			)
 
 			/* assert */
@@ -141,7 +141,7 @@ var _ = Context("containerCaller", func() {
 						DCGBaseCall: model.DCGBaseCall{},
 					},
 					map[string]*model.Value{},
-					&model.SCGContainerCall{},
+					&model.CallContainerSpec{},
 				)
 
 				/* assert */
@@ -163,7 +163,7 @@ var _ = Context("containerCaller", func() {
 			ContainerID: "providedContainerID",
 		}
 		providedInboundScope := map[string]*model.Value{}
-		providedSCGContainerCall := &model.SCGContainerCall{}
+		providedCallContainerSpec := &model.CallContainerSpec{}
 
 		expectedEvent := model.Event{
 			Timestamp: time.Now().UTC(),
@@ -194,7 +194,7 @@ var _ = Context("containerCaller", func() {
 			context.Background(),
 			providedDCGContainerCall,
 			providedInboundScope,
-			providedSCGContainerCall,
+			providedCallContainerSpec,
 		)
 
 		/* assert */
@@ -218,7 +218,7 @@ var _ = Context("containerCaller", func() {
 			ContainerID: "providedContainerID",
 		}
 		providedInboundScope := map[string]*model.Value{}
-		providedSCGContainerCall := &model.SCGContainerCall{}
+		providedCallContainerSpec := &model.CallContainerSpec{}
 
 		expectedEvent := model.Event{
 			Timestamp: time.Now().UTC(),
@@ -249,7 +249,7 @@ var _ = Context("containerCaller", func() {
 			context.Background(),
 			providedDCGContainerCall,
 			providedInboundScope,
-			providedSCGContainerCall,
+			providedCallContainerSpec,
 		)
 
 		/* assert */

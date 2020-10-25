@@ -235,16 +235,16 @@ var _ = Context("core", func() {
 					fakeOpFileGetter := new(FakeGetter)
 					fakeOpFileGetter.GetReturns(opFile, nil)
 
-					expectedSCGOpCall := &model.SCGOpCall{
+					expectedCallOpSpec := &model.CallOpSpec{
 						Ref:     opRef,
 						Inputs:  map[string]interface{}{},
 						Outputs: map[string]string{},
 					}
 					for name := range providedReq.Args {
-						expectedSCGOpCall.Inputs[name] = ""
+						expectedCallOpSpec.Inputs[name] = ""
 					}
 					for name := range opFile.Outputs {
-						expectedSCGOpCall.Outputs[name] = ""
+						expectedCallOpSpec.Outputs[name] = ""
 					}
 
 					expectedID := "expectedID"
@@ -258,7 +258,7 @@ var _ = Context("core", func() {
 					// use real interpreter
 					expectedDCGOpCall, err := opInterpreter.Interpret(
 						providedReq.Args,
-						expectedSCGOpCall,
+						expectedCallOpSpec,
 						expectedID,
 						opPath,
 						expectedID,
@@ -289,7 +289,7 @@ var _ = Context("core", func() {
 						actualDCGOpCall,
 						actualScope,
 						actualOpID,
-						actualSCGOpCall := fakeOpCaller.CallArgsForCall(0)
+						actualCallOpSpec := fakeOpCaller.CallArgsForCall(0)
 
 					// ignore ChildCallID
 					actualDCGOpCall.ChildCallID = expectedDCGOpCall.ChildCallID
@@ -298,7 +298,7 @@ var _ = Context("core", func() {
 					Expect(*actualDCGOpCall).To(BeEquivalentTo(*expectedDCGOpCall))
 					Expect(actualOpID).To(Equal(&expectedID))
 					Expect(actualScope).To(Equal(providedReq.Args))
-					Expect(actualSCGOpCall).To(Equal(expectedSCGOpCall))
+					Expect(actualCallOpSpec).To(Equal(expectedCallOpSpec))
 				})
 			})
 		})

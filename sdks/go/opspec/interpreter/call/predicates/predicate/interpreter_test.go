@@ -23,7 +23,7 @@ var _ = Context("Interpreter", func() {
 		Context("Eq Predicate", func() {
 			It("should call eqInterpreter.Interpret w/ expected args & return result", func() {
 				/* arrange */
-				providedScgPredicate := &model.SCGPredicate{
+				providedScgPredicate := &model.PredicateSpec{
 					Eq: new([]interface{}),
 				}
 
@@ -58,7 +58,7 @@ var _ = Context("Interpreter", func() {
 		Context("Exists Predicate", func() {
 			It("should call existsInterpreter.Interpret w/ expected args & return result", func() {
 				/* arrange */
-				providedScgPredicate := &model.SCGPredicate{
+				providedScgPredicate := &model.PredicateSpec{
 					Exists: new(string),
 				}
 
@@ -93,7 +93,7 @@ var _ = Context("Interpreter", func() {
 		Context("Ne predicate", func() {
 			It("should call neInterpreter.Interpret w/ expected args & return result", func() {
 				/* arrange */
-				providedScgPredicate := &model.SCGPredicate{
+				providedScgPredicate := &model.PredicateSpec{
 					Ne: new([]interface{}),
 				}
 
@@ -128,7 +128,7 @@ var _ = Context("Interpreter", func() {
 		Context("NotExists Predicate", func() {
 			It("should call existsInterpreter.Interpret w/ expected args & return result", func() {
 				/* arrange */
-				providedScgPredicate := &model.SCGPredicate{
+				providedScgPredicate := &model.PredicateSpec{
 					NotExists: new(string),
 				}
 
@@ -163,7 +163,7 @@ var _ = Context("Interpreter", func() {
 		Context("Unexpected predicate", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				providedScgPredicate := &model.SCGPredicate{}
+				providedScgPredicate := &model.PredicateSpec{}
 				objectUnderTest := _interpreter{}
 
 				expectedError := fmt.Errorf("unable to interpret predicate; predicate was unexpected type %+v", providedScgPredicate)

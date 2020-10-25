@@ -9,13 +9,13 @@ import (
 )
 
 type FakeScoper struct {
-	ScopeStub        func(int, map[string]*model.Value, interface{}, *model.SCGLoopVars) (map[string]*model.Value, error)
+	ScopeStub        func(int, map[string]*model.Value, interface{}, *model.LoopVarsSpec) (map[string]*model.Value, error)
 	scopeMutex       sync.RWMutex
 	scopeArgsForCall []struct {
 		arg1 int
 		arg2 map[string]*model.Value
 		arg3 interface{}
-		arg4 *model.SCGLoopVars
+		arg4 *model.LoopVarsSpec
 	}
 	scopeReturns struct {
 		result1 map[string]*model.Value
@@ -29,14 +29,14 @@ type FakeScoper struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeScoper) Scope(arg1 int, arg2 map[string]*model.Value, arg3 interface{}, arg4 *model.SCGLoopVars) (map[string]*model.Value, error) {
+func (fake *FakeScoper) Scope(arg1 int, arg2 map[string]*model.Value, arg3 interface{}, arg4 *model.LoopVarsSpec) (map[string]*model.Value, error) {
 	fake.scopeMutex.Lock()
 	ret, specificReturn := fake.scopeReturnsOnCall[len(fake.scopeArgsForCall)]
 	fake.scopeArgsForCall = append(fake.scopeArgsForCall, struct {
 		arg1 int
 		arg2 map[string]*model.Value
 		arg3 interface{}
-		arg4 *model.SCGLoopVars
+		arg4 *model.LoopVarsSpec
 	}{arg1, arg2, arg3, arg4})
 	fake.recordInvocation("Scope", []interface{}{arg1, arg2, arg3, arg4})
 	fake.scopeMutex.Unlock()
@@ -56,13 +56,13 @@ func (fake *FakeScoper) ScopeCallCount() int {
 	return len(fake.scopeArgsForCall)
 }
 
-func (fake *FakeScoper) ScopeCalls(stub func(int, map[string]*model.Value, interface{}, *model.SCGLoopVars) (map[string]*model.Value, error)) {
+func (fake *FakeScoper) ScopeCalls(stub func(int, map[string]*model.Value, interface{}, *model.LoopVarsSpec) (map[string]*model.Value, error)) {
 	fake.scopeMutex.Lock()
 	defer fake.scopeMutex.Unlock()
 	fake.ScopeStub = stub
 }
 
-func (fake *FakeScoper) ScopeArgsForCall(i int) (int, map[string]*model.Value, interface{}, *model.SCGLoopVars) {
+func (fake *FakeScoper) ScopeArgsForCall(i int) (int, map[string]*model.Value, interface{}, *model.LoopVarsSpec) {
 	fake.scopeMutex.RLock()
 	defer fake.scopeMutex.RUnlock()
 	argsForCall := fake.scopeArgsForCall[i]

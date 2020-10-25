@@ -50,7 +50,7 @@ var _ = Context("serialLoopCaller", func() {
 					context.Background(),
 					"id",
 					map[string]*model.Value{},
-					model.SCGSerialLoopCall{},
+					model.CallSerialLoopSpec{},
 					"dummyOpPath",
 					nil,
 					"rootOpID",
@@ -89,7 +89,7 @@ var _ = Context("serialLoopCaller", func() {
 					context.Background(),
 					"id",
 					map[string]*model.Value{},
-					model.SCGSerialLoopCall{},
+					model.CallSerialLoopSpec{},
 					"dummyOpPath",
 					nil,
 					"rootOpID",
@@ -105,11 +105,11 @@ var _ = Context("serialLoopCaller", func() {
 				providedCtx := context.Background()
 				providedScope := map[string]*model.Value{}
 				index := "index"
-				providedSCGSerialLoopCall := model.SCGSerialLoopCall{
-					Run: model.SCG{
-						Container: new(model.SCGContainerCall),
+				providedCallSerialLoopSpec := model.CallSerialLoopSpec{
+					Run: model.CallSpec{
+						Container: new(model.CallContainerSpec),
 					},
-					Vars: &model.SCGLoopVars{
+					Vars: &model.LoopVarsSpec{
 						Index: &index,
 					},
 				}
@@ -173,7 +173,7 @@ var _ = Context("serialLoopCaller", func() {
 					providedCtx,
 					"id",
 					providedScope,
-					providedSCGSerialLoopCall,
+					providedCallSerialLoopSpec,
 					providedOpPath,
 					providedParentCallID,
 					providedRootOpID,
@@ -183,7 +183,7 @@ var _ = Context("serialLoopCaller", func() {
 				actualCtx,
 					actualCallID,
 					actualScope,
-					actualSCG,
+					actualCallSpec,
 					actualOpPath,
 					actualParentCallID,
 					actualRootOpID := fakeCaller.CallArgsForCall(0)
@@ -191,7 +191,7 @@ var _ = Context("serialLoopCaller", func() {
 				Expect(actualCtx).To(Not(BeNil()))
 				Expect(actualCallID).To(Equal(callID))
 				Expect(actualScope).To(Equal(expectedScope))
-				Expect(actualSCG).To(Equal(&providedSCGSerialLoopCall.Run))
+				Expect(actualCallSpec).To(Equal(&providedCallSerialLoopSpec.Run))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualParentCallID).To(Equal(providedParentCallID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))

@@ -9,10 +9,10 @@ import (
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func(model.SCGSerialLoopCall, map[string]*model.Value) (*model.DCGSerialLoopCall, error)
+	InterpretStub        func(model.CallSerialLoopSpec, map[string]*model.Value) (*model.DCGSerialLoopCall, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
-		arg1 model.SCGSerialLoopCall
+		arg1 model.CallSerialLoopSpec
 		arg2 map[string]*model.Value
 	}
 	interpretReturns struct {
@@ -27,11 +27,11 @@ type FakeInterpreter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(arg1 model.SCGSerialLoopCall, arg2 map[string]*model.Value) (*model.DCGSerialLoopCall, error) {
+func (fake *FakeInterpreter) Interpret(arg1 model.CallSerialLoopSpec, arg2 map[string]*model.Value) (*model.DCGSerialLoopCall, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
-		arg1 model.SCGSerialLoopCall
+		arg1 model.CallSerialLoopSpec
 		arg2 map[string]*model.Value
 	}{arg1, arg2})
 	fake.recordInvocation("Interpret", []interface{}{arg1, arg2})
@@ -52,13 +52,13 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *FakeInterpreter) InterpretCalls(stub func(model.SCGSerialLoopCall, map[string]*model.Value) (*model.DCGSerialLoopCall, error)) {
+func (fake *FakeInterpreter) InterpretCalls(stub func(model.CallSerialLoopSpec, map[string]*model.Value) (*model.DCGSerialLoopCall, error)) {
 	fake.interpretMutex.Lock()
 	defer fake.interpretMutex.Unlock()
 	fake.InterpretStub = stub
 }
 
-func (fake *FakeInterpreter) InterpretArgsForCall(i int) (model.SCGSerialLoopCall, map[string]*model.Value) {
+func (fake *FakeInterpreter) InterpretArgsForCall(i int) (model.CallSerialLoopSpec, map[string]*model.Value) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
 	argsForCall := fake.interpretArgsForCall[i]

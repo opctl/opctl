@@ -18,9 +18,9 @@ var _ = Context("scoper", func() {
 	})
 
 	Context("Scope", func() {
-		Context("nil != scg.Vars", func() {
-			Context("nil == scg.Range", func() {
-				Context("nil != scg.Vars.Index", func() {
+		Context("nil != callSpec.Vars", func() {
+			Context("nil == callSpec.Range", func() {
+				Context("nil != callSpec.Vars.Index", func() {
 					It("should return expected result", func() {
 						/* arrange */
 						indexValue := 2
@@ -39,7 +39,7 @@ var _ = Context("scoper", func() {
 							indexValue,
 							map[string]*model.Value{},
 							nil,
-							&model.SCGLoopVars{
+							&model.LoopVarsSpec{
 								Index: &indexName,
 							},
 						)
@@ -49,7 +49,7 @@ var _ = Context("scoper", func() {
 					})
 				})
 			})
-			Context("nil != scg.Range", func() {
+			Context("nil != callSpec.Range", func() {
 				It("should call loopableInterpreter w/ expected args", func() {
 					/* arrange */
 					providedLoopRange := "providedLoopRange"
@@ -71,7 +71,7 @@ var _ = Context("scoper", func() {
 						0,
 						providedScope,
 						providedLoopRange,
-						&model.SCGLoopVars{},
+						&model.LoopVarsSpec{},
 					)
 
 					/* assert */
@@ -104,7 +104,7 @@ var _ = Context("scoper", func() {
 							0,
 							providedScope,
 							providedLoopRange,
-							&model.SCGLoopVars{
+							&model.LoopVarsSpec{
 								Index: new(string),
 							},
 						)

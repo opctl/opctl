@@ -17,8 +17,8 @@ type Scoper interface {
 	Scope(
 		index int,
 		scope map[string]*model.Value,
-		scgLoopRange interface{},
-		scgLoopVars *model.SCGLoopVars,
+		callSpecLoopRange interface{},
+		loopVarsSpec *model.LoopVarsSpec,
 	) (
 		map[string]*model.Value,
 		error,
@@ -56,13 +56,13 @@ func (lpr _scoper) sortMap(
 func (lpr _scoper) Scope(
 	index int,
 	scope map[string]*model.Value,
-	scgLoopRange interface{},
-	scgLoopVars *model.SCGLoopVars,
+	callSpecLoopRange interface{},
+	loopVarsSpec *model.LoopVarsSpec,
 ) (
 	map[string]*model.Value,
 	error,
 ) {
-	if nil == scgLoopVars {
+	if nil == loopVarsSpec {
 		return scope, nil
 	}
 
@@ -71,15 +71,15 @@ func (lpr _scoper) Scope(
 		outboundScope[varName] = varData
 	}
 
-	if nil != scgLoopVars.Index {
+	if nil != loopVarsSpec.Index {
 		// assign iteration index to requested inboundScope variable
 		indexAsFloat64 := float64(index)
-		outboundScope[refToVariable(scgLoopVars.Index)] = &model.Value{
+		outboundScope[refToVariable(loopVarsSpec.Index)] = &model.Value{
 			Number: &indexAsFloat64,
 		}
 	}
 
-	if nil == scgLoopRange {
+	if nil == callSpecLoopRange {
 		// guard no loopable
 		return outboundScope, nil
 	}
@@ -87,7 +87,7 @@ func (lpr _scoper) Scope(
 	var loopable *model.Value
 	var err error
 	loopable, err = lpr.loopableInterpreter.Interpret(
-		scgLoopRange,
+		callSpecLoopRange,
 		outboundScope,
 	)
 	if nil != err {
@@ -115,13 +115,13 @@ func (lpr _scoper) Scope(
 		name := sortedNames[index]
 		rawValue = (*loopable.Object)[name]
 
-		if nil != scgLoopVars.Key {
+		if nil != loopVarsSpec.Key {
 			// only add key to scope if declared
-			outboundScope[refToVariable(scgLoopVars.Key)] = &model.Value{String: &name}
+			outboundScope[refToVariable(loopVarsSpec.Key)] = &model.Value{String: &name}
 		}
 	}
 
-	if nil != scgLoopVars.Value {
+	if nil != loopVarsSpec.Value {
 		var value model.Value
 		value, err = lpr.valueInterpreter.Interpret(
 			rawValue,
@@ -131,7 +131,7 @@ func (lpr _scoper) Scope(
 			return nil, err
 		}
 
-		outboundScope[refToVariable(scgLoopVars.Value)] = &value
+		outboundScope[refToVariable(loopVarsSpec.Value)] = &value
 	}
 
 	return outboundScope, nil
