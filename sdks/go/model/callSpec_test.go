@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Context("CallOpSpec", func() {
+var _ = Context("OpCallSpec", func() {
 	Context("yaml.Unmarshal", func() {
 		It("should return expected result", func() {
 			/* arrange */
@@ -23,7 +23,7 @@ var _ = Context("CallOpSpec", func() {
 				providedPullPassword,
 			)
 
-			expectedResult := CallOpSpec{
+			expectedResult := OpCallSpec{
 				Ref: providedPkgRef,
 				PullCreds: &PullCredsSpec{
 					Username: providedPullUsername,
@@ -32,7 +32,7 @@ var _ = Context("CallOpSpec", func() {
 			}
 
 			/* act */
-			actualResult := CallOpSpec{}
+			actualResult := OpCallSpec{}
 			err := yaml.Unmarshal([]byte(providedString), &actualResult)
 			if nil != err {
 				panic(err)

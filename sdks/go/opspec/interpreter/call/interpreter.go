@@ -14,7 +14,7 @@ import (
 
 //counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
-	// Interpret interprets an CallSpec into a DCG
+	// Interpret interprets an CallSpec into a Call
 	Interpret(
 		scope map[string]*model.Value,
 		callSpec *model.CallSpec,
@@ -22,7 +22,7 @@ type Interpreter interface {
 		opPath string,
 		parentID *string,
 		rootOpID string,
-	) (*model.DCG, error)
+	) (*model.Call, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -54,8 +54,8 @@ func (itp _interpreter) Interpret(
 	opPath string,
 	parentID *string,
 	rootOpID string,
-) (*model.DCG, error) {
-	dcg := &model.DCG{
+) (*model.Call, error) {
+	dcg := &model.Call{
 		Id:       id,
 		Name:     callSpec.Name,
 		Needs:    callSpec.Needs,

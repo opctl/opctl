@@ -27,7 +27,7 @@ var _ = Context("Interpreter", func() {
 				providedCurrentScopeRef1: {Socket: &providedCurrentScopeRef1String},
 			}
 
-			providedCallContainerSpecSockets := map[string]string{
+			providedContainerCallSpecSockets := map[string]string{
 				// explicitly bound to scope
 				providedCurrentScopeRef1: providedCurrentScopeRef1,
 				// bound as unix socket
@@ -46,9 +46,9 @@ var _ = Context("Interpreter", func() {
 			}
 
 			/* act */
-			actualDCGContainerCallSockets, err := objectUnderTest.Interpret(
+			actualContainerCallSockets, err := objectUnderTest.Interpret(
 				providedCurrentScope,
-				providedCallContainerSpecSockets,
+				providedContainerCallSpecSockets,
 				providedScratchDirPath,
 			)
 			if nil != err {
@@ -56,7 +56,7 @@ var _ = Context("Interpreter", func() {
 			}
 
 			/* assert */
-			Expect(actualDCGContainerCallSockets).To(Equal(expectedSockets))
+			Expect(actualContainerCallSockets).To(Equal(expectedSockets))
 		})
 	})
 })

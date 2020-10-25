@@ -32,10 +32,10 @@ var _ = Context("serialCaller", func() {
 			providedOpPath := "providedOpPath"
 			providedCallSpecSerialCalls := []*model.CallSpec{
 				{
-					Container: &model.CallContainerSpec{},
+					Container: &model.ContainerCallSpec{},
 				},
 				{
-					Op: &model.CallOpSpec{},
+					Op: &model.OpCallSpec{},
 				},
 				{
 					Parallel: &[]*model.CallSpec{},
@@ -112,7 +112,7 @@ var _ = Context("serialCaller", func() {
 				providedRootOpID := "dummyRootOpID"
 				providedCallSpecSerialCalls := []*model.CallSpec{
 					{
-						Container: &model.CallContainerSpec{},
+						Container: &model.ContainerCallSpec{},
 					},
 				}
 
@@ -177,10 +177,10 @@ var _ = Context("serialCaller", func() {
 					providedOpPath := "providedOpPath"
 					providedCallSpecSerialCalls := []*model.CallSpec{
 						{
-							Container: &model.CallContainerSpec{},
+							Container: &model.ContainerCallSpec{},
 						},
 						{
-							Container: &model.CallContainerSpec{},
+							Container: &model.ContainerCallSpec{},
 						},
 					}
 
@@ -259,10 +259,10 @@ var _ = Context("serialCaller", func() {
 					providedRootOpID := "dummyRootOpID"
 					providedCallSpecSerialCalls := []*model.CallSpec{
 						{
-							Container: &model.CallContainerSpec{},
+							Container: &model.ContainerCallSpec{},
 						},
 						{
-							Container: &model.CallContainerSpec{},
+							Container: &model.ContainerCallSpec{},
 						},
 					}
 

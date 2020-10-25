@@ -8,46 +8,46 @@ import (
 )
 
 type FakeCallStore struct {
-	AddStub        func(*model.DCG)
+	AddStub        func(*model.Call)
 	addMutex       sync.RWMutex
 	addArgsForCall []struct {
-		arg1 *model.DCG
+		arg1 *model.Call
 	}
-	ListWithParentIDStub        func(string) []*model.DCG
+	ListWithParentIDStub        func(string) []*model.Call
 	listWithParentIDMutex       sync.RWMutex
 	listWithParentIDArgsForCall []struct {
 		arg1 string
 	}
 	listWithParentIDReturns struct {
-		result1 []*model.DCG
+		result1 []*model.Call
 	}
 	listWithParentIDReturnsOnCall map[int]struct {
-		result1 []*model.DCG
+		result1 []*model.Call
 	}
 	SetIsKilledStub        func(string)
 	setIsKilledMutex       sync.RWMutex
 	setIsKilledArgsForCall []struct {
 		arg1 string
 	}
-	TryGetStub        func(string) *model.DCG
+	TryGetStub        func(string) *model.Call
 	tryGetMutex       sync.RWMutex
 	tryGetArgsForCall []struct {
 		arg1 string
 	}
 	tryGetReturns struct {
-		result1 *model.DCG
+		result1 *model.Call
 	}
 	tryGetReturnsOnCall map[int]struct {
-		result1 *model.DCG
+		result1 *model.Call
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeCallStore) Add(arg1 *model.DCG) {
+func (fake *FakeCallStore) Add(arg1 *model.Call) {
 	fake.addMutex.Lock()
 	fake.addArgsForCall = append(fake.addArgsForCall, struct {
-		arg1 *model.DCG
+		arg1 *model.Call
 	}{arg1})
 	fake.recordInvocation("Add", []interface{}{arg1})
 	fake.addMutex.Unlock()
@@ -62,20 +62,20 @@ func (fake *FakeCallStore) AddCallCount() int {
 	return len(fake.addArgsForCall)
 }
 
-func (fake *FakeCallStore) AddCalls(stub func(*model.DCG)) {
+func (fake *FakeCallStore) AddCalls(stub func(*model.Call)) {
 	fake.addMutex.Lock()
 	defer fake.addMutex.Unlock()
 	fake.AddStub = stub
 }
 
-func (fake *FakeCallStore) AddArgsForCall(i int) *model.DCG {
+func (fake *FakeCallStore) AddArgsForCall(i int) *model.Call {
 	fake.addMutex.RLock()
 	defer fake.addMutex.RUnlock()
 	argsForCall := fake.addArgsForCall[i]
 	return argsForCall.arg1
 }
 
-func (fake *FakeCallStore) ListWithParentID(arg1 string) []*model.DCG {
+func (fake *FakeCallStore) ListWithParentID(arg1 string) []*model.Call {
 	fake.listWithParentIDMutex.Lock()
 	ret, specificReturn := fake.listWithParentIDReturnsOnCall[len(fake.listWithParentIDArgsForCall)]
 	fake.listWithParentIDArgsForCall = append(fake.listWithParentIDArgsForCall, struct {
@@ -99,7 +99,7 @@ func (fake *FakeCallStore) ListWithParentIDCallCount() int {
 	return len(fake.listWithParentIDArgsForCall)
 }
 
-func (fake *FakeCallStore) ListWithParentIDCalls(stub func(string) []*model.DCG) {
+func (fake *FakeCallStore) ListWithParentIDCalls(stub func(string) []*model.Call) {
 	fake.listWithParentIDMutex.Lock()
 	defer fake.listWithParentIDMutex.Unlock()
 	fake.ListWithParentIDStub = stub
@@ -112,26 +112,26 @@ func (fake *FakeCallStore) ListWithParentIDArgsForCall(i int) string {
 	return argsForCall.arg1
 }
 
-func (fake *FakeCallStore) ListWithParentIDReturns(result1 []*model.DCG) {
+func (fake *FakeCallStore) ListWithParentIDReturns(result1 []*model.Call) {
 	fake.listWithParentIDMutex.Lock()
 	defer fake.listWithParentIDMutex.Unlock()
 	fake.ListWithParentIDStub = nil
 	fake.listWithParentIDReturns = struct {
-		result1 []*model.DCG
+		result1 []*model.Call
 	}{result1}
 }
 
-func (fake *FakeCallStore) ListWithParentIDReturnsOnCall(i int, result1 []*model.DCG) {
+func (fake *FakeCallStore) ListWithParentIDReturnsOnCall(i int, result1 []*model.Call) {
 	fake.listWithParentIDMutex.Lock()
 	defer fake.listWithParentIDMutex.Unlock()
 	fake.ListWithParentIDStub = nil
 	if fake.listWithParentIDReturnsOnCall == nil {
 		fake.listWithParentIDReturnsOnCall = make(map[int]struct {
-			result1 []*model.DCG
+			result1 []*model.Call
 		})
 	}
 	fake.listWithParentIDReturnsOnCall[i] = struct {
-		result1 []*model.DCG
+		result1 []*model.Call
 	}{result1}
 }
 
@@ -166,7 +166,7 @@ func (fake *FakeCallStore) SetIsKilledArgsForCall(i int) string {
 	return argsForCall.arg1
 }
 
-func (fake *FakeCallStore) TryGet(arg1 string) *model.DCG {
+func (fake *FakeCallStore) TryGet(arg1 string) *model.Call {
 	fake.tryGetMutex.Lock()
 	ret, specificReturn := fake.tryGetReturnsOnCall[len(fake.tryGetArgsForCall)]
 	fake.tryGetArgsForCall = append(fake.tryGetArgsForCall, struct {
@@ -190,7 +190,7 @@ func (fake *FakeCallStore) TryGetCallCount() int {
 	return len(fake.tryGetArgsForCall)
 }
 
-func (fake *FakeCallStore) TryGetCalls(stub func(string) *model.DCG) {
+func (fake *FakeCallStore) TryGetCalls(stub func(string) *model.Call) {
 	fake.tryGetMutex.Lock()
 	defer fake.tryGetMutex.Unlock()
 	fake.TryGetStub = stub
@@ -203,26 +203,26 @@ func (fake *FakeCallStore) TryGetArgsForCall(i int) string {
 	return argsForCall.arg1
 }
 
-func (fake *FakeCallStore) TryGetReturns(result1 *model.DCG) {
+func (fake *FakeCallStore) TryGetReturns(result1 *model.Call) {
 	fake.tryGetMutex.Lock()
 	defer fake.tryGetMutex.Unlock()
 	fake.TryGetStub = nil
 	fake.tryGetReturns = struct {
-		result1 *model.DCG
+		result1 *model.Call
 	}{result1}
 }
 
-func (fake *FakeCallStore) TryGetReturnsOnCall(i int, result1 *model.DCG) {
+func (fake *FakeCallStore) TryGetReturnsOnCall(i int, result1 *model.Call) {
 	fake.tryGetMutex.Lock()
 	defer fake.tryGetMutex.Unlock()
 	fake.TryGetStub = nil
 	if fake.tryGetReturnsOnCall == nil {
 		fake.tryGetReturnsOnCall = make(map[int]struct {
-			result1 *model.DCG
+			result1 *model.Call
 		})
 	}
 	fake.tryGetReturnsOnCall[i] = struct {
-		result1 *model.DCG
+		result1 *model.Call
 	}{result1}
 }
 

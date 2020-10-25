@@ -13,7 +13,7 @@ import (
 type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
-		callContainerSpecSockets map[string]string,
+		containerCallSpecSockets map[string]string,
 		scratchDirPath string,
 	) (map[string]string, error)
 }
@@ -31,17 +31,17 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
-	callContainerSpecSockets map[string]string,
+	containerCallSpecSockets map[string]string,
 	scratchDirPath string,
 ) (map[string]string, error) {
-	dcgContainerCallSockets := map[string]string{}
-	for callSpecContainerSocketAddress, callSpecContainerSocketBind := range callContainerSpecSockets {
+	containerCallSockets := map[string]string{}
+	for callSpecContainerSocketAddress, callSpecContainerSocketBind := range containerCallSpecSockets {
 		// @TODO: use reference.interpret once reference syntax no longer optional
 		callSpecContainerSocketBind = strings.TrimSuffix(strings.TrimPrefix(callSpecContainerSocketBind, reference.RefStart), reference.RefEnd)
 
 		if boundArg, ok := scope[callSpecContainerSocketBind]; ok {
 			// bound to var
-			dcgContainerCallSockets[callSpecContainerSocketAddress] = *boundArg.Socket
+			containerCallSockets[callSpecContainerSocketAddress] = *boundArg.Socket
 		} else if isUnixSocketAddress(callSpecContainerSocketAddress) {
 			// bound to output
 			// create outputSocket on host so the output points to something
@@ -58,8 +58,8 @@ func (itp _interpreter) Interpret(
 			); nil != err {
 				return nil, err
 			}
-			dcgContainerCallSockets[callSpecContainerSocketAddress] = dcgHostSocketAddress
+			containerCallSockets[callSpecContainerSocketAddress] = dcgHostSocketAddress
 		}
 	}
-	return dcgContainerCallSockets, nil
+	return containerCallSockets, nil
 }

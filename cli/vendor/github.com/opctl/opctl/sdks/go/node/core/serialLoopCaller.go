@@ -22,7 +22,7 @@ type serialLoopCaller interface {
 		ctx context.Context,
 		id string,
 		inboundScope map[string]*model.Value,
-		callSpecSerialLoop model.CallSerialLoopSpec,
+		callSpecSerialLoop model.SerialLoopCallSpec,
 		opPath string,
 		parentCallID *string,
 		rootOpID string,
@@ -58,7 +58,7 @@ func (lpr _serialLoopCaller) Call(
 	ctx context.Context,
 	id string,
 	inboundScope map[string]*model.Value,
-	callSpecSerialLoop model.CallSerialLoopSpec,
+	callSpecSerialLoop model.SerialLoopCallSpec,
 	opPath string,
 	parentCallID *string,
 	rootOpID string,
@@ -98,7 +98,7 @@ func (lpr _serialLoopCaller) Call(
 	}
 
 	// interpret initial iteration of the loop
-	var dcgSerialLoop *model.DCGSerialLoopCall
+	var dcgSerialLoop *model.SerialLoopCall
 	dcgSerialLoop, err = lpr.serialLoopInterpreter.Interpret(
 		callSpecSerialLoop,
 		outboundScope,

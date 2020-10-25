@@ -70,7 +70,7 @@ var _ = Context("caller", func() {
 
 			fakeCallInterpreter := new(callFakes.FakeInterpreter)
 			fakeCallInterpreter.InterpretReturns(
-				&model.DCG{},
+				&model.Call{},
 				nil,
 			)
 
@@ -120,7 +120,7 @@ var _ = Context("caller", func() {
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				falseBoolean := false
 				fakeCallInterpreter.InterpretReturns(
-					&model.DCG{
+					&model.Call{
 						If: &falseBoolean,
 					},
 					nil,
@@ -174,14 +174,14 @@ var _ = Context("caller", func() {
 
 				providedScope := map[string]*model.Value{}
 				providedCallSpec := &model.CallSpec{
-					Container: &model.CallContainerSpec{},
+					Container: &model.ContainerCallSpec{},
 				}
 
-				expectedDCG := &model.DCG{
-					Container: &model.DCGContainerCall{},
+				expectedCall := &model.Call{
+					Container: &model.ContainerCall{},
 				}
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
-				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
+				fakeCallInterpreter.InterpretReturns(expectedCall, nil)
 
 				fakePubSub := new(FakePubSub)
 				// ensure eventChan closed so call exits
@@ -207,11 +207,11 @@ var _ = Context("caller", func() {
 
 				/* assert */
 				_,
-					actualDCGContainerCall,
+					actualContainerCall,
 					actualScope,
 					actualCallSpec := fakeContainerCaller.CallArgsForCall(0)
 
-				Expect(actualDCGContainerCall).To(Equal(expectedDCG.Container))
+				Expect(actualContainerCall).To(Equal(expectedCall.Container))
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualCallSpec).To(Equal(providedCallSpec.Container))
 			})
@@ -222,19 +222,19 @@ var _ = Context("caller", func() {
 				/* arrange */
 				fakeOpCaller := new(FakeOpCaller)
 
-				expectedDCG := &model.DCG{
-					Op: &model.DCGOpCall{},
+				expectedCall := &model.Call{
+					Op: &model.OpCall{},
 				}
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(
-					expectedDCG,
+					expectedCall,
 					nil,
 				)
 
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
 				providedCallSpec := &model.CallSpec{
-					Op: &model.CallOpSpec{
+					Op: &model.OpCallSpec{
 						Ref: "dummyOpRef",
 					},
 				}
@@ -266,12 +266,12 @@ var _ = Context("caller", func() {
 
 				/* assert */
 				_,
-					actualDCGOpCall,
+					actualOpCall,
 					actualScope,
 					actualParentID,
 					actualCallSpec := fakeOpCaller.CallArgsForCall(0)
 
-				Expect(actualDCGOpCall).To(Equal(expectedDCG.Op))
+				Expect(actualOpCall).To(Equal(expectedCall.Op))
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualParentID).To(Equal(actualParentID))
 				Expect(actualCallSpec).To(Equal(providedCallSpec.Op))
@@ -287,7 +287,7 @@ var _ = Context("caller", func() {
 				providedScope := map[string]*model.Value{}
 				providedCallSpec := &model.CallSpec{
 					Parallel: &[]*model.CallSpec{
-						{Container: &model.CallContainerSpec{}},
+						{Container: &model.ContainerCallSpec{}},
 					},
 				}
 				providedOpPath := "providedOpPath"
@@ -295,7 +295,7 @@ var _ = Context("caller", func() {
 
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(
-					&model.DCG{},
+					&model.Call{},
 					nil,
 				)
 
@@ -345,17 +345,17 @@ var _ = Context("caller", func() {
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
 				providedCallSpec := &model.CallSpec{
-					ParallelLoop: &model.CallParallelLoopSpec{},
+					ParallelLoop: &model.ParallelLoopCallSpec{},
 				}
 				providedOpPath := "providedOpPath"
 				providedRootOpID := "dummyRootOpID"
 				providedParentID := "providedParentID"
 
-				expectedDCG := &model.DCG{
-					ParallelLoop: &model.DCGParallelLoopCall{},
+				expectedCall := &model.Call{
+					ParallelLoop: &model.ParallelLoopCall{},
 				}
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
-				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
+				fakeCallInterpreter.InterpretReturns(expectedCall, nil)
 
 				fakePubSub := new(FakePubSub)
 				// ensure eventChan closed so call exits
@@ -383,14 +383,14 @@ var _ = Context("caller", func() {
 				_,
 					actualID,
 					actualScope,
-					actualCallParallelLoopSpec,
+					actualParallelLoopCallSpec,
 					actualOpPath,
 					actualParentID,
 					actualRootOpID := fakeParallelLoopCaller.CallArgsForCall(0)
 
 				Expect(actualID).To(Equal(providedCallID))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualCallParallelLoopSpec).To(Equal(*providedCallSpec.ParallelLoop))
+				Expect(actualParallelLoopCallSpec).To(Equal(*providedCallSpec.ParallelLoop))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(*actualParentID).To(Equal(providedParentID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
@@ -407,7 +407,7 @@ var _ = Context("caller", func() {
 				providedScope := map[string]*model.Value{}
 				providedCallSpec := &model.CallSpec{
 					Serial: &[]*model.CallSpec{
-						{Container: &model.CallContainerSpec{}},
+						{Container: &model.ContainerCallSpec{}},
 					},
 				}
 				providedOpPath := "providedOpPath"
@@ -415,7 +415,7 @@ var _ = Context("caller", func() {
 
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(
-					&model.DCG{},
+					&model.Call{},
 					nil,
 				)
 
@@ -466,17 +466,17 @@ var _ = Context("caller", func() {
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
 				providedCallSpec := &model.CallSpec{
-					SerialLoop: &model.CallSerialLoopSpec{},
+					SerialLoop: &model.SerialLoopCallSpec{},
 				}
 				providedOpPath := "providedOpPath"
 				providedRootOpID := "dummyRootOpID"
 				providedParentID := "providedParentID"
 
-				expectedDCG := &model.DCG{
-					SerialLoop: &model.DCGSerialLoopCall{},
+				expectedCall := &model.Call{
+					SerialLoop: &model.SerialLoopCall{},
 				}
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
-				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
+				fakeCallInterpreter.InterpretReturns(expectedCall, nil)
 
 				fakePubSub := new(FakePubSub)
 				// ensure eventChan closed so call exits
@@ -504,14 +504,14 @@ var _ = Context("caller", func() {
 				_,
 					actualID,
 					actualScope,
-					actualCallSerialLoopSpec,
+					actualSerialLoopCallSpec,
 					actualOpPath,
 					actualParentID,
 					actualRootOpID := fakeSerialLoopCaller.CallArgsForCall(0)
 
 				Expect(actualID).To(Equal(providedCallID))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualCallSerialLoopSpec).To(Equal(*providedCallSpec.SerialLoop))
+				Expect(actualSerialLoopCallSpec).To(Equal(*providedCallSpec.SerialLoop))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(*actualParentID).To(Equal(providedParentID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
@@ -528,7 +528,7 @@ var _ = Context("caller", func() {
 
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(
-					&model.DCG{},
+					&model.Call{},
 					nil,
 				)
 

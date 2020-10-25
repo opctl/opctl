@@ -45,7 +45,7 @@ export default (
                     call={call}
                 />
                 <CallHasOp
-                    callOp={call.op}
+                    opCall={call.op}
                 />
             </div>
         </ReactEasyPanzoom>

@@ -62,7 +62,7 @@ func (ckr _opKiller) Kill(
 	for _, childCallGraph := range ckr.callStore.ListWithParentID(callID) {
 		// recursively kill all child calls
 		waitGroup.Add(1)
-		go func(childCallGraph *model.DCG) {
+		go func(childCallGraph *model.Call) {
 			defer func() {
 				if panicArg := recover(); panicArg != nil {
 					// recover from panics; treat as errors

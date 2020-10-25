@@ -32,7 +32,7 @@ var _ = Context("serialLoopCaller", func() {
 				/* arrange */
 				fakeSerialLoopInterpreter := new(serialloopFakes.FakeInterpreter)
 				until := true
-				fakeSerialLoopInterpreter.InterpretReturns(&model.DCGSerialLoopCall{Until: &until}, nil)
+				fakeSerialLoopInterpreter.InterpretReturns(&model.SerialLoopCall{Until: &until}, nil)
 
 				fakeCaller := new(FakeCaller)
 
@@ -50,7 +50,7 @@ var _ = Context("serialLoopCaller", func() {
 					context.Background(),
 					"id",
 					map[string]*model.Value{},
-					model.CallSerialLoopSpec{},
+					model.SerialLoopCallSpec{},
 					"dummyOpPath",
 					nil,
 					"rootOpID",
@@ -65,7 +65,7 @@ var _ = Context("serialLoopCaller", func() {
 				/* arrange */
 				fakeSerialLoopInterpreter := new(serialloopFakes.FakeInterpreter)
 				fakeSerialLoopInterpreter.InterpretReturns(
-					&model.DCGSerialLoopCall{
+					&model.SerialLoopCall{
 						Range: &model.Value{
 							Array: new([]interface{}),
 						},
@@ -89,7 +89,7 @@ var _ = Context("serialLoopCaller", func() {
 					context.Background(),
 					"id",
 					map[string]*model.Value{},
-					model.CallSerialLoopSpec{},
+					model.SerialLoopCallSpec{},
 					"dummyOpPath",
 					nil,
 					"rootOpID",
@@ -105,9 +105,9 @@ var _ = Context("serialLoopCaller", func() {
 				providedCtx := context.Background()
 				providedScope := map[string]*model.Value{}
 				index := "index"
-				providedCallSerialLoopSpec := model.CallSerialLoopSpec{
+				providedSerialLoopCallSpec := model.SerialLoopCallSpec{
 					Run: model.CallSpec{
-						Container: new(model.CallContainerSpec),
+						Container: new(model.ContainerCallSpec),
 					},
 					Vars: &model.LoopVarsSpec{
 						Index: &index,
@@ -121,9 +121,9 @@ var _ = Context("serialLoopCaller", func() {
 				fakeSerialLoopInterpreter := new(serialloopFakes.FakeInterpreter)
 				until := false
 				fakeSerialLoopInterpreter.InterpretReturns(
-					&model.DCGSerialLoopCall{
+					&model.SerialLoopCall{
 						Until: &until,
-						Vars: &model.DCGLoopVars{
+						Vars: &model.LoopVars{
 							Index: &index,
 						},
 					},
@@ -173,7 +173,7 @@ var _ = Context("serialLoopCaller", func() {
 					providedCtx,
 					"id",
 					providedScope,
-					providedCallSerialLoopSpec,
+					providedSerialLoopCallSpec,
 					providedOpPath,
 					providedParentCallID,
 					providedRootOpID,
@@ -191,7 +191,7 @@ var _ = Context("serialLoopCaller", func() {
 				Expect(actualCtx).To(Not(BeNil()))
 				Expect(actualCallID).To(Equal(callID))
 				Expect(actualScope).To(Equal(expectedScope))
-				Expect(actualCallSpec).To(Equal(&providedCallSerialLoopSpec.Run))
+				Expect(actualCallSpec).To(Equal(&providedSerialLoopCallSpec.Run))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualParentCallID).To(Equal(providedParentCallID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))

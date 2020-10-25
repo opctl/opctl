@@ -35,7 +35,7 @@ var _ = Context("RunContainer", func() {
 		/* act */
 		_, actualErr := objectUnderTest.RunContainer(
 			context.Background(),
-			&model.DCGContainerCall{},
+			&model.ContainerCall{},
 			new(FakeEventPublisher),
 			nopWriteCloser{ioutil.Discard},
 			nopWriteCloser{ioutil.Discard},
@@ -50,10 +50,10 @@ var _ = Context("RunContainer", func() {
 
 	It("should call dockerClient.ContainerRemove w/ expected args", func() {
 		/* arrange */
-		providedReq := &model.DCGContainerCall{
+		providedReq := &model.ContainerCall{
 			ContainerID: "containerID",
-			DCGBaseCall: model.DCGBaseCall{},
-			Image:       &model.DCGContainerCallImage{Ref: new(string)},
+			BaseCall: model.BaseCall{},
+			Image:       &model.ContainerCallImage{Ref: new(string)},
 		}
 
 		expectedContainerRemoveOptions := types.ContainerRemoveOptions{
@@ -94,9 +94,9 @@ var _ = Context("RunContainer", func() {
 	})
 	It("should call portBindingsFactory.Construct w expected args", func() {
 		/* arrange */
-		providedReq := &model.DCGContainerCall{
-			DCGBaseCall: model.DCGBaseCall{},
-			Image:       &model.DCGContainerCallImage{Ref: new(string)},
+		providedReq := &model.ContainerCall{
+			BaseCall: model.BaseCall{},
+			Image:       &model.ContainerCallImage{Ref: new(string)},
 			Ports: map[string]string{
 				"6060/udp":  "6060",
 				"8080-8081": "9090-9091",
@@ -153,8 +153,8 @@ var _ = Context("RunContainer", func() {
 			/* act */
 			_, actualErr := objectUnderTest.RunContainer(
 				context.Background(),
-				&model.DCGContainerCall{
-					Image: &model.DCGContainerCallImage{Ref: new(string)},
+				&model.ContainerCall{
+					Image: &model.ContainerCallImage{Ref: new(string)},
 				},
 				new(FakeEventPublisher),
 				nopWriteCloser{ioutil.Discard},
@@ -168,15 +168,15 @@ var _ = Context("RunContainer", func() {
 	Context("portBindingsFactory.Construct doesn't err", func() {
 		It("should call containerConfigFactory.Construct w expected args", func() {
 			/* arrange */
-			providedReq := &model.DCGContainerCall{
-				DCGBaseCall: model.DCGBaseCall{},
+			providedReq := &model.ContainerCall{
+				BaseCall: model.BaseCall{},
 				Cmd:         []string{"dummyCmd"},
 				EnvVars: map[string]string{
 					"envVar1Name": "envVar1Value",
 					"envVar2Name": "envVar2Value",
 					"envVar3Name": "envVar3Value",
 				},
-				Image:   &model.DCGContainerCallImage{Ref: new(string)},
+				Image:   &model.ContainerCallImage{Ref: new(string)},
 				WorkDir: "dummyWorkDir",
 			}
 
@@ -225,8 +225,8 @@ var _ = Context("RunContainer", func() {
 
 		It("should call hostConfigFactory.Construct w expected args", func() {
 			/* arrange */
-			providedReq := &model.DCGContainerCall{
-				DCGBaseCall: model.DCGBaseCall{},
+			providedReq := &model.ContainerCall{
+				BaseCall: model.BaseCall{},
 				Dirs: map[string]string{
 					"dir1ContainerPath": "dir1HostPath",
 					"dir2ContainerPath": "dir2HostPath",
@@ -235,7 +235,7 @@ var _ = Context("RunContainer", func() {
 					"file1ContainerPath": "file1HostPath",
 					"file2ContainerPath": "file2HostPath",
 				},
-				Image: &model.DCGContainerCallImage{Ref: new(string)},
+				Image: &model.ContainerCallImage{Ref: new(string)},
 				Sockets: map[string]string{
 					"/unixSocket1ContainerAddress": "/unixSocket1HostAddress",
 					"/unixSocket2ContainerAddress": "/unixSocket2HostAddress",
@@ -286,12 +286,12 @@ var _ = Context("RunContainer", func() {
 
 			/* arrange */
 			providedCtx := context.Background()
-			providedReq := &model.DCGContainerCall{
-				DCGBaseCall: model.DCGBaseCall{
+			providedReq := &model.ContainerCall{
+				BaseCall: model.BaseCall{
 					RootOpID: "dummyRootOpID",
 				},
 				ContainerID: "dummyContainerID",
-				Image:       &model.DCGContainerCallImage{Ref: new(string)},
+				Image:       &model.ContainerCallImage{Ref: new(string)},
 			}
 
 			providedEventPublisher := new(FakeEventPublisher)
@@ -340,12 +340,12 @@ var _ = Context("RunContainer", func() {
 		It("should call dockerClient.ContainerCreate w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
-			providedReq := &model.DCGContainerCall{
-				DCGBaseCall: model.DCGBaseCall{
+			providedReq := &model.ContainerCall{
+				BaseCall: model.BaseCall{
 					RootOpID: "dummyRootOpID",
 				},
 				ContainerID: "dummyContainerID",
-				Image:       &model.DCGContainerCallImage{Ref: new(string)},
+				Image:       &model.ContainerCallImage{Ref: new(string)},
 				Name:        new(string),
 			}
 

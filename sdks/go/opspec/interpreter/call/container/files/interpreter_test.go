@@ -32,7 +32,7 @@ var _ = Context("Files", func() {
 
 			containerFilePath := "/dummyFile1Path.txt"
 
-			providedCallContainerSpecFiles := map[string]interface{}{
+			providedContainerCallSpecFiles := map[string]interface{}{
 				// implicitly bound
 				containerFilePath: nil,
 			}
@@ -50,7 +50,7 @@ var _ = Context("Files", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				providedScope,
-				providedCallContainerSpecFiles,
+				providedContainerCallSpecFiles,
 				providedScratchDir,
 			)
 
@@ -70,7 +70,7 @@ var _ = Context("Files", func() {
 				It("should return expected error", func() {
 					/* arrange */
 					containerFilePath := "/dummyFile1Path.txt"
-					providedCallContainerSpecFiles := map[string]interface{}{
+					providedContainerCallSpecFiles := map[string]interface{}{
 						// implicitly bound
 						containerFilePath: nil,
 					}
@@ -93,7 +93,7 @@ var _ = Context("Files", func() {
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
-						providedCallContainerSpecFiles,
+						providedContainerCallSpecFiles,
 						"dummyScratchDirPath",
 					)
 
@@ -112,7 +112,7 @@ var _ = Context("Files", func() {
 					filePath := tempFile.Name()
 					fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
 
-					expectedDCGContainerCallFiles := map[string]string{
+					expectedContainerCallFiles := map[string]string{
 						containerFilePath: filePath,
 					}
 
@@ -122,7 +122,7 @@ var _ = Context("Files", func() {
 					}
 
 					/* act */
-					actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
+					actualContainerCallFiles, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
 						map[string]interface{}{
 							// implicitly bound
@@ -132,7 +132,7 @@ var _ = Context("Files", func() {
 					)
 
 					/* assert */
-					Expect(actualDCGContainerCallFiles).To(Equal(expectedDCGContainerCallFiles))
+					Expect(actualContainerCallFiles).To(Equal(expectedContainerCallFiles))
 					Expect(actualErr).To(BeNil())
 
 				})

@@ -12,23 +12,23 @@ export interface PullCreds {
     password: string
 }
 
-export interface CallContainerImage {
+export interface ContainerCallImage {
     ref: string
     pullCreds?: PullCreds
 }
 
-export interface CallContainer {
-    image: CallContainerImage
+export interface ContainerCall {
+    image: ContainerCallImage
     cmd: string[]
 }
 
-export interface CallOpInputs {
+export interface OpCallInputs {
     [key: string]: any
 }
 
-export interface CallOp {
+export interface OpCall {
     ref: string
-    inputs?: CallOpInputs
+    inputs?: OpCallInputs
 }
 
 export type CallParallel = Call[]
@@ -47,7 +47,7 @@ export type LoopRangeObject = {
 
 export type LoopRange = LoopRangeArray | LoopRangeObject | string
 
-export interface CallParallelLoop {
+export interface ParallelLoopCall {
     range: LoopRange
     vars?: LoopVars
     run: Call
@@ -60,7 +60,7 @@ export interface Predicate {
     notExists?: string
 }
 
-export interface CallSerialLoop {
+export interface SerialLoopCall {
     range: LoopRange
     vars?: LoopVars
     run: Call
@@ -70,15 +70,15 @@ export interface CallSerialLoop {
 export type CallSerial = Call[]
 
 export interface Call {
-    container?: CallContainer
+    container?: ContainerCall
     if?: Predicate[]
     name?: string
     needs?: string[]
-    op?: CallOp
+    op?: OpCall
     parallel?: CallParallel
-    parallelLoop?: CallParallelLoop
+    parallelLoop?: ParallelLoopCall
     serial?: CallSerial
-    serialLoop?: CallSerialLoop
+    serialLoop?: SerialLoopCall
 }
 
 interface Props {
@@ -97,7 +97,7 @@ export default (
 
     if (call.op) {
         callComponent = <CallHasOp
-            callOp={call.op}
+            opCall={call.op}
             parentOpRef={parentOpRef}
         />
     } else if (call.parallel) {
@@ -107,7 +107,7 @@ export default (
         />
     } else if (call.parallelLoop) {
         callComponent = <CallHasParallelLoop
-            callParallelLoop={call.parallelLoop}
+            parallelLoopCall={call.parallelLoop}
             parentOpRef={parentOpRef}
         />
     } else if (call.serial) {
@@ -117,7 +117,7 @@ export default (
         />
     } else if (call.serialLoop) {
         callComponent = <CallHasSerialLoop
-            callSerialLoop={call.serialLoop}
+            serialLoopCall={call.serialLoop}
             parentOpRef={parentOpRef}
         />
     } else {

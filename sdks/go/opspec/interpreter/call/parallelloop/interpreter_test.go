@@ -19,7 +19,7 @@ var _ = Context("Interpreter", func() {
 	Context("Interpret", func() {
 		It("should call loopableInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
-			providedCallParallelLoopSpec := model.CallParallelLoopSpec{
+			providedParallelLoopCallSpec := model.ParallelLoopCallSpec{
 				Range: "range",
 			}
 
@@ -33,15 +33,15 @@ var _ = Context("Interpreter", func() {
 
 			/* act */
 			objectUnderTest.Interpret(
-				providedCallParallelLoopSpec,
+				providedParallelLoopCallSpec,
 				providedScope,
 			)
 
 			/* assert */
-			actualCallParallelLoopSpecOn,
+			actualParallelLoopCallSpecOn,
 				actualScope := fakeLoopableInterpreter.InterpretArgsForCall(0)
 
-			Expect(actualCallParallelLoopSpecOn).To(Equal(providedCallParallelLoopSpec.Range))
+			Expect(actualParallelLoopCallSpecOn).To(Equal(providedParallelLoopCallSpec.Range))
 			Expect(actualScope).To(Equal(providedScope))
 		})
 		Context("loopableInterpreter.Interpret errs", func() {
@@ -61,7 +61,7 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualError := objectUnderTest.Interpret(
-					model.CallParallelLoopSpec{
+					model.ParallelLoopCallSpec{
 						Range: "range",
 					},
 					map[string]*model.Value{},
@@ -73,18 +73,18 @@ var _ = Context("Interpreter", func() {
 		})
 		It("should return expected result", func() {
 			/* arrange */
-			providedScgLoop := model.CallParallelLoopSpec{
+			providedScgLoop := model.ParallelLoopCallSpec{
 				Range: "range",
 			}
 
 			fakeLoopableInterpreter := new(loopableFakes.FakeInterpreter)
 
-			expectedDCGParallelLoopCallRange := &model.Value{Array: new([]interface{})}
+			expectedParallelLoopCallRange := &model.Value{Array: new([]interface{})}
 
-			expectedResult := &model.DCGParallelLoopCall{
-				Range: expectedDCGParallelLoopCallRange,
+			expectedResult := &model.ParallelLoopCall{
+				Range: expectedParallelLoopCallRange,
 			}
-			fakeLoopableInterpreter.InterpretReturns(expectedDCGParallelLoopCallRange, nil)
+			fakeLoopableInterpreter.InterpretReturns(expectedParallelLoopCallRange, nil)
 
 			objectUnderTest := _interpreter{
 				loopableInterpreter: fakeLoopableInterpreter,

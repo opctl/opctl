@@ -12,7 +12,7 @@ accordance with
 - [Remove CallKilled event](https://github.com/opctl/opctl/issues/810)
 - [Remove OpErred event](https://github.com/opctl/opctl/issues/812)
 - [Remove Event suffix from event types](https://github.com/opctl/opctl/issues/814)
-- [Rename types from SCG to spec](https://github.com/opctl/opctl/issues/816)
+- [Rename types from SCG/DCG](https://github.com/opctl/opctl/issues/816)
 
 ### Fixed
 

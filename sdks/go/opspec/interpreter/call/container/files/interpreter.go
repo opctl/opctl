@@ -15,7 +15,7 @@ import (
 type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
-		callContainerSpecFiles map[string]interface{},
+		containerCallSpecFiles map[string]interface{},
 		scratchDirPath string,
 	) (map[string]string, error)
 }
@@ -41,12 +41,12 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
-	callContainerSpecFiles map[string]interface{},
+	containerCallSpecFiles map[string]interface{},
 	scratchDirPath string,
 ) (map[string]string, error) {
-	dcgContainerCallFiles := map[string]string{}
+	containerCallFiles := map[string]string{}
 fileLoop:
-	for callSpecContainerFilePath, fileExpression := range callContainerSpecFiles {
+	for callSpecContainerFilePath, fileExpression := range containerCallSpecFiles {
 
 		if nil == fileExpression {
 			// bound implicitly
@@ -70,14 +70,14 @@ fileLoop:
 
 		if !strings.HasPrefix(*fileValue.File, itp.dataDirPath) {
 			// bound to non rootFS file
-			dcgContainerCallFiles[callSpecContainerFilePath] = *fileValue.File
+			containerCallFiles[callSpecContainerFilePath] = *fileValue.File
 			continue fileLoop
 		}
-		dcgContainerCallFiles[callSpecContainerFilePath] = filepath.Join(scratchDirPath, callSpecContainerFilePath)
+		containerCallFiles[callSpecContainerFilePath] = filepath.Join(scratchDirPath, callSpecContainerFilePath)
 
 		// create file
 		if err := itp.os.MkdirAll(
-			filepath.Dir(dcgContainerCallFiles[callSpecContainerFilePath]),
+			filepath.Dir(containerCallFiles[callSpecContainerFilePath]),
 			0777,
 		); nil != err {
 			return nil, fmt.Errorf(
@@ -90,7 +90,7 @@ fileLoop:
 
 		err = itp.fileCopier.OS(
 			*fileValue.File,
-			dcgContainerCallFiles[callSpecContainerFilePath],
+			containerCallFiles[callSpecContainerFilePath],
 		)
 		if nil != err {
 			return nil, fmt.Errorf(
@@ -102,5 +102,5 @@ fileLoop:
 		}
 
 	}
-	return dcgContainerCallFiles, nil
+	return containerCallFiles, nil
 }

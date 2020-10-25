@@ -56,7 +56,7 @@ var _ = Context("Interpreter", func() {
 			/* act */
 			_, actualError := objectUnderTest.Interpret(
 				map[string]*model.Value{},
-				&model.CallContainerSpec{},
+				&model.ContainerCallSpec{},
 				providedContainerID,
 				providedRootOpID,
 				"dummyOpPath",
@@ -77,7 +77,7 @@ var _ = Context("Interpreter", func() {
 				containerFileBind: {String: new(string)},
 			}
 
-			providedCallContainerSpec := &model.CallContainerSpec{
+			providedContainerCallSpec := &model.ContainerCallSpec{
 				Cmd: []interface{}{
 					"cmd",
 				},
@@ -98,7 +98,7 @@ var _ = Context("Interpreter", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				providedScope,
-				providedCallContainerSpec,
+				providedContainerCallSpec,
 				"dummyContainerID",
 				"dummyRootOpID",
 				"dummyOpPath",
@@ -109,7 +109,7 @@ var _ = Context("Interpreter", func() {
 				actualScgContainerCallCmd := fakeCmdInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualScgContainerCallCmd).To(Equal(providedCallContainerSpec.Cmd))
+			Expect(actualScgContainerCallCmd).To(Equal(providedContainerCallSpec.Cmd))
 
 		})
 		Context("cmdFakesInterpret errors", func() {
@@ -127,7 +127,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.CallContainerSpec{},
+					&model.ContainerCallSpec{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					"dummyOpPath",
@@ -138,14 +138,14 @@ var _ = Context("Interpreter", func() {
 			})
 		})
 		Context("cmdFakesInterpret doesn't error", func() {
-			It("should return expected dcgContainerCall.Cmd", func() {
+			It("should return expected containerCall.Cmd", func() {
 				/* arrange */
-				expectedDCGContainerCallCmd := []string{
+				expectedContainerCallCmd := []string{
 					"cmd",
 				}
 
 				fakeCmdInterpreter := new(cmdFakes.FakeInterpreter)
-				fakeCmdInterpreter.InterpretReturns(expectedDCGContainerCallCmd, nil)
+				fakeCmdInterpreter.InterpretReturns(expectedContainerCallCmd, nil)
 
 				objectUnderTest := _interpreter{
 					cmdInterpreter:     fakeCmdInterpreter,
@@ -160,14 +160,14 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.CallContainerSpec{},
+					&model.ContainerCallSpec{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					"dummyOpPath",
 				)
 
 				/* assert */
-				Expect(actualResult.Cmd).To(Equal(expectedDCGContainerCallCmd))
+				Expect(actualResult.Cmd).To(Equal(expectedContainerCallCmd))
 			})
 		})
 
@@ -180,7 +180,7 @@ var _ = Context("Interpreter", func() {
 			}
 
 			dirName := "dummyDirName"
-			providedCallContainerSpec := &model.CallContainerSpec{
+			providedContainerCallSpec := &model.ContainerCallSpec{
 				Dirs: map[string]string{
 					// implicitly bound
 					dirName: "",
@@ -216,7 +216,7 @@ var _ = Context("Interpreter", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				providedScope,
-				providedCallContainerSpec,
+				providedContainerCallSpec,
 				providedContainerID,
 				providedRootOpID,
 				"dummyOpPath",
@@ -225,7 +225,7 @@ var _ = Context("Interpreter", func() {
 			/* assert */
 			actualScope, actualScgContainerCallDirs, actualScratchDir := fakeDirsInterpreter.InterpretArgsForCall(0)
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualScgContainerCallDirs).To(Equal(providedCallContainerSpec.Dirs))
+			Expect(actualScgContainerCallDirs).To(Equal(providedContainerCallSpec.Dirs))
 			Expect(actualScratchDir).To(Equal(expectedScratchDirPath))
 		})
 		Context("dirsFakes.Interpret errors", func() {
@@ -246,7 +246,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.CallContainerSpec{},
+					&model.ContainerCallSpec{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					"dummyOpPath",
@@ -257,14 +257,14 @@ var _ = Context("Interpreter", func() {
 			})
 		})
 		Context("dirsFakes.Interpret doesn't error", func() {
-			It("should return expected dcgContainerCall.Dirs", func() {
+			It("should return expected containerCall.Dirs", func() {
 				/* arrange */
-				expectedDCGContainerCallDirs := map[string]string{
+				expectedContainerCallDirs := map[string]string{
 					"dummyName": "dummyValue",
 				}
 
 				fakeDirsInterpreter := new(dirsFakes.FakeInterpreter)
-				fakeDirsInterpreter.InterpretReturns(expectedDCGContainerCallDirs, nil)
+				fakeDirsInterpreter.InterpretReturns(expectedContainerCallDirs, nil)
 
 				objectUnderTest := _interpreter{
 					cmdInterpreter:     new(cmdFakes.FakeInterpreter),
@@ -279,14 +279,14 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.CallContainerSpec{},
+					&model.ContainerCallSpec{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					"dummyOpPath",
 				)
 
 				/* assert */
-				Expect(actualResult.Dirs).To(Equal(expectedDCGContainerCallDirs))
+				Expect(actualResult.Dirs).To(Equal(expectedContainerCallDirs))
 			})
 		})
 
@@ -299,7 +299,7 @@ var _ = Context("Interpreter", func() {
 			}
 
 			envVarName := "dummyEnvVarName"
-			providedCallContainerSpec := &model.CallContainerSpec{
+			providedContainerCallSpec := &model.ContainerCallSpec{
 				EnvVars: map[string]interface{}{
 					// implicitly bound
 					envVarName: "",
@@ -321,7 +321,7 @@ var _ = Context("Interpreter", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				providedScope,
-				providedCallContainerSpec,
+				providedContainerCallSpec,
 				"dummyContainerID",
 				"dummyRootOpID",
 				"dummyOpPath",
@@ -332,7 +332,7 @@ var _ = Context("Interpreter", func() {
 				actualScgContainerCallEnvVars := fakeEnvVarsInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualScgContainerCallEnvVars).To(Equal(providedCallContainerSpec.EnvVars))
+			Expect(actualScgContainerCallEnvVars).To(Equal(providedContainerCallSpec.EnvVars))
 
 		})
 		Context("envVars.Interpret errors", func() {
@@ -352,7 +352,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.CallContainerSpec{},
+					&model.ContainerCallSpec{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					"dummyOpPath",
@@ -363,14 +363,14 @@ var _ = Context("Interpreter", func() {
 			})
 		})
 		Context("envVars.Interpret doesn't error", func() {
-			It("should return expected dcgContainerCall.EnvVars", func() {
+			It("should return expected containerCall.EnvVars", func() {
 				/* arrange */
-				expectedDCGContainerCallEnvVars := map[string]string{
+				expectedContainerCallEnvVars := map[string]string{
 					"dummyName": "dummyValue",
 				}
 
 				fakeEnvVarsInterpreter := new(envvarsFakes.FakeInterpreter)
-				fakeEnvVarsInterpreter.InterpretReturns(expectedDCGContainerCallEnvVars, nil)
+				fakeEnvVarsInterpreter.InterpretReturns(expectedContainerCallEnvVars, nil)
 
 				objectUnderTest := _interpreter{
 					cmdInterpreter:     new(cmdFakes.FakeInterpreter),
@@ -385,14 +385,14 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.CallContainerSpec{},
+					&model.ContainerCallSpec{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					"dummyOpPath",
 				)
 
 				/* assert */
-				Expect(actualResult.EnvVars).To(Equal(expectedDCGContainerCallEnvVars))
+				Expect(actualResult.EnvVars).To(Equal(expectedContainerCallEnvVars))
 			})
 		})
 
@@ -405,7 +405,7 @@ var _ = Context("Interpreter", func() {
 			}
 
 			fileName := "dummyFileName"
-			providedCallContainerSpec := &model.CallContainerSpec{
+			providedContainerCallSpec := &model.ContainerCallSpec{
 				Files: map[string]interface{}{
 					// implicitly bound
 					fileName: "",
@@ -441,7 +441,7 @@ var _ = Context("Interpreter", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				providedScope,
-				providedCallContainerSpec,
+				providedContainerCallSpec,
 				providedContainerID,
 				providedRootOpID,
 				"dummyOpPath",
@@ -450,7 +450,7 @@ var _ = Context("Interpreter", func() {
 			/* assert */
 			actualScope, actualScgContainerCallFiles, actualScratchDir := fakeFilesInterpreter.InterpretArgsForCall(0)
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualScgContainerCallFiles).To(Equal(providedCallContainerSpec.Files))
+			Expect(actualScgContainerCallFiles).To(Equal(providedContainerCallSpec.Files))
 			Expect(actualScratchDir).To(Equal(expectedScratchDirPath))
 		})
 		Context("filesFakes.Interpret errors", func() {
@@ -472,7 +472,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.CallContainerSpec{},
+					&model.ContainerCallSpec{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					"dummyOpPath",
@@ -483,14 +483,14 @@ var _ = Context("Interpreter", func() {
 			})
 		})
 		Context("filesFakes.Interpret doesn't error", func() {
-			It("should return expected dcgContainerCall.Files", func() {
+			It("should return expected containerCall.Files", func() {
 				/* arrange */
-				expectedDCGContainerCallFiles := map[string]string{
+				expectedContainerCallFiles := map[string]string{
 					"dummyName": "dummyValue",
 				}
 
 				fakeFilesInterpreter := new(filesFakes.FakeInterpreter)
-				fakeFilesInterpreter.InterpretReturns(expectedDCGContainerCallFiles, nil)
+				fakeFilesInterpreter.InterpretReturns(expectedContainerCallFiles, nil)
 
 				objectUnderTest := _interpreter{
 					cmdInterpreter:     new(cmdFakes.FakeInterpreter),
@@ -505,14 +505,14 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.CallContainerSpec{},
+					&model.ContainerCallSpec{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					"dummyOpPath",
 				)
 
 				/* assert */
-				Expect(actualResult.Files).To(Equal(expectedDCGContainerCallFiles))
+				Expect(actualResult.Files).To(Equal(expectedContainerCallFiles))
 			})
 		})
 
@@ -524,8 +524,8 @@ var _ = Context("Interpreter", func() {
 			providedScope := map[string]*model.Value{
 				containerFileBind: {String: new(string)},
 			}
-			providedCallContainerSpec := &model.CallContainerSpec{
-				Image: &model.CallContainerImageSpec{
+			providedContainerCallSpec := &model.ContainerCallSpec{
+				Image: &model.ContainerCallImageSpec{
 					Ref: "dummyRef",
 					PullCreds: &model.PullCredsSpec{
 						Username: "dummyUsername",
@@ -562,7 +562,7 @@ var _ = Context("Interpreter", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				providedScope,
-				providedCallContainerSpec,
+				providedContainerCallSpec,
 				providedContainerID,
 				providedRootOpID,
 				"dummyOpPath",
@@ -574,7 +574,7 @@ var _ = Context("Interpreter", func() {
 				actualScratchDir := fakeImageInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualScgContainerCallImage).To(Equal(providedCallContainerSpec.Image))
+			Expect(actualScgContainerCallImage).To(Equal(providedContainerCallSpec.Image))
 			Expect(actualScratchDir).To(Equal(expectedScratchDir))
 
 		})
@@ -597,7 +597,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.CallContainerSpec{},
+					&model.ContainerCallSpec{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					"dummyOpPath",
@@ -608,9 +608,9 @@ var _ = Context("Interpreter", func() {
 			})
 		})
 		Context("imageFakes.Interpret doesn't error", func() {
-			It("should return expected dcgContainerCall.Image", func() {
+			It("should return expected containerCall.Image", func() {
 				/* arrange */
-				expectedDCGContainerCallImage := &model.DCGContainerCallImage{
+				expectedContainerCallImage := &model.ContainerCallImage{
 					Ref: new(string),
 					PullCreds: &model.PullCreds{
 						Username: "dummyUsername",
@@ -619,7 +619,7 @@ var _ = Context("Interpreter", func() {
 				}
 
 				fakeImageInterpreter := new(imageFakes.FakeInterpreter)
-				fakeImageInterpreter.InterpretReturns(expectedDCGContainerCallImage, nil)
+				fakeImageInterpreter.InterpretReturns(expectedContainerCallImage, nil)
 
 				objectUnderTest := _interpreter{
 					cmdInterpreter:     new(cmdFakes.FakeInterpreter),
@@ -634,18 +634,18 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.CallContainerSpec{},
+					&model.ContainerCallSpec{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					"dummyOpPath",
 				)
 
 				/* assert */
-				Expect(actualResult.Image).To(Equal(expectedDCGContainerCallImage))
+				Expect(actualResult.Image).To(Equal(expectedContainerCallImage))
 			})
 		})
 
-		Context("callContainerSpec.Name truthy", func() {
+		Context("containerCallSpec.Name truthy", func() {
 			It("should call stringInterpreter.Interpret w/ expected args", func() {
 				/* arrange */
 				containerFileBind := "dummyContainerFileBind"
@@ -654,8 +654,8 @@ var _ = Context("Interpreter", func() {
 					containerFileBind: {String: new(string)},
 				}
 				expectedScgContainerCallName := "name"
-				providedCallContainerSpec := &model.CallContainerSpec{
-					Image: &model.CallContainerImageSpec{},
+				providedContainerCallSpec := &model.ContainerCallSpec{
+					Image: &model.ContainerCallImageSpec{},
 					Name:  &expectedScgContainerCallName,
 				}
 
@@ -677,7 +677,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					providedScope,
-					providedCallContainerSpec,
+					providedContainerCallSpec,
 					"dummyContainerID",
 					"dummyRootOpID",
 					"dummyOpPath",
@@ -688,7 +688,7 @@ var _ = Context("Interpreter", func() {
 					actualScgContainerCallName := fakeStrInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualScgContainerCallName).To(Equal(*providedCallContainerSpec.Name))
+				Expect(actualScgContainerCallName).To(Equal(*providedContainerCallSpec.Name))
 
 			})
 			Context("stringInterpreter.Interpret errors", func() {
@@ -711,7 +711,7 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
-						&model.CallContainerSpec{
+						&model.ContainerCallSpec{
 							Name: new(string),
 						},
 						"dummyContainerID",
@@ -724,12 +724,12 @@ var _ = Context("Interpreter", func() {
 				})
 			})
 			Context("stringInterpreter.Interpret doesn't error", func() {
-				It("should return expected dcgContainerCall.Name", func() {
+				It("should return expected containerCall.Name", func() {
 					/* arrange */
-					expectedDCGContainerCallName := "name"
+					expectedContainerCallName := "name"
 
 					fakeStrInterpreter := new(strFakes.FakeInterpreter)
-					fakeStrInterpreter.InterpretReturns(&model.Value{String: &expectedDCGContainerCallName}, nil)
+					fakeStrInterpreter.InterpretReturns(&model.Value{String: &expectedContainerCallName}, nil)
 
 					objectUnderTest := _interpreter{
 						cmdInterpreter:     new(cmdFakes.FakeInterpreter),
@@ -745,7 +745,7 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					actualResult, _ := objectUnderTest.Interpret(
 						map[string]*model.Value{},
-						&model.CallContainerSpec{
+						&model.ContainerCallSpec{
 							Name: new(string),
 						},
 						"dummyContainerID",
@@ -754,12 +754,12 @@ var _ = Context("Interpreter", func() {
 					)
 
 					/* assert */
-					Expect(*actualResult.Name).To(Equal(expectedDCGContainerCallName))
+					Expect(*actualResult.Name).To(Equal(expectedContainerCallName))
 				})
 			})
 		})
 
-		Context("callContainerSpec.WorkDir truthy", func() {
+		Context("containerCallSpec.WorkDir truthy", func() {
 			It("should call stringInterpreter.Interpret w/ expected args", func() {
 				/* arrange */
 				containerFileBind := "dummyContainerFileBind"
@@ -767,8 +767,8 @@ var _ = Context("Interpreter", func() {
 				providedScope := map[string]*model.Value{
 					containerFileBind: {String: new(string)},
 				}
-				providedCallContainerSpec := &model.CallContainerSpec{
-					Image:   &model.CallContainerImageSpec{},
+				providedContainerCallSpec := &model.ContainerCallSpec{
+					Image:   &model.ContainerCallImageSpec{},
 					WorkDir: "workDir",
 				}
 
@@ -789,7 +789,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					providedScope,
-					providedCallContainerSpec,
+					providedContainerCallSpec,
 					"dummyContainerID",
 					"dummyRootOpID",
 					"dummyOpPath",
@@ -800,7 +800,7 @@ var _ = Context("Interpreter", func() {
 					actualScgContainerCallWorkDir := fakeStrInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualScgContainerCallWorkDir).To(Equal(providedCallContainerSpec.WorkDir))
+				Expect(actualScgContainerCallWorkDir).To(Equal(providedContainerCallSpec.WorkDir))
 
 			})
 			Context("stringInterpreter.Interpret errors", func() {
@@ -823,7 +823,7 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
-						&model.CallContainerSpec{
+						&model.ContainerCallSpec{
 							WorkDir: "dummyWorkDir",
 						},
 						"dummyContainerID",
@@ -836,12 +836,12 @@ var _ = Context("Interpreter", func() {
 				})
 			})
 			Context("stringInterpreter.Interpret doesn't error", func() {
-				It("should return expected dcgContainerCall.WorkDir", func() {
+				It("should return expected containerCall.WorkDir", func() {
 					/* arrange */
-					expectedDCGContainerCallWorkDir := "workDir"
+					expectedContainerCallWorkDir := "workDir"
 
 					fakeStrInterpreter := new(strFakes.FakeInterpreter)
-					fakeStrInterpreter.InterpretReturns(&model.Value{String: &expectedDCGContainerCallWorkDir}, nil)
+					fakeStrInterpreter.InterpretReturns(&model.Value{String: &expectedContainerCallWorkDir}, nil)
 
 					objectUnderTest := _interpreter{
 						cmdInterpreter:     new(cmdFakes.FakeInterpreter),
@@ -857,7 +857,7 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					actualResult, _ := objectUnderTest.Interpret(
 						map[string]*model.Value{},
-						&model.CallContainerSpec{
+						&model.ContainerCallSpec{
 							WorkDir: "dummyWorkDir",
 						},
 						"dummyContainerID",
@@ -866,7 +866,7 @@ var _ = Context("Interpreter", func() {
 					)
 
 					/* assert */
-					Expect(actualResult.WorkDir).To(Equal(expectedDCGContainerCallWorkDir))
+					Expect(actualResult.WorkDir).To(Equal(expectedContainerCallWorkDir))
 				})
 			})
 		})
@@ -880,7 +880,7 @@ var _ = Context("Interpreter", func() {
 			}
 
 			envVarName := "dummyEnvVarName"
-			providedCallContainerSpec := &model.CallContainerSpec{
+			providedContainerCallSpec := &model.ContainerCallSpec{
 				Sockets: map[string]string{
 					// implicitly bound
 					envVarName: "",
@@ -916,7 +916,7 @@ var _ = Context("Interpreter", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				providedScope,
-				providedCallContainerSpec,
+				providedContainerCallSpec,
 				providedContainerID,
 				providedRootOpID,
 				"dummyOpPath",
@@ -925,7 +925,7 @@ var _ = Context("Interpreter", func() {
 			/* assert */
 			actualScope, actualScgContainerCallSockets, actualScratchDir := fakeSocketsInterpreter.InterpretArgsForCall(0)
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualScgContainerCallSockets).To(Equal(providedCallContainerSpec.Sockets))
+			Expect(actualScgContainerCallSockets).To(Equal(providedContainerCallSpec.Sockets))
 			Expect(actualScratchDir).To(Equal(expectedScratchDirPath))
 		})
 		Context("socketsFakes.Interpret errors", func() {
@@ -948,7 +948,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.CallContainerSpec{},
+					&model.ContainerCallSpec{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					"dummyOpPath",
@@ -959,14 +959,14 @@ var _ = Context("Interpreter", func() {
 			})
 		})
 		Context("socketsFakes.Interpret doesn't error", func() {
-			It("should return expected dcgContainerCall.Sockets", func() {
+			It("should return expected containerCall.Sockets", func() {
 				/* arrange */
-				expectedDCGContainerCallSockets := map[string]string{
+				expectedContainerCallSockets := map[string]string{
 					"dummyName": "dummyValue",
 				}
 
 				fakeSocketsInterpreter := new(socketsFakes.FakeInterpreter)
-				fakeSocketsInterpreter.InterpretReturns(expectedDCGContainerCallSockets, nil)
+				fakeSocketsInterpreter.InterpretReturns(expectedContainerCallSockets, nil)
 
 				objectUnderTest := _interpreter{
 					cmdInterpreter:     new(cmdFakes.FakeInterpreter),
@@ -981,14 +981,14 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.CallContainerSpec{},
+					&model.ContainerCallSpec{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					"dummyOpPath",
 				)
 
 				/* assert */
-				Expect(actualResult.Sockets).To(Equal(expectedDCGContainerCallSockets))
+				Expect(actualResult.Sockets).To(Equal(expectedContainerCallSockets))
 			})
 		})
 	})

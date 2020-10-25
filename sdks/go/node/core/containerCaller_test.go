@@ -32,22 +32,22 @@ var _ = Context("containerCaller", func() {
 		It("should call pubSub.Publish w/ expected ContainerStarted", func() {
 			/* arrange */
 			providedOpPath := "providedOpPath"
-			providedDCGContainerCall := &model.DCGContainerCall{
-				DCGBaseCall: model.DCGBaseCall{
+			providedContainerCall := &model.ContainerCall{
+				BaseCall: model.BaseCall{
 					OpPath:   providedOpPath,
 					RootOpID: "providedRootID",
 				},
 				ContainerID: "providedContainerID",
 			}
 			providedInboundScope := map[string]*model.Value{}
-			providedCallContainerSpec := &model.CallContainerSpec{}
+			providedContainerCallSpec := &model.ContainerCallSpec{}
 
 			expectedEvent := model.Event{
 				Timestamp: time.Now().UTC(),
 				ContainerStarted: &model.ContainerStarted{
-					ContainerID: providedDCGContainerCall.ContainerID,
+					ContainerID: providedContainerCall.ContainerID,
 					OpRef:       providedOpPath,
-					RootOpID:    providedDCGContainerCall.RootOpID,
+					RootOpID:    providedContainerCall.RootOpID,
 				},
 			}
 
@@ -65,9 +65,9 @@ var _ = Context("containerCaller", func() {
 			/* act */
 			objectUnderTest.Call(
 				context.Background(),
-				providedDCGContainerCall,
+				providedContainerCall,
 				providedInboundScope,
-				providedCallContainerSpec,
+				providedContainerCallSpec,
 			)
 
 			/* assert */
@@ -83,8 +83,8 @@ var _ = Context("containerCaller", func() {
 		It("should call containerRuntime.RunContainer w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
-			providedDCGContainerCall := &model.DCGContainerCall{
-				DCGBaseCall: model.DCGBaseCall{},
+			providedContainerCall := &model.ContainerCall{
+				BaseCall: model.BaseCall{},
 			}
 			fakeContainerRuntime := new(FakeContainerRuntime)
 
@@ -102,18 +102,18 @@ var _ = Context("containerCaller", func() {
 			/* act */
 			objectUnderTest.Call(
 				providedCtx,
-				providedDCGContainerCall,
+				providedContainerCall,
 				map[string]*model.Value{},
-				&model.CallContainerSpec{},
+				&model.ContainerCallSpec{},
 			)
 
 			/* assert */
 			_,
-				actualDCGContainerCall,
+				actualContainerCall,
 				actualEventPublisher,
 				_,
 				_ := fakeContainerRuntime.RunContainerArgsForCall(0)
-			Expect(actualDCGContainerCall).To(Equal(providedDCGContainerCall))
+			Expect(actualContainerCall).To(Equal(providedContainerCall))
 			Expect(actualEventPublisher).To(Equal(fakePubSub))
 		})
 		Context("containerRuntime.RunContainer errors", func() {
@@ -137,11 +137,11 @@ var _ = Context("containerCaller", func() {
 				/* act */
 				objectUnderTest.Call(
 					context.Background(),
-					&model.DCGContainerCall{
-						DCGBaseCall: model.DCGBaseCall{},
+					&model.ContainerCall{
+						BaseCall: model.BaseCall{},
 					},
 					map[string]*model.Value{},
-					&model.CallContainerSpec{},
+					&model.ContainerCallSpec{},
 				)
 
 				/* assert */
@@ -155,26 +155,26 @@ var _ = Context("containerCaller", func() {
 	It("should call pubSub.Publish w/ expected ContainerExited", func() {
 		/* arrange */
 		providedOpPath := "providedOpPath"
-		providedDCGContainerCall := &model.DCGContainerCall{
-			DCGBaseCall: model.DCGBaseCall{
+		providedContainerCall := &model.ContainerCall{
+			BaseCall: model.BaseCall{
 				OpPath:   providedOpPath,
 				RootOpID: "providedRootID",
 			},
 			ContainerID: "providedContainerID",
 		}
 		providedInboundScope := map[string]*model.Value{}
-		providedCallContainerSpec := &model.CallContainerSpec{}
+		providedContainerCallSpec := &model.ContainerCallSpec{}
 
 		expectedEvent := model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExited{
-				ContainerID: providedDCGContainerCall.ContainerID,
+				ContainerID: providedContainerCall.ContainerID,
 				Error: &model.CallEndedError{
 					Message: "io: read/write on closed pipe",
 				},
 				OpRef:    providedOpPath,
 				Outputs:  map[string]*model.Value{},
-				RootOpID: providedDCGContainerCall.RootOpID,
+				RootOpID: providedContainerCall.RootOpID,
 			},
 		}
 
@@ -192,9 +192,9 @@ var _ = Context("containerCaller", func() {
 		/* act */
 		objectUnderTest.Call(
 			context.Background(),
-			providedDCGContainerCall,
+			providedContainerCall,
 			providedInboundScope,
-			providedCallContainerSpec,
+			providedContainerCallSpec,
 		)
 
 		/* assert */
@@ -210,26 +210,26 @@ var _ = Context("containerCaller", func() {
 	It("should call pubSub.Publish w/ expected ContainerExited", func() {
 		/* arrange */
 		providedOpPath := "providedOpPath"
-		providedDCGContainerCall := &model.DCGContainerCall{
-			DCGBaseCall: model.DCGBaseCall{
+		providedContainerCall := &model.ContainerCall{
+			BaseCall: model.BaseCall{
 				OpPath:   providedOpPath,
 				RootOpID: "providedRootID",
 			},
 			ContainerID: "providedContainerID",
 		}
 		providedInboundScope := map[string]*model.Value{}
-		providedCallContainerSpec := &model.CallContainerSpec{}
+		providedContainerCallSpec := &model.ContainerCallSpec{}
 
 		expectedEvent := model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExited{
-				ContainerID: providedDCGContainerCall.ContainerID,
+				ContainerID: providedContainerCall.ContainerID,
 				Error: &model.CallEndedError{
 					Message: "io: read/write on closed pipe",
 				},
 				OpRef:    providedOpPath,
 				Outputs:  map[string]*model.Value{},
-				RootOpID: providedDCGContainerCall.RootOpID,
+				RootOpID: providedContainerCall.RootOpID,
 			},
 		}
 
@@ -247,9 +247,9 @@ var _ = Context("containerCaller", func() {
 		/* act */
 		objectUnderTest.Call(
 			context.Background(),
-			providedDCGContainerCall,
+			providedContainerCall,
 			providedInboundScope,
-			providedCallContainerSpec,
+			providedContainerCallSpec,
 		)
 
 		/* assert */

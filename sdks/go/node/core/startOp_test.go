@@ -235,16 +235,16 @@ var _ = Context("core", func() {
 					fakeOpFileGetter := new(FakeGetter)
 					fakeOpFileGetter.GetReturns(opFile, nil)
 
-					expectedCallOpSpec := &model.CallOpSpec{
+					expectedOpCallSpec := &model.OpCallSpec{
 						Ref:     opRef,
 						Inputs:  map[string]interface{}{},
 						Outputs: map[string]string{},
 					}
 					for name := range providedReq.Args {
-						expectedCallOpSpec.Inputs[name] = ""
+						expectedOpCallSpec.Inputs[name] = ""
 					}
 					for name := range opFile.Outputs {
-						expectedCallOpSpec.Outputs[name] = ""
+						expectedOpCallSpec.Outputs[name] = ""
 					}
 
 					expectedID := "expectedID"
@@ -256,9 +256,9 @@ var _ = Context("core", func() {
 					opInterpreter := op.NewInterpreter(tmpDir)
 
 					// use real interpreter
-					expectedDCGOpCall, err := opInterpreter.Interpret(
+					expectedOpCall, err := opInterpreter.Interpret(
 						providedReq.Args,
-						expectedCallOpSpec,
+						expectedOpCallSpec,
 						expectedID,
 						opPath,
 						expectedID,
@@ -286,19 +286,19 @@ var _ = Context("core", func() {
 					// Call happens in go routine; wait 500ms to allow it to occur
 					time.Sleep(time.Millisecond * 500)
 					actualCtx,
-						actualDCGOpCall,
+						actualOpCall,
 						actualScope,
 						actualOpID,
-						actualCallOpSpec := fakeOpCaller.CallArgsForCall(0)
+						actualOpCallSpec := fakeOpCaller.CallArgsForCall(0)
 
 					// ignore ChildCallID
-					actualDCGOpCall.ChildCallID = expectedDCGOpCall.ChildCallID
+					actualOpCall.ChildCallID = expectedOpCall.ChildCallID
 
 					Expect(actualCtx).To(Equal(providedCtx))
-					Expect(*actualDCGOpCall).To(BeEquivalentTo(*expectedDCGOpCall))
+					Expect(*actualOpCall).To(BeEquivalentTo(*expectedOpCall))
 					Expect(actualOpID).To(Equal(&expectedID))
 					Expect(actualScope).To(Equal(providedReq.Args))
-					Expect(actualCallOpSpec).To(Equal(expectedCallOpSpec))
+					Expect(actualOpCallSpec).To(Equal(expectedOpCallSpec))
 				})
 			})
 		})

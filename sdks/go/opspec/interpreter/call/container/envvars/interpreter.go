@@ -13,7 +13,7 @@ import (
 type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
-		callContainerSpecEnvVars interface{},
+		containerCallSpecEnvVars interface{},
 	) (map[string]string, error)
 }
 
@@ -34,20 +34,20 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
-	callContainerSpecEnvVars interface{},
+	containerCallSpecEnvVars interface{},
 ) (map[string]string, error) {
-	if nil == callContainerSpecEnvVars {
+	if nil == containerCallSpecEnvVars {
 		return nil, nil
 	}
 
 	envVarsMap, err := itp.objectInterpreter.Interpret(
 		scope,
-		callContainerSpecEnvVars,
+		containerCallSpecEnvVars,
 	)
 	if nil != err {
 		return nil, fmt.Errorf(
 			"unable to interpret '%v' as envVars; error was %v",
-			callContainerSpecEnvVars,
+			containerCallSpecEnvVars,
 			err,
 		)
 	}

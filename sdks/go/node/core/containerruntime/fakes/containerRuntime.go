@@ -23,11 +23,11 @@ type FakeContainerRuntime struct {
 	deleteContainerIfExistsReturnsOnCall map[int]struct {
 		result1 error
 	}
-	RunContainerStub        func(context.Context, *model.DCGContainerCall, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) (*int64, error)
+	RunContainerStub        func(context.Context, *model.ContainerCall, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) (*int64, error)
 	runContainerMutex       sync.RWMutex
 	runContainerArgsForCall []struct {
 		arg1 context.Context
-		arg2 *model.DCGContainerCall
+		arg2 *model.ContainerCall
 		arg3 pubsub.EventPublisher
 		arg4 io.WriteCloser
 		arg5 io.WriteCloser
@@ -104,12 +104,12 @@ func (fake *FakeContainerRuntime) DeleteContainerIfExistsReturnsOnCall(i int, re
 	}{result1}
 }
 
-func (fake *FakeContainerRuntime) RunContainer(arg1 context.Context, arg2 *model.DCGContainerCall, arg3 pubsub.EventPublisher, arg4 io.WriteCloser, arg5 io.WriteCloser) (*int64, error) {
+func (fake *FakeContainerRuntime) RunContainer(arg1 context.Context, arg2 *model.ContainerCall, arg3 pubsub.EventPublisher, arg4 io.WriteCloser, arg5 io.WriteCloser) (*int64, error) {
 	fake.runContainerMutex.Lock()
 	ret, specificReturn := fake.runContainerReturnsOnCall[len(fake.runContainerArgsForCall)]
 	fake.runContainerArgsForCall = append(fake.runContainerArgsForCall, struct {
 		arg1 context.Context
-		arg2 *model.DCGContainerCall
+		arg2 *model.ContainerCall
 		arg3 pubsub.EventPublisher
 		arg4 io.WriteCloser
 		arg5 io.WriteCloser
@@ -132,13 +132,13 @@ func (fake *FakeContainerRuntime) RunContainerCallCount() int {
 	return len(fake.runContainerArgsForCall)
 }
 
-func (fake *FakeContainerRuntime) RunContainerCalls(stub func(context.Context, *model.DCGContainerCall, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) (*int64, error)) {
+func (fake *FakeContainerRuntime) RunContainerCalls(stub func(context.Context, *model.ContainerCall, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) (*int64, error)) {
 	fake.runContainerMutex.Lock()
 	defer fake.runContainerMutex.Unlock()
 	fake.RunContainerStub = stub
 }
 
-func (fake *FakeContainerRuntime) RunContainerArgsForCall(i int) (context.Context, *model.DCGContainerCall, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) {
+func (fake *FakeContainerRuntime) RunContainerArgsForCall(i int) (context.Context, *model.ContainerCall, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) {
 	fake.runContainerMutex.RLock()
 	defer fake.runContainerMutex.RUnlock()
 	argsForCall := fake.runContainerArgsForCall[i]

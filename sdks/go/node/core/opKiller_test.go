@@ -58,7 +58,7 @@ var _ = Context("_opKiller", func() {
 				/* arrange */
 				providedCallID := "providedCallID"
 
-				nodesReturnedFromCallStore := []*model.DCG{
+				nodesReturnedFromCallStore := []*model.Call{
 					{Id: "dummyNode1Id"},
 					{Id: "dummyNode2Id"},
 					{Id: "dummyNode3Id"},
@@ -100,7 +100,7 @@ var _ = Context("_opKiller", func() {
 				/* arrange */
 				providedCallID := "providedCallID"
 
-				nodesReturnedFromCallStore := []*model.DCG{
+				nodesReturnedFromCallStore := []*model.Call{
 					{Id: "dummyNode1Id"},
 					{Id: "dummyNode2Id"},
 					{Id: "dummyNode3Id"},

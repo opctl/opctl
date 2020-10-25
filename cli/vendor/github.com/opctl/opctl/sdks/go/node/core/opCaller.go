@@ -17,10 +17,10 @@ type opCaller interface {
 	// Executes an op call
 	Call(
 		ctx context.Context,
-		dcgOpCall *model.DCGOpCall,
+		opCall *model.OpCall,
 		inboundScope map[string]*model.Value,
 		parentCallID *string,
-		callOpSpec *model.CallOpSpec,
+		opCallSpec *model.OpCallSpec,
 	)
 }
 
@@ -51,10 +51,10 @@ type _opCaller struct {
 
 func (oc _opCaller) Call(
 	ctx context.Context,
-	dcgOpCall *model.DCGOpCall,
+	opCall *model.OpCall,
 	inboundScope map[string]*model.Value,
 	parentCallID *string,
-	callOpSpec *model.CallOpSpec,
+	opCallSpec *model.OpCallSpec,
 ) {
 	var err error
 	outboundScope := map[string]*model.Value{}
@@ -62,7 +62,7 @@ func (oc _opCaller) Call(
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 		var opOutcome string
-		if dcg := oc.callStore.TryGet(dcgOpCall.OpID); nil != dcg && dcg.IsKilled {
+		if dcg := oc.callStore.TryGet(opCall.OpID); nil != dcg && dcg.IsKilled {
 			opOutcome = model.OpOutcomeKilled
 		} else if nil != err {
 			opOutcome = model.OpOutcomeFailed
@@ -73,10 +73,10 @@ func (oc _opCaller) Call(
 		event := model.Event{
 			Timestamp: time.Now().UTC(),
 			OpEnded: &model.OpEnded{
-				OpID:     dcgOpCall.OpID,
-				OpRef:    dcgOpCall.OpPath,
+				OpID:     opCall.OpID,
+				OpRef:    opCall.OpPath,
 				Outcome:  opOutcome,
-				RootOpID: dcgOpCall.RootOpID,
+				RootOpID: opCall.RootOpID,
 				Outputs:  outboundScope,
 			},
 		}
@@ -97,37 +97,37 @@ func (oc _opCaller) Call(
 		model.Event{
 			Timestamp: opStartedTime,
 			OpStarted: &model.OpStarted{
-				OpID:     dcgOpCall.OpID,
-				OpRef:    dcgOpCall.OpPath,
-				RootOpID: dcgOpCall.RootOpID,
+				OpID:     opCall.OpID,
+				OpRef:    opCall.OpPath,
+				RootOpID: opCall.RootOpID,
 			},
 		},
 	)
 
 	// form scope for op call by combining defined inputs & op dir
 	opCallScope := map[string]*model.Value{}
-	for varName, varData := range dcgOpCall.Inputs {
+	for varName, varData := range opCall.Inputs {
 		opCallScope[varName] = varData
 	}
 	opCallScope["/"] = &model.Value{
-		Dir: &dcgOpCall.OpPath,
+		Dir: &opCall.OpPath,
 	}
 
 	oc.caller.Call(
 		ctx,
-		dcgOpCall.ChildCallID,
+		opCall.ChildCallID,
 		opCallScope,
-		dcgOpCall.ChildCallCallSpec,
-		dcgOpCall.OpPath,
-		&dcgOpCall.OpID,
-		dcgOpCall.RootOpID,
+		opCall.ChildCallCallSpec,
+		opCall.OpPath,
+		&opCall.OpID,
+		opCall.RootOpID,
 	)
 
 	// subscribe to events
 	eventChannel, _ := oc.pubSub.Subscribe(
 		ctx,
 		model.EventFilter{
-			Roots: []string{dcgOpCall.RootOpID},
+			Roots: []string{opCall.RootOpID},
 			Since: &opStartedTime,
 		},
 	)
@@ -137,10 +137,10 @@ func (oc _opCaller) Call(
 eventLoop:
 	for event := range eventChannel {
 		switch {
-		case nil != event.OpEnded && event.OpEnded.OpID == dcgOpCall.OpID:
+		case nil != event.OpEnded && event.OpEnded.OpID == opCall.OpID:
 			// parent ended prematurely
 			return
-		case nil != event.CallEnded && event.CallEnded.CallID == dcgOpCall.ChildCallID:
+		case nil != event.CallEnded && event.CallEnded.CallID == opCall.ChildCallID:
 			if nil != event.CallEnded.Error {
 				err = errors.New(event.CallEnded.Error.Message)
 				// end on any error
@@ -156,7 +156,7 @@ eventLoop:
 	var opFile *model.OpFile
 	opFile, err = oc.opFileGetter.Get(
 		ctx,
-		dcgOpCall.OpPath,
+		opCall.OpPath,
 	)
 	if nil != err {
 		return
@@ -164,12 +164,12 @@ eventLoop:
 	opOutputs, err = oc.outputsInterpreter.Interpret(
 		opOutputs,
 		opFile.Outputs,
-		dcgOpCall.OpPath,
-		filepath.Join(oc.dcgScratchDir, dcgOpCall.OpID),
+		opCall.OpPath,
+		filepath.Join(oc.dcgScratchDir, opCall.OpID),
 	)
 
 	// filter op outboundScope to bound call outboundScope
-	for boundName, boundValue := range callOpSpec.Outputs {
+	for boundName, boundValue := range opCallSpec.Outputs {
 		// return bound outboundScope
 		if "" == boundValue {
 			// implicit value

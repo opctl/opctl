@@ -32,7 +32,7 @@ var _ = Context("Dirs", func() {
 
 			containerDirPath := "/dummyDir1Path.txt"
 
-			providedCallContainerSpecDirs := map[string]string{
+			providedContainerCallSpecDirs := map[string]string{
 				// implicitly bound
 				containerDirPath: "",
 			}
@@ -53,7 +53,7 @@ var _ = Context("Dirs", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				providedScope,
-				providedCallContainerSpecDirs,
+				providedContainerCallSpecDirs,
 				providedScratchDir,
 			)
 
@@ -113,7 +113,7 @@ var _ = Context("Dirs", func() {
 					filePath := tempDir.Name()
 					fakeDirInterpreter.InterpretReturns(&model.Value{Dir: &filePath}, nil)
 
-					expectedDCGContainerCallDirs := map[string]string{
+					expectedContainerCallDirs := map[string]string{
 						containerDirPath: filePath,
 					}
 
@@ -123,7 +123,7 @@ var _ = Context("Dirs", func() {
 					}
 
 					/* act */
-					actualDCGContainerCallDirs, actualErr := objectUnderTest.Interpret(
+					actualContainerCallDirs, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
 						map[string]string{
 							// implicitly bound
@@ -133,7 +133,7 @@ var _ = Context("Dirs", func() {
 					)
 
 					/* assert */
-					Expect(actualDCGContainerCallDirs).To(Equal(expectedDCGContainerCallDirs))
+					Expect(actualContainerCallDirs).To(Equal(expectedContainerCallDirs))
 					Expect(actualErr).To(BeNil())
 
 				})

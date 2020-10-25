@@ -17,14 +17,14 @@ import (
 
 //counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
-	// Interpret interprets an CallOpSpec into a DCGOpCall
+	// Interpret interprets an OpCallSpec into a OpCall
 	Interpret(
 		scope map[string]*model.Value,
-		callOpSpec *model.CallOpSpec,
+		opCallSpec *model.OpCallSpec,
 		opID string,
 		parentOpPath string,
 		rootOpID string,
-	) (*model.DCGOpCall, error)
+	) (*model.OpCall, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -56,14 +56,14 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
-	callOpSpec *model.CallOpSpec,
+	opCallSpec *model.OpCallSpec,
 	opID string,
 	parentOpPath string,
 	rootOpID string,
-) (*model.DCGOpCall, error) {
+) (*model.OpCall, error) {
 
 	var pkgPullCreds *model.PullCreds
-	if pullCredsSpec := callOpSpec.PullCreds; nil != pullCredsSpec {
+	if pullCredsSpec := opCallSpec.PullCreds; nil != pullCredsSpec {
 		pkgPullCreds = &model.PullCreds{}
 		var err error
 		interpretdUsername, err := itp.stringInterpreter.Interpret(scope, pullCredsSpec.Username)
@@ -82,11 +82,11 @@ func (itp _interpreter) Interpret(
 	scratchDir := filepath.Join(itp.dcgScratchDir, opID)
 
 	var opPath string
-	if regexp.MustCompile("^\\$\\(.+\\)$").MatchString(callOpSpec.Ref) {
+	if regexp.MustCompile("^\\$\\(.+\\)$").MatchString(opCallSpec.Ref) {
 		// attempt to process as a variable reference since its variable reference like.
 		dirValue, err := itp.dirInterpreter.Interpret(
 			scope,
-			callOpSpec.Ref,
+			opCallSpec.Ref,
 			scratchDir,
 			false,
 		)
@@ -97,7 +97,7 @@ func (itp _interpreter) Interpret(
 	} else {
 		opHandle, err := itp.data.Resolve(
 			context.TODO(),
-			callOpSpec.Ref,
+			opCallSpec.Ref,
 			itp.data.NewFSProvider(parentOpPath, filepath.Dir(parentOpPath)),
 			itp.data.NewGitProvider(itp.dataCachePath, pkgPullCreds),
 		)
@@ -120,8 +120,8 @@ func (itp _interpreter) Interpret(
 		return nil, err
 	}
 
-	dcgOpCall := &model.DCGOpCall{
-		DCGBaseCall: model.DCGBaseCall{
+	opCall := &model.OpCall{
+		BaseCall: model.BaseCall{
 			RootOpID: rootOpID,
 			OpPath:   opPath,
 		},
@@ -130,16 +130,16 @@ func (itp _interpreter) Interpret(
 		ChildCallCallSpec: opFile.Run,
 	}
 
-	dcgOpCall.Inputs, err = itp.inputsInterpreter.Interpret(
-		callOpSpec.Inputs,
+	opCall.Inputs, err = itp.inputsInterpreter.Interpret(
+		opCallSpec.Inputs,
 		opFile.Inputs,
 		opPath,
 		scope,
 		scratchDir,
 	)
 	if nil != err {
-		return nil, fmt.Errorf("unable to interpret call to %v; error was: %v", callOpSpec.Ref, err)
+		return nil, fmt.Errorf("unable to interpret call to %v; error was: %v", opCallSpec.Ref, err)
 	}
 
-	return dcgOpCall, nil
+	return opCall, nil
 }
