@@ -12,7 +12,6 @@ type Event struct {
 	OpKillRequested          *OpKillRequested               `json:"opKillRequested,omitempty"`
 	OpEnded                  *OpEndedEvent                  `json:"opEnded,omitempty"`
 	OpStarted                *OpStartedEvent                `json:"opStarted,omitempty"`
-	OpErred                  *OpErredEvent                  `json:"opErred,omitempty"`
 	Timestamp                time.Time                      `json:"timestamp"`
 	ParallelCallEnded        *ParallelCallEndedEvent        `json:"parallelCallEnded,omitempty"`
 	ParallelLoopCallEnded    *ParallelLoopCallEndedEvent    `json:"parallelLoopCallEnded,omitempty"`
