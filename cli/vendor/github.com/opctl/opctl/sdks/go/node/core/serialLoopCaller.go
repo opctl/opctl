@@ -22,7 +22,7 @@ type serialLoopCaller interface {
 		ctx context.Context,
 		id string,
 		inboundScope map[string]*model.Value,
-		scgSerialLoop model.SCGSerialLoopCall,
+		callSpecSerialLoop model.CallSerialLoopSpec,
 		opPath string,
 		parentCallID *string,
 		rootOpID string,
@@ -58,7 +58,7 @@ func (lpr _serialLoopCaller) Call(
 	ctx context.Context,
 	id string,
 	inboundScope map[string]*model.Value,
-	scgSerialLoop model.SCGSerialLoopCall,
+	callSpecSerialLoop model.CallSerialLoopSpec,
 	opPath string,
 	parentCallID *string,
 	rootOpID string,
@@ -90,8 +90,8 @@ func (lpr _serialLoopCaller) Call(
 	outboundScope, err = lpr.iterationScoper.Scope(
 		index,
 		inboundScope,
-		scgSerialLoop.Range,
-		scgSerialLoop.Vars,
+		callSpecSerialLoop.Range,
+		callSpecSerialLoop.Vars,
 	)
 	if nil != err {
 		return
@@ -100,7 +100,7 @@ func (lpr _serialLoopCaller) Call(
 	// interpret initial iteration of the loop
 	var dcgSerialLoop *model.DCGSerialLoopCall
 	dcgSerialLoop, err = lpr.serialLoopInterpreter.Interpret(
-		scgSerialLoop,
+		callSpecSerialLoop,
 		outboundScope,
 	)
 	if nil != err {
@@ -120,7 +120,7 @@ func (lpr _serialLoopCaller) Call(
 			ctx,
 			callID,
 			outboundScope,
-			&scgSerialLoop.Run,
+			&callSpecSerialLoop.Run,
 			opPath,
 			parentCallID,
 			rootOpID,
@@ -161,8 +161,8 @@ func (lpr _serialLoopCaller) Call(
 		outboundScope, err = lpr.iterationScoper.Scope(
 			index,
 			outboundScope,
-			scgSerialLoop.Range,
-			scgSerialLoop.Vars,
+			callSpecSerialLoop.Range,
+			callSpecSerialLoop.Vars,
 		)
 		if nil != err {
 			return
@@ -170,7 +170,7 @@ func (lpr _serialLoopCaller) Call(
 
 		// interpret next iteration of the loop
 		dcgSerialLoop, err = lpr.serialLoopInterpreter.Interpret(
-			scgSerialLoop,
+			callSpecSerialLoop,
 			outboundScope,
 		)
 		if nil != err {
@@ -180,8 +180,8 @@ func (lpr _serialLoopCaller) Call(
 
 	outboundScope = lpr.loopDeScoper.DeScope(
 		inboundScope,
-		scgSerialLoop.Range,
-		scgSerialLoop.Vars,
+		callSpecSerialLoop.Range,
+		callSpecSerialLoop.Vars,
 		outboundScope,
 	)
 }

@@ -15,7 +15,7 @@ import (
 type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
-		scgContainerCallFiles map[string]interface{},
+		callContainerSpecFiles map[string]interface{},
 		scratchDirPath string,
 	) (map[string]string, error)
 }
@@ -41,16 +41,16 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
-	scgContainerCallFiles map[string]interface{},
+	callContainerSpecFiles map[string]interface{},
 	scratchDirPath string,
 ) (map[string]string, error) {
 	dcgContainerCallFiles := map[string]string{}
 fileLoop:
-	for scgContainerFilePath, fileExpression := range scgContainerCallFiles {
+	for callSpecContainerFilePath, fileExpression := range callContainerSpecFiles {
 
 		if nil == fileExpression {
 			// bound implicitly
-			fileExpression = fmt.Sprintf("$(%v)", scgContainerFilePath)
+			fileExpression = fmt.Sprintf("$(%v)", callSpecContainerFilePath)
 		}
 
 		fileValue, err := itp.fileInterpreter.Interpret(
@@ -62,7 +62,7 @@ fileLoop:
 		if nil != err {
 			return nil, fmt.Errorf(
 				"unable to bind %v to %v; error was %v",
-				scgContainerFilePath,
+				callSpecContainerFilePath,
 				fileExpression,
 				err,
 			)
@@ -70,19 +70,19 @@ fileLoop:
 
 		if !strings.HasPrefix(*fileValue.File, itp.dataDirPath) {
 			// bound to non rootFS file
-			dcgContainerCallFiles[scgContainerFilePath] = *fileValue.File
+			dcgContainerCallFiles[callSpecContainerFilePath] = *fileValue.File
 			continue fileLoop
 		}
-		dcgContainerCallFiles[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
+		dcgContainerCallFiles[callSpecContainerFilePath] = filepath.Join(scratchDirPath, callSpecContainerFilePath)
 
 		// create file
 		if err := itp.os.MkdirAll(
-			filepath.Dir(dcgContainerCallFiles[scgContainerFilePath]),
+			filepath.Dir(dcgContainerCallFiles[callSpecContainerFilePath]),
 			0777,
 		); nil != err {
 			return nil, fmt.Errorf(
 				"unable to bind %v to %v; error was %v",
-				scgContainerFilePath,
+				callSpecContainerFilePath,
 				fileExpression,
 				err,
 			)
@@ -90,12 +90,12 @@ fileLoop:
 
 		err = itp.fileCopier.OS(
 			*fileValue.File,
-			dcgContainerCallFiles[scgContainerFilePath],
+			dcgContainerCallFiles[callSpecContainerFilePath],
 		)
 		if nil != err {
 			return nil, fmt.Errorf(
 				"unable to bind %v to %v; error was %v",
-				scgContainerFilePath,
+				callSpecContainerFilePath,
 				fileExpression,
 				err,
 			)

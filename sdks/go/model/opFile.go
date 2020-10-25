@@ -5,6 +5,6 @@ type OpFile struct {
 	Inputs      map[string]*Param `json:"inputs,omitempty"`
 	Name        string            `json:"name"`
 	Outputs     map[string]*Param `json:"outputs,omitempty"`
-	Run         *SCG              `json:"run,omitempty"`
+	Run         *CallSpec         `json:"run,omitempty"`
 	Version     string            `json:"version,omitempty"`
 }

@@ -9,11 +9,11 @@ import (
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func(map[string]*model.Value, *model.SCGContainerCall, string, string, string) (*model.DCGContainerCall, error)
+	InterpretStub        func(map[string]*model.Value, *model.CallContainerSpec, string, string, string) (*model.DCGContainerCall, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
 		arg1 map[string]*model.Value
-		arg2 *model.SCGContainerCall
+		arg2 *model.CallContainerSpec
 		arg3 string
 		arg4 string
 		arg5 string
@@ -30,12 +30,12 @@ type FakeInterpreter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(arg1 map[string]*model.Value, arg2 *model.SCGContainerCall, arg3 string, arg4 string, arg5 string) (*model.DCGContainerCall, error) {
+func (fake *FakeInterpreter) Interpret(arg1 map[string]*model.Value, arg2 *model.CallContainerSpec, arg3 string, arg4 string, arg5 string) (*model.DCGContainerCall, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
 		arg1 map[string]*model.Value
-		arg2 *model.SCGContainerCall
+		arg2 *model.CallContainerSpec
 		arg3 string
 		arg4 string
 		arg5 string
@@ -58,13 +58,13 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *FakeInterpreter) InterpretCalls(stub func(map[string]*model.Value, *model.SCGContainerCall, string, string, string) (*model.DCGContainerCall, error)) {
+func (fake *FakeInterpreter) InterpretCalls(stub func(map[string]*model.Value, *model.CallContainerSpec, string, string, string) (*model.DCGContainerCall, error)) {
 	fake.interpretMutex.Lock()
 	defer fake.interpretMutex.Unlock()
 	fake.InterpretStub = stub
 }
 
-func (fake *FakeInterpreter) InterpretArgsForCall(i int) (map[string]*model.Value, *model.SCGContainerCall, string, string, string) {
+func (fake *FakeInterpreter) InterpretArgsForCall(i int) (map[string]*model.Value, *model.CallContainerSpec, string, string, string) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
 	argsForCall := fake.interpretArgsForCall[i]

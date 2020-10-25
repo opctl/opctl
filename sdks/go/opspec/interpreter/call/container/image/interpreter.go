@@ -11,7 +11,7 @@ import (
 type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
-		scgContainerCallImage *model.SCGContainerCallImage,
+		callContainerImageSpec *model.CallContainerImageSpec,
 		scratchDir string,
 	) (*model.DCGContainerCallImage, error)
 }
@@ -31,18 +31,18 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
-	scgContainerCallImage *model.SCGContainerCallImage,
+	callContainerImageSpec *model.CallContainerImageSpec,
 	scratchDir string,
 ) (*model.DCGContainerCallImage, error) {
 
-	if nil == scgContainerCallImage {
+	if nil == callContainerImageSpec {
 		return nil, fmt.Errorf("image required")
 	}
 
 	// try to interpret as dir
 	src, err := itp.dirInterpreter.Interpret(
 		scope,
-		scgContainerCallImage.Ref,
+		callContainerImageSpec.Ref,
 		scratchDir,
 		false,
 	)
@@ -56,7 +56,7 @@ func (itp _interpreter) Interpret(
 	dcgContainerCallImage := &model.DCGContainerCallImage{}
 	ref, err := itp.stringInterpreter.Interpret(
 		scope,
-		scgContainerCallImage.Ref,
+		callContainerImageSpec.Ref,
 	)
 	if nil != err {
 		return nil, err
@@ -64,13 +64,13 @@ func (itp _interpreter) Interpret(
 
 	dcgContainerCallImage.Ref = ref.String
 
-	if nil != scgContainerCallImage.PullCreds {
-		username, err := itp.stringInterpreter.Interpret(scope, scgContainerCallImage.PullCreds.Username)
+	if nil != callContainerImageSpec.PullCreds {
+		username, err := itp.stringInterpreter.Interpret(scope, callContainerImageSpec.PullCreds.Username)
 		if nil != err {
 			return nil, fmt.Errorf("error encountered interpreting image pullcreds username; error was: %v", err)
 		}
 
-		password, err := itp.stringInterpreter.Interpret(scope, scgContainerCallImage.PullCreds.Password)
+		password, err := itp.stringInterpreter.Interpret(scope, callContainerImageSpec.PullCreds.Password)
 		if nil != err {
 			return nil, fmt.Errorf("error encountered interpreting image pullcreds password; error was: %v", err)
 		}

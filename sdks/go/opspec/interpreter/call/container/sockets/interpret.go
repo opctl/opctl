@@ -13,7 +13,7 @@ import (
 type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
-		scgContainerCallSockets map[string]string,
+		callContainerSpecSockets map[string]string,
 		scratchDirPath string,
 	) (map[string]string, error)
 }
@@ -31,21 +31,21 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
-	scgContainerCallSockets map[string]string,
+	callContainerSpecSockets map[string]string,
 	scratchDirPath string,
 ) (map[string]string, error) {
 	dcgContainerCallSockets := map[string]string{}
-	for scgContainerSocketAddress, scgContainerSocketBind := range scgContainerCallSockets {
+	for callSpecContainerSocketAddress, callSpecContainerSocketBind := range callContainerSpecSockets {
 		// @TODO: use reference.interpret once reference syntax no longer optional
-		scgContainerSocketBind = strings.TrimSuffix(strings.TrimPrefix(scgContainerSocketBind, reference.RefStart), reference.RefEnd)
+		callSpecContainerSocketBind = strings.TrimSuffix(strings.TrimPrefix(callSpecContainerSocketBind, reference.RefStart), reference.RefEnd)
 
-		if boundArg, ok := scope[scgContainerSocketBind]; ok {
+		if boundArg, ok := scope[callSpecContainerSocketBind]; ok {
 			// bound to var
-			dcgContainerCallSockets[scgContainerSocketAddress] = *boundArg.Socket
-		} else if isUnixSocketAddress(scgContainerSocketAddress) {
+			dcgContainerCallSockets[callSpecContainerSocketAddress] = *boundArg.Socket
+		} else if isUnixSocketAddress(callSpecContainerSocketAddress) {
 			// bound to output
 			// create outputSocket on host so the output points to something
-			dcgHostSocketAddress := filepath.Join(scratchDirPath, scgContainerSocketAddress)
+			dcgHostSocketAddress := filepath.Join(scratchDirPath, callSpecContainerSocketAddress)
 			var outputSocket *os.File
 			outputSocket, err := itp.os.Create(dcgHostSocketAddress)
 			outputSocket.Close()
@@ -58,7 +58,7 @@ func (itp _interpreter) Interpret(
 			); nil != err {
 				return nil, err
 			}
-			dcgContainerCallSockets[scgContainerSocketAddress] = dcgHostSocketAddress
+			dcgContainerCallSockets[callSpecContainerSocketAddress] = dcgHostSocketAddress
 		}
 	}
 	return dcgContainerCallSockets, nil

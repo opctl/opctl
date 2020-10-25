@@ -30,18 +30,18 @@ var _ = Context("parallelCaller", func() {
 			providedInboundScope := map[string]*model.Value{}
 			providedRootOpID := "dummyRootOpID"
 			providedOpPath := "providedOpPath"
-			providedSCGParallelCalls := []*model.SCG{
+			providedCallSpecParallelCalls := []*model.CallSpec{
 				{
-					Container: &model.SCGContainerCall{},
+					Container: &model.CallContainerSpec{},
 				},
 				{
-					Op: &model.SCGOpCall{},
+					Op: &model.CallOpSpec{},
 				},
 				{
-					Parallel: &[]*model.SCG{},
+					Parallel: &[]*model.CallSpec{},
 				},
 				{
-					Serial: &[]*model.SCG{},
+					Serial: &[]*model.CallSpec{},
 				},
 			}
 
@@ -50,7 +50,7 @@ var _ = Context("parallelCaller", func() {
 			fakeCaller := new(FakeCaller)
 			eventChannel := make(chan model.Event, 100)
 			callerCallIndex := 0
-			fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, string, *string, string) {
+			fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.CallSpec, string, *string, string) {
 				mtx.Lock()
 				eventChannel <- model.Event{
 					CallEnded: &model.CallEnded{
@@ -91,15 +91,15 @@ var _ = Context("parallelCaller", func() {
 				providedInboundScope,
 				providedRootOpID,
 				providedOpPath,
-				providedSCGParallelCalls,
+				providedCallSpecParallelCalls,
 			)
 
 			/* assert */
-			for callIndex := range providedSCGParallelCalls {
+			for callIndex := range providedCallSpecParallelCalls {
 				_,
 					actualNodeID,
 					actualChildOutboundScope,
-					actualSCG,
+					actualCallSpec,
 					actualOpPath,
 					actualParentCallID,
 					actualRootOpID := fakeCaller.CallArgsForCall(callIndex)
@@ -111,7 +111,7 @@ var _ = Context("parallelCaller", func() {
 
 				// handle unordered asserts because call order can't be relied on within go statement
 				Expect(expectedChildCallIds).To(ContainElement(actualNodeID))
-				Expect(providedSCGParallelCalls).To(ContainElement(actualSCG))
+				Expect(providedCallSpecParallelCalls).To(ContainElement(actualCallSpec))
 			}
 		})
 		Context("CallEnded event received w/ Error", func() {
@@ -121,24 +121,24 @@ var _ = Context("parallelCaller", func() {
 				providedInboundScope := map[string]*model.Value{}
 				providedRootOpID := "dummyRootOpID"
 				providedOpPath := "providedOpPath"
-				providedSCGParallelCalls := []*model.SCG{
+				providedCallSpecParallelCalls := []*model.CallSpec{
 					{
-						Container: &model.SCGContainerCall{},
+						Container: &model.CallContainerSpec{},
 					},
 					{
-						Op: &model.SCGOpCall{},
+						Op: &model.CallOpSpec{},
 					},
 					{
-						Parallel: &[]*model.SCG{},
+						Parallel: &[]*model.CallSpec{},
 					},
 					{
-						Serial: &[]*model.SCG{},
+						Serial: &[]*model.CallSpec{},
 					},
 				}
 
 				errorMessage := "errorMessage"
 				childErrorMessages := []string{}
-				for range providedSCGParallelCalls {
+				for range providedCallSpecParallelCalls {
 					childErrorMessages = append(childErrorMessages, errorMessage)
 				}
 
@@ -147,7 +147,7 @@ var _ = Context("parallelCaller", func() {
 				fakeCaller := new(FakeCaller)
 				eventChannel := make(chan model.Event, 100)
 				callerCallIndex := 0
-				fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, string, *string, string) {
+				fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.CallSpec, string, *string, string) {
 					mtx.Lock()
 
 					eventChannel <- model.Event{
@@ -201,7 +201,7 @@ var _ = Context("parallelCaller", func() {
 					providedInboundScope,
 					providedRootOpID,
 					providedOpPath,
-					providedSCGParallelCalls,
+					providedCallSpecParallelCalls,
 				)
 
 				/* assert */
@@ -217,18 +217,18 @@ var _ = Context("parallelCaller", func() {
 				providedInboundScope := map[string]*model.Value{}
 				providedRootOpID := "dummyRootOpID"
 				providedOpPath := "providedOpPath"
-				providedSCGParallelCalls := []*model.SCG{
+				providedCallSpecParallelCalls := []*model.CallSpec{
 					{
-						Container: &model.SCGContainerCall{},
+						Container: &model.CallContainerSpec{},
 					},
 					{
-						Op: &model.SCGOpCall{},
+						Op: &model.CallOpSpec{},
 					},
 					{
-						Parallel: &[]*model.SCG{},
+						Parallel: &[]*model.CallSpec{},
 					},
 					{
-						Serial: &[]*model.SCG{},
+						Serial: &[]*model.CallSpec{},
 					},
 				}
 
@@ -237,7 +237,7 @@ var _ = Context("parallelCaller", func() {
 				fakeCaller := new(FakeCaller)
 				eventChannel := make(chan model.Event, 100)
 				callerCallIndex := 0
-				fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, string, *string, string) {
+				fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.CallSpec, string, *string, string) {
 					mtx.Lock()
 
 					eventChannel <- model.Event{
@@ -278,15 +278,15 @@ var _ = Context("parallelCaller", func() {
 					providedInboundScope,
 					providedRootOpID,
 					providedOpPath,
-					providedSCGParallelCalls,
+					providedCallSpecParallelCalls,
 				)
 
 				/* assert */
-				for callIndex := range providedSCGParallelCalls {
+				for callIndex := range providedCallSpecParallelCalls {
 					_,
 						actualNodeID,
 						actualChildOutboundScope,
-						actualSCG,
+						actualCallSpec,
 						actualOpPath,
 						actualParentCallID,
 						actualRootOpID := fakeCaller.CallArgsForCall(callIndex)
@@ -298,7 +298,7 @@ var _ = Context("parallelCaller", func() {
 
 					// handle unordered asserts because call order can't be relied on within go statement
 					Expect(expectedChildCallIds).To(ContainElement(actualNodeID))
-					Expect(providedSCGParallelCalls).To(ContainElement(actualSCG))
+					Expect(providedCallSpecParallelCalls).To(ContainElement(actualCallSpec))
 				}
 			})
 		})

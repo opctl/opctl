@@ -9,7 +9,7 @@ import (
 type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
-		scgContainerCallCmd []interface{},
+		callContainerSpecCmd []interface{},
 	) ([]string, error)
 }
 
@@ -26,11 +26,11 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
-	scgContainerCallCmd []interface{},
+	callContainerSpecCmd []interface{},
 ) ([]string, error) {
 	dcgContainerCallCmd := []string{}
 
-	for _, cmdEntryExpression := range scgContainerCallCmd {
+	for _, cmdEntryExpression := range callContainerSpecCmd {
 		// interpret each entry as string
 		cmdEntry, err := itp.stringInterpreter.Interpret(scope, cmdEntryExpression)
 		if nil != err {

@@ -56,7 +56,7 @@ var _ = Context("parallelLoopCaller", func() {
 					context.Background(),
 					"id",
 					map[string]*model.Value{},
-					model.SCGParallelLoopCall{},
+					model.CallParallelLoopSpec{},
 					"dummyOpPath",
 					nil,
 					"rootOpID",
@@ -71,12 +71,12 @@ var _ = Context("parallelLoopCaller", func() {
 			providedCtx := context.Background()
 			providedScope := map[string]*model.Value{}
 			index := "index"
-			providedSCGParallelLoopCall := model.SCGParallelLoopCall{
-				Vars: &model.SCGLoopVars{
+			providedCallParallelLoopSpec := model.CallParallelLoopSpec{
+				Vars: &model.LoopVarsSpec{
 					Index: &index,
 				},
-				Run: model.SCG{
-					Container: new(model.SCGContainerCall),
+				Run: model.CallSpec{
+					Container: new(model.CallContainerSpec),
 				},
 			}
 			providedOpPath := "providedOpPath"
@@ -123,7 +123,7 @@ var _ = Context("parallelLoopCaller", func() {
 
 			fakeCaller := new(FakeCaller)
 			eventChannel := make(chan model.Event, 100)
-			fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, string, *string, string) {
+			fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.CallSpec, string, *string, string) {
 				eventChannel <- model.Event{
 					CallEnded: &model.CallEnded{
 						CallID: callID,
@@ -154,7 +154,7 @@ var _ = Context("parallelLoopCaller", func() {
 				providedCtx,
 				"id",
 				providedScope,
-				providedSCGParallelLoopCall,
+				providedCallParallelLoopSpec,
 				providedOpPath,
 				providedParentCallID,
 				providedRootOpID,
@@ -164,14 +164,14 @@ var _ = Context("parallelLoopCaller", func() {
 			_,
 				actualCallID,
 				actualScope,
-				actualSCG,
+				actualCallSpec,
 				actualOpPath,
 				actualParentCallID,
 				actualRootOpID := fakeCaller.CallArgsForCall(0)
 
 			Expect(actualCallID).To(Equal(callID))
 			Expect(actualScope).To(Equal(expectedScope))
-			Expect(actualSCG).To(Equal(&providedSCGParallelLoopCall.Run))
+			Expect(actualCallSpec).To(Equal(&providedCallParallelLoopSpec.Run))
 			Expect(actualOpPath).To(Equal(providedOpPath))
 			Expect(actualParentCallID).To(Equal(providedParentCallID))
 			Expect(actualRootOpID).To(Equal(providedRootOpID))

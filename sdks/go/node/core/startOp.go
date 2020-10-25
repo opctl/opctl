@@ -29,8 +29,8 @@ func (this _core) StartOp(
 		return "", err
 	}
 
-	// construct scgOpCall
-	scgOpCall := &model.SCGOpCall{
+	// construct callOpSpec
+	callOpSpec := &model.CallOpSpec{
 		Ref:     opHandle.Ref(),
 		Inputs:  map[string]interface{}{},
 		Outputs: map[string]string{},
@@ -38,7 +38,7 @@ func (this _core) StartOp(
 
 	// pull Creds
 	if nil != req.Op.PullCreds {
-		scgOpCall.PullCreds = &model.SCGPullCreds{
+		callOpSpec.PullCreds = &model.PullCredsSpec{
 			Username: req.Op.PullCreds.Username,
 			Password: req.Op.PullCreds.Password,
 		}
@@ -46,7 +46,7 @@ func (this _core) StartOp(
 
 	for name := range req.Args {
 		// implicitly bind
-		scgOpCall.Inputs[name] = ""
+		callOpSpec.Inputs[name] = ""
 	}
 
 	opFile, err := this.opFileGetter.Get(
@@ -58,12 +58,12 @@ func (this _core) StartOp(
 	}
 	for name := range opFile.Outputs {
 		// implicitly bind
-		scgOpCall.Outputs[name] = ""
+		callOpSpec.Outputs[name] = ""
 	}
 
 	dcgOpCall, err := this.opInterpreter.Interpret(
 		req.Args,
-		scgOpCall,
+		callOpSpec,
 		opID,
 		*opHandle.Path(),
 		opID,
@@ -100,7 +100,7 @@ func (this _core) StartOp(
 			dcgOpCall,
 			req.Args,
 			&opID,
-			scgOpCall,
+			callOpSpec,
 		)
 	}()
 

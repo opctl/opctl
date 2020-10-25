@@ -10,11 +10,11 @@ type DCG struct {
 	Name         *string              `json:"name,omitempty"`
 	Needs        []string             `json:"needs,omitempty"`
 	Op           *DCGOpCall           `json:"op,omitempty"`
-	Parallel     []*SCG               `json:"parallel,omitempty"`
+	Parallel     []*CallSpec          `json:"parallel,omitempty"`
 	ParallelLoop *DCGParallelLoopCall `json:"parallelLoop,omitempty"`
 	// id of parent call
 	ParentID   *string            `json:"parentId,omitempty"`
-	Serial     []*SCG             `json:"serial,omitempty"`
+	Serial     []*CallSpec        `json:"serial,omitempty"`
 	SerialLoop *DCGSerialLoopCall `json:"serialLoop,omitempty"`
 }
 
@@ -56,10 +56,10 @@ type DCGLoopVars struct {
 
 type DCGOpCall struct {
 	DCGBaseCall
-	OpID         string            `json:"opId"`
-	Inputs       map[string]*Value `json:"inputs"`
-	ChildCallSCG *SCG              `json:"childCallScg"`
-	ChildCallID  string            `json:"childCallId"`
+	OpID              string            `json:"opId"`
+	Inputs            map[string]*Value `json:"inputs"`
+	ChildCallCallSpec *CallSpec         `json:"childCallScg"`
+	ChildCallID       string            `json:"childCallId"`
 }
 
 type DCGParallelLoopCall struct {

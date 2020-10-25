@@ -15,7 +15,7 @@ import (
 type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
-		scgContainerCallFiles map[string]string,
+		callContainerSpecFiles map[string]string,
 		scratchDirPath string,
 	) (map[string]string, error)
 }
@@ -41,19 +41,19 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
-	scgContainerCallDirs map[string]string,
+	callContainerSpecDirs map[string]string,
 	scratchDirPath string,
 ) (map[string]string, error) {
 	dcgContainerCallDirs := map[string]string{}
 dirLoop:
-	for scgContainerDirPath, dirExpression := range scgContainerCallDirs {
+	for callSpecContainerDirPath, dirExpression := range callContainerSpecDirs {
 
 		if "" == dirExpression {
 			// bound implicitly
-			dirExpression = fmt.Sprintf("$(%v)", scgContainerDirPath)
+			dirExpression = fmt.Sprintf("$(%v)", callSpecContainerDirPath)
 		}
 
-		dcgContainerCallDirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirPath)
+		dcgContainerCallDirs[callSpecContainerDirPath] = filepath.Join(scratchDirPath, callSpecContainerDirPath)
 		dirValue, err := itp.dirInterpreter.Interpret(
 			scope,
 			dirExpression,
@@ -63,7 +63,7 @@ dirLoop:
 		if nil != err {
 			return nil, fmt.Errorf(
 				"unable to bind %v to %v; error was %v",
-				scgContainerDirPath,
+				callSpecContainerDirPath,
 				dirExpression,
 				err,
 			)
@@ -71,17 +71,17 @@ dirLoop:
 
 		if "" != *dirValue.Dir && !strings.HasPrefix(*dirValue.Dir, itp.dataDirPath) {
 			// bound to non rootFS dir
-			dcgContainerCallDirs[scgContainerDirPath] = *dirValue.Dir
+			dcgContainerCallDirs[callSpecContainerDirPath] = *dirValue.Dir
 			continue dirLoop
 		}
 
 		if err := itp.dirCopier.OS(
 			*dirValue.Dir,
-			dcgContainerCallDirs[scgContainerDirPath],
+			dcgContainerCallDirs[callSpecContainerDirPath],
 		); nil != err {
 			return nil, fmt.Errorf(
 				"unable to bind %v to %v; error was %v",
-				scgContainerDirPath,
+				callSpecContainerDirPath,
 				dirExpression,
 				err,
 			)

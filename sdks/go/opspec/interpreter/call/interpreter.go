@@ -14,10 +14,10 @@ import (
 
 //counterfeiter:generate -o fakes/interpreter.go . Interpreter
 type Interpreter interface {
-	// Interpret interprets an SCG into a DCG
+	// Interpret interprets an CallSpec into a DCG
 	Interpret(
 		scope map[string]*model.Value,
-		scg *model.SCG,
+		callSpec *model.CallSpec,
 		id string,
 		opPath string,
 		parentID *string,
@@ -49,7 +49,7 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
-	scg *model.SCG,
+	callSpec *model.CallSpec,
 	id string,
 	opPath string,
 	parentID *string,
@@ -57,15 +57,15 @@ func (itp _interpreter) Interpret(
 ) (*model.DCG, error) {
 	dcg := &model.DCG{
 		Id:       id,
-		Name:     scg.Name,
-		Needs:    scg.Needs,
+		Name:     callSpec.Name,
+		Needs:    callSpec.Needs,
 		ParentID: parentID,
 	}
 	var err error
 
-	if nil != scg.If {
+	if nil != callSpec.If {
 		dcgIf, err := itp.predicatesInterpreter.Interpret(
-			*scg.If,
+			*callSpec.If,
 			scope,
 		)
 		if nil != err {
@@ -81,43 +81,43 @@ func (itp _interpreter) Interpret(
 	}
 
 	switch {
-	case nil != scg.Container:
+	case nil != callSpec.Container:
 		dcg.Container, err = itp.containerCallInterpreter.Interpret(
 			scope,
-			scg.Container,
+			callSpec.Container,
 			id,
 			rootOpID,
 			opPath,
 		)
 		return dcg, err
-	case nil != scg.Op:
+	case nil != callSpec.Op:
 		dcg.Op, err = itp.opCallInterpreter.Interpret(
 			scope,
-			scg.Op,
+			callSpec.Op,
 			id,
 			opPath,
 			rootOpID,
 		)
 		return dcg, err
-	case nil != scg.Parallel:
-		dcg.Parallel = *scg.Parallel
+	case nil != callSpec.Parallel:
+		dcg.Parallel = *callSpec.Parallel
 		return dcg, nil
-	case nil != scg.ParallelLoop:
+	case nil != callSpec.ParallelLoop:
 		dcg.ParallelLoop, err = itp.parallelLoopInterpreter.Interpret(
-			*scg.ParallelLoop,
+			*callSpec.ParallelLoop,
 			scope,
 		)
 		return dcg, err
-	case nil != scg.Serial:
-		dcg.Serial = *scg.Serial
+	case nil != callSpec.Serial:
+		dcg.Serial = *callSpec.Serial
 		return dcg, nil
-	case nil != scg.SerialLoop:
+	case nil != callSpec.SerialLoop:
 		dcg.SerialLoop, err = itp.serialLoopInterpreter.Interpret(
-			*scg.SerialLoop,
+			*callSpec.SerialLoop,
 			scope,
 		)
 		return dcg, err
 	default:
-		return nil, fmt.Errorf("Invalid call graph %+v\n", scg)
+		return nil, fmt.Errorf("Invalid call graph %+v\n", callSpec)
 	}
 }

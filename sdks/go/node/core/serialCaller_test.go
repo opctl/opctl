@@ -30,25 +30,25 @@ var _ = Context("serialCaller", func() {
 			providedInboundScope := map[string]*model.Value{}
 			providedRootOpID := "providedRootOpID"
 			providedOpPath := "providedOpPath"
-			providedSCGSerialCalls := []*model.SCG{
+			providedCallSpecSerialCalls := []*model.CallSpec{
 				{
-					Container: &model.SCGContainerCall{},
+					Container: &model.CallContainerSpec{},
 				},
 				{
-					Op: &model.SCGOpCall{},
+					Op: &model.CallOpSpec{},
 				},
 				{
-					Parallel: &[]*model.SCG{},
+					Parallel: &[]*model.CallSpec{},
 				},
 				{
-					Serial: &[]*model.SCG{},
+					Serial: &[]*model.CallSpec{},
 				},
 			}
 
 			fakePubSub := new(FakePubSub)
 			eventChannel := make(chan model.Event, 100)
 			fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
-				for index := range providedSCGSerialCalls {
+				for index := range providedCallSpecSerialCalls {
 					eventChannel <- model.Event{
 						CallEnded: &model.CallEnded{
 							CallID: fmt.Sprintf("%v", index),
@@ -82,23 +82,23 @@ var _ = Context("serialCaller", func() {
 				providedInboundScope,
 				providedRootOpID,
 				providedOpPath,
-				providedSCGSerialCalls,
+				providedCallSpecSerialCalls,
 			)
 
 			/* assert */
-			for expectedSCGIndex, expectedSCG := range providedSCGSerialCalls {
+			for expectedCallSpecIndex, expectedCallSpec := range providedCallSpecSerialCalls {
 				actualCtx,
 					actualNodeID,
 					actualChildOutboundScope,
-					actualSCG,
+					actualCallSpec,
 					actualOpPath,
 					actualParentCallID,
-					actualRootOpID := fakeCaller.CallArgsForCall(expectedSCGIndex)
+					actualRootOpID := fakeCaller.CallArgsForCall(expectedCallSpecIndex)
 
 				Expect(actualCtx).To(Equal(actualCtx))
-				Expect(actualNodeID).To(Equal(fmt.Sprintf("%v", expectedSCGIndex)))
+				Expect(actualNodeID).To(Equal(fmt.Sprintf("%v", expectedCallSpecIndex)))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
-				Expect(actualSCG).To(Equal(expectedSCG))
+				Expect(actualCallSpec).To(Equal(expectedCallSpec))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualParentCallID).To(Equal(&providedCallID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
@@ -110,9 +110,9 @@ var _ = Context("serialCaller", func() {
 				providedCallID := "dummyCallID"
 				providedInboundScope := map[string]*model.Value{}
 				providedRootOpID := "dummyRootOpID"
-				providedSCGSerialCalls := []*model.SCG{
+				providedCallSpecSerialCalls := []*model.CallSpec{
 					{
-						Container: &model.SCGContainerCall{},
+						Container: &model.CallContainerSpec{},
 					},
 				}
 
@@ -122,7 +122,7 @@ var _ = Context("serialCaller", func() {
 				fakePubSub := new(FakePubSub)
 				eventChannel := make(chan model.Event, 100)
 				fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
-					for range providedSCGSerialCalls {
+					for range providedCallSpecSerialCalls {
 						eventChannel <- model.Event{
 							CallEnded: &model.CallEnded{
 								CallID: callID,
@@ -152,7 +152,7 @@ var _ = Context("serialCaller", func() {
 					providedInboundScope,
 					providedRootOpID,
 					"dummyOpPath",
-					providedSCGSerialCalls,
+					providedCallSpecSerialCalls,
 				)
 
 				/* assert */
@@ -175,19 +175,19 @@ var _ = Context("serialCaller", func() {
 					expectedInboundScopeToSecondChild := providedInboundScope
 					providedRootOpID := "dummyRootOpID"
 					providedOpPath := "providedOpPath"
-					providedSCGSerialCalls := []*model.SCG{
+					providedCallSpecSerialCalls := []*model.CallSpec{
 						{
-							Container: &model.SCGContainerCall{},
+							Container: &model.CallContainerSpec{},
 						},
 						{
-							Container: &model.SCGContainerCall{},
+							Container: &model.CallContainerSpec{},
 						},
 					}
 
 					fakePubSub := new(FakePubSub)
 					eventChannel := make(chan model.Event, 100)
 					fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
-						for index := range providedSCGSerialCalls {
+						for index := range providedCallSpecSerialCalls {
 							eventChannel <- model.Event{
 								CallEnded: &model.CallEnded{
 									CallID: fmt.Sprintf("%v", index),
@@ -222,7 +222,7 @@ var _ = Context("serialCaller", func() {
 						providedInboundScope,
 						providedRootOpID,
 						providedOpPath,
-						providedSCGSerialCalls,
+						providedCallSpecSerialCalls,
 					)
 
 					/* assert */
@@ -257,19 +257,19 @@ var _ = Context("serialCaller", func() {
 						"dummyVar3Name": providedInboundScope["dummyVar3Name"],
 					}
 					providedRootOpID := "dummyRootOpID"
-					providedSCGSerialCalls := []*model.SCG{
+					providedCallSpecSerialCalls := []*model.CallSpec{
 						{
-							Container: &model.SCGContainerCall{},
+							Container: &model.CallContainerSpec{},
 						},
 						{
-							Container: &model.SCGContainerCall{},
+							Container: &model.CallContainerSpec{},
 						},
 					}
 
 					fakePubSub := new(FakePubSub)
 					eventChannel := make(chan model.Event, 100)
 					fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
-						for index := range providedSCGSerialCalls {
+						for index := range providedCallSpecSerialCalls {
 							eventChannel <- model.Event{
 								CallEnded: &model.CallEnded{
 									RootCallID: providedRootOpID,
@@ -306,7 +306,7 @@ var _ = Context("serialCaller", func() {
 						providedInboundScope,
 						providedRootOpID,
 						"dummyOpPath",
-						providedSCGSerialCalls,
+						providedCallSpecSerialCalls,
 					)
 
 					/* assert */

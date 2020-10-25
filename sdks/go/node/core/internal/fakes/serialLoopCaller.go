@@ -9,13 +9,13 @@ import (
 )
 
 type FakeSerialLoopCaller struct {
-	CallStub        func(context.Context, string, map[string]*model.Value, model.SCGSerialLoopCall, string, *string, string)
+	CallStub        func(context.Context, string, map[string]*model.Value, model.CallSerialLoopSpec, string, *string, string)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
 		arg3 map[string]*model.Value
-		arg4 model.SCGSerialLoopCall
+		arg4 model.CallSerialLoopSpec
 		arg5 string
 		arg6 *string
 		arg7 string
@@ -24,13 +24,13 @@ type FakeSerialLoopCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeSerialLoopCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 model.SCGSerialLoopCall, arg5 string, arg6 *string, arg7 string) {
+func (fake *FakeSerialLoopCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 model.CallSerialLoopSpec, arg5 string, arg6 *string, arg7 string) {
 	fake.callMutex.Lock()
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
 		arg3 map[string]*model.Value
-		arg4 model.SCGSerialLoopCall
+		arg4 model.CallSerialLoopSpec
 		arg5 string
 		arg6 *string
 		arg7 string
@@ -48,13 +48,13 @@ func (fake *FakeSerialLoopCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *FakeSerialLoopCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, model.SCGSerialLoopCall, string, *string, string)) {
+func (fake *FakeSerialLoopCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, model.CallSerialLoopSpec, string, *string, string)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
 }
 
-func (fake *FakeSerialLoopCaller) CallArgsForCall(i int) (context.Context, string, map[string]*model.Value, model.SCGSerialLoopCall, string, *string, string) {
+func (fake *FakeSerialLoopCaller) CallArgsForCall(i int) (context.Context, string, map[string]*model.Value, model.CallSerialLoopSpec, string, *string, string) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]

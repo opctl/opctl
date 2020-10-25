@@ -21,7 +21,7 @@ type parallelCaller interface {
 		inboundScope map[string]*model.Value,
 		rootOpID string,
 		opPath string,
-		scgParallelCall []*model.SCG,
+		callSpecParallelCall []*model.CallSpec,
 	)
 }
 
@@ -54,7 +54,7 @@ func (pc _parallelCaller) Call(
 	inboundScope map[string]*model.Value,
 	rootOpID string,
 	opPath string,
-	scgParallelCall []*model.SCG,
+	callSpecParallelCall []*model.CallSpec,
 ) {
 	// setup cancellation
 	parallelCtx, cancelParallel := context.WithCancel(parentCtx)
@@ -83,9 +83,9 @@ func (pc _parallelCaller) Call(
 	}()
 
 	childCallNeededCountByName := map[string]int{}
-	for _, scgChildCall := range scgParallelCall {
+	for _, callSpecChildCall := range callSpecParallelCall {
 		// increment needed by counts for any needs
-		for _, neededCallRef := range scgChildCall.Needs {
+		for _, neededCallRef := range callSpecChildCall.Needs {
 			childCallNeededCountByName[refToName(neededCallRef)]++
 		}
 	}
@@ -96,7 +96,7 @@ func (pc _parallelCaller) Call(
 	childCallOutputsByIndex := map[int]map[string]*model.Value{}
 
 	// perform calls in parallel w/ cancellation
-	for childCallIndex, childCall := range scgParallelCall {
+	for childCallIndex, childCall := range callSpecParallelCall {
 
 		var childCallID string
 		childCallID, err = pc.uniqueStringFactory.Construct()
@@ -110,7 +110,7 @@ func (pc _parallelCaller) Call(
 			childCallIDByName[*childCall.Name] = childCallID
 		}
 
-		go func(childCall *model.SCG) {
+		go func(childCall *model.CallSpec) {
 			defer func() {
 				if panicArg := recover(); panicArg != nil {
 					// recover from panics; treat as errors
@@ -156,7 +156,7 @@ func (pc _parallelCaller) Call(
 				}
 
 				// decrement needed by counts for any needs
-				for _, neededCallRef := range scgParallelCall[childCallIndex].Needs {
+				for _, neededCallRef := range callSpecParallelCall[childCallIndex].Needs {
 					childCallNeededCountByName[refToName(neededCallRef)]--
 				}
 
@@ -183,7 +183,7 @@ func (pc _parallelCaller) Call(
 				// all calls have ended
 
 				// construct parallel outputs
-				for i := 0; i < len(scgParallelCall); i++ {
+				for i := 0; i < len(callSpecParallelCall); i++ {
 					callOutputs := childCallOutputsByIndex[i]
 					for varName, varData := range callOutputs {
 						outputs[varName] = varData

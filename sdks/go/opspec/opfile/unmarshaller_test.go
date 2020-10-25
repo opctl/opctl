@@ -89,8 +89,8 @@ var _ = Context("unmarshaller", func() {
 					Inputs:      dummyParams,
 					Name:        "dummyName",
 					Outputs:     dummyParams,
-					Run: &model.SCG{
-						Op: &model.SCGOpCall{
+					Run: &model.CallSpec{
+						Op: &model.CallOpSpec{
 							Ref: "dummyOpRef",
 						},
 					},

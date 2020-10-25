@@ -9,10 +9,10 @@ import (
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func([]*model.SCGPredicate, map[string]*model.Value) (bool, error)
+	InterpretStub        func([]*model.PredicateSpec, map[string]*model.Value) (bool, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
-		arg1 []*model.SCGPredicate
+		arg1 []*model.PredicateSpec
 		arg2 map[string]*model.Value
 	}
 	interpretReturns struct {
@@ -27,16 +27,16 @@ type FakeInterpreter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(arg1 []*model.SCGPredicate, arg2 map[string]*model.Value) (bool, error) {
-	var arg1Copy []*model.SCGPredicate
+func (fake *FakeInterpreter) Interpret(arg1 []*model.PredicateSpec, arg2 map[string]*model.Value) (bool, error) {
+	var arg1Copy []*model.PredicateSpec
 	if arg1 != nil {
-		arg1Copy = make([]*model.SCGPredicate, len(arg1))
+		arg1Copy = make([]*model.PredicateSpec, len(arg1))
 		copy(arg1Copy, arg1)
 	}
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
-		arg1 []*model.SCGPredicate
+		arg1 []*model.PredicateSpec
 		arg2 map[string]*model.Value
 	}{arg1Copy, arg2})
 	fake.recordInvocation("Interpret", []interface{}{arg1Copy, arg2})
@@ -57,13 +57,13 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *FakeInterpreter) InterpretCalls(stub func([]*model.SCGPredicate, map[string]*model.Value) (bool, error)) {
+func (fake *FakeInterpreter) InterpretCalls(stub func([]*model.PredicateSpec, map[string]*model.Value) (bool, error)) {
 	fake.interpretMutex.Lock()
 	defer fake.interpretMutex.Unlock()
 	fake.InterpretStub = stub
 }
 
-func (fake *FakeInterpreter) InterpretArgsForCall(i int) ([]*model.SCGPredicate, map[string]*model.Value) {
+func (fake *FakeInterpreter) InterpretArgsForCall(i int) ([]*model.PredicateSpec, map[string]*model.Value) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
 	argsForCall := fake.interpretArgsForCall[i]

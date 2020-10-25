@@ -19,7 +19,7 @@ var _ = Context("Interpreter", func() {
 	Context("Interpret", func() {
 		It("should call loopableInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
-			providedSCGParallelLoopCall := model.SCGParallelLoopCall{
+			providedCallParallelLoopSpec := model.CallParallelLoopSpec{
 				Range: "range",
 			}
 
@@ -33,15 +33,15 @@ var _ = Context("Interpreter", func() {
 
 			/* act */
 			objectUnderTest.Interpret(
-				providedSCGParallelLoopCall,
+				providedCallParallelLoopSpec,
 				providedScope,
 			)
 
 			/* assert */
-			actualSCGParallelLoopCallOn,
+			actualCallParallelLoopSpecOn,
 				actualScope := fakeLoopableInterpreter.InterpretArgsForCall(0)
 
-			Expect(actualSCGParallelLoopCallOn).To(Equal(providedSCGParallelLoopCall.Range))
+			Expect(actualCallParallelLoopSpecOn).To(Equal(providedCallParallelLoopSpec.Range))
 			Expect(actualScope).To(Equal(providedScope))
 		})
 		Context("loopableInterpreter.Interpret errs", func() {
@@ -61,7 +61,7 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualError := objectUnderTest.Interpret(
-					model.SCGParallelLoopCall{
+					model.CallParallelLoopSpec{
 						Range: "range",
 					},
 					map[string]*model.Value{},
@@ -73,7 +73,7 @@ var _ = Context("Interpreter", func() {
 		})
 		It("should return expected result", func() {
 			/* arrange */
-			providedScgLoop := model.SCGParallelLoopCall{
+			providedScgLoop := model.CallParallelLoopSpec{
 				Range: "range",
 			}
 

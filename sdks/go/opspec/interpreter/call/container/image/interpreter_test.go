@@ -18,7 +18,7 @@ var _ = Context("Interpreter", func() {
 		})
 	})
 	Context("Interpret", func() {
-		Context("scgContainerCallImage is nil", func() {
+		Context("callContainerImageSpec is nil", func() {
 			It("should return expected error", func() {
 				/* arrange */
 				objectUnderTest := _interpreter{}
@@ -34,7 +34,7 @@ var _ = Context("Interpreter", func() {
 				Expect(actualError).To(Equal(fmt.Errorf("image required")))
 			})
 		})
-		Context("scgContainerCallImage isn't nil", func() {
+		Context("callContainerImageSpec isn't nil", func() {
 			It("should call stringInterpreter.Interpret w/ expected args", func() {
 				/* arrange */
 				providedString1 := "dummyString1"
@@ -42,9 +42,9 @@ var _ = Context("Interpreter", func() {
 					"name1": {String: &providedString1},
 				}
 
-				providedSCGContainerCallImage := &model.SCGContainerCallImage{
+				providedCallContainerImageSpec := &model.CallContainerImageSpec{
 					Ref: "dummyRef",
-					PullCreds: &model.SCGPullCreds{
+					PullCreds: &model.PullCredsSpec{
 						Username: "dummyUsername",
 						Password: "dummyPassword",
 					},
@@ -64,32 +64,32 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					providedCurrentScope,
-					providedSCGContainerCallImage,
+					providedCallContainerImageSpec,
 					"dummyScratchDir",
 				)
 
 				/* assert */
 				actualImageRefScope,
 					actualImageRef := fakeStrInterpreter.InterpretArgsForCall(0)
-				Expect(actualImageRef).To(Equal(providedSCGContainerCallImage.Ref))
+				Expect(actualImageRef).To(Equal(providedCallContainerImageSpec.Ref))
 				Expect(actualImageRefScope).To(Equal(providedCurrentScope))
 
 				actualUsernameScope,
 					actualUsername := fakeStrInterpreter.InterpretArgsForCall(1)
-				Expect(actualUsername).To(Equal(providedSCGContainerCallImage.PullCreds.Username))
+				Expect(actualUsername).To(Equal(providedCallContainerImageSpec.PullCreds.Username))
 				Expect(actualUsernameScope).To(Equal(providedCurrentScope))
 
 				actualPasswordScope,
 					actualPassword := fakeStrInterpreter.InterpretArgsForCall(2)
-				Expect(actualPassword).To(Equal(providedSCGContainerCallImage.PullCreds.Password))
+				Expect(actualPassword).To(Equal(providedCallContainerImageSpec.PullCreds.Password))
 				Expect(actualPasswordScope).To(Equal(providedCurrentScope))
 			})
 			It("should return expected dcg.Image", func() {
 
 				/* arrange */
-				providedSCGContainerCallImage := &model.SCGContainerCallImage{
+				providedCallContainerImageSpec := &model.CallContainerImageSpec{
 					Ref:       "dummyRef",
-					PullCreds: &model.SCGPullCreds{},
+					PullCreds: &model.PullCredsSpec{},
 				}
 
 				fakeDirInterpreter := new(dirFakes.FakeInterpreter)
@@ -122,7 +122,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				actualDCGContainerCallImage, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					providedSCGContainerCallImage,
+					providedCallContainerImageSpec,
 					"dummyScratchDir",
 				)
 
