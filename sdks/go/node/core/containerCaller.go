@@ -57,7 +57,7 @@ func (cc _containerCaller) Call(
 		// defer must be defined before conditional return statements so it always runs
 		event := model.Event{
 			Timestamp: time.Now().UTC(),
-			ContainerExited: &model.ContainerExitedEvent{
+			ContainerExited: &model.ContainerExited{
 				ContainerID: dcgContainerCall.ContainerID,
 				OpRef:       dcgContainerCall.OpPath,
 				RootOpID:    dcgContainerCall.RootOpID,
@@ -67,7 +67,7 @@ func (cc _containerCaller) Call(
 		}
 
 		if nil != err {
-			event.ContainerExited.Error = &model.CallEndedEventError{
+			event.ContainerExited.Error = &model.CallEndedError{
 				Message: err.Error(),
 			}
 		}
@@ -78,7 +78,7 @@ func (cc _containerCaller) Call(
 	cc.pubSub.Publish(
 		model.Event{
 			Timestamp: time.Now().UTC(),
-			ContainerStarted: &model.ContainerStartedEvent{
+			ContainerStarted: &model.ContainerStarted{
 				ContainerID: dcgContainerCall.ContainerID,
 				OpRef:       dcgContainerCall.OpPath,
 				RootOpID:    dcgContainerCall.RootOpID,
@@ -143,7 +143,7 @@ func (this _containerCaller) interpretLogs(
 				this.pubSub.Publish(
 					model.Event{
 						Timestamp: time.Now().UTC(),
-						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
+						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenTo{
 							Data:        chunk,
 							ContainerID: dcgContainerCall.ContainerID,
 							OpRef:       dcgContainerCall.OpPath,
@@ -163,7 +163,7 @@ func (this _containerCaller) interpretLogs(
 				this.pubSub.Publish(
 					model.Event{
 						Timestamp: time.Now().UTC(),
-						ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
+						ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenTo{
 							Data:        chunk,
 							ContainerID: dcgContainerCall.ContainerID,
 							OpRef:       dcgContainerCall.OpPath,

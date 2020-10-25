@@ -101,7 +101,7 @@ func (clr _caller) Call(
 		<-callCtx.Done()
 
 		event := model.Event{
-			CallEnded: &model.CallEndedEvent{
+			CallEnded: &model.CallEnded{
 				CallID:     id,
 				Outputs:    outputs,
 				RootCallID: rootOpID,
@@ -110,7 +110,7 @@ func (clr _caller) Call(
 		}
 
 		if nil != err {
-			event.CallEnded.Error = &model.CallEndedEventError{
+			event.CallEnded.Error = &model.CallEndedError{
 				Message: err.Error(),
 			}
 		}

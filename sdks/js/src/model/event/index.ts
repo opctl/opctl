@@ -7,8 +7,8 @@ import ContainerStdOutWrittenTo from './containerStdOutWrittenTo'
 import OpEnded from './opEnded'
 import OpErred from './opErred'
 import OpStarted from './opStarted'
-import ParallelCallEndedEvent from './parallelCallEnded'
-import SerialCallEndedEvent from './serialCallEnded'
+import ParallelCallEnded from './parallelCallEnded'
+import SerialCallEnded from './serialCallEnded'
 
 export default interface Event {
     callEnded?: CallEnded | null | undefined
@@ -21,6 +21,6 @@ export default interface Event {
     opErred?: OpErred | null | undefined
     opStarted?: OpStarted | null | undefined
     timestamp: Date
-    parallelCallEnded?: ParallelCallEndedEvent | null | undefined
-    serialCallEnded?: SerialCallEndedEvent | null | undefined
+    parallelCallEnded?: ParallelCallEnded | null | undefined
+    serialCallEnded?: SerialCallEnded | null | undefined
 }

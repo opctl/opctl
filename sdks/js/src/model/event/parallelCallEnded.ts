@@ -1,4 +1,4 @@
-export default interface ParallelCallEndedEvent {
+export default interface ParallelCallEnded {
     callId: string
     rootOpId: string
 }

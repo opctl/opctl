@@ -27,7 +27,7 @@ func NewStdOutWriteCloser(
 				eventPublisher.Publish(
 					model.Event{
 						Timestamp: time.Now().UTC(),
-						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
+						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenTo{
 							Data:        b,
 							ContainerID: containerID,
 							RootOpID:    rootOpID,

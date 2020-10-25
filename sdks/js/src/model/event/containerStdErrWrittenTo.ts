@@ -1,4 +1,4 @@
-export default interface ContainerStdErrWrittenToEvent {
+export default interface ContainerStdErrWrittenTo {
     containerId: string
     data: Int8Array
     imageRef: string

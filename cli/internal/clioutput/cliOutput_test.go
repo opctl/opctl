@@ -78,7 +78,7 @@ var _ = Context("output", func() {
 			It("should call stdWriter w/ expected args", func() {
 				/* arrange */
 				providedEvent := &model.Event{
-					ContainerExited: &model.ContainerExitedEvent{
+					ContainerExited: &model.ContainerExited{
 						ContainerID: "dummyContainerID",
 						OpRef:       "dummyOpRef",
 						ExitCode:    1,
@@ -118,7 +118,7 @@ var _ = Context("output", func() {
 			It("should call stdWriter w/ expected args", func() {
 				/* arrange */
 				providedEvent := &model.Event{
-					ContainerStarted: &model.ContainerStartedEvent{
+					ContainerStarted: &model.ContainerStarted{
 						ContainerID: "dummyContainerID",
 						OpRef:       "dummyOpRef",
 					},
@@ -156,7 +156,7 @@ var _ = Context("output", func() {
 			It("should call stdWriter w/ expected args", func() {
 				/* arrange */
 				providedEvent := &model.Event{
-					ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
+					ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenTo{
 						Data: []byte("dummyData"),
 					},
 					Timestamp: time.Now(),
@@ -182,7 +182,7 @@ var _ = Context("output", func() {
 			It("should call stdWriter w/ expected args", func() {
 				/* arrange */
 				providedEvent := &model.Event{
-					ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
+					ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenTo{
 						Data: []byte("dummyData"),
 					},
 					Timestamp: time.Now(),
@@ -205,11 +205,55 @@ var _ = Context("output", func() {
 			})
 		})
 		Context("OpEnded", func() {
+			Context("Outcome==FAILED", func() {
+				It("should call errWriter w/ expected args", func() {
+					/* arrange */
+					providedEvent := &model.Event{
+						OpEnded: &model.OpEnded{
+							Error: &model.CallEndedError{
+								Message: "message",
+							},
+							OpID:    "dummyOpID",
+							OpRef:   "dummyOpRef",
+							Outcome: "FAILED",
+						},
+						Timestamp: time.Now(),
+					}
+					expectedWriteArg := []byte(
+						fmt.Sprintln(
+							_cliColorer.Error(
+								fmt.Sprintf(
+									"OpEnded Id='%v' OpRef='%v' Outcome='%v'%v Timestamp='%v'\n",
+									providedEvent.OpEnded.OpID,
+									providedEvent.OpEnded.OpRef,
+									providedEvent.OpEnded.Outcome,
+									fmt.Sprintf(" Error='%v'", providedEvent.OpEnded.Error.Message),
+									providedEvent.Timestamp.Format(time.RFC3339),
+								),
+							),
+						),
+					)
+
+					fakeErrWriter := new(fakeWriter)
+					objectUnderTest := New(
+						_cliColorer,
+						fakeErrWriter,
+						new(fakeWriter),
+					)
+
+					/* act */
+					objectUnderTest.Event(providedEvent)
+
+					/* assert */
+					Expect(fakeErrWriter.WriteArgsForCall(0)).
+						To(Equal(expectedWriteArg))
+				})
+			})
 			Context("Outcome==SUCCEEDED", func() {
 				It("should call stdWriter w/ expected args", func() {
 					/* arrange */
 					providedEvent := &model.Event{
-						OpEnded: &model.OpEndedEvent{
+						OpEnded: &model.OpEnded{
 							OpID:    "dummyOpID",
 							OpRef:   "dummyOpRef",
 							Outcome: "SUCCEEDED",
@@ -249,7 +293,7 @@ var _ = Context("output", func() {
 				It("should call stdWriter w/ expected args", func() {
 					/* arrange */
 					providedEvent := &model.Event{
-						OpEnded: &model.OpEndedEvent{
+						OpEnded: &model.OpEnded{
 							OpID:    "dummyOpID",
 							OpRef:   "dummyOpRef",
 							Outcome: "KILLED",
@@ -289,7 +333,7 @@ var _ = Context("output", func() {
 				It("should call errWriter w/ expected args", func() {
 					/* arrange */
 					providedEvent := &model.Event{
-						OpEnded: &model.OpEndedEvent{
+						OpEnded: &model.OpEnded{
 							OpID:    "dummyOpID",
 							OpRef:   "dummyOpRef",
 							Outcome: "FAILED",
@@ -330,7 +374,7 @@ var _ = Context("output", func() {
 			It("should call stdWriter w/ expected args", func() {
 				/* arrange */
 				providedEvent := &model.Event{
-					OpStarted: &model.OpStartedEvent{
+					OpStarted: &model.OpStarted{
 						OpID:  "dummyOpID",
 						OpRef: "dummyOpRef",
 					},

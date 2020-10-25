@@ -145,9 +145,9 @@ var _ = Context("serialLoopCaller", func() {
 				eventChannel := make(chan model.Event, 100)
 				fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
 					eventChannel <- model.Event{
-						CallEnded: &model.CallEndedEvent{
+						CallEnded: &model.CallEnded{
 							CallID: callID,
-							Error: &model.CallEndedEventError{
+							Error: &model.CallEndedError{
 								Message: expectedErrorMessage,
 							},
 						},

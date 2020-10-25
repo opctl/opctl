@@ -66,7 +66,7 @@ func (pc _parallelCaller) Call(
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 		event := model.Event{
-			ParallelCallEnded: &model.ParallelCallEndedEvent{
+			ParallelCallEnded: &model.ParallelCallEnded{
 				CallID:   callID,
 				Outputs:  outputs,
 				RootOpID: rootOpID,
@@ -75,7 +75,7 @@ func (pc _parallelCaller) Call(
 		}
 
 		if nil != err {
-			event.ParallelCallEnded.Error = &model.CallEndedEventError{
+			event.ParallelCallEnded.Error = &model.CallEndedError{
 				Message: err.Error(),
 			}
 		}

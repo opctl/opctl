@@ -50,7 +50,7 @@ var _ = Context("serialCaller", func() {
 			fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
 				for index := range providedSCGSerialCalls {
 					eventChannel <- model.Event{
-						CallEnded: &model.CallEndedEvent{
+						CallEnded: &model.CallEnded{
 							CallID: fmt.Sprintf("%v", index),
 						},
 					}
@@ -105,7 +105,7 @@ var _ = Context("serialCaller", func() {
 			}
 		})
 		Context("caller errors", func() {
-			It("should publish expected CallEndedEvent", func() {
+			It("should publish expected CallEnded", func() {
 				/* arrange */
 				providedCallID := "dummyCallID"
 				providedInboundScope := map[string]*model.Value{}
@@ -124,9 +124,9 @@ var _ = Context("serialCaller", func() {
 				fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
 					for range providedSCGSerialCalls {
 						eventChannel <- model.Event{
-							CallEnded: &model.CallEndedEvent{
+							CallEnded: &model.CallEnded{
 								CallID: callID,
-								Error: &model.CallEndedEventError{
+								Error: &model.CallEndedError{
 									Message: expectedErrorMessage,
 								},
 							},
@@ -189,7 +189,7 @@ var _ = Context("serialCaller", func() {
 					fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
 						for index := range providedSCGSerialCalls {
 							eventChannel <- model.Event{
-								CallEnded: &model.CallEndedEvent{
+								CallEnded: &model.CallEnded{
 									CallID: fmt.Sprintf("%v", index),
 								},
 							}
@@ -271,7 +271,7 @@ var _ = Context("serialCaller", func() {
 					fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
 						for index := range providedSCGSerialCalls {
 							eventChannel <- model.Event{
-								CallEnded: &model.CallEndedEvent{
+								CallEnded: &model.CallEnded{
 									RootCallID: providedRootOpID,
 									CallID:     fmt.Sprintf("%v", index),
 									Outputs:    firstChildOutputs,

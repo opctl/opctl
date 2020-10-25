@@ -127,7 +127,7 @@ var _ = Context("caller", func() {
 				)
 
 				expectedEvent := model.Event{
-					CallEnded: &model.CallEndedEvent{
+					CallEnded: &model.CallEnded{
 						CallID:     providedCallID,
 						RootCallID: providedRootOpID,
 					},

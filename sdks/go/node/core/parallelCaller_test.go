@@ -53,7 +53,7 @@ var _ = Context("parallelCaller", func() {
 			fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, string, *string, string) {
 				mtx.Lock()
 				eventChannel <- model.Event{
-					CallEnded: &model.CallEndedEvent{
+					CallEnded: &model.CallEnded{
 						CallID: fmt.Sprintf("%v", callerCallIndex),
 					},
 				}
@@ -115,7 +115,7 @@ var _ = Context("parallelCaller", func() {
 			}
 		})
 		Context("CallEnded event received w/ Error", func() {
-			It("should publish expected CallEndedEvent", func() {
+			It("should publish expected CallEnded", func() {
 				/* arrange */
 				providedCallID := "dummyCallID"
 				providedInboundScope := map[string]*model.Value{}
@@ -151,9 +151,9 @@ var _ = Context("parallelCaller", func() {
 					mtx.Lock()
 
 					eventChannel <- model.Event{
-						CallEnded: &model.CallEndedEvent{
+						CallEnded: &model.CallEnded{
 							CallID: fmt.Sprintf("%v", callerCallIndex),
-							Error: &model.CallEndedEventError{
+							Error: &model.CallEndedError{
 								Message: errorMessage,
 							},
 						},
@@ -241,7 +241,7 @@ var _ = Context("parallelCaller", func() {
 					mtx.Lock()
 
 					eventChannel <- model.Event{
-						CallEnded: &model.CallEndedEvent{
+						CallEnded: &model.CallEnded{
 							CallID: fmt.Sprintf("%v", callerCallIndex),
 						},
 					}
