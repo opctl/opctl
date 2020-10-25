@@ -65,17 +65,6 @@ func (oc _opCaller) Call(
 		if dcg := oc.callStore.TryGet(dcgOpCall.OpID); nil != dcg && dcg.IsKilled {
 			opOutcome = model.OpOutcomeKilled
 		} else if nil != err {
-			oc.pubSub.Publish(
-				model.Event{
-					Timestamp: time.Now().UTC(),
-					OpErred: &model.OpErredEvent{
-						Msg:      err.Error(),
-						OpID:     dcgOpCall.OpID,
-						OpRef:    dcgOpCall.OpPath,
-						RootOpID: dcgOpCall.RootOpID,
-					},
-				},
-			)
 			opOutcome = model.OpOutcomeFailed
 		} else {
 			opOutcome = model.OpOutcomeSucceeded

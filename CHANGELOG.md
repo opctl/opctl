@@ -10,6 +10,7 @@ accordance with
 
 - [Make OpKill Event Driven](https://github.com/opctl/opctl/issues/809)
 - [Remove CallKilled event](https://github.com/opctl/opctl/issues/810)
+- [Remove OpErred event](https://github.com/opctl/opctl/issues/812)
 
 ### Fixed
 

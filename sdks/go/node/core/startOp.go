@@ -81,18 +81,6 @@ func (this _core) StartOp(
 				this.pubSub.Publish(
 					model.Event{
 						Timestamp: time.Now().UTC(),
-						OpErred: &model.OpErredEvent{
-							Msg:      msg,
-							OpID:     dcgOpCall.OpID,
-							OpRef:    dcgOpCall.OpPath,
-							RootOpID: dcgOpCall.RootOpID,
-						},
-					},
-				)
-
-				this.pubSub.Publish(
-					model.Event{
-						Timestamp: time.Now().UTC(),
 						OpEnded: &model.OpEndedEvent{
 							Error: &model.CallEndedEventError{
 								Message: msg,

@@ -77,8 +77,6 @@ func (this _cliOutput) Event(event *model.Event) {
 		this.containerStdErrWrittenTo(event)
 	case nil != event.ContainerStdOutWrittenTo:
 		this.containerStdOutWrittenTo(event)
-	case nil != event.OpErred:
-		this.opErred(event)
 	case nil != event.OpEnded:
 		this.opEnded(event)
 	case nil != event.OpStarted:
@@ -117,24 +115,17 @@ func (this _cliOutput) containerStdOutWrittenTo(event *model.Event) {
 	io.WriteString(this.stdWriter, string(event.ContainerStdOutWrittenTo.Data))
 }
 
-func (this _cliOutput) opErred(event *model.Event) {
-	this.Error(
-		fmt.Sprintf(
-			"OpErred Id='%v' OpRef='%v' Timestamp='%v' Msg='%v'\n",
-			event.OpErred.OpID,
-			event.OpErred.OpRef,
-			event.Timestamp.Format(time.RFC3339),
-			event.OpErred.Msg,
-		),
-	)
-}
-
 func (this _cliOutput) opEnded(event *model.Event) {
+	err := ""
+	if nil != event.OpEnded.Error {
+		err = fmt.Sprintf(" Error='%v'", event.OpEnded.Error.Message)
+	}
 	message := fmt.Sprintf(
-		"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
+		"OpEnded Id='%v' OpRef='%v' Outcome='%v'%v Timestamp='%v'\n",
 		event.OpEnded.OpID,
 		event.OpEnded.OpRef,
 		event.OpEnded.Outcome,
+		err,
 		event.Timestamp.Format(time.RFC3339),
 	)
 	switch event.OpEnded.Outcome {

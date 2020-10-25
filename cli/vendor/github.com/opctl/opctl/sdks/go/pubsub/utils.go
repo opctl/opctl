@@ -41,8 +41,6 @@ func getEventRootOpID(
 		return event.ContainerStdOutWrittenTo.RootOpID
 	case nil != event.OpKillRequested:
 		return event.OpKillRequested.Request.RootOpID
-	case nil != event.OpErred:
-		return event.OpErred.RootOpID
 	case nil != event.OpEnded:
 		return event.OpEnded.RootOpID
 	case nil != event.OpStarted:

@@ -288,7 +288,7 @@ var _ = Context("opCaller", func() {
 					)
 
 					/* assert */
-					actualEvent := fakePubSub.PublishArgsForCall(2)
+					actualEvent := fakePubSub.PublishArgsForCall(1)
 
 					// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
 					Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))

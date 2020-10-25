@@ -204,46 +204,6 @@ var _ = Context("output", func() {
 					To(Equal(expectedWriteArg))
 			})
 		})
-		Context("OpErred", func() {
-			It("should call errWriter w/ expected args", func() {
-				/* arrange */
-				providedEvent := &model.Event{
-					OpErred: &model.OpErredEvent{
-						OpID:  "dummyOpID",
-						OpRef: "dummyOpRef",
-						Msg:   "dummyMsg",
-					},
-					Timestamp: time.Now(),
-				}
-				expectedWriteArg := []byte(
-					fmt.Sprintln(
-						_cliColorer.Error(
-							fmt.Sprintf(
-								"OpErred Id='%v' OpRef='%v' Timestamp='%v' Msg='%v'\n",
-								providedEvent.OpErred.OpID,
-								providedEvent.OpErred.OpRef,
-								providedEvent.Timestamp.Format(time.RFC3339),
-								providedEvent.OpErred.Msg,
-							),
-						),
-					),
-				)
-
-				fakeErrWriter := new(fakeWriter)
-				objectUnderTest := New(
-					_cliColorer,
-					fakeErrWriter,
-					new(fakeWriter),
-				)
-
-				/* act */
-				objectUnderTest.Event(providedEvent)
-
-				/* assert */
-				Expect(fakeErrWriter.WriteArgsForCall(0)).
-					To(Equal(expectedWriteArg))
-			})
-		})
 		Context("OpEnded", func() {
 			Context("Outcome==SUCCEEDED", func() {
 				It("should call stdWriter w/ expected args", func() {
