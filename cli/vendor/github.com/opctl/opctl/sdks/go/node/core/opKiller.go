@@ -42,18 +42,6 @@ func (ckr _opKiller) Kill(
 	callID string,
 	rootCallID string,
 ) {
-	ckr.eventPublisher.Publish(
-		model.Event{
-			OpKillRequested: &model.OpKillRequested{
-				Request: model.KillOpReq{
-					OpID:     callID,
-					RootOpID: rootCallID,
-				},
-			},
-			Timestamp: time.Now().UTC(),
-		},
-	)
-
 	ckr.callStore.SetIsKilled(callID)
 	ckr.containerRuntime.DeleteContainerIfExists(callID)
 
@@ -71,9 +59,16 @@ func (ckr _opKiller) Kill(
 			}()
 			defer waitGroup.Done()
 
-			ckr.Kill(
-				childCallGraph.Id,
-				rootCallID,
+			ckr.eventPublisher.Publish(
+				model.Event{
+					OpKillRequested: &model.OpKillRequested{
+						Request: model.KillOpReq{
+							OpID:     childCallGraph.Id,
+							RootOpID: rootCallID,
+						},
+					},
+					Timestamp: time.Now().UTC(),
+				},
 			)
 
 		}(childCallGraph)
