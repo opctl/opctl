@@ -15,7 +15,7 @@ import (
 func (this _core) ResolveData(
 	ctx context.Context,
 	dataRef string,
-	pullCreds *model.PullCreds,
+	pullCreds *model.Creds,
 ) (
 	model.DataHandle,
 	error,

@@ -45,8 +45,8 @@ type ContainerCallSpec struct {
 
 //ContainerCallImageSpec is a spec for the image when calling a container
 type ContainerCallImageSpec struct {
-	Ref       string         `json:"ref"`
-	PullCreds *PullCredsSpec `json:"pullCreds,omitempty"`
+	Ref       string     `json:"ref"`
+	PullCreds *CredsSpec `json:"pullCreds,omitempty"`
 }
 
 //LoopVarsSpec is a spec for a loops vars
@@ -61,7 +61,7 @@ type OpCallSpec struct {
 	// Ref represents a references to an op; will be interpolated
 	Ref string `json:"ref"`
 	// PullCreds represent creds for pulling the op from a provider
-	PullCreds *PullCredsSpec `json:"pullCreds,omitempty"`
+	PullCreds *CredsSpec `json:"pullCreds,omitempty"`
 	// binds scope to inputs of referenced op
 	Inputs map[string]interface{} `json:"inputs,omitempty"`
 	// binds scope to outputs of referenced op
@@ -83,8 +83,8 @@ type PredicateSpec struct {
 	NotExists *string        `json:"notExists,omitempty"`
 }
 
-//PullCredsSpec is a spec for pull creds
-type PullCredsSpec struct {
+//CredsSpec is a spec for authentication credentials
+type CredsSpec struct {
 	// will be interpolated
 	Username string `json:"username"`
 	// will be interpolated

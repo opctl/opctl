@@ -5,9 +5,13 @@ package core
 
 import (
 	"context"
+	"os"
+	"path"
 	"path/filepath"
+	"runtime"
 	"time"
 
+	"github.com/dgraph-io/badger/v2"
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -21,6 +25,9 @@ import (
 
 //counterfeiter:generate -o fakes/core.go . Core
 type Core interface {
+	AddAuth(
+		req model.AddAuthReq,
+	)
 	GetEventStream(
 		ctx context.Context,
 		req *model.GetEventStreamReq,
@@ -51,7 +58,7 @@ type Core interface {
 	ResolveData(
 		ctx context.Context,
 		dataRef string,
-		pullCreds *model.PullCreds,
+		pullCreds *model.Creds,
 	) (
 		model.DataHandle,
 		error,
@@ -59,13 +66,35 @@ type Core interface {
 }
 
 func New(
-	pubSub pubsub.PubSub,
 	containerRuntime containerruntime.ContainerRuntime,
 	dataDirPath string,
 ) Core {
+	eventDbPath := path.Join(dataDirPath, "dcg", "events")
+	err := os.MkdirAll(eventDbPath, 0700)
+	if nil != err {
+		panic(err)
+	}
+
+	// per badger README.MD#FAQ "maximizes throughput"
+	runtime.GOMAXPROCS(128)
+
+	db, err := badger.Open(
+		badger.DefaultOptions(
+			eventDbPath,
+		).WithLogger(nil),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	pubSub := pubsub.New(db)
+
 	uniqueStringFactory := uniquestring.NewUniqueStringFactory()
 
-	callStore := newCallStore()
+	stateStore := newStateStore(
+		db,
+		pubSub,
+	)
 
 	caller := newCaller(
 		call.NewInterpreter(
@@ -75,16 +104,17 @@ func New(
 		newContainerCaller(
 			containerRuntime,
 			pubSub,
+			stateStore,
 		),
 		dataDirPath,
-		callStore,
+		stateStore,
 		pubSub,
 	)
 
 	go func() {
 		// process events in background
 		opKiller := newOpKiller(
-			callStore,
+			stateStore,
 			containerRuntime,
 			pubSub,
 		)
@@ -112,7 +142,7 @@ func New(
 		data:             data.New(),
 		dataCachePath:    filepath.Join(dataDirPath, "ops"),
 		opCaller: newOpCaller(
-			callStore,
+			stateStore,
 			pubSub,
 			caller,
 			dataDirPath,
@@ -120,6 +150,7 @@ func New(
 		opFileGetter:        opfile.NewGetter(),
 		opInterpreter:       op.NewInterpreter(dataDirPath),
 		pubSub:              pubSub,
+		stateStore:          stateStore,
 		uniqueStringFactory: uniqueStringFactory,
 	}
 }
@@ -133,5 +164,6 @@ type _core struct {
 	opFileGetter        opfile.Getter
 	opInterpreter       op.Interpreter
 	pubSub              pubsub.PubSub
+	stateStore          stateStore
 	uniqueStringFactory uniquestring.UniqueStringFactory
 }

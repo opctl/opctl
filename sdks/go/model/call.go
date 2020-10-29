@@ -1,5 +1,12 @@
 package model
 
+//Auth holds auth data
+type Auth struct {
+	// Resources designates which resources this auth applies to in the form of a reference (or prefix thereof)
+	Resources string
+	Creds
+}
+
 //Call is a node of a call graph; see https://en.wikipedia.org/wiki/Call_graph
 type Call struct {
 	Container *ContainerCall `json:"container,omitempty"`
@@ -46,8 +53,14 @@ type ContainerCall struct {
 type ContainerCallImage struct {
 	Src *Value `json:"src,omitempty"`
 	// @TODO: deprecate in favor of Src
-	Ref       *string    `json:"ref"`
-	PullCreds *PullCreds `json:"pullCreds,omitempty"`
+	Ref       *string `json:"ref"`
+	PullCreds *Creds  `json:"pullCreds,omitempty"`
+}
+
+// Creds contains authentication credentials
+type Creds struct {
+	Username,
+	Password string
 }
 
 //LoopVars is a loops vars

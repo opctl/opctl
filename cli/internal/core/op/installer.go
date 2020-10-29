@@ -61,7 +61,7 @@ func (ivkr _installer) Install(
 
 	opDirHandle := ivkr.dataResolver.Resolve(
 		pkgRef,
-		&model.PullCreds{
+		&model.Creds{
 			Username: username,
 			Password: password,
 		},

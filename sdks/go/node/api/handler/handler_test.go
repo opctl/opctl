@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"strings"
 
+	authsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/auths/fakes"
 	dataFakes "github.com/opctl/opctl/sdks/go/node/api/handler/data/fakes"
 	eventsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/events/fakes"
 	livenessFakes "github.com/opctl/opctl/sdks/go/node/api/handler/liveness/fakes"
@@ -40,6 +41,35 @@ var _ = Context("Handler", func() {
 
 				/* assert */
 				Expect(providedHTTPResp.Code).To(Equal(http.StatusNotFound))
+			})
+		})
+		Context("next URL path segment is auths", func() {
+			It("should call authsHandler.Handle w/ expected args", func() {
+				/* arrange */
+				fakeAuthsHandler := new(authsFakes.FakeHandler)
+
+				objectUnderTest := _handler{
+					authsHandler: fakeAuthsHandler,
+				}
+
+				providedPath := "auths/adds"
+				providedHTTPReq, err := http.NewRequest("dummyMethod", providedPath, nil)
+				if nil != err {
+					panic(err.Error())
+				}
+
+				expectedURLPath := strings.SplitN(providedPath, "/", 2)[1]
+
+				/* act */
+				objectUnderTest.ServeHTTP(httptest.NewRecorder(), providedHTTPReq)
+
+				/* assert */
+				_, actualHTTPReq := fakeAuthsHandler.HandleArgsForCall(0)
+
+				Expect(actualHTTPReq.URL.Path).To(Equal(expectedURLPath))
+
+				// this works because our URL path set mutates the httpRequest
+				Expect(actualHTTPReq).To(Equal(providedHTTPReq))
 			})
 		})
 		Context("next URL path segment is data", func() {

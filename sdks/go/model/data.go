@@ -132,9 +132,3 @@ func (vlu Value) Unbox() (interface{}, error) {
 	}
 	return nil, fmt.Errorf("unable to unbox value %+v; box unknown", vlu)
 }
-
-// PullCreds contains authentication attributes for auth'ing w/ a data provider
-type PullCreds struct {
-	Username,
-	Password string
-}

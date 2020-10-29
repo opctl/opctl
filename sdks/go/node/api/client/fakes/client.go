@@ -10,6 +10,18 @@ import (
 )
 
 type FakeClient struct {
+	AddAuthStub        func(context.Context, model.AddAuthReq) error
+	addAuthMutex       sync.RWMutex
+	addAuthArgsForCall []struct {
+		arg1 context.Context
+		arg2 model.AddAuthReq
+	}
+	addAuthReturns struct {
+		result1 error
+	}
+	addAuthReturnsOnCall map[int]struct {
+		result1 error
+	}
 	GetDataStub        func(context.Context, model.GetDataReq) (model.ReadSeekCloser, error)
 	getDataMutex       sync.RWMutex
 	getDataArgsForCall []struct {
@@ -91,6 +103,67 @@ type FakeClient struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *FakeClient) AddAuth(arg1 context.Context, arg2 model.AddAuthReq) error {
+	fake.addAuthMutex.Lock()
+	ret, specificReturn := fake.addAuthReturnsOnCall[len(fake.addAuthArgsForCall)]
+	fake.addAuthArgsForCall = append(fake.addAuthArgsForCall, struct {
+		arg1 context.Context
+		arg2 model.AddAuthReq
+	}{arg1, arg2})
+	fake.recordInvocation("AddAuth", []interface{}{arg1, arg2})
+	fake.addAuthMutex.Unlock()
+	if fake.AddAuthStub != nil {
+		return fake.AddAuthStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.addAuthReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeClient) AddAuthCallCount() int {
+	fake.addAuthMutex.RLock()
+	defer fake.addAuthMutex.RUnlock()
+	return len(fake.addAuthArgsForCall)
+}
+
+func (fake *FakeClient) AddAuthCalls(stub func(context.Context, model.AddAuthReq) error) {
+	fake.addAuthMutex.Lock()
+	defer fake.addAuthMutex.Unlock()
+	fake.AddAuthStub = stub
+}
+
+func (fake *FakeClient) AddAuthArgsForCall(i int) (context.Context, model.AddAuthReq) {
+	fake.addAuthMutex.RLock()
+	defer fake.addAuthMutex.RUnlock()
+	argsForCall := fake.addAuthArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeClient) AddAuthReturns(result1 error) {
+	fake.addAuthMutex.Lock()
+	defer fake.addAuthMutex.Unlock()
+	fake.AddAuthStub = nil
+	fake.addAuthReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeClient) AddAuthReturnsOnCall(i int, result1 error) {
+	fake.addAuthMutex.Lock()
+	defer fake.addAuthMutex.Unlock()
+	fake.AddAuthStub = nil
+	if fake.addAuthReturnsOnCall == nil {
+		fake.addAuthReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.addAuthReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *FakeClient) GetData(arg1 context.Context, arg2 model.GetDataReq) (model.ReadSeekCloser, error) {
@@ -473,6 +546,8 @@ func (fake *FakeClient) StartOpReturnsOnCall(i int, result1 string, result2 erro
 func (fake *FakeClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.addAuthMutex.RLock()
+	defer fake.addAuthMutex.RUnlock()
 	fake.getDataMutex.RLock()
 	defer fake.getDataMutex.RUnlock()
 	fake.getEventStreamMutex.RLock()

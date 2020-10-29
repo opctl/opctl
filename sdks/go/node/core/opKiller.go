@@ -21,19 +21,19 @@ type opKiller interface {
 }
 
 func newOpKiller(
-	callStore callStore,
+	stateStore stateStore,
 	containerRuntime containerruntime.ContainerRuntime,
 	eventPublisher pubsub.EventPublisher,
 ) opKiller {
 	return _opKiller{
-		callStore:        callStore,
+		stateStore:       stateStore,
 		containerRuntime: containerRuntime,
 		eventPublisher:   eventPublisher,
 	}
 }
 
 type _opKiller struct {
-	callStore        callStore
+	stateStore       stateStore
 	containerRuntime containerruntime.ContainerRuntime
 	eventPublisher   pubsub.EventPublisher
 }
@@ -42,12 +42,11 @@ func (ckr _opKiller) Kill(
 	callID string,
 	rootCallID string,
 ) {
-	ckr.callStore.SetIsKilled(callID)
 	ckr.containerRuntime.DeleteContainerIfExists(callID)
 
 	var waitGroup sync.WaitGroup
 
-	for _, childCallGraph := range ckr.callStore.ListWithParentID(callID) {
+	for _, childCallGraph := range ckr.stateStore.ListWithParentID(callID) {
 		// recursively kill all child calls
 		waitGroup.Add(1)
 		go func(childCallGraph *model.Call) {

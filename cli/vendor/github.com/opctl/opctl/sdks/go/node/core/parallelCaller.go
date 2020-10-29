@@ -68,6 +68,7 @@ func (pc _parallelCaller) Call(
 		event := model.Event{
 			CallEnded: &model.CallEnded{
 				CallID:     callID,
+				CallType:   model.CallTypeParallel,
 				Outputs:    outputs,
 				RootCallID: rootCallID,
 			},

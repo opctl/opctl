@@ -23,11 +23,11 @@ type FakeData struct {
 	newFSProviderReturnsOnCall map[int]struct {
 		result1 provider.Provider
 	}
-	NewGitProviderStub        func(string, *model.PullCreds) provider.Provider
+	NewGitProviderStub        func(string, *model.Creds) provider.Provider
 	newGitProviderMutex       sync.RWMutex
 	newGitProviderArgsForCall []struct {
 		arg1 string
-		arg2 *model.PullCreds
+		arg2 *model.Creds
 	}
 	newGitProviderReturns struct {
 		result1 provider.Provider
@@ -35,11 +35,11 @@ type FakeData struct {
 	newGitProviderReturnsOnCall map[int]struct {
 		result1 provider.Provider
 	}
-	NewNodeProviderStub        func(client.Client, *model.PullCreds) provider.Provider
+	NewNodeProviderStub        func(client.Client, *model.Creds) provider.Provider
 	newNodeProviderMutex       sync.RWMutex
 	newNodeProviderArgsForCall []struct {
 		arg1 client.Client
-		arg2 *model.PullCreds
+		arg2 *model.Creds
 	}
 	newNodeProviderReturns struct {
 		result1 provider.Provider
@@ -126,12 +126,12 @@ func (fake *FakeData) NewFSProviderReturnsOnCall(i int, result1 provider.Provide
 	}{result1}
 }
 
-func (fake *FakeData) NewGitProvider(arg1 string, arg2 *model.PullCreds) provider.Provider {
+func (fake *FakeData) NewGitProvider(arg1 string, arg2 *model.Creds) provider.Provider {
 	fake.newGitProviderMutex.Lock()
 	ret, specificReturn := fake.newGitProviderReturnsOnCall[len(fake.newGitProviderArgsForCall)]
 	fake.newGitProviderArgsForCall = append(fake.newGitProviderArgsForCall, struct {
 		arg1 string
-		arg2 *model.PullCreds
+		arg2 *model.Creds
 	}{arg1, arg2})
 	fake.recordInvocation("NewGitProvider", []interface{}{arg1, arg2})
 	fake.newGitProviderMutex.Unlock()
@@ -151,13 +151,13 @@ func (fake *FakeData) NewGitProviderCallCount() int {
 	return len(fake.newGitProviderArgsForCall)
 }
 
-func (fake *FakeData) NewGitProviderCalls(stub func(string, *model.PullCreds) provider.Provider) {
+func (fake *FakeData) NewGitProviderCalls(stub func(string, *model.Creds) provider.Provider) {
 	fake.newGitProviderMutex.Lock()
 	defer fake.newGitProviderMutex.Unlock()
 	fake.NewGitProviderStub = stub
 }
 
-func (fake *FakeData) NewGitProviderArgsForCall(i int) (string, *model.PullCreds) {
+func (fake *FakeData) NewGitProviderArgsForCall(i int) (string, *model.Creds) {
 	fake.newGitProviderMutex.RLock()
 	defer fake.newGitProviderMutex.RUnlock()
 	argsForCall := fake.newGitProviderArgsForCall[i]
@@ -187,12 +187,12 @@ func (fake *FakeData) NewGitProviderReturnsOnCall(i int, result1 provider.Provid
 	}{result1}
 }
 
-func (fake *FakeData) NewNodeProvider(arg1 client.Client, arg2 *model.PullCreds) provider.Provider {
+func (fake *FakeData) NewNodeProvider(arg1 client.Client, arg2 *model.Creds) provider.Provider {
 	fake.newNodeProviderMutex.Lock()
 	ret, specificReturn := fake.newNodeProviderReturnsOnCall[len(fake.newNodeProviderArgsForCall)]
 	fake.newNodeProviderArgsForCall = append(fake.newNodeProviderArgsForCall, struct {
 		arg1 client.Client
-		arg2 *model.PullCreds
+		arg2 *model.Creds
 	}{arg1, arg2})
 	fake.recordInvocation("NewNodeProvider", []interface{}{arg1, arg2})
 	fake.newNodeProviderMutex.Unlock()
@@ -212,13 +212,13 @@ func (fake *FakeData) NewNodeProviderCallCount() int {
 	return len(fake.newNodeProviderArgsForCall)
 }
 
-func (fake *FakeData) NewNodeProviderCalls(stub func(client.Client, *model.PullCreds) provider.Provider) {
+func (fake *FakeData) NewNodeProviderCalls(stub func(client.Client, *model.Creds) provider.Provider) {
 	fake.newNodeProviderMutex.Lock()
 	defer fake.newNodeProviderMutex.Unlock()
 	fake.NewNodeProviderStub = stub
 }
 
-func (fake *FakeData) NewNodeProviderArgsForCall(i int) (client.Client, *model.PullCreds) {
+func (fake *FakeData) NewNodeProviderArgsForCall(i int) (client.Client, *model.Creds) {
 	fake.newNodeProviderMutex.RLock()
 	defer fake.newNodeProviderMutex.RUnlock()
 	argsForCall := fake.newNodeProviderArgsForCall[i]

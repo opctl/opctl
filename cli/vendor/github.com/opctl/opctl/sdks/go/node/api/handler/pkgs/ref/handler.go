@@ -54,10 +54,10 @@ func (hdlr _handler) Handle(
 		http.Error(httpResp, "", http.StatusNotFound)
 		return
 	default:
-		var pullCreds *model.PullCreds
+		var pullCreds *model.Creds
 		pullUsername, pullPassword, hasBasicAuth := httpReq.BasicAuth()
 		if hasBasicAuth {
-			pullCreds = &model.PullCreds{
+			pullCreds = &model.Creds{
 				Username: pullUsername,
 				Password: pullPassword,
 			}

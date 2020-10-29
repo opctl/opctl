@@ -366,6 +366,8 @@ github.com/opctl/opctl/sdks/go/node/api
 github.com/opctl/opctl/sdks/go/node/api/client
 github.com/opctl/opctl/sdks/go/node/api/client/fakes
 github.com/opctl/opctl/sdks/go/node/api/handler
+github.com/opctl/opctl/sdks/go/node/api/handler/auths
+github.com/opctl/opctl/sdks/go/node/api/handler/auths/adds
 github.com/opctl/opctl/sdks/go/node/api/handler/data
 github.com/opctl/opctl/sdks/go/node/api/handler/data/ref
 github.com/opctl/opctl/sdks/go/node/api/handler/events

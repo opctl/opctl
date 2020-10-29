@@ -25,15 +25,15 @@ type opCaller interface {
 }
 
 func newOpCaller(
-	callStore callStore,
+	stateStore stateStore,
 	pubSub pubsub.PubSub,
 	caller caller,
 	dataDirPath string,
 ) opCaller {
 	return _opCaller{
 		caller:             caller,
-		callStore:          callStore,
-		dcgScratchDir:      filepath.Join(dataDirPath, "dcg"),
+		stateStore:         stateStore,
+		callScratchDir:     filepath.Join(dataDirPath, "call"),
 		outputsInterpreter: outputs.NewInterpreter(),
 		opFileGetter:       opfile.NewGetter(),
 		pubSub:             pubSub,
@@ -41,9 +41,9 @@ func newOpCaller(
 }
 
 type _opCaller struct {
-	callStore          callStore
+	stateStore         stateStore
 	caller             caller
-	dcgScratchDir      string
+	callScratchDir     string
 	outputsInterpreter outputs.Interpreter
 	opFileGetter       opfile.Getter
 	pubSub             pubsub.PubSub
@@ -62,7 +62,7 @@ func (oc _opCaller) Call(
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 		var outcome string
-		if dcg := oc.callStore.TryGet(opCall.RootCallID); nil != dcg && dcg.IsKilled {
+		if call := oc.stateStore.TryGet(opCall.RootCallID); nil != call && call.IsKilled {
 			outcome = model.OpOutcomeKilled
 		} else if nil != err {
 			outcome = model.OpOutcomeFailed
@@ -93,18 +93,6 @@ func (oc _opCaller) Call(
 	}()
 
 	callStartedTime := time.Now().UTC()
-
-	oc.pubSub.Publish(
-		model.Event{
-			Timestamp: callStartedTime,
-			CallStarted: &model.CallStarted{
-				CallID:     opCall.OpID,
-				CallType:   model.CallTypeOp,
-				OpRef:      opCall.OpPath,
-				RootCallID: opCall.RootCallID,
-			},
-		},
-	)
 
 	// form scope for op call by combining defined inputs & op dir
 	opCallScope := map[string]*model.Value{}
@@ -167,7 +155,7 @@ eventLoop:
 		opOutputs,
 		opFile.Outputs,
 		opCall.OpPath,
-		filepath.Join(oc.dcgScratchDir, opCall.OpID),
+		filepath.Join(oc.callScratchDir, opCall.OpID),
 	)
 
 	// filter op outboundScope to bound call outboundScope

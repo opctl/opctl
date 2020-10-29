@@ -7,7 +7,7 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/golang-interfaces/github.com-gorilla-websocket"
+	iwebsocket "github.com/golang-interfaces/github.com-gorilla-websocket"
 	"github.com/golang-interfaces/ihttp"
 	"github.com/gorilla/websocket"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -16,6 +16,12 @@ import (
 
 //counterfeiter:generate -o fakes/client.go . Client
 type Client interface {
+	// AddAuth adds auth
+	AddAuth(
+		ctx context.Context,
+		req model.AddAuthReq,
+	) error
+
 	GetEventStream(
 		ctx context.Context,
 		req *model.GetEventStreamReq,

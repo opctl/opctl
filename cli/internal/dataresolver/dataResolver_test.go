@@ -74,14 +74,14 @@ var _ = Context("dataResolver", func() {
 				}
 
 				/* act */
-				objectUnderTest.Resolve("dummyDataRef", &model.PullCreds{})
+				objectUnderTest.Resolve("dummyDataRef", &model.Creds{})
 
 				/* assert */
 				Expect(fakeData.NewFSProviderArgsForCall(0)).To(ConsistOf(filepath.Join(workDir, ".opspec"), workDir))
 			})
 			It("should call data.NewNodeProvider w/ expected args", func() {
 				/* arrange */
-				providedPullCreds := &model.PullCreds{
+				providedPullCreds := &model.Creds{
 					Username: "dummyUsername",
 					Password: "dummyPassword",
 				}
@@ -151,7 +151,7 @@ var _ = Context("dataResolver", func() {
 				/* act */
 				objectUnderTest.Resolve(
 					providedDataRef,
-					&model.PullCreds{},
+					&model.Creds{},
 				)
 
 				/* assert */
@@ -197,7 +197,7 @@ var _ = Context("dataResolver", func() {
 						}
 
 						/* act */
-						objectUnderTest.Resolve("dummyDataRef", &model.PullCreds{})
+						objectUnderTest.Resolve("dummyDataRef", &model.Creds{})
 
 						/* assert */
 						_, actualInputs := fakeCliParamSatisfier.SatisfyArgsForCall(0)
@@ -219,7 +219,7 @@ var _ = Context("dataResolver", func() {
 						expectedError := model.ErrDataProviderAuthentication{}
 						fakeData.ResolveReturnsOnCall(0, nil, expectedError)
 
-						pullCreds := &model.PullCreds{
+						pullCreds := &model.Creds{
 							Username: "dummyUsername",
 							Password: "dummyPassword",
 						}
@@ -243,7 +243,7 @@ var _ = Context("dataResolver", func() {
 						/* act */
 						objectUnderTest.Resolve(
 							"dummyDataRef",
-							&model.PullCreds{},
+							&model.Creds{},
 						)
 
 						/* assert */
@@ -293,7 +293,7 @@ var _ = Context("dataResolver", func() {
 						/* act */
 						objectUnderTest.Resolve(
 							providedDataRef,
-							&model.PullCreds{},
+							&model.Creds{},
 						)
 
 						/* assert */
@@ -337,7 +337,7 @@ var _ = Context("dataResolver", func() {
 						}
 
 						/* act */
-						objectUnderTest.Resolve("dummyDataRef", &model.PullCreds{})
+						objectUnderTest.Resolve("dummyDataRef", &model.Creds{})
 
 						/* assert */
 						Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -371,7 +371,7 @@ var _ = Context("dataResolver", func() {
 					/* act */
 					actualPkgHandle := objectUnderTest.Resolve(
 						"dummyDataRef",
-						&model.PullCreds{},
+						&model.Creds{},
 					)
 
 					/* assert */

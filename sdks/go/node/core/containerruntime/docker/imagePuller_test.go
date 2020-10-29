@@ -34,7 +34,7 @@ var _ = Context("imagePuller", func() {
 			err := objectUnderTest.Pull(
 				providedCtx,
 				"",
-				&model.PullCreds{},
+				&model.Creds{},
 				providedImageRef,
 				"",
 				new(FakeEventPublisher),

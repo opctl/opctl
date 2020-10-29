@@ -1,8 +1,6 @@
 package pubsub
 
 import (
-	"fmt"
-
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -33,8 +31,6 @@ func getEventRootCallID(
 		return event.CallEnded.RootCallID
 	case nil != event.ContainerExited:
 		return event.ContainerExited.RootCallID
-	case nil != event.ContainerStarted:
-		return event.ContainerStarted.RootCallID
 	case nil != event.ContainerStdErrWrittenTo:
 		return event.ContainerStdErrWrittenTo.RootCallID
 	case nil != event.ContainerStdOutWrittenTo:
@@ -44,7 +40,6 @@ func getEventRootCallID(
 	case nil != event.CallStarted:
 		return event.CallStarted.RootCallID
 	default:
-		fmt.Println("received unexpected event", event)
 		// use empty guid for unknown events
 		return "00000000-0000-0000-0000-000000000000"
 	}

@@ -22,7 +22,7 @@ var _ = Context("Installer", func() {
 			/* arrange */
 			providedPkgRef := "providedPkgRef#0.0.0"
 			providedOpRef := fmt.Sprintf("%s/subpath", providedPkgRef)
-			providedPullCreds := &model.PullCreds{
+			providedPullCreds := &model.Creds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",
 			}

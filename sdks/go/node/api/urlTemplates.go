@@ -2,6 +2,7 @@ package api
 
 /* resources */
 const (
+	URLAuths_Adds             string = "/auths/adds"
 	URLEvents_Stream          string = "/events/stream"
 	URLLiveness               string = "/liveness"
 	URLOps_Kills              string = "/ops/kills"

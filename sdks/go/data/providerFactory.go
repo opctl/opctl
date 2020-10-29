@@ -18,13 +18,13 @@ type providerFactory interface {
 	// NewGitProvider returns a data provider which sources pkgs from git repos
 	NewGitProvider(
 		basePath string,
-		pullCreds *model.PullCreds,
+		pullCreds *model.Creds,
 	) provider.Provider
 
 	// NewNodeProvider returns a data provider which sources pkgs from a node
 	NewNodeProvider(
 		apiClient client.Client,
-		pullCreds *model.PullCreds,
+		pullCreds *model.Creds,
 	) provider.Provider
 }
 
@@ -42,7 +42,7 @@ func (pf _providerFactory) NewFSProvider(
 
 func (pf _providerFactory) NewGitProvider(
 	basePath string,
-	pullCreds *model.PullCreds,
+	pullCreds *model.Creds,
 ) provider.Provider {
 	return git.New(
 		basePath,
@@ -52,7 +52,7 @@ func (pf _providerFactory) NewGitProvider(
 
 func (pf _providerFactory) NewNodeProvider(
 	apiClient client.Client,
-	pullCreds *model.PullCreds,
+	pullCreds *model.Creds,
 ) provider.Provider {
 	return node.New(
 		apiClient,

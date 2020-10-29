@@ -6,12 +6,23 @@ import (
 	"sync"
 
 	"github.com/opctl/opctl/cli/internal/core"
+	"github.com/opctl/opctl/cli/internal/core/auth"
 	"github.com/opctl/opctl/cli/internal/core/node"
 	"github.com/opctl/opctl/cli/internal/core/op"
 	"github.com/opctl/opctl/cli/internal/model"
 )
 
 type FakeCore struct {
+	AuthStub        func() auth.Auth
+	authMutex       sync.RWMutex
+	authArgsForCall []struct {
+	}
+	authReturns struct {
+		result1 auth.Auth
+	}
+	authReturnsOnCall map[int]struct {
+		result1 auth.Auth
+	}
 	EventsStub        func(context.Context)
 	eventsMutex       sync.RWMutex
 	eventsArgsForCall []struct {
@@ -62,6 +73,58 @@ type FakeCore struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *FakeCore) Auth() auth.Auth {
+	fake.authMutex.Lock()
+	ret, specificReturn := fake.authReturnsOnCall[len(fake.authArgsForCall)]
+	fake.authArgsForCall = append(fake.authArgsForCall, struct {
+	}{})
+	fake.recordInvocation("Auth", []interface{}{})
+	fake.authMutex.Unlock()
+	if fake.AuthStub != nil {
+		return fake.AuthStub()
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.authReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeCore) AuthCallCount() int {
+	fake.authMutex.RLock()
+	defer fake.authMutex.RUnlock()
+	return len(fake.authArgsForCall)
+}
+
+func (fake *FakeCore) AuthCalls(stub func() auth.Auth) {
+	fake.authMutex.Lock()
+	defer fake.authMutex.Unlock()
+	fake.AuthStub = stub
+}
+
+func (fake *FakeCore) AuthReturns(result1 auth.Auth) {
+	fake.authMutex.Lock()
+	defer fake.authMutex.Unlock()
+	fake.AuthStub = nil
+	fake.authReturns = struct {
+		result1 auth.Auth
+	}{result1}
+}
+
+func (fake *FakeCore) AuthReturnsOnCall(i int, result1 auth.Auth) {
+	fake.authMutex.Lock()
+	defer fake.authMutex.Unlock()
+	fake.AuthStub = nil
+	if fake.authReturnsOnCall == nil {
+		fake.authReturnsOnCall = make(map[int]struct {
+			result1 auth.Auth
+		})
+	}
+	fake.authReturnsOnCall[i] = struct {
+		result1 auth.Auth
+	}{result1}
 }
 
 func (fake *FakeCore) Events(arg1 context.Context) {
@@ -329,6 +392,8 @@ func (fake *FakeCore) UIArgsForCall(i int) string {
 func (fake *FakeCore) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.authMutex.RLock()
+	defer fake.authMutex.RUnlock()
 	fake.eventsMutex.RLock()
 	defer fake.eventsMutex.RUnlock()
 	fake.lsMutex.RLock()

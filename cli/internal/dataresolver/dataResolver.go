@@ -20,7 +20,7 @@ import (
 type DataResolver interface {
 	Resolve(
 		dataRef string,
-		pullCreds *model.PullCreds,
+		pullCreds *model.Creds,
 	) model.DataHandle
 }
 
@@ -48,7 +48,7 @@ type _dataResolver struct {
 
 func (dtr _dataResolver) Resolve(
 	dataRef string,
-	pullCreds *model.PullCreds,
+	pullCreds *model.Creds,
 ) model.DataHandle {
 	cwd, err := dtr.os.Getwd()
 	if nil != err {
@@ -99,7 +99,7 @@ func (dtr _dataResolver) Resolve(
 			)
 
 			// save providedArgs & re-attempt
-			pullCreds = &model.PullCreds{
+			pullCreds = &model.Creds{
 				Username: *(argMap[usernameInputName].String),
 				Password: *(argMap[passwordInputName].String),
 			}

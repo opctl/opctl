@@ -49,10 +49,10 @@ func (hdlr _handler) Handle(
 
 	switch pathSegment {
 	case "":
-		var pullCreds *model.PullCreds
+		var pullCreds *model.Creds
 		pullUsername, pullPassword, hasBasicAuth := httpReq.BasicAuth()
 		if hasBasicAuth {
-			pullCreds = &model.PullCreds{
+			pullCreds = &model.Creds{
 				Username: pullUsername,
 				Password: pullPassword,
 			}

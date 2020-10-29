@@ -2,6 +2,9 @@ package image
 
 import (
 	"fmt"
+	"strings"
+
+	"github.com/docker/distribution/reference"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
@@ -62,7 +65,13 @@ func (itp _interpreter) Interpret(
 		return nil, err
 	}
 
-	containerCallImage.Ref = ref.String
+	parsedRef, err := reference.ParseAnyReference(strings.ToLower(*ref.String))
+	if nil != err {
+		return nil, err
+	}
+	parsedRefString := parsedRef.String()
+
+	containerCallImage.Ref = &parsedRefString
 
 	if nil != containerCallImageSpec.PullCreds {
 		username, err := itp.stringInterpreter.Interpret(scope, containerCallImageSpec.PullCreds.Username)
@@ -75,7 +84,7 @@ func (itp _interpreter) Interpret(
 			return nil, fmt.Errorf("error encountered interpreting image pullcreds password; error was: %v", err)
 		}
 
-		containerCallImage.PullCreds = &model.PullCreds{
+		containerCallImage.PullCreds = &model.Creds{
 			Username: *username.String,
 			Password: *password.String,
 		}

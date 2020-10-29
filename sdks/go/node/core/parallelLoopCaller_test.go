@@ -27,7 +27,7 @@ var _ = Context("parallelLoopCaller", func() {
 	})
 
 	Context("Call", func() {
-		Context("initial dcgParallelLoop.Range empty", func() {
+		Context("initial callParallelLoop.Range empty", func() {
 			It("should not call caller.Call", func() {
 				/* arrange */
 				fakeParallelLoopInterpreter := new(parallelloopFakes.FakeInterpreter)

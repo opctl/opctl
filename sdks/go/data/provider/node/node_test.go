@@ -19,7 +19,7 @@ var _ = Context("_node", func() {
 
 			fakeAPIClient := new(clientFakes.FakeClient)
 
-			providedPullCreds := &model.PullCreds{
+			providedPullCreds := &model.Creds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",
 			}
@@ -74,7 +74,7 @@ var _ = Context("_node", func() {
 
 				fakeAPIClient := new(clientFakes.FakeClient)
 
-				providedPullCreds := &model.PullCreds{
+				providedPullCreds := &model.Creds{
 					Username: "dummyUsername",
 					Password: "dummyPassword",
 				}

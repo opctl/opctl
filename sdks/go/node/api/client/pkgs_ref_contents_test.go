@@ -23,7 +23,7 @@ var _ = Context("ListDescendants", func() {
 		providedCtx := context.TODO()
 		providedReq := model.ListDescendantsReq{
 			PkgRef: "dummyOpRef",
-			PullCreds: &model.PullCreds{
+			PullCreds: &model.Creds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",
 			},

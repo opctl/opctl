@@ -191,7 +191,7 @@ var _ = Context("Interpreter", func() {
 					_, actualError := objectUnderTest.Interpret(
 						map[string]*model.Value{},
 						&model.OpCallSpec{
-							PullCreds: &model.PullCredsSpec{},
+							PullCreds: &model.CredsSpec{},
 						},
 						"dummyOpID",
 						"dummyOpPath",
@@ -208,7 +208,7 @@ var _ = Context("Interpreter", func() {
 					providedDataCachePath := "dummyDataCachePath"
 
 					fakeStrInterpreter := new(strFakes.FakeInterpreter)
-					expectedPullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
+					expectedPullCreds := &model.Creds{Username: "dummyUsername", Password: "dummyPassword"}
 					fakeStrInterpreter.InterpretReturnsOnCall(0, &model.Value{String: &expectedPullCreds.Username}, nil)
 					fakeStrInterpreter.InterpretReturnsOnCall(1, &model.Value{String: &expectedPullCreds.Password}, nil)
 
@@ -227,7 +227,7 @@ var _ = Context("Interpreter", func() {
 						map[string]*model.Value{},
 						&model.OpCallSpec{
 							Ref:       "dummyOpRef",
-							PullCreds: &model.PullCredsSpec{},
+							PullCreds: &model.CredsSpec{},
 						},
 						"dummyOpID",
 						"dummyOpPath",

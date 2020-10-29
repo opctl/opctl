@@ -167,7 +167,7 @@ var _ = Context("puller", func() {
 							context.Background(),
 							providedPath,
 							"dummyDataRef",
-							&model.PullCreds{
+							&model.Creds{
 								Username: "joetesterperson",
 								Password: "MWgQpun9TWUx2iFQctyJ",
 							},

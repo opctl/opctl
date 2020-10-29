@@ -2,27 +2,28 @@ package pubsub
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"time"
 
+	"github.com/dgraph-io/badger/v2"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
 var _ = Context("pubSub", func() {
-	tempDirPath, err := ioutil.TempDir("", "")
-	if nil != err {
+	db, err := badger.Open(
+		badger.DefaultOptions(os.TempDir()).WithLogger(nil),
+	)
+	if err != nil {
 		panic(err)
 	}
-	tempEventStore := NewBadgerDBEventStore(tempDirPath)
 
 	Context("New", func() {
 		It("should return PubSub", func() {
 			/* arrange/act/assert */
 
-			Expect(New(tempEventStore)).To(Not(BeNil()))
+			Expect(New(db)).To(Not(BeNil()))
 		})
 	})
 	Context("Publish", func() {
@@ -30,15 +31,16 @@ var _ = Context("pubSub", func() {
 			Context("is subscribed", func() {
 				It("receives event", func() {
 					/* arrange */
+					db.DropAll()
+
 					expectedEvent := model.Event{
 						CallStarted: &model.CallStarted{
 							RootCallID: "dummyRootCallID",
-							CallID:     "dummyCallID",
 							OpRef:      "dummyOpRef",
 						},
 					}
 
-					objectUnderTest := New(tempEventStore)
+					objectUnderTest := New(db)
 
 					eventChannel, _ := objectUnderTest.Subscribe(context.TODO(), model.EventFilter{})
 
@@ -59,12 +61,11 @@ var _ = Context("pubSub", func() {
 					publishedEvent := model.Event{
 						CallStarted: &model.CallStarted{
 							RootCallID: "dummyRootCallID",
-							CallID:     "dummyCallID",
 							OpRef:      "dummyOpRef",
 						},
 					}
 
-					objectUnderTest := New(tempEventStore)
+					objectUnderTest := New(db)
 
 					eventChannel, _ := objectUnderTest.Subscribe(context.TODO(), subscriberEventFilter)
 
@@ -82,15 +83,19 @@ var _ = Context("pubSub", func() {
 			Context("no filter", func() {
 				It("should receive published event", func() {
 					/* arrange */
+					db.DropAll()
+
 					expectedEvent := model.Event{
-						ContainerStarted: &model.ContainerStarted{
-							RootCallID:  "dummyRootCallID",
-							ContainerID: "dummyContainerID",
-							OpRef:       "dummyOpRef",
+						CallStarted: &model.CallStarted{
+							Call: model.Call{
+								Id: "id",
+							},
+							RootCallID: "dummyRootCallID",
+							OpRef:      "dummyOpRef",
 						},
 					}
 
-					objectUnderTest := New(tempEventStore)
+					objectUnderTest := New(db)
 					objectUnderTest.Publish(expectedEvent)
 
 					/* act */
@@ -107,10 +112,11 @@ var _ = Context("pubSub", func() {
 			Context("filter allows previous publish", func() {
 				It("should receive published event", func() {
 					/* arrange */
+					db.DropAll()
+
 					expectedEvent := model.Event{
 						CallStarted: &model.CallStarted{
 							RootCallID: "dummyRootCallID",
-							CallID:     "dummyCallID",
 							OpRef:      "dummyOpRef",
 						},
 					}
@@ -121,7 +127,7 @@ var _ = Context("pubSub", func() {
 						},
 					}
 
-					objectUnderTest := New(tempEventStore)
+					objectUnderTest := New(db)
 					objectUnderTest.Publish(expectedEvent)
 
 					/* act */
@@ -140,11 +146,15 @@ var _ = Context("pubSub", func() {
 			Context("no filter", func() {
 				It("should receive published events", func() {
 					/* arrange */
+					db.DropAll()
+
 					expectedEvent1 := model.Event{
-						ContainerStarted: &model.ContainerStarted{
-							RootCallID:  "dummyRootCallID",
-							ContainerID: "dummyContainerID",
-							OpRef:       "dummyOpRef",
+						CallStarted: &model.CallStarted{
+							Call: model.Call{
+								Id: "id",
+							},
+							RootCallID: "dummyRootCallID",
+							OpRef:      "dummyOpRef",
 						},
 						Timestamp: time.Now(),
 					}
@@ -152,16 +162,12 @@ var _ = Context("pubSub", func() {
 					expectedEvent2 := model.Event{
 						CallStarted: &model.CallStarted{
 							RootCallID: "dummyRootCallID",
-							CallID:     "dummyCallID",
 							OpRef:      "dummyOpRef",
 						},
 						Timestamp: time.Now().Add(time.Second),
 					}
 
-					tempDirPath := os.TempDir()
-					tempEventStore := NewBadgerDBEventStore(tempDirPath)
-
-					objectUnderTest := New(tempEventStore)
+					objectUnderTest := New(db)
 					objectUnderTest.Publish(expectedEvent1)
 					objectUnderTest.Publish(expectedEvent2)
 

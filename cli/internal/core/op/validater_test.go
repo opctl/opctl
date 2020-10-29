@@ -21,7 +21,10 @@ var _ = Context("Validater", func() {
 			providedPkgRef := "dummyPkgRef"
 
 			fakeDataResolver := new(dataresolver.Fake)
-			fakeDataResolver.ResolveReturns(nil)
+			opPath := "opPath"
+			fakeOpHandle := new(FakeDataHandle)
+			fakeOpHandle.PathReturns(&opPath)
+			fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 			fakeOpValidator := new(FakeValidator)
 			// error to trigger immediate return

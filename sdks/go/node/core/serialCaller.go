@@ -61,6 +61,7 @@ func (sc _serialCaller) Call(
 		event := model.Event{
 			CallEnded: &model.CallEnded{
 				CallID:     callID,
+				CallType:   model.CallTypeSerial,
 				Outputs:    outputs,
 				RootCallID: rootCallID,
 			},

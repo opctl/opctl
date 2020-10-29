@@ -39,4 +39,4 @@ run:
         ref: github.com/opspec-pkgs/golang.coverprofile.assert#1.1.0
         inputs:
           coverprofile:
-          minCoverage: 35
+          minCoverage: 38

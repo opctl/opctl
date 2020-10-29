@@ -62,9 +62,9 @@ func (itp _interpreter) Interpret(
 	rootCallID string,
 ) (*model.OpCall, error) {
 
-	var pkgPullCreds *model.PullCreds
+	var pkgPullCreds *model.Creds
 	if pullCredsSpec := opCallSpec.PullCreds; nil != pullCredsSpec {
-		pkgPullCreds = &model.PullCreds{}
+		pkgPullCreds = &model.Creds{}
 		var err error
 		interpretdUsername, err := itp.stringInterpreter.Interpret(scope, pullCredsSpec.Username)
 		if nil != err {
