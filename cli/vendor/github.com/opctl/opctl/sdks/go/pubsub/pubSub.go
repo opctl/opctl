@@ -4,18 +4,11 @@ package pubsub
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
 	"sync"
-)
 
-func New(
-	eventStore EventStore,
-) PubSub {
-	return &pubSub{
-		eventStore:    eventStore,
-		subscriptions: map[chan model.Event]subscriptionInfo{},
-	}
-}
+	"github.com/dgraph-io/badger/v2"
+	"github.com/opctl/opctl/sdks/go/model"
+)
 
 //counterfeiter:generate -o fakes/eventPublisher.go . EventPublisher
 type EventPublisher interface {
@@ -44,6 +37,15 @@ type EventSubscriber interface {
 type PubSub interface {
 	EventPublisher
 	EventSubscriber
+}
+
+func New(
+	db *badger.DB,
+) PubSub {
+	return &pubSub{
+		eventStore:    newEventStore(db),
+		subscriptions: map[chan model.Event]subscriptionInfo{},
+	}
 }
 
 type pubSub struct {

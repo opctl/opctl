@@ -17,6 +17,7 @@ import (
 // Core exposes all cli commands
 //counterfeiter:generate -o fakes/core.go . Core
 type Core interface {
+	Auther
 	Eventser
 	Lser
 	Noder
@@ -43,6 +44,11 @@ func New(
 	)
 
 	return _core{
+		Auther: newAuther(
+			cliExiter,
+			dataResolver,
+			nodeProvider,
+		),
 		Eventser: newEventser(
 			cliExiter,
 			cliOutput,
@@ -83,6 +89,7 @@ func New(
 }
 
 type _core struct {
+	Auther
 	Eventser
 	Lser
 	Noder

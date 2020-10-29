@@ -17,9 +17,6 @@ type DataDir interface {
 
 	// Path resolves the data dir path
 	Path() string
-
-	// EventDBPath resolves the eventdb path
-	EventDBPath() string
 }
 
 // ensureExists ensures resolvedDataDirPath exists
@@ -65,10 +62,6 @@ type _datadir struct {
 
 func (dd _datadir) Path() string {
 	return filepath.Join(dd.resolvedPath)
-}
-
-func (dd _datadir) EventDBPath() string {
-	return filepath.Join(dd.resolvedPath, "dcg", "events")
 }
 
 func (dd _datadir) InitAndLock() error {

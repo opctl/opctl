@@ -22,7 +22,7 @@ var _ = Context("caller", func() {
 					new(callFakes.FakeInterpreter),
 					new(FakeContainerCaller),
 					"dummyDataDir",
-					new(FakeCallStore),
+					new(FakeStateStore),
 					new(FakePubSub),
 				),
 			).To(Not(BeNil()))
@@ -40,7 +40,6 @@ var _ = Context("caller", func() {
 				/* act */
 				objectUnderTest := _caller{
 					callInterpreter: new(callFakes.FakeInterpreter),
-					callStore:       new(FakeCallStore),
 					containerCaller: fakeContainerCaller,
 					pubSub:          new(FakePubSub),
 				}
@@ -80,7 +79,6 @@ var _ = Context("caller", func() {
 
 			objectUnderTest := _caller{
 				callInterpreter: fakeCallInterpreter,
-				callStore:       new(FakeCallStore),
 				containerCaller: new(FakeContainerCaller),
 				pubSub:          fakePubSub,
 			}
@@ -140,7 +138,6 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
-					callStore:       new(FakeCallStore),
 					containerCaller: new(FakeContainerCaller),
 					pubSub:          fakePubSub,
 				}
@@ -190,7 +187,6 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
-					callStore:       new(FakeCallStore),
 					containerCaller: fakeContainerCaller,
 					pubSub:          fakePubSub,
 				}
@@ -249,7 +245,6 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
-					callStore:       new(FakeCallStore),
 					opCaller:        fakeOpCaller,
 					pubSub:          fakePubSub,
 				}
@@ -306,7 +301,6 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
-					callStore:       new(FakeCallStore),
 					parallelCaller:  fakeParallelCaller,
 					pubSub:          fakePubSub,
 				}
@@ -364,7 +358,6 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					callInterpreter:    fakeCallInterpreter,
-					callStore:          new(FakeCallStore),
 					parallelLoopCaller: fakeParallelLoopCaller,
 					pubSub:             fakePubSub,
 				}
@@ -426,7 +419,6 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
-					callStore:       new(FakeCallStore),
 					containerCaller: new(FakeContainerCaller),
 					pubSub:          fakePubSub,
 					serialCaller:    fakeSerialCaller,
@@ -485,7 +477,6 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					callInterpreter:  fakeCallInterpreter,
-					callStore:        new(FakeCallStore),
 					serialLoopCaller: fakeSerialLoopCaller,
 					pubSub:           fakePubSub,
 				}
@@ -539,7 +530,6 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
-					callStore:       new(FakeCallStore),
 					pubSub:          fakePubSub,
 				}
 
@@ -555,7 +545,7 @@ var _ = Context("caller", func() {
 				)
 
 				/* assert */
-				actualEvent := fakePubSub.PublishArgsForCall(0)
+				actualEvent := fakePubSub.PublishArgsForCall(1)
 
 				Expect(actualEvent.CallEnded.Error.Message).To(Equal(expectedError.Error()))
 			})

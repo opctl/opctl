@@ -527,7 +527,7 @@ var _ = Context("Interpreter", func() {
 			providedContainerCallSpec := &model.ContainerCallSpec{
 				Image: &model.ContainerCallImageSpec{
 					Ref: "dummyRef",
-					PullCreds: &model.PullCredsSpec{
+					PullCreds: &model.CredsSpec{
 						Username: "dummyUsername",
 						Password: "dummyPassword",
 					},
@@ -612,7 +612,7 @@ var _ = Context("Interpreter", func() {
 				/* arrange */
 				expectedContainerCallImage := &model.ContainerCallImage{
 					Ref: new(string),
-					PullCreds: &model.PullCreds{
+					PullCreds: &model.Creds{
 						Username: "dummyUsername",
 						Password: "dummyPassword",
 					},

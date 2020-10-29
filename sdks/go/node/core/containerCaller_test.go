@@ -11,6 +11,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
@@ -25,66 +26,17 @@ var _ = Context("containerCaller", func() {
 			Expect(newContainerCaller(
 				new(FakeContainerRuntime),
 				new(FakePubSub),
+				new(FakeStateStore),
 			)).To(Not(BeNil()))
 		})
 	})
 	Context("Call", func() {
-		It("should call pubSub.Publish w/ expected ContainerStarted", func() {
-			/* arrange */
-			providedOpPath := "providedOpPath"
-			providedContainerCall := &model.ContainerCall{
-				BaseCall: model.BaseCall{
-					OpPath:     providedOpPath,
-					RootCallID: "providedRootID",
-				},
-				ContainerID: "providedContainerID",
-			}
-			providedInboundScope := map[string]*model.Value{}
-			providedContainerCallSpec := &model.ContainerCallSpec{}
-
-			expectedEvent := model.Event{
-				Timestamp: time.Now().UTC(),
-				ContainerStarted: &model.ContainerStarted{
-					ContainerID: providedContainerCall.ContainerID,
-					OpRef:       providedOpPath,
-					RootCallID:  providedContainerCall.RootCallID,
-				},
-			}
-
-			fakePubSub := new(FakePubSub)
-
-			fakeIIO := new(iio.Fake)
-			fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
-
-			objectUnderTest := _containerCaller{
-				containerRuntime: new(FakeContainerRuntime),
-				pubSub:           fakePubSub,
-				io:               fakeIIO,
-			}
-
-			/* act */
-			objectUnderTest.Call(
-				context.Background(),
-				providedContainerCall,
-				providedInboundScope,
-				providedContainerCallSpec,
-			)
-
-			/* assert */
-			actualEvent := fakePubSub.PublishArgsForCall(0)
-
-			// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
-			Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
-			// set temporal fields to expected vals since they're already asserted
-			actualEvent.Timestamp = expectedEvent.Timestamp
-
-			Expect(actualEvent).To(Equal(expectedEvent))
-		})
 		It("should call containerRuntime.RunContainer w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
 			providedContainerCall := &model.ContainerCall{
 				BaseCall: model.BaseCall{},
+				Image:    &model.ContainerCallImage{},
 			}
 			fakeContainerRuntime := new(FakeContainerRuntime)
 
@@ -96,6 +48,7 @@ var _ = Context("containerCaller", func() {
 			objectUnderTest := _containerCaller{
 				containerRuntime: fakeContainerRuntime,
 				pubSub:           fakePubSub,
+				stateStore:       new(FakeStateStore),
 				io:               fakeIIO,
 			}
 
@@ -131,6 +84,7 @@ var _ = Context("containerCaller", func() {
 				objectUnderTest := _containerCaller{
 					containerRuntime: fakeContainerRuntime,
 					pubSub:           fakePubSub,
+					stateStore:       new(FakeStateStore),
 					io:               fakeIIO,
 				}
 
@@ -139,13 +93,14 @@ var _ = Context("containerCaller", func() {
 					context.Background(),
 					&model.ContainerCall{
 						BaseCall: model.BaseCall{},
+						Image:    &model.ContainerCallImage{},
 					},
 					map[string]*model.Value{},
 					&model.ContainerCallSpec{},
 				)
 
 				/* assert */
-				actualEvent := fakePubSub.PublishArgsForCall(1)
+				actualEvent := fakePubSub.PublishArgsForCall(0)
 
 				Expect(actualEvent.ContainerExited.Error.Message).To(Equal(expectedErrorMessage))
 			})
@@ -161,6 +116,7 @@ var _ = Context("containerCaller", func() {
 				RootCallID: "providedRootID",
 			},
 			ContainerID: "providedContainerID",
+			Image:       &model.ContainerCallImage{},
 		}
 		providedInboundScope := map[string]*model.Value{}
 		providedContainerCallSpec := &model.ContainerCallSpec{}
@@ -186,6 +142,7 @@ var _ = Context("containerCaller", func() {
 		objectUnderTest := _containerCaller{
 			containerRuntime: new(FakeContainerRuntime),
 			pubSub:           fakePubSub,
+			stateStore:       new(FakeStateStore),
 			io:               fakeIIO,
 		}
 
@@ -198,62 +155,7 @@ var _ = Context("containerCaller", func() {
 		)
 
 		/* assert */
-		actualEvent := fakePubSub.PublishArgsForCall(1)
-
-		// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
-		Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
-		// set temporal fields to expected vals since they're already asserted
-		actualEvent.Timestamp = expectedEvent.Timestamp
-
-		Expect(actualEvent).To(Equal(expectedEvent))
-	})
-	It("should call pubSub.Publish w/ expected ContainerExited", func() {
-		/* arrange */
-		providedOpPath := "providedOpPath"
-		providedContainerCall := &model.ContainerCall{
-			BaseCall: model.BaseCall{
-				OpPath:     providedOpPath,
-				RootCallID: "providedRootID",
-			},
-			ContainerID: "providedContainerID",
-		}
-		providedInboundScope := map[string]*model.Value{}
-		providedContainerCallSpec := &model.ContainerCallSpec{}
-
-		expectedEvent := model.Event{
-			Timestamp: time.Now().UTC(),
-			ContainerExited: &model.ContainerExited{
-				ContainerID: providedContainerCall.ContainerID,
-				Error: &model.CallEndedError{
-					Message: "io: read/write on closed pipe",
-				},
-				OpRef:      providedOpPath,
-				Outputs:    map[string]*model.Value{},
-				RootCallID: providedContainerCall.RootCallID,
-			},
-		}
-
-		fakePubSub := new(FakePubSub)
-
-		fakeIIO := new(iio.Fake)
-		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
-
-		objectUnderTest := _containerCaller{
-			containerRuntime: new(FakeContainerRuntime),
-			pubSub:           fakePubSub,
-			io:               fakeIIO,
-		}
-
-		/* act */
-		objectUnderTest.Call(
-			context.Background(),
-			providedContainerCall,
-			providedInboundScope,
-			providedContainerCallSpec,
-		)
-
-		/* assert */
-		actualEvent := fakePubSub.PublishArgsForCall(1)
+		actualEvent := fakePubSub.PublishArgsForCall(0)
 
 		// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
 		Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))

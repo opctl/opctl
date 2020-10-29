@@ -24,7 +24,7 @@ var _ = Context("GetData", func() {
 		providedReq := model.GetDataReq{
 			ContentPath: "dummy/content/path",
 			PkgRef:      "dummyOpRef",
-			PullCreds: &model.PullCreds{
+			PullCreds: &model.Creds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",
 			},

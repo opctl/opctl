@@ -26,7 +26,7 @@ type puller interface {
 		ctx context.Context,
 		path string,
 		dataRef string,
-		pullCreds *model.PullCreds,
+		pullCreds *model.Creds,
 	) error
 }
 
@@ -46,7 +46,7 @@ func (plr _puller) Pull(
 	ctx context.Context,
 	path string,
 	dataRef string,
-	authOpts *model.PullCreds,
+	authOpts *model.Creds,
 ) error {
 
 	parsedPkgRef, err := plr.refParser.Parse(dataRef)

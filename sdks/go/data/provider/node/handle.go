@@ -10,7 +10,7 @@ import (
 func newHandle(
 	client client.Client,
 	dataRef string,
-	pullCreds *model.PullCreds,
+	pullCreds *model.Creds,
 ) model.DataHandle {
 	return handle{
 		client:    client,
@@ -40,7 +40,7 @@ func (nh handle) GetContent(
 type handle struct {
 	client    client.Client
 	dataRef   string
-	pullCreds *model.PullCreds
+	pullCreds *model.Creds
 }
 
 func (nh handle) ListDescendants(

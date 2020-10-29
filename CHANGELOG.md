@@ -6,6 +6,10 @@ accordance with
 
 ## [Unreleased]
 
+### Added
+
+- [Add ability to auth opctl to external resource providers](https://github.com/opctl/opctl/issues/823)
+
 ### Changed
 
 - [Make OpKill Event Driven](https://github.com/opctl/opctl/issues/809)

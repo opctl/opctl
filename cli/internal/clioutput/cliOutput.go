@@ -71,7 +71,7 @@ func (this _cliOutput) Event(event *model.Event) {
 	switch {
 	case nil != event.ContainerExited:
 		this.containerExited(event)
-	case nil != event.ContainerStarted:
+	case nil != event.CallStarted && nil != event.CallStarted.Call.Container:
 		this.containerStarted(event)
 	case nil != event.ContainerStdErrWrittenTo:
 		this.containerStdErrWrittenTo(event)
@@ -79,7 +79,7 @@ func (this _cliOutput) Event(event *model.Event) {
 		this.containerStdOutWrittenTo(event)
 	case nil != event.CallEnded && event.CallEnded.CallType == model.CallTypeOp:
 		this.opEnded(event)
-	case nil != event.CallStarted && event.CallStarted.CallType == model.CallTypeOp:
+	case nil != event.CallStarted && nil != event.CallStarted.Call.Op:
 		this.opStarted(event)
 	}
 }
@@ -100,8 +100,8 @@ func (this _cliOutput) containerStarted(event *model.Event) {
 	this.Info(
 		fmt.Sprintf(
 			"ContainerStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-			event.ContainerStarted.ContainerID,
-			event.ContainerStarted.OpRef,
+			event.CallStarted.Call.Id,
+			event.CallStarted.OpRef,
 			event.Timestamp.Format(time.RFC3339),
 		),
 	)
@@ -142,7 +142,7 @@ func (this _cliOutput) opStarted(event *model.Event) {
 	this.Info(
 		fmt.Sprintf(
 			"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-			event.CallStarted.CallID,
+			event.CallStarted.Call.Id,
 			event.CallStarted.OpRef,
 			event.Timestamp.Format(time.RFC3339),
 		),

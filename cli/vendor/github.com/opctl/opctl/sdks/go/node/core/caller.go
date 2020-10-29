@@ -30,18 +30,17 @@ func newCaller(
 	callInterpreter call.Interpreter,
 	containerCaller containerCaller,
 	dataDirPath string,
-	callStore callStore,
+	stateStore stateStore,
 	pubSub pubsub.PubSub,
 ) caller {
 	instance := &_caller{
 		callInterpreter: callInterpreter,
 		containerCaller: containerCaller,
-		callStore:       callStore,
 		pubSub:          pubSub,
 	}
 
 	instance.opCaller = newOpCaller(
-		callStore,
+		stateStore,
 		pubSub,
 		instance,
 		dataDirPath,
@@ -73,7 +72,6 @@ func newCaller(
 type _caller struct {
 	callInterpreter    call.Interpreter
 	containerCaller    containerCaller
-	callStore          callStore
 	opCaller           opCaller
 	parallelCaller     parallelCaller
 	parallelLoopCaller parallelLoopCaller
@@ -135,8 +133,8 @@ func (clr _caller) Call(
 		return
 	}
 
-	var dcg *model.Call
-	dcg, err = clr.callInterpreter.Interpret(
+	var call *model.Call
+	call, err = clr.callInterpreter.Interpret(
 		scope,
 		callSpec,
 		id,
@@ -150,11 +148,22 @@ func (clr _caller) Call(
 		return
 	}
 
-	if nil != dcg.If && !*dcg.If {
+	if nil != call.If && !*call.If {
 		cancelCall()
 
 		return
 	}
+
+	clr.pubSub.Publish(
+		model.Event{
+			Timestamp: callStartTime,
+			CallStarted: &model.CallStarted{
+				Call:       *call,
+				OpRef:      opPath,
+				RootCallID: rootCallID,
+			},
+		},
+	)
 
 	go func() {
 		defer func() {
@@ -197,20 +206,18 @@ func (clr _caller) Call(
 		}
 	}()
 
-	clr.callStore.Add(dcg)
-
 	switch {
 	case nil != callSpec.Container:
 		clr.containerCaller.Call(
 			callCtx,
-			dcg.Container,
+			call.Container,
 			scope,
 			callSpec.Container,
 		)
 	case nil != callSpec.Op:
 		clr.opCaller.Call(
 			callCtx,
-			dcg.Op,
+			call.Op,
 			scope,
 			parentCallID,
 			callSpec.Op,

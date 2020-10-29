@@ -38,7 +38,7 @@ func (this _core) StartOp(
 
 	// pull Creds
 	if nil != req.Op.PullCreds {
-		opCallSpec.PullCreds = &model.PullCredsSpec{
+		opCallSpec.PullCreds = &model.CredsSpec{
 			Username: req.Op.PullCreds.Username,
 			Password: req.Op.PullCreds.Password,
 		}

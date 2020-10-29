@@ -18,7 +18,7 @@ var resolveSingleFlightGroup singleflight.Group
 // New returns a data provider which sources pkgs from git repos
 func New(
 	basePath string,
-	pullCreds *model.PullCreds,
+	pullCreds *model.Creds,
 ) provider.Provider {
 	return _git{
 		localFSProvider: fs.New(basePath),
@@ -33,7 +33,7 @@ type _git struct {
 	localFSProvider provider.Provider
 	basePath        string
 	puller          puller
-	pullCreds       *model.PullCreds
+	pullCreds       *model.Creds
 }
 
 func (gp _git) TryResolve(

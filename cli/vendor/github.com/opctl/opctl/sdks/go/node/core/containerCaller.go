@@ -27,11 +27,13 @@ type containerCaller interface {
 func newContainerCaller(
 	containerRuntime containerruntime.ContainerRuntime,
 	pubSub pubsub.PubSub,
+	stateStore stateStore,
 ) containerCaller {
 
 	return _containerCaller{
 		containerRuntime: containerRuntime,
 		pubSub:           pubSub,
+		stateStore:       stateStore,
 		io:               iio.New(),
 	}
 
@@ -40,6 +42,7 @@ func newContainerCaller(
 type _containerCaller struct {
 	containerRuntime containerruntime.ContainerRuntime
 	pubSub           pubsub.PubSub
+	stateStore       stateStore
 	io               iio.IIO
 }
 
@@ -75,16 +78,11 @@ func (cc _containerCaller) Call(
 		cc.pubSub.Publish(event)
 	}()
 
-	cc.pubSub.Publish(
-		model.Event{
-			Timestamp: time.Now().UTC(),
-			ContainerStarted: &model.ContainerStarted{
-				ContainerID: containerCall.ContainerID,
-				OpRef:       containerCall.OpPath,
-				RootCallID:  containerCall.RootCallID,
-			},
-		},
-	)
+	if nil != containerCall.Image.Ref && nil == containerCall.Image.PullCreds {
+		if auth := cc.stateStore.TryGetAuth(*containerCall.Image.Ref); nil != auth {
+			containerCall.Image.PullCreds = &auth.Creds
+		}
+	}
 
 	logStdOutPR, logStdOutPW := cc.io.Pipe()
 	logStdErrPR, logStdErrPW := cc.io.Pipe()
@@ -208,10 +206,10 @@ func (this _containerCaller) interpretOutputs(
 		}
 
 		// add file outputs
-		for dcgContainerFilePath, dcgHostFilePath := range containerCall.Files {
-			if callSpecContainerFilePath == dcgContainerFilePath {
-				// copy dcgHostFilePath before taking address; range vars have same address for every iteration
-				value := dcgHostFilePath
+		for callContainerFilePath, callHostFilePath := range containerCall.Files {
+			if callSpecContainerFilePath == callContainerFilePath {
+				// copy callHostFilePath before taking address; range vars have same address for every iteration
+				value := callHostFilePath
 				if nameAsString, ok := name.(string); ok {
 					outputs[strings.TrimSuffix(strings.TrimPrefix(nameAsString, "$("), ")")] = &model.Value{File: &value}
 				}
@@ -225,10 +223,10 @@ func (this _containerCaller) interpretOutputs(
 		}
 
 		// add dir outputs
-		for dcgContainerDirPath, dcgHostDirPath := range containerCall.Dirs {
-			if callSpecContainerDirPath == dcgContainerDirPath {
-				// copy dcgHostDirPath before taking address; range vars have same address for every iteration
-				value := dcgHostDirPath
+		for callContainerDirPath, callHostDirPath := range containerCall.Dirs {
+			if callSpecContainerDirPath == callContainerDirPath {
+				// copy callHostDirPath before taking address; range vars have same address for every iteration
+				value := callHostDirPath
 				outputs[strings.TrimSuffix(strings.TrimPrefix(name, "$("), ")")] = &model.Value{Dir: &value}
 			}
 		}

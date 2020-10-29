@@ -13,7 +13,7 @@ import (
 // New returns a data provider which sources pkgs from a node
 func New(
 	apiClient client.Client,
-	pullCreds *model.PullCreds,
+	pullCreds *model.Creds,
 ) provider.Provider {
 	return _node{
 		apiClient: apiClient,
@@ -23,7 +23,7 @@ func New(
 
 type _node struct {
 	apiClient client.Client
-	pullCreds *model.PullCreds
+	pullCreds *model.Creds
 }
 
 func (np _node) TryResolve(

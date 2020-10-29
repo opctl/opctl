@@ -77,6 +77,7 @@ func (plpr _parallelLoopCaller) Call(
 			Timestamp: time.Now().UTC(),
 			CallEnded: &model.CallEnded{
 				CallID:     id,
+				CallType:   model.CallTypeParallelLoop,
 				RootCallID: rootCallID,
 				Outputs:    outboundScope,
 			},
@@ -103,8 +104,8 @@ func (plpr _parallelLoopCaller) Call(
 	}
 
 	// interpret initial iteration of the loop
-	var dcgParallelLoop *model.ParallelLoopCall
-	dcgParallelLoop, err = plpr.parallelLoopInterpreter.Interpret(
+	var callParallelLoop *model.ParallelLoopCall
+	callParallelLoop, err = plpr.parallelLoopInterpreter.Interpret(
 		callSpecParallelLoop,
 		outboundScope,
 	)
@@ -116,7 +117,7 @@ func (plpr _parallelLoopCaller) Call(
 	childCallIDIndexMap := map[string]int{}
 	callIndexOutputsMap := map[int]map[string]*model.Value{}
 
-	for !parallelloop.IsIterationComplete(childCallIndex, *dcgParallelLoop) {
+	for !parallelloop.IsIterationComplete(childCallIndex, *callParallelLoop) {
 
 		var childCallID string
 		childCallID, err = plpr.uniqueStringFactory.Construct()
@@ -150,7 +151,7 @@ func (plpr _parallelLoopCaller) Call(
 
 		childCallIndex++
 
-		if parallelloop.IsIterationComplete(childCallIndex, *dcgParallelLoop) {
+		if parallelloop.IsIterationComplete(childCallIndex, *callParallelLoop) {
 			break
 		}
 
@@ -165,7 +166,7 @@ func (plpr _parallelLoopCaller) Call(
 		}
 
 		// interpret next iteration of the loop
-		dcgParallelLoop, err = plpr.parallelLoopInterpreter.Interpret(
+		callParallelLoop, err = plpr.parallelLoopInterpreter.Interpret(
 			callSpecParallelLoop,
 			outboundScope,
 		)

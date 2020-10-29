@@ -16,7 +16,7 @@ var _ = Context("core", func() {
 			/* arrange */
 			providedCtx := context.Background()
 			providedOpRef := "dummyOpRef"
-			providedPullCreds := &model.PullCreds{
+			providedPullCreds := &model.Creds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",
 			}

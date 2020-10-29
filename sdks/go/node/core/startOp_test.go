@@ -24,7 +24,7 @@ var _ = Context("core", func() {
 			/* arrange */
 			providedStartOpReq := model.StartOpReq{
 				Op: model.StartOpReqOp{
-					PullCreds: &model.PullCreds{
+					PullCreds: &model.Creds{
 						Username: "dummyUsername",
 						Password: "dummyPassword",
 					},

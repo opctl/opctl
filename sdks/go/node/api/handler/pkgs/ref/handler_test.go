@@ -73,7 +73,7 @@ var _ = Context("Handler", func() {
 						providedPassword,
 					)
 
-					expectedPullCreds := model.PullCreds{
+					expectedPullCreds := model.Creds{
 						Username: providedUsername,
 						Password: providedPassword,
 					}

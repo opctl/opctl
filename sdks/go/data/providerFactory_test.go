@@ -26,7 +26,7 @@ var _ = Context("providerFactory", func() {
 		It("should return expected Provider", func() {
 			/* arrange */
 			providedBasePath := "dummyBasePath"
-			providedPullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
+			providedPullCreds := &model.Creds{Username: "dummyUsername", Password: "dummyPassword"}
 
 			objectUnderTest := _providerFactory{}
 
@@ -44,7 +44,7 @@ var _ = Context("providerFactory", func() {
 		It("should return nodeProvider", func() {
 			/* arrange */
 			fakeAPIClient := new(clientFakes.FakeClient)
-			providedPullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
+			providedPullCreds := &model.Creds{Username: "dummyUsername", Password: "dummyPassword"}
 
 			objectUnderTest := _providerFactory{}
 

@@ -16,7 +16,7 @@ type imagePuller interface {
 	Pull(
 		ctx context.Context,
 		containerID string,
-		imagePullCreds *model.PullCreds,
+		imagePullCreds *model.Creds,
 		imageRef string,
 		rootCallID string,
 		eventPublisher pubsub.EventPublisher,
@@ -38,7 +38,7 @@ type _imagePuller struct {
 func (ip _imagePuller) Pull(
 	ctx context.Context,
 	containerID string,
-	imagePullCreds *model.PullCreds,
+	imagePullCreds *model.Creds,
 	imageRef string,
 	rootCallID string,
 	eventPublisher pubsub.EventPublisher,

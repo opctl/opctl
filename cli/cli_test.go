@@ -8,6 +8,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/clicolorer"
 	cliColorerFakes "github.com/opctl/opctl/cli/internal/clicolorer/fakes"
 	corePkg "github.com/opctl/opctl/cli/internal/core"
+	authFakes "github.com/opctl/opctl/cli/internal/core/auth/fakes"
 	coreFakes "github.com/opctl/opctl/cli/internal/core/fakes"
 	nodeFakes "github.com/opctl/opctl/cli/internal/core/node/fakes"
 	opFakes "github.com/opctl/opctl/cli/internal/core/op/fakes"
@@ -39,6 +40,49 @@ var _ = Context("cli", func() {
 				/* assert */
 				Expect(fakeCliColorer.DisableCallCount()).To(Equal(1))
 			})
+		})
+
+		Context("auth", func() {
+
+			Context("add", func() {
+
+				It("should call authAddCmd.Invoke w/ expected args", func() {
+					/* arrange */
+					providedResources := "resources"
+					providedUsername := "username"
+					providedPassword := "password"
+
+					fakeCore := new(coreFakes.FakeCore)
+
+					fakeAuth := new(authFakes.FakeAuth)
+					fakeCore.AuthReturns(fakeAuth)
+
+					objectUnderTest := newCli(
+						new(cliColorerFakes.FakeCliColorer),
+						func(
+							cliColorer clicolorer.CliColorer,
+							nodeProvider nodeprovider.NodeProvider,
+						) corePkg.Core {
+							return fakeCore
+						},
+					)
+
+					/* act */
+					objectUnderTest.Run([]string{"opctl", "auth", "add", providedResources, "-u", providedUsername, "-p", providedPassword})
+
+					/* assert */
+					_,
+						actualResources,
+						actualUsername,
+						actualPassword := fakeAuth.AddArgsForCall(0)
+
+					Expect(actualResources).To(Equal(providedResources))
+					Expect(actualUsername).To(Equal(providedUsername))
+					Expect(actualPassword).To(Equal(providedPassword))
+				})
+
+			})
+
 		})
 
 		Context("events", func() {

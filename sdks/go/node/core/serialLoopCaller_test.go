@@ -27,7 +27,7 @@ var _ = Context("serialLoopCaller", func() {
 	})
 
 	Context("Call", func() {
-		Context("initial dcgSerialLoop.Until true", func() {
+		Context("initial callSerialLoop.Until true", func() {
 			It("should not call caller.Call", func() {
 				/* arrange */
 				fakeSerialLoopInterpreter := new(serialloopFakes.FakeInterpreter)
@@ -60,7 +60,7 @@ var _ = Context("serialLoopCaller", func() {
 				Expect(fakeCaller.CallCallCount()).To(Equal(0))
 			})
 		})
-		Context("initial dcgSerialLoop.On empty", func() {
+		Context("initial callSerialLoop.On empty", func() {
 			It("should not call caller.Call", func() {
 				/* arrange */
 				fakeSerialLoopInterpreter := new(serialloopFakes.FakeInterpreter)
@@ -99,7 +99,7 @@ var _ = Context("serialLoopCaller", func() {
 				Expect(fakeCaller.CallCallCount()).To(Equal(0))
 			})
 		})
-		Context("initial dcgSerialLoop.Until false", func() {
+		Context("initial callSerialLoop.Until false", func() {
 			It("should call caller.Call w/ expected args", func() {
 				/* arrange */
 				providedCtx := context.Background()

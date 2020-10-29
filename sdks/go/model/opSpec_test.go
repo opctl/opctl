@@ -25,7 +25,7 @@ var _ = Context("OpCallSpec", func() {
 
 			expectedResult := OpCallSpec{
 				Ref: providedPkgRef,
-				PullCreds: &PullCredsSpec{
+				PullCreds: &CredsSpec{
 					Username: providedPullUsername,
 					Password: providedPullPassword,
 				},

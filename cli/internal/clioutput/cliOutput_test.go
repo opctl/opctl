@@ -114,44 +114,6 @@ var _ = Context("output", func() {
 					To(Equal(expectedWriteArg))
 			})
 		})
-		Context("ContainerStarted", func() {
-			It("should call stdWriter w/ expected args", func() {
-				/* arrange */
-				providedEvent := &model.Event{
-					ContainerStarted: &model.ContainerStarted{
-						ContainerID: "dummyContainerID",
-						OpRef:       "dummyOpRef",
-					},
-					Timestamp: time.Now(),
-				}
-				expectedWriteArg := []byte(
-					fmt.Sprintln(
-						_cliColorer.Info(
-							fmt.Sprintf(
-								"ContainerStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-								providedEvent.ContainerStarted.ContainerID,
-								providedEvent.ContainerStarted.OpRef,
-								providedEvent.Timestamp.Format(time.RFC3339),
-							),
-						),
-					),
-				)
-
-				fakeStdWriter := new(fakeWriter)
-				objectUnderTest := New(
-					_cliColorer,
-					new(fakeWriter),
-					fakeStdWriter,
-				)
-
-				/* act */
-				objectUnderTest.Event(providedEvent)
-
-				/* assert */
-				Expect(fakeStdWriter.WriteArgsForCall(0)).
-					To(Equal(expectedWriteArg))
-			})
-		})
 		Context("ContainerStdErrWrittenTo", func() {
 			It("should call stdWriter w/ expected args", func() {
 				/* arrange */
@@ -374,43 +336,87 @@ var _ = Context("output", func() {
 				})
 			})
 		})
-		Context("OpStarted", func() {
-			It("should call stdWriter w/ expected args", func() {
-				/* arrange */
-				providedEvent := &model.Event{
-					CallStarted: &model.CallStarted{
-						CallID:   "dummyOpID",
-						CallType: model.CallTypeOp,
-						OpRef:    "dummyOpRef",
-					},
-					Timestamp: time.Now(),
-				}
-				expectedWriteArg := []byte(
-					fmt.Sprintln(
-						_cliColorer.Info(
-							fmt.Sprintf(
-								"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-								providedEvent.CallStarted.CallID,
-								providedEvent.CallStarted.OpRef,
-								providedEvent.Timestamp.Format(time.RFC3339),
+		Context("CallStarted", func() {
+			Context("Call.Container truthy", func() {
+				It("should call stdWriter w/ expected args", func() {
+					/* arrange */
+					providedEvent := &model.Event{
+						CallStarted: &model.CallStarted{
+							Call: model.Call{
+								Container: &model.ContainerCall{},
+							},
+							OpRef: "dummyOpRef",
+						},
+						Timestamp: time.Now(),
+					}
+					expectedWriteArg := []byte(
+						fmt.Sprintln(
+							_cliColorer.Info(
+								fmt.Sprintf(
+									"ContainerStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
+									providedEvent.CallStarted.Call.Id,
+									providedEvent.CallStarted.OpRef,
+									providedEvent.Timestamp.Format(time.RFC3339),
+								),
 							),
 						),
-					),
-				)
+					)
 
-				fakeStdWriter := new(fakeWriter)
-				objectUnderTest := New(
-					_cliColorer,
-					new(fakeWriter),
-					fakeStdWriter,
-				)
+					fakeStdWriter := new(fakeWriter)
+					objectUnderTest := New(
+						_cliColorer,
+						new(fakeWriter),
+						fakeStdWriter,
+					)
 
-				/* act */
-				objectUnderTest.Event(providedEvent)
+					/* act */
+					objectUnderTest.Event(providedEvent)
 
-				/* assert */
-				Expect(fakeStdWriter.WriteArgsForCall(0)).
-					To(Equal(expectedWriteArg))
+					/* assert */
+					Expect(fakeStdWriter.WriteArgsForCall(0)).
+						To(Equal(expectedWriteArg))
+				})
+			})
+			Describe("Call.Op truthy", func() {
+				It("should call stdWriter w/ expected args", func() {
+					/* arrange */
+					providedEvent := &model.Event{
+						CallStarted: &model.CallStarted{
+							Call: model.Call{
+								Id: "id",
+								Op: &model.OpCall{},
+							},
+							OpRef: "dummyOpRef",
+						},
+						Timestamp: time.Now(),
+					}
+					expectedWriteArg := []byte(
+						fmt.Sprintln(
+							_cliColorer.Info(
+								fmt.Sprintf(
+									"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
+									providedEvent.CallStarted.Call.Id,
+									providedEvent.CallStarted.OpRef,
+									providedEvent.Timestamp.Format(time.RFC3339),
+								),
+							),
+						),
+					)
+
+					fakeStdWriter := new(fakeWriter)
+					objectUnderTest := New(
+						_cliColorer,
+						new(fakeWriter),
+						fakeStdWriter,
+					)
+
+					/* act */
+					objectUnderTest.Event(providedEvent)
+
+					/* assert */
+					Expect(fakeStdWriter.WriteArgsForCall(0)).
+						To(Equal(expectedWriteArg))
+				})
 			})
 		})
 	})

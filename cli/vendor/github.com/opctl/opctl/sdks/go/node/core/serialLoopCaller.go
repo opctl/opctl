@@ -72,6 +72,7 @@ func (lpr _serialLoopCaller) Call(
 			Timestamp: time.Now().UTC(),
 			CallEnded: &model.CallEnded{
 				CallID:     id,
+				CallType:   model.CallTypeSerialLoop,
 				RootCallID: rootCallID,
 				Outputs:    outboundScope,
 			},
@@ -98,8 +99,8 @@ func (lpr _serialLoopCaller) Call(
 	}
 
 	// interpret initial iteration of the loop
-	var dcgSerialLoop *model.SerialLoopCall
-	dcgSerialLoop, err = lpr.serialLoopInterpreter.Interpret(
+	var callSerialLoop *model.SerialLoopCall
+	callSerialLoop, err = lpr.serialLoopInterpreter.Interpret(
 		callSpecSerialLoop,
 		outboundScope,
 	)
@@ -107,7 +108,7 @@ func (lpr _serialLoopCaller) Call(
 		return
 	}
 
-	for !serialloop.IsIterationComplete(index, dcgSerialLoop) {
+	for !serialloop.IsIterationComplete(index, callSerialLoop) {
 		eventFilterSince := time.Now().UTC()
 
 		var callID string
@@ -154,7 +155,7 @@ func (lpr _serialLoopCaller) Call(
 
 		index++
 
-		if serialloop.IsIterationComplete(index, dcgSerialLoop) {
+		if serialloop.IsIterationComplete(index, callSerialLoop) {
 			break
 		}
 
@@ -169,7 +170,7 @@ func (lpr _serialLoopCaller) Call(
 		}
 
 		// interpret next iteration of the loop
-		dcgSerialLoop, err = lpr.serialLoopInterpreter.Interpret(
+		callSerialLoop, err = lpr.serialLoopInterpreter.Interpret(
 			callSpecSerialLoop,
 			outboundScope,
 		)

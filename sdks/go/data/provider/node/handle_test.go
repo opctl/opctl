@@ -18,7 +18,7 @@ var _ = Context("handle", func() {
 			providedContentPath := "dummyContentPath"
 
 			dataRef := "dummyDataRef"
-			pullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
+			pullCreds := &model.Creds{Username: "dummyUsername", Password: "dummyPassword"}
 
 			fakeClient := new(clientFakes.FakeClient)
 
@@ -50,7 +50,7 @@ var _ = Context("handle", func() {
 			providedCtx := context.TODO()
 
 			dataRef := "dummyDataRef"
-			pullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
+			pullCreds := &model.Creds{Username: "dummyUsername", Password: "dummyPassword"}
 
 			fakeClient := new(clientFakes.FakeClient)
 

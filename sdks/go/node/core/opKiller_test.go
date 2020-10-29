@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	"github.com/dgraph-io/badger/v2"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -15,15 +16,15 @@ import (
 
 var _ = Context("_opKiller", func() {
 	Context("Kill", func() {
-		It("should call callStore.SetIsKilled w/ expected args", func() {
+		It("should call stateStore.ListWithParentID w/ expected args", func() {
 			/* arrange */
 			providedCallID := "providedCallID"
 
-			fakeCallStore := new(FakeCallStore)
+			fakeStateStore := new(FakeStateStore)
 
 			objectUnderTest := _opKiller{
 				containerRuntime: new(FakeContainerRuntime),
-				callStore:        fakeCallStore,
+				stateStore:       fakeStateStore,
 				eventPublisher:   new(FakeEventPublisher),
 			}
 
@@ -34,46 +35,30 @@ var _ = Context("_opKiller", func() {
 			)
 
 			/* assert */
-			Expect(fakeCallStore.SetIsKilledArgsForCall(0)).To(Equal(providedCallID))
+			Expect(fakeStateStore.ListWithParentIDArgsForCall(0)).To(Equal(providedCallID))
 		})
-		It("should call callStore.ListWithParentID w/ expected args", func() {
-			/* arrange */
-			providedCallID := "providedCallID"
-
-			fakeCallStore := new(FakeCallStore)
-
-			objectUnderTest := _opKiller{
-				containerRuntime: new(FakeContainerRuntime),
-				callStore:        fakeCallStore,
-				eventPublisher:   new(FakeEventPublisher),
-			}
-
-			/* act */
-			objectUnderTest.Kill(
-				providedCallID,
-				"rootCallID",
-			)
-
-			/* assert */
-			Expect(fakeCallStore.ListWithParentIDArgsForCall(0)).To(Equal(providedCallID))
-		})
-		Context("callStore.ListWithParentID returns nodes", func() {
-			It("should call callStore.SetIsKilled w/ expected args for each", func() {
+		Context("stateStore.ListWithParentID returns nodes", func() {
+			It("should call pubsub.Publish for each", func() {
 				/* arrange */
 				providedCallID := "providedCallID"
 
-				nodesReturnedFromCallStore := []*model.Call{
+				nodesReturnedFromStateStore := []*model.Call{
 					{Id: "dummyNode1Id"},
 					{Id: "dummyNode2Id"},
 					{Id: "dummyNode3Id"},
 				}
-				fakeCallStore := new(FakeCallStore)
-				fakeCallStore.ListWithParentIDReturnsOnCall(0, nodesReturnedFromCallStore)
+				fakeStateStore := new(FakeStateStore)
+				fakeStateStore.ListWithParentIDReturnsOnCall(0, nodesReturnedFromStateStore)
 
-				tmpDir := os.TempDir()
+				db, err := badger.Open(
+					badger.DefaultOptions(os.TempDir()).WithLogger(nil),
+				)
+				if err != nil {
+					panic(err)
+				}
 
 				pubSub := pubsub.New(
-					pubsub.NewBadgerDBEventStore(tmpDir),
+					db,
 				)
 
 				eventChanCtx, cancelEventChan := context.WithCancel(context.Background())
@@ -91,7 +76,7 @@ var _ = Context("_opKiller", func() {
 
 				objectUnderTest := _opKiller{
 					containerRuntime: new(FakeContainerRuntime),
-					callStore:        fakeCallStore,
+					stateStore:       fakeStateStore,
 					eventPublisher:   pubSub,
 				}
 
@@ -104,7 +89,7 @@ var _ = Context("_opKiller", func() {
 				/* assert */
 				cancelEventChan()
 
-				Expect(len(actualCalls)).To(Equal(len(nodesReturnedFromCallStore) + 1))
+				Expect(len(actualCalls)).To(Equal(len(nodesReturnedFromStateStore) + 1))
 			})
 		})
 	})

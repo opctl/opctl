@@ -9,7 +9,6 @@ import (
 	"github.com/opctl/opctl/cli/internal/model"
 	"github.com/opctl/opctl/sdks/go/node/core"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker"
-	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 // Creater exposes the "node create" sub command
@@ -46,11 +45,6 @@ func (ivkr _creater) Create(
 
 	err = newHTTPListener(
 		core.New(
-			pubsub.New(
-				pubsub.NewBadgerDBEventStore(
-					dataDir.EventDBPath(),
-				),
-			),
 			containerRuntime,
 			dataDir.Path(),
 		),

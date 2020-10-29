@@ -43,8 +43,7 @@ var _ = Context("Interpreter", func() {
 				}
 
 				providedContainerCallImageSpec := &model.ContainerCallImageSpec{
-					Ref: "dummyRef",
-					PullCreds: &model.PullCredsSpec{
+					PullCreds: &model.CredsSpec{
 						Username: "dummyUsername",
 						Password: "dummyPassword",
 					},
@@ -54,7 +53,8 @@ var _ = Context("Interpreter", func() {
 				fakeDirInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 
 				fakeStrInterpreter := new(strFakes.FakeInterpreter)
-				fakeStrInterpreter.InterpretReturns(&model.Value{String: new(string)}, nil)
+				imageRef := "imageRef"
+				fakeStrInterpreter.InterpretReturns(&model.Value{String: &imageRef}, nil)
 
 				objectUnderTest := _interpreter{
 					dirInterpreter:    fakeDirInterpreter,
@@ -62,13 +62,14 @@ var _ = Context("Interpreter", func() {
 				}
 
 				/* act */
-				objectUnderTest.Interpret(
+				_, err := objectUnderTest.Interpret(
 					providedCurrentScope,
 					providedContainerCallImageSpec,
 					"dummyScratchDir",
 				)
 
 				/* assert */
+				Expect(err).To(BeNil())
 				actualImageRefScope,
 					actualImageRef := fakeStrInterpreter.InterpretArgsForCall(0)
 				Expect(actualImageRef).To(Equal(providedContainerCallImageSpec.Ref))
@@ -89,7 +90,7 @@ var _ = Context("Interpreter", func() {
 				/* arrange */
 				providedContainerCallImageSpec := &model.ContainerCallImageSpec{
 					Ref:       "dummyRef",
-					PullCreds: &model.PullCredsSpec{},
+					PullCreds: &model.CredsSpec{},
 				}
 
 				fakeDirInterpreter := new(dirFakes.FakeInterpreter)
@@ -97,7 +98,7 @@ var _ = Context("Interpreter", func() {
 
 				fakeStrInterpreter := new(strFakes.FakeInterpreter)
 
-				expectedImageRef := "expectedImageRef"
+				expectedImageRef := "docker.io/library/expectedimageref"
 				fakeStrInterpreter.InterpretReturnsOnCall(0, &model.Value{String: &expectedImageRef}, nil)
 
 				expectedUsername := "expectedUsername"
@@ -108,7 +109,7 @@ var _ = Context("Interpreter", func() {
 
 				expectedImage := &model.ContainerCallImage{
 					Ref: &expectedImageRef,
-					PullCreds: &model.PullCreds{
+					PullCreds: &model.Creds{
 						Username: expectedUsername,
 						Password: expectedPassword,
 					},
@@ -120,13 +121,14 @@ var _ = Context("Interpreter", func() {
 				}
 
 				/* act */
-				actualContainerCallImage, _ := objectUnderTest.Interpret(
+				actualContainerCallImage, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedContainerCallImageSpec,
 					"dummyScratchDir",
 				)
 
 				/* assert */
+				Expect(actualErr).To(BeNil())
 				Expect(actualContainerCallImage).To(Equal(expectedImage))
 			})
 		})

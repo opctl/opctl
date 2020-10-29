@@ -9,11 +9,11 @@ import (
 )
 
 type FakeDataResolver struct {
-	ResolveStub        func(string, *model.PullCreds) model.DataHandle
+	ResolveStub        func(string, *model.Creds) model.DataHandle
 	resolveMutex       sync.RWMutex
 	resolveArgsForCall []struct {
 		arg1 string
-		arg2 *model.PullCreds
+		arg2 *model.Creds
 	}
 	resolveReturns struct {
 		result1 model.DataHandle
@@ -25,12 +25,12 @@ type FakeDataResolver struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeDataResolver) Resolve(arg1 string, arg2 *model.PullCreds) model.DataHandle {
+func (fake *FakeDataResolver) Resolve(arg1 string, arg2 *model.Creds) model.DataHandle {
 	fake.resolveMutex.Lock()
 	ret, specificReturn := fake.resolveReturnsOnCall[len(fake.resolveArgsForCall)]
 	fake.resolveArgsForCall = append(fake.resolveArgsForCall, struct {
 		arg1 string
-		arg2 *model.PullCreds
+		arg2 *model.Creds
 	}{arg1, arg2})
 	fake.recordInvocation("Resolve", []interface{}{arg1, arg2})
 	fake.resolveMutex.Unlock()
@@ -50,13 +50,13 @@ func (fake *FakeDataResolver) ResolveCallCount() int {
 	return len(fake.resolveArgsForCall)
 }
 
-func (fake *FakeDataResolver) ResolveCalls(stub func(string, *model.PullCreds) model.DataHandle) {
+func (fake *FakeDataResolver) ResolveCalls(stub func(string, *model.Creds) model.DataHandle) {
 	fake.resolveMutex.Lock()
 	defer fake.resolveMutex.Unlock()
 	fake.ResolveStub = stub
 }
 
-func (fake *FakeDataResolver) ResolveArgsForCall(i int) (string, *model.PullCreds) {
+func (fake *FakeDataResolver) ResolveArgsForCall(i int) (string, *model.Creds) {
 	fake.resolveMutex.RLock()
 	defer fake.resolveMutex.RUnlock()
 	argsForCall := fake.resolveArgsForCall[i]

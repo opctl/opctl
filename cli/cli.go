@@ -79,6 +79,25 @@ func newCli(
 		}
 	}
 
+	cli.Command("auth", "Manage auth for dependencies", func(authCmd *mow.Cmd) {
+
+		authCmd.Command(
+			"add", "Add auth for ",
+			func(addCmd *mow.Cmd) {
+				addCmd.Spec = "RESOURCES [ -u=<username> ] [ -p=<password> ]"
+
+				resources := addCmd.StringArg("RESOURCES", "", "Resources this auth applies to in the form of a host or host/path.")
+				username := addCmd.StringOpt("u username", "", "Username")
+				password := addCmd.StringOpt("p password", "", "Password")
+
+				addCmd.Action = func() {
+					core.Auth().Add(context.TODO(), *resources, *username, *password)
+				}
+			})
+
+	},
+	)
+
 	cli.Command("events", "Stream events", func(eventsCmd *mow.Cmd) {
 		eventsCmd.Action = func() {
 			core.Events(context.TODO())

@@ -97,7 +97,7 @@ var _ = Context("_git", func() {
 						providedCtx := context.Background()
 						providedDataRef := "dummyDataRef"
 						basePath := "dummyBasePath"
-						pullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
+						pullCreds := &model.Creds{Username: "dummyUsername", Password: "dummyPassword"}
 
 						fakePuller := new(FakePuller)
 						// err to trigger immediate return

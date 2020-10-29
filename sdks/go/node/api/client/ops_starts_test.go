@@ -25,7 +25,7 @@ var _ = Context("StartOp", func() {
 			Args: map[string]*model.Value{},
 			Op: model.StartOpReqOp{
 				Ref: "dummyOpRef",
-				PullCreds: &model.PullCreds{
+				PullCreds: &model.Creds{
 					Username: "dummyUsername",
 					Password: "dummyPassword",
 				},

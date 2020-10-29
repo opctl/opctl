@@ -29,7 +29,8 @@ var _ = Context("Killer", func() {
 
 			expectedCtx := providedCtx
 			expectedReq := model.KillOpReq{
-				OpID: "dummyOpID",
+				OpID:       "dummyOpID",
+				RootCallID: "dummyOpID",
 			}
 
 			objectUnderTest := _killer{

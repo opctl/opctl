@@ -9,6 +9,7 @@ import (
 func (this _core) KillOp(
 	req model.KillOpReq,
 ) {
+	// killing an op is async
 	this.pubSub.Publish(
 		model.Event{
 			OpKillRequested: &model.OpKillRequested{

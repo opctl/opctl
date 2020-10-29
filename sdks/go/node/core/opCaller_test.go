@@ -19,7 +19,7 @@ var _ = Context("opCaller", func() {
 		It("should return opCaller", func() {
 			/* arrange/act/assert */
 			Expect(newOpCaller(
-				new(FakeCallStore),
+				new(FakeStateStore),
 				new(FakePubSub),
 				new(FakeCaller),
 				"",
@@ -27,66 +27,6 @@ var _ = Context("opCaller", func() {
 		})
 	})
 	Context("Call", func() {
-		It("should call pubSub.Publish w/ expected args", func() {
-			/* arrange */
-			providedOpPath := "providedOpPath"
-
-			providedOpCall := &model.OpCall{
-				BaseCall: model.BaseCall{
-					OpPath:     providedOpPath,
-					RootCallID: "providedRootID",
-				},
-				OpID: "providedOpId",
-			}
-
-			providedOpCallSpec := &model.OpCallSpec{}
-
-			expectedEvent := model.Event{
-				Timestamp: time.Now().UTC(),
-				CallStarted: &model.CallStarted{
-					CallID:     providedOpCall.OpID,
-					CallType:   model.CallTypeOp,
-					OpRef:      providedOpPath,
-					RootCallID: providedOpCall.RootCallID,
-				},
-			}
-
-			fakePubSub := new(FakePubSub)
-			eventChannel := make(chan model.Event)
-			// close eventChannel to trigger immediate return
-			close(eventChannel)
-			fakePubSub.SubscribeReturns(eventChannel, nil)
-
-			fakeOpFileGetter := new(FakeGetter)
-			// err to trigger immediate return
-			fakeOpFileGetter.GetReturns(nil, errors.New("dummyErr"))
-
-			objectUnderTest := _opCaller{
-				caller:       new(FakeCaller),
-				callStore:    new(FakeCallStore),
-				opFileGetter: fakeOpFileGetter,
-				pubSub:       fakePubSub,
-			}
-
-			/* act */
-			objectUnderTest.Call(
-				context.Background(),
-				providedOpCall,
-				map[string]*model.Value{},
-				nil,
-				providedOpCallSpec,
-			)
-
-			/* assert */
-			actualEvent := fakePubSub.PublishArgsForCall(0)
-
-			// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
-			Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
-			// set temporal fields to expected vals since they're already asserted
-			actualEvent.Timestamp = expectedEvent.Timestamp
-
-			Expect(actualEvent).To(Equal(expectedEvent))
-		})
 		It("should call caller.Call w/ expected args", func() {
 			/* arrange */
 			providedOpPath := "providedOpPath"
@@ -133,7 +73,7 @@ var _ = Context("opCaller", func() {
 
 			objectUnderTest := _opCaller{
 				caller:       fakeCaller,
-				callStore:    new(FakeCallStore),
+				stateStore:   new(FakeStateStore),
 				opFileGetter: fakeOpFileGetter,
 				pubSub:       fakePubSub,
 			}
@@ -164,7 +104,7 @@ var _ = Context("opCaller", func() {
 			Expect(actualParentCallID).To(Equal(&providedOpCall.OpID))
 			Expect(actualRootCallID).To(Equal(providedOpCall.RootCallID))
 		})
-		Context("callStore.Get(callID).IsKilled returns true", func() {
+		Context("stateStore.Get(callID).IsKilled returns true", func() {
 			It("should call pubSub.Publish w/ expected args", func() {
 				/* arrange */
 				providedOpPath := "providedOpPath"
@@ -191,8 +131,8 @@ var _ = Context("opCaller", func() {
 					},
 				}
 
-				fakeCallStore := new(FakeCallStore)
-				fakeCallStore.TryGetReturns(&model.Call{IsKilled: true})
+				fakeStateStore := new(FakeStateStore)
+				fakeStateStore.TryGetReturns(&model.Call{IsKilled: true})
 
 				fakeOpFileGetter := new(FakeGetter)
 				fakeOpFileGetter.GetReturns(&model.OpSpec{}, nil)
@@ -205,7 +145,7 @@ var _ = Context("opCaller", func() {
 
 				objectUnderTest := _opCaller{
 					caller:             new(FakeCaller),
-					callStore:          fakeCallStore,
+					stateStore:         fakeStateStore,
 					opFileGetter:       fakeOpFileGetter,
 					pubSub:             fakePubSub,
 					outputsInterpreter: new(outputsFakes.FakeInterpreter),
@@ -221,7 +161,7 @@ var _ = Context("opCaller", func() {
 				)
 
 				/* assert */
-				actualEvent := fakePubSub.PublishArgsForCall(1)
+				actualEvent := fakePubSub.PublishArgsForCall(0)
 
 				// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
 				Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
@@ -231,7 +171,7 @@ var _ = Context("opCaller", func() {
 				Expect(actualEvent).To(Equal(expectedEvent))
 			})
 		})
-		Context("callStore.Get(callID).IsKilled returns false", func() {
+		Context("stateStore.Get(callID).IsKilled returns false", func() {
 
 			Context("caller.Call errs", func() {
 				It("should call pubSub.Publish w/ expected args", func() {
@@ -276,7 +216,7 @@ var _ = Context("opCaller", func() {
 
 					objectUnderTest := _opCaller{
 						caller:       new(FakeCaller),
-						callStore:    new(FakeCallStore),
+						stateStore:   new(FakeStateStore),
 						opFileGetter: fakeOpFileGetter,
 						pubSub:       fakePubSub,
 					}
@@ -291,7 +231,7 @@ var _ = Context("opCaller", func() {
 					)
 
 					/* assert */
-					actualEvent := fakePubSub.PublishArgsForCall(1)
+					actualEvent := fakePubSub.PublishArgsForCall(0)
 
 					// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
 					Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
@@ -356,7 +296,7 @@ var _ = Context("opCaller", func() {
 
 				objectUnderTest := _opCaller{
 					caller:             new(FakeCaller),
-					callStore:          new(FakeCallStore),
+					stateStore:         new(FakeStateStore),
 					opFileGetter:       fakeOpFileGetter,
 					pubSub:             fakePubSub,
 					outputsInterpreter: fakeOutputsInterpreter,
@@ -372,7 +312,7 @@ var _ = Context("opCaller", func() {
 				)
 
 				/* assert */
-				actualEvent := fakePubSub.PublishArgsForCall(1)
+				actualEvent := fakePubSub.PublishArgsForCall(0)
 
 				// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
 				Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
