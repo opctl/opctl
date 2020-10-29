@@ -33,8 +33,8 @@ var _ = Context("opCaller", func() {
 
 			providedOpCall := &model.OpCall{
 				BaseCall: model.BaseCall{
-					OpPath:   providedOpPath,
-					RootOpID: "providedRootID",
+					OpPath:     providedOpPath,
+					RootCallID: "providedRootID",
 				},
 				OpID: "providedOpId",
 			}
@@ -43,10 +43,11 @@ var _ = Context("opCaller", func() {
 
 			expectedEvent := model.Event{
 				Timestamp: time.Now().UTC(),
-				OpStarted: &model.OpStarted{
-					OpID:     providedOpCall.OpID,
-					OpRef:    providedOpPath,
-					RootOpID: providedOpCall.RootOpID,
+				CallStarted: &model.CallStarted{
+					CallID:     providedOpCall.OpID,
+					CallType:   model.CallTypeOp,
+					OpRef:      providedOpPath,
+					RootCallID: providedOpCall.RootCallID,
 				},
 			}
 
@@ -94,8 +95,8 @@ var _ = Context("opCaller", func() {
 			providedCtx := context.Background()
 			providedOpCall := &model.OpCall{
 				BaseCall: model.BaseCall{
-					OpPath:   providedOpPath,
-					RootOpID: "providedRootID",
+					OpPath:     providedOpPath,
+					RootCallID: "providedRootID",
 				},
 				ChildCallID: "dummyChildCallID",
 				ChildCallCallSpec: &model.CallSpec{
@@ -153,7 +154,7 @@ var _ = Context("opCaller", func() {
 				actualChildCallSpec,
 				actualOpPath,
 				actualParentCallID,
-				actualRootOpID := fakeCaller.CallArgsForCall(0)
+				actualRootCallID := fakeCaller.CallArgsForCall(0)
 
 			Expect(actualCtx).To(Not(BeNil()))
 			Expect(actualChildCallID).To(Equal(providedOpCall.ChildCallID))
@@ -161,7 +162,7 @@ var _ = Context("opCaller", func() {
 			Expect(actualChildCallSpec).To(Equal(providedOpCall.ChildCallCallSpec))
 			Expect(actualOpPath).To(Equal(providedOpPath))
 			Expect(actualParentCallID).To(Equal(&providedOpCall.OpID))
-			Expect(actualRootOpID).To(Equal(providedOpCall.RootOpID))
+			Expect(actualRootCallID).To(Equal(providedOpCall.RootCallID))
 		})
 		Context("callStore.Get(callID).IsKilled returns true", func() {
 			It("should call pubSub.Publish w/ expected args", func() {
@@ -170,8 +171,8 @@ var _ = Context("opCaller", func() {
 
 				providedOpCall := &model.OpCall{
 					BaseCall: model.BaseCall{
-						OpPath:   providedOpPath,
-						RootOpID: "providedRootID",
+						OpPath:     providedOpPath,
+						RootCallID: "providedRootID",
 					},
 					OpID: "providedOpID",
 				}
@@ -180,12 +181,13 @@ var _ = Context("opCaller", func() {
 
 				expectedEvent := model.Event{
 					Timestamp: time.Now().UTC(),
-					OpEnded: &model.OpEnded{
-						OpID:     providedOpCall.OpID,
-						Outcome:  model.OpOutcomeKilled,
-						RootOpID: providedOpCall.RootOpID,
-						OpRef:    providedOpPath,
-						Outputs:  map[string]*model.Value{},
+					CallEnded: &model.CallEnded{
+						CallID:     providedOpCall.OpID,
+						CallType:   model.CallTypeOp,
+						Outcome:    model.OpOutcomeKilled,
+						RootCallID: providedOpCall.RootCallID,
+						Ref:        providedOpPath,
+						Outputs:    map[string]*model.Value{},
 					},
 				}
 
@@ -193,7 +195,7 @@ var _ = Context("opCaller", func() {
 				fakeCallStore.TryGetReturns(&model.Call{IsKilled: true})
 
 				fakeOpFileGetter := new(FakeGetter)
-				fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
+				fakeOpFileGetter.GetReturns(&model.OpSpec{}, nil)
 
 				fakePubSub := new(FakePubSub)
 				eventChannel := make(chan model.Event)
@@ -238,8 +240,8 @@ var _ = Context("opCaller", func() {
 
 					providedOpCall := &model.OpCall{
 						BaseCall: model.BaseCall{
-							OpPath:   providedOpPath,
-							RootOpID: "providedRootID",
+							OpPath:     providedOpPath,
+							RootCallID: "providedRootID",
 						},
 						OpID: "providedOpId",
 					}
@@ -249,15 +251,16 @@ var _ = Context("opCaller", func() {
 
 					expectedEvent := model.Event{
 						Timestamp: time.Now().UTC(),
-						OpEnded: &model.OpEnded{
+						CallEnded: &model.CallEnded{
 							Error: &model.CallEndedError{
 								Message: errMsg,
 							},
-							OpID:     providedOpCall.OpID,
-							OpRef:    providedOpPath,
-							Outcome:  model.OpOutcomeFailed,
-							RootOpID: providedOpCall.RootOpID,
-							Outputs:  map[string]*model.Value{},
+							CallID:     providedOpCall.OpID,
+							CallType:   model.CallTypeOp,
+							Ref:        providedOpPath,
+							Outcome:    model.OpOutcomeFailed,
+							RootCallID: providedOpCall.RootCallID,
+							Outputs:    map[string]*model.Value{},
 						},
 					}
 
@@ -306,8 +309,8 @@ var _ = Context("opCaller", func() {
 
 				providedOpCall := &model.OpCall{
 					BaseCall: model.BaseCall{
-						OpPath:   providedOpPath,
-						RootOpID: "providedRootID",
+						OpPath:     providedOpPath,
+						RootCallID: "providedRootID",
 					},
 					OpID: "providedOpId",
 				}
@@ -330,11 +333,12 @@ var _ = Context("opCaller", func() {
 
 				expectedEvent := model.Event{
 					Timestamp: time.Now().UTC(),
-					OpEnded: &model.OpEnded{
-						OpID:     providedOpCall.OpID,
-						OpRef:    providedOpPath,
-						Outcome:  model.OpOutcomeSucceeded,
-						RootOpID: providedOpCall.RootOpID,
+					CallEnded: &model.CallEnded{
+						CallID:     providedOpCall.OpID,
+						CallType:   model.CallTypeOp,
+						Ref:        providedOpPath,
+						Outcome:    model.OpOutcomeSucceeded,
+						RootCallID: providedOpCall.RootCallID,
 						Outputs: map[string]*model.Value{
 							expectedOutputName: interpretedOutputs[expectedOutputName],
 						},
@@ -342,7 +346,7 @@ var _ = Context("opCaller", func() {
 				}
 
 				fakeOpFileGetter := new(FakeGetter)
-				fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
+				fakeOpFileGetter.GetReturns(&model.OpSpec{}, nil)
 
 				fakePubSub := new(FakePubSub)
 				eventChannel := make(chan model.Event)

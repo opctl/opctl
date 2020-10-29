@@ -30,12 +30,12 @@ var _ = Context("Interpreter", func() {
 			/* arrange */
 			dataDirPath := "/dummydataDirPath"
 			providedContainerID := "dummyContainerID"
-			providedRootOpID := "dummyRootOpID"
+			providedRootCallID := "dummyRootCallID"
 
 			expectedScratchDirPath := filepath.Join(
 				dataDirPath,
 				"dcg",
-				providedRootOpID,
+				providedRootCallID,
 				"containers",
 				providedContainerID,
 				"fs",
@@ -58,7 +58,7 @@ var _ = Context("Interpreter", func() {
 				map[string]*model.Value{},
 				&model.ContainerCallSpec{},
 				providedContainerID,
-				providedRootOpID,
+				providedRootCallID,
 				"dummyOpPath",
 			)
 
@@ -100,7 +100,7 @@ var _ = Context("Interpreter", func() {
 				providedScope,
 				providedContainerCallSpec,
 				"dummyContainerID",
-				"dummyRootOpID",
+				"dummyRootCallID",
 				"dummyOpPath",
 			)
 
@@ -129,7 +129,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					&model.ContainerCallSpec{},
 					"dummyContainerID",
-					"dummyRootOpID",
+					"dummyRootCallID",
 					"dummyOpPath",
 				)
 
@@ -162,7 +162,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					&model.ContainerCallSpec{},
 					"dummyContainerID",
-					"dummyRootOpID",
+					"dummyRootCallID",
 					"dummyOpPath",
 				)
 
@@ -189,12 +189,12 @@ var _ = Context("Interpreter", func() {
 
 			provideddataDirPath := "dummydataDirPath"
 			providedContainerID := "dummyContainerID"
-			providedRootOpID := "dummyRootOpID"
+			providedRootCallID := "dummyRootCallID"
 
 			expectedScratchDirPath := filepath.Join(
 				provideddataDirPath,
 				"dcg",
-				providedRootOpID,
+				providedRootCallID,
 				"containers",
 				providedContainerID,
 				"fs",
@@ -218,7 +218,7 @@ var _ = Context("Interpreter", func() {
 				providedScope,
 				providedContainerCallSpec,
 				providedContainerID,
-				providedRootOpID,
+				providedRootCallID,
 				"dummyOpPath",
 			)
 
@@ -248,7 +248,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					&model.ContainerCallSpec{},
 					"dummyContainerID",
-					"dummyRootOpID",
+					"dummyRootCallID",
 					"dummyOpPath",
 				)
 
@@ -281,7 +281,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					&model.ContainerCallSpec{},
 					"dummyContainerID",
-					"dummyRootOpID",
+					"dummyRootCallID",
 					"dummyOpPath",
 				)
 
@@ -323,7 +323,7 @@ var _ = Context("Interpreter", func() {
 				providedScope,
 				providedContainerCallSpec,
 				"dummyContainerID",
-				"dummyRootOpID",
+				"dummyRootCallID",
 				"dummyOpPath",
 			)
 
@@ -354,7 +354,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					&model.ContainerCallSpec{},
 					"dummyContainerID",
-					"dummyRootOpID",
+					"dummyRootCallID",
 					"dummyOpPath",
 				)
 
@@ -387,7 +387,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					&model.ContainerCallSpec{},
 					"dummyContainerID",
-					"dummyRootOpID",
+					"dummyRootCallID",
 					"dummyOpPath",
 				)
 
@@ -414,12 +414,12 @@ var _ = Context("Interpreter", func() {
 
 			provideddataDirPath := "dummydataDirPath"
 			providedContainerID := "dummyContainerID"
-			providedRootOpID := "dummyRootOpID"
+			providedRootCallID := "dummyRootCallID"
 
 			expectedScratchDirPath := filepath.Join(
 				provideddataDirPath,
 				"dcg",
-				providedRootOpID,
+				providedRootCallID,
 				"containers",
 				providedContainerID,
 				"fs",
@@ -443,7 +443,7 @@ var _ = Context("Interpreter", func() {
 				providedScope,
 				providedContainerCallSpec,
 				providedContainerID,
-				providedRootOpID,
+				providedRootCallID,
 				"dummyOpPath",
 			)
 
@@ -474,7 +474,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					&model.ContainerCallSpec{},
 					"dummyContainerID",
-					"dummyRootOpID",
+					"dummyRootCallID",
 					"dummyOpPath",
 				)
 
@@ -507,7 +507,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					&model.ContainerCallSpec{},
 					"dummyContainerID",
-					"dummyRootOpID",
+					"dummyRootCallID",
 					"dummyOpPath",
 				)
 
@@ -534,13 +534,13 @@ var _ = Context("Interpreter", func() {
 				},
 			}
 
-			providedRootOpID := "providedRootOpID"
+			providedRootCallID := "providedRootCallID"
 			providedContainerID := "providedContainerID"
 
 			expectedScratchDir := filepath.Join(
 				providedDataDirPath,
 				"dcg",
-				providedRootOpID,
+				providedRootCallID,
 				"containers",
 				providedContainerID,
 				"fs",
@@ -564,7 +564,7 @@ var _ = Context("Interpreter", func() {
 				providedScope,
 				providedContainerCallSpec,
 				providedContainerID,
-				providedRootOpID,
+				providedRootCallID,
 				"dummyOpPath",
 			)
 
@@ -599,7 +599,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					&model.ContainerCallSpec{},
 					"dummyContainerID",
-					"dummyRootOpID",
+					"dummyRootCallID",
 					"dummyOpPath",
 				)
 
@@ -636,7 +636,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					&model.ContainerCallSpec{},
 					"dummyContainerID",
-					"dummyRootOpID",
+					"dummyRootCallID",
 					"dummyOpPath",
 				)
 
@@ -679,7 +679,7 @@ var _ = Context("Interpreter", func() {
 					providedScope,
 					providedContainerCallSpec,
 					"dummyContainerID",
-					"dummyRootOpID",
+					"dummyRootCallID",
 					"dummyOpPath",
 				)
 
@@ -715,7 +715,7 @@ var _ = Context("Interpreter", func() {
 							Name: new(string),
 						},
 						"dummyContainerID",
-						"dummyRootOpID",
+						"dummyRootCallID",
 						"dummyOpPath",
 					)
 
@@ -749,7 +749,7 @@ var _ = Context("Interpreter", func() {
 							Name: new(string),
 						},
 						"dummyContainerID",
-						"dummyRootOpID",
+						"dummyRootCallID",
 						"dummyOpPath",
 					)
 
@@ -791,7 +791,7 @@ var _ = Context("Interpreter", func() {
 					providedScope,
 					providedContainerCallSpec,
 					"dummyContainerID",
-					"dummyRootOpID",
+					"dummyRootCallID",
 					"dummyOpPath",
 				)
 
@@ -827,7 +827,7 @@ var _ = Context("Interpreter", func() {
 							WorkDir: "dummyWorkDir",
 						},
 						"dummyContainerID",
-						"dummyRootOpID",
+						"dummyRootCallID",
 						"dummyOpPath",
 					)
 
@@ -861,7 +861,7 @@ var _ = Context("Interpreter", func() {
 							WorkDir: "dummyWorkDir",
 						},
 						"dummyContainerID",
-						"dummyRootOpID",
+						"dummyRootCallID",
 						"dummyOpPath",
 					)
 
@@ -889,12 +889,12 @@ var _ = Context("Interpreter", func() {
 
 			provideddataDirPath := "dummydataDirPath"
 			providedContainerID := "dummyContainerID"
-			providedRootOpID := "dummyRootOpID"
+			providedRootCallID := "dummyRootCallID"
 
 			expectedScratchDirPath := filepath.Join(
 				provideddataDirPath,
 				"dcg",
-				providedRootOpID,
+				providedRootCallID,
 				"containers",
 				providedContainerID,
 				"fs",
@@ -918,7 +918,7 @@ var _ = Context("Interpreter", func() {
 				providedScope,
 				providedContainerCallSpec,
 				providedContainerID,
-				providedRootOpID,
+				providedRootCallID,
 				"dummyOpPath",
 			)
 
@@ -950,7 +950,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					&model.ContainerCallSpec{},
 					"dummyContainerID",
-					"dummyRootOpID",
+					"dummyRootCallID",
 					"dummyOpPath",
 				)
 
@@ -983,7 +983,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					&model.ContainerCallSpec{},
 					"dummyContainerID",
-					"dummyRootOpID",
+					"dummyRootCallID",
 					"dummyOpPath",
 				)
 

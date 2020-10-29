@@ -84,7 +84,7 @@ var _ = Context("unmarshaller", func() {
 					},
 				}
 
-				expectedOpFile := &model.OpFile{
+				expectedOpFile := &model.OpSpec{
 					Description: "dummyDescription",
 					Inputs:      dummyParams,
 					Name:        "dummyName",

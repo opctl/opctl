@@ -16,7 +16,7 @@ type Lister interface {
 	List(
 		ctx context.Context,
 		dirHandle model.DataHandle,
-	) (map[string]*model.OpFile, error)
+	) (map[string]*model.OpSpec, error)
 }
 
 // NewLister returns an initialized Lister instance
@@ -35,14 +35,14 @@ type _lister struct {
 func (ls _lister) List(
 	ctx context.Context,
 	dirHandle model.DataHandle,
-) (map[string]*model.OpFile, error) {
+) (map[string]*model.OpSpec, error) {
 
 	contents, err := dirHandle.ListDescendants(ctx)
 	if nil != err {
 		return nil, err
 	}
 
-	opsByPath := map[string]*model.OpFile{}
+	opsByPath := map[string]*model.OpSpec{}
 	for _, content := range contents {
 		if filepath.Base(content.Path) == opfile.FileName {
 

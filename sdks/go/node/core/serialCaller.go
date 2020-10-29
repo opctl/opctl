@@ -17,7 +17,7 @@ type serialCaller interface {
 		ctx context.Context,
 		callID string,
 		inboundScope map[string]*model.Value,
-		rootOpID string,
+		rootCallID string,
 		opPath string,
 		callSpecSerialCall []*model.CallSpec,
 	)
@@ -46,7 +46,7 @@ func (sc _serialCaller) Call(
 	ctx context.Context,
 	callID string,
 	inboundScope map[string]*model.Value,
-	rootOpID string,
+	rootCallID string,
 	opPath string,
 	callSpecSerialCall []*model.CallSpec,
 ) {
@@ -59,16 +59,16 @@ func (sc _serialCaller) Call(
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 		event := model.Event{
-			SerialCallEnded: &model.SerialCallEnded{
-				CallID:   callID,
-				Outputs:  outputs,
-				RootOpID: rootOpID,
+			CallEnded: &model.CallEnded{
+				CallID:     callID,
+				Outputs:    outputs,
+				RootCallID: rootCallID,
 			},
 			Timestamp: time.Now().UTC(),
 		}
 
 		if nil != err {
-			event.SerialCallEnded.Error = &model.CallEndedError{
+			event.CallEnded.Error = &model.CallEndedError{
 				Message: err.Error(),
 			}
 		}
@@ -83,7 +83,7 @@ func (sc _serialCaller) Call(
 	eventChannel, _ := sc.pubSub.Subscribe(
 		ctx,
 		model.EventFilter{
-			Roots: []string{rootOpID},
+			Roots: []string{rootCallID},
 			Since: &eventFilterSince,
 		},
 	)
@@ -104,7 +104,7 @@ func (sc _serialCaller) Call(
 			callSpecCall,
 			opPath,
 			&callID,
-			rootOpID,
+			rootCallID,
 		)
 
 	eventLoop:

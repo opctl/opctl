@@ -6,14 +6,14 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
-func isRootOpIDExcludedByFilter(
-	rootOpID string,
+func isRootCallIDExcludedByFilter(
+	rootCallID string,
 	filter model.EventFilter,
 ) bool {
 	if nil != filter.Roots {
 		isMatchFound := false
-		for _, includedRootOpID := range filter.Roots {
-			if includedRootOpID == rootOpID {
+		for _, includedRootCallID := range filter.Roots {
+			if includedRootCallID == rootCallID {
 				isMatchFound = true
 				break
 			}
@@ -25,34 +25,24 @@ func isRootOpIDExcludedByFilter(
 	return false
 }
 
-func getEventRootOpID(
+func getEventRootCallID(
 	event model.Event,
 ) string {
 	switch {
 	case nil != event.CallEnded:
 		return event.CallEnded.RootCallID
 	case nil != event.ContainerExited:
-		return event.ContainerExited.RootOpID
+		return event.ContainerExited.RootCallID
 	case nil != event.ContainerStarted:
-		return event.ContainerStarted.RootOpID
+		return event.ContainerStarted.RootCallID
 	case nil != event.ContainerStdErrWrittenTo:
-		return event.ContainerStdErrWrittenTo.RootOpID
+		return event.ContainerStdErrWrittenTo.RootCallID
 	case nil != event.ContainerStdOutWrittenTo:
-		return event.ContainerStdOutWrittenTo.RootOpID
+		return event.ContainerStdOutWrittenTo.RootCallID
 	case nil != event.OpKillRequested:
-		return event.OpKillRequested.Request.RootOpID
-	case nil != event.OpEnded:
-		return event.OpEnded.RootOpID
-	case nil != event.OpStarted:
-		return event.OpStarted.RootOpID
-	case nil != event.ParallelCallEnded:
-		return event.ParallelCallEnded.RootOpID
-	case nil != event.ParallelLoopCallEnded:
-		return event.ParallelLoopCallEnded.RootOpID
-	case nil != event.SerialCallEnded:
-		return event.SerialCallEnded.RootOpID
-	case nil != event.SerialLoopCallEnded:
-		return event.SerialLoopCallEnded.RootOpID
+		return event.OpKillRequested.Request.RootCallID
+	case nil != event.CallStarted:
+		return event.CallStarted.RootCallID
 	default:
 		fmt.Println("received unexpected event", event)
 		// use empty guid for unknown events

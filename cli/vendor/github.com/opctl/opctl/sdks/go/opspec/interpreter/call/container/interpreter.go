@@ -21,7 +21,7 @@ type Interpreter interface {
 		scope map[string]*model.Value,
 		containerCallSpec *model.ContainerCallSpec,
 		containerID string,
-		rootOpID string,
+		rootCallID string,
 		opPath string,
 	) (*model.ContainerCall, error)
 }
@@ -59,14 +59,14 @@ func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	containerCallSpec *model.ContainerCallSpec,
 	containerID string,
-	rootOpID string,
+	rootCallID string,
 	opPath string,
 ) (*model.ContainerCall, error) {
 
 	containerCall := &model.ContainerCall{
 		BaseCall: model.BaseCall{
-			RootOpID: rootOpID,
-			OpPath:   opPath,
+			RootCallID: rootCallID,
+			OpPath:     opPath,
 		},
 		Dirs:        map[string]string{},
 		EnvVars:     map[string]string{},
@@ -81,7 +81,7 @@ func (itp _interpreter) Interpret(
 	scratchDirPath := filepath.Join(
 		itp.dataDirPath,
 		"dcg",
-		rootOpID,
+		rootCallID,
 		"containers",
 		containerID,
 		"fs",

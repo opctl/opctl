@@ -15,7 +15,7 @@ type Getter interface {
 		ctx context.Context,
 		opPath string,
 	) (
-		*model.OpFile,
+		*model.OpSpec,
 		error,
 	)
 }
@@ -36,7 +36,7 @@ func (gtr _getter) Get(
 	ctx context.Context,
 	opPath string,
 ) (
-	*model.OpFile,
+	*model.OpSpec,
 	error,
 ) {
 	opFileBytes, err := gtr.ioUtil.ReadFile(filepath.Join(opPath, FileName))

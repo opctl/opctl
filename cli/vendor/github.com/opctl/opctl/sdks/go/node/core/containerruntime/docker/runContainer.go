@@ -108,7 +108,7 @@ func (cr _runContainer) RunContainer(
 			req.ContainerID,
 			req.Image.PullCreds,
 			*req.Image.Ref,
-			req.RootOpID,
+			req.RootCallID,
 			eventPublisher,
 		)
 		// don't err yet; image might be cached. We allow this to support offline use

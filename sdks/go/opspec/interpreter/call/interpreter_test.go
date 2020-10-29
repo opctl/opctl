@@ -47,7 +47,7 @@ var _ = Context("Interpreter", func() {
 					"providedID",
 					"dummyOpPath",
 					nil,
-					"providedRootOpID",
+					"providedRootCallID",
 				)
 
 				/* assert */
@@ -80,7 +80,7 @@ var _ = Context("Interpreter", func() {
 						"providedID",
 						"dummyOpPath",
 						nil,
-						"providedRootOpID",
+						"providedRootCallID",
 					)
 
 					/* assert */
@@ -99,7 +99,7 @@ var _ = Context("Interpreter", func() {
 
 				providedID := "providedID"
 				providedOpPath := "providedOpPath"
-				providedRootOpID := "providedRootOpID"
+				providedRootCallID := "providedRootCallID"
 
 				fakeContainerCallInterpreter := new(containerFakes.FakeInterpreter)
 
@@ -114,20 +114,20 @@ var _ = Context("Interpreter", func() {
 					providedID,
 					providedOpPath,
 					nil,
-					providedRootOpID,
+					providedRootCallID,
 				)
 
 				/* assert */
 				actualScope,
 					actualContainerCallSpec,
 					actualContainerID,
-					actualRootOpID,
+					actualRootCallID,
 					actualOpPath := fakeContainerCallInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualContainerCallSpec).To(Equal(providedCallSpec.Container))
 				Expect(actualContainerID).To(Equal(providedID))
-				Expect(actualRootOpID).To(Equal(providedRootOpID))
+				Expect(actualRootCallID).To(Equal(providedRootCallID))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 
 			})
@@ -164,7 +164,7 @@ var _ = Context("Interpreter", func() {
 					providedID,
 					"dummyOpPath",
 					providedParentID,
-					"providedRootOpID",
+					"providedRootCallID",
 				)
 
 				/* assert */
@@ -184,7 +184,7 @@ var _ = Context("Interpreter", func() {
 
 				providedID := "providedID"
 				providedOpPath := "providedOpPath"
-				providedRootOpID := "providedRootOpID"
+				providedRootCallID := "providedRootCallID"
 
 				fakeOpCallInterpreter := new(opFakes.FakeInterpreter)
 
@@ -199,7 +199,7 @@ var _ = Context("Interpreter", func() {
 					providedID,
 					providedOpPath,
 					nil,
-					providedRootOpID,
+					providedRootCallID,
 				)
 
 				/* assert */
@@ -207,13 +207,13 @@ var _ = Context("Interpreter", func() {
 					actualOpCallSpec,
 					actualOpID,
 					actualOpPath,
-					actualRootOpID := fakeOpCallInterpreter.InterpretArgsForCall(0)
+					actualRootCallID := fakeOpCallInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualOpCallSpec).To(Equal(providedCallSpec.Op))
 				Expect(actualOpID).To(Equal(providedID))
 				Expect(actualOpPath).To(Equal(providedOpPath))
-				Expect(actualRootOpID).To(Equal(providedRootOpID))
+				Expect(actualRootCallID).To(Equal(providedRootCallID))
 
 			})
 			It("should return expected result", func() {
@@ -248,7 +248,7 @@ var _ = Context("Interpreter", func() {
 					providedID,
 					"dummyOpPath",
 					&providedParentID,
-					"providedRootOpID",
+					"providedRootCallID",
 				)
 
 				/* assert */
@@ -286,7 +286,7 @@ var _ = Context("Interpreter", func() {
 					providedID,
 					"dummyOpPath",
 					&providedParentID,
-					"providedRootOpID",
+					"providedRootCallID",
 				)
 
 				/* assert */
@@ -324,7 +324,7 @@ var _ = Context("Interpreter", func() {
 					providedID,
 					"dummyOpPath",
 					&providedParentID,
-					"providedRootOpID",
+					"providedRootCallID",
 				)
 
 				/* assert */

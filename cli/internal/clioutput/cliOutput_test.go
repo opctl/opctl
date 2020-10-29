@@ -204,18 +204,19 @@ var _ = Context("output", func() {
 					To(Equal(expectedWriteArg))
 			})
 		})
-		Context("OpEnded", func() {
+		Context("CallEnded", func() {
 			Context("Outcome==FAILED", func() {
 				It("should call errWriter w/ expected args", func() {
 					/* arrange */
 					providedEvent := &model.Event{
-						OpEnded: &model.OpEnded{
+						CallEnded: &model.CallEnded{
 							Error: &model.CallEndedError{
 								Message: "message",
 							},
-							OpID:    "dummyOpID",
-							OpRef:   "dummyOpRef",
-							Outcome: "FAILED",
+							CallID:   "dummyOpID",
+							CallType: model.CallTypeOp,
+							Ref:      "dummyOpRef",
+							Outcome:  "FAILED",
 						},
 						Timestamp: time.Now(),
 					}
@@ -224,10 +225,10 @@ var _ = Context("output", func() {
 							_cliColorer.Error(
 								fmt.Sprintf(
 									"OpEnded Id='%v' OpRef='%v' Outcome='%v'%v Timestamp='%v'\n",
-									providedEvent.OpEnded.OpID,
-									providedEvent.OpEnded.OpRef,
-									providedEvent.OpEnded.Outcome,
-									fmt.Sprintf(" Error='%v'", providedEvent.OpEnded.Error.Message),
+									providedEvent.CallEnded.CallID,
+									providedEvent.CallEnded.Ref,
+									providedEvent.CallEnded.Outcome,
+									fmt.Sprintf(" Error='%v'", providedEvent.CallEnded.Error.Message),
 									providedEvent.Timestamp.Format(time.RFC3339),
 								),
 							),
@@ -253,10 +254,11 @@ var _ = Context("output", func() {
 				It("should call stdWriter w/ expected args", func() {
 					/* arrange */
 					providedEvent := &model.Event{
-						OpEnded: &model.OpEnded{
-							OpID:    "dummyOpID",
-							OpRef:   "dummyOpRef",
-							Outcome: "SUCCEEDED",
+						CallEnded: &model.CallEnded{
+							CallID:   "dummyOpID",
+							CallType: model.CallTypeOp,
+							Ref:      "dummyOpRef",
+							Outcome:  "SUCCEEDED",
 						},
 						Timestamp: time.Now(),
 					}
@@ -265,9 +267,9 @@ var _ = Context("output", func() {
 							_cliColorer.Success(
 								fmt.Sprintf(
 									"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
-									providedEvent.OpEnded.OpID,
-									providedEvent.OpEnded.OpRef,
-									providedEvent.OpEnded.Outcome,
+									providedEvent.CallEnded.CallID,
+									providedEvent.CallEnded.Ref,
+									providedEvent.CallEnded.Outcome,
 									providedEvent.Timestamp.Format(time.RFC3339),
 								),
 							),
@@ -293,10 +295,11 @@ var _ = Context("output", func() {
 				It("should call stdWriter w/ expected args", func() {
 					/* arrange */
 					providedEvent := &model.Event{
-						OpEnded: &model.OpEnded{
-							OpID:    "dummyOpID",
-							OpRef:   "dummyOpRef",
-							Outcome: "KILLED",
+						CallEnded: &model.CallEnded{
+							CallID:   "dummyOpID",
+							CallType: model.CallTypeOp,
+							Ref:      "dummyOpRef",
+							Outcome:  "KILLED",
 						},
 						Timestamp: time.Now(),
 					}
@@ -305,9 +308,9 @@ var _ = Context("output", func() {
 							_cliColorer.Info(
 								fmt.Sprintf(
 									"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
-									providedEvent.OpEnded.OpID,
-									providedEvent.OpEnded.OpRef,
-									providedEvent.OpEnded.Outcome,
+									providedEvent.CallEnded.CallID,
+									providedEvent.CallEnded.Ref,
+									providedEvent.CallEnded.Outcome,
 									providedEvent.Timestamp.Format(time.RFC3339),
 								),
 							),
@@ -333,10 +336,11 @@ var _ = Context("output", func() {
 				It("should call errWriter w/ expected args", func() {
 					/* arrange */
 					providedEvent := &model.Event{
-						OpEnded: &model.OpEnded{
-							OpID:    "dummyOpID",
-							OpRef:   "dummyOpRef",
-							Outcome: "FAILED",
+						CallEnded: &model.CallEnded{
+							CallID:   "dummyOpID",
+							CallType: model.CallTypeOp,
+							Ref:      "dummyOpRef",
+							Outcome:  "FAILED",
 						},
 						Timestamp: time.Now(),
 					}
@@ -345,9 +349,9 @@ var _ = Context("output", func() {
 							_cliColorer.Error(
 								fmt.Sprintf(
 									"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
-									providedEvent.OpEnded.OpID,
-									providedEvent.OpEnded.OpRef,
-									providedEvent.OpEnded.Outcome,
+									providedEvent.CallEnded.CallID,
+									providedEvent.CallEnded.Ref,
+									providedEvent.CallEnded.Outcome,
 									providedEvent.Timestamp.Format(time.RFC3339),
 								),
 							),
@@ -374,9 +378,10 @@ var _ = Context("output", func() {
 			It("should call stdWriter w/ expected args", func() {
 				/* arrange */
 				providedEvent := &model.Event{
-					OpStarted: &model.OpStarted{
-						OpID:  "dummyOpID",
-						OpRef: "dummyOpRef",
+					CallStarted: &model.CallStarted{
+						CallID:   "dummyOpID",
+						CallType: model.CallTypeOp,
+						OpRef:    "dummyOpRef",
 					},
 					Timestamp: time.Now(),
 				}
@@ -385,8 +390,8 @@ var _ = Context("output", func() {
 						_cliColorer.Info(
 							fmt.Sprintf(
 								"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-								providedEvent.OpStarted.OpID,
-								providedEvent.OpStarted.OpRef,
+								providedEvent.CallStarted.CallID,
+								providedEvent.CallStarted.OpRef,
 								providedEvent.Timestamp.Format(time.RFC3339),
 							),
 						),

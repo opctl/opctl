@@ -141,7 +141,7 @@ var _ = Context("Runer", func() {
 			It("should call paramSatisfier.Satisfy w/ expected args", func() {
 				/* arrange */
 				param1Name := "DUMMY_PARAM1_NAME"
-				opFile := &model.OpFile{
+				opFile := &model.OpSpec{
 					Inputs: map[string]*model.Param{
 						param1Name: {
 							String: &model.StringParam{},
@@ -209,7 +209,7 @@ var _ = Context("Runer", func() {
 				}
 
 				fakeOpFileUnmarshaller := new(opfileFakes.FakeUnmarshaller)
-				fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpFile{}, nil)
+				fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpSpec{}, nil)
 
 				fakeDataResolver := new(dataresolver.Fake)
 				fakeDataResolver.ResolveReturns(dummyOpDataHandle)
@@ -254,7 +254,7 @@ var _ = Context("Runer", func() {
 					returnedError := errors.New("dummyError")
 
 					fakeOpFileUnmarshaller := new(opfileFakes.FakeUnmarshaller)
-					fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpFile{}, nil)
+					fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpSpec{}, nil)
 
 					dummyOpDataHandle := getDummyOpDataHandle()
 
@@ -263,7 +263,7 @@ var _ = Context("Runer", func() {
 
 					// stub node provider
 					fakeAPIClient := new(clientFakes.FakeClient)
-					fakeAPIClient.StartOpReturns("dummyOpID", returnedError)
+					fakeAPIClient.StartOpReturns("dummyCallID", returnedError)
 
 					fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 					fakeNodeHandle.APIClientReturns(fakeAPIClient)
@@ -291,17 +291,17 @@ var _ = Context("Runer", func() {
 				It("should call nodeHandle.APIClient().GetEventStream w/ expected args", func() {
 					/* arrange */
 					providedCtx := context.Background()
-					rootOpIDReturnedFromStartOp := "dummyRootOpID"
+					rootCallIDReturnedFromStartOp := "dummyRootCallID"
 					startTime := time.Now().UTC()
 					expectedReq := &model.GetEventStreamReq{
 						Filter: model.EventFilter{
-							Roots: []string{rootOpIDReturnedFromStartOp},
+							Roots: []string{rootCallIDReturnedFromStartOp},
 							Since: &startTime,
 						},
 					}
 
 					fakeOpFileUnmarshaller := new(opfileFakes.FakeUnmarshaller)
-					fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpFile{}, nil)
+					fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpSpec{}, nil)
 
 					dummyOpDataHandle := getDummyOpDataHandle()
 
@@ -310,7 +310,7 @@ var _ = Context("Runer", func() {
 
 					// stub node provider
 					fakeAPIClient := new(clientFakes.FakeClient)
-					fakeAPIClient.StartOpReturns(rootOpIDReturnedFromStartOp, nil)
+					fakeAPIClient.StartOpReturns(rootCallIDReturnedFromStartOp, nil)
 
 					fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 					fakeNodeHandle.APIClientReturns(fakeAPIClient)
@@ -352,7 +352,7 @@ var _ = Context("Runer", func() {
 						returnedError := errors.New("dummyError")
 
 						fakeOpFileUnmarshaller := new(opfileFakes.FakeUnmarshaller)
-						fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpFile{}, nil)
+						fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpSpec{}, nil)
 
 						dummyOpDataHandle := getDummyOpDataHandle()
 
@@ -391,7 +391,7 @@ var _ = Context("Runer", func() {
 							fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 							fakeOpFileUnmarshaller := new(opfileFakes.FakeUnmarshaller)
-							fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpFile{}, nil)
+							fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpSpec{}, nil)
 
 							dummyOpDataHandle := getDummyOpDataHandle()
 
@@ -427,25 +427,24 @@ var _ = Context("Runer", func() {
 					})
 					Context("event channel doesn't close", func() {
 						Context("event received", func() {
-							rootOpID := "dummyRootOpID"
-							Context("OpEnded", func() {
+							rootCallID := "dummyRootCallID"
+							Context("CallEnded", func() {
 								Context("Outcome==SUCCEEDED", func() {
 									It("should call exiter w/ expected args", func() {
 										/* arrange */
 										opEnded := model.Event{
 											Timestamp: time.Now(),
-											OpEnded: &model.OpEnded{
-												OpID:     rootOpID,
-												OpRef:    "dummyOpRef",
-												Outcome:  model.OpOutcomeSucceeded,
-												RootOpID: rootOpID,
+											CallEnded: &model.CallEnded{
+												CallID:     rootCallID,
+												Outcome:    model.OpOutcomeSucceeded,
+												RootCallID: rootCallID,
 											},
 										}
 
 										fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 										fakeOpFileUnmarshaller := new(opfileFakes.FakeUnmarshaller)
-										fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpFile{}, nil)
+										fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpSpec{}, nil)
 
 										dummyOpDataHandle := getDummyOpDataHandle()
 
@@ -457,7 +456,7 @@ var _ = Context("Runer", func() {
 										eventChannel <- opEnded
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEnded.OpEnded.RootOpID, nil)
+										fakeAPIClient.StartOpReturns(opEnded.CallEnded.RootCallID, nil)
 
 										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)
@@ -486,18 +485,17 @@ var _ = Context("Runer", func() {
 										/* arrange */
 										opEnded := model.Event{
 											Timestamp: time.Now(),
-											OpEnded: &model.OpEnded{
-												OpID:     rootOpID,
-												OpRef:    "dummyOpRef",
-												Outcome:  model.OpOutcomeKilled,
-												RootOpID: rootOpID,
+											CallEnded: &model.CallEnded{
+												CallID:     rootCallID,
+												Outcome:    model.OpOutcomeKilled,
+												RootCallID: rootCallID,
 											},
 										}
 
 										fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 										fakeOpFileUnmarshaller := new(opfileFakes.FakeUnmarshaller)
-										fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpFile{}, nil)
+										fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpSpec{}, nil)
 
 										dummyOpDataHandle := getDummyOpDataHandle()
 
@@ -509,7 +507,7 @@ var _ = Context("Runer", func() {
 										eventChannel <- opEnded
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEnded.OpEnded.RootOpID, nil)
+										fakeAPIClient.StartOpReturns(opEnded.CallEnded.RootCallID, nil)
 
 										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)
@@ -539,18 +537,17 @@ var _ = Context("Runer", func() {
 										/* arrange */
 										opEnded := model.Event{
 											Timestamp: time.Now(),
-											OpEnded: &model.OpEnded{
-												OpID:     rootOpID,
-												OpRef:    "dummyOpRef",
-												Outcome:  model.OpOutcomeFailed,
-												RootOpID: rootOpID,
+											CallEnded: &model.CallEnded{
+												CallID:     rootCallID,
+												Outcome:    model.OpOutcomeFailed,
+												RootCallID: rootCallID,
 											},
 										}
 
 										fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 										fakeOpFileUnmarshaller := new(opfileFakes.FakeUnmarshaller)
-										fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpFile{}, nil)
+										fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpSpec{}, nil)
 
 										dummyOpDataHandle := getDummyOpDataHandle()
 
@@ -562,7 +559,7 @@ var _ = Context("Runer", func() {
 										eventChannel <- opEnded
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEnded.OpEnded.RootOpID, nil)
+										fakeAPIClient.StartOpReturns(opEnded.CallEnded.RootCallID, nil)
 
 										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)
@@ -591,18 +588,17 @@ var _ = Context("Runer", func() {
 										/* arrange */
 										opEnded := model.Event{
 											Timestamp: time.Now(),
-											OpEnded: &model.OpEnded{
-												OpID:     rootOpID,
-												OpRef:    "dummyOpRef",
-												Outcome:  "some unexpected outcome",
-												RootOpID: rootOpID,
+											CallEnded: &model.CallEnded{
+												CallID:     rootCallID,
+												Outcome:    "some unexpected outcome",
+												RootCallID: rootCallID,
 											},
 										}
 
 										fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
 										fakeOpFileUnmarshaller := new(opfileFakes.FakeUnmarshaller)
-										fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpFile{}, nil)
+										fakeOpFileUnmarshaller.UnmarshalReturns(&model.OpSpec{}, nil)
 
 										dummyOpDataHandle := getDummyOpDataHandle()
 
@@ -614,7 +610,7 @@ var _ = Context("Runer", func() {
 										eventChannel <- opEnded
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEnded.OpEnded.RootOpID, nil)
+										fakeAPIClient.StartOpReturns(opEnded.CallEnded.RootCallID, nil)
 
 										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)

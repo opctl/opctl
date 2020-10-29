@@ -53,7 +53,7 @@ var _ = Context("serialLoopCaller", func() {
 					model.SerialLoopCallSpec{},
 					"dummyOpPath",
 					nil,
-					"rootOpID",
+					"rootCallID",
 				)
 
 				/* assert */
@@ -92,7 +92,7 @@ var _ = Context("serialLoopCaller", func() {
 					model.SerialLoopCallSpec{},
 					"dummyOpPath",
 					nil,
-					"rootOpID",
+					"rootCallID",
 				)
 
 				/* assert */
@@ -116,7 +116,7 @@ var _ = Context("serialLoopCaller", func() {
 				providedOpPath := "providedOpPath"
 				providedParentCallIDValue := "providedParentCallID"
 				providedParentCallID := &providedParentCallIDValue
-				providedRootOpID := "providedRootOpID"
+				providedRootCallID := "providedRootCallID"
 
 				fakeSerialLoopInterpreter := new(serialloopFakes.FakeInterpreter)
 				until := false
@@ -176,7 +176,7 @@ var _ = Context("serialLoopCaller", func() {
 					providedSerialLoopCallSpec,
 					providedOpPath,
 					providedParentCallID,
-					providedRootOpID,
+					providedRootCallID,
 				)
 
 				/* assert */
@@ -186,7 +186,7 @@ var _ = Context("serialLoopCaller", func() {
 					actualCallSpec,
 					actualOpPath,
 					actualParentCallID,
-					actualRootOpID := fakeCaller.CallArgsForCall(0)
+					actualRootCallID := fakeCaller.CallArgsForCall(0)
 
 				Expect(actualCtx).To(Not(BeNil()))
 				Expect(actualCallID).To(Equal(callID))
@@ -194,7 +194,7 @@ var _ = Context("serialLoopCaller", func() {
 				Expect(actualCallSpec).To(Equal(&providedSerialLoopCallSpec.Run))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualParentCallID).To(Equal(providedParentCallID))
-				Expect(actualRootOpID).To(Equal(providedRootOpID))
+				Expect(actualRootCallID).To(Equal(providedRootCallID))
 			})
 		})
 	})

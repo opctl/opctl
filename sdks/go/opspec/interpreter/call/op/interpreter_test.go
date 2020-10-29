@@ -135,7 +135,7 @@ var _ = Context("Interpreter", func() {
 				},
 				"dummyOpID",
 				providedOpPath,
-				"dummyRootOpID",
+				"dummyRootCallID",
 			)
 
 			/* assert */
@@ -164,7 +164,7 @@ var _ = Context("Interpreter", func() {
 					},
 					"dummyOpID",
 					"dummyOpPath",
-					"dummyRootOpID",
+					"dummyRootCallID",
 				)
 
 				/* assert */
@@ -195,7 +195,7 @@ var _ = Context("Interpreter", func() {
 						},
 						"dummyOpID",
 						"dummyOpPath",
-						"dummyRootOpID",
+						"dummyRootCallID",
 					)
 
 					/* assert */
@@ -231,7 +231,7 @@ var _ = Context("Interpreter", func() {
 						},
 						"dummyOpID",
 						"dummyOpPath",
-						"dummyRootOpID",
+						"dummyRootCallID",
 					)
 
 					/* assert */
@@ -269,7 +269,7 @@ var _ = Context("Interpreter", func() {
 					},
 					"dummyOpID",
 					"dummyOpPath",
-					"dummyRootOpID",
+					"dummyRootCallID",
 				)
 
 				/* assert */
@@ -313,7 +313,7 @@ var _ = Context("Interpreter", func() {
 					providedOpCallSpec,
 					"dummyOpID",
 					providedOpPath,
-					"dummyRootOpID",
+					"dummyRootCallID",
 				)
 
 				/* assert */
@@ -343,7 +343,7 @@ var _ = Context("Interpreter", func() {
 						&model.OpCallSpec{},
 						"dummyOpID",
 						"dummyOpPath",
-						"dummyRootOpID",
+						"dummyRootCallID",
 					)
 
 					/* assert */
@@ -376,7 +376,7 @@ var _ = Context("Interpreter", func() {
 				&model.OpCallSpec{},
 				"dummyOpID",
 				"dummyOpPath",
-				"dummyRootOpID",
+				"dummyRootCallID",
 			)
 
 			/* assert */
@@ -411,7 +411,7 @@ var _ = Context("Interpreter", func() {
 					&model.OpCallSpec{},
 					"dummyOpID",
 					"dummyOpPath",
-					"dummyRootOpID",
+					"dummyRootCallID",
 				)
 
 				/* assert */
@@ -447,7 +447,7 @@ var _ = Context("Interpreter", func() {
 			}
 
 			fakeOpFileGetter := new(FakeGetter)
-			returnedManifest := &model.OpFile{
+			returnedManifest := &model.OpSpec{
 				Inputs: expectedInputParams,
 			}
 			fakeOpFileGetter.GetReturns(returnedManifest, nil)
@@ -470,7 +470,7 @@ var _ = Context("Interpreter", func() {
 				providedOpCallSpec,
 				providedOpID,
 				providedParentOpPath,
-				"dummyRootOpID",
+				"dummyRootCallID",
 			)
 
 			/* assert */

@@ -25,7 +25,7 @@ type serialLoopCaller interface {
 		callSpecSerialLoop model.SerialLoopCallSpec,
 		opPath string,
 		parentCallID *string,
-		rootOpID string,
+		rootCallID string,
 	)
 }
 
@@ -61,7 +61,7 @@ func (lpr _serialLoopCaller) Call(
 	callSpecSerialLoop model.SerialLoopCallSpec,
 	opPath string,
 	parentCallID *string,
-	rootOpID string,
+	rootCallID string,
 ) {
 	var err error
 	outboundScope := map[string]*model.Value{}
@@ -70,15 +70,15 @@ func (lpr _serialLoopCaller) Call(
 		// defer must be defined before conditional return statements so it always runs
 		event := model.Event{
 			Timestamp: time.Now().UTC(),
-			SerialLoopCallEnded: &model.SerialLoopCallEnded{
-				CallID:   id,
-				RootOpID: rootOpID,
-				Outputs:  outboundScope,
+			CallEnded: &model.CallEnded{
+				CallID:     id,
+				RootCallID: rootCallID,
+				Outputs:    outboundScope,
 			},
 		}
 
 		if nil != err {
-			event.SerialLoopCallEnded.Error = &model.CallEndedError{
+			event.CallEnded.Error = &model.CallEndedError{
 				Message: err.Error(),
 			}
 		}
@@ -123,7 +123,7 @@ func (lpr _serialLoopCaller) Call(
 			&callSpecSerialLoop.Run,
 			opPath,
 			parentCallID,
-			rootOpID,
+			rootCallID,
 		)
 
 		// subscribe to events
@@ -131,7 +131,7 @@ func (lpr _serialLoopCaller) Call(
 		eventChannel, _ := lpr.pubSub.Subscribe(
 			ctx,
 			model.EventFilter{
-				Roots: []string{rootOpID},
+				Roots: []string{rootCallID},
 				Since: &eventFilterSince,
 			},
 		)

@@ -2,12 +2,13 @@ package pubsub
 
 import (
 	"context"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 	"io/ioutil"
 	"os"
 	"time"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 var _ = Context("pubSub", func() {
@@ -30,10 +31,10 @@ var _ = Context("pubSub", func() {
 				It("receives event", func() {
 					/* arrange */
 					expectedEvent := model.Event{
-						OpStarted: &model.OpStarted{
-							RootOpID: "dummyRootOpID",
-							OpID:     "dummyOpID",
-							OpRef:    "dummyOpRef",
+						CallStarted: &model.CallStarted{
+							RootCallID: "dummyRootCallID",
+							CallID:     "dummyCallID",
+							OpRef:      "dummyOpRef",
 						},
 					}
 
@@ -53,13 +54,13 @@ var _ = Context("pubSub", func() {
 			Context("isn't subscribed", func() {
 				It("doesn't receive event", func() {
 					/* arrange */
-					subscriberEventFilter := model.EventFilter{Roots: []string{"notPublishedRootOpID"}}
+					subscriberEventFilter := model.EventFilter{Roots: []string{"notPublishedRootCallID"}}
 
 					publishedEvent := model.Event{
-						OpStarted: &model.OpStarted{
-							RootOpID: "dummyRootOpID",
-							OpID:     "dummyOpID",
-							OpRef:    "dummyOpRef",
+						CallStarted: &model.CallStarted{
+							RootCallID: "dummyRootCallID",
+							CallID:     "dummyCallID",
+							OpRef:      "dummyOpRef",
 						},
 					}
 
@@ -83,7 +84,7 @@ var _ = Context("pubSub", func() {
 					/* arrange */
 					expectedEvent := model.Event{
 						ContainerStarted: &model.ContainerStarted{
-							RootOpID:    "dummyRootOpID",
+							RootCallID:  "dummyRootCallID",
 							ContainerID: "dummyContainerID",
 							OpRef:       "dummyOpRef",
 						},
@@ -107,16 +108,16 @@ var _ = Context("pubSub", func() {
 				It("should receive published event", func() {
 					/* arrange */
 					expectedEvent := model.Event{
-						OpStarted: &model.OpStarted{
-							RootOpID: "dummyRootOpID",
-							OpID:     "dummyOpID",
-							OpRef:    "dummyOpRef",
+						CallStarted: &model.CallStarted{
+							RootCallID: "dummyRootCallID",
+							CallID:     "dummyCallID",
+							OpRef:      "dummyOpRef",
 						},
 					}
 
 					providedFilter := model.EventFilter{
 						Roots: []string{
-							expectedEvent.OpStarted.RootOpID,
+							expectedEvent.CallStarted.RootCallID,
 						},
 					}
 
@@ -141,7 +142,7 @@ var _ = Context("pubSub", func() {
 					/* arrange */
 					expectedEvent1 := model.Event{
 						ContainerStarted: &model.ContainerStarted{
-							RootOpID:    "dummyRootOpID",
+							RootCallID:  "dummyRootCallID",
 							ContainerID: "dummyContainerID",
 							OpRef:       "dummyOpRef",
 						},
@@ -149,10 +150,10 @@ var _ = Context("pubSub", func() {
 					}
 
 					expectedEvent2 := model.Event{
-						OpStarted: &model.OpStarted{
-							RootOpID: "dummyRootOpID",
-							OpID:     "dummyOpID",
-							OpRef:    "dummyOpRef",
+						CallStarted: &model.CallStarted{
+							RootCallID: "dummyRootCallID",
+							CallID:     "dummyCallID",
+							OpRef:      "dummyOpRef",
 						},
 						Timestamp: time.Now().Add(time.Second),
 					}

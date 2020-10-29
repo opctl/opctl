@@ -53,7 +53,7 @@ var _ = Context("caller", func() {
 					nil,
 					"dummyOpPath",
 					nil,
-					"dummyRootOpID",
+					"dummyRootCallID",
 				)
 			})
 		})
@@ -66,7 +66,7 @@ var _ = Context("caller", func() {
 			providedOpPath := "providedOpPath"
 			providedParentIDValue := "providedParentID"
 			providedParentID := &providedParentIDValue
-			providedRootOpID := "dummyRootOpID"
+			providedRootCallID := "dummyRootCallID"
 
 			fakeCallInterpreter := new(callFakes.FakeInterpreter)
 			fakeCallInterpreter.InterpretReturns(
@@ -93,7 +93,7 @@ var _ = Context("caller", func() {
 				providedCallSpec,
 				providedOpPath,
 				providedParentID,
-				providedRootOpID,
+				providedRootCallID,
 			)
 
 			/* assert */
@@ -102,20 +102,20 @@ var _ = Context("caller", func() {
 				actualID,
 				actualOpPath,
 				actualParentID,
-				actualRootOpID := fakeCallInterpreter.InterpretArgsForCall(0)
+				actualRootCallID := fakeCallInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualCallSpec).To(Equal(providedCallSpec))
 			Expect(actualID).To(Equal(providedCallID))
 			Expect(actualOpPath).To(Equal(providedOpPath))
 			Expect(actualParentID).To(Equal(providedParentID))
-			Expect(actualRootOpID).To(Equal(providedRootOpID))
+			Expect(actualRootCallID).To(Equal(providedRootCallID))
 		})
 		Context("callInterpreter.Interpret result.If falsy", func() {
 			It("should call pubSub.Publish w/ expected args", func() {
 				/* arrange */
 				providedCallID := "dummyCallID"
-				providedRootOpID := "dummyRootOpID"
+				providedRootCallID := "dummyRootCallID"
 
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				falseBoolean := false
@@ -129,7 +129,8 @@ var _ = Context("caller", func() {
 				expectedEvent := model.Event{
 					CallEnded: &model.CallEnded{
 						CallID:     providedCallID,
-						RootCallID: providedRootOpID,
+						Outcome:    model.OpOutcomeSucceeded,
+						RootCallID: providedRootCallID,
 					},
 				}
 
@@ -152,7 +153,7 @@ var _ = Context("caller", func() {
 					&model.CallSpec{},
 					"dummyOpPath",
 					nil,
-					providedRootOpID,
+					providedRootCallID,
 				)
 
 				/* assert */
@@ -202,7 +203,7 @@ var _ = Context("caller", func() {
 					providedCallSpec,
 					"dummyOpPath",
 					nil,
-					"dummyRootOpID",
+					"dummyRootCallID",
 				)
 
 				/* assert */
@@ -240,7 +241,7 @@ var _ = Context("caller", func() {
 				}
 				providedOpPath := "providedOpPath"
 				providedParentID := "providedParentID"
-				providedRootOpID := "dummyRootOpID"
+				providedRootCallID := "dummyRootCallID"
 
 				fakePubSub := new(FakePubSub)
 				// ensure eventChan closed so call exits
@@ -261,7 +262,7 @@ var _ = Context("caller", func() {
 					providedCallSpec,
 					providedOpPath,
 					&providedParentID,
-					providedRootOpID,
+					providedRootCallID,
 				)
 
 				/* assert */
@@ -291,7 +292,7 @@ var _ = Context("caller", func() {
 					},
 				}
 				providedOpPath := "providedOpPath"
-				providedRootOpID := "dummyRootOpID"
+				providedRootCallID := "dummyRootCallID"
 
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(
@@ -318,20 +319,20 @@ var _ = Context("caller", func() {
 					providedCallSpec,
 					providedOpPath,
 					nil,
-					providedRootOpID,
+					providedRootCallID,
 				)
 
 				/* assert */
 				_,
 					actualCallID,
 					actualScope,
-					actualRootOpID,
+					actualRootCallID,
 					actualOpPath,
 					actualCallSpec := fakeParallelCaller.CallArgsForCall(0)
 
 				Expect(actualCallID).To(Equal(providedCallID))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualRootOpID).To(Equal(providedRootOpID))
+				Expect(actualRootCallID).To(Equal(providedRootCallID))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualCallSpec).To(Equal(*providedCallSpec.Parallel))
 			})
@@ -348,7 +349,7 @@ var _ = Context("caller", func() {
 					ParallelLoop: &model.ParallelLoopCallSpec{},
 				}
 				providedOpPath := "providedOpPath"
-				providedRootOpID := "dummyRootOpID"
+				providedRootCallID := "dummyRootCallID"
 				providedParentID := "providedParentID"
 
 				expectedCall := &model.Call{
@@ -376,7 +377,7 @@ var _ = Context("caller", func() {
 					providedCallSpec,
 					providedOpPath,
 					&providedParentID,
-					providedRootOpID,
+					providedRootCallID,
 				)
 
 				/* assert */
@@ -386,14 +387,14 @@ var _ = Context("caller", func() {
 					actualParallelLoopCallSpec,
 					actualOpPath,
 					actualParentID,
-					actualRootOpID := fakeParallelLoopCaller.CallArgsForCall(0)
+					actualRootCallID := fakeParallelLoopCaller.CallArgsForCall(0)
 
 				Expect(actualID).To(Equal(providedCallID))
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualParallelLoopCallSpec).To(Equal(*providedCallSpec.ParallelLoop))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(*actualParentID).To(Equal(providedParentID))
-				Expect(actualRootOpID).To(Equal(providedRootOpID))
+				Expect(actualRootCallID).To(Equal(providedRootCallID))
 			})
 		})
 
@@ -411,7 +412,7 @@ var _ = Context("caller", func() {
 					},
 				}
 				providedOpPath := "providedOpPath"
-				providedRootOpID := "dummyRootOpID"
+				providedRootCallID := "dummyRootCallID"
 
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(
@@ -439,20 +440,20 @@ var _ = Context("caller", func() {
 					providedCallSpec,
 					providedOpPath,
 					nil,
-					providedRootOpID,
+					providedRootCallID,
 				)
 
 				/* assert */
 				_,
 					actualCallID,
 					actualScope,
-					actualRootOpID,
+					actualRootCallID,
 					actualOpPath,
 					actualCallSpec := fakeSerialCaller.CallArgsForCall(0)
 
 				Expect(actualCallID).To(Equal(providedCallID))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualRootOpID).To(Equal(providedRootOpID))
+				Expect(actualRootCallID).To(Equal(providedRootCallID))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualCallSpec).To(Equal(*providedCallSpec.Serial))
 			})
@@ -469,7 +470,7 @@ var _ = Context("caller", func() {
 					SerialLoop: &model.SerialLoopCallSpec{},
 				}
 				providedOpPath := "providedOpPath"
-				providedRootOpID := "dummyRootOpID"
+				providedRootCallID := "dummyRootCallID"
 				providedParentID := "providedParentID"
 
 				expectedCall := &model.Call{
@@ -497,7 +498,7 @@ var _ = Context("caller", func() {
 					providedCallSpec,
 					providedOpPath,
 					&providedParentID,
-					providedRootOpID,
+					providedRootCallID,
 				)
 
 				/* assert */
@@ -507,14 +508,14 @@ var _ = Context("caller", func() {
 					actualSerialLoopCallSpec,
 					actualOpPath,
 					actualParentID,
-					actualRootOpID := fakeSerialLoopCaller.CallArgsForCall(0)
+					actualRootCallID := fakeSerialLoopCaller.CallArgsForCall(0)
 
 				Expect(actualID).To(Equal(providedCallID))
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualSerialLoopCallSpec).To(Equal(*providedCallSpec.SerialLoop))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(*actualParentID).To(Equal(providedParentID))
-				Expect(actualRootOpID).To(Equal(providedRootOpID))
+				Expect(actualRootCallID).To(Equal(providedRootCallID))
 			})
 		})
 
@@ -550,7 +551,7 @@ var _ = Context("caller", func() {
 					providedCallSpec,
 					"providedOpPath",
 					nil,
-					"dummyRootOpID",
+					"dummyRootCallID",
 				)
 
 				/* assert */
