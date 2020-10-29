@@ -135,7 +135,7 @@ func (ivkr _runer) Run(
 	}
 
 	// start op
-	rootOpID, err := nodeHandle.APIClient().StartOp(
+	rootCallID, err := nodeHandle.APIClient().StartOp(
 		ctx,
 		model.StartOpReq{
 			Args: argsMap,
@@ -154,7 +154,7 @@ func (ivkr _runer) Run(
 		ctx,
 		&model.GetEventStreamReq{
 			Filter: model.EventFilter{
-				Roots: []string{rootOpID},
+				Roots: []string{rootCallID},
 				Since: &startTime,
 			},
 		},
@@ -175,8 +175,8 @@ func (ivkr _runer) Run(
 				nodeHandle.APIClient().KillOp(
 					ctx,
 					model.KillOpReq{
-						OpID:     rootOpID,
-						RootOpID: rootOpID,
+						OpID:       rootCallID,
+						RootCallID: rootCallID,
 					},
 				)
 			} else {
@@ -190,8 +190,8 @@ func (ivkr _runer) Run(
 			nodeHandle.APIClient().KillOp(
 				ctx,
 				model.KillOpReq{
-					OpID:     rootOpID,
-					RootOpID: rootOpID,
+					OpID:       rootCallID,
+					RootCallID: rootCallID,
 				},
 			)
 			return // support fake exiter
@@ -204,9 +204,9 @@ func (ivkr _runer) Run(
 
 			ivkr.cliOutput.Event(&event)
 
-			if nil != event.OpEnded {
-				if event.OpEnded.OpID == rootOpID {
-					switch event.OpEnded.Outcome {
+			if nil != event.CallEnded {
+				if event.CallEnded.CallID == rootCallID {
+					switch event.CallEnded.Outcome {
 					case model.OpOutcomeSucceeded:
 						ivkr.cliExiter.Exit(cliexiter.ExitReq{Code: 0})
 					case model.OpOutcomeKilled:

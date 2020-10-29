@@ -22,7 +22,7 @@ type caller interface {
 		callSpec *model.CallSpec,
 		opPath string,
 		parentCallID *string,
-		rootOpID string,
+		rootCallID string,
 	)
 }
 
@@ -89,27 +89,37 @@ func (clr _caller) Call(
 	callSpec *model.CallSpec,
 	opPath string,
 	parentCallID *string,
-	rootOpID string,
+	rootCallID string,
 ) {
 	callCtx, cancelCall := context.WithCancel(ctx)
 	var err error
+	var isKilled bool
 	var outputs map[string]*model.Value
 	callStartTime := time.Now().UTC()
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 		<-callCtx.Done()
+		var outcome string
+		if isKilled {
+			outcome = model.OpOutcomeKilled
+		} else if nil != err {
+			outcome = model.OpOutcomeFailed
+		} else {
+			outcome = model.OpOutcomeSucceeded
+		}
 
 		event := model.Event{
 			CallEnded: &model.CallEnded{
 				CallID:     id,
+				Outcome:    outcome,
 				Outputs:    outputs,
-				RootCallID: rootOpID,
+				RootCallID: rootCallID,
 			},
 			Timestamp: time.Now().UTC(),
 		}
 
-		if nil != err {
+		if outcome == model.OpOutcomeFailed {
 			event.CallEnded.Error = &model.CallEndedError{
 				Message: err.Error(),
 			}
@@ -132,7 +142,7 @@ func (clr _caller) Call(
 		id,
 		opPath,
 		parentCallID,
-		rootOpID,
+		rootCallID,
 	)
 	if nil != err {
 		cancelCall()
@@ -161,7 +171,7 @@ func (clr _caller) Call(
 		eventChannel, _ := clr.pubSub.Subscribe(
 			callCtx,
 			model.EventFilter{
-				Roots: []string{rootOpID},
+				Roots: []string{rootCallID},
 				Since: &callStartTime,
 			},
 		)
@@ -180,37 +190,8 @@ func (clr _caller) Call(
 				}
 				outputs = event.ContainerExited.Outputs
 				return
-			case nil != event.OpEnded && event.OpEnded.OpID == id:
-				if nil != event.OpEnded.Error {
-					err = errors.New(event.OpEnded.Error.Message)
-				}
-				outputs = event.OpEnded.Outputs
-				return
-			case nil != event.SerialCallEnded && event.SerialCallEnded.CallID == id:
-				if nil != event.SerialCallEnded.Error {
-					err = errors.New(event.SerialCallEnded.Error.Message)
-				}
-				outputs = event.SerialCallEnded.Outputs
-				return
-			case nil != event.SerialLoopCallEnded && event.SerialLoopCallEnded.CallID == id:
-				if nil != event.SerialLoopCallEnded.Error {
-					err = errors.New(event.SerialLoopCallEnded.Error.Message)
-				}
-				outputs = event.SerialLoopCallEnded.Outputs
-				return
-			case nil != event.ParallelLoopCallEnded && event.ParallelLoopCallEnded.CallID == id:
-				if nil != event.ParallelLoopCallEnded.Error {
-					err = errors.New(event.ParallelLoopCallEnded.Error.Message)
-				}
-				outputs = event.ParallelLoopCallEnded.Outputs
-				return
-			case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallID == id:
-				if nil != event.ParallelCallEnded.Error {
-					err = errors.New(event.ParallelCallEnded.Error.Message)
-				}
-				outputs = event.ParallelCallEnded.Outputs
-				return
 			case nil != event.OpKillRequested:
+				isKilled = true
 				return
 			}
 		}
@@ -239,7 +220,7 @@ func (clr _caller) Call(
 			callCtx,
 			id,
 			scope,
-			rootOpID,
+			rootCallID,
 			opPath,
 			*callSpec.Parallel,
 		)
@@ -251,14 +232,14 @@ func (clr _caller) Call(
 			*callSpec.ParallelLoop,
 			opPath,
 			parentCallID,
-			rootOpID,
+			rootCallID,
 		)
 	case nil != callSpec.Serial:
 		clr.serialCaller.Call(
 			callCtx,
 			id,
 			scope,
-			rootOpID,
+			rootCallID,
 			opPath,
 			*callSpec.Serial,
 		)
@@ -270,7 +251,7 @@ func (clr _caller) Call(
 			*callSpec.SerialLoop,
 			opPath,
 			parentCallID,
-			rootOpID,
+			rootCallID,
 		)
 	default:
 		err = fmt.Errorf("Invalid call graph %+v\n", callSpec)

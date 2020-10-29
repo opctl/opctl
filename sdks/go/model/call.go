@@ -19,8 +19,8 @@ type Call struct {
 }
 
 type BaseCall struct {
-	RootOpID string `json:"rootOpId"`
-	OpPath   string `json:"opPath"`
+	RootCallID string `json:"rootCallId"`
+	OpPath     string `json:"opPath"`
 }
 
 //ContainerCall is a call of a container

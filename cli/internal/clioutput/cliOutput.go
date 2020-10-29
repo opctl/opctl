@@ -77,9 +77,9 @@ func (this _cliOutput) Event(event *model.Event) {
 		this.containerStdErrWrittenTo(event)
 	case nil != event.ContainerStdOutWrittenTo:
 		this.containerStdOutWrittenTo(event)
-	case nil != event.OpEnded:
+	case nil != event.CallEnded && event.CallEnded.CallType == model.CallTypeOp:
 		this.opEnded(event)
-	case nil != event.OpStarted:
+	case nil != event.CallStarted && event.CallStarted.CallType == model.CallTypeOp:
 		this.opStarted(event)
 	}
 }
@@ -117,18 +117,18 @@ func (this _cliOutput) containerStdOutWrittenTo(event *model.Event) {
 
 func (this _cliOutput) opEnded(event *model.Event) {
 	err := ""
-	if nil != event.OpEnded.Error {
-		err = fmt.Sprintf(" Error='%v'", event.OpEnded.Error.Message)
+	if nil != event.CallEnded.Error {
+		err = fmt.Sprintf(" Error='%v'", event.CallEnded.Error.Message)
 	}
 	message := fmt.Sprintf(
 		"OpEnded Id='%v' OpRef='%v' Outcome='%v'%v Timestamp='%v'\n",
-		event.OpEnded.OpID,
-		event.OpEnded.OpRef,
-		event.OpEnded.Outcome,
+		event.CallEnded.CallID,
+		event.CallEnded.Ref,
+		event.CallEnded.Outcome,
 		err,
 		event.Timestamp.Format(time.RFC3339),
 	)
-	switch event.OpEnded.Outcome {
+	switch event.CallEnded.Outcome {
 	case model.OpOutcomeSucceeded:
 		this.Success(message)
 	case model.OpOutcomeKilled:
@@ -142,8 +142,8 @@ func (this _cliOutput) opStarted(event *model.Event) {
 	this.Info(
 		fmt.Sprintf(
 			"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-			event.OpStarted.OpID,
-			event.OpStarted.OpRef,
+			event.CallStarted.CallID,
+			event.CallStarted.OpRef,
 			event.Timestamp.Format(time.RFC3339),
 		),
 	)

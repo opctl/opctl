@@ -13,7 +13,7 @@ type Unmarshaller interface {
 	// Unmarshal validates and unmarshals an "op.yml" file
 	Unmarshal(
 		opFileBytes []byte,
-	) (*model.OpFile, error)
+	) (*model.OpSpec, error)
 }
 
 // NewUnmarshaller returns an initialized Unmarshaller instance
@@ -29,7 +29,7 @@ type _unmarshaller struct {
 
 func (uml _unmarshaller) Unmarshal(
 	opFileBytes []byte,
-) (*model.OpFile, error) {
+) (*model.OpSpec, error) {
 
 	var err error
 
@@ -53,7 +53,7 @@ func (uml _unmarshaller) Unmarshal(
 	}
 
 	// 2) build
-	opFile := model.OpFile{}
+	opFile := model.OpSpec{}
 	return &opFile, yaml.Unmarshal(opFileBytes, &opFile)
 
 }

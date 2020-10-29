@@ -3,10 +3,7 @@ package core
 import (
 	"context"
 	"errors"
-	"io/ioutil"
 	"time"
-
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -172,7 +169,7 @@ var _ = Context("core", func() {
 
 					fakeOpFileGetter := new(FakeGetter)
 					expectedErr := errors.New("dummyError")
-					fakeOpFileGetter.GetReturns(&model.OpFile{}, expectedErr)
+					fakeOpFileGetter.GetReturns(&model.OpSpec{}, expectedErr)
 
 					objectUnderTest := _core{
 						data:                fakeData,
@@ -191,13 +188,8 @@ var _ = Context("core", func() {
 				})
 			})
 			Context("data.Get doesn't err", func() {
-				It("should call opCaller.Call w/ expected args", func() {
+				It("should call caller.Call w/ expected args", func() {
 					/* arrange */
-					tmpDir, err := ioutil.TempDir("", "")
-					if nil != err {
-						panic(err)
-					}
-
 					providedCtx := context.Background()
 					providedArg1String := "dummyArg1Value"
 					providedArg2Dir := "/"
@@ -225,7 +217,7 @@ var _ = Context("core", func() {
 					fakeDataHandle.RefReturns(opRef)
 					fakeData.ResolveReturns(fakeDataHandle, nil)
 
-					opFile := &model.OpFile{
+					opFile := &model.OpSpec{
 						Outputs: map[string]*model.Param{
 							"dummyOutput1": nil,
 							"dummyOutput2": nil,
@@ -251,28 +243,13 @@ var _ = Context("core", func() {
 					fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 					fakeUniqueStringFactory.ConstructReturns(expectedID, nil)
 
-					fakeOpCaller := new(FakeOpCaller)
-
-					opInterpreter := op.NewInterpreter(tmpDir)
-
-					// use real interpreter
-					expectedOpCall, err := opInterpreter.Interpret(
-						providedReq.Args,
-						expectedOpCallSpec,
-						expectedID,
-						opPath,
-						expectedID,
-					)
-					if nil != err {
-						panic(err)
-					}
+					fakeCaller := new(FakeCaller)
 
 					objectUnderTest := _core{
-						opCaller:            fakeOpCaller,
+						caller:              fakeCaller,
 						pubSub:              new(FakePubSub),
 						data:                fakeData,
 						opFileGetter:        fakeOpFileGetter,
-						opInterpreter:       opInterpreter,
 						uniqueStringFactory: fakeUniqueStringFactory,
 					}
 
@@ -286,19 +263,21 @@ var _ = Context("core", func() {
 					// Call happens in go routine; wait 500ms to allow it to occur
 					time.Sleep(time.Millisecond * 500)
 					actualCtx,
-						actualOpCall,
-						actualScope,
 						actualOpID,
-						actualOpCallSpec := fakeOpCaller.CallArgsForCall(0)
-
-					// ignore ChildCallID
-					actualOpCall.ChildCallID = expectedOpCall.ChildCallID
+						actualScope,
+						actualCallSpec,
+						actualOpPath,
+						_,
+						actualRootID := fakeCaller.CallArgsForCall(0)
 
 					Expect(actualCtx).To(Equal(providedCtx))
-					Expect(*actualOpCall).To(BeEquivalentTo(*expectedOpCall))
-					Expect(actualOpID).To(Equal(&expectedID))
+					Expect(actualOpID).To(Equal(expectedID))
 					Expect(actualScope).To(Equal(providedReq.Args))
-					Expect(actualOpCallSpec).To(Equal(expectedOpCallSpec))
+					Expect(*actualCallSpec).To(BeEquivalentTo(model.CallSpec{
+						Op: expectedOpCallSpec,
+					}))
+					Expect(actualOpPath).To(Equal(opPath))
+					Expect(actualRootID).To(Equal(expectedID))
 				})
 			})
 		})

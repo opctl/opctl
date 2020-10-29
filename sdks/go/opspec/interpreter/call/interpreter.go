@@ -21,7 +21,7 @@ type Interpreter interface {
 		id string,
 		opPath string,
 		parentID *string,
-		rootOpID string,
+		rootCallID string,
 	) (*model.Call, error)
 }
 
@@ -53,7 +53,7 @@ func (itp _interpreter) Interpret(
 	id string,
 	opPath string,
 	parentID *string,
-	rootOpID string,
+	rootCallID string,
 ) (*model.Call, error) {
 	dcg := &model.Call{
 		Id:       id,
@@ -86,7 +86,7 @@ func (itp _interpreter) Interpret(
 			scope,
 			callSpec.Container,
 			id,
-			rootOpID,
+			rootCallID,
 			opPath,
 		)
 		return dcg, err
@@ -96,7 +96,7 @@ func (itp _interpreter) Interpret(
 			callSpec.Op,
 			id,
 			opPath,
-			rootOpID,
+			rootCallID,
 		)
 		return dcg, err
 	case nil != callSpec.Parallel:

@@ -34,8 +34,8 @@ var _ = Context("containerCaller", func() {
 			providedOpPath := "providedOpPath"
 			providedContainerCall := &model.ContainerCall{
 				BaseCall: model.BaseCall{
-					OpPath:   providedOpPath,
-					RootOpID: "providedRootID",
+					OpPath:     providedOpPath,
+					RootCallID: "providedRootID",
 				},
 				ContainerID: "providedContainerID",
 			}
@@ -47,7 +47,7 @@ var _ = Context("containerCaller", func() {
 				ContainerStarted: &model.ContainerStarted{
 					ContainerID: providedContainerCall.ContainerID,
 					OpRef:       providedOpPath,
-					RootOpID:    providedContainerCall.RootOpID,
+					RootCallID:  providedContainerCall.RootCallID,
 				},
 			}
 
@@ -157,8 +157,8 @@ var _ = Context("containerCaller", func() {
 		providedOpPath := "providedOpPath"
 		providedContainerCall := &model.ContainerCall{
 			BaseCall: model.BaseCall{
-				OpPath:   providedOpPath,
-				RootOpID: "providedRootID",
+				OpPath:     providedOpPath,
+				RootCallID: "providedRootID",
 			},
 			ContainerID: "providedContainerID",
 		}
@@ -172,9 +172,9 @@ var _ = Context("containerCaller", func() {
 				Error: &model.CallEndedError{
 					Message: "io: read/write on closed pipe",
 				},
-				OpRef:    providedOpPath,
-				Outputs:  map[string]*model.Value{},
-				RootOpID: providedContainerCall.RootOpID,
+				OpRef:      providedOpPath,
+				Outputs:    map[string]*model.Value{},
+				RootCallID: providedContainerCall.RootCallID,
 			},
 		}
 
@@ -212,8 +212,8 @@ var _ = Context("containerCaller", func() {
 		providedOpPath := "providedOpPath"
 		providedContainerCall := &model.ContainerCall{
 			BaseCall: model.BaseCall{
-				OpPath:   providedOpPath,
-				RootOpID: "providedRootID",
+				OpPath:     providedOpPath,
+				RootCallID: "providedRootID",
 			},
 			ContainerID: "providedContainerID",
 		}
@@ -227,9 +227,9 @@ var _ = Context("containerCaller", func() {
 				Error: &model.CallEndedError{
 					Message: "io: read/write on closed pipe",
 				},
-				OpRef:    providedOpPath,
-				Outputs:  map[string]*model.Value{},
-				RootOpID: providedContainerCall.RootOpID,
+				OpRef:      providedOpPath,
+				Outputs:    map[string]*model.Value{},
+				RootCallID: providedContainerCall.RootCallID,
 			},
 		}
 

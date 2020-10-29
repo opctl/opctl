@@ -18,7 +18,7 @@ type imagePuller interface {
 		containerID string,
 		imagePullCreds *model.PullCreds,
 		imageRef string,
-		rootOpID string,
+		rootCallID string,
 		eventPublisher pubsub.EventPublisher,
 	) error
 }
@@ -40,7 +40,7 @@ func (ip _imagePuller) Pull(
 	containerID string,
 	imagePullCreds *model.PullCreds,
 	imageRef string,
-	rootOpID string,
+	rootCallID string,
 	eventPublisher pubsub.EventPublisher,
 ) error {
 
@@ -68,7 +68,7 @@ func (ip _imagePuller) Pull(
 	}
 	defer imagePullResp.Close()
 
-	stdOutWriter := NewStdOutWriteCloser(eventPublisher, containerID, rootOpID)
+	stdOutWriter := NewStdOutWriteCloser(eventPublisher, containerID, rootCallID)
 	defer stdOutWriter.Close()
 
 	dec := json.NewDecoder(imagePullResp)

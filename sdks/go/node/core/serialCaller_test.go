@@ -28,7 +28,7 @@ var _ = Context("serialCaller", func() {
 			providedCtx := context.Background()
 			providedCallID := "providedCallID"
 			providedInboundScope := map[string]*model.Value{}
-			providedRootOpID := "providedRootOpID"
+			providedRootCallID := "providedRootCallID"
 			providedOpPath := "providedOpPath"
 			providedCallSpecSerialCalls := []*model.CallSpec{
 				{
@@ -80,7 +80,7 @@ var _ = Context("serialCaller", func() {
 				providedCtx,
 				providedCallID,
 				providedInboundScope,
-				providedRootOpID,
+				providedRootCallID,
 				providedOpPath,
 				providedCallSpecSerialCalls,
 			)
@@ -93,7 +93,7 @@ var _ = Context("serialCaller", func() {
 					actualCallSpec,
 					actualOpPath,
 					actualParentCallID,
-					actualRootOpID := fakeCaller.CallArgsForCall(expectedCallSpecIndex)
+					actualRootCallID := fakeCaller.CallArgsForCall(expectedCallSpecIndex)
 
 				Expect(actualCtx).To(Equal(actualCtx))
 				Expect(actualNodeID).To(Equal(fmt.Sprintf("%v", expectedCallSpecIndex)))
@@ -101,7 +101,7 @@ var _ = Context("serialCaller", func() {
 				Expect(actualCallSpec).To(Equal(expectedCallSpec))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualParentCallID).To(Equal(&providedCallID))
-				Expect(actualRootOpID).To(Equal(providedRootOpID))
+				Expect(actualRootCallID).To(Equal(providedRootCallID))
 			}
 		})
 		Context("caller errors", func() {
@@ -109,7 +109,7 @@ var _ = Context("serialCaller", func() {
 				/* arrange */
 				providedCallID := "dummyCallID"
 				providedInboundScope := map[string]*model.Value{}
-				providedRootOpID := "dummyRootOpID"
+				providedRootCallID := "dummyRootCallID"
 				providedCallSpecSerialCalls := []*model.CallSpec{
 					{
 						Container: &model.ContainerCallSpec{},
@@ -150,7 +150,7 @@ var _ = Context("serialCaller", func() {
 					context.Background(),
 					providedCallID,
 					providedInboundScope,
-					providedRootOpID,
+					providedRootCallID,
 					"dummyOpPath",
 					providedCallSpecSerialCalls,
 				)
@@ -158,7 +158,7 @@ var _ = Context("serialCaller", func() {
 				/* assert */
 				actualEvent := fakePubSub.PublishArgsForCall(0)
 
-				Expect(actualEvent.SerialCallEnded.Error.Message).To(Equal(expectedErrorMessage))
+				Expect(actualEvent.CallEnded.Error.Message).To(Equal(expectedErrorMessage))
 			})
 		})
 		Context("caller doesn't error", func() {
@@ -173,7 +173,7 @@ var _ = Context("serialCaller", func() {
 						"dummyVar2Name": {Dir: &providedScopeName2Dir},
 					}
 					expectedInboundScopeToSecondChild := providedInboundScope
-					providedRootOpID := "dummyRootOpID"
+					providedRootCallID := "dummyRootCallID"
 					providedOpPath := "providedOpPath"
 					providedCallSpecSerialCalls := []*model.CallSpec{
 						{
@@ -220,7 +220,7 @@ var _ = Context("serialCaller", func() {
 						context.Background(),
 						providedCallID,
 						providedInboundScope,
-						providedRootOpID,
+						providedRootCallID,
 						providedOpPath,
 						providedCallSpecSerialCalls,
 					)
@@ -256,7 +256,7 @@ var _ = Context("serialCaller", func() {
 						"dummyVar2Name": firstChildOutputs["dummyVar2Name"],
 						"dummyVar3Name": providedInboundScope["dummyVar3Name"],
 					}
-					providedRootOpID := "dummyRootOpID"
+					providedRootCallID := "dummyRootCallID"
 					providedCallSpecSerialCalls := []*model.CallSpec{
 						{
 							Container: &model.ContainerCallSpec{},
@@ -272,7 +272,7 @@ var _ = Context("serialCaller", func() {
 						for index := range providedCallSpecSerialCalls {
 							eventChannel <- model.Event{
 								CallEnded: &model.CallEnded{
-									RootCallID: providedRootOpID,
+									RootCallID: providedRootCallID,
 									CallID:     fmt.Sprintf("%v", index),
 									Outputs:    firstChildOutputs,
 								},
@@ -304,7 +304,7 @@ var _ = Context("serialCaller", func() {
 						context.Background(),
 						providedCallID,
 						providedInboundScope,
-						providedRootOpID,
+						providedRootCallID,
 						"dummyOpPath",
 						providedCallSpecSerialCalls,
 					)

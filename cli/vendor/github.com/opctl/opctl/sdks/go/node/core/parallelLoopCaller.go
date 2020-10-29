@@ -26,7 +26,7 @@ type parallelLoopCaller interface {
 		callSpecParallelLoop model.ParallelLoopCallSpec,
 		opPath string,
 		parentCallID *string,
-		rootOpID string,
+		rootCallID string,
 	)
 }
 
@@ -62,7 +62,7 @@ func (plpr _parallelLoopCaller) Call(
 	callSpecParallelLoop model.ParallelLoopCallSpec,
 	opPath string,
 	parentCallID *string,
-	rootOpID string,
+	rootCallID string,
 ) {
 	// setup cancellation
 	parallelLoopCtx, cancelParallelLoop := context.WithCancel(parentCtx)
@@ -75,15 +75,15 @@ func (plpr _parallelLoopCaller) Call(
 		// defer must be defined before conditional return statements so it always runs
 		event := model.Event{
 			Timestamp: time.Now().UTC(),
-			ParallelLoopCallEnded: &model.ParallelLoopCallEnded{
-				CallID:   id,
-				RootOpID: rootOpID,
-				Outputs:  outboundScope,
+			CallEnded: &model.CallEnded{
+				CallID:     id,
+				RootCallID: rootCallID,
+				Outputs:    outboundScope,
 			},
 		}
 
 		if nil != err {
-			event.ParallelLoopCallEnded.Error = &model.CallEndedError{
+			event.CallEnded.Error = &model.CallEndedError{
 				Message: err.Error(),
 			}
 		}
@@ -144,7 +144,7 @@ func (plpr _parallelLoopCaller) Call(
 				&callSpecParallelLoop.Run,
 				opPath,
 				parentCallID,
-				rootOpID,
+				rootCallID,
 			)
 		}()
 
@@ -180,7 +180,7 @@ func (plpr _parallelLoopCaller) Call(
 	eventChannel, _ := plpr.pubSub.Subscribe(
 		parallelLoopCtx,
 		model.EventFilter{
-			Roots: []string{rootOpID},
+			Roots: []string{rootCallID},
 			Since: &startTime,
 		},
 	)

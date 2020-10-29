@@ -23,7 +23,7 @@ func (this _core) StartOp(
 		return "", err
 	}
 
-	opID, err := this.uniqueStringFactory.Construct()
+	callID, err := this.uniqueStringFactory.Construct()
 	if nil != err {
 		// end run immediately on any error
 		return "", err
@@ -61,17 +61,6 @@ func (this _core) StartOp(
 		opCallSpec.Outputs[name] = ""
 	}
 
-	opCall, err := this.opInterpreter.Interpret(
-		req.Args,
-		opCallSpec,
-		opID,
-		*opHandle.Path(),
-		opID,
-	)
-	if nil != err {
-		return "", err
-	}
-
 	go func() {
 		defer func() {
 			if panicArg := recover(); panicArg != nil {
@@ -81,29 +70,33 @@ func (this _core) StartOp(
 				this.pubSub.Publish(
 					model.Event{
 						Timestamp: time.Now().UTC(),
-						OpEnded: &model.OpEnded{
+						CallEnded: &model.CallEnded{
 							Error: &model.CallEndedError{
 								Message: msg,
 							},
-							OpID:     opCall.OpID,
-							OpRef:    opCall.OpPath,
-							Outcome:  model.OpOutcomeFailed,
-							RootOpID: opCall.RootOpID,
+							CallID:     callID,
+							Ref:        *opHandle.Path(),
+							Outcome:    model.OpOutcomeFailed,
+							RootCallID: callID,
 						},
 					},
 				)
 			}
 		}()
 
-		this.opCaller.Call(
+		this.caller.Call(
 			context.Background(),
-			opCall,
+			callID,
 			req.Args,
-			&opID,
-			opCallSpec,
+			&model.CallSpec{
+				Op: opCallSpec,
+			},
+			*opHandle.Path(),
+			nil,
+			callID,
 		)
 	}()
 
-	return opID, nil
+	return callID, nil
 
 }

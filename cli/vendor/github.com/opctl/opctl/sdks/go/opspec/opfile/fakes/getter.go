@@ -10,25 +10,25 @@ import (
 )
 
 type FakeGetter struct {
-	GetStub        func(context.Context, string) (*model.OpFile, error)
+	GetStub        func(context.Context, string) (*model.OpSpec, error)
 	getMutex       sync.RWMutex
 	getArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
 	}
 	getReturns struct {
-		result1 *model.OpFile
+		result1 *model.OpSpec
 		result2 error
 	}
 	getReturnsOnCall map[int]struct {
-		result1 *model.OpFile
+		result1 *model.OpSpec
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeGetter) Get(arg1 context.Context, arg2 string) (*model.OpFile, error) {
+func (fake *FakeGetter) Get(arg1 context.Context, arg2 string) (*model.OpSpec, error) {
 	fake.getMutex.Lock()
 	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
@@ -53,7 +53,7 @@ func (fake *FakeGetter) GetCallCount() int {
 	return len(fake.getArgsForCall)
 }
 
-func (fake *FakeGetter) GetCalls(stub func(context.Context, string) (*model.OpFile, error)) {
+func (fake *FakeGetter) GetCalls(stub func(context.Context, string) (*model.OpSpec, error)) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = stub
@@ -66,28 +66,28 @@ func (fake *FakeGetter) GetArgsForCall(i int) (context.Context, string) {
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeGetter) GetReturns(result1 *model.OpFile, result2 error) {
+func (fake *FakeGetter) GetReturns(result1 *model.OpSpec, result2 error) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = nil
 	fake.getReturns = struct {
-		result1 *model.OpFile
+		result1 *model.OpSpec
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeGetter) GetReturnsOnCall(i int, result1 *model.OpFile, result2 error) {
+func (fake *FakeGetter) GetReturnsOnCall(i int, result1 *model.OpSpec, result2 error) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = nil
 	if fake.getReturnsOnCall == nil {
 		fake.getReturnsOnCall = make(map[int]struct {
-			result1 *model.OpFile
+			result1 *model.OpSpec
 			result2 error
 		})
 	}
 	fake.getReturnsOnCall[i] = struct {
-		result1 *model.OpFile
+		result1 *model.OpSpec
 		result2 error
 	}{result1, result2}
 }

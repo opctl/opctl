@@ -46,7 +46,7 @@ func (cr _creator) Create(
 		return err
 	}
 
-	opFile := model.OpFile{
+	opFile := model.OpSpec{
 		Description: pkgDescription,
 		Name:        pkgName,
 	}

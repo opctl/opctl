@@ -60,7 +60,7 @@ func (cc _containerCaller) Call(
 			ContainerExited: &model.ContainerExited{
 				ContainerID: containerCall.ContainerID,
 				OpRef:       containerCall.OpPath,
-				RootOpID:    containerCall.RootOpID,
+				RootCallID:  containerCall.RootCallID,
 				ExitCode:    exitCode,
 				Outputs:     outputs,
 			},
@@ -81,7 +81,7 @@ func (cc _containerCaller) Call(
 			ContainerStarted: &model.ContainerStarted{
 				ContainerID: containerCall.ContainerID,
 				OpRef:       containerCall.OpPath,
-				RootOpID:    containerCall.RootOpID,
+				RootCallID:  containerCall.RootCallID,
 			},
 		},
 	)
@@ -147,7 +147,7 @@ func (this _containerCaller) interpretLogs(
 							Data:        chunk,
 							ContainerID: containerCall.ContainerID,
 							OpRef:       containerCall.OpPath,
-							RootOpID:    containerCall.RootOpID,
+							RootCallID:  containerCall.RootCallID,
 						},
 					},
 				)
@@ -167,7 +167,7 @@ func (this _containerCaller) interpretLogs(
 							Data:        chunk,
 							ContainerID: containerCall.ContainerID,
 							OpRef:       containerCall.OpPath,
-							RootOpID:    containerCall.RootOpID,
+							RootCallID:  containerCall.RootCallID,
 						},
 					},
 				)

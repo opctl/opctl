@@ -63,8 +63,8 @@ func (ckr _opKiller) Kill(
 				model.Event{
 					OpKillRequested: &model.OpKillRequested{
 						Request: model.KillOpReq{
-							OpID:     childCallGraph.Id,
-							RootOpID: rootCallID,
+							OpID:       childCallGraph.Id,
+							RootCallID: rootCallID,
 						},
 					},
 					Timestamp: time.Now().UTC(),

@@ -61,28 +61,29 @@ func (oc _opCaller) Call(
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-		var opOutcome string
-		if dcg := oc.callStore.TryGet(opCall.OpID); nil != dcg && dcg.IsKilled {
-			opOutcome = model.OpOutcomeKilled
+		var outcome string
+		if dcg := oc.callStore.TryGet(opCall.RootCallID); nil != dcg && dcg.IsKilled {
+			outcome = model.OpOutcomeKilled
 		} else if nil != err {
-			opOutcome = model.OpOutcomeFailed
+			outcome = model.OpOutcomeFailed
 		} else {
-			opOutcome = model.OpOutcomeSucceeded
+			outcome = model.OpOutcomeSucceeded
 		}
 
 		event := model.Event{
 			Timestamp: time.Now().UTC(),
-			OpEnded: &model.OpEnded{
-				OpID:     opCall.OpID,
-				OpRef:    opCall.OpPath,
-				Outcome:  opOutcome,
-				RootOpID: opCall.RootOpID,
-				Outputs:  outboundScope,
+			CallEnded: &model.CallEnded{
+				CallID:     opCall.OpID,
+				CallType:   model.CallTypeOp,
+				Ref:        opCall.OpPath,
+				Outcome:    outcome,
+				RootCallID: opCall.RootCallID,
+				Outputs:    outboundScope,
 			},
 		}
 
-		if nil != err {
-			event.OpEnded.Error = &model.CallEndedError{
+		if outcome == model.OpOutcomeFailed {
+			event.CallEnded.Error = &model.CallEndedError{
 				Message: err.Error(),
 			}
 		}
@@ -91,15 +92,16 @@ func (oc _opCaller) Call(
 
 	}()
 
-	opStartedTime := time.Now().UTC()
+	callStartedTime := time.Now().UTC()
 
 	oc.pubSub.Publish(
 		model.Event{
-			Timestamp: opStartedTime,
-			OpStarted: &model.OpStarted{
-				OpID:     opCall.OpID,
-				OpRef:    opCall.OpPath,
-				RootOpID: opCall.RootOpID,
+			Timestamp: callStartedTime,
+			CallStarted: &model.CallStarted{
+				CallID:     opCall.OpID,
+				CallType:   model.CallTypeOp,
+				OpRef:      opCall.OpPath,
+				RootCallID: opCall.RootCallID,
 			},
 		},
 	)
@@ -120,15 +122,15 @@ func (oc _opCaller) Call(
 		opCall.ChildCallCallSpec,
 		opCall.OpPath,
 		&opCall.OpID,
-		opCall.RootOpID,
+		opCall.RootCallID,
 	)
 
 	// subscribe to events
 	eventChannel, _ := oc.pubSub.Subscribe(
 		ctx,
 		model.EventFilter{
-			Roots: []string{opCall.RootOpID},
-			Since: &opStartedTime,
+			Roots: []string{opCall.RootCallID},
+			Since: &callStartedTime,
 		},
 	)
 
@@ -137,7 +139,7 @@ func (oc _opCaller) Call(
 eventLoop:
 	for event := range eventChannel {
 		switch {
-		case nil != event.OpEnded && event.OpEnded.OpID == opCall.OpID:
+		case nil != event.CallEnded && event.CallEnded.CallID == opCall.OpID:
 			// parent ended prematurely
 			return
 		case nil != event.CallEnded && event.CallEnded.CallID == opCall.ChildCallID:
@@ -153,7 +155,7 @@ eventLoop:
 		}
 	}
 
-	var opFile *model.OpFile
+	var opFile *model.OpSpec
 	opFile, err = oc.opFileGetter.Get(
 		ctx,
 		opCall.OpPath,

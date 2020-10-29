@@ -1,11 +1,15 @@
 package core
 
 import (
+	"context"
+	"os"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	"github.com/opctl/opctl/sdks/go/pubsub"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
@@ -66,18 +70,29 @@ var _ = Context("_opKiller", func() {
 				fakeCallStore := new(FakeCallStore)
 				fakeCallStore.ListWithParentIDReturnsOnCall(0, nodesReturnedFromCallStore)
 
-				// use map so order ignored; calls happen in parallel so all ordering bets are off
-				expectedCalls := map[string]bool{
-					providedCallID:                   true,
-					nodesReturnedFromCallStore[0].Id: true,
-					nodesReturnedFromCallStore[1].Id: true,
-					nodesReturnedFromCallStore[2].Id: true,
-				}
+				tmpDir := os.TempDir()
+
+				pubSub := pubsub.New(
+					pubsub.NewBadgerDBEventStore(tmpDir),
+				)
+
+				eventChanCtx, cancelEventChan := context.WithCancel(context.Background())
+				eventChannel, _ := pubSub.Subscribe(
+					eventChanCtx,
+					model.EventFilter{},
+				)
+
+				actualCalls := []model.Event{}
+				go func() {
+					for event := range eventChannel {
+						actualCalls = append(actualCalls, event)
+					}
+				}()
 
 				objectUnderTest := _opKiller{
 					containerRuntime: new(FakeContainerRuntime),
 					callStore:        fakeCallStore,
-					eventPublisher:   new(FakeEventPublisher),
+					eventPublisher:   pubSub,
 				}
 
 				/* act */
@@ -87,58 +102,9 @@ var _ = Context("_opKiller", func() {
 				)
 
 				/* assert */
-				actualCalls := map[string]bool{}
-				callIndex := 0
-				for callIndex < fakeCallStore.SetIsKilledCallCount() {
-					actualCalls[fakeCallStore.SetIsKilledArgsForCall(callIndex)] = true
-					callIndex++
-				}
+				cancelEventChan()
 
-				Expect(actualCalls).To(Equal(expectedCalls))
-			})
-			It("should call containerRuntime.DeleteContainerIfExists w/ expected args", func() {
-				/* arrange */
-				providedCallID := "providedCallID"
-
-				nodesReturnedFromCallStore := []*model.Call{
-					{Id: "dummyNode1Id"},
-					{Id: "dummyNode2Id"},
-					{Id: "dummyNode3Id"},
-				}
-				fakeCallStore := new(FakeCallStore)
-				fakeCallStore.ListWithParentIDReturnsOnCall(0, nodesReturnedFromCallStore)
-
-				// use map so order ignored; calls happen in parallel so all ordering bets are off
-				expectedCalls := map[string]bool{
-					providedCallID:                   true,
-					nodesReturnedFromCallStore[0].Id: true,
-					nodesReturnedFromCallStore[1].Id: true,
-					nodesReturnedFromCallStore[2].Id: true,
-				}
-
-				fakeContainerRuntime := new(FakeContainerRuntime)
-
-				objectUnderTest := &_opKiller{
-					containerRuntime: fakeContainerRuntime,
-					callStore:        fakeCallStore,
-					eventPublisher:   new(FakeEventPublisher),
-				}
-
-				/* act */
-				objectUnderTest.Kill(
-					providedCallID,
-					"rootCallID",
-				)
-
-				/* assert */
-				actualCalls := map[string]bool{}
-				callIndex := 0
-				for callIndex < fakeContainerRuntime.DeleteContainerIfExistsCallCount() {
-					actualCalls[fakeContainerRuntime.DeleteContainerIfExistsArgsForCall(callIndex)] = true
-					callIndex++
-				}
-
-				Expect(actualCalls).To(Equal(expectedCalls))
+				Expect(len(actualCalls)).To(Equal(len(nodesReturnedFromCallStore) + 1))
 			})
 		})
 	})

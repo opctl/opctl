@@ -52,7 +52,7 @@ var _ = Context("RunContainer", func() {
 		/* arrange */
 		providedReq := &model.ContainerCall{
 			ContainerID: "containerID",
-			BaseCall: model.BaseCall{},
+			BaseCall:    model.BaseCall{},
 			Image:       &model.ContainerCallImage{Ref: new(string)},
 		}
 
@@ -96,7 +96,7 @@ var _ = Context("RunContainer", func() {
 		/* arrange */
 		providedReq := &model.ContainerCall{
 			BaseCall: model.BaseCall{},
-			Image:       &model.ContainerCallImage{Ref: new(string)},
+			Image:    &model.ContainerCallImage{Ref: new(string)},
 			Ports: map[string]string{
 				"6060/udp":  "6060",
 				"8080-8081": "9090-9091",
@@ -170,7 +170,7 @@ var _ = Context("RunContainer", func() {
 			/* arrange */
 			providedReq := &model.ContainerCall{
 				BaseCall: model.BaseCall{},
-				Cmd:         []string{"dummyCmd"},
+				Cmd:      []string{"dummyCmd"},
 				EnvVars: map[string]string{
 					"envVar1Name": "envVar1Value",
 					"envVar2Name": "envVar2Value",
@@ -288,7 +288,7 @@ var _ = Context("RunContainer", func() {
 			providedCtx := context.Background()
 			providedReq := &model.ContainerCall{
 				BaseCall: model.BaseCall{
-					RootOpID: "dummyRootOpID",
+					RootCallID: "dummyRootCallID",
 				},
 				ContainerID: "dummyContainerID",
 				Image:       &model.ContainerCallImage{Ref: new(string)},
@@ -326,14 +326,14 @@ var _ = Context("RunContainer", func() {
 				actualContainerID,
 				actualImagePullCreds,
 				actualImageRef,
-				actualRootOpID,
+				actualRootCallID,
 				actualEventPublisher := fakeImagePuller.PullArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualContainerID).To(Equal(providedReq.ContainerID))
 			Expect(actualImagePullCreds).To(Equal(providedReq.Image.PullCreds))
 			Expect(actualImageRef).To(Equal(*providedReq.Image.Ref))
-			Expect(actualRootOpID).To(Equal(providedReq.RootOpID))
+			Expect(actualRootCallID).To(Equal(providedReq.RootCallID))
 			Expect(actualEventPublisher).To(Equal(providedEventPublisher))
 		})
 
@@ -342,7 +342,7 @@ var _ = Context("RunContainer", func() {
 			providedCtx := context.Background()
 			providedReq := &model.ContainerCall{
 				BaseCall: model.BaseCall{
-					RootOpID: "dummyRootOpID",
+					RootCallID: "dummyRootCallID",
 				},
 				ContainerID: "dummyContainerID",
 				Image:       &model.ContainerCallImage{Ref: new(string)},

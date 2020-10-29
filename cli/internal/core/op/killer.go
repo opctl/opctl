@@ -45,8 +45,8 @@ func (ivkr _killer) Kill(
 	err := nodeHandle.APIClient().KillOp(
 		ctx,
 		model.KillOpReq{
-			OpID:     opID,
-			RootOpID: opID,
+			OpID:       opID,
+			RootCallID: opID,
 		},
 	)
 	if nil != err {

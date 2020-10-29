@@ -9,24 +9,24 @@ import (
 )
 
 type FakeUnmarshaller struct {
-	UnmarshalStub        func([]byte) (*model.OpFile, error)
+	UnmarshalStub        func([]byte) (*model.OpSpec, error)
 	unmarshalMutex       sync.RWMutex
 	unmarshalArgsForCall []struct {
 		arg1 []byte
 	}
 	unmarshalReturns struct {
-		result1 *model.OpFile
+		result1 *model.OpSpec
 		result2 error
 	}
 	unmarshalReturnsOnCall map[int]struct {
-		result1 *model.OpFile
+		result1 *model.OpSpec
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeUnmarshaller) Unmarshal(arg1 []byte) (*model.OpFile, error) {
+func (fake *FakeUnmarshaller) Unmarshal(arg1 []byte) (*model.OpSpec, error) {
 	var arg1Copy []byte
 	if arg1 != nil {
 		arg1Copy = make([]byte, len(arg1))
@@ -55,7 +55,7 @@ func (fake *FakeUnmarshaller) UnmarshalCallCount() int {
 	return len(fake.unmarshalArgsForCall)
 }
 
-func (fake *FakeUnmarshaller) UnmarshalCalls(stub func([]byte) (*model.OpFile, error)) {
+func (fake *FakeUnmarshaller) UnmarshalCalls(stub func([]byte) (*model.OpSpec, error)) {
 	fake.unmarshalMutex.Lock()
 	defer fake.unmarshalMutex.Unlock()
 	fake.UnmarshalStub = stub
@@ -68,28 +68,28 @@ func (fake *FakeUnmarshaller) UnmarshalArgsForCall(i int) []byte {
 	return argsForCall.arg1
 }
 
-func (fake *FakeUnmarshaller) UnmarshalReturns(result1 *model.OpFile, result2 error) {
+func (fake *FakeUnmarshaller) UnmarshalReturns(result1 *model.OpSpec, result2 error) {
 	fake.unmarshalMutex.Lock()
 	defer fake.unmarshalMutex.Unlock()
 	fake.UnmarshalStub = nil
 	fake.unmarshalReturns = struct {
-		result1 *model.OpFile
+		result1 *model.OpSpec
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeUnmarshaller) UnmarshalReturnsOnCall(i int, result1 *model.OpFile, result2 error) {
+func (fake *FakeUnmarshaller) UnmarshalReturnsOnCall(i int, result1 *model.OpSpec, result2 error) {
 	fake.unmarshalMutex.Lock()
 	defer fake.unmarshalMutex.Unlock()
 	fake.UnmarshalStub = nil
 	if fake.unmarshalReturnsOnCall == nil {
 		fake.unmarshalReturnsOnCall = make(map[int]struct {
-			result1 *model.OpFile
+			result1 *model.OpSpec
 			result2 error
 		})
 	}
 	fake.unmarshalReturnsOnCall[i] = struct {
-		result1 *model.OpFile
+		result1 *model.OpSpec
 		result2 error
 	}{result1, result2}
 }

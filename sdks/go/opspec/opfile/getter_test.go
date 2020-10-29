@@ -73,7 +73,7 @@ var _ = Context("opfile", func() {
 		// 		fakeIOUtil := new(iioutil.Fake)
 		// 		fakeIOUtil.ReadAllReturns(bytesFromReadAll, nil)
 
-		// 		expectedOpFile := &model.OpFile{
+		// 		expectedOpFile := &model.OpSpec{
 		// 			Name: "dummyName",
 		// 		}
 		// 		expectedErr := errors.New("dummyError")

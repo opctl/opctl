@@ -59,7 +59,7 @@ var _ = Context("parallelLoopCaller", func() {
 					model.ParallelLoopCallSpec{},
 					"dummyOpPath",
 					nil,
-					"rootOpID",
+					"rootCallID",
 				)
 
 				/* assert */
@@ -82,7 +82,7 @@ var _ = Context("parallelLoopCaller", func() {
 			providedOpPath := "providedOpPath"
 			providedParentCallIDValue := "providedParentCallID"
 			providedParentCallID := &providedParentCallIDValue
-			providedRootOpID := "providedRootOpID"
+			providedRootCallID := "providedRootCallID"
 
 			loopRangeValue := []interface{}{"value1", "value2"}
 			loopRange := &model.Value{
@@ -157,7 +157,7 @@ var _ = Context("parallelLoopCaller", func() {
 				providedParallelLoopCallSpec,
 				providedOpPath,
 				providedParentCallID,
-				providedRootOpID,
+				providedRootCallID,
 			)
 
 			/* assert */
@@ -167,14 +167,14 @@ var _ = Context("parallelLoopCaller", func() {
 				actualCallSpec,
 				actualOpPath,
 				actualParentCallID,
-				actualRootOpID := fakeCaller.CallArgsForCall(0)
+				actualRootCallID := fakeCaller.CallArgsForCall(0)
 
 			Expect(actualCallID).To(Equal(callID))
 			Expect(actualScope).To(Equal(expectedScope))
 			Expect(actualCallSpec).To(Equal(&providedParallelLoopCallSpec.Run))
 			Expect(actualOpPath).To(Equal(providedOpPath))
 			Expect(actualParentCallID).To(Equal(providedParentCallID))
-			Expect(actualRootOpID).To(Equal(providedRootOpID))
+			Expect(actualRootCallID).To(Equal(providedRootCallID))
 		})
 	})
 })

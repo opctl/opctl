@@ -101,7 +101,7 @@ func New(
 			switch {
 			case nil != event.OpKillRequested:
 				req := event.OpKillRequested.Request
-				opKiller.Kill(req.OpID, req.RootOpID)
+				opKiller.Kill(req.OpID, req.RootCallID)
 			}
 		}
 	}()

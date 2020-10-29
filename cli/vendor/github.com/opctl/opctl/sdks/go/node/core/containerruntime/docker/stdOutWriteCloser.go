@@ -11,7 +11,7 @@ import (
 func NewStdOutWriteCloser(
 	eventPublisher pubsub.EventPublisher,
 	containerID string,
-	rootOpID string,
+	rootCallID string,
 ) io.WriteCloser {
 	pr, pw := io.Pipe()
 	go func() {
@@ -30,7 +30,7 @@ func NewStdOutWriteCloser(
 						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenTo{
 							Data:        b,
 							ContainerID: containerID,
-							RootOpID:    rootOpID,
+							RootCallID:  rootCallID,
 						},
 					},
 				)

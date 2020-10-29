@@ -28,7 +28,7 @@ var _ = Context("parallelCaller", func() {
 			/* arrange */
 			providedCallID := "dummyCallID"
 			providedInboundScope := map[string]*model.Value{}
-			providedRootOpID := "dummyRootOpID"
+			providedRootCallID := "dummyRootCallID"
 			providedOpPath := "providedOpPath"
 			providedCallSpecParallelCalls := []*model.CallSpec{
 				{
@@ -89,7 +89,7 @@ var _ = Context("parallelCaller", func() {
 				context.Background(),
 				providedCallID,
 				providedInboundScope,
-				providedRootOpID,
+				providedRootCallID,
 				providedOpPath,
 				providedCallSpecParallelCalls,
 			)
@@ -102,12 +102,12 @@ var _ = Context("parallelCaller", func() {
 					actualCallSpec,
 					actualOpPath,
 					actualParentCallID,
-					actualRootOpID := fakeCaller.CallArgsForCall(callIndex)
+					actualRootCallID := fakeCaller.CallArgsForCall(callIndex)
 
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(actualParentCallID).To(Equal(&providedCallID))
-				Expect(actualRootOpID).To(Equal(providedRootOpID))
+				Expect(actualRootCallID).To(Equal(providedRootCallID))
 
 				// handle unordered asserts because call order can't be relied on within go statement
 				Expect(expectedChildCallIds).To(ContainElement(actualNodeID))
@@ -119,7 +119,7 @@ var _ = Context("parallelCaller", func() {
 				/* arrange */
 				providedCallID := "dummyCallID"
 				providedInboundScope := map[string]*model.Value{}
-				providedRootOpID := "dummyRootOpID"
+				providedRootCallID := "dummyRootCallID"
 				providedOpPath := "providedOpPath"
 				providedCallSpecParallelCalls := []*model.CallSpec{
 					{
@@ -199,7 +199,7 @@ var _ = Context("parallelCaller", func() {
 					context.Background(),
 					providedCallID,
 					providedInboundScope,
-					providedRootOpID,
+					providedRootCallID,
 					providedOpPath,
 					providedCallSpecParallelCalls,
 				)
@@ -207,7 +207,7 @@ var _ = Context("parallelCaller", func() {
 				/* assert */
 				actualEvent := fakePubSub.PublishArgsForCall(0)
 
-				Expect(actualEvent.ParallelCallEnded.Error.Message).To(Equal(expectedErrorMessage))
+				Expect(actualEvent.CallEnded.Error.Message).To(Equal(expectedErrorMessage))
 			})
 		})
 		Context("caller doesn't error", func() {
@@ -215,7 +215,7 @@ var _ = Context("parallelCaller", func() {
 				/* arrange */
 				providedCallID := "dummyCallID"
 				providedInboundScope := map[string]*model.Value{}
-				providedRootOpID := "dummyRootOpID"
+				providedRootCallID := "dummyRootCallID"
 				providedOpPath := "providedOpPath"
 				providedCallSpecParallelCalls := []*model.CallSpec{
 					{
@@ -276,7 +276,7 @@ var _ = Context("parallelCaller", func() {
 					context.Background(),
 					providedCallID,
 					providedInboundScope,
-					providedRootOpID,
+					providedRootCallID,
 					providedOpPath,
 					providedCallSpecParallelCalls,
 				)
@@ -289,12 +289,12 @@ var _ = Context("parallelCaller", func() {
 						actualCallSpec,
 						actualOpPath,
 						actualParentCallID,
-						actualRootOpID := fakeCaller.CallArgsForCall(callIndex)
+						actualRootCallID := fakeCaller.CallArgsForCall(callIndex)
 
 					Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 					Expect(actualOpPath).To(Equal(providedOpPath))
 					Expect(actualParentCallID).To(Equal(&providedCallID))
-					Expect(actualRootOpID).To(Equal(providedRootOpID))
+					Expect(actualRootCallID).To(Equal(providedRootCallID))
 
 					// handle unordered asserts because call order can't be relied on within go statement
 					Expect(expectedChildCallIds).To(ContainElement(actualNodeID))

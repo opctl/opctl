@@ -74,7 +74,7 @@ var _ = Context("Creator", func() {
 		providedPkgName := "dummyPkgName"
 		providedPkgDescription := "dummyPkgDescription"
 
-		expectedOpFileBytes, err := yaml.Marshal(&model.OpFile{
+		expectedOpFileBytes, err := yaml.Marshal(&model.OpSpec{
 			Description: providedPkgDescription,
 			Name:        providedPkgName,
 		})

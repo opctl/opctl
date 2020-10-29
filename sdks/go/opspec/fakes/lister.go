@@ -10,25 +10,25 @@ import (
 )
 
 type FakeLister struct {
-	ListStub        func(context.Context, model.DataHandle) (map[string]*model.OpFile, error)
+	ListStub        func(context.Context, model.DataHandle) (map[string]*model.OpSpec, error)
 	listMutex       sync.RWMutex
 	listArgsForCall []struct {
 		arg1 context.Context
 		arg2 model.DataHandle
 	}
 	listReturns struct {
-		result1 map[string]*model.OpFile
+		result1 map[string]*model.OpSpec
 		result2 error
 	}
 	listReturnsOnCall map[int]struct {
-		result1 map[string]*model.OpFile
+		result1 map[string]*model.OpSpec
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeLister) List(arg1 context.Context, arg2 model.DataHandle) (map[string]*model.OpFile, error) {
+func (fake *FakeLister) List(arg1 context.Context, arg2 model.DataHandle) (map[string]*model.OpSpec, error) {
 	fake.listMutex.Lock()
 	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
 	fake.listArgsForCall = append(fake.listArgsForCall, struct {
@@ -53,7 +53,7 @@ func (fake *FakeLister) ListCallCount() int {
 	return len(fake.listArgsForCall)
 }
 
-func (fake *FakeLister) ListCalls(stub func(context.Context, model.DataHandle) (map[string]*model.OpFile, error)) {
+func (fake *FakeLister) ListCalls(stub func(context.Context, model.DataHandle) (map[string]*model.OpSpec, error)) {
 	fake.listMutex.Lock()
 	defer fake.listMutex.Unlock()
 	fake.ListStub = stub
@@ -66,28 +66,28 @@ func (fake *FakeLister) ListArgsForCall(i int) (context.Context, model.DataHandl
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeLister) ListReturns(result1 map[string]*model.OpFile, result2 error) {
+func (fake *FakeLister) ListReturns(result1 map[string]*model.OpSpec, result2 error) {
 	fake.listMutex.Lock()
 	defer fake.listMutex.Unlock()
 	fake.ListStub = nil
 	fake.listReturns = struct {
-		result1 map[string]*model.OpFile
+		result1 map[string]*model.OpSpec
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeLister) ListReturnsOnCall(i int, result1 map[string]*model.OpFile, result2 error) {
+func (fake *FakeLister) ListReturnsOnCall(i int, result1 map[string]*model.OpSpec, result2 error) {
 	fake.listMutex.Lock()
 	defer fake.listMutex.Unlock()
 	fake.ListStub = nil
 	if fake.listReturnsOnCall == nil {
 		fake.listReturnsOnCall = make(map[int]struct {
-			result1 map[string]*model.OpFile
+			result1 map[string]*model.OpSpec
 			result2 error
 		})
 	}
 	fake.listReturnsOnCall[i] = struct {
-		result1 map[string]*model.OpFile
+		result1 map[string]*model.OpSpec
 		result2 error
 	}{result1, result2}
 }
