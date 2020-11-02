@@ -74,46 +74,6 @@ var _ = Context("output", func() {
 		})
 	})
 	Context("Event", func() {
-		Context("ContainerExited", func() {
-			It("should call stdWriter w/ expected args", func() {
-				/* arrange */
-				providedEvent := &model.Event{
-					ContainerExited: &model.ContainerExited{
-						ContainerID: "dummyContainerID",
-						OpRef:       "dummyOpRef",
-						ExitCode:    1,
-					},
-					Timestamp: time.Now(),
-				}
-				expectedWriteArg := []byte(
-					fmt.Sprintln(
-						_cliColorer.Info(
-							fmt.Sprintf(
-								"ContainerExited Id='%v' OpRef='%v' ExitCode='%v' Timestamp='%v'\n",
-								providedEvent.ContainerExited.ContainerID,
-								providedEvent.ContainerExited.OpRef,
-								providedEvent.ContainerExited.ExitCode,
-								providedEvent.Timestamp.Format(time.RFC3339),
-							),
-						),
-					),
-				)
-
-				fakeStdWriter := new(fakeWriter)
-				objectUnderTest := New(
-					_cliColorer,
-					new(fakeWriter),
-					fakeStdWriter,
-				)
-
-				/* act */
-				objectUnderTest.Event(providedEvent)
-
-				/* assert */
-				Expect(fakeStdWriter.WriteArgsForCall(0)).
-					To(Equal(expectedWriteArg))
-			})
-		})
 		Context("ContainerStdErrWrittenTo", func() {
 			It("should call stdWriter w/ expected args", func() {
 				/* arrange */
@@ -167,101 +127,16 @@ var _ = Context("output", func() {
 			})
 		})
 		Context("CallEnded", func() {
-			Context("Outcome==FAILED", func() {
-				It("should call errWriter w/ expected args", func() {
+			Context("Call.Container truthy", func() {
+				It("should call stdWriter w/ expected args", func() {
 					/* arrange */
 					providedEvent := &model.Event{
 						CallEnded: &model.CallEnded{
-							Error: &model.CallEndedError{
-								Message: "message",
+							Call: model.Call{
+								Container: &model.ContainerCall{},
+								Id:        "id",
 							},
-							CallID:   "dummyOpID",
-							CallType: model.CallTypeOp,
-							Ref:      "dummyOpRef",
-							Outcome:  "FAILED",
-						},
-						Timestamp: time.Now(),
-					}
-					expectedWriteArg := []byte(
-						fmt.Sprintln(
-							_cliColorer.Error(
-								fmt.Sprintf(
-									"OpEnded Id='%v' OpRef='%v' Outcome='%v'%v Timestamp='%v'\n",
-									providedEvent.CallEnded.CallID,
-									providedEvent.CallEnded.Ref,
-									providedEvent.CallEnded.Outcome,
-									fmt.Sprintf(" Error='%v'", providedEvent.CallEnded.Error.Message),
-									providedEvent.Timestamp.Format(time.RFC3339),
-								),
-							),
-						),
-					)
-
-					fakeErrWriter := new(fakeWriter)
-					objectUnderTest := New(
-						_cliColorer,
-						fakeErrWriter,
-						new(fakeWriter),
-					)
-
-					/* act */
-					objectUnderTest.Event(providedEvent)
-
-					/* assert */
-					Expect(fakeErrWriter.WriteArgsForCall(0)).
-						To(Equal(expectedWriteArg))
-				})
-			})
-			Context("Outcome==SUCCEEDED", func() {
-				It("should call stdWriter w/ expected args", func() {
-					/* arrange */
-					providedEvent := &model.Event{
-						CallEnded: &model.CallEnded{
-							CallID:   "dummyOpID",
-							CallType: model.CallTypeOp,
-							Ref:      "dummyOpRef",
-							Outcome:  "SUCCEEDED",
-						},
-						Timestamp: time.Now(),
-					}
-					expectedWriteArg := []byte(
-						fmt.Sprintln(
-							_cliColorer.Success(
-								fmt.Sprintf(
-									"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
-									providedEvent.CallEnded.CallID,
-									providedEvent.CallEnded.Ref,
-									providedEvent.CallEnded.Outcome,
-									providedEvent.Timestamp.Format(time.RFC3339),
-								),
-							),
-						),
-					)
-
-					fakeStdWriter := new(fakeWriter)
-					objectUnderTest := New(
-						_cliColorer,
-						new(fakeWriter),
-						fakeStdWriter,
-					)
-
-					/* act */
-					objectUnderTest.Event(providedEvent)
-
-					/* assert */
-					Expect(fakeStdWriter.WriteArgsForCall(0)).
-						To(Equal(expectedWriteArg))
-				})
-			})
-			Context("Outcome==KILLED", func() {
-				It("should call stdWriter w/ expected args", func() {
-					/* arrange */
-					providedEvent := &model.Event{
-						CallEnded: &model.CallEnded{
-							CallID:   "dummyOpID",
-							CallType: model.CallTypeOp,
-							Ref:      "dummyOpRef",
-							Outcome:  "KILLED",
+							Ref: "dummyOpRef",
 						},
 						Timestamp: time.Now(),
 					}
@@ -269,10 +144,9 @@ var _ = Context("output", func() {
 						fmt.Sprintln(
 							_cliColorer.Info(
 								fmt.Sprintf(
-									"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
-									providedEvent.CallEnded.CallID,
+									"ContainerExited Id='%v' OpRef='%v' Timestamp='%v'\n",
+									providedEvent.CallEnded.Call.Id,
 									providedEvent.CallEnded.Ref,
-									providedEvent.CallEnded.Outcome,
 									providedEvent.Timestamp.Format(time.RFC3339),
 								),
 							),
@@ -294,45 +168,140 @@ var _ = Context("output", func() {
 						To(Equal(expectedWriteArg))
 				})
 			})
-			Context("Outcome==FAILED", func() {
-				It("should call errWriter w/ expected args", func() {
-					/* arrange */
-					providedEvent := &model.Event{
-						CallEnded: &model.CallEnded{
-							CallID:   "dummyOpID",
-							CallType: model.CallTypeOp,
-							Ref:      "dummyOpRef",
-							Outcome:  "FAILED",
-						},
-						Timestamp: time.Now(),
-					}
-					expectedWriteArg := []byte(
-						fmt.Sprintln(
-							_cliColorer.Error(
-								fmt.Sprintf(
-									"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
-									providedEvent.CallEnded.CallID,
-									providedEvent.CallEnded.Ref,
-									providedEvent.CallEnded.Outcome,
-									providedEvent.Timestamp.Format(time.RFC3339),
+			Context("Call.Op truthy", func() {
+
+				Context("Outcome==FAILED", func() {
+					It("should call errWriter w/ expected args", func() {
+						/* arrange */
+						providedEvent := &model.Event{
+							CallEnded: &model.CallEnded{
+								Call: model.Call{
+									Id: "id",
+									Op: &model.OpCall{},
+								},
+								Error: &model.CallEndedError{
+									Message: "message",
+								},
+								Ref:     "dummyOpRef",
+								Outcome: "FAILED",
+							},
+							Timestamp: time.Now(),
+						}
+						expectedWriteArg := []byte(
+							fmt.Sprintln(
+								_cliColorer.Error(
+									fmt.Sprintf(
+										"OpEnded Id='%v' OpRef='%v' Outcome='%v'%v Timestamp='%v'\n",
+										providedEvent.CallEnded.Call.Id,
+										providedEvent.CallEnded.Ref,
+										providedEvent.CallEnded.Outcome,
+										fmt.Sprintf(" Error='%v'", providedEvent.CallEnded.Error.Message),
+										providedEvent.Timestamp.Format(time.RFC3339),
+									),
 								),
 							),
-						),
-					)
+						)
 
-					fakeErrWriter := new(fakeWriter)
-					objectUnderTest := New(
-						_cliColorer,
-						fakeErrWriter,
-						new(fakeWriter),
-					)
+						fakeErrWriter := new(fakeWriter)
+						objectUnderTest := New(
+							_cliColorer,
+							fakeErrWriter,
+							new(fakeWriter),
+						)
 
-					/* act */
-					objectUnderTest.Event(providedEvent)
+						/* act */
+						objectUnderTest.Event(providedEvent)
 
-					/* assert */
-					Expect(fakeErrWriter.WriteArgsForCall(0)).
-						To(Equal(expectedWriteArg))
+						/* assert */
+						Expect(fakeErrWriter.WriteArgsForCall(0)).
+							To(Equal(expectedWriteArg))
+					})
+				})
+				Context("Outcome==SUCCEEDED", func() {
+					It("should call stdWriter w/ expected args", func() {
+						/* arrange */
+						providedEvent := &model.Event{
+							CallEnded: &model.CallEnded{
+								Call: model.Call{
+									Id: "id",
+									Op: &model.OpCall{},
+								},
+								Ref:     "dummyOpRef",
+								Outcome: "SUCCEEDED",
+							},
+							Timestamp: time.Now(),
+						}
+						expectedWriteArg := []byte(
+							fmt.Sprintln(
+								_cliColorer.Success(
+									fmt.Sprintf(
+										"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
+										providedEvent.CallEnded.Call.Id,
+										providedEvent.CallEnded.Ref,
+										providedEvent.CallEnded.Outcome,
+										providedEvent.Timestamp.Format(time.RFC3339),
+									),
+								),
+							),
+						)
+
+						fakeStdWriter := new(fakeWriter)
+						objectUnderTest := New(
+							_cliColorer,
+							new(fakeWriter),
+							fakeStdWriter,
+						)
+
+						/* act */
+						objectUnderTest.Event(providedEvent)
+
+						/* assert */
+						Expect(fakeStdWriter.WriteArgsForCall(0)).
+							To(Equal(expectedWriteArg))
+					})
+				})
+				Context("Outcome==KILLED", func() {
+					It("should call stdWriter w/ expected args", func() {
+						/* arrange */
+						providedEvent := &model.Event{
+							CallEnded: &model.CallEnded{
+								Call: model.Call{
+									Id: "id",
+									Op: &model.OpCall{},
+								},
+								Ref:     "dummyOpRef",
+								Outcome: "KILLED",
+							},
+							Timestamp: time.Now(),
+						}
+						expectedWriteArg := []byte(
+							fmt.Sprintln(
+								_cliColorer.Info(
+									fmt.Sprintf(
+										"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
+										providedEvent.CallEnded.Call.Id,
+										providedEvent.CallEnded.Ref,
+										providedEvent.CallEnded.Outcome,
+										providedEvent.Timestamp.Format(time.RFC3339),
+									),
+								),
+							),
+						)
+
+						fakeStdWriter := new(fakeWriter)
+						objectUnderTest := New(
+							_cliColorer,
+							new(fakeWriter),
+							fakeStdWriter,
+						)
+
+						/* act */
+						objectUnderTest.Event(providedEvent)
+
+						/* assert */
+						Expect(fakeStdWriter.WriteArgsForCall(0)).
+							To(Equal(expectedWriteArg))
+					})
 				})
 			})
 		})

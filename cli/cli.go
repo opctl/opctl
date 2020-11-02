@@ -79,10 +79,10 @@ func newCli(
 		}
 	}
 
-	cli.Command("auth", "Manage auth for dependencies", func(authCmd *mow.Cmd) {
+	cli.Command("auth", "Manage auth for OCI image registries", func(authCmd *mow.Cmd) {
 
 		authCmd.Command(
-			"add", "Add auth for ",
+			"add", "Add auth for an OCI image registry",
 			func(addCmd *mow.Cmd) {
 				addCmd.Spec = "RESOURCES [ -u=<username> ] [ -p=<password> ]"
 
@@ -144,7 +144,7 @@ func newCli(
 			})
 
 		opCmd.Command(
-			"install", "Installs an op",
+			"install", "Install an op",
 			func(installCmd *mow.Cmd) {
 				path := installCmd.StringOpt("path", op.DotOpspecDirName, "Path the op will be installed at")
 				opRef := installCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
@@ -165,7 +165,7 @@ func newCli(
 		})
 
 		opCmd.Command(
-			"validate", "Validates an op",
+			"validate", "Validate an op",
 			func(validateCmd *mow.Cmd) {
 				opRef := validateCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 

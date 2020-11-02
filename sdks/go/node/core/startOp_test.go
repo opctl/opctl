@@ -262,7 +262,7 @@ var _ = Context("core", func() {
 					/* assert */
 					// Call happens in go routine; wait 500ms to allow it to occur
 					time.Sleep(time.Millisecond * 500)
-					actualCtx,
+					_,
 						actualOpID,
 						actualScope,
 						actualCallSpec,
@@ -270,7 +270,6 @@ var _ = Context("core", func() {
 						_,
 						actualRootID := fakeCaller.CallArgsForCall(0)
 
-					Expect(actualCtx).To(Equal(providedCtx))
 					Expect(actualOpID).To(Equal(expectedID))
 					Expect(actualScope).To(Equal(providedReq.Args))
 					Expect(*actualCallSpec).To(BeEquivalentTo(model.CallSpec{

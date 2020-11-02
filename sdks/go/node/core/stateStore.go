@@ -15,9 +15,9 @@ import (
 
 //counterfeiter:generate -o internal/fakes/stateStore.go . stateStore
 // stateStore allows efficiently querying the current state of opctl.
-// 
-// State is materialized by applying events in the order in which they are/were received. 
-// 
+//
+// State is materialized by applying events in the order in which they are/were received.
+//
 // efficient startup:
 // A lastAppliedEventTimestamp is maintained and used at startup to pickup applying events
 // from where we left off.
@@ -49,7 +49,7 @@ func newStateStore(
 		// make best effort to get lastAppliedEventTimestamp
 		lastAppliedEventTimestamp, _ := stateStore.getLastAppliedEventTimestamp()
 
-		// replay from second before last applied event to ensure we see events 
+		// replay from second before last applied event to ensure we see events
 		// at least once (multiple events w/ same timestamp could exist)
 		since := lastAppliedEventTimestamp.Add(-time.Second)
 
@@ -142,7 +142,7 @@ func (ss *_stateStore) applyCallEnded(callEnded model.CallEnded) {
 	ss.mux.RLock()
 	defer ss.mux.RUnlock()
 
-	callID := callEnded.CallID
+	callID := callEnded.Call.Id
 	if _, ok := ss.callsByID[callID]; ok {
 		ss.callsByID[callID].IsKilled = true
 	}

@@ -7,7 +7,6 @@ type Event struct {
 	AuthAdded                *AuthAdded                `json:"authAdded,omitempty"`
 	CallEnded                *CallEnded                `json:"callEnded,omitempty"`
 	CallStarted              *CallStarted              `json:"callStarted,omitempty"`
-	ContainerExited          *ContainerExited          `json:"containerExited,omitempty"`
 	ContainerStdErrWrittenTo *ContainerStdErrWrittenTo `json:"containerStdErrWrittenTo,omitempty"`
 	ContainerStdOutWrittenTo *ContainerStdOutWrittenTo `json:"containerStdOutWrittenTo,omitempty"`
 	OpKillRequested          *OpKillRequested          `json:"opKillRequested,omitempty"`
@@ -18,6 +17,7 @@ const (
 	OpOutcomeSucceeded   = "SUCCEEDED"
 	OpOutcomeFailed      = "FAILED"
 	OpOutcomeKilled      = "KILLED"
+	CallTypeContainer    = "Container"
 	CallTypeOp           = "Op"
 	CallTypeSerial       = "Serial"
 	CallTypeSerialLoop   = "SerialLoop"
@@ -37,8 +37,7 @@ type OpKillRequested struct {
 
 // CallEnded represents a call ended; no further events will occur for the call
 type CallEnded struct {
-	CallID     string            `json:"callId"`
-	CallType   string            `json:"callType"`
+	Call       Call              `json:"call"`
 	Ref        string            `json:"ref"`
 	Error      *CallEndedError   `json:"error,omitempty"`
 	Outputs    map[string]*Value `json:"outputs"`
@@ -56,17 +55,6 @@ type CallStarted struct {
 // CallEndedError represents an error associated w/ an ended call
 type CallEndedError struct {
 	Message string `json:"message"`
-}
-
-// ContainerExited represents the exit of a containerized process; no further events will occur for the container
-type ContainerExited struct {
-	ImageRef    string            `json:"imageRef"`
-	Error       *CallEndedError   `json:"error,omitempty"`
-	ExitCode    int64             `json:"exitCode"`
-	RootCallID  string            `json:"rootCallId"`
-	ContainerID string            `json:"containerId"`
-	OpRef       string            `json:"opRef"`
-	Outputs     map[string]*Value `json:"outputs"`
 }
 
 // ContainerStdErrWrittenTo represents a single write to a containers std err.

@@ -26,6 +26,9 @@ type serialLoopCaller interface {
 		opPath string,
 		parentCallID *string,
 		rootCallID string,
+	) (
+		map[string]*model.Value,
+		error,
 	)
 }
 
@@ -62,30 +65,13 @@ func (lpr _serialLoopCaller) Call(
 	opPath string,
 	parentCallID *string,
 	rootCallID string,
+) (
+	map[string]*model.Value,
+	error,
 ) {
 	var err error
 	outboundScope := map[string]*model.Value{}
-
-	defer func() {
-		// defer must be defined before conditional return statements so it always runs
-		event := model.Event{
-			Timestamp: time.Now().UTC(),
-			CallEnded: &model.CallEnded{
-				CallID:     id,
-				CallType:   model.CallTypeSerialLoop,
-				RootCallID: rootCallID,
-				Outputs:    outboundScope,
-			},
-		}
-
-		if nil != err {
-			event.CallEnded.Error = &model.CallEndedError{
-				Message: err.Error(),
-			}
-		}
-
-		lpr.pubSub.Publish(event)
-	}()
+	var callSerialLoop *model.SerialLoopCall
 
 	index := 0
 	outboundScope, err = lpr.iterationScoper.Scope(
@@ -95,17 +81,16 @@ func (lpr _serialLoopCaller) Call(
 		callSpecSerialLoop.Vars,
 	)
 	if nil != err {
-		return
+		return outboundScope, err
 	}
 
 	// interpret initial iteration of the loop
-	var callSerialLoop *model.SerialLoopCall
 	callSerialLoop, err = lpr.serialLoopInterpreter.Interpret(
 		callSpecSerialLoop,
 		outboundScope,
 	)
 	if nil != err {
-		return
+		return outboundScope, err
 	}
 
 	for !serialloop.IsIterationComplete(index, callSerialLoop) {
@@ -114,7 +99,7 @@ func (lpr _serialLoopCaller) Call(
 		var callID string
 		callID, err = lpr.uniqueStringFactory.Construct()
 		if nil != err {
-			return
+			return outboundScope, err
 		}
 
 		lpr.caller.Call(
@@ -141,10 +126,10 @@ func (lpr _serialLoopCaller) Call(
 		for event := range eventChannel {
 			// merge child outboundScope w/ outboundScope, child outboundScope having precedence
 			switch {
-			case nil != event.CallEnded && event.CallEnded.CallID == callID:
+			case nil != event.CallEnded && event.CallEnded.Call.Id == callID:
 				if nil != event.CallEnded.Error {
 					err = errors.New(event.CallEnded.Error.Message)
-					return
+					return outboundScope, err
 				}
 				for name, value := range event.CallEnded.Outputs {
 					outboundScope[name] = value
@@ -166,7 +151,7 @@ func (lpr _serialLoopCaller) Call(
 			callSpecSerialLoop.Vars,
 		)
 		if nil != err {
-			return
+			return outboundScope, err
 		}
 
 		// interpret next iteration of the loop
@@ -175,7 +160,7 @@ func (lpr _serialLoopCaller) Call(
 			outboundScope,
 		)
 		if nil != err {
-			return
+			return outboundScope, err
 		}
 	}
 
@@ -185,4 +170,6 @@ func (lpr _serialLoopCaller) Call(
 		callSpecSerialLoop.Vars,
 		outboundScope,
 	)
+
+	return outboundScope, err
 }

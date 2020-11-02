@@ -21,6 +21,9 @@ type containerCaller interface {
 		containerCall *model.ContainerCall,
 		inboundScope map[string]*model.Value,
 		containerCallSpec *model.ContainerCallSpec,
+	) (
+		map[string]*model.Value,
+		error,
 	)
 }
 
@@ -51,32 +54,13 @@ func (cc _containerCaller) Call(
 	containerCall *model.ContainerCall,
 	inboundScope map[string]*model.Value,
 	containerCallSpec *model.ContainerCallSpec,
+) (
+	map[string]*model.Value,
+	error,
 ) {
 	var err error
 	outputs := map[string]*model.Value{}
 	var exitCode int64
-
-	defer func() {
-		// defer must be defined before conditional return statements so it always runs
-		event := model.Event{
-			Timestamp: time.Now().UTC(),
-			ContainerExited: &model.ContainerExited{
-				ContainerID: containerCall.ContainerID,
-				OpRef:       containerCall.OpPath,
-				RootCallID:  containerCall.RootCallID,
-				ExitCode:    exitCode,
-				Outputs:     outputs,
-			},
-		}
-
-		if nil != err {
-			event.ContainerExited.Error = &model.CallEndedError{
-				Message: err.Error(),
-			}
-		}
-
-		cc.pubSub.Publish(event)
-	}()
 
 	if nil != containerCall.Image.Ref && nil == containerCall.Image.PullCreds {
 		if auth := cc.stateStore.TryGetAuth(*containerCall.Image.Ref); nil != auth {
@@ -125,6 +109,8 @@ func (cc _containerCaller) Call(
 		// non-destructively set err
 		err = logChanErr
 	}
+
+	return outputs, err
 }
 
 func (this _containerCaller) interpretLogs(

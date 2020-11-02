@@ -51,7 +51,9 @@ var _ = Context("serialCaller", func() {
 				for index := range providedCallSpecSerialCalls {
 					eventChannel <- model.Event{
 						CallEnded: &model.CallEnded{
-							CallID: fmt.Sprintf("%v", index),
+							Call: model.Call{
+								Id: fmt.Sprintf("%v", index),
+							},
 						},
 					}
 				}
@@ -105,7 +107,7 @@ var _ = Context("serialCaller", func() {
 			}
 		})
 		Context("caller errors", func() {
-			It("should publish expected CallEnded", func() {
+			It("should return expected results", func() {
 				/* arrange */
 				providedCallID := "dummyCallID"
 				providedInboundScope := map[string]*model.Value{}
@@ -125,7 +127,9 @@ var _ = Context("serialCaller", func() {
 					for range providedCallSpecSerialCalls {
 						eventChannel <- model.Event{
 							CallEnded: &model.CallEnded{
-								CallID: callID,
+								Call: model.Call{
+									Id: callID,
+								},
 								Error: &model.CallEndedError{
 									Message: expectedErrorMessage,
 								},
@@ -146,7 +150,7 @@ var _ = Context("serialCaller", func() {
 				}
 
 				/* act */
-				objectUnderTest.Call(
+				actualOutputs, actualErr := objectUnderTest.Call(
 					context.Background(),
 					providedCallID,
 					providedInboundScope,
@@ -156,9 +160,8 @@ var _ = Context("serialCaller", func() {
 				)
 
 				/* assert */
-				actualEvent := fakePubSub.PublishArgsForCall(0)
-
-				Expect(actualEvent.CallEnded.Error.Message).To(Equal(expectedErrorMessage))
+				Expect(actualOutputs).To(Equal(map[string]*model.Value{}))
+				Expect(actualErr).To(Equal(actualErr))
 			})
 		})
 		Context("caller doesn't error", func() {
@@ -190,7 +193,9 @@ var _ = Context("serialCaller", func() {
 						for index := range providedCallSpecSerialCalls {
 							eventChannel <- model.Event{
 								CallEnded: &model.CallEnded{
-									CallID: fmt.Sprintf("%v", index),
+									Call: model.Call{
+										Id: fmt.Sprintf("%v", index),
+									},
 								},
 							}
 						}
@@ -272,8 +277,10 @@ var _ = Context("serialCaller", func() {
 						for index := range providedCallSpecSerialCalls {
 							eventChannel <- model.Event{
 								CallEnded: &model.CallEnded{
+									Call: model.Call{
+										Id: fmt.Sprintf("%v", index),
+									},
 									RootCallID: providedRootCallID,
-									CallID:     fmt.Sprintf("%v", index),
 									Outputs:    firstChildOutputs,
 								},
 							}
