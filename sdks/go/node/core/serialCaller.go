@@ -20,6 +20,9 @@ type serialCaller interface {
 		rootCallID string,
 		opPath string,
 		callSpecSerialCall []*model.CallSpec,
+	) (
+		map[string]*model.Value,
+		error,
 	)
 }
 
@@ -49,34 +52,15 @@ func (sc _serialCaller) Call(
 	rootCallID string,
 	opPath string,
 	callSpecSerialCall []*model.CallSpec,
+) (
+	map[string]*model.Value,
+	error,
 ) {
 	outputs := map[string]*model.Value{}
 	for varName, varData := range inboundScope {
 		outputs[varName] = varData
 	}
 	var err error
-
-	defer func() {
-		// defer must be defined before conditional return statements so it always runs
-		event := model.Event{
-			CallEnded: &model.CallEnded{
-				CallID:     callID,
-				CallType:   model.CallTypeSerial,
-				Outputs:    outputs,
-				RootCallID: rootCallID,
-			},
-			Timestamp: time.Now().UTC(),
-		}
-
-		if nil != err {
-			event.CallEnded.Error = &model.CallEndedError{
-				Message: err.Error(),
-			}
-		}
-		sc.pubSub.Publish(
-			event,
-		)
-	}()
 
 	// subscribe to events
 	// @TODO: handle err channel
@@ -95,7 +79,7 @@ func (sc _serialCaller) Call(
 		childCallID, err = sc.uniqueStringFactory.Construct()
 		if nil != err {
 			// end run immediately on any error
-			return
+			return outputs, err
 		}
 
 		sc.caller.Call(
@@ -112,11 +96,11 @@ func (sc _serialCaller) Call(
 		for event := range eventChannel {
 			// merge child outboundScope w/ outboundScope, child outboundScope having precedence
 			switch {
-			case nil != event.CallEnded && event.CallEnded.CallID == childCallID:
+			case nil != event.CallEnded && event.CallEnded.Call.Id == childCallID:
 				if nil != event.CallEnded.Error {
 					err = errors.New(event.CallEnded.Error.Message)
 					// end on any error
-					return
+					return outputs, err
 				}
 				for name, value := range event.CallEnded.Outputs {
 					outputs[name] = value
@@ -127,4 +111,5 @@ func (sc _serialCaller) Call(
 
 	}
 
+	return outputs, err
 }

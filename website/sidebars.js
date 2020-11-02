@@ -125,7 +125,21 @@ module.exports = {
           ]
         },
         'reference/ui',
-        'reference/cli',
+        {
+          type: "category",
+          label: "CLI",
+          items: [
+            "reference/cli/global-options",
+            "reference/cli/auth",
+            "reference/cli/events",
+            "reference/cli/ls",
+            "reference/cli/node",
+            "reference/cli/op",
+            "reference/cli/run",
+            "reference/cli/self-update",
+            "reference/cli/ui",
+          ]
+        },
         {
           type: "category",
           label: "SDKs",

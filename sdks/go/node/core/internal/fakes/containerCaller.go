@@ -9,7 +9,7 @@ import (
 )
 
 type FakeContainerCaller struct {
-	CallStub        func(context.Context, *model.ContainerCall, map[string]*model.Value, *model.ContainerCallSpec)
+	CallStub        func(context.Context, *model.ContainerCall, map[string]*model.Value, *model.ContainerCallSpec) (map[string]*model.Value, error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		arg1 context.Context
@@ -17,12 +17,21 @@ type FakeContainerCaller struct {
 		arg3 map[string]*model.Value
 		arg4 *model.ContainerCallSpec
 	}
+	callReturns struct {
+		result1 map[string]*model.Value
+		result2 error
+	}
+	callReturnsOnCall map[int]struct {
+		result1 map[string]*model.Value
+		result2 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeContainerCaller) Call(arg1 context.Context, arg2 *model.ContainerCall, arg3 map[string]*model.Value, arg4 *model.ContainerCallSpec) {
+func (fake *FakeContainerCaller) Call(arg1 context.Context, arg2 *model.ContainerCall, arg3 map[string]*model.Value, arg4 *model.ContainerCallSpec) (map[string]*model.Value, error) {
 	fake.callMutex.Lock()
+	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		arg1 context.Context
 		arg2 *model.ContainerCall
@@ -32,8 +41,13 @@ func (fake *FakeContainerCaller) Call(arg1 context.Context, arg2 *model.Containe
 	fake.recordInvocation("Call", []interface{}{arg1, arg2, arg3, arg4})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		fake.CallStub(arg1, arg2, arg3, arg4)
+		return fake.CallStub(arg1, arg2, arg3, arg4)
 	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.callReturns
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *FakeContainerCaller) CallCallCount() int {
@@ -42,7 +56,7 @@ func (fake *FakeContainerCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *FakeContainerCaller) CallCalls(stub func(context.Context, *model.ContainerCall, map[string]*model.Value, *model.ContainerCallSpec)) {
+func (fake *FakeContainerCaller) CallCalls(stub func(context.Context, *model.ContainerCall, map[string]*model.Value, *model.ContainerCallSpec) (map[string]*model.Value, error)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
@@ -53,6 +67,32 @@ func (fake *FakeContainerCaller) CallArgsForCall(i int) (context.Context, *model
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
+}
+
+func (fake *FakeContainerCaller) CallReturns(result1 map[string]*model.Value, result2 error) {
+	fake.callMutex.Lock()
+	defer fake.callMutex.Unlock()
+	fake.CallStub = nil
+	fake.callReturns = struct {
+		result1 map[string]*model.Value
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeContainerCaller) CallReturnsOnCall(i int, result1 map[string]*model.Value, result2 error) {
+	fake.callMutex.Lock()
+	defer fake.callMutex.Unlock()
+	fake.CallStub = nil
+	if fake.callReturnsOnCall == nil {
+		fake.callReturnsOnCall = make(map[int]struct {
+			result1 map[string]*model.Value
+			result2 error
+		})
+	}
+	fake.callReturnsOnCall[i] = struct {
+		result1 map[string]*model.Value
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeContainerCaller) Invocations() map[string][][]interface{} {

@@ -8,12 +8,13 @@ accordance with
 
 ### Added
 
-- [Add ability to auth opctl to external resource providers](https://github.com/opctl/opctl/issues/823)
+- [Add ability to add auth to opctl for OCI image registries](https://github.com/opctl/opctl/issues/823)
 
 ### Changed
 
 - [Make OpKill Event Driven](https://github.com/opctl/opctl/issues/809)
 - [Remove CallKilled event](https://github.com/opctl/opctl/issues/810)
+- [Remove ContainerExited event](https://github.com/opctl/opctl/issues/825)
 - [Remove OpErred event](https://github.com/opctl/opctl/issues/812)
 - [Remove Event suffix from event types](https://github.com/opctl/opctl/issues/814)
 - [Rename types from SCG/DCG](https://github.com/opctl/opctl/issues/816)

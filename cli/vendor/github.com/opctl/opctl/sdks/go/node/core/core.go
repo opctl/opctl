@@ -143,7 +143,6 @@ func New(
 		dataCachePath:    filepath.Join(dataDirPath, "ops"),
 		opCaller: newOpCaller(
 			stateStore,
-			pubSub,
 			caller,
 			dataDirPath,
 		),

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"runtime/debug"
-	"time"
 
 	"github.com/opctl/opctl/sdks/go/model"
 )
@@ -61,31 +60,19 @@ func (this _core) StartOp(
 		opCallSpec.Outputs[name] = ""
 	}
 
+	opCtx, cancelOp := context.WithCancel(context.Background())
 	go func() {
 		defer func() {
 			if panicArg := recover(); panicArg != nil {
 				// recover from panics; treat as errors
-				msg := fmt.Sprint(panicArg, debug.Stack())
-
-				this.pubSub.Publish(
-					model.Event{
-						Timestamp: time.Now().UTC(),
-						CallEnded: &model.CallEnded{
-							Error: &model.CallEndedError{
-								Message: msg,
-							},
-							CallID:     callID,
-							Ref:        *opHandle.Path(),
-							Outcome:    model.OpOutcomeFailed,
-							RootCallID: callID,
-						},
-					},
-				)
+				fmt.Println(panicArg, debug.Stack())
 			}
+
+			cancelOp()
 		}()
 
 		this.caller.Call(
-			context.Background(),
+			opCtx,
 			callID,
 			req.Args,
 			&model.CallSpec{
@@ -98,5 +85,4 @@ func (this _core) StartOp(
 	}()
 
 	return callID, nil
-
 }

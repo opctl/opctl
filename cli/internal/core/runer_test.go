@@ -435,7 +435,9 @@ var _ = Context("Runer", func() {
 										opEnded := model.Event{
 											Timestamp: time.Now(),
 											CallEnded: &model.CallEnded{
-												CallID:     rootCallID,
+												Call: model.Call{
+													Id: rootCallID,
+												},
 												Outcome:    model.OpOutcomeSucceeded,
 												RootCallID: rootCallID,
 											},
@@ -486,7 +488,9 @@ var _ = Context("Runer", func() {
 										opEnded := model.Event{
 											Timestamp: time.Now(),
 											CallEnded: &model.CallEnded{
-												CallID:     rootCallID,
+												Call: model.Call{
+													Id: rootCallID,
+												},
 												Outcome:    model.OpOutcomeKilled,
 												RootCallID: rootCallID,
 											},
@@ -538,7 +542,9 @@ var _ = Context("Runer", func() {
 										opEnded := model.Event{
 											Timestamp: time.Now(),
 											CallEnded: &model.CallEnded{
-												CallID:     rootCallID,
+												Call: model.Call{
+													Id: rootCallID,
+												},
 												Outcome:    model.OpOutcomeFailed,
 												RootCallID: rootCallID,
 											},
@@ -589,7 +595,9 @@ var _ = Context("Runer", func() {
 										opEnded := model.Event{
 											Timestamp: time.Now(),
 											CallEnded: &model.CallEnded{
-												CallID:     rootCallID,
+												Call: model.Call{
+													Id: rootCallID,
+												},
 												Outcome:    "some unexpected outcome",
 												RootCallID: rootCallID,
 											},

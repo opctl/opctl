@@ -9,7 +9,7 @@ import (
 )
 
 type FakeParallelCaller struct {
-	CallStub        func(context.Context, string, map[string]*model.Value, string, string, []*model.CallSpec)
+	CallStub        func(context.Context, string, map[string]*model.Value, string, string, []*model.CallSpec) (map[string]*model.Value, error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		arg1 context.Context
@@ -19,17 +19,26 @@ type FakeParallelCaller struct {
 		arg5 string
 		arg6 []*model.CallSpec
 	}
+	callReturns struct {
+		result1 map[string]*model.Value
+		result2 error
+	}
+	callReturnsOnCall map[int]struct {
+		result1 map[string]*model.Value
+		result2 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeParallelCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 string, arg5 string, arg6 []*model.CallSpec) {
+func (fake *FakeParallelCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 string, arg5 string, arg6 []*model.CallSpec) (map[string]*model.Value, error) {
 	var arg6Copy []*model.CallSpec
 	if arg6 != nil {
 		arg6Copy = make([]*model.CallSpec, len(arg6))
 		copy(arg6Copy, arg6)
 	}
 	fake.callMutex.Lock()
+	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
@@ -41,8 +50,13 @@ func (fake *FakeParallelCaller) Call(arg1 context.Context, arg2 string, arg3 map
 	fake.recordInvocation("Call", []interface{}{arg1, arg2, arg3, arg4, arg5, arg6Copy})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		fake.CallStub(arg1, arg2, arg3, arg4, arg5, arg6)
+		return fake.CallStub(arg1, arg2, arg3, arg4, arg5, arg6)
 	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.callReturns
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *FakeParallelCaller) CallCallCount() int {
@@ -51,7 +65,7 @@ func (fake *FakeParallelCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *FakeParallelCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, string, string, []*model.CallSpec)) {
+func (fake *FakeParallelCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, string, string, []*model.CallSpec) (map[string]*model.Value, error)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
@@ -62,6 +76,32 @@ func (fake *FakeParallelCaller) CallArgsForCall(i int) (context.Context, string,
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5, argsForCall.arg6
+}
+
+func (fake *FakeParallelCaller) CallReturns(result1 map[string]*model.Value, result2 error) {
+	fake.callMutex.Lock()
+	defer fake.callMutex.Unlock()
+	fake.CallStub = nil
+	fake.callReturns = struct {
+		result1 map[string]*model.Value
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeParallelCaller) CallReturnsOnCall(i int, result1 map[string]*model.Value, result2 error) {
+	fake.callMutex.Lock()
+	defer fake.callMutex.Unlock()
+	fake.CallStub = nil
+	if fake.callReturnsOnCall == nil {
+		fake.callReturnsOnCall = make(map[int]struct {
+			result1 map[string]*model.Value
+			result2 error
+		})
+	}
+	fake.callReturnsOnCall[i] = struct {
+		result1 map[string]*model.Value
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeParallelCaller) Invocations() map[string][][]interface{} {

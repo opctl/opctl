@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"runtime/debug"
 	"time"
@@ -23,6 +22,9 @@ type caller interface {
 		opPath string,
 		parentCallID *string,
 		rootCallID string,
+	) (
+		map[string]*model.Value,
+		error,
 	)
 }
 
@@ -41,7 +43,6 @@ func newCaller(
 
 	instance.opCaller = newOpCaller(
 		stateStore,
-		pubSub,
 		instance,
 		dataDirPath,
 	)
@@ -88,16 +89,20 @@ func (clr _caller) Call(
 	opPath string,
 	parentCallID *string,
 	rootCallID string,
+) (
+	map[string]*model.Value,
+	error,
 ) {
 	callCtx, cancelCall := context.WithCancel(ctx)
+	defer cancelCall()
 	var err error
 	var isKilled bool
 	var outputs map[string]*model.Value
+	var call *model.Call
 	callStartTime := time.Now().UTC()
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-		<-callCtx.Done()
 		var outcome string
 		if isKilled {
 			outcome = model.OpOutcomeKilled
@@ -107,11 +112,18 @@ func (clr _caller) Call(
 			outcome = model.OpOutcomeSucceeded
 		}
 
+		if nil == call {
+			call = &model.Call{
+				Id: id,
+			}
+		}
+
 		event := model.Event{
 			CallEnded: &model.CallEnded{
-				CallID:     id,
+				Call:       *call,
 				Outcome:    outcome,
 				Outputs:    outputs,
+				Ref:        opPath,
 				RootCallID: rootCallID,
 			},
 			Timestamp: time.Now().UTC(),
@@ -127,13 +139,10 @@ func (clr _caller) Call(
 	}()
 
 	if nil == callSpec {
-		cancelCall()
-
 		// NOOP
-		return
+		return outputs, err
 	}
 
-	var call *model.Call
 	call, err = clr.callInterpreter.Interpret(
 		scope,
 		callSpec,
@@ -143,15 +152,11 @@ func (clr _caller) Call(
 		rootCallID,
 	)
 	if nil != err {
-		cancelCall()
-
-		return
+		return outputs, err
 	}
 
 	if nil != call.If && !*call.If {
-		cancelCall()
-
-		return
+		return outputs, err
 	}
 
 	clr.pubSub.Publish(
@@ -187,18 +192,6 @@ func (clr _caller) Call(
 
 		for event := range eventChannel {
 			switch {
-			case nil != event.CallEnded && event.CallEnded.CallID == id:
-				if nil != event.CallEnded.Error {
-					err = errors.New(event.CallEnded.Error.Message)
-				}
-				outputs = event.CallEnded.Outputs
-				return
-			case nil != event.ContainerExited && event.ContainerExited.ContainerID == id:
-				if nil != event.ContainerExited.Error {
-					err = errors.New(event.ContainerExited.Error.Message)
-				}
-				outputs = event.ContainerExited.Outputs
-				return
 			case nil != event.OpKillRequested:
 				isKilled = true
 				return
@@ -208,14 +201,14 @@ func (clr _caller) Call(
 
 	switch {
 	case nil != callSpec.Container:
-		clr.containerCaller.Call(
+		outputs, err = clr.containerCaller.Call(
 			callCtx,
 			call.Container,
 			scope,
 			callSpec.Container,
 		)
 	case nil != callSpec.Op:
-		clr.opCaller.Call(
+		outputs, err = clr.opCaller.Call(
 			callCtx,
 			call.Op,
 			scope,
@@ -223,7 +216,7 @@ func (clr _caller) Call(
 			callSpec.Op,
 		)
 	case nil != callSpec.Parallel:
-		clr.parallelCaller.Call(
+		outputs, err = clr.parallelCaller.Call(
 			callCtx,
 			id,
 			scope,
@@ -232,7 +225,7 @@ func (clr _caller) Call(
 			*callSpec.Parallel,
 		)
 	case nil != callSpec.ParallelLoop:
-		clr.parallelLoopCaller.Call(
+		outputs, err = clr.parallelLoopCaller.Call(
 			callCtx,
 			id,
 			scope,
@@ -242,7 +235,7 @@ func (clr _caller) Call(
 			rootCallID,
 		)
 	case nil != callSpec.Serial:
-		clr.serialCaller.Call(
+		outputs, err = clr.serialCaller.Call(
 			callCtx,
 			id,
 			scope,
@@ -251,7 +244,7 @@ func (clr _caller) Call(
 			*callSpec.Serial,
 		)
 	case nil != callSpec.SerialLoop:
-		clr.serialLoopCaller.Call(
+		outputs, err = clr.serialLoopCaller.Call(
 			callCtx,
 			id,
 			scope,
@@ -264,4 +257,5 @@ func (clr _caller) Call(
 		err = fmt.Errorf("Invalid call graph %+v\n", callSpec)
 	}
 
+	return outputs, err
 }

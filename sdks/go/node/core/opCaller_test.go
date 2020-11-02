@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 	"errors"
-	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -11,7 +10,6 @@ import (
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	outputsFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs/fakes"
 	. "github.com/opctl/opctl/sdks/go/opspec/opfile/fakes"
-	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("opCaller", func() {
@@ -20,7 +18,6 @@ var _ = Context("opCaller", func() {
 			/* arrange/act/assert */
 			Expect(newOpCaller(
 				new(FakeStateStore),
-				new(FakePubSub),
 				new(FakeCaller),
 				"",
 			)).To(Not(BeNil()))
@@ -59,12 +56,6 @@ var _ = Context("opCaller", func() {
 				},
 			}
 
-			fakePubSub := new(FakePubSub)
-			eventChannel := make(chan model.Event)
-			// close eventChannel to trigger immediate return
-			close(eventChannel)
-			fakePubSub.SubscribeReturns(eventChannel, nil)
-
 			fakeCaller := new(FakeCaller)
 
 			fakeOpFileGetter := new(FakeGetter)
@@ -75,7 +66,6 @@ var _ = Context("opCaller", func() {
 				caller:       fakeCaller,
 				stateStore:   new(FakeStateStore),
 				opFileGetter: fakeOpFileGetter,
-				pubSub:       fakePubSub,
 			}
 
 			/* act */
@@ -104,223 +94,60 @@ var _ = Context("opCaller", func() {
 			Expect(actualParentCallID).To(Equal(&providedOpCall.OpID))
 			Expect(actualRootCallID).To(Equal(providedOpCall.RootCallID))
 		})
-		Context("stateStore.Get(callID).IsKilled returns true", func() {
-			It("should call pubSub.Publish w/ expected args", func() {
-				/* arrange */
-				providedOpPath := "providedOpPath"
+		It("should return expected results", func() {
+			/* arrange */
+			providedOpPath := "providedOpPath"
 
-				providedOpCall := &model.OpCall{
-					BaseCall: model.BaseCall{
-						OpPath:     providedOpPath,
-						RootCallID: "providedRootID",
-					},
-					OpID: "providedOpID",
-				}
+			providedOpCall := &model.OpCall{
+				BaseCall: model.BaseCall{
+					OpPath:     providedOpPath,
+					RootCallID: "providedRootID",
+				},
+				OpID: "providedOpId",
+			}
 
-				providedOpCallSpec := &model.OpCallSpec{}
+			expectedOutputName := "expectedOutputName"
 
-				expectedEvent := model.Event{
-					Timestamp: time.Now().UTC(),
-					CallEnded: &model.CallEnded{
-						CallID:     providedOpCall.OpID,
-						CallType:   model.CallTypeOp,
-						Outcome:    model.OpOutcomeKilled,
-						RootCallID: providedOpCall.RootCallID,
-						Ref:        providedOpPath,
-						Outputs:    map[string]*model.Value{},
-					},
-				}
+			providedOpCallSpec := &model.OpCallSpec{
+				Outputs: map[string]string{
+					expectedOutputName: "",
+				},
+			}
 
-				fakeStateStore := new(FakeStateStore)
-				fakeStateStore.TryGetReturns(&model.Call{IsKilled: true})
+			fakeOutputsInterpreter := new(outputsFakes.FakeInterpreter)
+			interpretedOutputs := map[string]*model.Value{
+				expectedOutputName: new(model.Value),
+				// include unbound output to ensure it's not added to scope
+				"unexpectedOutputName": new(model.Value),
+			}
+			fakeOutputsInterpreter.InterpretReturns(interpretedOutputs, nil)
 
-				fakeOpFileGetter := new(FakeGetter)
-				fakeOpFileGetter.GetReturns(&model.OpSpec{}, nil)
+			expectedOutputs := map[string]*model.Value{
+				expectedOutputName: interpretedOutputs[expectedOutputName],
+			}
 
-				fakePubSub := new(FakePubSub)
-				eventChannel := make(chan model.Event)
-				// close eventChannel to trigger immediate return
-				close(eventChannel)
-				fakePubSub.SubscribeReturns(eventChannel, nil)
+			fakeOpFileGetter := new(FakeGetter)
+			fakeOpFileGetter.GetReturns(&model.OpSpec{}, nil)
 
-				objectUnderTest := _opCaller{
-					caller:             new(FakeCaller),
-					stateStore:         fakeStateStore,
-					opFileGetter:       fakeOpFileGetter,
-					pubSub:             fakePubSub,
-					outputsInterpreter: new(outputsFakes.FakeInterpreter),
-				}
+			objectUnderTest := _opCaller{
+				caller:             new(FakeCaller),
+				stateStore:         new(FakeStateStore),
+				opFileGetter:       fakeOpFileGetter,
+				outputsInterpreter: fakeOutputsInterpreter,
+			}
 
-				/* act */
-				objectUnderTest.Call(
-					context.Background(),
-					providedOpCall,
-					map[string]*model.Value{},
-					nil,
-					providedOpCallSpec,
-				)
+			/* act */
+			actualOutputs, actualErr := objectUnderTest.Call(
+				context.Background(),
+				providedOpCall,
+				map[string]*model.Value{},
+				nil,
+				providedOpCallSpec,
+			)
 
-				/* assert */
-				actualEvent := fakePubSub.PublishArgsForCall(0)
-
-				// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
-				Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
-				// set temporal fields to expected vals since they're already asserted
-				actualEvent.Timestamp = expectedEvent.Timestamp
-
-				Expect(actualEvent).To(Equal(expectedEvent))
-			})
-		})
-		Context("stateStore.Get(callID).IsKilled returns false", func() {
-
-			Context("caller.Call errs", func() {
-				It("should call pubSub.Publish w/ expected args", func() {
-					/* arrange */
-					providedOpPath := "providedOpPath"
-
-					providedOpCall := &model.OpCall{
-						BaseCall: model.BaseCall{
-							OpPath:     providedOpPath,
-							RootCallID: "providedRootID",
-						},
-						OpID: "providedOpId",
-					}
-
-					providedOpCallSpec := &model.OpCallSpec{}
-					errMsg := "errMsg"
-
-					expectedEvent := model.Event{
-						Timestamp: time.Now().UTC(),
-						CallEnded: &model.CallEnded{
-							Error: &model.CallEndedError{
-								Message: errMsg,
-							},
-							CallID:     providedOpCall.OpID,
-							CallType:   model.CallTypeOp,
-							Ref:        providedOpPath,
-							Outcome:    model.OpOutcomeFailed,
-							RootCallID: providedOpCall.RootCallID,
-							Outputs:    map[string]*model.Value{},
-						},
-					}
-
-					fakePubSub := new(FakePubSub)
-					eventChannel := make(chan model.Event)
-					// close eventChannel to trigger immediate return
-					close(eventChannel)
-					fakePubSub.SubscribeReturns(eventChannel, nil)
-
-					fakeOpFileGetter := new(FakeGetter)
-					// err to trigger immediate return
-					fakeOpFileGetter.GetReturns(nil, errors.New(errMsg))
-
-					objectUnderTest := _opCaller{
-						caller:       new(FakeCaller),
-						stateStore:   new(FakeStateStore),
-						opFileGetter: fakeOpFileGetter,
-						pubSub:       fakePubSub,
-					}
-
-					/* act */
-					objectUnderTest.Call(
-						context.Background(),
-						providedOpCall,
-						map[string]*model.Value{},
-						nil,
-						providedOpCallSpec,
-					)
-
-					/* assert */
-					actualEvent := fakePubSub.PublishArgsForCall(0)
-
-					// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
-					Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
-					// set temporal fields to expected vals since they're already asserted
-					actualEvent.Timestamp = expectedEvent.Timestamp
-
-					Expect(actualEvent).To(Equal(expectedEvent))
-				})
-			})
-		})
-		Context("caller.Call didn't error", func() {
-			It("should call pubSub.Publish w/ expected args", func() {
-				/* arrange */
-				providedOpPath := "providedOpPath"
-
-				providedOpCall := &model.OpCall{
-					BaseCall: model.BaseCall{
-						OpPath:     providedOpPath,
-						RootCallID: "providedRootID",
-					},
-					OpID: "providedOpId",
-				}
-
-				expectedOutputName := "expectedOutputName"
-
-				providedOpCallSpec := &model.OpCallSpec{
-					Outputs: map[string]string{
-						expectedOutputName: "",
-					},
-				}
-
-				fakeOutputsInterpreter := new(outputsFakes.FakeInterpreter)
-				interpretedOutputs := map[string]*model.Value{
-					expectedOutputName: new(model.Value),
-					// include unbound output to ensure it's not added to scope
-					"unexpectedOutputName": new(model.Value),
-				}
-				fakeOutputsInterpreter.InterpretReturns(interpretedOutputs, nil)
-
-				expectedEvent := model.Event{
-					Timestamp: time.Now().UTC(),
-					CallEnded: &model.CallEnded{
-						CallID:     providedOpCall.OpID,
-						CallType:   model.CallTypeOp,
-						Ref:        providedOpPath,
-						Outcome:    model.OpOutcomeSucceeded,
-						RootCallID: providedOpCall.RootCallID,
-						Outputs: map[string]*model.Value{
-							expectedOutputName: interpretedOutputs[expectedOutputName],
-						},
-					},
-				}
-
-				fakeOpFileGetter := new(FakeGetter)
-				fakeOpFileGetter.GetReturns(&model.OpSpec{}, nil)
-
-				fakePubSub := new(FakePubSub)
-				eventChannel := make(chan model.Event)
-				// close eventChannel to trigger immediate return
-				close(eventChannel)
-				fakePubSub.SubscribeReturns(eventChannel, nil)
-
-				objectUnderTest := _opCaller{
-					caller:             new(FakeCaller),
-					stateStore:         new(FakeStateStore),
-					opFileGetter:       fakeOpFileGetter,
-					pubSub:             fakePubSub,
-					outputsInterpreter: fakeOutputsInterpreter,
-				}
-
-				/* act */
-				objectUnderTest.Call(
-					context.Background(),
-					providedOpCall,
-					map[string]*model.Value{},
-					nil,
-					providedOpCallSpec,
-				)
-
-				/* assert */
-				actualEvent := fakePubSub.PublishArgsForCall(0)
-
-				// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
-				Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
-				// set temporal fields to expected vals since they're already asserted
-				actualEvent.Timestamp = expectedEvent.Timestamp
-
-				Expect(actualEvent).To(Equal(expectedEvent))
-			})
+			/* assert */
+			Expect(actualOutputs).To(Equal(expectedOutputs))
+			Expect(actualErr).To(BeNil())
 		})
 	})
 })

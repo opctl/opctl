@@ -113,20 +113,23 @@ var _ = Context("caller", func() {
 			It("should call pubSub.Publish w/ expected args", func() {
 				/* arrange */
 				providedCallID := "dummyCallID"
+				providedOpPath := "providedOpPath"
 				providedRootCallID := "dummyRootCallID"
 
 				fakeCallInterpreter := new(callFakes.FakeInterpreter)
 				falseBoolean := false
+				expectedCall := model.Call{
+					If: &falseBoolean,
+				}
 				fakeCallInterpreter.InterpretReturns(
-					&model.Call{
-						If: &falseBoolean,
-					},
+					&expectedCall,
 					nil,
 				)
 
 				expectedEvent := model.Event{
 					CallEnded: &model.CallEnded{
-						CallID:     providedCallID,
+						Call:       expectedCall,
+						Ref:        providedOpPath,
 						Outcome:    model.OpOutcomeSucceeded,
 						RootCallID: providedRootCallID,
 					},
@@ -148,7 +151,7 @@ var _ = Context("caller", func() {
 					providedCallID,
 					map[string]*model.Value{},
 					&model.CallSpec{},
-					"dummyOpPath",
+					providedOpPath,
 					nil,
 					providedRootCallID,
 				)

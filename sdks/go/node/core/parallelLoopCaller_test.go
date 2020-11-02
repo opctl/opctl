@@ -123,15 +123,30 @@ var _ = Context("parallelLoopCaller", func() {
 
 			fakeCaller := new(FakeCaller)
 			eventChannel := make(chan model.Event, 100)
-			fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.CallSpec, string, *string, string) {
+			fakeCaller.CallStub = func(
+				context.Context,
+				string,
+				map[string]*model.Value,
+				*model.CallSpec,
+				string,
+				*string,
+				string,
+			) (
+				map[string]*model.Value,
+				error,
+			) {
 				eventChannel <- model.Event{
 					CallEnded: &model.CallEnded{
-						CallID: callID,
+						Call: model.Call{
+							Id: callID,
+						},
 						Error: &model.CallEndedError{
 							Message: expectedErrorMessage,
 						},
 					},
 				}
+
+				return nil, nil
 			}
 
 			fakePubSub := new(FakePubSub)

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"time"
 
 	"github.com/golang-interfaces/iio"
 	. "github.com/onsi/ginkgo"
@@ -89,7 +88,7 @@ var _ = Context("containerCaller", func() {
 				}
 
 				/* act */
-				objectUnderTest.Call(
+				actualOutputs, actualErr := objectUnderTest.Call(
 					context.Background(),
 					&model.ContainerCall{
 						BaseCall: model.BaseCall{},
@@ -100,14 +99,13 @@ var _ = Context("containerCaller", func() {
 				)
 
 				/* assert */
-				actualEvent := fakePubSub.PublishArgsForCall(0)
-
-				Expect(actualEvent.ContainerExited.Error.Message).To(Equal(expectedErrorMessage))
+				Expect(actualOutputs).To(Equal(map[string]*model.Value{}))
+				Expect(actualErr).To(Equal(errors.New(expectedErrorMessage)))
 			})
 		})
 	})
 
-	It("should call pubSub.Publish w/ expected ContainerExited", func() {
+	It("should return expected results", func() {
 		/* arrange */
 		providedOpPath := "providedOpPath"
 		providedContainerCall := &model.ContainerCall{
@@ -121,33 +119,18 @@ var _ = Context("containerCaller", func() {
 		providedInboundScope := map[string]*model.Value{}
 		providedContainerCallSpec := &model.ContainerCallSpec{}
 
-		expectedEvent := model.Event{
-			Timestamp: time.Now().UTC(),
-			ContainerExited: &model.ContainerExited{
-				ContainerID: providedContainerCall.ContainerID,
-				Error: &model.CallEndedError{
-					Message: "io: read/write on closed pipe",
-				},
-				OpRef:      providedOpPath,
-				Outputs:    map[string]*model.Value{},
-				RootCallID: providedContainerCall.RootCallID,
-			},
-		}
-
-		fakePubSub := new(FakePubSub)
-
 		fakeIIO := new(iio.Fake)
 		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 		objectUnderTest := _containerCaller{
 			containerRuntime: new(FakeContainerRuntime),
-			pubSub:           fakePubSub,
+			pubSub:           new(FakePubSub),
 			stateStore:       new(FakeStateStore),
 			io:               fakeIIO,
 		}
 
 		/* act */
-		objectUnderTest.Call(
+		actualOutputs, actualErr := objectUnderTest.Call(
 			context.Background(),
 			providedContainerCall,
 			providedInboundScope,
@@ -155,13 +138,7 @@ var _ = Context("containerCaller", func() {
 		)
 
 		/* assert */
-		actualEvent := fakePubSub.PublishArgsForCall(0)
-
-		// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
-		Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
-		// set temporal fields to expected vals since they're already asserted
-		actualEvent.Timestamp = expectedEvent.Timestamp
-
-		Expect(actualEvent).To(Equal(expectedEvent))
+		Expect(actualOutputs).To(Equal(map[string]*model.Value{}))
+		Expect(actualErr).To(Equal(errors.New("io: read/write on closed pipe")))
 	})
 })

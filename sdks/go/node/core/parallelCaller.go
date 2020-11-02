@@ -22,6 +22,9 @@ type parallelCaller interface {
 		rootCallID string,
 		opPath string,
 		callSpecParallelCall []*model.CallSpec,
+	) (
+		map[string]*model.Value,
+		error,
 	)
 }
 
@@ -55,6 +58,9 @@ func (pc _parallelCaller) Call(
 	rootCallID string,
 	opPath string,
 	callSpecParallelCall []*model.CallSpec,
+) (
+	map[string]*model.Value,
+	error,
 ) {
 	// setup cancellation
 	parallelCtx, cancelParallel := context.WithCancel(parentCtx)
@@ -62,26 +68,6 @@ func (pc _parallelCaller) Call(
 
 	outputs := map[string]*model.Value{}
 	var err error
-
-	defer func() {
-		// defer must be defined before conditional return statements so it always runs
-		event := model.Event{
-			CallEnded: &model.CallEnded{
-				CallID:     callID,
-				CallType:   model.CallTypeParallel,
-				Outputs:    outputs,
-				RootCallID: rootCallID,
-			},
-			Timestamp: time.Now().UTC(),
-		}
-
-		if nil != err {
-			event.CallEnded.Error = &model.CallEndedError{
-				Message: err.Error(),
-			}
-		}
-		pc.pubSub.Publish(event)
-	}()
 
 	childCallNeededCountByName := map[string]int{}
 	for _, callSpecChildCall := range callSpecParallelCall {
@@ -148,7 +134,7 @@ func (pc _parallelCaller) Call(
 	childErrorMessages := []string{}
 	for event := range eventChannel {
 		if nil != event.CallEnded {
-			if childCallIndex, isChildCallEnded := childCallIndexByID[event.CallEnded.CallID]; isChildCallEnded {
+			if childCallIndex, isChildCallEnded := childCallIndexByID[event.CallEnded.Call.Id]; isChildCallEnded {
 				childCallOutputsByIndex[childCallIndex] = event.CallEnded.Outputs
 				if nil != event.CallEnded.Error {
 					// cancel all children on any error
@@ -203,10 +189,11 @@ func (pc _parallelCaller) Call(
 					)
 				}
 
-				return
+				return outputs, err
 			}
 
 		}
 	}
 
+	return outputs, err
 }

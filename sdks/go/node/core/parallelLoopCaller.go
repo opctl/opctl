@@ -27,6 +27,9 @@ type parallelLoopCaller interface {
 		opPath string,
 		parentCallID *string,
 		rootCallID string,
+	) (
+		map[string]*model.Value,
+		error,
 	)
 }
 
@@ -63,6 +66,9 @@ func (plpr _parallelLoopCaller) Call(
 	opPath string,
 	parentCallID *string,
 	rootCallID string,
+) (
+	map[string]*model.Value,
+	error,
 ) {
 	// setup cancellation
 	parallelLoopCtx, cancelParallelLoop := context.WithCancel(parentCtx)
@@ -70,27 +76,7 @@ func (plpr _parallelLoopCaller) Call(
 
 	outboundScope := map[string]*model.Value{}
 	var err error
-
-	defer func() {
-		// defer must be defined before conditional return statements so it always runs
-		event := model.Event{
-			Timestamp: time.Now().UTC(),
-			CallEnded: &model.CallEnded{
-				CallID:     id,
-				CallType:   model.CallTypeParallelLoop,
-				RootCallID: rootCallID,
-				Outputs:    outboundScope,
-			},
-		}
-
-		if nil != err {
-			event.CallEnded.Error = &model.CallEndedError{
-				Message: err.Error(),
-			}
-		}
-
-		plpr.pubSub.Publish(event)
-	}()
+	var callParallelLoop *model.ParallelLoopCall
 
 	childCallIndex := 0
 	outboundScope, err = plpr.iterationScoper.Scope(
@@ -100,17 +86,16 @@ func (plpr _parallelLoopCaller) Call(
 		callSpecParallelLoop.Vars,
 	)
 	if nil != err {
-		return
+		return outboundScope, err
 	}
 
 	// interpret initial iteration of the loop
-	var callParallelLoop *model.ParallelLoopCall
 	callParallelLoop, err = plpr.parallelLoopInterpreter.Interpret(
 		callSpecParallelLoop,
 		outboundScope,
 	)
 	if nil != err {
-		return
+		return outboundScope, err
 	}
 
 	startTime := time.Now().UTC()
@@ -162,7 +147,7 @@ func (plpr _parallelLoopCaller) Call(
 			callSpecParallelLoop.Vars,
 		)
 		if nil != err {
-			return
+			return outboundScope, err
 		}
 
 		// interpret next iteration of the loop
@@ -171,7 +156,7 @@ func (plpr _parallelLoopCaller) Call(
 			outboundScope,
 		)
 		if nil != err {
-			return
+			return outboundScope, err
 		}
 
 	}
@@ -187,13 +172,13 @@ func (plpr _parallelLoopCaller) Call(
 	)
 
 	if len(childCallIDIndexMap) == 0 {
-		return
+		return outboundScope, err
 	}
 
 	childErrorMessages := []string{}
 	for event := range eventChannel {
 		if nil != event.CallEnded {
-			if childCallIndex, isChildCallEnded := childCallIDIndexMap[event.CallEnded.CallID]; isChildCallEnded {
+			if childCallIndex, isChildCallEnded := childCallIDIndexMap[event.CallEnded.Call.Id]; isChildCallEnded {
 				callIndexOutputsMap[childCallIndex] = event.CallEnded.Outputs
 				if nil != event.CallEnded.Error {
 					// cancel all children on any error
@@ -225,7 +210,7 @@ func (plpr _parallelLoopCaller) Call(
 					)
 				}
 
-				return
+				return outboundScope, err
 			}
 
 		}
@@ -237,4 +222,6 @@ func (plpr _parallelLoopCaller) Call(
 		callSpecParallelLoop.Vars,
 		outboundScope,
 	)
+
+	return outboundScope, err
 }

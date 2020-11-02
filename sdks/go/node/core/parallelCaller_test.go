@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 
@@ -50,17 +51,32 @@ var _ = Context("parallelCaller", func() {
 			fakeCaller := new(FakeCaller)
 			eventChannel := make(chan model.Event, 100)
 			callerCallIndex := 0
-			fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.CallSpec, string, *string, string) {
+			fakeCaller.CallStub = func(
+				context.Context,
+				string,
+				map[string]*model.Value,
+				*model.CallSpec,
+				string,
+				*string,
+				string,
+			) (
+				map[string]*model.Value,
+				error,
+			) {
 				mtx.Lock()
 				eventChannel <- model.Event{
 					CallEnded: &model.CallEnded{
-						CallID: fmt.Sprintf("%v", callerCallIndex),
+						Call: model.Call{
+							Id: fmt.Sprintf("%v", callerCallIndex),
+						},
 					},
 				}
 
 				callerCallIndex++
 
 				mtx.Unlock()
+
+				return nil, nil
 			}
 
 			fakePubSub := new(FakePubSub)
@@ -147,12 +163,25 @@ var _ = Context("parallelCaller", func() {
 				fakeCaller := new(FakeCaller)
 				eventChannel := make(chan model.Event, 100)
 				callerCallIndex := 0
-				fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.CallSpec, string, *string, string) {
+				fakeCaller.CallStub = func(
+					context.Context,
+					string,
+					map[string]*model.Value,
+					*model.CallSpec,
+					string,
+					*string,
+					string,
+				) (
+					map[string]*model.Value,
+					error,
+				) {
 					mtx.Lock()
 
 					eventChannel <- model.Event{
 						CallEnded: &model.CallEnded{
-							CallID: fmt.Sprintf("%v", callerCallIndex),
+							Call: model.Call{
+								Id: fmt.Sprintf("%v", callerCallIndex),
+							},
 							Error: &model.CallEndedError{
 								Message: errorMessage,
 							},
@@ -162,6 +191,8 @@ var _ = Context("parallelCaller", func() {
 					callerCallIndex++
 
 					mtx.Unlock()
+
+					return nil, nil
 				}
 
 				fakePubSub := new(FakePubSub)
@@ -195,7 +226,7 @@ var _ = Context("parallelCaller", func() {
 				}
 
 				/* act */
-				objectUnderTest.Call(
+				actualOutputs, actualErr := objectUnderTest.Call(
 					context.Background(),
 					providedCallID,
 					providedInboundScope,
@@ -205,9 +236,8 @@ var _ = Context("parallelCaller", func() {
 				)
 
 				/* assert */
-				actualEvent := fakePubSub.PublishArgsForCall(0)
-
-				Expect(actualEvent.CallEnded.Error.Message).To(Equal(expectedErrorMessage))
+				Expect(actualOutputs).To(Equal(map[string]*model.Value{}))
+				Expect(actualErr).To(Equal(errors.New(expectedErrorMessage)))
 			})
 		})
 		Context("caller doesn't error", func() {
@@ -237,17 +267,32 @@ var _ = Context("parallelCaller", func() {
 				fakeCaller := new(FakeCaller)
 				eventChannel := make(chan model.Event, 100)
 				callerCallIndex := 0
-				fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.CallSpec, string, *string, string) {
+				fakeCaller.CallStub = func(
+					context.Context,
+					string,
+					map[string]*model.Value,
+					*model.CallSpec,
+					string,
+					*string,
+					string,
+				) (
+					map[string]*model.Value,
+					error,
+				) {
 					mtx.Lock()
 
 					eventChannel <- model.Event{
 						CallEnded: &model.CallEnded{
-							CallID: fmt.Sprintf("%v", callerCallIndex),
+							Call: model.Call{
+								Id: fmt.Sprintf("%v", callerCallIndex),
+							},
 						},
 					}
 
 					callerCallIndex++
 					mtx.Unlock()
+
+					return nil, nil
 				}
 
 				fakePubSub := new(FakePubSub)
