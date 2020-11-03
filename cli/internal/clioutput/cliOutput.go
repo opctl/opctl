@@ -85,22 +85,46 @@ func (this _cliOutput) Event(event *model.Event) {
 }
 
 func (this _cliOutput) containerExited(event *model.Event) {
-	this.Info(
-		fmt.Sprintf(
-			"ContainerExited Id='%v' OpRef='%v' Timestamp='%v'\n",
-			event.CallEnded.Call.Id,
-			event.CallEnded.Ref,
-			event.Timestamp.Format(time.RFC3339),
-		),
+	err := ""
+	if nil != event.CallEnded.Error {
+		err = fmt.Sprintf(" Error='%v'", event.CallEnded.Error.Message)
+	}
+
+	imageRef := ""
+	if nil != event.CallEnded.Call.Container.Image.Ref {
+		imageRef = fmt.Sprintf(" ImageRef='%v'", *event.CallEnded.Call.Container.Image.Ref)
+	}
+
+	message := fmt.Sprintf(
+		"ContainerExited Id='%v'%v Outcome='%v'%v Timestamp='%v'\n",
+		event.CallEnded.Call.ID,
+		imageRef,
+		event.CallEnded.Outcome,
+		err,
+		event.Timestamp.Format(time.RFC3339),
 	)
+	switch event.CallEnded.Outcome {
+	case model.OpOutcomeSucceeded:
+		this.Success(message)
+	case model.OpOutcomeKilled:
+		this.Info(message)
+	default:
+		this.Error(message)
+	}
 }
 
 func (this _cliOutput) containerStarted(event *model.Event) {
+	imageRef := ""
+	if nil != event.CallStarted.Call.Container.Image.Ref {
+		imageRef = fmt.Sprintf(" ImageRef='%v'", *event.CallStarted.Call.Container.Image.Ref)
+	}
+
 	this.Info(
 		fmt.Sprintf(
-			"ContainerStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-			event.CallStarted.Call.Id,
-			event.CallStarted.OpRef,
+			"ContainerStarted Id='%v' OpRef='%v'%v Timestamp='%v'\n",
+			event.CallStarted.Call.ID,
+			event.CallStarted.Ref,
+			imageRef,
 			event.Timestamp.Format(time.RFC3339),
 		),
 	)
@@ -121,8 +145,8 @@ func (this _cliOutput) opEnded(event *model.Event) {
 	}
 	message := fmt.Sprintf(
 		"OpEnded Id='%v' OpRef='%v' Outcome='%v'%v Timestamp='%v'\n",
-		event.CallEnded.Call.Id,
-		event.CallEnded.Ref,
+		event.CallEnded.Call.ID,
+		event.CallEnded.Call.Op.OpPath,
 		event.CallEnded.Outcome,
 		err,
 		event.Timestamp.Format(time.RFC3339),
@@ -141,8 +165,8 @@ func (this _cliOutput) opStarted(event *model.Event) {
 	this.Info(
 		fmt.Sprintf(
 			"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-			event.CallStarted.Call.Id,
-			event.CallStarted.OpRef,
+			event.CallStarted.Call.ID,
+			event.CallStarted.Call.Op.OpPath,
 			event.Timestamp.Format(time.RFC3339),
 		),
 	)

@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"runtime/debug"
 	"strings"
@@ -66,9 +67,6 @@ func (pc _parallelCaller) Call(
 	parallelCtx, cancelParallel := context.WithCancel(parentCtx)
 	defer cancelParallel()
 
-	outputs := map[string]*model.Value{}
-	var err error
-
 	childCallNeededCountByName := map[string]int{}
 	for _, callSpecChildCall := range callSpecParallelCall {
 		// increment needed by counts for any needs
@@ -85,12 +83,12 @@ func (pc _parallelCaller) Call(
 	// perform calls in parallel w/ cancellation
 	for childCallIndex, childCall := range callSpecParallelCall {
 
-		var childCallID string
-		childCallID, err = pc.uniqueStringFactory.Construct()
+		childCallID, err := pc.uniqueStringFactory.Construct()
 		if nil != err {
-			// cancel all children on any error
-			cancelParallel()
+			// end run immediately on any error
+			return nil, err
 		}
+
 		childCallIndexByID[childCallID] = childCallIndex
 
 		if nil != childCall.Name {
@@ -101,7 +99,7 @@ func (pc _parallelCaller) Call(
 			defer func() {
 				if panicArg := recover(); panicArg != nil {
 					// recover from panics; treat as errors
-					err = fmt.Errorf("%v\n%v", panicArg, debug.Stack())
+					fmt.Printf("%v\n%v", panicArg, debug.Stack())
 
 					// cancel all children on any error
 					cancelParallel()
@@ -124,22 +122,27 @@ func (pc _parallelCaller) Call(
 	// subscribe to events
 	// @TODO: handle err channel
 	eventChannel, _ := pc.pubSub.Subscribe(
-		parallelCtx,
+		// don't cancel w/ children; we need to read err msgs
+		parentCtx,
 		model.EventFilter{
 			Roots: []string{rootCallID},
 			Since: &startTime,
 		},
 	)
 
-	childErrorMessages := []string{}
+	var isChildErred = false
+	outputs := map[string]*model.Value{}
+
+eventLoop:
 	for event := range eventChannel {
 		if nil != event.CallEnded {
-			if childCallIndex, isChildCallEnded := childCallIndexByID[event.CallEnded.Call.Id]; isChildCallEnded {
+			if childCallIndex, isChildCallEnded := childCallIndexByID[event.CallEnded.Call.ID]; isChildCallEnded {
 				childCallOutputsByIndex[childCallIndex] = event.CallEnded.Outputs
 				if nil != event.CallEnded.Error {
+					isChildErred = true
+
 					// cancel all children on any error
 					cancelParallel()
-					childErrorMessages = append(childErrorMessages, event.CallEnded.Error.Message)
 				}
 
 				// decrement needed by counts for any needs
@@ -152,7 +155,7 @@ func (pc _parallelCaller) Call(
 						if neededCallID, ok := childCallIDByName[neededCallName]; ok {
 							pc.pubSub.Publish(
 								model.Event{
-									OpKillRequested: &model.OpKillRequested{
+									CallKillRequested: &model.CallKillRequested{
 										Request: model.KillOpReq{
 											OpID:       neededCallID,
 											RootCallID: rootCallID,
@@ -177,23 +180,15 @@ func (pc _parallelCaller) Call(
 					}
 				}
 
-				// construct parallel error
-				if len(childErrorMessages) != 0 {
-					var formattedChildErrorMessages string
-					for _, childErrorMessage := range childErrorMessages {
-						formattedChildErrorMessages = fmt.Sprintf("\t-%v\n", childErrorMessage)
-					}
-					err = fmt.Errorf(
-						"-\nError(s) during parallel call. Error(s) were:\n%v\n-",
-						formattedChildErrorMessages,
-					)
+				if isChildErred {
+					return nil, errors.New("child call failed")
 				}
 
-				return outputs, err
+				break eventLoop
 			}
 
 		}
 	}
 
-	return outputs, err
+	return outputs, nil
 }

@@ -142,7 +142,7 @@ func (ss *_stateStore) applyCallEnded(callEnded model.CallEnded) {
 	ss.mux.RLock()
 	defer ss.mux.RUnlock()
 
-	callID := callEnded.Call.Id
+	callID := callEnded.Call.ID
 	if _, ok := ss.callsByID[callID]; ok {
 		ss.callsByID[callID].IsKilled = true
 	}
@@ -154,7 +154,7 @@ func (ss *_stateStore) applyCallStarted(callStarted model.CallStarted) {
 	defer ss.mux.Unlock()
 
 	call := callStarted.Call
-	ss.callsByID[call.Id] = &call
+	ss.callsByID[call.ID] = &call
 }
 
 // O(n) complexity (n being active call count)

@@ -37,6 +37,7 @@ var _ = Context("containerCaller", func() {
 				BaseCall: model.BaseCall{},
 				Image:    &model.ContainerCallImage{},
 			}
+			providedRootCallID := "providedRootCallID"
 			fakeContainerRuntime := new(FakeContainerRuntime)
 
 			fakePubSub := new(FakePubSub)
@@ -57,15 +58,18 @@ var _ = Context("containerCaller", func() {
 				providedContainerCall,
 				map[string]*model.Value{},
 				&model.ContainerCallSpec{},
+				providedRootCallID,
 			)
 
 			/* assert */
 			_,
 				actualContainerCall,
+				actualRootCallID,
 				actualEventPublisher,
 				_,
 				_ := fakeContainerRuntime.RunContainerArgsForCall(0)
 			Expect(actualContainerCall).To(Equal(providedContainerCall))
+			Expect(actualRootCallID).To(Equal(providedRootCallID))
 			Expect(actualEventPublisher).To(Equal(fakePubSub))
 		})
 		Context("containerRuntime.RunContainer errors", func() {
@@ -96,6 +100,7 @@ var _ = Context("containerCaller", func() {
 					},
 					map[string]*model.Value{},
 					&model.ContainerCallSpec{},
+					"rootCallID",
 				)
 
 				/* assert */
@@ -110,8 +115,7 @@ var _ = Context("containerCaller", func() {
 		providedOpPath := "providedOpPath"
 		providedContainerCall := &model.ContainerCall{
 			BaseCall: model.BaseCall{
-				OpPath:     providedOpPath,
-				RootCallID: "providedRootID",
+				OpPath: providedOpPath,
 			},
 			ContainerID: "providedContainerID",
 			Image:       &model.ContainerCallImage{},
@@ -135,6 +139,7 @@ var _ = Context("containerCaller", func() {
 			providedContainerCall,
 			providedInboundScope,
 			providedContainerCallSpec,
+			"rootCallID",
 		)
 
 		/* assert */

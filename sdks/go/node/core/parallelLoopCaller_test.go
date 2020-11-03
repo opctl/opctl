@@ -138,7 +138,7 @@ var _ = Context("parallelLoopCaller", func() {
 				eventChannel <- model.Event{
 					CallEnded: &model.CallEnded{
 						Call: model.Call{
-							Id: callID,
+							ID: callID,
 						},
 						Error: &model.CallEndedError{
 							Message: expectedErrorMessage,

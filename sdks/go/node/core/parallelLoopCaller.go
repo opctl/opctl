@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"runtime/debug"
 	"time"
@@ -74,28 +75,24 @@ func (plpr _parallelLoopCaller) Call(
 	parallelLoopCtx, cancelParallelLoop := context.WithCancel(parentCtx)
 	defer cancelParallelLoop()
 
-	outboundScope := map[string]*model.Value{}
-	var err error
-	var callParallelLoop *model.ParallelLoopCall
-
 	childCallIndex := 0
-	outboundScope, err = plpr.iterationScoper.Scope(
+	outboundScope, scopeErr := plpr.iterationScoper.Scope(
 		childCallIndex,
 		inboundScope,
 		callSpecParallelLoop.Range,
 		callSpecParallelLoop.Vars,
 	)
-	if nil != err {
-		return outboundScope, err
+	if nil != scopeErr {
+		return nil, scopeErr
 	}
 
 	// interpret initial iteration of the loop
-	callParallelLoop, err = plpr.parallelLoopInterpreter.Interpret(
+	callParallelLoop, interpretErr := plpr.parallelLoopInterpreter.Interpret(
 		callSpecParallelLoop,
 		outboundScope,
 	)
-	if nil != err {
-		return outboundScope, err
+	if nil != interpretErr {
+		return nil, interpretErr
 	}
 
 	startTime := time.Now().UTC()
@@ -104,11 +101,10 @@ func (plpr _parallelLoopCaller) Call(
 
 	for !parallelloop.IsIterationComplete(childCallIndex, *callParallelLoop) {
 
-		var childCallID string
-		childCallID, err = plpr.uniqueStringFactory.Construct()
+		childCallID, err := plpr.uniqueStringFactory.Construct()
 		if nil != err {
-			// cancel all children on any error
-			cancelParallelLoop()
+			// end run immediately on any error
+			return nil, err
 		}
 		childCallIDIndexMap[childCallID] = childCallIndex
 
@@ -116,7 +112,7 @@ func (plpr _parallelLoopCaller) Call(
 			defer func() {
 				if panicArg := recover(); panicArg != nil {
 					// recover from panics; treat as errors
-					err = fmt.Errorf("%v\n%v", panicArg, debug.Stack())
+					fmt.Printf("%v\n%v", panicArg, debug.Stack())
 
 					// cancel all children on any error
 					cancelParallelLoop()
@@ -140,23 +136,25 @@ func (plpr _parallelLoopCaller) Call(
 			break
 		}
 
-		outboundScope, err = plpr.iterationScoper.Scope(
+		var scopeErr error
+		outboundScope, scopeErr = plpr.iterationScoper.Scope(
 			childCallIndex,
 			outboundScope,
 			callSpecParallelLoop.Range,
 			callSpecParallelLoop.Vars,
 		)
-		if nil != err {
-			return outboundScope, err
+		if nil != scopeErr {
+			return nil, scopeErr
 		}
 
 		// interpret next iteration of the loop
-		callParallelLoop, err = plpr.parallelLoopInterpreter.Interpret(
+		var interpretErr error
+		callParallelLoop, interpretErr = plpr.parallelLoopInterpreter.Interpret(
 			callSpecParallelLoop,
 			outboundScope,
 		)
-		if nil != err {
-			return outboundScope, err
+		if nil != interpretErr {
+			return nil, interpretErr
 		}
 
 	}
@@ -164,7 +162,8 @@ func (plpr _parallelLoopCaller) Call(
 	// subscribe to events
 	// @TODO: handle err channel
 	eventChannel, _ := plpr.pubSub.Subscribe(
-		parallelLoopCtx,
+		// don't cancel w/ children; we need to read err msgs
+		parentCtx,
 		model.EventFilter{
 			Roots: []string{rootCallID},
 			Since: &startTime,
@@ -172,18 +171,21 @@ func (plpr _parallelLoopCaller) Call(
 	)
 
 	if len(childCallIDIndexMap) == 0 {
-		return outboundScope, err
+		return nil, nil
 	}
 
-	childErrorMessages := []string{}
+	var isChildErred = false
+
+eventLoop:
 	for event := range eventChannel {
 		if nil != event.CallEnded {
-			if childCallIndex, isChildCallEnded := childCallIDIndexMap[event.CallEnded.Call.Id]; isChildCallEnded {
+			if childCallIndex, isChildCallEnded := childCallIDIndexMap[event.CallEnded.Call.ID]; isChildCallEnded {
 				callIndexOutputsMap[childCallIndex] = event.CallEnded.Outputs
 				if nil != event.CallEnded.Error {
+					isChildErred = true
+
 					// cancel all children on any error
 					cancelParallelLoop()
-					childErrorMessages = append(childErrorMessages, event.CallEnded.Error.Message)
 				}
 			}
 
@@ -198,30 +200,20 @@ func (plpr _parallelLoopCaller) Call(
 					}
 				}
 
-				// construct parallel error
-				if len(childErrorMessages) != 0 {
-					var formattedChildErrorMessages string
-					for _, childErrorMessage := range childErrorMessages {
-						formattedChildErrorMessages = fmt.Sprintf("\t-%v\n", childErrorMessage)
-					}
-					err = fmt.Errorf(
-						"-\nError(s) during parallel call. Error(s) were:\n%v\n-",
-						formattedChildErrorMessages,
-					)
+				if isChildErred {
+					return nil, errors.New("child call failed")
 				}
 
-				return outboundScope, err
+				break eventLoop
 			}
 
 		}
 	}
 
-	outboundScope = plpr.loopDeScoper.DeScope(
+	return plpr.loopDeScoper.DeScope(
 		inboundScope,
 		callSpecParallelLoop.Range,
 		callSpecParallelLoop.Vars,
 		outboundScope,
-	)
-
-	return outboundScope, err
+	), nil
 }

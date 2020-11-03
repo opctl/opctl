@@ -1,5 +1,0 @@
-name: run/op/inputs/explicitly-bound/file-input/string-arg/is-fs-ref-with-path/isnt-resolvable
-run:
-  op:
-    ref: isnt-resolvable/_
-    inputs: { file: $(/dir/file.txt) }

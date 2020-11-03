@@ -17,6 +17,7 @@ type opCaller interface {
 		opCall *model.OpCall,
 		inboundScope map[string]*model.Value,
 		parentCallID *string,
+		rootCallID string,
 		opCallSpec *model.OpCallSpec,
 	) (
 		map[string]*model.Value,
@@ -51,6 +52,7 @@ func (oc _opCaller) Call(
 	opCall *model.OpCall,
 	inboundScope map[string]*model.Value,
 	parentCallID *string,
+	rootCallID string,
 	opCallSpec *model.OpCallSpec,
 ) (
 	map[string]*model.Value,
@@ -75,7 +77,7 @@ func (oc _opCaller) Call(
 		opCall.ChildCallCallSpec,
 		opCall.OpPath,
 		&opCall.OpID,
-		opCall.RootCallID,
+		rootCallID,
 	)
 	if nil != err {
 		return outboundScope, err

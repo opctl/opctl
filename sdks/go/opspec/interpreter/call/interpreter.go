@@ -55,16 +55,17 @@ func (itp _interpreter) Interpret(
 	parentID *string,
 	rootCallID string,
 ) (*model.Call, error) {
-	dcg := &model.Call{
-		Id:       id,
+	call := &model.Call{
+		ID:       id,
 		Name:     callSpec.Name,
 		Needs:    callSpec.Needs,
 		ParentID: parentID,
+		RootID:   rootCallID,
 	}
 	var err error
 
 	if nil != callSpec.If {
-		dcgIf, err := itp.predicatesInterpreter.Interpret(
+		callIf, err := itp.predicatesInterpreter.Interpret(
 			*callSpec.If,
 			scope,
 		)
@@ -72,51 +73,49 @@ func (itp _interpreter) Interpret(
 			return nil, err
 		}
 
-		dcg.If = &dcgIf
+		call.If = &callIf
 
-		if !dcgIf {
+		if !callIf {
 			// end interpretation early since call will be skipped
-			return dcg, err
+			return call, err
 		}
 	}
 
 	switch {
 	case nil != callSpec.Container:
-		dcg.Container, err = itp.containerCallInterpreter.Interpret(
+		call.Container, err = itp.containerCallInterpreter.Interpret(
 			scope,
 			callSpec.Container,
 			id,
-			rootCallID,
 			opPath,
 		)
-		return dcg, err
+		return call, err
 	case nil != callSpec.Op:
-		dcg.Op, err = itp.opCallInterpreter.Interpret(
+		call.Op, err = itp.opCallInterpreter.Interpret(
 			scope,
 			callSpec.Op,
 			id,
 			opPath,
-			rootCallID,
 		)
-		return dcg, err
+		return call, err
 	case nil != callSpec.Parallel:
-		dcg.Parallel = *callSpec.Parallel
-		return dcg, nil
+		call.Parallel = *callSpec.Parallel
+		return call, nil
 	case nil != callSpec.ParallelLoop:
-		dcg.ParallelLoop, err = itp.parallelLoopInterpreter.Interpret(
+		call.ParallelLoop, err = itp.parallelLoopInterpreter.Interpret(
 			*callSpec.ParallelLoop,
 			scope,
 		)
-		return dcg, err
+		return call, err
 	case nil != callSpec.Serial:
-		dcg.Serial = *callSpec.Serial
-		return dcg, nil
+		call.Serial = *callSpec.Serial
+		return call, nil
 	case nil != callSpec.SerialLoop:
-		dcg.SerialLoop, err = itp.serialLoopInterpreter.Interpret(
+		call.SerialLoop, err = itp.serialLoopInterpreter.Interpret(
 			*callSpec.SerialLoop,
 			scope,
 		)
-		return dcg, err
+		return call, err
 	default:
 		return nil, fmt.Errorf("Invalid call graph %+v\n", callSpec)
 	}

@@ -1,0 +1,5 @@
+name: run/op/object/inputs/explicitly-bound/object-input/array-arg
+run:
+  op:
+    ref: array-arg/_
+    inputs: { object: [] }

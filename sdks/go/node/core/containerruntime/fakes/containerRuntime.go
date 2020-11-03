@@ -23,14 +23,15 @@ type FakeContainerRuntime struct {
 	deleteContainerIfExistsReturnsOnCall map[int]struct {
 		result1 error
 	}
-	RunContainerStub        func(context.Context, *model.ContainerCall, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) (*int64, error)
+	RunContainerStub        func(context.Context, *model.ContainerCall, string, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) (*int64, error)
 	runContainerMutex       sync.RWMutex
 	runContainerArgsForCall []struct {
 		arg1 context.Context
 		arg2 *model.ContainerCall
-		arg3 pubsub.EventPublisher
-		arg4 io.WriteCloser
+		arg3 string
+		arg4 pubsub.EventPublisher
 		arg5 io.WriteCloser
+		arg6 io.WriteCloser
 	}
 	runContainerReturns struct {
 		result1 *int64
@@ -104,20 +105,21 @@ func (fake *FakeContainerRuntime) DeleteContainerIfExistsReturnsOnCall(i int, re
 	}{result1}
 }
 
-func (fake *FakeContainerRuntime) RunContainer(arg1 context.Context, arg2 *model.ContainerCall, arg3 pubsub.EventPublisher, arg4 io.WriteCloser, arg5 io.WriteCloser) (*int64, error) {
+func (fake *FakeContainerRuntime) RunContainer(arg1 context.Context, arg2 *model.ContainerCall, arg3 string, arg4 pubsub.EventPublisher, arg5 io.WriteCloser, arg6 io.WriteCloser) (*int64, error) {
 	fake.runContainerMutex.Lock()
 	ret, specificReturn := fake.runContainerReturnsOnCall[len(fake.runContainerArgsForCall)]
 	fake.runContainerArgsForCall = append(fake.runContainerArgsForCall, struct {
 		arg1 context.Context
 		arg2 *model.ContainerCall
-		arg3 pubsub.EventPublisher
-		arg4 io.WriteCloser
+		arg3 string
+		arg4 pubsub.EventPublisher
 		arg5 io.WriteCloser
-	}{arg1, arg2, arg3, arg4, arg5})
-	fake.recordInvocation("RunContainer", []interface{}{arg1, arg2, arg3, arg4, arg5})
+		arg6 io.WriteCloser
+	}{arg1, arg2, arg3, arg4, arg5, arg6})
+	fake.recordInvocation("RunContainer", []interface{}{arg1, arg2, arg3, arg4, arg5, arg6})
 	fake.runContainerMutex.Unlock()
 	if fake.RunContainerStub != nil {
-		return fake.RunContainerStub(arg1, arg2, arg3, arg4, arg5)
+		return fake.RunContainerStub(arg1, arg2, arg3, arg4, arg5, arg6)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -132,17 +134,17 @@ func (fake *FakeContainerRuntime) RunContainerCallCount() int {
 	return len(fake.runContainerArgsForCall)
 }
 
-func (fake *FakeContainerRuntime) RunContainerCalls(stub func(context.Context, *model.ContainerCall, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) (*int64, error)) {
+func (fake *FakeContainerRuntime) RunContainerCalls(stub func(context.Context, *model.ContainerCall, string, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) (*int64, error)) {
 	fake.runContainerMutex.Lock()
 	defer fake.runContainerMutex.Unlock()
 	fake.RunContainerStub = stub
 }
 
-func (fake *FakeContainerRuntime) RunContainerArgsForCall(i int) (context.Context, *model.ContainerCall, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) {
+func (fake *FakeContainerRuntime) RunContainerArgsForCall(i int) (context.Context, *model.ContainerCall, string, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) {
 	fake.runContainerMutex.RLock()
 	defer fake.runContainerMutex.RUnlock()
 	argsForCall := fake.runContainerArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5, argsForCall.arg6
 }
 
 func (fake *FakeContainerRuntime) RunContainerReturns(result1 *int64, result2 error) {

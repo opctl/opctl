@@ -6,9 +6,12 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.42 - 2020-11-03
+
 ### Added
 
 - [Add ability to add auth to opctl for OCI image registries](https://github.com/opctl/opctl/issues/823)
+- [Better messages for parallel/parallelLoop child errors](https://github.com/opctl/opctl/issues/827)
 
 ### Changed
 

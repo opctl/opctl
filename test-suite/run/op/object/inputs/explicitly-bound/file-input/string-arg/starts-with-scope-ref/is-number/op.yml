@@ -1,0 +1,9 @@
+name: run/op/object/inputs/explicitly-bound/file-input/string-arg/starts-with-scope-ref/is-number
+inputs:
+  number:
+    number:
+      default: 7
+run:
+  op:
+    ref: is-number/_
+    inputs: { file: $(number)suffix }

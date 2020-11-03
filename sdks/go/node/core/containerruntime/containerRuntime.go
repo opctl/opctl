@@ -22,6 +22,9 @@ type ContainerRuntime interface {
 	RunContainer(
 		ctx context.Context,
 		req *model.ContainerCall,
+		// @TODO: get rid of in combination with eventPublisher
+		rootCallID string,
+		// @TODO: get rid of this; just use stdout/stderr
 		eventPublisher pubsub.EventPublisher,
 		stdout io.WriteCloser,
 		stderr io.WriteCloser,

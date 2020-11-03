@@ -21,6 +21,7 @@ type containerCaller interface {
 		containerCall *model.ContainerCall,
 		inboundScope map[string]*model.Value,
 		containerCallSpec *model.ContainerCallSpec,
+		rootCallID string,
 	) (
 		map[string]*model.Value,
 		error,
@@ -54,11 +55,11 @@ func (cc _containerCaller) Call(
 	containerCall *model.ContainerCall,
 	inboundScope map[string]*model.Value,
 	containerCallSpec *model.ContainerCallSpec,
+	rootCallID string,
 ) (
 	map[string]*model.Value,
 	error,
 ) {
-	var err error
 	outputs := map[string]*model.Value{}
 	var exitCode int64
 
@@ -78,6 +79,7 @@ func (cc _containerCaller) Call(
 			logStdOutPR,
 			logStdErrPR,
 			containerCall,
+			rootCallID,
 		)
 	}()
 
@@ -86,10 +88,10 @@ func (cc _containerCaller) Call(
 		containerCall,
 	)
 
-	var rawExitCode *int64
-	rawExitCode, err = cc.containerRuntime.RunContainer(
+	rawExitCode, err := cc.containerRuntime.RunContainer(
 		ctx,
 		containerCall,
+		rootCallID,
 		cc.pubSub,
 		logStdOutPW,
 		logStdErrPW,
@@ -117,6 +119,7 @@ func (this _containerCaller) interpretLogs(
 	stdOutReader io.Reader,
 	stdErrReader io.Reader,
 	containerCall *model.ContainerCall,
+	rootCallID string,
 ) error {
 	stdOutLogChan := make(chan error, 1)
 	go func() {
@@ -131,7 +134,7 @@ func (this _containerCaller) interpretLogs(
 							Data:        chunk,
 							ContainerID: containerCall.ContainerID,
 							OpRef:       containerCall.OpPath,
-							RootCallID:  containerCall.RootCallID,
+							RootCallID:  rootCallID,
 						},
 					},
 				)
@@ -151,7 +154,7 @@ func (this _containerCaller) interpretLogs(
 							Data:        chunk,
 							ContainerID: containerCall.ContainerID,
 							OpRef:       containerCall.OpPath,
-							RootCallID:  containerCall.RootCallID,
+							RootCallID:  rootCallID,
 						},
 					},
 				)

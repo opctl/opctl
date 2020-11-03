@@ -128,10 +128,9 @@ var _ = Context("caller", func() {
 
 				expectedEvent := model.Event{
 					CallEnded: &model.CallEnded{
-						Call:       expectedCall,
-						Ref:        providedOpPath,
-						Outcome:    model.OpOutcomeSucceeded,
-						RootCallID: providedRootCallID,
+						Call:    expectedCall,
+						Ref:     providedOpPath,
+						Outcome: model.OpOutcomeSucceeded,
 					},
 				}
 
@@ -177,6 +176,7 @@ var _ = Context("caller", func() {
 				providedCallSpec := &model.CallSpec{
 					Container: &model.ContainerCallSpec{},
 				}
+				providedRootCallID := "providedRootCallID"
 
 				expectedCall := &model.Call{
 					Container: &model.ContainerCall{},
@@ -202,18 +202,20 @@ var _ = Context("caller", func() {
 					providedCallSpec,
 					"dummyOpPath",
 					nil,
-					"dummyRootCallID",
+					providedRootCallID,
 				)
 
 				/* assert */
 				_,
 					actualContainerCall,
 					actualScope,
-					actualCallSpec := fakeContainerCaller.CallArgsForCall(0)
+					actualCallSpec,
+					actualRootCallID := fakeContainerCaller.CallArgsForCall(0)
 
 				Expect(actualContainerCall).To(Equal(expectedCall.Container))
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualCallSpec).To(Equal(providedCallSpec.Container))
+				Expect(actualRootCallID).To(Equal(providedRootCallID))
 			})
 		})
 
@@ -268,11 +270,13 @@ var _ = Context("caller", func() {
 					actualOpCall,
 					actualScope,
 					actualParentID,
+					actualRootCallID,
 					actualCallSpec := fakeOpCaller.CallArgsForCall(0)
 
 				Expect(actualOpCall).To(Equal(expectedCall.Op))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualParentID).To(Equal(actualParentID))
+				Expect(*actualParentID).To(Equal(providedParentID))
+				Expect(actualRootCallID).To(Equal(providedRootCallID))
 				Expect(actualCallSpec).To(Equal(providedCallSpec.Op))
 			})
 		})

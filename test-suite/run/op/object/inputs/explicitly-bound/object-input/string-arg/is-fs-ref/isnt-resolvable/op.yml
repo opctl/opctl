@@ -1,0 +1,5 @@
+name: run/op/object/inputs/explicitly-bound/object-input/string-arg/is-fs-ref/isnt-resolvable
+run:
+  op:
+    ref: isnt-resolvable/_
+    inputs: { object: $(/file.txt) }

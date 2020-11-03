@@ -32,8 +32,7 @@ var _ = Context("opCaller", func() {
 			providedCtx := context.Background()
 			providedOpCall := &model.OpCall{
 				BaseCall: model.BaseCall{
-					OpPath:     providedOpPath,
-					RootCallID: "providedRootID",
+					OpPath: providedOpPath,
 				},
 				ChildCallID: "dummyChildCallID",
 				ChildCallCallSpec: &model.CallSpec{
@@ -48,6 +47,7 @@ var _ = Context("opCaller", func() {
 				},
 				OpID: "providedOpID",
 			}
+			providedRootCallID := "providedRootCallID"
 
 			expectedChildCallScope := map[string]*model.Value{
 				"dummyScopeName": providedOpCall.Inputs["dummyScopeName"],
@@ -74,6 +74,7 @@ var _ = Context("opCaller", func() {
 				providedOpCall,
 				map[string]*model.Value{},
 				nil,
+				providedRootCallID,
 				&model.OpCallSpec{},
 			)
 
@@ -92,7 +93,7 @@ var _ = Context("opCaller", func() {
 			Expect(actualChildCallSpec).To(Equal(providedOpCall.ChildCallCallSpec))
 			Expect(actualOpPath).To(Equal(providedOpPath))
 			Expect(actualParentCallID).To(Equal(&providedOpCall.OpID))
-			Expect(actualRootCallID).To(Equal(providedOpCall.RootCallID))
+			Expect(actualRootCallID).To(Equal(providedRootCallID))
 		})
 		It("should return expected results", func() {
 			/* arrange */
@@ -100,8 +101,7 @@ var _ = Context("opCaller", func() {
 
 			providedOpCall := &model.OpCall{
 				BaseCall: model.BaseCall{
-					OpPath:     providedOpPath,
-					RootCallID: "providedRootID",
+					OpPath: providedOpPath,
 				},
 				OpID: "providedOpId",
 			}
@@ -142,6 +142,7 @@ var _ = Context("opCaller", func() {
 				providedOpCall,
 				map[string]*model.Value{},
 				nil,
+				"rootCallID",
 				providedOpCallSpec,
 			)
 

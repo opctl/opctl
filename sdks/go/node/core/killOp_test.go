@@ -11,7 +11,7 @@ import (
 
 var _ = Context("core", func() {
 	Context("KillOp", func() {
-		It("should call opKiller.Kill w/ expected args", func() {
+		It("should call callKiller.Kill w/ expected args", func() {
 
 			/* arrange */
 			providedReq := model.KillOpReq{
@@ -19,7 +19,7 @@ var _ = Context("core", func() {
 			}
 
 			expectedEvent := model.Event{
-				OpKillRequested: &model.OpKillRequested{
+				CallKillRequested: &model.CallKillRequested{
 					Request: providedReq,
 				},
 				Timestamp: time.Now().UTC(),
