@@ -16,6 +16,7 @@ var createSingleFlightGroup singleflight.Group
 //counterfeiter:generate -o internal/fakes/ensureNetworkExistser.go . ensureNetworkExistser
 type ensureNetworkExistser interface {
 	EnsureNetworkExists(
+		ctx context.Context,
 		networkID string,
 	) error
 }
@@ -31,11 +32,12 @@ type _ensureNetworkExistser struct {
 }
 
 func (ene _ensureNetworkExistser) EnsureNetworkExists(
+	ctx context.Context,
 	networkID string,
 ) error {
 
 	_, networkInspectErr := ene.dockerClient.NetworkInspect(
-		context.Background(),
+		ctx,
 		networkID,
 		types.NetworkInspectOptions{},
 	)
@@ -53,7 +55,7 @@ func (ene _ensureNetworkExistser) EnsureNetworkExists(
 		networkID,
 		func() (interface{}, error) {
 			return ene.dockerClient.NetworkCreate(
-				context.Background(),
+				ctx,
 				networkID,
 				types.NetworkCreate{
 					CheckDuplicate: true,

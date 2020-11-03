@@ -436,10 +436,9 @@ var _ = Context("Runer", func() {
 											Timestamp: time.Now(),
 											CallEnded: &model.CallEnded{
 												Call: model.Call{
-													Id: rootCallID,
+													ID: rootCallID,
 												},
-												Outcome:    model.OpOutcomeSucceeded,
-												RootCallID: rootCallID,
+												Outcome: model.OpOutcomeSucceeded,
 											},
 										}
 
@@ -458,7 +457,7 @@ var _ = Context("Runer", func() {
 										eventChannel <- opEnded
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEnded.CallEnded.RootCallID, nil)
+										fakeAPIClient.StartOpReturns(opEnded.CallEnded.Call.ID, nil)
 
 										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)
@@ -489,10 +488,9 @@ var _ = Context("Runer", func() {
 											Timestamp: time.Now(),
 											CallEnded: &model.CallEnded{
 												Call: model.Call{
-													Id: rootCallID,
+													ID: rootCallID,
 												},
-												Outcome:    model.OpOutcomeKilled,
-												RootCallID: rootCallID,
+												Outcome: model.OpOutcomeKilled,
 											},
 										}
 
@@ -511,7 +509,7 @@ var _ = Context("Runer", func() {
 										eventChannel <- opEnded
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEnded.CallEnded.RootCallID, nil)
+										fakeAPIClient.StartOpReturns(opEnded.CallEnded.Call.ID, nil)
 
 										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)
@@ -543,10 +541,9 @@ var _ = Context("Runer", func() {
 											Timestamp: time.Now(),
 											CallEnded: &model.CallEnded{
 												Call: model.Call{
-													Id: rootCallID,
+													ID: rootCallID,
 												},
-												Outcome:    model.OpOutcomeFailed,
-												RootCallID: rootCallID,
+												Outcome: model.OpOutcomeFailed,
 											},
 										}
 
@@ -565,7 +562,7 @@ var _ = Context("Runer", func() {
 										eventChannel <- opEnded
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEnded.CallEnded.RootCallID, nil)
+										fakeAPIClient.StartOpReturns(opEnded.CallEnded.Call.ID, nil)
 
 										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)
@@ -596,10 +593,9 @@ var _ = Context("Runer", func() {
 											Timestamp: time.Now(),
 											CallEnded: &model.CallEnded{
 												Call: model.Call{
-													Id: rootCallID,
+													ID: rootCallID,
 												},
-												Outcome:    "some unexpected outcome",
-												RootCallID: rootCallID,
+												Outcome: "some unexpected outcome",
 											},
 										}
 
@@ -618,7 +614,7 @@ var _ = Context("Runer", func() {
 										eventChannel <- opEnded
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEnded.CallEnded.RootCallID, nil)
+										fakeAPIClient.StartOpReturns(opEnded.CallEnded.Call.ID, nil)
 
 										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 										fakeNodeHandle.APIClientReturns(fakeAPIClient)

@@ -1,5 +1,0 @@
-name: run/op/inputs/explicitly-bound/dir-input/object-arg
-run:
-  op:
-    ref: object-arg/_
-    inputs: { dir: {}}

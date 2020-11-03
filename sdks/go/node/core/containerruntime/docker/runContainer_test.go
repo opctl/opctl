@@ -23,7 +23,7 @@ var _ = Context("RunContainer", func() {
 
 	It("should call containerConfigFactory.Construct w expected args", func() {
 		/* arrange */
-
+		providedCtx := context.Background()
 		fakeEnsureNetworkExistser := new(FakeEnsureNetworkExistser)
 		expectedErr := errors.New("dummyErr")
 		fakeEnsureNetworkExistser.EnsureNetworkExistsReturnsOnCall(0, expectedErr)
@@ -34,17 +34,20 @@ var _ = Context("RunContainer", func() {
 
 		/* act */
 		_, actualErr := objectUnderTest.RunContainer(
-			context.Background(),
+			providedCtx,
 			&model.ContainerCall{},
+			"rootCallID",
 			new(FakeEventPublisher),
 			nopWriteCloser{ioutil.Discard},
 			nopWriteCloser{ioutil.Discard},
 		)
 
 		/* assert */
-		actualNetworkName := fakeEnsureNetworkExistser.EnsureNetworkExistsArgsForCall(0)
+		actualCtx,
+			actualNetworkName := fakeEnsureNetworkExistser.EnsureNetworkExistsArgsForCall(0)
 
 		Expect(actualErr).To(Equal(expectedErr))
+		Expect(actualCtx).To(Equal(providedCtx))
 		Expect(actualNetworkName).To(Equal(dockerNetworkName))
 	})
 
@@ -81,6 +84,7 @@ var _ = Context("RunContainer", func() {
 		objectUnderTest.RunContainer(
 			context.Background(),
 			providedReq,
+			"rootCallID",
 			new(FakeEventPublisher),
 			nopWriteCloser{ioutil.Discard},
 			nopWriteCloser{ioutil.Discard},
@@ -123,6 +127,7 @@ var _ = Context("RunContainer", func() {
 		objectUnderTest.RunContainer(
 			context.Background(),
 			providedReq,
+			"rootCallID",
 			new(FakeEventPublisher),
 			nopWriteCloser{ioutil.Discard},
 			nopWriteCloser{ioutil.Discard},
@@ -156,6 +161,7 @@ var _ = Context("RunContainer", func() {
 				&model.ContainerCall{
 					Image: &model.ContainerCallImage{Ref: new(string)},
 				},
+				"rootCallID",
 				new(FakeEventPublisher),
 				nopWriteCloser{ioutil.Discard},
 				nopWriteCloser{ioutil.Discard},
@@ -204,6 +210,7 @@ var _ = Context("RunContainer", func() {
 			objectUnderTest.RunContainer(
 				context.Background(),
 				providedReq,
+				"rootCallID",
 				new(FakeEventPublisher),
 				nopWriteCloser{ioutil.Discard},
 				nopWriteCloser{ioutil.Discard},
@@ -266,6 +273,7 @@ var _ = Context("RunContainer", func() {
 			objectUnderTest.RunContainer(
 				context.Background(),
 				providedReq,
+				"rootCallID",
 				new(FakeEventPublisher),
 				nopWriteCloser{ioutil.Discard},
 				nopWriteCloser{ioutil.Discard},
@@ -287,12 +295,11 @@ var _ = Context("RunContainer", func() {
 			/* arrange */
 			providedCtx := context.Background()
 			providedReq := &model.ContainerCall{
-				BaseCall: model.BaseCall{
-					RootCallID: "dummyRootCallID",
-				},
+				BaseCall:    model.BaseCall{},
 				ContainerID: "dummyContainerID",
 				Image:       &model.ContainerCallImage{Ref: new(string)},
 			}
+			providedRootCallID := "providedRootCallID"
 
 			providedEventPublisher := new(FakeEventPublisher)
 
@@ -316,6 +323,7 @@ var _ = Context("RunContainer", func() {
 			objectUnderTest.RunContainer(
 				providedCtx,
 				providedReq,
+				providedRootCallID,
 				providedEventPublisher,
 				nopWriteCloser{ioutil.Discard},
 				nopWriteCloser{ioutil.Discard},
@@ -333,7 +341,7 @@ var _ = Context("RunContainer", func() {
 			Expect(actualContainerID).To(Equal(providedReq.ContainerID))
 			Expect(actualImagePullCreds).To(Equal(providedReq.Image.PullCreds))
 			Expect(actualImageRef).To(Equal(*providedReq.Image.Ref))
-			Expect(actualRootCallID).To(Equal(providedReq.RootCallID))
+			Expect(actualRootCallID).To(Equal(providedRootCallID))
 			Expect(actualEventPublisher).To(Equal(providedEventPublisher))
 		})
 
@@ -341,9 +349,7 @@ var _ = Context("RunContainer", func() {
 			/* arrange */
 			providedCtx := context.Background()
 			providedReq := &model.ContainerCall{
-				BaseCall: model.BaseCall{
-					RootCallID: "dummyRootCallID",
-				},
+				BaseCall:    model.BaseCall{},
 				ContainerID: "dummyContainerID",
 				Image:       &model.ContainerCallImage{Ref: new(string)},
 				Name:        new(string),
@@ -385,6 +391,7 @@ var _ = Context("RunContainer", func() {
 			objectUnderTest.RunContainer(
 				providedCtx,
 				providedReq,
+				"rootCallID",
 				new(FakeEventPublisher),
 				nopWriteCloser{ioutil.Discard},
 				nopWriteCloser{ioutil.Discard},

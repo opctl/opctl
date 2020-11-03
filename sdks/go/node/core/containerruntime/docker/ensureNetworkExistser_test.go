@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/docker/docker/api/types"
@@ -21,7 +22,10 @@ var _ = Context("EnsureNetworkExistser", func() {
 		}
 
 		/* act */
-		objectUnderTest.EnsureNetworkExists(providedContainerID)
+		objectUnderTest.EnsureNetworkExists(
+			context.Background(),
+			providedContainerID,
+		)
 
 		/* assert */
 		_, actualContainerID, actualVerbose := fakeDockerClient.NetworkInspectArgsForCall(0)
@@ -40,7 +44,10 @@ var _ = Context("EnsureNetworkExistser", func() {
 			}
 
 			/* act */
-			actualErr := objectUnderTest.EnsureNetworkExists(providedContainerID)
+			actualErr := objectUnderTest.EnsureNetworkExists(
+				context.Background(),
+				providedContainerID,
+			)
 
 			/* assert */
 			Expect(actualErr).To(BeNil())
@@ -72,7 +79,10 @@ var _ = Context("EnsureNetworkExistser", func() {
 				}
 
 				/* act */
-				objectUnderTest.EnsureNetworkExists(providedContainerID)
+				objectUnderTest.EnsureNetworkExists(
+					context.Background(),
+					providedContainerID,
+				)
 
 				/* assert */
 				_, actualContainerID, actualNetworkCreations := fakeDockerClient.NetworkCreateArgsForCall(0)
@@ -105,7 +115,10 @@ var _ = Context("EnsureNetworkExistser", func() {
 					}
 
 					/* act */
-					actualError := objectUnderTest.EnsureNetworkExists("")
+					actualError := objectUnderTest.EnsureNetworkExists(
+						context.Background(),
+						"",
+					)
 
 					/* assert */
 					Expect(actualError).To(Equal(expectedError))
@@ -128,7 +141,10 @@ var _ = Context("EnsureNetworkExistser", func() {
 					}
 
 					/* act */
-					actualError := objectUnderTest.EnsureNetworkExists("")
+					actualError := objectUnderTest.EnsureNetworkExists(
+						context.Background(),
+						"",
+					)
 
 					/* assert */
 					Expect(actualError).To(BeNil())
@@ -153,7 +169,10 @@ var _ = Context("EnsureNetworkExistser", func() {
 				}
 
 				/* act */
-				actualError := objectUnderTest.EnsureNetworkExists("")
+				actualError := objectUnderTest.EnsureNetworkExists(
+					context.Background(),
+					"",
+				)
 
 				/* assert */
 				Expect(actualError).To(Equal(expectedError))

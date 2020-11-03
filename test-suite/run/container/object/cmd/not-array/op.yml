@@ -1,0 +1,5 @@
+name: run/container/object/cmd/not-array
+run:
+  container:
+    image: {ref: 'alpine'}
+    cmd: {}

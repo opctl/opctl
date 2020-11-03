@@ -101,10 +101,16 @@ func (clr _caller) Call(
 	var call *model.Call
 	callStartTime := time.Now().UTC()
 
+	if nil != callCtx.Err() {
+		// if context done NOOP
+		return nil, nil
+	}
+
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 		var outcome string
-		if isKilled {
+		if isKilled || nil != ctx.Err() {
+			// this call or parent call killed/cancelled
 			outcome = model.OpOutcomeKilled
 		} else if nil != err {
 			outcome = model.OpOutcomeFailed
@@ -114,17 +120,17 @@ func (clr _caller) Call(
 
 		if nil == call {
 			call = &model.Call{
-				Id: id,
+				ID:     id,
+				RootID: rootCallID,
 			}
 		}
 
 		event := model.Event{
 			CallEnded: &model.CallEnded{
-				Call:       *call,
-				Outcome:    outcome,
-				Outputs:    outputs,
-				Ref:        opPath,
-				RootCallID: rootCallID,
+				Call:    *call,
+				Outcome: outcome,
+				Outputs: outputs,
+				Ref:     opPath,
 			},
 			Timestamp: time.Now().UTC(),
 		}
@@ -152,7 +158,7 @@ func (clr _caller) Call(
 		rootCallID,
 	)
 	if nil != err {
-		return outputs, err
+		return nil, err
 	}
 
 	if nil != call.If && !*call.If {
@@ -163,9 +169,8 @@ func (clr _caller) Call(
 		model.Event{
 			Timestamp: callStartTime,
 			CallStarted: &model.CallStarted{
-				Call:       *call,
-				OpRef:      opPath,
-				RootCallID: rootCallID,
+				Call: *call,
+				Ref:  opPath,
 			},
 		},
 	)
@@ -192,7 +197,7 @@ func (clr _caller) Call(
 
 		for event := range eventChannel {
 			switch {
-			case nil != event.OpKillRequested:
+			case nil != event.CallKillRequested && event.CallKillRequested.Request.OpID == id:
 				isKilled = true
 				return
 			}
@@ -206,6 +211,7 @@ func (clr _caller) Call(
 			call.Container,
 			scope,
 			callSpec.Container,
+			rootCallID,
 		)
 	case nil != callSpec.Op:
 		outputs, err = clr.opCaller.Call(
@@ -213,6 +219,7 @@ func (clr _caller) Call(
 			call.Op,
 			scope,
 			parentCallID,
+			rootCallID,
 			callSpec.Op,
 		)
 	case nil != callSpec.Parallel:

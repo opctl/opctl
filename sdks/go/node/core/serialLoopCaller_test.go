@@ -147,7 +147,7 @@ var _ = Context("serialLoopCaller", func() {
 					eventChannel <- model.Event{
 						CallEnded: &model.CallEnded{
 							Call: model.Call{
-								Id: callID,
+								ID: callID,
 							},
 							Error: &model.CallEndedError{
 								Message: expectedErrorMessage,

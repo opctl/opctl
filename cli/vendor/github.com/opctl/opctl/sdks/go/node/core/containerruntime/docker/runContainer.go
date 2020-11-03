@@ -20,6 +20,7 @@ type runContainer interface {
 	RunContainer(
 		ctx context.Context,
 		req *model.ContainerCall,
+		rootCallID string,
 		eventPublisher pubsub.EventPublisher,
 		stdout io.WriteCloser,
 		stderr io.WriteCloser,
@@ -63,21 +64,26 @@ type _runContainer struct {
 func (cr _runContainer) RunContainer(
 	ctx context.Context,
 	req *model.ContainerCall,
+	rootCallID string,
 	eventPublisher pubsub.EventPublisher,
 	stdout io.WriteCloser,
 	stderr io.WriteCloser,
 ) (*int64, error) {
+	defer stdout.Close()
+	defer stderr.Close()
+
 	// ensure user defined network exists to allow inter container resolution via name
 	// @TODO: remove when socket outputs supported
-	if err := cr.ensureNetworkExistser.EnsureNetworkExists(dockerNetworkName); nil != err {
+	if err := cr.ensureNetworkExistser.EnsureNetworkExists(
+		ctx,
+		dockerNetworkName,
+	); nil != err {
 		return nil, err
 	}
 
 	// for docker, we prefix name with opctl_ in order to allow external tools to know it's an opctl managed container
 	// do not change this prefix as it might break external consumers
 	containerName := fmt.Sprintf("opctl_%s", req.ContainerID)
-	defer stdout.Close()
-	defer stderr.Close()
 	defer func() {
 		// ensure container always cleaned up
 		cr.dockerClient.ContainerRemove(
@@ -90,12 +96,12 @@ func (cr _runContainer) RunContainer(
 		)
 	}()
 
-	var pullErr error
+	var imageErr error
 	if nil != req.Image.Src {
 		imageRef := fmt.Sprintf("%s:latest", req.ContainerID)
 		req.Image.Ref = &imageRef
 
-		pullErr = cr.imagePusher.Push(
+		imageErr = cr.imagePusher.Push(
 			ctx,
 			imageRef,
 			req.Image.Src,
@@ -103,12 +109,12 @@ func (cr _runContainer) RunContainer(
 	} else {
 		// always pull latest version of image
 		// note: this trades local reproducibility for distributed reproducibility
-		pullErr = cr.imagePuller.Pull(
+		imageErr = cr.imagePuller.Pull(
 			ctx,
 			req.ContainerID,
 			req.Image.PullCreds,
 			*req.Image.Ref,
-			req.RootCallID,
+			rootCallID,
 			eventPublisher,
 		)
 		// don't err yet; image might be cached. We allow this to support offline use
@@ -162,11 +168,11 @@ func (cr _runContainer) RunContainer(
 			// we got killed;
 			return nil, nil
 		default:
-			if nil == pullErr {
+			if nil == imageErr {
 				return nil, createErr
 			}
-			// if pullErr occurred prior; combine errors
-			return nil, errors.New(strings.Join([]string{pullErr.Error(), createErr.Error()}, ", "))
+			// if imageErr occurred prior; combine errors
+			return nil, errors.New(strings.Join([]string{imageErr.Error(), createErr.Error()}, ", "))
 		}
 	}
 

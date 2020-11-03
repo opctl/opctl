@@ -1,9 +1,0 @@
-name: run/op/inputs/explicitly-bound/string-input/string-arg/is-scope-ref/is-number
-inputs:
-  number:
-    number:
-      default: 7
-run:
-  op:
-    ref: is-number/_
-    inputs: { string: $(number) }

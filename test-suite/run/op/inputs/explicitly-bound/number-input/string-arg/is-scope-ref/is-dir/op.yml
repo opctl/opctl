@@ -1,9 +1,0 @@
-name: run/op/inputs/explicitly-bound/number-input/string-arg/is-scope-ref/is-dir
-inputs:
-  dir:
-    dir:
-      default: /dir
-run:
-  op:
-    ref: is-dir/_
-    inputs: { number: $(dir) }

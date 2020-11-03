@@ -1,0 +1,9 @@
+name: run/op/object/inputs/explicitly-bound/file-input/string-arg/starts-with-scope-ref/is-object
+inputs:
+  object:
+    object:
+      default: {}
+run:
+  op:
+    ref: is-object/_
+    inputs: { file: $(object)suffix }

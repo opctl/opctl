@@ -1,5 +1,0 @@
-name: run/op/inputs/explicitly-bound/object-input/string-arg/isnt-ref
-run:
-  op:
-    ref: isnt-ref/_
-    inputs: { object: a }

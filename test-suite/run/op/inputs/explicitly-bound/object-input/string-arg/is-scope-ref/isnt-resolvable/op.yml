@@ -1,5 +1,0 @@
-name: run/op/inputs/explicitly-bound/object-input/string-arg/is-scope-ref/isnt-resolvable
-run:
-  op:
-    ref: isnt-resolvable/_
-    inputs: { object: $(object) }

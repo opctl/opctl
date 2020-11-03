@@ -11,7 +11,7 @@ type Auth struct {
 type Call struct {
 	Container *ContainerCall `json:"container,omitempty"`
 	// id of call
-	Id           string            `json:"id"`
+	ID           string            `json:"id"`
 	If           *bool             `json:"if,omitempty"`
 	IsKilled     bool              `json:"isKilled"`
 	Name         *string           `json:"name,omitempty"`
@@ -20,14 +20,15 @@ type Call struct {
 	Parallel     []*CallSpec       `json:"parallel,omitempty"`
 	ParallelLoop *ParallelLoopCall `json:"parallelLoop,omitempty"`
 	// id of parent call
-	ParentID   *string         `json:"parentId,omitempty"`
+	ParentID *string `json:"parentId,omitempty"`
+	// id of root call
+	RootID     string          `json:"rootId"`
 	Serial     []*CallSpec     `json:"serial,omitempty"`
 	SerialLoop *SerialLoopCall `json:"serialLoop,omitempty"`
 }
 
 type BaseCall struct {
-	RootCallID string `json:"rootCallId"`
-	OpPath     string `json:"opPath"`
+	OpPath string `json:"opPath"`
 }
 
 //ContainerCall is a call of a container
@@ -51,8 +52,7 @@ type ContainerCall struct {
 
 //ContainerCallImage is the image used when calling a container
 type ContainerCallImage struct {
-	Src *Value `json:"src,omitempty"`
-	// @TODO: deprecate in favor of Src
+	Src       *Value  `json:"src,omitempty"`
 	Ref       *string `json:"ref"`
 	PullCreds *Creds  `json:"pullCreds,omitempty"`
 }

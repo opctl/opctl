@@ -23,7 +23,6 @@ type Interpreter interface {
 		opCallSpec *model.OpCallSpec,
 		opID string,
 		parentOpPath string,
-		rootCallID string,
 	) (*model.OpCall, error)
 }
 
@@ -59,7 +58,6 @@ func (itp _interpreter) Interpret(
 	opCallSpec *model.OpCallSpec,
 	opID string,
 	parentOpPath string,
-	rootCallID string,
 ) (*model.OpCall, error) {
 
 	var pkgPullCreds *model.Creds
@@ -122,12 +120,11 @@ func (itp _interpreter) Interpret(
 
 	opCall := &model.OpCall{
 		BaseCall: model.BaseCall{
-			RootCallID: rootCallID,
-			OpPath:     opPath,
+			OpPath: opPath,
 		},
-		OpID:              opID,
 		ChildCallID:       childCallID,
 		ChildCallCallSpec: opFile.Run,
+		OpID:              opID,
 	}
 
 	opCall.Inputs, err = itp.inputsInterpreter.Interpret(

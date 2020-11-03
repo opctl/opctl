@@ -1,5 +1,0 @@
-name: run/op/inputs/explicitly-bound/string-input/array-arg
-run:
-  op:
-    ref: object-arg/_
-    inputs: { string: [] }

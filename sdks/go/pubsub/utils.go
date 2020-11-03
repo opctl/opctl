@@ -28,15 +28,15 @@ func getEventRootCallID(
 ) string {
 	switch {
 	case nil != event.CallEnded:
-		return event.CallEnded.RootCallID
+		return event.CallEnded.Call.RootID
 	case nil != event.ContainerStdErrWrittenTo:
 		return event.ContainerStdErrWrittenTo.RootCallID
 	case nil != event.ContainerStdOutWrittenTo:
 		return event.ContainerStdOutWrittenTo.RootCallID
-	case nil != event.OpKillRequested:
-		return event.OpKillRequested.Request.RootCallID
+	case nil != event.CallKillRequested:
+		return event.CallKillRequested.Request.RootCallID
 	case nil != event.CallStarted:
-		return event.CallStarted.RootCallID
+		return event.CallStarted.Call.RootID
 	default:
 		// use empty guid for unknown events
 		return "00000000-0000-0000-0000-000000000000"

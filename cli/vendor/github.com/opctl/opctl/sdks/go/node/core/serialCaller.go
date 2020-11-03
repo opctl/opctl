@@ -60,7 +60,6 @@ func (sc _serialCaller) Call(
 	for varName, varData := range inboundScope {
 		outputs[varName] = varData
 	}
-	var err error
 
 	// subscribe to events
 	// @TODO: handle err channel
@@ -76,10 +75,10 @@ func (sc _serialCaller) Call(
 	for _, callSpecCall := range callSpecSerialCall {
 
 		var childCallID string
-		childCallID, err = sc.uniqueStringFactory.Construct()
+		childCallID, err := sc.uniqueStringFactory.Construct()
 		if nil != err {
 			// end run immediately on any error
-			return outputs, err
+			return nil, err
 		}
 
 		sc.caller.Call(
@@ -96,11 +95,10 @@ func (sc _serialCaller) Call(
 		for event := range eventChannel {
 			// merge child outboundScope w/ outboundScope, child outboundScope having precedence
 			switch {
-			case nil != event.CallEnded && event.CallEnded.Call.Id == childCallID:
+			case nil != event.CallEnded && event.CallEnded.Call.ID == childCallID:
 				if nil != event.CallEnded.Error {
-					err = errors.New(event.CallEnded.Error.Message)
 					// end on any error
-					return outputs, err
+					return nil, errors.New(event.CallEnded.Error.Message)
 				}
 				for name, value := range event.CallEnded.Outputs {
 					outputs[name] = value
@@ -111,5 +109,5 @@ func (sc _serialCaller) Call(
 
 	}
 
-	return outputs, err
+	return outputs, nil
 }

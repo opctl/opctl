@@ -35,8 +35,9 @@ var _ = Context("pubSub", func() {
 
 					expectedEvent := model.Event{
 						CallStarted: &model.CallStarted{
-							RootCallID: "dummyRootCallID",
-							OpRef:      "dummyOpRef",
+							Call: model.Call{
+								RootID: "rootID",
+							},
 						},
 					}
 
@@ -60,8 +61,9 @@ var _ = Context("pubSub", func() {
 
 					publishedEvent := model.Event{
 						CallStarted: &model.CallStarted{
-							RootCallID: "dummyRootCallID",
-							OpRef:      "dummyOpRef",
+							Call: model.Call{
+								RootID: "rootID",
+							},
 						},
 					}
 
@@ -88,10 +90,8 @@ var _ = Context("pubSub", func() {
 					expectedEvent := model.Event{
 						CallStarted: &model.CallStarted{
 							Call: model.Call{
-								Id: "id",
+								ID: "id",
 							},
-							RootCallID: "dummyRootCallID",
-							OpRef:      "dummyOpRef",
 						},
 					}
 
@@ -116,14 +116,15 @@ var _ = Context("pubSub", func() {
 
 					expectedEvent := model.Event{
 						CallStarted: &model.CallStarted{
-							RootCallID: "dummyRootCallID",
-							OpRef:      "dummyOpRef",
+							Call: model.Call{
+								RootID: "rootId",
+							},
 						},
 					}
 
 					providedFilter := model.EventFilter{
 						Roots: []string{
-							expectedEvent.CallStarted.RootCallID,
+							expectedEvent.CallStarted.Call.RootID,
 						},
 					}
 
@@ -151,18 +152,17 @@ var _ = Context("pubSub", func() {
 					expectedEvent1 := model.Event{
 						CallStarted: &model.CallStarted{
 							Call: model.Call{
-								Id: "id",
+								ID: "id",
 							},
-							RootCallID: "dummyRootCallID",
-							OpRef:      "dummyOpRef",
 						},
 						Timestamp: time.Now(),
 					}
 
 					expectedEvent2 := model.Event{
 						CallStarted: &model.CallStarted{
-							RootCallID: "dummyRootCallID",
-							OpRef:      "dummyOpRef",
+							Call: model.Call{
+								RootID: "rootID",
+							},
 						},
 						Timestamp: time.Now().Add(time.Second),
 					}

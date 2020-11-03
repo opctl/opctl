@@ -130,23 +130,31 @@ var _ = Context("output", func() {
 			Context("Call.Container truthy", func() {
 				It("should call stdWriter w/ expected args", func() {
 					/* arrange */
+					imageRef := "imageRef"
 					providedEvent := &model.Event{
 						CallEnded: &model.CallEnded{
 							Call: model.Call{
-								Container: &model.ContainerCall{},
-								Id:        "id",
+								Container: &model.ContainerCall{
+									Image: &model.ContainerCallImage{
+										Ref: &imageRef,
+									},
+								},
+								ID: "ID",
 							},
-							Ref: "dummyOpRef",
+							Outcome: model.OpOutcomeSucceeded,
+							Ref:     "ref",
 						},
 						Timestamp: time.Now(),
 					}
 					expectedWriteArg := []byte(
 						fmt.Sprintln(
-							_cliColorer.Info(
+							_cliColorer.Success(
 								fmt.Sprintf(
-									"ContainerExited Id='%v' OpRef='%v' Timestamp='%v'\n",
-									providedEvent.CallEnded.Call.Id,
-									providedEvent.CallEnded.Ref,
+									"ContainerExited Id='%v'%v Outcome='%v'%v Timestamp='%v'\n",
+									providedEvent.CallEnded.Call.ID,
+									fmt.Sprintf(" ImageRef='%v'", imageRef),
+									providedEvent.CallEnded.Outcome,
+									"",
 									providedEvent.Timestamp.Format(time.RFC3339),
 								),
 							),
@@ -176,13 +184,17 @@ var _ = Context("output", func() {
 						providedEvent := &model.Event{
 							CallEnded: &model.CallEnded{
 								Call: model.Call{
-									Id: "id",
-									Op: &model.OpCall{},
+									ID: "ID",
+									Op: &model.OpCall{
+										BaseCall: model.BaseCall{
+											OpPath: "opPath",
+										},
+									},
 								},
 								Error: &model.CallEndedError{
 									Message: "message",
 								},
-								Ref:     "dummyOpRef",
+								Ref:     "ref",
 								Outcome: "FAILED",
 							},
 							Timestamp: time.Now(),
@@ -192,8 +204,8 @@ var _ = Context("output", func() {
 								_cliColorer.Error(
 									fmt.Sprintf(
 										"OpEnded Id='%v' OpRef='%v' Outcome='%v'%v Timestamp='%v'\n",
-										providedEvent.CallEnded.Call.Id,
-										providedEvent.CallEnded.Ref,
+										providedEvent.CallEnded.Call.ID,
+										providedEvent.CallEnded.Call.Op.OpPath,
 										providedEvent.CallEnded.Outcome,
 										fmt.Sprintf(" Error='%v'", providedEvent.CallEnded.Error.Message),
 										providedEvent.Timestamp.Format(time.RFC3339),
@@ -223,10 +235,14 @@ var _ = Context("output", func() {
 						providedEvent := &model.Event{
 							CallEnded: &model.CallEnded{
 								Call: model.Call{
-									Id: "id",
-									Op: &model.OpCall{},
+									ID: "ID",
+									Op: &model.OpCall{
+										BaseCall: model.BaseCall{
+											OpPath: "opPath",
+										},
+									},
 								},
-								Ref:     "dummyOpRef",
+								Ref:     "ref",
 								Outcome: "SUCCEEDED",
 							},
 							Timestamp: time.Now(),
@@ -236,8 +252,8 @@ var _ = Context("output", func() {
 								_cliColorer.Success(
 									fmt.Sprintf(
 										"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
-										providedEvent.CallEnded.Call.Id,
-										providedEvent.CallEnded.Ref,
+										providedEvent.CallEnded.Call.ID,
+										providedEvent.CallEnded.Call.Op.OpPath,
 										providedEvent.CallEnded.Outcome,
 										providedEvent.Timestamp.Format(time.RFC3339),
 									),
@@ -266,10 +282,14 @@ var _ = Context("output", func() {
 						providedEvent := &model.Event{
 							CallEnded: &model.CallEnded{
 								Call: model.Call{
-									Id: "id",
-									Op: &model.OpCall{},
+									ID: "ID",
+									Op: &model.OpCall{
+										BaseCall: model.BaseCall{
+											OpPath: "opPath",
+										},
+									},
 								},
-								Ref:     "dummyOpRef",
+								Ref:     "ref",
 								Outcome: "KILLED",
 							},
 							Timestamp: time.Now(),
@@ -279,8 +299,8 @@ var _ = Context("output", func() {
 								_cliColorer.Info(
 									fmt.Sprintf(
 										"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
-										providedEvent.CallEnded.Call.Id,
-										providedEvent.CallEnded.Ref,
+										providedEvent.CallEnded.Call.ID,
+										providedEvent.CallEnded.Call.Op.OpPath,
 										providedEvent.CallEnded.Outcome,
 										providedEvent.Timestamp.Format(time.RFC3339),
 									),
@@ -309,12 +329,17 @@ var _ = Context("output", func() {
 			Context("Call.Container truthy", func() {
 				It("should call stdWriter w/ expected args", func() {
 					/* arrange */
+					imageRef := "imageRef"
 					providedEvent := &model.Event{
 						CallStarted: &model.CallStarted{
 							Call: model.Call{
-								Container: &model.ContainerCall{},
+								Container: &model.ContainerCall{
+									Image: &model.ContainerCallImage{
+										Ref: &imageRef,
+									},
+								},
 							},
-							OpRef: "dummyOpRef",
+							Ref: "ref",
 						},
 						Timestamp: time.Now(),
 					}
@@ -322,9 +347,10 @@ var _ = Context("output", func() {
 						fmt.Sprintln(
 							_cliColorer.Info(
 								fmt.Sprintf(
-									"ContainerStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-									providedEvent.CallStarted.Call.Id,
-									providedEvent.CallStarted.OpRef,
+									"ContainerStarted Id='%v' OpRef='%v' ImageRef='%v' Timestamp='%v'\n",
+									providedEvent.CallStarted.Call.ID,
+									providedEvent.CallStarted.Ref,
+									imageRef,
 									providedEvent.Timestamp.Format(time.RFC3339),
 								),
 							),
@@ -352,10 +378,14 @@ var _ = Context("output", func() {
 					providedEvent := &model.Event{
 						CallStarted: &model.CallStarted{
 							Call: model.Call{
-								Id: "id",
-								Op: &model.OpCall{},
+								ID: "ID",
+								Op: &model.OpCall{
+									BaseCall: model.BaseCall{
+										OpPath: "opPath",
+									},
+								},
 							},
-							OpRef: "dummyOpRef",
+							Ref: "ref",
 						},
 						Timestamp: time.Now(),
 					}
@@ -364,8 +394,8 @@ var _ = Context("output", func() {
 							_cliColorer.Info(
 								fmt.Sprintf(
 									"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-									providedEvent.CallStarted.Call.Id,
-									providedEvent.CallStarted.OpRef,
+									providedEvent.CallStarted.Call.ID,
+									providedEvent.CallStarted.Call.Op.OpPath,
 									providedEvent.Timestamp.Format(time.RFC3339),
 								),
 							),

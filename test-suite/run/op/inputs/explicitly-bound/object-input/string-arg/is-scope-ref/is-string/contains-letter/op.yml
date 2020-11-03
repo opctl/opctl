@@ -1,9 +1,0 @@
-name: run/op/inputs/explicitly-bound/object-input/string-arg/is-scope-ref/is-string/contains-letter
-inputs:
-  string:
-    string:
-      default: a
-run:
-  op:
-    ref: contains-letter/_
-    inputs: { object: $(string) }

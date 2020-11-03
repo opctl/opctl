@@ -113,7 +113,7 @@ func New(
 
 	go func() {
 		// process events in background
-		opKiller := newOpKiller(
+		callKiller := newCallKiller(
 			stateStore,
 			containerRuntime,
 			pubSub,
@@ -129,9 +129,9 @@ func New(
 
 		for event := range eventChannel {
 			switch {
-			case nil != event.OpKillRequested:
-				req := event.OpKillRequested.Request
-				opKiller.Kill(req.OpID, req.RootCallID)
+			case nil != event.CallKillRequested:
+				req := event.CallKillRequested.Request
+				callKiller.Kill(req.OpID, req.RootCallID)
 			}
 		}
 	}()

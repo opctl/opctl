@@ -205,7 +205,7 @@ func (ivkr _runer) Run(
 			ivkr.cliOutput.Event(&event)
 
 			if nil != event.CallEnded {
-				if event.CallEnded.Call.Id == rootCallID {
+				if event.CallEnded.Call.ID == rootCallID {
 					switch event.CallEnded.Outcome {
 					case model.OpOutcomeSucceeded:
 						ivkr.cliExiter.Exit(cliexiter.ExitReq{Code: 0})

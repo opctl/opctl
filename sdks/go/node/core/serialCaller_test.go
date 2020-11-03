@@ -52,7 +52,7 @@ var _ = Context("serialCaller", func() {
 					eventChannel <- model.Event{
 						CallEnded: &model.CallEnded{
 							Call: model.Call{
-								Id: fmt.Sprintf("%v", index),
+								ID: fmt.Sprintf("%v", index),
 							},
 						},
 					}
@@ -128,7 +128,7 @@ var _ = Context("serialCaller", func() {
 						eventChannel <- model.Event{
 							CallEnded: &model.CallEnded{
 								Call: model.Call{
-									Id: callID,
+									ID: callID,
 								},
 								Error: &model.CallEndedError{
 									Message: expectedErrorMessage,
@@ -160,7 +160,7 @@ var _ = Context("serialCaller", func() {
 				)
 
 				/* assert */
-				Expect(actualOutputs).To(Equal(map[string]*model.Value{}))
+				Expect(actualOutputs).To(BeNil())
 				Expect(actualErr).To(Equal(actualErr))
 			})
 		})
@@ -194,7 +194,7 @@ var _ = Context("serialCaller", func() {
 							eventChannel <- model.Event{
 								CallEnded: &model.CallEnded{
 									Call: model.Call{
-										Id: fmt.Sprintf("%v", index),
+										ID: fmt.Sprintf("%v", index),
 									},
 								},
 							}
@@ -278,10 +278,10 @@ var _ = Context("serialCaller", func() {
 							eventChannel <- model.Event{
 								CallEnded: &model.CallEnded{
 									Call: model.Call{
-										Id: fmt.Sprintf("%v", index),
+										ID:     fmt.Sprintf("%v", index),
+										RootID: providedRootCallID,
 									},
-									RootCallID: providedRootCallID,
-									Outputs:    firstChildOutputs,
+									Outputs: firstChildOutputs,
 								},
 							}
 						}

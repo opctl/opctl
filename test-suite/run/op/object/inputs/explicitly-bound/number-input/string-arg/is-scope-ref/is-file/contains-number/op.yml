@@ -1,0 +1,9 @@
+name: run/op/object/inputs/explicitly-bound/number-input/string-arg/is-scope-ref/is-file/contains-number
+inputs:
+  file:
+    file:
+      default: /file.txt
+run:
+  op:
+    ref: contains-number/_
+    inputs: { number: $(file) }

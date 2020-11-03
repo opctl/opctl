@@ -2,14 +2,16 @@
 package fakes
 
 import (
+	"context"
 	"sync"
 )
 
 type FakeEnsureNetworkExistser struct {
-	EnsureNetworkExistsStub        func(string) error
+	EnsureNetworkExistsStub        func(context.Context, string) error
 	ensureNetworkExistsMutex       sync.RWMutex
 	ensureNetworkExistsArgsForCall []struct {
-		arg1 string
+		arg1 context.Context
+		arg2 string
 	}
 	ensureNetworkExistsReturns struct {
 		result1 error
@@ -21,16 +23,17 @@ type FakeEnsureNetworkExistser struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeEnsureNetworkExistser) EnsureNetworkExists(arg1 string) error {
+func (fake *FakeEnsureNetworkExistser) EnsureNetworkExists(arg1 context.Context, arg2 string) error {
 	fake.ensureNetworkExistsMutex.Lock()
 	ret, specificReturn := fake.ensureNetworkExistsReturnsOnCall[len(fake.ensureNetworkExistsArgsForCall)]
 	fake.ensureNetworkExistsArgsForCall = append(fake.ensureNetworkExistsArgsForCall, struct {
-		arg1 string
-	}{arg1})
-	fake.recordInvocation("EnsureNetworkExists", []interface{}{arg1})
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("EnsureNetworkExists", []interface{}{arg1, arg2})
 	fake.ensureNetworkExistsMutex.Unlock()
 	if fake.EnsureNetworkExistsStub != nil {
-		return fake.EnsureNetworkExistsStub(arg1)
+		return fake.EnsureNetworkExistsStub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1
@@ -45,17 +48,17 @@ func (fake *FakeEnsureNetworkExistser) EnsureNetworkExistsCallCount() int {
 	return len(fake.ensureNetworkExistsArgsForCall)
 }
 
-func (fake *FakeEnsureNetworkExistser) EnsureNetworkExistsCalls(stub func(string) error) {
+func (fake *FakeEnsureNetworkExistser) EnsureNetworkExistsCalls(stub func(context.Context, string) error) {
 	fake.ensureNetworkExistsMutex.Lock()
 	defer fake.ensureNetworkExistsMutex.Unlock()
 	fake.EnsureNetworkExistsStub = stub
 }
 
-func (fake *FakeEnsureNetworkExistser) EnsureNetworkExistsArgsForCall(i int) string {
+func (fake *FakeEnsureNetworkExistser) EnsureNetworkExistsArgsForCall(i int) (context.Context, string) {
 	fake.ensureNetworkExistsMutex.RLock()
 	defer fake.ensureNetworkExistsMutex.RUnlock()
 	argsForCall := fake.ensureNetworkExistsArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeEnsureNetworkExistser) EnsureNetworkExistsReturns(result1 error) {

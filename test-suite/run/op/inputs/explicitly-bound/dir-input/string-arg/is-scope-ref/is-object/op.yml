@@ -1,9 +1,0 @@
-name: run/op/inputs/explicitly-bound/dir-input/string-arg/is-scope-ref/is-object
-inputs:
-  object:
-    object:
-      default: {}
-run:
-  op:
-    ref: is-object/_
-    inputs: { dir: $(object) }

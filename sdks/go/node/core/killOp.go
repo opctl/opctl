@@ -12,7 +12,7 @@ func (this _core) KillOp(
 	// killing an op is async
 	this.pubSub.Publish(
 		model.Event{
-			OpKillRequested: &model.OpKillRequested{
+			CallKillRequested: &model.CallKillRequested{
 				Request: req,
 			},
 			Timestamp: time.Now().UTC(),

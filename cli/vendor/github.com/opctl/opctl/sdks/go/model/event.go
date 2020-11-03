@@ -9,20 +9,14 @@ type Event struct {
 	CallStarted              *CallStarted              `json:"callStarted,omitempty"`
 	ContainerStdErrWrittenTo *ContainerStdErrWrittenTo `json:"containerStdErrWrittenTo,omitempty"`
 	ContainerStdOutWrittenTo *ContainerStdOutWrittenTo `json:"containerStdOutWrittenTo,omitempty"`
-	OpKillRequested          *OpKillRequested          `json:"opKillRequested,omitempty"`
+	CallKillRequested        *CallKillRequested        `json:"callKillRequested,omitempty"`
 	Timestamp                time.Time                 `json:"timestamp"`
 }
 
 const (
-	OpOutcomeSucceeded   = "SUCCEEDED"
-	OpOutcomeFailed      = "FAILED"
-	OpOutcomeKilled      = "KILLED"
-	CallTypeContainer    = "Container"
-	CallTypeOp           = "Op"
-	CallTypeSerial       = "Serial"
-	CallTypeSerialLoop   = "SerialLoop"
-	CallTypeParallel     = "Parallel"
-	CallTypeParallelLoop = "ParallelLoop"
+	OpOutcomeSucceeded = "SUCCEEDED"
+	OpOutcomeFailed    = "FAILED"
+	OpOutcomeKilled    = "KILLED"
 )
 
 // AuthAdded represents auth was added for external resources
@@ -30,26 +24,24 @@ type AuthAdded struct {
 	Auth Auth `json:"auth"`
 }
 
-// OpKillRequested represents a request was made to kill an op; a CallEnded event may follow
-type OpKillRequested struct {
+// CallKillRequested represents a request was made to kill an op; a CallEnded event may follow
+type CallKillRequested struct {
 	Request KillOpReq `json:"request"`
 }
 
 // CallEnded represents a call ended; no further events will occur for the call
 type CallEnded struct {
-	Call       Call              `json:"call"`
-	Ref        string            `json:"ref"`
-	Error      *CallEndedError   `json:"error,omitempty"`
-	Outputs    map[string]*Value `json:"outputs"`
-	Outcome    string            `json:"outcome"`
-	RootCallID string            `json:"rootCallId"`
+	Call    Call              `json:"call"`
+	Ref     string            `json:"ref"`
+	Error   *CallEndedError   `json:"error,omitempty"`
+	Outputs map[string]*Value `json:"outputs"`
+	Outcome string            `json:"outcome"`
 }
 
 // CallStarted represents the start of an op
 type CallStarted struct {
-	Call       Call   `json:"call"`
-	RootCallID string `json:"rootCallId"`
-	OpRef      string `json:"opRef"`
+	Call Call   `json:"call"`
+	Ref  string `json:"ref"`
 }
 
 // CallEndedError represents an error associated w/ an ended call

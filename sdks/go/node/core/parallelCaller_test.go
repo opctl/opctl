@@ -67,7 +67,7 @@ var _ = Context("parallelCaller", func() {
 				eventChannel <- model.Event{
 					CallEnded: &model.CallEnded{
 						Call: model.Call{
-							Id: fmt.Sprintf("%v", callerCallIndex),
+							ID: fmt.Sprintf("%v", callerCallIndex),
 						},
 					},
 				}
@@ -84,13 +84,13 @@ var _ = Context("parallelCaller", func() {
 
 			fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 			uniqueStringCallIndex := 0
-			expectedChildCallIds := []string{}
+			expectedChildCallIDs := []string{}
 			fakeUniqueStringFactory.ConstructStub = func() (string, error) {
 				defer func() {
 					uniqueStringCallIndex++
 				}()
 				childCallID := fmt.Sprintf("%v", uniqueStringCallIndex)
-				expectedChildCallIds = append(expectedChildCallIds, fmt.Sprintf("%v", uniqueStringCallIndex))
+				expectedChildCallIDs = append(expectedChildCallIDs, fmt.Sprintf("%v", uniqueStringCallIndex))
 				return childCallID, nil
 			}
 
@@ -126,7 +126,7 @@ var _ = Context("parallelCaller", func() {
 				Expect(actualRootCallID).To(Equal(providedRootCallID))
 
 				// handle unordered asserts because call order can't be relied on within go statement
-				Expect(expectedChildCallIds).To(ContainElement(actualNodeID))
+				Expect(expectedChildCallIDs).To(ContainElement(actualNodeID))
 				Expect(providedCallSpecParallelCalls).To(ContainElement(actualCallSpec))
 			}
 		})
@@ -180,7 +180,7 @@ var _ = Context("parallelCaller", func() {
 					eventChannel <- model.Event{
 						CallEnded: &model.CallEnded{
 							Call: model.Call{
-								Id: fmt.Sprintf("%v", callerCallIndex),
+								ID: fmt.Sprintf("%v", callerCallIndex),
 							},
 							Error: &model.CallEndedError{
 								Message: errorMessage,
@@ -200,24 +200,15 @@ var _ = Context("parallelCaller", func() {
 
 				fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 				uniqueStringCallIndex := 0
-				expectedChildCallIds := []string{}
+				expectedChildCallIDs := []string{}
 				fakeUniqueStringFactory.ConstructStub = func() (string, error) {
 					defer func() {
 						uniqueStringCallIndex++
 					}()
 					childCallID := fmt.Sprintf("%v", uniqueStringCallIndex)
-					expectedChildCallIds = append(expectedChildCallIds, childCallID)
+					expectedChildCallIDs = append(expectedChildCallIDs, childCallID)
 					return childCallID, nil
 				}
-
-				var formattedChildErrorMessages string
-				for _, childErrorMessage := range childErrorMessages {
-					formattedChildErrorMessages = fmt.Sprintf("\t-%v\n", childErrorMessage)
-				}
-				expectedErrorMessage := fmt.Sprintf(
-					"-\nError(s) during parallel call. Error(s) were:\n%v\n-",
-					formattedChildErrorMessages,
-				)
 
 				objectUnderTest := _parallelCaller{
 					caller:              fakeCaller,
@@ -236,8 +227,8 @@ var _ = Context("parallelCaller", func() {
 				)
 
 				/* assert */
-				Expect(actualOutputs).To(Equal(map[string]*model.Value{}))
-				Expect(actualErr).To(Equal(errors.New(expectedErrorMessage)))
+				Expect(actualOutputs).To(BeNil())
+				Expect(actualErr).To(Equal(errors.New("child call failed")))
 			})
 		})
 		Context("caller doesn't error", func() {
@@ -284,7 +275,7 @@ var _ = Context("parallelCaller", func() {
 					eventChannel <- model.Event{
 						CallEnded: &model.CallEnded{
 							Call: model.Call{
-								Id: fmt.Sprintf("%v", callerCallIndex),
+								ID: fmt.Sprintf("%v", callerCallIndex),
 							},
 						},
 					}
@@ -300,13 +291,13 @@ var _ = Context("parallelCaller", func() {
 
 				fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 				uniqueStringCallIndex := 0
-				expectedChildCallIds := []string{}
+				expectedChildCallIDs := []string{}
 				fakeUniqueStringFactory.ConstructStub = func() (string, error) {
 					defer func() {
 						uniqueStringCallIndex++
 					}()
 					childCallID := fmt.Sprintf("%v", uniqueStringCallIndex)
-					expectedChildCallIds = append(expectedChildCallIds, fmt.Sprintf("%v", uniqueStringCallIndex))
+					expectedChildCallIDs = append(expectedChildCallIDs, fmt.Sprintf("%v", uniqueStringCallIndex))
 					return childCallID, nil
 				}
 
@@ -342,7 +333,7 @@ var _ = Context("parallelCaller", func() {
 					Expect(actualRootCallID).To(Equal(providedRootCallID))
 
 					// handle unordered asserts because call order can't be relied on within go statement
-					Expect(expectedChildCallIds).To(ContainElement(actualNodeID))
+					Expect(expectedChildCallIDs).To(ContainElement(actualNodeID))
 					Expect(providedCallSpecParallelCalls).To(ContainElement(actualCallSpec))
 				}
 			})

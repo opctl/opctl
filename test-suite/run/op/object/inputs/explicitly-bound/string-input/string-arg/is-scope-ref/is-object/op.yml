@@ -1,0 +1,9 @@
+name: run/op/object/inputs/explicitly-bound/string-input/string-arg/is-scope-ref/is-object
+inputs:
+  object:
+    object:
+      default: {}
+run:
+  op:
+    ref: is-object/_
+    inputs: { string: $(object) }

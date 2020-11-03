@@ -96,7 +96,6 @@ var _ = Context("Interpreter", func() {
 											opCallSpec,
 											"",
 											*opHandle.Path(),
-											"",
 										)
 
 										/* assert */
@@ -135,7 +134,6 @@ var _ = Context("Interpreter", func() {
 				},
 				"dummyOpID",
 				providedOpPath,
-				"dummyRootCallID",
 			)
 
 			/* assert */
@@ -164,7 +162,6 @@ var _ = Context("Interpreter", func() {
 					},
 					"dummyOpID",
 					"dummyOpPath",
-					"dummyRootCallID",
 				)
 
 				/* assert */
@@ -195,7 +192,6 @@ var _ = Context("Interpreter", func() {
 						},
 						"dummyOpID",
 						"dummyOpPath",
-						"dummyRootCallID",
 					)
 
 					/* assert */
@@ -231,7 +227,6 @@ var _ = Context("Interpreter", func() {
 						},
 						"dummyOpID",
 						"dummyOpPath",
-						"dummyRootCallID",
 					)
 
 					/* assert */
@@ -269,7 +264,6 @@ var _ = Context("Interpreter", func() {
 					},
 					"dummyOpID",
 					"dummyOpPath",
-					"dummyRootCallID",
 				)
 
 				/* assert */
@@ -313,7 +307,6 @@ var _ = Context("Interpreter", func() {
 					providedOpCallSpec,
 					"dummyOpID",
 					providedOpPath,
-					"dummyRootCallID",
 				)
 
 				/* assert */
@@ -343,7 +336,6 @@ var _ = Context("Interpreter", func() {
 						&model.OpCallSpec{},
 						"dummyOpID",
 						"dummyOpPath",
-						"dummyRootCallID",
 					)
 
 					/* assert */
@@ -376,7 +368,6 @@ var _ = Context("Interpreter", func() {
 				&model.OpCallSpec{},
 				"dummyOpID",
 				"dummyOpPath",
-				"dummyRootCallID",
 			)
 
 			/* assert */
@@ -411,7 +402,6 @@ var _ = Context("Interpreter", func() {
 					&model.OpCallSpec{},
 					"dummyOpID",
 					"dummyOpPath",
-					"dummyRootCallID",
 				)
 
 				/* assert */
@@ -470,7 +460,6 @@ var _ = Context("Interpreter", func() {
 				providedOpCallSpec,
 				providedOpID,
 				providedParentOpPath,
-				"dummyRootCallID",
 			)
 
 			/* assert */
