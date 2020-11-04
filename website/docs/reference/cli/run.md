@@ -1,36 +1,47 @@
-## `opctl run [OPTIONS] OP_REF`
-Start and wait on an op
+---
+sidebar_label: run
+title: opctl run
+---
+
+```sh
+opctl run [OPTIONS] OP_REF
+```
+
+Start and wait on an op.
 
 > if a node isn't running, one will be automatically created
 
-### Arguments
+## Arguments
 
-#### `OP_REF`
+### `OP_REF`
 Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)
 
-### Options
+## Options
 
-#### `-a`
+### `-a`
 Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`
 
-#### `--arg-file` *default: `.opspec/args.yml`*
+### `--arg-file` *default: `.opspec/args.yml`*
 Read in a file of args in yml format
 
-### Examples
+## Global Options
+see [global options](global-options.md)
 
-#### local op ref w/out args
+## Examples
+
+### local op ref w/out args
 ```sh
 opctl run myop
 ```
 
-#### remote op ref w/ args
+### remote op ref w/ args
 ```sh
 opctl run -a apiToken="my-token" -a channelName="my-channel" -a msg="hello!" github.com/opspec-pkgs/slack.chat.post-message#0.1.1
 ```
 
-### Notes
+## Notes
 
-#### op source username/password prompt
+### op source username/password prompt
 If auth w/ the op source fails the cli will (re)prompt for username &
 password.
 
@@ -38,7 +49,7 @@ password.
 > due to being in a non-interactive terminal and exit with a non zero
 > exit code.
 
-#### input sources
+### input sources
 Input sources are checked according to the following precedence:
 
 - arg provided via `-a` option
@@ -47,7 +58,7 @@ Input sources are checked according to the following precedence:
 - default
 - prompt
 
-#### input prompts
+### input prompts
 Inputs which are invalid or missing will result in the cli prompting for
 them.
 
@@ -66,29 +77,25 @@ example:
 -
 ```
 
-##### validation
+### validation
 When inputs don't meet constraints, the cli will (re)prompt for the
 input until a satisfactory value is obtained.
 
-#### containers
+### caching
+All pulled ops/image layers will be cached
 
-##### image
-
-###### image layer caching
-All pulled image layers will be cached
-
-###### image updates
+### image updates
 Prior to container creation, updates to the referenced image will be
 pulled and applied.
 
 If checking for or applying updated image layers fails, graceful
 fallback to cached image layers will occur
 
-##### networking
+### container networking
 All containers created by opctl will be attached to a single managed
 network.
 
 > the network is visible from `docker network ls` as `opctl`.
 
-##### cleanup
+### container cleanup
 Containers will be removed as they exit.

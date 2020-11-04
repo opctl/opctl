@@ -130,15 +130,45 @@ module.exports = {
           label: "CLI",
           items: [
             "reference/cli/global-options",
-            "reference/cli/auth",
+            {
+              type: "category",
+              label: "auth",
+              items: [
+                "reference/cli/auth/index",
+                "reference/cli/auth/add",
+              ]
+            },
             "reference/cli/events",
             "reference/cli/ls",
-            "reference/cli/node",
-            "reference/cli/op",
+            {
+              type: "category",
+              label: "node",
+              items: [
+                "reference/cli/node/index",
+                "reference/cli/node/create",
+                "reference/cli/node/kill",
+              ]
+            },
+            {
+              type: "category",
+              label: "op",
+              items: [
+                "reference/cli/op/index",
+                "reference/cli/op/create",
+                "reference/cli/op/install",
+                "reference/cli/op/kill",
+                "reference/cli/op/validate",
+              ]
+            },
             "reference/cli/run",
             "reference/cli/self-update",
             "reference/cli/ui",
           ]
+        },
+        {
+          type: "link",
+          label: "ReST API",
+          href: "https://petstore.swagger.io/?url=https://raw.githubusercontent.com/opctl/opctl/main/api/openapi.yaml"
         },
         {
           type: "category",

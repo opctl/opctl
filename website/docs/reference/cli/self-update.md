@@ -1,18 +1,29 @@
-## `opctl self-update [OPTIONS]`
-Updates the current version of opctl.
+---
+sidebar_label: self-update
+title: opctl self-update
+---
+
+```sh
+opctl self-update [OPTIONS]
+```
+
+Update opctl.
 
 > if a node is running, it will be automatically killed
 
-### Options
+## Options
 
-##### `-c` or `--channel` *default: `stable`*
+### `-c` or `--channel` *default: `stable`*
 The release channel to update from
 
 - `stable`
 - `beta` (smoke tested alpha channel)
 - `alpha` (all bets are off)
 
-### Examples
+## Global Options
+see [global options](global-options.md)
+
+## Examples
 get latest stable release
 ```sh
 opctl self-update

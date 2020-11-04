@@ -1,5 +1,5 @@
 ---
-sidebar_label: Index
+sidebar_label: Overview
 title: Opspec
 ---
 Opspec (portmanteau of operation specification) is a language designed to portably and fully define operations (ops).

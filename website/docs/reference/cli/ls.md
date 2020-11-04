@@ -1,10 +1,21 @@
-## `opctl ls [DIR_REF]`
+---
+sidebar_label: ls
+title: opctl ls
+---
+
+```sh
+opctl ls [DIR_REF=.opspec]
+```
+
 List ops in a local or remote directory.
 
 ### Arguments
 
 #### `DIR_REF` *default: `.opspec`*
 Reference to dir ops will be listed from (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)
+
+## Global Options
+see [global options](global-options.md)
 
 ### Examples
 

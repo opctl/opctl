@@ -1,12 +1,23 @@
-## `ui [MOUNT_REF]`
-Opens the opctl web UI and mounts a reference.
+---
+sidebar_label: ui
+title: opctl ui
+---
 
-### Arguments
+```sh
+opctl ui [MOUNT_REF=.]
+```
 
-#### `MOUNT_REF` *default: `.`*
+Open the opctl web UI and mount a reference.
+
+## Arguments
+
+### `MOUNT_REF` *default: `.`*
 Reference to mount (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`).
 
-### Examples
+## Global Options
+see [global options](global-options.md)
+
+## Examples
 Open web UI to current working directory
 ```sh
 opctl ui

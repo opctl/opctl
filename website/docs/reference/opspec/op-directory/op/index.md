@@ -1,5 +1,5 @@
 ---
-sidebar_label: Index
+sidebar_label: Overview
 title: Op [object]
 ---
 An object which defines an operations inputs, outputs, call graph... etc.
