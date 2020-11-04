@@ -1,5 +1,5 @@
 ---
-sidebar_label: Index
+sidebar_label: Overview
 title: Op [directory]
 ---
 A directory which defines an operation.

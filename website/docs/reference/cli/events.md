@@ -1,12 +1,22 @@
-## `opctl events`
-listen to node events.
+---
+sidebar_label: events
+title: opctl events
+---
+
+```sh
+opctl events
+```
+
+Stream events.
 
 > if a node isn't running, one will be automatically created.
 
+## Global Options
+see [global options](global-options.md)
 
-### Examples
+## Examples
 
-#### Event Replay
+### Event Replay
 Events are persisted to disk and can be replayed.
 > events are not held across node restarts; any time a node starts it
 > clears its event db.
@@ -26,7 +36,7 @@ Events are persisted to disk and can be replayed.
    opctl events
    ```
 
-#### Event Streaming
+### Event Streaming
 Events are streamed in realtime as they occur. They can be streamed in parallel to any number of terminals.
 > behind the scenes, events are delivered over websockets
 

@@ -43,7 +43,7 @@ opctl self-update
 2. add to your user or workspace settings
    ```json
    "yaml.schemas": {
-    "https://raw.githubusercontent.com/opctl/opctl/master/opspec/opfile/jsonschema.json": "/op.yml"
+    "https://raw.githubusercontent.com/opctl/opctl/main/opspec/opfile/jsonschema.json": "/op.yml"
     }
     ```
 3. edit or create an op.yml w/ your fancy intellisense.
