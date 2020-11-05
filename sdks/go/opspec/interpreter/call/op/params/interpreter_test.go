@@ -1,129 +1,60 @@
 package params
 
 import (
-	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	. "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/internal/fakes"
 )
 
-var _ = Context("interpreter", func() {
-	Context("NewInterpreter", func() {
-		It("shouldn't return nil", func() {
-			/* arrange/act/assert */
-			Expect(NewInterpreter()).To(Not(BeNil()))
-		})
-	})
-	Context("Interpret", func() {
+var _ = Context("Interpret", func() {
+	It("should return expected result", func() {
+		/* arrange */
+		defaultStrParamName := "defaultStrParamName"
+		defaultStrParamValue := "defaultStrParamValue"
+		numberParamName := "numberParamName"
+		numberParamValue := 2.2
 
-		It("should call paramsCoercer.Coerce w/ expected args", func() {
-			/* arrange */
-			providedScope := map[string]*model.Value{"dummyArgName": new(model.Value)}
-			providedParams := map[string]*model.Param{"dummyParamName": new(model.Param)}
-			providedOpScratchDir := "providedOpScratchDir"
+		providedParams := map[string]*model.Param{
+			defaultStrParamName: &model.Param{
+				String: &model.StringParam{
+					Default: &defaultStrParamValue,
+				},
+			},
+			numberParamName: &model.Param{
+				Number: &model.NumberParam{},
+			},
+		}
 
-			fakeParamsCoercer := new(FakeCoercer)
+		providedOpPath := "dummyOpPath"
 
-			objectUnderTest := _interpreter{
-				paramsCoercer:   fakeParamsCoercer,
-				paramsDefaulter: new(FakeDefaulter),
-				paramsValidator: new(FakeValidator),
-			}
+		expectedOutputs := map[string]*model.Value{
+			defaultStrParamName: &model.Value{
+				String: &defaultStrParamValue,
+			},
+			numberParamName: &model.Value{
+				Number: &numberParamValue,
+			},
+		}
 
-			/* act */
-			objectUnderTest.Interpret(
-				providedScope,
-				providedParams,
-				"providedOpPath",
-				providedOpScratchDir,
-			)
+		/* act */
+		actualOutputs, actualErr := Interpret(
+			map[string]*model.Value{
+				defaultStrParamName: &model.Value{
+					String: &defaultStrParamValue,
+				},
+				numberParamName: &model.Value{
+					Number: &numberParamValue,
+				},
+			},
+			providedParams,
+			providedOpPath,
+			"dummyOpScratchDir",
+		)
 
-			/* assert */
-			actualScope,
-				actualParams,
-				actualOpScratchDir := fakeParamsCoercer.CoerceArgsForCall(0)
+		/* assert */
 
-			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualParams).To(Equal(providedParams))
-			Expect(actualOpScratchDir).To(Equal(providedOpScratchDir))
+		Expect(actualErr).To(BeNil())
+		Expect(actualOutputs).To(Equal(expectedOutputs))
 
-		})
-
-		It("should call paramsDefaulter.Default w/ expected args", func() {
-			/* arrange */
-			providedScope := map[string]*model.Value{"dummyArgName": new(model.Value)}
-			providedParams := map[string]*model.Param{"dummyParamName": new(model.Param)}
-			providedOpPath := "dummyOpPath"
-
-			fakeParamsCoercer := new(FakeCoercer)
-			coercedScope := map[string]*model.Value{"dummyArgName": new(model.Value)}
-
-			fakeParamsCoercer.CoerceReturns(coercedScope, nil)
-
-			fakeParamsDefaulter := new(FakeDefaulter)
-
-			objectUnderTest := _interpreter{
-				paramsCoercer:   fakeParamsCoercer,
-				paramsDefaulter: fakeParamsDefaulter,
-				paramsValidator: new(FakeValidator),
-			}
-
-			/* act */
-			objectUnderTest.Interpret(
-				providedScope,
-				providedParams,
-				providedOpPath,
-				"dummyOpScratchDir",
-			)
-
-			/* assert */
-			actualScope,
-				actualParams,
-				actualOpPath := fakeParamsDefaulter.DefaultArgsForCall(0)
-
-			Expect(actualScope).To(Equal(coercedScope))
-			Expect(actualParams).To(Equal(providedParams))
-			Expect(actualOpPath).To(Equal(providedOpPath))
-
-		})
-		It("should call paramsValidator.Validate w/ expected args & return expected result", func() {
-			/* arrange */
-			providedParams := map[string]*model.Param{"dummyParamName": new(model.Param)}
-			providedOpPath := "dummyOpPath"
-
-			fakeParamsDefaulter := new(FakeDefaulter)
-			defaultedScope := map[string]*model.Value{"dummyArgName": new(model.Value)}
-
-			fakeParamsDefaulter.DefaultReturns(defaultedScope)
-
-			fakeParamsValidator := new(FakeValidator)
-			validateErr := errors.New("dummyErr")
-			fakeParamsValidator.ValidateReturns(validateErr)
-
-			objectUnderTest := _interpreter{
-				paramsCoercer:   new(FakeCoercer),
-				paramsDefaulter: fakeParamsDefaulter,
-				paramsValidator: fakeParamsValidator,
-			}
-
-			/* act */
-			actualOutputs, actualErr := objectUnderTest.Interpret(
-				map[string]*model.Value{},
-				providedParams,
-				providedOpPath,
-				"dummyOpScratchDir",
-			)
-
-			/* assert */
-			actualScope,
-				actualParams := fakeParamsValidator.ValidateArgsForCall(0)
-			Expect(actualScope).To(Equal(defaultedScope))
-			Expect(actualParams).To(Equal(providedParams))
-
-			Expect(actualOutputs).To(Equal(defaultedScope))
-			Expect(actualErr).To(Equal(validateErr))
-
-		})
 	})
 })

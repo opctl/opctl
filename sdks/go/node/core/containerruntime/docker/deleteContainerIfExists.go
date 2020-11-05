@@ -2,23 +2,26 @@ package docker
 
 import (
 	"fmt"
+
 	"github.com/docker/docker/api/types"
 	"golang.org/x/net/context"
 )
 
 func (ctp _containerRuntime) DeleteContainerIfExists(
-	containerName string,
-) (err error) {
-	err = ctp.dockerClient.ContainerRemove(
-		context.Background(),
-		containerName,
+	ctx context.Context,
+	containerID string,
+) error {
+	err := ctp.dockerClient.ContainerRemove(
+		ctx,
+		containerID,
 		types.ContainerRemoveOptions{
 			RemoveVolumes: true,
 			Force:         true,
 		},
 	)
 	if nil != err {
-		err = fmt.Errorf("unable to delete container. Response from docker was: %v", err.Error())
+		return fmt.Errorf("unable to delete container. Response from docker was: %v", err.Error())
 	}
-	return
+
+	return nil
 }

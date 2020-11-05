@@ -1,54 +1,37 @@
 package core
 
 import (
+	"os"
+	"path/filepath"
 	"context"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/opctl/opctl/sdks/go/data/fakes"
-	"github.com/opctl/opctl/sdks/go/data/provider"
-	. "github.com/opctl/opctl/sdks/go/data/provider/fakes"
-	"github.com/opctl/opctl/sdks/go/model"
 )
 
 var _ = Context("core", func() {
 	Context("ResolveData", func() {
 		It("should call data.Resolve w/ expected args", func() {
 			/* arrange */
+			dataCachePath := os.TempDir()
+
 			providedCtx := context.Background()
-			providedOpRef := "dummyOpRef"
-			providedPullCreds := &model.Creds{
-				Username: "dummyUsername",
-				Password: "dummyPassword",
-			}
-
-			fakeData := new(FakeData)
-
-			expectedPkgProviders := []provider.Provider{
-				new(FakeProvider),
-				new(FakeProvider),
-			}
-			fakeData.NewFSProviderReturns(expectedPkgProviders[0])
-			fakeData.NewGitProviderReturns(expectedPkgProviders[1])
+			// some public repo that's relatively small
+			providedOpRef := "github.com/opspec-pkgs/_.op.create#3.3.1"
 
 			objectUnderTest := _core{
-				data: fakeData,
+				dataCachePath: dataCachePath,
 			}
 
 			/* act */
-			objectUnderTest.ResolveData(
+			actualOp, actualErr := objectUnderTest.ResolveData(
 				providedCtx,
 				providedOpRef,
-				providedPullCreds,
+				nil,
 			)
 
 			/* assert */
-			actualCtx,
-				actualOpRef,
-				actualPkgProviders := fakeData.ResolveArgsForCall(0)
-
-			Expect(actualCtx).To(Equal(providedCtx))
-			Expect(actualOpRef).To(Equal(providedOpRef))
-			Expect(actualPkgProviders).To(ConsistOf(expectedPkgProviders))
+			Expect(actualErr).To(BeNil())
+			Expect(*actualOp.Path()).To(Equal(filepath.Join(dataCachePath, providedOpRef)))
 		})
 	})
 })

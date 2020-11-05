@@ -12,14 +12,9 @@ import (
 	"time"
 
 	"github.com/dgraph-io/badger/v2"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op"
-	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
@@ -44,7 +39,7 @@ type Core interface {
 		ctx context.Context,
 		req model.StartOpReq,
 	) (
-		callId string,
+		callID string,
 		err error,
 	)
 
@@ -97,10 +92,6 @@ func New(
 	)
 
 	caller := newCaller(
-		call.NewInterpreter(
-			container.NewInterpreter(dataDirPath),
-			dataDirPath,
-		),
 		newContainerCaller(
 			containerRuntime,
 			pubSub,
@@ -119,9 +110,11 @@ func New(
 			pubSub,
 		)
 
+		ctx := context.Background()
+
 		since := time.Now().UTC()
 		eventChannel, _ := pubSub.Subscribe(
-			context.Background(),
+			ctx,
 			model.EventFilter{
 				Since: &since,
 			},
@@ -131,7 +124,11 @@ func New(
 			switch {
 			case nil != event.CallKillRequested:
 				req := event.CallKillRequested.Request
-				callKiller.Kill(req.OpID, req.RootCallID)
+				callKiller.Kill(
+					ctx,
+					req.OpID,
+					req.RootCallID,
+				)
 			}
 		}
 	}()
@@ -139,15 +136,12 @@ func New(
 	return _core{
 		caller:           caller,
 		containerRuntime: containerRuntime,
-		data:             data.New(),
 		dataCachePath:    filepath.Join(dataDirPath, "ops"),
 		opCaller: newOpCaller(
 			stateStore,
 			caller,
 			dataDirPath,
 		),
-		opFileGetter:        opfile.NewGetter(),
-		opInterpreter:       op.NewInterpreter(dataDirPath),
 		pubSub:              pubSub,
 		stateStore:          stateStore,
 		uniqueStringFactory: uniqueStringFactory,
@@ -157,11 +151,8 @@ func New(
 type _core struct {
 	caller              caller
 	containerRuntime    containerruntime.ContainerRuntime
-	data                data.Data
 	dataCachePath       string
 	opCaller            opCaller
-	opFileGetter        opfile.Getter
-	opInterpreter       op.Interpreter
 	pubSub              pubsub.PubSub
 	stateStore          stateStore
 	uniqueStringFactory uniquestring.UniqueStringFactory

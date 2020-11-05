@@ -14,7 +14,6 @@ require (
 	github.com/docker/go-metrics v0.0.1 // indirect
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-git/go-git/v5 v5.2.0
-	github.com/gogo/protobuf v1.2.1 // indirect
 	github.com/golang-interfaces/encoding-ijson v0.0.0-20170731144015-49fbc3963d10
 	github.com/golang-interfaces/github.com-gorilla-websocket v0.0.0-20190604222234-f7c71d63fecb
 	github.com/golang-interfaces/ihttp v0.0.0-20170731143308-228dd9eedf13
@@ -24,7 +23,6 @@ require (
 	github.com/golang-interfaces/satori-go.uuid v0.0.0-20180127202525-399ef31ed58a
 	github.com/golang-utils/dircopier v0.0.0-20170803194507-75bc9e581ed2
 	github.com/golang-utils/filecopier v0.0.0-20170803193939-16f96e9dcff4
-	github.com/golang/protobuf v1.4.0 // indirect
 	github.com/gorilla/mux v1.7.2 // indirect
 	github.com/gorilla/websocket v1.4.0
 	github.com/jfbus/httprs v0.0.0-20180614100821-7861a1150846
@@ -35,7 +33,7 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.1 // indirect
 	github.com/mjibson/esc v0.2.0
 	github.com/morikuni/aec v0.0.0-20170113033406-39771216ff4c // indirect
-	github.com/onsi/ginkgo v1.8.0
+	github.com/onsi/ginkgo v1.11.0
 	github.com/onsi/gomega v1.9.0
 	github.com/pkg/errors v0.9.1
 	github.com/satori/go.uuid v0.0.0-20181028125025-b2ce2384e17b
@@ -43,15 +41,14 @@ require (
 	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/mod v0.3.0 // indirect
-	golang.org/x/net v0.0.0-20200425230154-ff2c4b7c35a0
+	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/sys v0.0.0-20200428200454-593003d681fa // indirect
-	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
 	golang.org/x/tools v0.0.0-20200528171350-af9456bb6365 // indirect
-	google.golang.org/genproto v0.0.0-20190605220351-eb0b1bdb6ae6 // indirect
-	google.golang.org/grpc v1.21.1 // indirect
-	gopkg.in/yaml.v2 v2.2.5 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
+	k8s.io/api v0.19.1
+	k8s.io/apimachinery v0.19.1
+	k8s.io/client-go v0.19.1
+	k8s.io/utils v0.0.0-20201104234853-8146046b121e // indirect
 )
 
 go 1.15

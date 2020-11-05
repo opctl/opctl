@@ -38,17 +38,13 @@ func New(
 	return &_CLIParamSatisfier{
 		cliExiter:       cliExiter,
 		cliOutput:       cliOutput,
-		coerce:          coerce.New(),
-		paramsValidator: params.NewValidator(),
 		InputSrcFactory: newInputSrcFactory(),
 	}
 }
 
 type _CLIParamSatisfier struct {
-	cliExiter       cliexiter.CliExiter
-	cliOutput       clioutput.CliOutput
-	coerce          coerce.Coerce
-	paramsValidator params.Validator
+	cliExiter cliexiter.CliExiter
+	cliOutput clioutput.CliOutput
 	InputSrcFactory
 }
 
@@ -95,7 +91,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 				arg = &model.Value{Array: argValue}
 			case nil != param.Boolean:
 				var err error
-				if arg, err = cps.coerce.ToBoolean(&model.Value{String: rawArg}); nil != err {
+				if arg, err = coerce.ToBoolean(&model.Value{String: rawArg}); nil != err {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
@@ -118,7 +114,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 				arg = &model.Value{File: &absPath}
 			case nil != param.Number:
 				var err error
-				if arg, err = cps.coerce.ToNumber(&model.Value{String: rawArg}); nil != err {
+				if arg, err = coerce.ToNumber(&model.Value{String: rawArg}); nil != err {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
@@ -144,7 +140,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 				arg = &model.Value{String: rawArg}
 			}
 
-			validateErr := cps.paramsValidator.Validate(
+			validateErr := params.Validate(
 				map[string]*model.Value{paramName: arg},
 				map[string]*model.Param{paramName: param},
 			)

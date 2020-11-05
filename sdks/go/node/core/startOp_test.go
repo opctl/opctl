@@ -2,101 +2,20 @@ package core
 
 import (
 	"context"
-	"errors"
+	"os"
+	"path/filepath"
 	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/opctl/opctl/sdks/go/data/fakes"
-	"github.com/opctl/opctl/sdks/go/data/provider"
-	. "github.com/opctl/opctl/sdks/go/data/provider/fakes"
 	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
-	. "github.com/opctl/opctl/sdks/go/opspec/opfile/fakes"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("core", func() {
 	Context("StartOp", func() {
-		It("should call data.NewGitProvider w/ expected args", func() {
-			/* arrange */
-			providedStartOpReq := model.StartOpReq{
-				Op: model.StartOpReqOp{
-					PullCreds: &model.Creds{
-						Username: "dummyUsername",
-						Password: "dummyPassword",
-					},
-				},
-			}
-			providedDataCachePath := "providedDataCachePath"
-
-			fakeData := new(FakeData)
-			// err to trigger immediate return
-			fakeData.ResolveReturns(nil, errors.New("dummyErr"))
-
-			objectUnderTest := _core{
-				data:          fakeData,
-				dataCachePath: providedDataCachePath,
-			}
-
-			/* act */
-			objectUnderTest.StartOp(
-				context.Background(),
-				providedStartOpReq,
-			)
-
-			/* assert */
-			actualCachePath,
-				actualPullCreds := fakeData.NewGitProviderArgsForCall(0)
-
-			Expect(actualCachePath).To(Equal(providedDataCachePath))
-			Expect(actualPullCreds).To(Equal(providedStartOpReq.Op.PullCreds))
-		})
-		It("should call data.Resolve w/ expected args", func() {
-			/* arrange */
-			providedCtx := context.Background()
-			providedStartOpReq := model.StartOpReq{
-				Op: model.StartOpReqOp{
-					Ref: "dummyOpRef",
-				},
-			}
-
-			fakeData := new(FakeData)
-			// err to trigger immediate return
-			fakeData.ResolveReturns(nil, errors.New("dummyErr"))
-
-			fsProvider := new(FakeProvider)
-			fakeData.NewFSProviderReturns(fsProvider)
-
-			gitProvider := new(FakeProvider)
-			fakeData.NewGitProviderReturns(gitProvider)
-
-			expectedProviders := []provider.Provider{
-				fsProvider,
-				gitProvider,
-			}
-
-			objectUnderTest := _core{
-				data: fakeData,
-			}
-
-			/* act */
-			objectUnderTest.StartOp(
-				providedCtx,
-				providedStartOpReq,
-			)
-
-			/* assert */
-			actualCtx,
-				actualOpRef,
-				actualProviders := fakeData.ResolveArgsForCall(0)
-
-			Expect(actualCtx).To(Equal(providedCtx))
-			Expect(actualOpRef).To(Equal(providedStartOpReq.Op.Ref))
-			Expect(actualProviders).To(Equal(expectedProviders))
-		})
 		Context("data.Resolve errs", func() {
 			It("should return expected result", func() {
 
@@ -108,13 +27,7 @@ var _ = Context("core", func() {
 					},
 				}
 
-				fakeData := new(FakeData)
-				expectedErr := errors.New("dummyErr")
-				fakeData.ResolveReturns(nil, expectedErr)
-
-				objectUnderTest := _core{
-					data: fakeData,
-				}
+				objectUnderTest := _core{}
 
 				/* act */
 				_, actualErr := objectUnderTest.StartOp(
@@ -123,71 +36,11 @@ var _ = Context("core", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(expectedErr))
+				Expect(actualErr.Error()).To(Equal(`Get "https://dummyOpRef/info/refs?service=git-upload-pack": dial tcp: lookup dummyOpRef on 127.0.0.11:53: no such host`))
 			})
 		})
 		Context("data.Resolve doesn't err", func() {
-			It("should call data.Get w/ expected args", func() {
-				/* arrange */
-				providedCtx := context.Background()
-				fakeData := new(FakeData)
-				fakeDataHandle := new(modelFakes.FakeDataHandle)
-				opPath := "opPath"
-				fakeDataHandle.PathReturns(&opPath)
-				fakeData.ResolveReturns(fakeDataHandle, nil)
-
-				fakeOpFileGetter := new(FakeGetter)
-				// err to trigger immediate return
-				fakeOpFileGetter.GetReturns(nil, errors.New("dummyError"))
-
-				objectUnderTest := _core{
-					data:                fakeData,
-					opFileGetter:        fakeOpFileGetter,
-					uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
-				}
-
-				/* act */
-				objectUnderTest.StartOp(
-					providedCtx,
-					model.StartOpReq{},
-				)
-
-				/* assert */
-				actualCtx,
-					actualOpPath := fakeOpFileGetter.GetArgsForCall(0)
-
-				Expect(actualCtx).To(Equal(providedCtx))
-				Expect(actualOpPath).To(Equal(opPath))
-			})
-			Context("data.Get errs", func() {
-				It("should return expected error", func() {
-					/* arrange */
-					fakeData := new(FakeData)
-					fakeDataHandle := new(modelFakes.FakeDataHandle)
-					fakeDataHandle.PathReturns(new(string))
-					fakeData.ResolveReturns(fakeDataHandle, nil)
-
-					fakeOpFileGetter := new(FakeGetter)
-					expectedErr := errors.New("dummyError")
-					fakeOpFileGetter.GetReturns(&model.OpSpec{}, expectedErr)
-
-					objectUnderTest := _core{
-						data:                fakeData,
-						opFileGetter:        fakeOpFileGetter,
-						uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
-					}
-
-					/* act */
-					_, actualErr := objectUnderTest.StartOp(
-						context.Background(),
-						model.StartOpReq{},
-					)
-
-					/* assert */
-					Expect(actualErr).To(Equal(expectedErr))
-				})
-			})
-			Context("data.Get doesn't err", func() {
+			Context("opfile.Get doesn't err", func() {
 				It("should call caller.Call w/ expected args", func() {
 					/* arrange */
 					providedCtx := context.Background()
@@ -197,7 +50,11 @@ var _ = Context("core", func() {
 					providedArg4Dir := "/"
 
 					// use local op
-					opRef := "testdata/startOp"
+					wd, err := os.Getwd()
+					if nil != err {
+						panic(err)
+					}
+					providedOpPath := filepath.Join(wd, "testdata/startOp")
 					providedReq := model.StartOpReq{
 						Args: map[string]*model.Value{
 							"dummyArg1Name": {String: &providedArg1String},
@@ -206,29 +63,19 @@ var _ = Context("core", func() {
 							"dummyArg4Name": {Dir: &providedArg4Dir},
 						},
 						Op: model.StartOpReqOp{
-							Ref: opRef,
+							Ref: providedOpPath,
 						},
 					}
-
-					fakeData := new(FakeData)
-					fakeDataHandle := new(modelFakes.FakeDataHandle)
-					opPath := "opPath"
-					fakeDataHandle.PathReturns(&opPath)
-					fakeDataHandle.RefReturns(opRef)
-					fakeData.ResolveReturns(fakeDataHandle, nil)
 
 					opFile := &model.OpSpec{
 						Outputs: map[string]*model.Param{
-							"dummyOutput1": nil,
-							"dummyOutput2": nil,
+							"dummyOutput1": {String: &model.StringParam{}},
+							"dummyOutput2": {String: &model.StringParam{}},
 						},
 					}
 
-					fakeOpFileGetter := new(FakeGetter)
-					fakeOpFileGetter.GetReturns(opFile, nil)
-
 					expectedOpCallSpec := &model.OpCallSpec{
-						Ref:     opRef,
+						Ref:     providedOpPath,
 						Inputs:  map[string]interface{}{},
 						Outputs: map[string]string{},
 					}
@@ -244,12 +91,12 @@ var _ = Context("core", func() {
 					fakeUniqueStringFactory.ConstructReturns(expectedID, nil)
 
 					fakeCaller := new(FakeCaller)
+					dataCachePath := os.TempDir()
 
 					objectUnderTest := _core{
 						caller:              fakeCaller,
+						dataCachePath:       dataCachePath,
 						pubSub:              new(FakePubSub),
-						data:                fakeData,
-						opFileGetter:        fakeOpFileGetter,
 						uniqueStringFactory: fakeUniqueStringFactory,
 					}
 
@@ -275,7 +122,7 @@ var _ = Context("core", func() {
 					Expect(*actualCallSpec).To(BeEquivalentTo(model.CallSpec{
 						Op: expectedOpCallSpec,
 					}))
-					Expect(actualOpPath).To(Equal(opPath))
+					Expect(actualOpPath).To(Equal(providedOpPath))
 					Expect(actualRootID).To(Equal(expectedID))
 				})
 			})

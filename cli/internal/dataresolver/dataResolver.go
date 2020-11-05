@@ -12,6 +12,8 @@ import (
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/data"
+	"github.com/opctl/opctl/sdks/go/data/fs"
+	"github.com/opctl/opctl/sdks/go/data/node"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -32,7 +34,6 @@ func New(
 	return _dataResolver{
 		cliExiter:         cliExiter,
 		cliParamSatisfier: cliParamSatisfier,
-		data:              data.New(),
 		nodeProvider:      nodeProvider,
 		os:                ios.New(),
 	}
@@ -41,7 +42,6 @@ func New(
 type _dataResolver struct {
 	cliExiter         cliexiter.CliExiter
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier
-	data              data.Data
 	nodeProvider      nodeprovider.NodeProvider
 	os                ios.IOS
 }
@@ -56,7 +56,7 @@ func (dtr _dataResolver) Resolve(
 		return nil // support fake exiter
 	}
 
-	fsProvider := dtr.data.NewFSProvider(
+	fsProvider := fs.New(
 		filepath.Join(cwd, ".opspec"),
 		cwd,
 	)
@@ -68,11 +68,11 @@ func (dtr _dataResolver) Resolve(
 	}
 
 	for {
-		opDirHandle, err := dtr.data.Resolve(
+		opDirHandle, err := data.Resolve(
 			context.TODO(),
 			dataRef,
 			fsProvider,
-			dtr.data.NewNodeProvider(
+			node.New(
 				nodeHandle.APIClient(),
 				pullCreds,
 			),

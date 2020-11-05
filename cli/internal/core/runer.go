@@ -39,24 +39,22 @@ func newRuner(
 	nodeProvider nodeprovider.NodeProvider,
 ) Runer {
 	return _runer{
-		cliColorer:         cliColorer,
-		cliExiter:          cliExiter,
-		cliOutput:          cliOutput,
-		cliParamSatisfier:  cliParamSatisfier,
-		dataResolver:       dataResolver,
-		nodeProvider:       nodeProvider,
-		opFileUnmarshaller: opfile.NewUnmarshaller(),
+		cliColorer:        cliColorer,
+		cliExiter:         cliExiter,
+		cliOutput:         cliOutput,
+		cliParamSatisfier: cliParamSatisfier,
+		dataResolver:      dataResolver,
+		nodeProvider:      nodeProvider,
 	}
 }
 
 type _runer struct {
-	dataResolver       dataresolver.DataResolver
-	cliColorer         clicolorer.CliColorer
-	cliExiter          cliexiter.CliExiter
-	cliOutput          clioutput.CliOutput
-	cliParamSatisfier  cliparamsatisfier.CLIParamSatisfier
-	nodeProvider       nodeprovider.NodeProvider
-	opFileUnmarshaller opfile.Unmarshaller
+	dataResolver      dataresolver.DataResolver
+	cliColorer        clicolorer.CliColorer
+	cliExiter         cliexiter.CliExiter
+	cliOutput         clioutput.CliOutput
+	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier
+	nodeProvider      nodeprovider.NodeProvider
 }
 
 func (ivkr _runer) Run(
@@ -86,7 +84,7 @@ func (ivkr _runer) Run(
 		return // support fake exiter
 	}
 
-	opFile, err := ivkr.opFileUnmarshaller.Unmarshal(
+	opFile, err := opfile.Unmarshal(
 		opFileBytes,
 	)
 	if nil != err {

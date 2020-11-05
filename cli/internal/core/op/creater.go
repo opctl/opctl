@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 
 	"github.com/opctl/opctl/cli/internal/cliexiter"
-	opspec "github.com/opctl/opctl/sdks/go/opspec"
+	"github.com/opctl/opctl/sdks/go/opspec"
 )
 
 // Creater exposes the "op create" sub command
@@ -21,14 +21,12 @@ func newCreater(
 	cliExiter cliexiter.CliExiter,
 ) Creater {
 	return _creater{
-		opCreator: opspec.NewCreator(),
 		cliExiter: cliExiter,
 	}
 }
 
 type _creater struct {
 	cliExiter cliexiter.CliExiter
-	opCreator opspec.Creator
 }
 
 func (ivkr _creater) Create(
@@ -36,7 +34,7 @@ func (ivkr _creater) Create(
 	description string,
 	name string,
 ) {
-	if err := ivkr.opCreator.Create(
+	if err := opspec.Create(
 		filepath.Join(path, name),
 		name,
 		description,

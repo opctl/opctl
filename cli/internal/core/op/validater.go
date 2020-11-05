@@ -1,13 +1,12 @@
 package op
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 
 	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
-	opspec "github.com/opctl/opctl/sdks/go/opspec"
+	"github.com/opctl/opctl/sdks/go/opspec"
 )
 
 // Validater exposes the "op validate" sub command
@@ -26,14 +25,12 @@ func newValidater(
 	return _validater{
 		cliExiter:    cliExiter,
 		dataResolver: dataResolver,
-		opValidator:  opspec.NewValidator(),
 	}
 }
 
 type _validater struct {
 	cliExiter    cliexiter.CliExiter
 	dataResolver dataresolver.DataResolver
-	opValidator  opspec.Validator
 }
 
 func (ivkr _validater) Validate(
@@ -45,24 +42,15 @@ func (ivkr _validater) Validate(
 		nil,
 	)
 
-	errs := ivkr.opValidator.Validate(
+	err := opspec.Validate(
 		ctx,
 		*opDirHandle.Path(),
 	)
-	if len(errs) > 0 {
-		messageBuffer := bytes.NewBufferString(
-			fmt.Sprint(`
--
-  Error(s):`))
-		for _, validationError := range errs {
-			messageBuffer.WriteString(fmt.Sprintf(`
-    - %v`, validationError.Error()))
-		}
+	if nil != err {
 		ivkr.cliExiter.Exit(cliexiter.ExitReq{
-			Message: fmt.Sprintf(
-				`%v
--`, messageBuffer.String()),
-			Code: 1})
+			Message: err.Error(),
+			Code:    1},
+		)
 	} else {
 		ivkr.cliExiter.Exit(cliexiter.ExitReq{
 			Message: fmt.Sprintf("%v is valid", opDirHandle.Ref()),

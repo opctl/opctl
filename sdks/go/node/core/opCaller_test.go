@@ -2,14 +2,11 @@ package core
 
 import (
 	"context"
-	"errors"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
-	outputsFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs/fakes"
-	. "github.com/opctl/opctl/sdks/go/opspec/opfile/fakes"
 )
 
 var _ = Context("opCaller", func() {
@@ -58,14 +55,9 @@ var _ = Context("opCaller", func() {
 
 			fakeCaller := new(FakeCaller)
 
-			fakeOpFileGetter := new(FakeGetter)
-			// err to trigger immediate return
-			fakeOpFileGetter.GetReturns(nil, errors.New("dummyErr"))
-
 			objectUnderTest := _opCaller{
 				caller:       fakeCaller,
 				stateStore:   new(FakeStateStore),
-				opFileGetter: fakeOpFileGetter,
 			}
 
 			/* act */
@@ -97,7 +89,9 @@ var _ = Context("opCaller", func() {
 		})
 		It("should return expected results", func() {
 			/* arrange */
-			providedOpPath := "providedOpPath"
+			expectedOutputName := "expectedOutputName"
+
+			providedOpPath := "testdata/opCaller"
 
 			providedOpCall := &model.OpCall{
 				BaseCall: model.BaseCall{
@@ -106,34 +100,33 @@ var _ = Context("opCaller", func() {
 				OpID: "providedOpId",
 			}
 
-			expectedOutputName := "expectedOutputName"
-
 			providedOpCallSpec := &model.OpCallSpec{
 				Outputs: map[string]string{
 					expectedOutputName: "",
 				},
 			}
 
-			fakeOutputsInterpreter := new(outputsFakes.FakeInterpreter)
-			interpretedOutputs := map[string]*model.Value{
-				expectedOutputName: new(model.Value),
+			callOutputs := map[string]*model.Value{
+				expectedOutputName: &model.Value{
+					String: new(string),
+				},
 				// include unbound output to ensure it's not added to scope
 				"unexpectedOutputName": new(model.Value),
 			}
-			fakeOutputsInterpreter.InterpretReturns(interpretedOutputs, nil)
 
 			expectedOutputs := map[string]*model.Value{
-				expectedOutputName: interpretedOutputs[expectedOutputName],
+				expectedOutputName: callOutputs[expectedOutputName],
 			}
 
-			fakeOpFileGetter := new(FakeGetter)
-			fakeOpFileGetter.GetReturns(&model.OpSpec{}, nil)
+			fakeCaller := new(FakeCaller)
+			fakeCaller.CallReturns(
+				callOutputs,
+				nil,
+			)
 
 			objectUnderTest := _opCaller{
-				caller:             new(FakeCaller),
+				caller:             fakeCaller,
 				stateStore:         new(FakeStateStore),
-				opFileGetter:       fakeOpFileGetter,
-				outputsInterpreter: fakeOutputsInterpreter,
 			}
 
 			/* act */
@@ -147,8 +140,8 @@ var _ = Context("opCaller", func() {
 			)
 
 			/* assert */
-			Expect(actualOutputs).To(Equal(expectedOutputs))
 			Expect(actualErr).To(BeNil())
+			Expect(actualOutputs).To(Equal(expectedOutputs))
 		})
 	})
 })

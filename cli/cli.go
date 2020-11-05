@@ -44,6 +44,15 @@ func newCli(
 		panic(err)
 	}
 
+	containerRuntime := cli.String(
+		mow.StringOpt{
+			Desc:   "Runtime for opctl containers",
+			EnvVar: "OPCTL_CONTAINER_RUNTIME",
+			Name:   "container-runtime",
+			Value:  "docker",
+		},
+	)
+
 	dataDir := cli.String(
 		mow.StringOpt{
 			Desc:   "Path of dir used to store opctl data",
@@ -62,8 +71,9 @@ func newCli(
 		},
 	)
 	nodeCreateOpts := model.NodeCreateOpts{
-		DataDir:       *dataDir,
-		ListenAddress: *listenAddress,
+		ContainerRuntime: *containerRuntime,
+		DataDir:          *dataDir,
+		ListenAddress:    *listenAddress,
 	}
 
 	core := newCorer(

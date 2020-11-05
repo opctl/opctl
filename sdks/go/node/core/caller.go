@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call"
+	callpkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/call"
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
@@ -29,15 +29,14 @@ type caller interface {
 }
 
 func newCaller(
-	callInterpreter call.Interpreter,
 	containerCaller containerCaller,
 	dataDirPath string,
 	stateStore stateStore,
 	pubSub pubsub.PubSub,
 ) caller {
 	instance := &_caller{
-		callInterpreter: callInterpreter,
 		containerCaller: containerCaller,
+		dataDirPath:     dataDirPath,
 		pubSub:          pubSub,
 	}
 
@@ -71,8 +70,8 @@ func newCaller(
 }
 
 type _caller struct {
-	callInterpreter    call.Interpreter
 	containerCaller    containerCaller
+	dataDirPath        string
 	opCaller           opCaller
 	parallelCaller     parallelCaller
 	parallelLoopCaller parallelLoopCaller
@@ -149,13 +148,14 @@ func (clr _caller) Call(
 		return outputs, err
 	}
 
-	call, err = clr.callInterpreter.Interpret(
+	call, err = callpkg.Interpret(
 		scope,
 		callSpec,
 		id,
 		opPath,
 		parentCallID,
 		rootCallID,
+		clr.dataDirPath,
 	)
 	if nil != err {
 		return nil, err
@@ -261,7 +261,7 @@ func (clr _caller) Call(
 			rootCallID,
 		)
 	default:
-		err = fmt.Errorf("Invalid call graph %+v\n", callSpec)
+		err = fmt.Errorf("invalid call graph %+v", callSpec)
 	}
 
 	return outputs, err

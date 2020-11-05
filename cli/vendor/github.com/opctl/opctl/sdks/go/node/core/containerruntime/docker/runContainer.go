@@ -36,7 +36,6 @@ func newRunContainer(
 	}
 
 	rc := _runContainer{
-		containerConfigFactory:  newContainerConfigFactory(),
 		containerStdErrStreamer: newContainerStdErrStreamer(dockerClient),
 		containerStdOutStreamer: newContainerStdOutStreamer(dockerClient),
 		dockerClient:            dockerClient,
@@ -44,13 +43,11 @@ func newRunContainer(
 		hostConfigFactory:       hcf,
 		imagePuller:             newImagePuller(dockerClient),
 		imagePusher:             newImagePusher(),
-		portBindingsFactory:     newPortBindingsFactory(),
 	}
 	return rc, nil
 }
 
 type _runContainer struct {
-	containerConfigFactory  containerConfigFactory
 	containerStdErrStreamer containerLogStreamer
 	containerStdOutStreamer containerLogStreamer
 	dockerClient            dockerClientPkg.CommonAPIClient
@@ -58,7 +55,6 @@ type _runContainer struct {
 	hostConfigFactory       hostConfigFactory
 	imagePuller             imagePuller
 	imagePusher             imagePusher
-	portBindingsFactory     portBindingsFactory
 }
 
 func (cr _runContainer) RunContainer(
@@ -120,20 +116,12 @@ func (cr _runContainer) RunContainer(
 		// don't err yet; image might be cached. We allow this to support offline use
 	}
 
-	portBindings, err := cr.portBindingsFactory.Construct(
+	portBindings, err := constructPortBindings(
 		req.Ports,
 	)
 	if nil != err {
 		return nil, err
 	}
-
-	containerConfig := cr.containerConfigFactory.Construct(
-		req.Cmd,
-		req.EnvVars,
-		*req.Image.Ref,
-		portBindings,
-		req.WorkDir,
-	)
 
 	hostConfig := cr.hostConfigFactory.Construct(
 		req.Dirs,
@@ -157,7 +145,13 @@ func (cr _runContainer) RunContainer(
 	// create container
 	containerCreatedResponse, createErr := cr.dockerClient.ContainerCreate(
 		ctx,
-		containerConfig,
+		constructContainerConfig(
+			req.Cmd,
+			req.EnvVars,
+			*req.Image.Ref,
+			portBindings,
+			req.WorkDir,
+		),
 		hostConfig,
 		networkingConfig,
 		containerName,

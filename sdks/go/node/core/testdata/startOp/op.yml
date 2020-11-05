@@ -1,4 +1,4 @@
-name: testOp
+name: startOp
 inputs:
   dummyArg1Name:
     string: {}
@@ -8,5 +8,10 @@ inputs:
     dir: {}
   dummyArg4Name:
     dir: {}
+outputs:
+  dummyOutput1:
+    string: {}
+  dummyOutput2:
+    string: {}
 run:
   serial: []

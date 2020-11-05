@@ -30,6 +30,7 @@ var _ = Context("_callKiller", func() {
 
 			/* act */
 			objectUnderTest.Kill(
+				context.Background(),
 				providedCallID,
 				"rootCallID",
 			)
@@ -83,6 +84,7 @@ var _ = Context("_callKiller", func() {
 
 				/* act */
 				objectUnderTest.Kill(
+					context.Background(),
 					providedCallID,
 					"rootCallID",
 				)

@@ -12,7 +12,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
-	op "github.com/opctl/opctl/sdks/go/opspec"
+	"github.com/opctl/opctl/sdks/go/opspec"
 )
 
 // Lser exposes the "ls" command
@@ -33,7 +33,6 @@ func newLser(
 		cliExiter:    cliExiter,
 		cliOutput:    cliOutput,
 		dataResolver: dataResolver,
-		opLister:     op.NewLister(),
 		writer:       os.Stdout,
 	}
 }
@@ -42,7 +41,6 @@ type _lsInvoker struct {
 	cliExiter    cliexiter.CliExiter
 	cliOutput    clioutput.CliOutput
 	dataResolver dataresolver.DataResolver
-	opLister     op.Lister
 	writer       io.Writer
 }
 
@@ -61,7 +59,7 @@ func (ivkr _lsInvoker) Ls(
 		nil,
 	)
 
-	opsByPath, err := ivkr.opLister.List(
+	opsByPath, err := opspec.List(
 		ctx,
 		dirHandle,
 	)

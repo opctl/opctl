@@ -8,7 +8,9 @@ import (
 	"github.com/opctl/opctl/cli/internal/datadir"
 	"github.com/opctl/opctl/cli/internal/model"
 	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker"
+	"github.com/opctl/opctl/sdks/go/node/core/containerruntime/k8s"
 )
 
 // Creater exposes the "node create" sub command
@@ -38,9 +40,17 @@ func (ivkr _creater) Create(
 		panic(err)
 	}
 
-	containerRuntime, err := docker.New()
-	if nil != err {
-		panic(err)
+	var containerRuntime containerruntime.ContainerRuntime
+	if "k8s" == opts.ContainerRuntime {
+		containerRuntime, err = k8s.New()
+		if nil != err {
+			panic(err)
+		}
+	} else {
+		containerRuntime, err = docker.New()
+		if nil != err {
+			panic(err)
+		}
 	}
 
 	err = newHTTPListener(
