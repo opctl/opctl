@@ -4,10 +4,6 @@ import (
 	"context"
 
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
-	loopFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop/fakes"
-	iterationFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop/iteration/fakes"
-	parallelloopFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/parallelloop/fakes"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
@@ -30,23 +26,10 @@ var _ = Context("parallelLoopCaller", func() {
 		Context("initial callParallelLoop.Range empty", func() {
 			It("should not call caller.Call", func() {
 				/* arrange */
-				fakeParallelLoopInterpreter := new(parallelloopFakes.FakeInterpreter)
-				fakeParallelLoopInterpreter.InterpretReturns(
-					&model.ParallelLoopCall{
-						Range: &model.Value{
-							Array: new([]interface{}),
-						},
-					},
-					nil,
-				)
-
 				fakeCaller := new(FakeCaller)
 
 				objectUnderTest := _parallelLoopCaller{
 					caller:                  fakeCaller,
-					loopDeScoper:            new(loopFakes.FakeDeScoper),
-					parallelLoopInterpreter: fakeParallelLoopInterpreter,
-					iterationScoper:         new(iterationFakes.FakeScoper),
 					pubSub:                  new(FakePubSub),
 					uniqueStringFactory:     new(uniquestringFakes.FakeUniqueStringFactory),
 				}
@@ -56,7 +39,9 @@ var _ = Context("parallelLoopCaller", func() {
 					context.Background(),
 					"id",
 					map[string]*model.Value{},
-					model.ParallelLoopCallSpec{},
+					model.ParallelLoopCallSpec{
+						Range: []interface{}{},
+					},
 					"dummyOpPath",
 					nil,
 					"rootCallID",
@@ -72,11 +57,18 @@ var _ = Context("parallelLoopCaller", func() {
 			providedScope := map[string]*model.Value{}
 			index := "index"
 			providedParallelLoopCallSpec := model.ParallelLoopCallSpec{
+				Range: []interface{}{
+					"one",
+				},
 				Vars: &model.LoopVarsSpec{
 					Index: &index,
 				},
 				Run: model.CallSpec{
-					Container: new(model.ContainerCallSpec),
+					Container: &model.ContainerCallSpec{
+						Image: &model.ContainerCallImageSpec{
+							Ref: "ref",
+						},
+					},
 				},
 			}
 			providedOpPath := "providedOpPath"
@@ -84,32 +76,14 @@ var _ = Context("parallelLoopCaller", func() {
 			providedParentCallID := &providedParentCallIDValue
 			providedRootCallID := "providedRootCallID"
 
-			loopRangeValue := []interface{}{"value1", "value2"}
-			loopRange := &model.Value{
-				Array: &loopRangeValue,
-			}
-
-			fakeParallelLoopInterpreter := new(parallelloopFakes.FakeInterpreter)
-			fakeParallelLoopInterpreter.InterpretReturns(
-				&model.ParallelLoopCall{
-					Range: loopRange,
-					Vars: &model.LoopVars{
-						Index: &index,
-					},
-				},
-				nil,
-			)
-
-			fakeIterationScoper := new(iterationFakes.FakeScoper)
 			expectedScope := map[string]*model.Value{
 				index: &model.Value{Number: new(float64)},
 			}
-			fakeIterationScoper.ScopeReturns(expectedScope, nil)
 
 			callID := "callID"
-			expectedErrorMessage := "expectedErrorMessage"
 
 			fakeCaller := new(FakeCaller)
+
 			eventChannel := make(chan model.Event, 100)
 			fakeCaller.CallStub = func(
 				context.Context,
@@ -129,7 +103,7 @@ var _ = Context("parallelLoopCaller", func() {
 							ID: callID,
 						},
 						Error: &model.CallEndedError{
-							Message: expectedErrorMessage,
+							Message: "message",
 						},
 					},
 				}
@@ -145,9 +119,6 @@ var _ = Context("parallelLoopCaller", func() {
 
 			objectUnderTest := _parallelLoopCaller{
 				caller:                  fakeCaller,
-				loopDeScoper:            new(loopFakes.FakeDeScoper),
-				parallelLoopInterpreter: fakeParallelLoopInterpreter,
-				iterationScoper:         fakeIterationScoper,
 				pubSub:                  fakePubSub,
 				uniqueStringFactory:     fakeUniqueStringFactory,
 			}

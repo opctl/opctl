@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"runtime/debug"
 
+	"github.com/opctl/opctl/sdks/go/data/git"
+	"github.com/opctl/opctl/sdks/go/data/fs"
+	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -12,11 +16,11 @@ func (this _core) StartOp(
 	ctx context.Context,
 	req model.StartOpReq,
 ) (string, error) {
-	opHandle, err := this.data.Resolve(
+	opHandle, err := data.Resolve(
 		ctx,
 		req.Op.Ref,
-		this.data.NewFSProvider(),
-		this.data.NewGitProvider(this.dataCachePath, req.Op.PullCreds),
+		fs.New(),
+		git.New(this.dataCachePath, req.Op.PullCreds),
 	)
 	if nil != err {
 		return "", err
@@ -48,7 +52,7 @@ func (this _core) StartOp(
 		opCallSpec.Inputs[name] = ""
 	}
 
-	opFile, err := this.opFileGetter.Get(
+	opFile, err := opfile.Get(
 		ctx,
 		*opHandle.Path(),
 	)

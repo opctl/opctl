@@ -1,7 +1,6 @@
 package sockets
 
 import (
-	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 	"os"
@@ -9,27 +8,8 @@ import (
 	"strings"
 )
 
-//counterfeiter:generate -o fakes/interpreter.go . Interpreter
-type Interpreter interface {
-	Interpret(
-		scope map[string]*model.Value,
-		containerCallSpecSockets map[string]string,
-		scratchDirPath string,
-	) (map[string]string, error)
-}
-
-// NewInterpreter returns an initialized Interpreter instance
-func NewInterpreter() Interpreter {
-	return _interpreter{
-		os: ios.New(),
-	}
-}
-
-type _interpreter struct {
-	os ios.IOS
-}
-
-func (itp _interpreter) Interpret(
+// Interpret container sockets
+func Interpret(
 	scope map[string]*model.Value,
 	containerCallSpecSockets map[string]string,
 	scratchDirPath string,
@@ -47,12 +27,12 @@ func (itp _interpreter) Interpret(
 			// create outputSocket on host so the output points to something
 			dcgHostSocketAddress := filepath.Join(scratchDirPath, callSpecContainerSocketAddress)
 			var outputSocket *os.File
-			outputSocket, err := itp.os.Create(dcgHostSocketAddress)
+			outputSocket, err := os.Create(dcgHostSocketAddress)
 			outputSocket.Close()
 			if nil != err {
 				return nil, err
 			}
-			if err := itp.os.Chmod(
+			if err := os.Chmod(
 				dcgHostSocketAddress,
 				os.ModeSocket,
 			); nil != err {

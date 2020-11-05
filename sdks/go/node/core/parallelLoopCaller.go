@@ -10,7 +10,6 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop/iteration"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/parallelloop"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -40,10 +39,6 @@ func newParallelLoopCaller(
 ) parallelLoopCaller {
 	return _parallelLoopCaller{
 		caller:                  caller,
-		iterationScoper:         iteration.NewScoper(),
-		loopableInterpreter:     loopable.NewInterpreter(),
-		loopDeScoper:            loop.NewDeScoper(),
-		parallelLoopInterpreter: parallelloop.NewInterpreter(),
 		pubSub:                  pubSub,
 		uniqueStringFactory:     uniquestring.NewUniqueStringFactory(),
 	}
@@ -51,10 +46,6 @@ func newParallelLoopCaller(
 
 type _parallelLoopCaller struct {
 	caller                  caller
-	iterationScoper         iteration.Scoper
-	loopableInterpreter     loopable.Interpreter
-	loopDeScoper            loop.DeScoper
-	parallelLoopInterpreter parallelloop.Interpreter
 	pubSub                  pubsub.PubSub
 	uniqueStringFactory     uniquestring.UniqueStringFactory
 }
@@ -87,7 +78,7 @@ func (plpr _parallelLoopCaller) Call(
 			return nil, err
 		}
 
-		childCallScope, scopeErr := plpr.iterationScoper.Scope(
+		childCallScope, scopeErr := iteration.Scope(
 			childCallIndex,
 			inboundScope,
 			callSpecParallelLoop.Range,
@@ -98,7 +89,7 @@ func (plpr _parallelLoopCaller) Call(
 		}
 
 		// interpret iteration of the loop
-		callParallelLoop, interpretErr := plpr.parallelLoopInterpreter.Interpret(
+		callParallelLoop, interpretErr := parallelloop.Interpret(
 			callSpecParallelLoop,
 			childCallScope,
 		)
@@ -191,7 +182,7 @@ eventLoop:
 		}
 	}
 
-	return plpr.loopDeScoper.DeScope(
+	return loop.DeScope(
 		inboundScope,
 		callSpecParallelLoop.Range,
 		callSpecParallelLoop.Vars,

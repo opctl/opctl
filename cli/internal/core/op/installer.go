@@ -9,7 +9,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/sdks/go/model"
-	opspec "github.com/opctl/opctl/sdks/go/opspec"
+	"github.com/opctl/opctl/sdks/go/opspec"
 )
 
 // Installer exposes the "op install" sub command
@@ -31,14 +31,12 @@ func newInstaller(
 	return _installer{
 		cliExiter:    cliExiter,
 		dataResolver: dataResolver,
-		opInstaller:  opspec.NewInstaller(),
 	}
 }
 
 type _installer struct {
 	cliExiter    cliexiter.CliExiter
 	dataResolver dataresolver.DataResolver
-	opInstaller  opspec.Installer
 }
 
 func (ivkr _installer) Install(
@@ -67,7 +65,7 @@ func (ivkr _installer) Install(
 		},
 	)
 
-	if err := ivkr.opInstaller.Install(
+	if err := opspec.Install(
 		ctx,
 		filepath.Join(path, pkgRef),
 		opDirHandle,

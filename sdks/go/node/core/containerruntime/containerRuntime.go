@@ -15,6 +15,7 @@ import (
 //counterfeiter:generate -o fakes/containerRuntime.go . ContainerRuntime
 type ContainerRuntime interface {
 	DeleteContainerIfExists(
+		ctx context.Context,
 		containerID string,
 	) error
 

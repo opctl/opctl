@@ -1,8 +1,10 @@
 package docker
 
 import (
+	"context"
 	"errors"
 	"fmt"
+
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -14,6 +16,7 @@ var _ = Context("DeleteContainerIfExists", func() {
 		/* arrange */
 		fakeDockerClient := new(FakeCommonAPIClient)
 
+		providedCtx := context.Background()
 		providedContainerName := "dummyContainerName"
 		expectedContainerName := providedContainerName
 		expectedContainerRemoveOptions := types.ContainerRemoveOptions{
@@ -26,10 +29,17 @@ var _ = Context("DeleteContainerIfExists", func() {
 		}
 
 		/* act */
-		objectUnderTest.DeleteContainerIfExists(providedContainerName)
+		objectUnderTest.DeleteContainerIfExists(
+			providedCtx,
+			providedContainerName,
+		)
 
 		/* assert */
-		_, actualContainerName, actualContainerRemoveOptions := fakeDockerClient.ContainerRemoveArgsForCall(0)
+		actualCtx,
+			actualContainerName,
+			actualContainerRemoveOptions := fakeDockerClient.ContainerRemoveArgsForCall(0)
+
+		Expect(actualCtx).To(Equal(providedCtx))
 		Expect(actualContainerName).To(Equal(expectedContainerName))
 		Expect(actualContainerRemoveOptions).To(Equal(expectedContainerRemoveOptions))
 	})
@@ -51,7 +61,10 @@ var _ = Context("DeleteContainerIfExists", func() {
 			}
 
 			/* act */
-			actualError := objectUnderTest.DeleteContainerIfExists("")
+			actualError := objectUnderTest.DeleteContainerIfExists(
+				context.Background(),
+				"containerID",
+			)
 
 			/* assert */
 			Expect(actualError).To(Equal(expectedError))
@@ -65,7 +78,10 @@ var _ = Context("DeleteContainerIfExists", func() {
 			}
 
 			/* act */
-			actualError := objectUnderTest.DeleteContainerIfExists("")
+			actualError := objectUnderTest.DeleteContainerIfExists(
+				context.Background(),
+				"containerID",
+			)
 
 			/* assert */
 			Expect(actualError).To(BeNil())

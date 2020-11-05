@@ -12,10 +12,11 @@ import (
 )
 
 type FakeContainerRuntime struct {
-	DeleteContainerIfExistsStub        func(string) error
+	DeleteContainerIfExistsStub        func(context.Context, string) error
 	deleteContainerIfExistsMutex       sync.RWMutex
 	deleteContainerIfExistsArgsForCall []struct {
-		arg1 string
+		arg1 context.Context
+		arg2 string
 	}
 	deleteContainerIfExistsReturns struct {
 		result1 error
@@ -45,16 +46,17 @@ type FakeContainerRuntime struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeContainerRuntime) DeleteContainerIfExists(arg1 string) error {
+func (fake *FakeContainerRuntime) DeleteContainerIfExists(arg1 context.Context, arg2 string) error {
 	fake.deleteContainerIfExistsMutex.Lock()
 	ret, specificReturn := fake.deleteContainerIfExistsReturnsOnCall[len(fake.deleteContainerIfExistsArgsForCall)]
 	fake.deleteContainerIfExistsArgsForCall = append(fake.deleteContainerIfExistsArgsForCall, struct {
-		arg1 string
-	}{arg1})
-	fake.recordInvocation("DeleteContainerIfExists", []interface{}{arg1})
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("DeleteContainerIfExists", []interface{}{arg1, arg2})
 	fake.deleteContainerIfExistsMutex.Unlock()
 	if fake.DeleteContainerIfExistsStub != nil {
-		return fake.DeleteContainerIfExistsStub(arg1)
+		return fake.DeleteContainerIfExistsStub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1
@@ -69,17 +71,17 @@ func (fake *FakeContainerRuntime) DeleteContainerIfExistsCallCount() int {
 	return len(fake.deleteContainerIfExistsArgsForCall)
 }
 
-func (fake *FakeContainerRuntime) DeleteContainerIfExistsCalls(stub func(string) error) {
+func (fake *FakeContainerRuntime) DeleteContainerIfExistsCalls(stub func(context.Context, string) error) {
 	fake.deleteContainerIfExistsMutex.Lock()
 	defer fake.deleteContainerIfExistsMutex.Unlock()
 	fake.DeleteContainerIfExistsStub = stub
 }
 
-func (fake *FakeContainerRuntime) DeleteContainerIfExistsArgsForCall(i int) string {
+func (fake *FakeContainerRuntime) DeleteContainerIfExistsArgsForCall(i int) (context.Context, string) {
 	fake.deleteContainerIfExistsMutex.RLock()
 	defer fake.deleteContainerIfExistsMutex.RUnlock()
 	argsForCall := fake.deleteContainerIfExistsArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeContainerRuntime) DeleteContainerIfExistsReturns(result1 error) {

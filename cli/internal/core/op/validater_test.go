@@ -2,8 +2,9 @@ package op
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -11,7 +12,6 @@ import (
 	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	. "github.com/opctl/opctl/sdks/go/model/fakes"
-	. "github.com/opctl/opctl/sdks/go/opspec/fakes"
 )
 
 var _ = Context("Validater", func() {
@@ -26,14 +26,9 @@ var _ = Context("Validater", func() {
 			fakeOpHandle.PathReturns(&opPath)
 			fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-			fakeOpValidator := new(FakeValidator)
-			// error to trigger immediate return
-			fakeOpValidator.ValidateReturns([]error{errors.New("dummyError")})
-
 			objectUnderTest := _validater{
 				cliExiter:    new(cliexiterFakes.FakeCliExiter),
 				dataResolver: fakeDataResolver,
-				opValidator:  fakeOpValidator,
 			}
 
 			/* act */
@@ -49,58 +44,18 @@ var _ = Context("Validater", func() {
 			Expect(actualPkgRef).To(Equal(providedPkgRef))
 			Expect(actualPullCreds).To(BeNil())
 		})
-		It("should call pkg.Validate w/ expected args", func() {
-			/* arrange */
-			providedCtx := context.Background()
-
-			fakeOpValidator := new(FakeValidator)
-
-			fakeDataResolver := new(dataresolver.Fake)
-			opPath := "opPath"
-			fakeOpHandle := new(FakeDataHandle)
-			fakeOpHandle.PathReturns(&opPath)
-			fakeDataResolver.ResolveReturns(fakeOpHandle)
-
-			objectUnderTest := _validater{
-				cliExiter:    new(cliexiterFakes.FakeCliExiter),
-				dataResolver: fakeDataResolver,
-				opValidator:  fakeOpValidator,
-			}
-
-			/* act */
-			objectUnderTest.Validate(
-				providedCtx,
-				"dummyPkgRef",
-			)
-
-			/* assert */
-			actualCtx,
-				actualOpPath := fakeOpValidator.ValidateArgsForCall(0)
-
-			Expect(actualCtx).To(Equal(providedCtx))
-			Expect(actualOpPath).To(Equal(opPath))
-		})
-		Context("pkg.Validate returns errors", func() {
+		Context("op.Validate returns errors", func() {
 			It("should call cliExiter.Exit w/ expected args", func() {
 				/* arrange */
-				fakeOpValidator := new(FakeValidator)
-
 				fakeDataResolver := new(dataresolver.Fake)
 
 				fakeOpHandle := new(FakeDataHandle)
 				fakeOpHandle.PathReturns(new(string))
 				fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-				errsReturnedFromValidate := []error{errors.New("dummyError")}
-				fakeOpValidator.ValidateReturns(errsReturnedFromValidate)
-
 				expectedExitReq := cliexiter.ExitReq{
-					Message: fmt.Sprintf(`
--
-  Error(s):
-    - %v
--`, errsReturnedFromValidate[0]),
-					Code: 1,
+					Message: "open op.yml: no such file or directory",
+					Code:    1,
 				}
 
 				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
@@ -108,7 +63,6 @@ var _ = Context("Validater", func() {
 				objectUnderTest := _validater{
 					cliExiter:    fakeCliExiter,
 					dataResolver: fakeDataResolver,
-					opValidator:  fakeOpValidator,
 				}
 
 				/* act */
@@ -125,11 +79,14 @@ var _ = Context("Validater", func() {
 		Context("pkg.Validate doesn't return errors", func() {
 			It("should call cliExiter.Exit w/ expected args", func() {
 				/* arrange */
-				fakeOpValidator := new(FakeValidator)
+				wd, err := os.Getwd()
+				if nil != err {
+					panic(err)
+				}
+				opRef := filepath.Join(wd, "testdata/validater_valid")
 
 				fakeOpHandle := new(FakeDataHandle)
-				fakeOpHandle.PathReturns(new(string))
-				opRef := "dummyPkgRef"
+				fakeOpHandle.PathReturns(&opRef)
 				fakeOpHandle.RefReturns(opRef)
 
 				fakeDataResolver := new(dataresolver.Fake)
@@ -144,13 +101,12 @@ var _ = Context("Validater", func() {
 				objectUnderTest := _validater{
 					cliExiter:    fakeCliExiter,
 					dataResolver: fakeDataResolver,
-					opValidator:  fakeOpValidator,
 				}
 
 				/* act */
 				objectUnderTest.Validate(
 					context.Background(),
-					"dummyPkgRef",
+					opRef,
 				)
 
 				/* assert */

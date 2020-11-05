@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"fmt"
 	"runtime/debug"
 	"sync"
@@ -15,6 +16,7 @@ import (
 //counterfeiter:generate -o internal/fakes/callKiller.go . callKiller
 type callKiller interface {
 	Kill(
+		ctx context.Context,
 		callID string,
 		rootCallID string,
 	)
@@ -39,10 +41,14 @@ type _callKiller struct {
 }
 
 func (ckr _callKiller) Kill(
+	ctx context.Context,
 	callID string,
 	rootCallID string,
 ) {
-	ckr.containerRuntime.DeleteContainerIfExists(callID)
+	ckr.containerRuntime.DeleteContainerIfExists(
+		ctx,
+		callID,
+	)
 
 	var waitGroup sync.WaitGroup
 

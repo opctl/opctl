@@ -1,0 +1,6 @@
+name: testOp
+outputs:
+  expectedOutputName:
+    string: {}
+run:
+  serial: []

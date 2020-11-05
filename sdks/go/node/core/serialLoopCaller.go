@@ -8,7 +8,6 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop/iteration"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/serialloop"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -38,22 +37,14 @@ func newSerialLoopCaller(
 ) serialLoopCaller {
 	return _serialLoopCaller{
 		caller:                caller,
-		iterationScoper:       iteration.NewScoper(),
-		loopableInterpreter:   loopable.NewInterpreter(),
-		loopDeScoper:          loop.NewDeScoper(),
 		pubSub:                pubSub,
-		serialLoopInterpreter: serialloop.NewInterpreter(),
 		uniqueStringFactory:   uniquestring.NewUniqueStringFactory(),
 	}
 }
 
 type _serialLoopCaller struct {
 	caller                caller
-	iterationScoper       iteration.Scoper
-	loopableInterpreter   loopable.Interpreter
-	loopDeScoper          loop.DeScoper
 	pubSub                pubsub.PubSub
-	serialLoopInterpreter serialloop.Interpreter
 	uniqueStringFactory   uniquestring.UniqueStringFactory
 }
 
@@ -73,7 +64,7 @@ func (lpr _serialLoopCaller) Call(
 	var callSerialLoop *model.SerialLoopCall
 
 	index := 0
-	outboundScope, err := lpr.iterationScoper.Scope(
+	outboundScope, err := iteration.Scope(
 		index,
 		inboundScope,
 		callSpecSerialLoop.Range,
@@ -84,7 +75,7 @@ func (lpr _serialLoopCaller) Call(
 	}
 
 	// interpret initial iteration of the loop
-	callSerialLoop, err = lpr.serialLoopInterpreter.Interpret(
+	callSerialLoop, err = serialloop.Interpret(
 		callSpecSerialLoop,
 		outboundScope,
 	)
@@ -143,7 +134,7 @@ func (lpr _serialLoopCaller) Call(
 			break
 		}
 
-		outboundScope, err = lpr.iterationScoper.Scope(
+		outboundScope, err = iteration.Scope(
 			index,
 			outboundScope,
 			callSpecSerialLoop.Range,
@@ -154,7 +145,7 @@ func (lpr _serialLoopCaller) Call(
 		}
 
 		// interpret next iteration of the loop
-		callSerialLoop, err = lpr.serialLoopInterpreter.Interpret(
+		callSerialLoop, err = serialloop.Interpret(
 			callSpecSerialLoop,
 			outboundScope,
 		)
@@ -163,7 +154,7 @@ func (lpr _serialLoopCaller) Call(
 		}
 	}
 
-	outboundScope = lpr.loopDeScoper.DeScope(
+	outboundScope = loop.DeScope(
 		inboundScope,
 		callSpecSerialLoop.Range,
 		callSpecSerialLoop.Vars,

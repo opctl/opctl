@@ -34,8 +34,6 @@ func newOpCaller(
 		caller:             caller,
 		stateStore:         stateStore,
 		callScratchDir:     filepath.Join(dataDirPath, "call"),
-		outputsInterpreter: outputs.NewInterpreter(),
-		opFileGetter:       opfile.NewGetter(),
 	}
 }
 
@@ -43,8 +41,6 @@ type _opCaller struct {
 	stateStore         stateStore
 	caller             caller
 	callScratchDir     string
-	outputsInterpreter outputs.Interpreter
-	opFileGetter       opfile.Getter
 }
 
 func (oc _opCaller) Call(
@@ -84,14 +80,14 @@ func (oc _opCaller) Call(
 	}
 
 	var opFile *model.OpSpec
-	opFile, err = oc.opFileGetter.Get(
+	opFile, err = opfile.Get(
 		ctx,
 		opCall.OpPath,
 	)
 	if nil != err {
 		return outboundScope, err
 	}
-	opOutputs, err = oc.outputsInterpreter.Interpret(
+	opOutputs, err = outputs.Interpret(
 		opOutputs,
 		opFile.Outputs,
 		opCall.OpPath,

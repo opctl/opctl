@@ -1,67 +1,46 @@
 package op
 
 import (
-	"errors"
+	"io/ioutil"
+	"path/filepath"
+
+	"github.com/ghodss/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/cliexiter"
-	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
-	. "github.com/opctl/opctl/sdks/go/opspec/fakes"
-	"path/filepath"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 var _ = Context("Creater", func() {
 	Context("Create", func() {
-		It("should call opCreator.Create w/ expected args", func() {
+		It("should create expected op", func() {
 			/* arrange */
-			fakeOpCreator := new(FakeCreator)
+			providedPath, err := ioutil.TempDir("", "")
+			if nil != err {
+				panic(err)
+			}
+			providedName := "dummyName"
+			providedDescription := "dummyDescription"
 
-			providedPath := "dummyPath"
-			providedPkgName := "dummyPkgName"
-			providedPkgDescription := "dummyPkgDescription"
-
-			expectedPath := filepath.Join(providedPath, providedPkgName)
-			expectedPkgName := providedPkgName
-			expectedPkgDescription := providedPkgDescription
-
-			objectUnderTest := _creater{
-				opCreator: fakeOpCreator,
+			expectedOpFileBytes, err := yaml.Marshal(&model.OpSpec{
+				Description: providedDescription,
+				Name:        providedName,
+			})
+			if nil != err {
+				panic(err)
 			}
 
+			objectUnderTest := _creater{}
+
 			/* act */
-			objectUnderTest.Create(providedPath, providedPkgDescription, providedPkgName)
+			objectUnderTest.Create(providedPath, providedDescription, providedName)
 
 			/* assert */
-			actualPath,
-				actualPkgName,
-				actualPkgDescription := fakeOpCreator.CreateArgsForCall(0)
+			actualOpFileBytes, err := ioutil.ReadFile(filepath.Join(providedPath, providedName, "op.yml"))
+			if nil != err {
+				panic(err)
+			}
 
-			Expect(actualPath).To(Equal(expectedPath))
-			Expect(actualPkgName).To(Equal(expectedPkgName))
-			Expect(actualPkgDescription).To(Equal(expectedPkgDescription))
-		})
-		Context("opCreator.Create errors", func() {
-			It("should call exiter w/ expected args", func() {
-				/* arrange */
-				fakeOpCreator := new(FakeCreator)
-				expectedError := errors.New("dummyError")
-				fakeOpCreator.CreateReturns(expectedError)
-
-				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
-				objectUnderTest := _creater{
-					opCreator: fakeOpCreator,
-					cliExiter: fakeCliExiter,
-				}
-
-				/* act */
-				objectUnderTest.Create("", "", "")
-
-				/* assert */
-				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
-
-			})
+			Expect(string(actualOpFileBytes)).To(Equal(string(expectedOpFileBytes)))
 		})
 	})
 })

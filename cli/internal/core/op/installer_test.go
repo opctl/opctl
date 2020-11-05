@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -13,7 +12,6 @@ import (
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/model/fakes"
-	. "github.com/opctl/opctl/sdks/go/opspec/fakes"
 )
 
 var _ = Context("Installer", func() {
@@ -31,7 +29,6 @@ var _ = Context("Installer", func() {
 			fakeDataResolver.ResolveReturns(new(FakeDataHandle))
 
 			objectUnderTest := _installer{
-				opInstaller:  new(FakeInstaller),
 				dataResolver: fakeDataResolver,
 			}
 
@@ -51,57 +48,20 @@ var _ = Context("Installer", func() {
 			Expect(actualPkgRef).To(Equal(providedPkgRef))
 			Expect(actualPullCreds).To(Equal(providedPullCreds))
 		})
-		It("should call opInstaller.Install w/ expected args", func() {
-			/* arrange */
-			providedCtx := context.Background()
-			providedPath := "dummyPath"
-
-			providedPkgRef := "providedPkgRef"
-
-			fakeHandle := new(FakeDataHandle)
-
-			fakeDataResolver := new(dataresolver.Fake)
-			fakeDataResolver.ResolveReturns(fakeHandle)
-
-			fakeInstaller := new(FakeInstaller)
-
-			objectUnderTest := _installer{
-				opInstaller:  fakeInstaller,
-				dataResolver: fakeDataResolver,
-			}
-
-			/* act */
-			objectUnderTest.Install(
-				providedCtx,
-				providedPath,
-				providedPkgRef,
-				"dummyUsername",
-				"dummyPassword",
-			)
-
-			/* assert */
-			actualContext,
-				actualPath,
-				actualHandle := fakeInstaller.InstallArgsForCall(0)
-
-			Expect(actualContext).To(Equal(providedCtx))
-			Expect(actualPath).To(Equal(filepath.Join(providedPath, providedPkgRef)))
-			Expect(actualHandle).To(Equal(fakeHandle))
-		})
-		Context("pkg.Install errs", func() {
+		Context("op.Install errs", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeInstaller := new(FakeInstaller)
-
-				expectedError := errors.New("dummyError")
-				fakeInstaller.InstallReturns(expectedError)
-
 				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
+
+				fakeOpHandle := new(FakeDataHandle)
+				fakeOpHandle.ListDescendantsReturns(nil, errors.New(""))
+
+				fakeDataResolver := new(dataresolver.Fake)
+				fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 				objectUnderTest := _installer{
 					cliExiter:    fakeCliExiter,
-					opInstaller:  fakeInstaller,
-					dataResolver: new(dataresolver.Fake),
+					dataResolver: fakeDataResolver,
 				}
 
 				/* act */
@@ -115,7 +75,7 @@ var _ = Context("Installer", func() {
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+					To(Equal(cliexiter.ExitReq{Message: "", Code: 1}))
 
 			})
 		})

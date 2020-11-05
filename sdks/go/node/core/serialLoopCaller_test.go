@@ -2,16 +2,14 @@ package core
 
 import (
 	"context"
+	"errors"
 
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
-	loopFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop/fakes"
-	iterationFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop/iteration/fakes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	serialloopFakes "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/serialloop/fakes"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
@@ -30,17 +28,10 @@ var _ = Context("serialLoopCaller", func() {
 		Context("initial callSerialLoop.Until true", func() {
 			It("should not call caller.Call", func() {
 				/* arrange */
-				fakeSerialLoopInterpreter := new(serialloopFakes.FakeInterpreter)
-				until := true
-				fakeSerialLoopInterpreter.InterpretReturns(&model.SerialLoopCall{Until: &until}, nil)
-
 				fakeCaller := new(FakeCaller)
 
 				objectUnderTest := _serialLoopCaller{
 					caller:                fakeCaller,
-					loopDeScoper:          new(loopFakes.FakeDeScoper),
-					serialLoopInterpreter: fakeSerialLoopInterpreter,
-					iterationScoper:       new(iterationFakes.FakeScoper),
 					pubSub:                new(FakePubSub),
 					uniqueStringFactory:   new(uniquestringFakes.FakeUniqueStringFactory),
 				}
@@ -50,7 +41,16 @@ var _ = Context("serialLoopCaller", func() {
 					context.Background(),
 					"id",
 					map[string]*model.Value{},
-					model.SerialLoopCallSpec{},
+					model.SerialLoopCallSpec{
+						Until: []*model.PredicateSpec{
+							{
+								Eq: &[]interface{}{
+									true,
+									true,
+								},
+							},
+						},
+					},
 					"dummyOpPath",
 					nil,
 					"rootCallID",
@@ -63,23 +63,10 @@ var _ = Context("serialLoopCaller", func() {
 		Context("initial callSerialLoop.On empty", func() {
 			It("should not call caller.Call", func() {
 				/* arrange */
-				fakeSerialLoopInterpreter := new(serialloopFakes.FakeInterpreter)
-				fakeSerialLoopInterpreter.InterpretReturns(
-					&model.SerialLoopCall{
-						Range: &model.Value{
-							Array: new([]interface{}),
-						},
-					},
-					nil,
-				)
-
 				fakeCaller := new(FakeCaller)
 
 				objectUnderTest := _serialLoopCaller{
 					caller:                fakeCaller,
-					loopDeScoper:          new(loopFakes.FakeDeScoper),
-					serialLoopInterpreter: fakeSerialLoopInterpreter,
-					iterationScoper:       new(iterationFakes.FakeScoper),
 					pubSub:                new(FakePubSub),
 					uniqueStringFactory:   new(uniquestringFakes.FakeUniqueStringFactory),
 				}
@@ -89,7 +76,9 @@ var _ = Context("serialLoopCaller", func() {
 					context.Background(),
 					"id",
 					map[string]*model.Value{},
-					model.SerialLoopCallSpec{},
+					model.SerialLoopCallSpec{
+						Range: []interface{}{},
+					},
 					"dummyOpPath",
 					nil,
 					"rootCallID",
@@ -118,29 +107,15 @@ var _ = Context("serialLoopCaller", func() {
 				providedParentCallID := &providedParentCallIDValue
 				providedRootCallID := "providedRootCallID"
 
-				fakeSerialLoopInterpreter := new(serialloopFakes.FakeInterpreter)
-				until := false
-				fakeSerialLoopInterpreter.InterpretReturns(
-					&model.SerialLoopCall{
-						Until: &until,
-						Vars: &model.LoopVars{
-							Index: &index,
-						},
-					},
-					nil,
-				)
-
-				fakeIterationScoper := new(iterationFakes.FakeScoper)
 				expectedScope := map[string]*model.Value{
 					index: &model.Value{Number: new(float64)},
 				}
-				fakeIterationScoper.ScopeReturns(expectedScope, nil)
 
 				fakeCaller := new(FakeCaller)
+				fakeCaller.CallReturns(nil, errors.New(""))
 
 				callID := "callID"
 
-				expectedErrorMessage := "expectedErrorMessage"
 				fakePubSub := new(FakePubSub)
 				eventChannel := make(chan model.Event, 100)
 				fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
@@ -150,7 +125,7 @@ var _ = Context("serialLoopCaller", func() {
 								ID: callID,
 							},
 							Error: &model.CallEndedError{
-								Message: expectedErrorMessage,
+								Message: "message",
 							},
 						},
 					}
@@ -163,9 +138,6 @@ var _ = Context("serialLoopCaller", func() {
 
 				objectUnderTest := _serialLoopCaller{
 					caller:                fakeCaller,
-					loopDeScoper:          new(loopFakes.FakeDeScoper),
-					serialLoopInterpreter: fakeSerialLoopInterpreter,
-					iterationScoper:       fakeIterationScoper,
 					pubSub:                fakePubSub,
 					uniqueStringFactory:   fakeUniqueStringFactory,
 				}
