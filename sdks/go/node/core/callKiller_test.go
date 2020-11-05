@@ -56,6 +56,7 @@ var _ = Context("_callKiller", func() {
 				if err != nil {
 					panic(err)
 				}
+				db.DropAll()
 
 				pubSub := pubsub.New(
 					db,
@@ -88,8 +89,9 @@ var _ = Context("_callKiller", func() {
 
 				/* assert */
 				cancelEventChan()
-
-				Expect(len(actualCalls)).To(Equal(len(nodesReturnedFromStateStore) + 1))
+				Eventually(func() int {
+					return len(actualCalls)
+				}).Should(Equal(len(nodesReturnedFromStateStore)))
 			})
 		})
 	})

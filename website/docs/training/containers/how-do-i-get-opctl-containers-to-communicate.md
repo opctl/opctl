@@ -5,7 +5,7 @@ title: How do I get opctl containers to communicate?
 ## TLDR;
 Opctl attaches all containers to a virtual overlay network.  
 
-Adding a [name](../../reference/opspec/op-directory/op/call/container/index#name) attribute to container(s) adds a corresponding network wide DNS CNAME which resolves to the assigned ip(s) of the container(s).
+Adding a [name](../../reference/opspec/op-directory/op/call/container/index#name) attribute to container(s) adds a corresponding network wide DNS A record which resolves to the assigned ip(s) of the container(s).
 
 Whether containers are defined in the same op or not makes no difference, they can still reach each other.
 

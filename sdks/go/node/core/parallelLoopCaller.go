@@ -76,37 +76,41 @@ func (plpr _parallelLoopCaller) Call(
 	defer cancelParallelLoop()
 
 	childCallIndex := 0
-	outboundScope, scopeErr := plpr.iterationScoper.Scope(
-		childCallIndex,
-		inboundScope,
-		callSpecParallelLoop.Range,
-		callSpecParallelLoop.Vars,
-	)
-	if nil != scopeErr {
-		return nil, scopeErr
-	}
-
-	// interpret initial iteration of the loop
-	callParallelLoop, interpretErr := plpr.parallelLoopInterpreter.Interpret(
-		callSpecParallelLoop,
-		outboundScope,
-	)
-	if nil != interpretErr {
-		return nil, interpretErr
-	}
-
 	startTime := time.Now().UTC()
-	childCallIDIndexMap := map[string]int{}
-	callIndexOutputsMap := map[int]map[string]*model.Value{}
+	childCallIndexByID := map[string]int{}
 
-	for !parallelloop.IsIterationComplete(childCallIndex, *callParallelLoop) {
+	for {
 
 		childCallID, err := plpr.uniqueStringFactory.Construct()
 		if nil != err {
 			// end run immediately on any error
 			return nil, err
 		}
-		childCallIDIndexMap[childCallID] = childCallIndex
+
+		childCallScope, scopeErr := plpr.iterationScoper.Scope(
+			childCallIndex,
+			inboundScope,
+			callSpecParallelLoop.Range,
+			callSpecParallelLoop.Vars,
+		)
+		if nil != scopeErr {
+			return nil, scopeErr
+		}
+
+		// interpret iteration of the loop
+		callParallelLoop, interpretErr := plpr.parallelLoopInterpreter.Interpret(
+			callSpecParallelLoop,
+			childCallScope,
+		)
+		if nil != interpretErr {
+			return nil, interpretErr
+		}
+
+		if parallelloop.IsIterationComplete(childCallIndex, *callParallelLoop) {
+			break
+		}
+
+		childCallIndexByID[childCallID] = childCallIndex
 
 		go func() {
 			defer func() {
@@ -122,7 +126,7 @@ func (plpr _parallelLoopCaller) Call(
 			plpr.caller.Call(
 				parallelLoopCtx,
 				childCallID,
-				outboundScope,
+				childCallScope,
 				&callSpecParallelLoop.Run,
 				opPath,
 				parentCallID,
@@ -132,31 +136,10 @@ func (plpr _parallelLoopCaller) Call(
 
 		childCallIndex++
 
-		if parallelloop.IsIterationComplete(childCallIndex, *callParallelLoop) {
-			break
-		}
+	}
 
-		var scopeErr error
-		outboundScope, scopeErr = plpr.iterationScoper.Scope(
-			childCallIndex,
-			outboundScope,
-			callSpecParallelLoop.Range,
-			callSpecParallelLoop.Vars,
-		)
-		if nil != scopeErr {
-			return nil, scopeErr
-		}
-
-		// interpret next iteration of the loop
-		var interpretErr error
-		callParallelLoop, interpretErr = plpr.parallelLoopInterpreter.Interpret(
-			callSpecParallelLoop,
-			outboundScope,
-		)
-		if nil != interpretErr {
-			return nil, interpretErr
-		}
-
+	if len(childCallIndexByID) == 0 {
+		return nil, nil
 	}
 
 	// subscribe to events
@@ -170,17 +153,15 @@ func (plpr _parallelLoopCaller) Call(
 		},
 	)
 
-	if len(childCallIDIndexMap) == 0 {
-		return nil, nil
-	}
-
 	var isChildErred = false
+	childCallOutputsByIndex := map[int]map[string]*model.Value{}
+	outputs := inboundScope
 
 eventLoop:
 	for event := range eventChannel {
 		if nil != event.CallEnded {
-			if childCallIndex, isChildCallEnded := childCallIDIndexMap[event.CallEnded.Call.ID]; isChildCallEnded {
-				callIndexOutputsMap[childCallIndex] = event.CallEnded.Outputs
+			if childCallIndex, isChildCallEnded := childCallIndexByID[event.CallEnded.Call.ID]; isChildCallEnded {
+				childCallOutputsByIndex[childCallIndex] = event.CallEnded.Outputs
 				if nil != event.CallEnded.Error {
 					isChildErred = true
 
@@ -189,14 +170,14 @@ eventLoop:
 				}
 			}
 
-			if len(callIndexOutputsMap) == len(childCallIDIndexMap) {
+			if len(childCallOutputsByIndex) == len(childCallIndexByID) {
 				// all calls have ended
 
 				// construct parallel outputs
-				for i := 0; i < len(childCallIDIndexMap); i++ {
-					callOutputs := callIndexOutputsMap[i]
+				for i := 0; i < len(childCallIndexByID); i++ {
+					callOutputs := childCallOutputsByIndex[i]
 					for varName, varData := range callOutputs {
-						outboundScope[varName] = varData
+						outputs[varName] = varData
 					}
 				}
 
@@ -214,6 +195,6 @@ eventLoop:
 		inboundScope,
 		callSpecParallelLoop.Range,
 		callSpecParallelLoop.Vars,
-		outboundScope,
+		outputs,
 	), nil
 }
