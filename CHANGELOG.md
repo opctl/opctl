@@ -6,6 +6,12 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.43 - 2020-11-04
+
+### Fixed
+
+- parallelLoop loop iteration vars sometimes get set to values from other iterations.
+
 ## 0.1.42 - 2020-11-03
 
 ### Added

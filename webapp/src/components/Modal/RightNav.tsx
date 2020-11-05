@@ -8,15 +8,18 @@ export default ({
 }) =>
   <div
     className={css({
-      color: brandColors.active,
-      cursor: 'pointer',
       flex: '1 0 0',
       textAlign: 'right',
       marginRight: '1.2rem',
-      ...isCompleteDisabled && {
-        color: brandColors.lightGray,
-        cursor: 'default'
-      }
+      ...isCompleteDisabled
+        ? {
+          color: brandColors.lightGray,
+          cursor: 'default'
+        }
+        : {
+          color: brandColors.active,
+          cursor: 'pointer',
+        }
     })}
   >
     {

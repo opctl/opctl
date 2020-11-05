@@ -28,7 +28,7 @@ func (itp _interpreter) Interpret(
 	parallelLoopCallSpec model.ParallelLoopCallSpec,
 	scope map[string]*model.Value,
 ) (*model.ParallelLoopCall, error) {
-	dcgParallelLoop := model.ParallelLoopCall{}
+	parallelLoopCall := model.ParallelLoopCall{}
 
 	loopRangeSpec := parallelLoopCallSpec.Range
 	if nil != loopRangeSpec {
@@ -40,8 +40,8 @@ func (itp _interpreter) Interpret(
 			return nil, err
 		}
 
-		dcgParallelLoop.Range = dcgLoopRange
+		parallelLoopCall.Range = dcgLoopRange
 	}
 
-	return &dcgParallelLoop, nil
+	return &parallelLoopCall, nil
 }

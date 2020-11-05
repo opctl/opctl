@@ -90,19 +90,7 @@ var _ = Context("parallelLoopCaller", func() {
 			}
 
 			fakeParallelLoopInterpreter := new(parallelloopFakes.FakeInterpreter)
-			fakeParallelLoopInterpreter.InterpretReturnsOnCall(
-				0,
-				&model.ParallelLoopCall{
-					Range: loopRange,
-					Vars: &model.LoopVars{
-						Index: &index,
-					},
-				},
-				nil,
-			)
-
-			fakeParallelLoopInterpreter.InterpretReturnsOnCall(
-				1,
+			fakeParallelLoopInterpreter.InterpretReturns(
 				&model.ParallelLoopCall{
 					Range: loopRange,
 					Vars: &model.LoopVars{

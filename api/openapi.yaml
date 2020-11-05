@@ -589,19 +589,12 @@ components:
           $ref: "#/components/schemas/pullCreds"
       type: object
     startOpReq:
-      oneOf:
-        - type: object
-          properties:
-            args:
-              $ref: "#/components/schemas/startOpReqArgs"
-            op:
-              $ref: "#/components/schemas/startOpReqOp"
-        - type: object
-          properties:
-            args:
-              $ref: "#/components/schemas/startOpReqArgs"
-            pkg:
-              $ref: "#/components/schemas/startOpReqOp"
+      type: object
+      properties:
+        args:
+          $ref: "#/components/schemas/startOpReqArgs"
+        op:
+          $ref: "#/components/schemas/startOpReqOp"
     value:
       description: a typed value
       oneOf:
