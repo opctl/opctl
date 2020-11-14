@@ -2,30 +2,33 @@
 package fakes
 
 import (
+	"context"
 	"sync"
 )
 
 type FakeCallKiller struct {
-	KillStub        func(string, string)
+	KillStub        func(context.Context, string, string)
 	killMutex       sync.RWMutex
 	killArgsForCall []struct {
-		arg1 string
+		arg1 context.Context
 		arg2 string
+		arg3 string
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeCallKiller) Kill(arg1 string, arg2 string) {
+func (fake *FakeCallKiller) Kill(arg1 context.Context, arg2 string, arg3 string) {
 	fake.killMutex.Lock()
 	fake.killArgsForCall = append(fake.killArgsForCall, struct {
-		arg1 string
+		arg1 context.Context
 		arg2 string
-	}{arg1, arg2})
-	fake.recordInvocation("Kill", []interface{}{arg1, arg2})
+		arg3 string
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("Kill", []interface{}{arg1, arg2, arg3})
 	fake.killMutex.Unlock()
 	if fake.KillStub != nil {
-		fake.KillStub(arg1, arg2)
+		fake.KillStub(arg1, arg2, arg3)
 	}
 }
 
@@ -35,17 +38,17 @@ func (fake *FakeCallKiller) KillCallCount() int {
 	return len(fake.killArgsForCall)
 }
 
-func (fake *FakeCallKiller) KillCalls(stub func(string, string)) {
+func (fake *FakeCallKiller) KillCalls(stub func(context.Context, string, string)) {
 	fake.killMutex.Lock()
 	defer fake.killMutex.Unlock()
 	fake.KillStub = stub
 }
 
-func (fake *FakeCallKiller) KillArgsForCall(i int) (string, string) {
+func (fake *FakeCallKiller) KillArgsForCall(i int) (context.Context, string, string) {
 	fake.killMutex.RLock()
 	defer fake.killMutex.RUnlock()
 	argsForCall := fake.killArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
 func (fake *FakeCallKiller) Invocations() map[string][][]interface{} {

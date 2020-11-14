@@ -9,6 +9,9 @@
         },
         {
           "type": "string"
+        },
+        {
+          "$ref": "../../variableReference.json"
         }
       ]
     }

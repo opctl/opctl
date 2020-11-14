@@ -6,6 +6,10 @@ accordance with
 
 ## [Unreleased]
 
+### Changed
+
+- [Make input/output binding when calling ops consistent](https://github.com/opctl/opctl/issues/721)
+
 ## 0.1.43 - 2020-11-04
 
 ### Fixed
