@@ -1,6 +1,8 @@
 package core
 
 import (
+	"strings"
+	"regexp"
 	"context"
 	"path/filepath"
 
@@ -100,10 +102,17 @@ func (oc _opCaller) Call(
 		if "" == boundValue {
 			// implicit value
 			boundValue = boundName
+		} else if !regexp.MustCompile("^\\$\\(.+\\)$").MatchString(boundValue) {
+			// handle obsolete syntax by swapping order
+			prevBoundName := boundName
+			boundName = boundValue
+			boundValue = prevBoundName
+		} else {
+			boundValue = strings.TrimSuffix(strings.TrimPrefix(boundValue, "$("), ")")
 		}
 		for opOutputName, opOutputValue := range opOutputs {
-			if boundValue == opOutputName {
-				outboundScope[boundName] = opOutputValue
+			if boundName == opOutputName {
+				outboundScope[boundValue] = opOutputValue
 			}
 		}
 	}
