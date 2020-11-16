@@ -10,10 +10,6 @@ inputs:
       constraints: { minLength: 1 }
       description: equinox.io auth token
       isSecret: true
-  srcDir:
-    dir:
-      default: .
-      description: directory containing the projects source code
   version:
     string:
       constraints: { format: semver }
@@ -49,7 +45,7 @@ run:
           --token="$(equinoxToken)" \
           -- -a github.com/opctl/opctl/cli
     dirs:
-      /go/src/github.com/opctl/opctl: $(srcDir)
+      /go/src/github.com/opctl/opctl: $(../../..)
     envVars:
       EQUINOX_SIGNING_KEY: $(equinoxSigningKey)
       CGO_ENABLED: '0'

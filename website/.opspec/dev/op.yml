@@ -1,20 +1,14 @@
 description: Initializes and starts the website with live-reload. Exposes it on localhost:3000
 name: dev
-inputs:
-  srcDir:
-    dir:
-      default: ..
 run:
   serial:
     - op:
         ref: ../init
-        inputs: { srcDir }
-        outputs: { srcDir }
     - container:
         cmd: [ yarn, start ]
         image: { ref: 'node:12.5.0-alpine' }
         dirs:
-          /src: $(srcDir)
+          /src: $(../../..)
         ports:
           3000: 3000
           35729: 35729

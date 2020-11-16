@@ -1,14 +1,6 @@
 name: test
 description: runs all tests
-inputs:
-  srcDir:
-    dir:
-      description: dir containing the projects source code
-      default: ../..
 outputs:
-  srcDir:
-    dir:
-      description: dir containing the projects source code
   coverageReport:
     file:
       description: coverage report
@@ -17,13 +9,11 @@ run:
   serial:
     - op:
         ref: ../init
-        inputs: { srcDir }
-        outputs: { srcDir }
     - container:
         image: { ref: 'node:12.4.0-alpine' }
         cmd: [npm, test]
         dirs:
-          /src: $(srcDir)
+          /src: $(../..)
         files:
-          /src/sdks/react/coverage/lcov.info: $(coverageReport)
-        workDir: /src/sdks/react
+          /src/coverage/lcov.info: $(coverageReport)
+        workDir: /src

@@ -6,40 +6,27 @@ inputs:
       constraints: { minLength: 1 }
       description: git branch the coverage should be associated with
       default: master
-  srcDir:
-    dir:
-      default: ..
-      description: directory containing the projects source code
   version:
     string:
       default: 0.0.1
       constraints:
         format: semver
-outputs:
-  srcDir:
-    dir:
-      description: directory containing the projects source code
 run:
   serial:
     - op:
         ref: ../test
-        inputs:
-          srcDir: $(srcDir/cli)
         outputs:
           coverprofile:
     - op:
         ref: ../compile
         inputs:
-          srcDir: $(srcDir)
           version:
     - op:
         ref: ../test/system/opspec
-        inputs:
-          srcDir: $(srcDir)
     - op:
         ref: github.com/opspec-pkgs/git.resolve-commit#1.0.2
-        inputs: { dotGitDir: $(srcDir/.git) }
-        outputs: { gitCommit: commit }
+        inputs: { dotGitDir: $(../../../.git) }
+        outputs: { commit: $(gitCommit) }
     - op:
         ref: github.com/opspec-pkgs/codecov.upload#1.1.0
         inputs:

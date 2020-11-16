@@ -6,25 +6,15 @@ inputs:
       constraints: { minLength: 1 }
       description: git branch the coverage should be associated with
       default: master
-  srcDir:
-    dir:
-      default: .
-      description: directory containing the projects source code
   version:
     string:
       default: 0.0.0
       constraints:
         format: semver
-outputs:
-  srcDir:
-    dir:
-      description: directory containing the projects source code
 run:
   serial:
     - op:
         ref: ../../webapp/.opspec/build
-        inputs:
-          srcDir: $(srcDir)
     # embed webapp in node
     - container:
         cmd:
@@ -34,12 +24,11 @@ run:
             echo "embedding webapp in node"
             go run github.com/rakyll/statik -src ../webapp/build -dest internal/core/node/creater -f
         dirs:
-          /src: $(srcDir)
+          /src: $(../..)
         image: { ref: 'golang:1.15' }
         workDir: /src/cli
     - op:
         ref: ../../cli/.opspec/build
         inputs:
           gitBranch:
-          srcDir:
           version:

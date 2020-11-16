@@ -1,18 +1,10 @@
 description: runs go generate YOUR_PATH
 name: generate
 inputs:
-  srcDir:
-    dir:
-      default: ..
-      description: directory containing the projects source code
   path:
     string:
       description: relative path to file containing a 'go:generate ...' pre-processing directive
       default: ./...
-outputs:
-  srcDir:
-    dir:
-      description: directory containing the projects source code
 run:
   container:
     cmd:
@@ -20,9 +12,9 @@ run:
       - generate
       - $(path)
     dirs:
-      /src: $(srcDir)
+      /src: $(../..)
     envVars:
       GOFLAGS: -mod=vendor
     # @TODO: identify why fake generation breaks on 1.14
     image: { ref: 'golang:1.15' }
-    workDir: /src/cli
+    workDir: /src

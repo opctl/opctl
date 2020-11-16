@@ -10,9 +10,6 @@ inputs:
     string:
       constraints: { minLength: 1 }
       description: username for docker registry
-  opctlForLinux:
-    file:
-      description: opctl for linux binary to release. Image tag will be determined via `opctl -v` command. 
 run:
   serial:
     - container:
@@ -31,7 +28,7 @@ run:
             echo -n "opctl/opctl:${version}" > /imageRefPrefix
         image: { ref: 'alpine:3.4' }
         files:
-          /opctl: $(opctlForLinux)
+          /opctl: $(../../../cli/opctl.linux)
           /imageRefPrefix: $(imageRefPrefix)
           /entrypoint.sh:
         dirs:
@@ -41,7 +38,7 @@ run:
           - dind
           - dood
         vars:
-          value: imageRefVariant
+          value: $(imageRefVariant)
         run:
           serial:
             - op:

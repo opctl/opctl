@@ -3,6 +3,6 @@ run:
   parallelLoop:
     range: []
     vars:
-      value: value
+      value: $(value)
     run:
       serial: []

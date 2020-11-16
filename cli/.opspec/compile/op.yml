@@ -1,19 +1,11 @@
 description: compiles the cli
 name: compile
 inputs:
-  srcDir:
-    dir:
-      default: ..
-      description: directory containing the projects source code
   version:
     string:
       default: 0.0.1
       constraints:
         format: semver
-outputs:
-  srcDir:
-    dir:
-      description: directory containing the projects source code
 run:
   parallelLoop:
     range:
@@ -21,13 +13,13 @@ run:
       - linux
       - windows
     vars:
-      value: GOOS
+      value: $(GOOS)
     run:
       op:
         ref: github.com/opspec-pkgs/golang.build.bin#2.0.0
         inputs:
           name: opctl.$(GOOS)
-          srcDir: $(srcDir/cli)
+          srcDir: $(../..)
           goVersion: 1.15
           GOOS:
           GOFLAGS: 

@@ -1,18 +1,12 @@
 description: uses the cli to run all test-suite scenarios. 
 name: test/system/opspec
-inputs:
-  srcDir:
-    dir:
-      default: ..
-      description: directory containing the projects source code & binary to test
 run:
   container:
     image: { ref: 'docker:19.03-dind' }
     dirs:
-      /src: $(srcDir)
+      /src: $(../../../../..)
       /sharness:
     files:
-      /opctl: $(srcDir/cli/opctl.linux)
       /cmd.sh:
       /yaml:
     cmd: [/cmd.sh]

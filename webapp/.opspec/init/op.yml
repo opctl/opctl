@@ -1,9 +1,5 @@
 description: ensures deps of the webapp are installed
 name: init
-inputs:
-  srcDir:
-    dir:
-      default: ..
 run:
   container:
     cmd:
@@ -14,5 +10,5 @@ run:
         yarn install -q
     image: { ref: 'node:12.8.1-alpine' }
     dirs:
-      /src: $(srcDir)
+      /src: $(../../..)
     workDir: /src/webapp

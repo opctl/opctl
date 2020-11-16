@@ -24,10 +24,6 @@ inputs:
       constraints: { minLength: 1 }
       description: git branch the coverage should be associated with
       default: master
-  srcDir:
-    dir:
-      default: .
-      description: directory containing the projects source code
   version:
     string:
       constraints: { format: semver }
@@ -36,18 +32,16 @@ run:
   serial:
     - op:
         ref: ../build
-        inputs: { srcDir, gitBranch, version }
-        outputs: { srcDir }
+        inputs: { gitBranch, version }
     - parallel:
         - op:
             ref: ../release/to-docker
             inputs:
               dockerPassword:
               dockerUsername:
-              opctlForLinux: $(srcDir/cli/opctl.linux)
         # @TODO: either remove equinox or figure out how to obtain explicit versions of equinox artifacts.
         # At present, equinox doesn't support downloading explicit versions of artifacts so can't be used for anything
         # requiring the current build artifact such as system testing or publishing to docker.
         - op:
             ref: ../release/to-equinox
-            inputs: { equinoxSigningKey, equinoxToken, srcDir, version }
+            inputs: { equinoxSigningKey, equinoxToken, version }

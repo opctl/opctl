@@ -1,14 +1,6 @@
 name: test
 description: runs all tests
-inputs:
-  srcDir:
-    dir:
-      default: ../..
-      description: directory containing the projects source code
 outputs:
-  srcDir:
-    dir:
-      description: directory containing the projects source code
   coverprofile:
     file:
       description: aggregate coverprofile
@@ -31,11 +23,11 @@ run:
         files:
           /coverprofile: $(coverprofile)
         dirs:
-          /src: $(srcDir)
+          /src: $(../..)
         envVars:
           GOFLAGS: -mod=vendor -tags=containers_image_openpgp
         image: { ref: "golang:1.15" }
-        workDir: /src/sdks/go
+        workDir: /src
     - op:
         ref: github.com/opspec-pkgs/golang.coverprofile.assert#1.1.0
         inputs: { coverprofile, minCoverage: 40 }

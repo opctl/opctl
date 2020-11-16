@@ -1,14 +1,6 @@
 description: runs unit tests
 name: test/unit
-inputs:
-  srcDir:
-    dir:
-      default: .
-      description: directory containing the projects source code
 outputs:
-  srcDir:
-    dir:
-      description: directory containing the projects source code
   coverprofile:
     file:
       description: aggregate coverprofile
@@ -30,7 +22,7 @@ run:
         files:
           /coverprofile: $(coverprofile)
         dirs:
-          /src: $(srcDir)
+          /src: $(../../../)
         envVars:
           GOFLAGS: -mod=vendor -tags=containers_image_openpgp
         image: { ref: 'golang:1.15' }
