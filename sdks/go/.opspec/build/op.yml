@@ -6,10 +6,6 @@ inputs:
       constraints: { minLength: 1 }
       description: git branch coverage should be associated with
       default: master
-  srcDir:
-    dir:
-      default: ../..
-      description: directory containing the projects source code
 outputs:
   srcDir:
     dir:
@@ -19,18 +15,16 @@ run:
   serial:
     - op:
         ref: ../clean
-        inputs: { srcDir }
-        outputs: { srcDir }
     - op:
         ref: github.com/opspec-pkgs/golang.fmt#1.2.0
-        inputs: { srcDir: $(srcDir/sdks/go) }
+        inputs:
+          srcDir: $(../..)
     - op:
         ref: ../test
-        inputs: { srcDir }
-        outputs: { srcDir, coverprofile }
+        outputs: { coverprofile }
     - op:
         ref: github.com/opspec-pkgs/git.repo.resolve-commit#1.0.2
-        inputs: { dotGitDir: $(srcDir/.git) }
+        inputs: { dotGitDir: $(../../../../.git) }
         outputs: { commit }
     - op:
         ref: github.com/opspec-pkgs/codecov.upload#1.1.0

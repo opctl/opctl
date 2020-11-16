@@ -72,9 +72,11 @@ func (oc _opCaller) Call(
 	opCallScope["./"] = &model.Value{
 		Dir: &opCall.OpPath,
 	}
+
 	// add parent directory to scope
+	parentDirPath := filepath.Dir(opCall.OpPath)
 	opCallScope["../"] = &model.Value{
-		Dir: &opCall.OpPath,
+		Dir: &parentDirPath,
 	}
 
 	opOutputs, err := oc.caller.Call(

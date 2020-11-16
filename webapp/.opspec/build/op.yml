@@ -1,24 +1,12 @@
 description: builds the webapp
 name: build
-inputs:
-  srcDir:
-    dir:
-      default: ..
-outputs:
-  srcDir:
-    dir:
-      description: directory containing the projects source code
 run:
   serial:
     - op:
         ref: ../test
-        inputs:
-          srcDir:
-        outputs:
-          srcDir:
     - container:
         cmd: [ yarn, run, build ]
         image: { ref: 'node:12.8.1-alpine' }
         dirs:
-          /src: $(srcDir)
+          /src: $(../../..)
         workDir: /src/webapp

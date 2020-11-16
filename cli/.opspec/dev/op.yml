@@ -1,9 +1,6 @@
 name: dev
 description: compiles and exposes a delv debugger for the cli
 inputs:
-  srcDir:
-    dir:
-      default: ../
   dockerSocket:
     socket:
       description: docker socket to use as container runtime
@@ -11,8 +8,6 @@ run:
   serial:
     - op:
         ref: ../build
-        inputs:
-          srcDir:
     - container:
         image: { ref: 'golang:1.15' }
         cmd:
@@ -27,7 +22,7 @@ run:
           - run
           - github.com/opspec-pkgs/uuid.v4.generate#1.1.0
         dirs:
-          /src: $(srcDir)
+          /src: $(../..)
         envVars:
           GOFLAGS: -mod=vendor
         ports:
@@ -35,4 +30,4 @@ run:
           40000: 40000
         sockets:
           /var/run/docker.sock: dockerSocket
-        workDir: /src/cli
+        workDir: /src

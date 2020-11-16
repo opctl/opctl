@@ -1,11 +1,7 @@
 description: tests if openapi.yaml is valid
 name: test
-inputs:
-  openapiDotYaml:
-    file:
-      default: openapi.yaml
 run:
   op:
     ref: github.com/opspec-pkgs/openapispec.v3.validate-spec#1.0.0
     inputs:
-      spec: $(openapiDotYaml)
+      spec: $(./openapi.yaml)

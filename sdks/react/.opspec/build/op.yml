@@ -6,21 +6,12 @@ inputs:
       constraints: { minLength: 1 }
       description: git branch coverage should be associated with
       default: master
-  srcDir:
-    dir:
-      description: dir containing the projects source code
-      default: ../..
-outputs:
-  srcDir:
-    dir:
-      description: dir containing the projects source code
 opspec: 0.1.6
 run:
   serial:
     - op:
         ref: ../test
-        inputs: { srcDir }
-        outputs: { srcDir, coverageReport }
+        outputs: { coverageReport }
     - container:
         image: { ref: 'node:12.4.0-alpine' }
         cmd:
@@ -30,11 +21,11 @@ run:
             rm -rf lib
             yarn tsc -b
         dirs:
-          /src: $(srcDir)
-        workDir: /src/sdks/react
+          /src: $(../..)
+        workDir: /src
     - op:
         ref: github.com/opspec-pkgs/git.repo.resolve-commit#1.0.2
-        inputs: { dotGitDir: $(srcDir/.git) }
+        inputs: { dotGitDir: $(../../../../.git) }
         outputs: { gitCommit: commit }
     - op:
         ref: github.com/opspec-pkgs/codecov.upload#1.1.0

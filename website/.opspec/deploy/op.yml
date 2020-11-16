@@ -1,10 +1,6 @@
 description: deploys website to github pages
 name: deploy
 inputs:
-  srcDir:
-    dir:
-      default: ..
-      description: dir containing the doc source
   github:
     object:
       constraints:
@@ -22,12 +18,10 @@ run:
   serial:
     - op:
         ref: ../init
-        inputs:
-          srcDir:
     - container:
         cmd: [/cmd.sh]
         dirs:
-          /src: $(srcDir)
+          /src: $(../../..)
         envVars:
           GIT_USER: $(github.username)
           GITHUB_ACCESS_TOKEN: $(github.accessToken)

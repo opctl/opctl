@@ -1,18 +1,10 @@
 description: runs go generate YOUR_PATH
 name: generate
 inputs:
-  srcDir:
-    dir:
-      default: ../..
-      description: directory containing the projects source code
   path:
     string:
       description: relative path to file containing a 'go:generate ...' pre-processing directive
       default: ./...
-outputs:
-  srcDir:
-    dir:
-      description: directory containing the projects source code
 opspec: 0.1.6
 run:
   container:
@@ -23,7 +15,7 @@ run:
     envVars:
       GOFLAGS: -mod=vendor -tags=containers_image_openpgp 
     dirs:
-      /src: $(srcDir)
+      /src: $(../../)
     # @TODO: identify why fake generation breaks on 1.14
     image: { ref: 'golang:1.15' }
-    workDir: /src/sdks/go
+    workDir: /src

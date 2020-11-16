@@ -1,22 +1,14 @@
 description: Initializes and starts the webapp with live-reload. Exposes it on localhost:80
 name: dev
-inputs:
-  srcDir:
-    dir:
-      default: ..
 run:
   serial:
     - op:
         ref: ../init
-        inputs:
-          srcDir:
-        outputs:
-          srcDir:
     - container:
         cmd: [ yarn, start ]
         image: { ref: 'node:12.8.1-alpine' }
         dirs:
-          /src: $(srcDir)
+          /src: $(../..)
         ports:
           80: 80
-        workDir: /src/webapp
+        workDir: /src
