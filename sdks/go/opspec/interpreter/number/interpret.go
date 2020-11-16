@@ -8,7 +8,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
 )
 
-// Interpret interprets an expression to a number value.
+// Interpret an expression to a number value.
 // Expression must be either a type supported by coerce.ToNumber
 // or an number initializer
 func Interpret(

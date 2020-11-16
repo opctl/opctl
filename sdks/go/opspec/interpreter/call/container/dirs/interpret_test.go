@@ -1,10 +1,10 @@
 package dirs
 
 import (
-	"os"
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
@@ -16,7 +16,7 @@ var _ = Context("Interpret", func() {
 	Context("dir.Interpret errs", func() {
 		It("should return expected error", func() {
 			/* arrange */
-			identifier:= "identifier"
+			identifier := "identifier"
 			/* act */
 			_, actualErr := Interpret(
 				map[string]*model.Value{
@@ -24,7 +24,7 @@ var _ = Context("Interpret", func() {
 						Socket: new(string),
 					},
 				},
-				map[string]string{
+				map[string]interface{}{
 					"/something": fmt.Sprintf("$(%s)", identifier),
 				},
 				os.TempDir(),
@@ -32,11 +32,11 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(Equal(errors.New("unable to bind /something to $(identifier); error was unable to interpret $(identifier) to dir")))
+			Expect(actualErr).To(Equal(errors.New("unable to bind /something to $(identifier); error was unable to interpret $(identifier) to dir; error was unable to coerce socket to dir; incompatible types")))
 		})
 	})
 	Context("dir.Interpret doesn't err", func() {
-		Context("value.Dir not prefixed by dataDirPath", func() {
+		Context("value.Dir not prefixed by dataCachePath", func() {
 			It("should return expected results", func() {
 				/* arrange */
 				identifier := "identifier"
@@ -55,7 +55,7 @@ var _ = Context("Interpret", func() {
 					map[string]*model.Value{
 						identifier: &model.Value{Dir: &dirPath},
 					},
-					map[string]string{
+					map[string]interface{}{
 						// implicitly bound
 						"/something": fmt.Sprintf("$(%s)", identifier),
 					},
@@ -69,7 +69,7 @@ var _ = Context("Interpret", func() {
 
 			})
 		})
-		Context("value.Dir prefixed by dataDirPath", func() {
+		Context("value.Dir prefixed by dataCachePath", func() {
 			Context("dircopier.OS errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
@@ -94,7 +94,7 @@ var _ = Context("Interpret", func() {
 						map[string]*model.Value{
 							identifier: &model.Value{Dir: &dirValue},
 						},
-						map[string]string{
+						map[string]interface{}{
 							// implicitly bound
 							containerPath: fmt.Sprintf("$(%s)", identifier),
 						},

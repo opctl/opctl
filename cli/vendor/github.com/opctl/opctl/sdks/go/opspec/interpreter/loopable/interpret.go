@@ -6,7 +6,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
 )
 
-//Interpret a loopable
+//Interpret an expression to a loopable value.
 func Interpret(
 	expression interface{},
 	scope map[string]*model.Value,

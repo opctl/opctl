@@ -51,7 +51,7 @@ var _ = Context("Interpret", func() {
 					Image: &model.ContainerCallImageSpec{
 						Ref: "ref",
 					},
-					Dirs: map[string]string{
+					Dirs: map[string]interface{}{
 						"/something": fmt.Sprintf("$(%s)", identifier),
 					},
 				},
@@ -61,7 +61,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(Equal(errors.New("unable to bind /something to $(identifier); error was unable to interpret $(identifier) to dir")))
+			Expect(actualErr).To(Equal(errors.New("unable to bind /something to $(identifier); error was unable to interpret $(identifier) to dir; error was unable to coerce socket to dir; incompatible types")))
 		})
 	})
 

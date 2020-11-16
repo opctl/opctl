@@ -188,8 +188,13 @@ func (this _containerCaller) interpretOutputs(
 			outputs[name] = &model.Value{Socket: &containerCall.ContainerID}
 		}
 	}
-	for callSpecContainerFilePath, name := range containerCallSpec.Files {
-		if "" == name {
+	for callSpecContainerFilePath, mountSrc := range containerCallSpec.Files {
+		mountSrcStr, ok := mountSrc.(string)
+		if !ok {
+			continue
+		}
+
+		if "" == mountSrcStr {
 			// skip embedded files
 			continue
 		}
@@ -199,14 +204,17 @@ func (this _containerCaller) interpretOutputs(
 			if callSpecContainerFilePath == callContainerFilePath {
 				// copy callHostFilePath before taking address; range vars have same address for every iteration
 				value := callHostFilePath
-				if nameAsString, ok := name.(string); ok {
-					outputs[strings.TrimSuffix(strings.TrimPrefix(nameAsString, "$("), ")")] = &model.Value{File: &value}
-				}
+				outputs[strings.TrimSuffix(strings.TrimPrefix(mountSrcStr, "$("), ")")] = &model.Value{File: &value}
 			}
 		}
 	}
-	for callSpecContainerDirPath, name := range containerCallSpec.Dirs {
-		if "" == name {
+	for callSpecContainerDirPath, mountSrc := range containerCallSpec.Dirs {
+		mountSrcStr, ok := mountSrc.(string)
+		if !ok {
+			continue
+		}
+
+		if "" == mountSrcStr {
 			// skip embedded dirs
 			continue
 		}
@@ -216,7 +224,7 @@ func (this _containerCaller) interpretOutputs(
 			if callSpecContainerDirPath == callContainerDirPath {
 				// copy callHostDirPath before taking address; range vars have same address for every iteration
 				value := callHostDirPath
-				outputs[strings.TrimSuffix(strings.TrimPrefix(name, "$("), ")")] = &model.Value{Dir: &value}
+				outputs[strings.TrimSuffix(strings.TrimPrefix(mountSrcStr, "$("), ")")] = &model.Value{Dir: &value}
 			}
 		}
 	}

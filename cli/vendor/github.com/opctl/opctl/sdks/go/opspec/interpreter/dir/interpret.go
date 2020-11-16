@@ -1,15 +1,16 @@
 package dir
 
 import (
+	"regexp"
 	"fmt"
-	"strings"
 
+	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
 )
 
-// Interpret interprets an expression to a dir value.
+// Interpret an expression to a dir value.
 // Expression must be of type string.
 //
 // Examples of valid dir expressions:
@@ -25,8 +26,7 @@ func Interpret(
 ) (*model.Value, error) {
 	switch expression := expression.(type) {
 	case string:
-		// @TODO: this incorrectly treats $(inScope)$(inScope) as ref
-		if strings.HasPrefix(expression, interpolater.RefStart) && strings.HasSuffix(expression, interpolater.RefEnd) {
+		if regexp.MustCompile("^\\$\\(.+\\)$").MatchString(expression) {
 			var opts *model.ReferenceOpts
 			if createIfNotExist {
 				opts = &model.ReferenceOpts{
@@ -44,15 +44,27 @@ func Interpret(
 				return nil, fmt.Errorf("unable to interpret %+v to dir; error was %v", expression, err)
 			}
 
-			if nil == value.Dir {
-				return nil, fmt.Errorf("unable to interpret %+v to dir", expression)
+			result, err := coerce.ToDir(value, scratchDir)
+			if nil != err {
+				err = fmt.Errorf("unable to interpret %+v to dir; error was %v", expression, err)
 			}
-
-			return value, nil
+			return result, err
 
 		}
 	}
 
-	return nil, fmt.Errorf("unable to interpret %v to dir", expression)
+	value, err := value.Interpret(
+		expression,
+		scope,
+	)
+	if nil != err {
+		return nil, fmt.Errorf("unable to interpret %+v to dir; error was %v", expression, err)
+	}
+
+	result, err := coerce.ToDir(&value, scratchDir)
+	if nil != err {
+		err = fmt.Errorf("unable to interpret %+v to dir; error was %v", expression, err)
+	}
+	return result, err
 
 }

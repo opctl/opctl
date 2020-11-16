@@ -13,15 +13,15 @@ import (
 // Interpret container dirs
 func Interpret(
 	scope map[string]*model.Value,
-	containerCallSpecDirs map[string]string,
+	containerCallSpecDirs map[string]interface{},
 	scratchDirPath string,
-	dataDirPath string,
+	dataCachePath string,
 ) (map[string]string, error) {
 	containerCallDirs := map[string]string{}
 dirLoop:
 	for callSpecContainerDirPath, dirExpression := range containerCallSpecDirs {
 
-		if "" == dirExpression {
+		if nil == dirExpression {
 			// bound implicitly
 			dirExpression = fmt.Sprintf("$(%v)", callSpecContainerDirPath)
 		}
@@ -41,12 +41,13 @@ dirLoop:
 			)
 		}
 
-		if "" != *dirValue.Dir && !strings.HasPrefix(*dirValue.Dir, dataDirPath) {
-			// bound to non rootFS dir
+		if "" != *dirValue.Dir && !strings.HasPrefix(*dirValue.Dir, dataCachePath) {
+			// bound to non dataCachePath
 			containerCallDirs[callSpecContainerDirPath] = *dirValue.Dir
 			continue dirLoop
 		}
 		
+		// copy cached files to ensure can't be mutated
 		containerCallDirs[callSpecContainerDirPath] = filepath.Join(scratchDirPath, callSpecContainerDirPath)
 
 		dirCopier := dircopier.New()

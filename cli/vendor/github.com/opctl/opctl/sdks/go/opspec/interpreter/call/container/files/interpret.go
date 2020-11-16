@@ -17,7 +17,7 @@ func Interpret(
 	scope map[string]*model.Value,
 	containerCallSpecFiles map[string]interface{},
 	scratchDirPath string,
-	dataDirPath string,
+	dataCachePath string,
 ) (map[string]string, error) {
 	containerCallFiles := map[string]string{}
 fileLoop:
@@ -43,14 +43,16 @@ fileLoop:
 			)
 		}
 
-		if !strings.HasPrefix(*fileValue.File, dataDirPath) {
-			// bound to non rootFS file
+		if !strings.HasPrefix(*fileValue.File, dataCachePath) {
+			// bound to non dataCachePath
 			containerCallFiles[callSpecContainerFilePath] = *fileValue.File
 			continue fileLoop
 		}
+
+		// copy cached files to ensure can't be mutated
 		containerCallFiles[callSpecContainerFilePath] = filepath.Join(scratchDirPath, callSpecContainerFilePath)
 
-		// create file
+		// create parent dir
 		if err := os.MkdirAll(
 			filepath.Dir(containerCallFiles[callSpecContainerFilePath]),
 			0777,
@@ -63,6 +65,7 @@ fileLoop:
 			)
 		}
 
+		// copy file
 		fileCopier := filecopier.New()
 		err = fileCopier.OS(
 			*fileValue.File,

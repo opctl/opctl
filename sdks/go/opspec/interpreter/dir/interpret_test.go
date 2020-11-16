@@ -1,6 +1,7 @@
 package dir
 
 import (
+	"errors"
 	"os"
 	"fmt"
 
@@ -28,7 +29,7 @@ var _ = Context("Interpret", func() {
 				)
 
 				/* assert */
-				Expect(actualErr.Error()).To(Equal("unable to interpret $(identifier) to dir"))
+				Expect(actualErr).To(Equal(errors.New("unable to interpret $(identifier) to dir; error was unable to coerce socket to dir; incompatible types")))
 
 			})
 		})
@@ -51,7 +52,7 @@ var _ = Context("Interpret", func() {
 					)
 
 					/* assert */
-					Expect(actualErr).To(Equal(fmt.Errorf("unable to interpret %+v to dir", providedExpression)))
+					Expect(actualErr).To(Equal(errors.New("unable to interpret $(identifier) to dir; error was unable to coerce '&{Array:<nil> Boolean:<nil> Dir:<nil> File:<nil> Number:<nil> Object:<nil> Socket:<nil> String:<nil>}' to dir")))
 				})
 			})
 			Context("value.Dir not nil", func() {

@@ -10,7 +10,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 )
 
-// Interpret a value expression
+// Interpret an expression to a value
 func Interpret(
 	valueExpression interface{},
 	scope map[string]*model.Value,

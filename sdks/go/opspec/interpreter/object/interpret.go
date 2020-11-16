@@ -8,7 +8,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
-// Interpret interprets an expression to a object value.
+// Interpret an expression to an object value.
 // Expression must be either a type supported by coerce.ToObject
 // or an object initializer
 func Interpret(
