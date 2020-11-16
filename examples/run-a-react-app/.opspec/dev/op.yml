@@ -3,16 +3,17 @@ description: runs react-app for development
 run:
   parallel:
     - op:
-        ref: github.com/opctl/golang-ops-example#1.0.2/.opspec/dev # referencing the dev op for go-svc remotely - which has been designed to be self-containing - opctl will clone the git repo and run the op for us
-    - serial:
-      - op:
-          ref: init
-      - container:
-          image: { ref: 'node:12-alpine'}
-          cmd: [npm, run, 'start']
-          dirs:
-            /src: $(/srcDir)
-          workDir: /src
-          ports: {
-            '3000':'3000'
-          }
+        # reference run-a-go-service dev op
+        ref: ../../../run-a-go-service/.opspec/dev
+    - container:
+        image:
+          ref: 'node:15-alpine'
+        cmd:
+          - sh
+          - -ce
+          - yarn && yarn run start
+        dirs:
+          /src: $(../..)
+        workDir: /src
+        ports:
+          3000: 3000

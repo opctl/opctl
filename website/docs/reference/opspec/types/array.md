@@ -14,7 +14,7 @@ Arrays...
 ### Initialization
 Array typed values can be constructed from a literal or templated array.
  
-A templated array is an array which includes one or more value reference.
+A templated array is an array which includes one or more [variable-reference [string]](../op-directory/op/variable-reference.md).
 At runtime, each reference gets evaluated and replaced with it's corresponding value. 
 
 #### Initialization Example (literal)
@@ -25,14 +25,14 @@ At runtime, each reference gets evaluated and replaced with it's corresponding v
 
 #### Initialization Example (templated)
 given:
-- `/someDir/file2.txt` is embedded in op
+- `someDir/file2.txt` is embedded in op
 - `someObject` 
   - is in scope
   - is type coercible to object
   - has property `someProperty`
 
 ```yaml
-- string $(/someDir/file2.txt)
+- string $(./someDir/file2.txt)
 - $(someObject.someProperty)
 - [ sub, array, 2]
 ```

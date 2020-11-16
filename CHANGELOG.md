@@ -6,6 +6,8 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.44 - 2020-11-16
+
 ### Added
 
 - [Dir Initializer Syntax](https://github.com/opctl/opctl/issues/500)
@@ -15,11 +17,15 @@ accordance with
 - [Opspec) use relative paths for file/dir refs #834](https://github.com/opctl/opctl/issues/834)
 - [Make input/output binding when calling ops consistent](https://github.com/opctl/opctl/issues/721)
 
+### Fixed
+
+- Certain child call errors not shown.
+
 ## 0.1.43 - 2020-11-04
 
 ### Fixed
 
-- parallelLoop loop iteration vars sometimes get set to values from other iterations.
+- ParallelLoop loop iteration vars sometimes get set to values from other iterations.
 
 ## 0.1.42 - 2020-11-03
 

@@ -11,10 +11,10 @@ An object naming variables to assign each iterations info to.
   - [value](#value)
 
 ### index
-An [identifier [string]](../identifier.md) naming a variable to bind each iterations index to.
+A [variable reference [string]](../variable-reference.md) each iterations index will be bound to.
 
 ### key
-An [identifier [string]](../identifier.md) naming a variable to bind each iterations key to.
+A [variable reference [string]](../variable-reference.md) each iterations key will be bound to.
 
 Behavior varies based on the range value:  
 
@@ -25,7 +25,7 @@ Behavior varies based on the range value:
 |object|Variable set to current property name|
 
 ### value
-An [identifier [string]](../identifier.md) naming a variable to bind each iterations value to.
+A [variable reference [string]](../variable-reference.md) each iterations value will be bound to.
 
 Behavior varies based on the range value:  
 

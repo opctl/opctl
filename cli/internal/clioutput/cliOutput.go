@@ -69,19 +69,46 @@ func (this _cliOutput) Error(s string) {
 
 func (this _cliOutput) Event(event *model.Event) {
 	switch {
-	case nil != event.CallEnded && nil != event.CallEnded.Call.Container:
+	case nil != event.CallEnded &&
+		nil == event.CallEnded.Call.Op &&
+		nil == event.CallEnded.Call.Container &&
+		nil != event.CallEnded.Error:
+		this.error(event)
+
+	case nil != event.CallEnded &&
+		nil != event.CallEnded.Call.Container:
 		this.containerExited(event)
-	case nil != event.CallStarted && nil != event.CallStarted.Call.Container:
+
+	case nil != event.CallStarted &&
+		nil != event.CallStarted.Call.Container:
 		this.containerStarted(event)
+
 	case nil != event.ContainerStdErrWrittenTo:
 		this.containerStdErrWrittenTo(event)
+
 	case nil != event.ContainerStdOutWrittenTo:
 		this.containerStdOutWrittenTo(event)
-	case nil != event.CallEnded && nil != event.CallEnded.Call.Op:
+
+	case nil != event.CallEnded &&
+		nil != event.CallEnded.Call.Op:
 		this.opEnded(event)
-	case nil != event.CallStarted && nil != event.CallStarted.Call.Op:
+
+	case nil != event.CallStarted &&
+		nil != event.CallStarted.Call.Op:
 		this.opStarted(event)
 	}
+}
+
+func (this _cliOutput) error(event *model.Event) {
+	this.Error(
+		fmt.Sprintf(
+			"Error='%v' Id='%v' OpRef='%v' Timestamp='%v'\n",
+			event.CallEnded.Error.Message,
+			event.CallEnded.Call.ID,
+			event.CallEnded.Ref,
+			event.Timestamp.Format(time.RFC3339),
+		),
+	)
 }
 
 func (this _cliOutput) containerExited(event *model.Event) {

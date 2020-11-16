@@ -10,7 +10,8 @@ References can be used to either define or access values in the current scope.
 
 When an op starts, it's initial scope includes:
 
-- `/` with a value of the current op directory i.e. the current op's `op.yml` can be accessed via `$(/op.yml)`.
+- `./` equal to the current op directory i.e. the current `op.yml` can be accessed via `$(./op.yml)`.
+- `../` equal to the parent of the current op directory i.e. the current `op.yml` can be accessed via `$(../op.yml)`.
 - any defined inputs
 
 
