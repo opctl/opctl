@@ -107,15 +107,6 @@ func (clr _caller) Call(
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-		var outcome string
-		if isKilled || nil != ctx.Err() {
-			// this call or parent call killed/cancelled
-			outcome = model.OpOutcomeKilled
-		} else if nil != err {
-			outcome = model.OpOutcomeFailed
-		} else {
-			outcome = model.OpOutcomeSucceeded
-		}
 
 		if nil == call {
 			call = &model.Call{
@@ -127,17 +118,22 @@ func (clr _caller) Call(
 		event := model.Event{
 			CallEnded: &model.CallEnded{
 				Call:    *call,
-				Outcome: outcome,
 				Outputs: outputs,
 				Ref:     opPath,
 			},
 			Timestamp: time.Now().UTC(),
 		}
 
-		if outcome == model.OpOutcomeFailed {
+		if isKilled || nil != ctx.Err() {
+			// this call or parent call killed/cancelled
+			event.CallEnded.Outcome = model.OpOutcomeKilled
+		} else if nil != err {
+			event.CallEnded.Outcome = model.OpOutcomeFailed
 			event.CallEnded.Error = &model.CallEndedError{
 				Message: err.Error(),
 			}
+		} else {
+			event.CallEnded.Outcome = model.OpOutcomeSucceeded
 		}
 
 		clr.pubSub.Publish(event)
@@ -198,7 +194,7 @@ func (clr _caller) Call(
 		for event := range eventChannel {
 			switch {
 			case nil != event.CallKillRequested && event.CallKillRequested.Request.OpID == id:
-				isKilled = true
+				// isKilled = true
 				return
 			}
 		}

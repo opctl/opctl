@@ -31,8 +31,9 @@ An object for which each key is an absolute path in the container and each value
 
 |value|meaning|
 |--|--|
-|null|Mount dir embedded in op w/ same path (equivalent to `$(/absolute/path)`)|
+|null|Mount dir embedded in op w/ same path (equivalent to `$(./relative/path)`)|
 |[dir](../../../../types/dir.md) [variable-reference [string]](../../variable-reference.md)|Mount dir|
+|[dir initializer](../../../../types/dir.md#initialization)|Evaluate and mount|
 
 ### envVars
 An [object initializer](../../../../types/object.md#initialization) or [variable-reference [string]](../../variable-reference.md), whos properties represent the name and value of an environment variable to be set in the container.
@@ -44,7 +45,7 @@ An object for which each key is an absolute path in the container and each value
 
 |value|meaning|
 |--|--|
-|null|Mount file embedded in op w/ same path (equivalent to `$(/absolute/path)`)|
+|null|Mount file embedded in op w/ same path (equivalent to `$(./relative/path)`)|
 |[file](../../../../types/file.md) [variable-reference [string]](../../variable-reference.md)|Mount file|
 |[file initializer](../../../../types/file.md#initialization)|Evaluate and mount|
 

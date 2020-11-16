@@ -14,7 +14,7 @@ Objects...
 ### Initialization
 Object typed values can be constructed from a literal or templated object.
  
-A templated object is an object which includes one or more value reference.
+A templated object is an object which includes one or more [variable-reference [string]](../op-directory/op/variable-reference.md).
 At runtime, each reference gets evaluated and replaced with it's corresponding value.
 
 #### Initialization Example (literal)
@@ -26,7 +26,7 @@ myObject:
 
 #### Initialization Example (templated)
 given:
-- `/someDir/file2.txt` is embedded in op
+- `someDir/file2.txt` is embedded in op
 - `prop2Name` is in scope
 - `someObject`
   - is in scope
@@ -37,7 +37,7 @@ given:
 ```yaml
 # interpolate properties
 myObject:
-    prop1: string $(/someDir/file2.txt)
+    prop1: string $(./someDir/file2.txt)
     $(prop2Name): $(someObject.someProperty)
     prop3: [ sub, array, 2]
     # Shorthand property name; equivalent to prop4: $(prop4)
@@ -63,6 +63,7 @@ Object typed values are coercible to:
 
 - [boolean](boolean.md) (objects which are null or empty coerce to false; all else coerce to true)
 - [file](file.md) (will be serialized to JSON)
+- [dir](dir.md) (will be treated as dir initializer)
 - [string](string.md) (will be serialized to JSON)
 
 #### Coercion Example (object to string)

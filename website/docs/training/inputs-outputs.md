@@ -27,8 +27,7 @@ run:
     cmd:
       - sh
       - -ce
-      - |
-        echo hello $person
+      - echo hello $person
 ```
 if you run that, you'll be prompted for the input
 

@@ -20,15 +20,28 @@ run:
   parallel:
     - op:
         ref: ../mysql # we reference the mysql op using its relative path to this op
-        inputs: { MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST, MYSQL_DATABASE, doSeed: true} # we pass the relevant inputs through to the mysql op
+        inputs:
+          # we pass the relevant inputs through to the mysql op
+          MYSQL_USER:
+          MYSQL_PASSWORD:
+          MYSQL_HOST:
+          MYSQL_DATABASE:
     - container:
-        image: { ref: 'golang:1.10.3' }
+        image:
+          ref: 'golang:1.15'
         name: go-svc
         dirs:
-          /go/src/github.com/golang-ops-example: $(/app) # IMPORTANT: we've created a symlink in the root of the op (i.e. at /.opspec/dev) to the source code of our app (i.e. at /app) - this is so we can encapsulate the op, meaning that any files the op needs to reference now are accessible from within its directory. we reference that symlink here as /app because that refers to the root of the op - see https://opspec.io/docs/reference/definition-format/op.yml/expressions/dir-entry-ref.html#embedded-json-file for more details
-        envVars: {MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST, MYSQL_DATABASE} # the same inputs are needed to let our code know how to connect to the DB
-        workDir: /go/src/github.com/golang-ops-example
-        ports: { '8080': '8080' }
+          # mount the source code of our app to the container
+          /src: $(../..) 
+        envVars:
+          # let our code know how to connect to the DB
+          MYSQL_USER:
+          MYSQL_PASSWORD:
+          MYSQL_HOST:
+          MYSQL_DATABASE:
+        workDir: /src
+        ports:
+          8080: 8080
         cmd:
           - sh
           - -ce

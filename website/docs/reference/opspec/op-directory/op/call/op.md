@@ -38,7 +38,7 @@ An object for which each key is an input of the referenced op and the value is o
 > This is equivalent to providing named arguments to a function in modern programming languages.
 
 ### outputs
-An object for which each key is a variable to assign and the value is one of:
+An object for which each key is an output of the referenced op and the value is one of:
 
 |value|meaning|
 |--|--|

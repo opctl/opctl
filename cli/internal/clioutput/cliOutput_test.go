@@ -324,6 +324,50 @@ var _ = Context("output", func() {
 					})
 				})
 			})
+			Context("Error truthy", func() {
+				It("should call errWriter w/ expected args", func() {
+					/* arrange */
+					providedEvent := &model.Event{
+						CallEnded: &model.CallEnded{
+							Call: model.Call{
+								ID: "ID",
+							},
+							Error: &model.CallEndedError{
+								Message: "message",
+							},
+							Ref: "ref",
+						},
+						Timestamp: time.Now(),
+					}
+					expectedWriteArg := []byte(
+						fmt.Sprintln(
+							_cliColorer.Error(
+								fmt.Sprintf(
+									"Error='%v' Id='%v' OpRef='%v' Timestamp='%v'\n",
+									providedEvent.CallEnded.Error.Message,
+									providedEvent.CallEnded.Call.ID,
+									providedEvent.CallEnded.Ref,
+									providedEvent.Timestamp.Format(time.RFC3339),
+								),
+							),
+						),
+					)
+
+					fakeErrWriter := new(fakeWriter)
+					objectUnderTest := New(
+						_cliColorer,
+						fakeErrWriter,
+						new(fakeWriter),
+					)
+
+					/* act */
+					objectUnderTest.Event(providedEvent)
+
+					/* assert */
+					Expect(fakeErrWriter.WriteArgsForCall(0)).
+						To(Equal(expectedWriteArg))
+				})
+			})
 		})
 		Context("CallStarted", func() {
 			Context("Call.Container truthy", func() {

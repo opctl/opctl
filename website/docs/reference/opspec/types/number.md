@@ -13,7 +13,7 @@ Numbers...
 ### Initialization
 Number typed values can be constructed from a literal or templated number.
  
-A templated number is a number which includes one or more value reference.
+A templated number is a number which includes one or more [variable-reference [string]](../op-directory/op/variable-reference.md).
 At runtime, each reference gets evaluated and replaced with it's corresponding value.
 
 #### Initialization Example (literal)

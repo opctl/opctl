@@ -23,9 +23,8 @@ If multiple containers have the same [name](../../reference/opspec/op-directory/
             cmd: [sleep, 1000000]
         - container:
             image: { ref: alpine }
-            name: container2
             # ping container1 by its name
             cmd: [ping, container1]
     ```
 
-1. Observe `container2` succeeds in `ping`ing `container1`. 
+1. Observe the second container succeeds in `ping`ing `container1`. 

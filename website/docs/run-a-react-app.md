@@ -11,29 +11,9 @@ Let's say our frontend React app needs to call the a go api from our previous ex
 
 What we need our `dev` op to do then is to:
 1. call `go-svc`'s `dev` op by remote reference
-2. call `react-app`'s `init` op by local reference
 3. run our React app in a container
 
-So our ops in `react-ops-example` would look like this
-
-#### init
-```yaml
-name: init
-description: installs dependencies of the project
-inputs:
-  srcDir:
-    dir:
-      default: .
-      description: project source location
-run:
-  container:
-    image: { ref: 'node:10-alpine'}
-    cmd: [npm, install]
-    dirs:
-      /src: $(srcDir)
-    workDir: /src
-
-```
+So our ops in `run-a-react-app` would look like this
 
 #### dev
 ```yaml
@@ -42,25 +22,26 @@ description: runs react-app for development
 run:
   parallel:
     - op:
-        ref: github.com/opctl/golang-ops-example#1.0.2/.opspec/dev # remotely referencing an op via git
-    - serial:
-      - op:
-          ref: init
-      - container:
-          image: { ref: 'node:10-alpine'}
-          cmd: [npm, run, 'start']
-          dirs:
-            /src: $(/srcDir)
-          workDir: /src
-          ports: {
-            '3000':'3000'
-          }
+        # reference run-a-go-service dev op
+        ref: ../../../run-a-go-service/.opspec/dev
+    - container:
+        image:
+          ref: 'node:15-alpine'
+        cmd:
+          - sh
+          - -ce
+          - yarn && yarn run start
+        dirs:
+          /src: $(../..)
+        workDir: /src
+        ports:
+          3000: 3000
 ```
 
 going to http://localhost:8080 should show us the `go-svc` api being served, and http://localhost:3000 should show us the react app, which in turns is making a call to `go-svc` and fetching data to show.
 
 Notice the following:
-1. we're referencing the `dev` op for go-svc remotely - which has been designed to be self-containing. opctl clones the `golang-ops-example` repo and runs the op for us
+1. we're referencing the `dev` op from the go-svc.
 2. we can run our ops in any combination of `parallel` and `serial` blocks, composing them as needed. for our case the `dev` op can run in the background while we init then run our react app
 3. networking between our services "just works" by referencing containers by name, thanks to how they all are in the same Docker container network, so the webpack dev server proxy configuration in `package.json` targets `go-svc`:
 

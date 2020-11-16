@@ -6,7 +6,7 @@ sidebar_label: run a go service
 We'll now look at an op to run a sample Go application. Please see the code at [https://github.com/opctl/opctl/tree/master/examples/run-a-go-service](https://github.com/opctl/opctl/tree/master/examples/run-a-go-service)
 The sample application we have requires a mysql database, therefore to run it locally we need to:
 1. Start a MySQL database with some DB credentials
-2. (optional) Seed the DB with sample data
+2. Seed the DB with sample data
 3. Start the application and provide the MySQL DB credentials as inputs - our application will read those from environment variables
 
 The ops to make that happen are explained below.
@@ -14,7 +14,7 @@ The ops to make that happen are explained below.
 #### mysql
 ```yaml
 name: mysql
-description: runs a mysql container, optionally seeding it with sample data
+description: runs a mysql container, seeding it with sample data
 inputs:
   MYSQL_USER:
     string:
@@ -27,41 +27,28 @@ inputs:
   MYSQL_DATABASE:
     string:
       default: testapp
-      description: Database to create
+      description: name of mysql database to create
   MYSQL_HOST:
     string:
-      default: mysql
-  doSeed:
-    boolean:
-      default: false
-      description: if true, sample data will be inserted in the database
+      default: run-a-go-service-mysql
 run:
-  parallel:
-    - container:
-        image: { ref: 'mysql:8' }
-        name: mysql # this value will be provided as input to the 'local' op so our code knows what mysql host to connect to
-        envVars: {MYSQL_USER , MYSQL_PASSWORD , MYSQL_DATABASE , MYSQL_RANDOM_ROOT_PASSWORD: "yes"}
-        ports: { '3306': '3306' }
-    - container:
-        image: { ref: 'mysql:8' }
-        envVars: {MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST, MYSQL_DATABASE, doSeed}
-        files:
-          /seed.sql: # this shorthand form will copy seed.sql from the root of this op to the root of the container
-        workDir: /db
-        cmd: 
-          - sh
-          - -ce
-          - |
-            echo "starting seed script"
-            sleep 25 # we'll sleep while the MySQL DB starts
-            if [ $doSeed = "true" ]
-            then
-              echo "connecting to load sql script"
-              mysql -u $MYSQL_USER -p$MYSQL_PASSWORD -h $MYSQL_HOST $MYSQL_DATABASE < /seed.sql
-            fi
-            exit 0
+  container:
+    dirs:
+      # mount our data seed scripts
+      /docker-entrypoint-initdb.d:
+    image:
+      ref: 'mysql:8'
+    # this sets an opctl overlay network DNS A record so the containers available via this name.
+    name: run-a-go-service-mysql
+    envVars:
+      MYSQL_USER:
+      MYSQL_PASSWORD:
+      MYSQL_DATABASE:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+    ports:
+      3306: 3306
 ```
-This op will run a MySQL database in a Docker container. It has an optional input, `doSeed`, which is of type `Boolean`. When `true`, it will run the `seed.sql` script in a second, parallel container to seed the MySQL database in first container with a single table and a single row of data.
+This op will run a MySQL database in a Docker container and seeds the MySQL database with a single table and a single row of data.
 
 Note that instead of writing the `cmd` inline, we could have also put the run script in a file in the op directory and referenced it.
 e.g.
@@ -96,15 +83,28 @@ run:
   parallel:
     - op:
         ref: ../mysql # we reference the mysql op using its relative path to this op
-        inputs: { MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST, MYSQL_DATABASE, doSeed: true} # we pass the relevant inputs through to the mysql op
+        inputs:
+          # we pass the relevant inputs through to the mysql op
+          MYSQL_USER:
+          MYSQL_PASSWORD:
+          MYSQL_HOST:
+          MYSQL_DATABASE:
     - container:
-        image: { ref: 'golang:1.10.3' }
+        image:
+          ref: 'golang:1.15'
         name: go-svc
         dirs:
-          /go/src/github.com/golang-ops-example: $(/app) # IMPORTANT: we've created a symlink in the root of the op (i.e. at /.opspec/dev) to the source code of our app (i.e. at /app) - this is so we can encapsulate the op, meaning that any files the op needs to reference now are accessible from within its directory. we reference that symlink here as /app because that refers to the root of the op - see https://opctl.io/docs/reference/op-definition-format/op.yml/expressions/dir-entry-ref.html#embedded-json-file for more details
-        envVars: {MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST, MYSQL_DATABASE} # the same inputs are needed to let our code know how to connect to the DB
-        workDir: /go/src/github.com/golang-ops-example
-        ports: { '8080': '8080' }
+          # mount the source code of our app to the container
+          /src: $(../..) 
+        envVars:
+          # let our code know how to connect to the DB
+          MYSQL_USER:
+          MYSQL_PASSWORD:
+          MYSQL_HOST:
+          MYSQL_DATABASE:
+        workDir: /src
+        ports:
+          8080: 8080
         cmd:
           - sh
           - -ce
