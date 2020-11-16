@@ -17,7 +17,6 @@ func ToFile(
 	scratchDir string,
 ) (*model.Value, error) {
 	var data []byte
-	uniqueString := uniquestring.NewUniqueStringFactory()
 
 	switch {
 	case nil == value:
@@ -57,7 +56,7 @@ func ToFile(
 		return nil, fmt.Errorf("unable to coerce '%s' to file", string(data))
 	}
 
-	uniqueStr, err := uniqueString.Construct()
+	uniqueStr, err := uniquestring.Construct()
 	if nil != err {
 		return nil, fmt.Errorf("unable to coerce '%+v' to file; error was %v", value, err.Error())
 	}

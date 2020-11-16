@@ -19,7 +19,7 @@ func Interpret(
 ) (string, *model.Value, error) {
 
 	if !strings.HasPrefix(ref, "/") {
-		return "", nil, fmt.Errorf("unable to interpret '%v'; expected '/'", ref)
+		return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref; expected '/'", ref)
 	}
 
 	valuePath := filepath.Join(*data.Dir, ref)

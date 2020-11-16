@@ -21,7 +21,7 @@ var _ = Context("ToArray", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(BeNil())
+			Expect(actualErr).To(Equal(errors.New("unable to coerce null to array")))
 		})
 	})
 	Context("Value.Array isn't nil", func() {
@@ -53,7 +53,7 @@ var _ = Context("ToArray", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce boolean '%v' to array; incompatible types", providedBoolean)))
+			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce boolean to array; incompatible types")))
 		})
 	})
 	Context("Value.Dir isn't nil", func() {
@@ -69,7 +69,7 @@ var _ = Context("ToArray", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to array; incompatible types", providedDir)))
+			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir to array; incompatible types")))
 		})
 	})
 	Context("Value.File isn't nil", func() {
@@ -155,7 +155,7 @@ var _ = Context("ToArray", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce number '%v' to array; incompatible types", providedNumber)))
+			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce number to array; incompatible types")))
 		})
 	})
 	Context("Value.Socket isn't nil", func() {
@@ -171,7 +171,7 @@ var _ = Context("ToArray", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce socket '%v' to array; incompatible types", providedSocket)))
+			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce socket to array; incompatible types")))
 		})
 	})
 	Context("Value.String isn't nil", func() {

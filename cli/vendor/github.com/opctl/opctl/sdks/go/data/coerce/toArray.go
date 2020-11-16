@@ -13,13 +13,13 @@ func ToArray(
 ) (*model.Value, error) {
 	switch {
 	case nil == value:
-		return nil, nil
+		return nil, fmt.Errorf("unable to coerce null to array")
 	case nil != value.Array:
 		return value, nil
 	case nil != value.Boolean:
-		return nil, fmt.Errorf("unable to coerce boolean '%v' to array; incompatible types", *value.Boolean)
+		return nil, fmt.Errorf("unable to coerce boolean to array; incompatible types")
 	case nil != value.Dir:
-		return nil, fmt.Errorf("unable to coerce dir '%v' to array; incompatible types", *value.Dir)
+		return nil, fmt.Errorf("unable to coerce dir to array; incompatible types")
 	case nil != value.File:
 		fileBytes, err := ioutil.ReadFile(*value.File)
 		if nil != err {
@@ -32,9 +32,9 @@ func ToArray(
 		}
 		return &model.Value{Array: valueArray}, nil
 	case nil != value.Number:
-		return nil, fmt.Errorf("unable to coerce number '%v' to array; incompatible types", *value.Number)
+		return nil, fmt.Errorf("unable to coerce number to array; incompatible types")
 	case nil != value.Socket:
-		return nil, fmt.Errorf("unable to coerce socket '%v' to array; incompatible types", *value.Socket)
+		return nil, fmt.Errorf("unable to coerce socket to array; incompatible types")
 	case nil != value.String:
 		valueArray := new([]interface{})
 		err := json.Unmarshal([]byte(*value.String), valueArray)

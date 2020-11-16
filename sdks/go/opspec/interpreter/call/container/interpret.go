@@ -57,12 +57,14 @@ func Interpret(
 		return nil, err
 	}
 
+	dataCachePath := filepath.Join(dataDirPath, "ops")
+
 	// interpret dirs
 	containerCall.Dirs, err = dirs.Interpret(
 		scope,
 		containerCallSpec.Dirs,
 		scratchDirPath,
-		dataDirPath,
+		dataCachePath,
 	)
 	if nil != err {
 		return nil, err
@@ -82,7 +84,7 @@ func Interpret(
 		scope,
 		containerCallSpec.Files,
 		scratchDirPath,
-		dataDirPath,
+		dataCachePath,
 	)
 	if nil != err {
 		return nil, err

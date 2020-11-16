@@ -64,7 +64,16 @@ func (oc _opCaller) Call(
 	for varName, varData := range opCall.Inputs {
 		opCallScope[varName] = varData
 	}
+	// add deprecated absolute path to scope
 	opCallScope["/"] = &model.Value{
+		Dir: &opCall.OpPath,
+	}
+	// add current directory to scope
+	opCallScope["./"] = &model.Value{
+		Dir: &opCall.OpPath,
+	}
+	// add parent directory to scope
+	opCallScope["../"] = &model.Value{
 		Dir: &opCall.OpPath,
 	}
 

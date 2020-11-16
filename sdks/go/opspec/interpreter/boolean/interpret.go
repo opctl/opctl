@@ -8,7 +8,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
 )
 
-// Interpret interprets an expression to an boolean value.
+// Interpret an expression to a boolean value.
 // Expression must be a type supported by coerce.ToBoolean
 func Interpret(
 	scope map[string]*model.Value,

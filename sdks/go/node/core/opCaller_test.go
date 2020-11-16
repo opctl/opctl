@@ -48,6 +48,12 @@ var _ = Context("opCaller", func() {
 
 			expectedChildCallScope := map[string]*model.Value{
 				"dummyScopeName": providedOpCall.Inputs["dummyScopeName"],
+				"./": &model.Value{
+					Dir: &providedOpPath,
+				},
+				"../": &model.Value{
+					Dir: &providedOpPath,
+				},
 				"/": &model.Value{
 					Dir: &providedOpPath,
 				},

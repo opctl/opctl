@@ -25,16 +25,14 @@ type CallSpec struct {
 
 //ContainerCallSpec is a spec for calling a container
 type ContainerCallSpec struct {
-	// Cmd entries will be evaluated to strings
+	// Cmd entries will be interpreted to strings
 	Cmd []interface{} `json:"cmd,omitempty"`
+	// Dirs entries will be interpreted to dirs
+	Dirs map[string]interface{} `json:"dirs,omitempty"`
 
-	// Dirs entries will be evaluated to files
-	Dirs map[string]string `json:"dirs,omitempty"`
-
-	// EnvVars entries will be evaluated to strings
+	// EnvVars entries will be interpreted to strings
 	EnvVars interface{} `json:"envVars,omitempty"`
-
-	// Files entries will be evaluated to files
+	// Dirs entries will be interpreted to files
 	Files   map[string]interface{}  `json:"files,omitempty"`
 	Image   *ContainerCallImageSpec `json:"image"`
 	Sockets map[string]string       `json:"sockets,omitempty"`

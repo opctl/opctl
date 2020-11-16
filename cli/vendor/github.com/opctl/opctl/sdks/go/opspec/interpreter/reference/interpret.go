@@ -132,7 +132,18 @@ func getRootValue(
 	opts *model.ReferenceOpts,
 ) (*model.Value, string, error) {
 	if strings.HasPrefix(ref, "/") {
+		// handle deprecated absolute path reference
 		return scope["/"], ref, nil
+	}	
+	
+	if strings.HasPrefix(ref, "./") {
+		// handle current directory reference
+		return scope["./"], ref[1:], nil
+	}
+
+	if strings.HasPrefix(ref, "../") {
+		// handle parent directory reference
+		return scope["../"], ref[2:], nil
 	}
 
 	// scope ref

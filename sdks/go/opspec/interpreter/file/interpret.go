@@ -2,9 +2,8 @@ package file
 
 import (
 	"fmt"
-	"strings"
+	"regexp"
 
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 
 	"github.com/opctl/opctl/sdks/go/data/coerce"
@@ -15,7 +14,7 @@ import (
 var fileType = "File"
 
 //
-// Interpret interprets an expression to a file value.
+// Interpret an expression to a file value.
 // Expression must be a type supported by coerce.ToFile
 // scratchDir will be used as the containing dir if file creation necessary
 //
@@ -32,8 +31,7 @@ func Interpret(
 ) (*model.Value, error) {
 	expressionAsString, expressionIsString := expression.(string)
 
-	// @TODO: this incorrectly treats $(inScope)$(inScope) as ref
-	if expressionIsString && strings.HasPrefix(expressionAsString, interpolater.RefStart) && strings.HasSuffix(expressionAsString, interpolater.RefEnd) {
+	if expressionIsString && regexp.MustCompile("^\\$\\(.+\\)$").MatchString(expressionAsString) {
 		var opts *model.ReferenceOpts
 		if createIfNotExist {
 			opts = &model.ReferenceOpts{

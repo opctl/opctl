@@ -6,8 +6,13 @@ accordance with
 
 ## [Unreleased]
 
+### Added
+
+- [Dir Initializer Syntax](https://github.com/opctl/opctl/issues/500)
+
 ### Changed
 
+- [Opspec) use relative paths for file/dir refs #834](https://github.com/opctl/opctl/issues/834)
 - [Make input/output binding when calling ops consistent](https://github.com/opctl/opctl/issues/721)
 
 ## 0.1.43 - 2020-11-04
