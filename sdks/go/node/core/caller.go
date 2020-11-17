@@ -194,7 +194,7 @@ func (clr _caller) Call(
 		for event := range eventChannel {
 			switch {
 			case nil != event.CallKillRequested && event.CallKillRequested.Request.OpID == id:
-				// isKilled = true
+				isKilled = true
 				return
 			}
 		}

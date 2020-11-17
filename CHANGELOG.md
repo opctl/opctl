@@ -6,6 +6,12 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.45 - 2020-11-17
+
+### Fixed
+
+- Calls killed by needs declaration exiting non-zero
+
 ## 0.1.44 - 2020-11-16
 
 ### Added
