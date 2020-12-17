@@ -24,9 +24,7 @@ func New(
 	nodeProvider nodeprovider.NodeProvider,
 ) Op {
 	return _op{
-		Creater: newCreater(
-			cliExiter,
-		),
+		Creater: newCreater(),
 		Installer: newInstaller(
 			cliExiter,
 			dataResolver,

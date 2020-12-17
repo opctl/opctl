@@ -170,7 +170,12 @@ func newCli(
 				name := createCmd.StringArg("NAME", "", "Op name")
 
 				createCmd.Action = func() {
-					core.Op().Create(*path, *description, *name)
+					if err := core.Op().Create(*path, *description, *name); err != nil {
+						core.Exit(cliexiter.ExitReq{
+							Message: err.Error(),
+							Code:    1,
+						})
+					}
 				}
 			})
 
