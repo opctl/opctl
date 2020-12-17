@@ -4,7 +4,7 @@ inputs:
   path:
     string:
       description: relative path to file containing a 'go:generate ...' pre-processing directive
-      default: ./...
+      default: ./cli/...
 run:
   container:
     cmd:
@@ -12,7 +12,7 @@ run:
       - generate
       - $(path)
     dirs:
-      /src: $(../..)
+      /src: $(../.../..)
     envVars:
       GOFLAGS: -mod=vendor
     # @TODO: identify why fake generation breaks on 1.14

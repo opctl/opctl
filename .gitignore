@@ -8,3 +8,6 @@ coverage/
 
 ## goland
 .idea/
+
+### build
+/opctl.*
