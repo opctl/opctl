@@ -40,11 +40,17 @@ type FakeCore struct {
 	exitArgsForCall []struct {
 		arg1 cliexiter.ExitReq
 	}
-	LsStub        func(context.Context, string)
+	LsStub        func(context.Context, string) error
 	lsMutex       sync.RWMutex
 	lsArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
+	}
+	lsReturns struct {
+		result1 error
+	}
+	lsReturnsOnCall map[int]struct {
+		result1 error
 	}
 	NodeStub        func() node.Node
 	nodeMutex       sync.RWMutex
@@ -236,8 +242,9 @@ func (fake *FakeCore) ExitArgsForCall(i int) cliexiter.ExitReq {
 	return argsForCall.arg1
 }
 
-func (fake *FakeCore) Ls(arg1 context.Context, arg2 string) {
+func (fake *FakeCore) Ls(arg1 context.Context, arg2 string) error {
 	fake.lsMutex.Lock()
+	ret, specificReturn := fake.lsReturnsOnCall[len(fake.lsArgsForCall)]
 	fake.lsArgsForCall = append(fake.lsArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
@@ -245,8 +252,13 @@ func (fake *FakeCore) Ls(arg1 context.Context, arg2 string) {
 	fake.recordInvocation("Ls", []interface{}{arg1, arg2})
 	fake.lsMutex.Unlock()
 	if fake.LsStub != nil {
-		fake.LsStub(arg1, arg2)
+		return fake.LsStub(arg1, arg2)
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.lsReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeCore) LsCallCount() int {
@@ -255,7 +267,7 @@ func (fake *FakeCore) LsCallCount() int {
 	return len(fake.lsArgsForCall)
 }
 
-func (fake *FakeCore) LsCalls(stub func(context.Context, string)) {
+func (fake *FakeCore) LsCalls(stub func(context.Context, string) error) {
 	fake.lsMutex.Lock()
 	defer fake.lsMutex.Unlock()
 	fake.LsStub = stub
@@ -266,6 +278,29 @@ func (fake *FakeCore) LsArgsForCall(i int) (context.Context, string) {
 	defer fake.lsMutex.RUnlock()
 	argsForCall := fake.lsArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeCore) LsReturns(result1 error) {
+	fake.lsMutex.Lock()
+	defer fake.lsMutex.Unlock()
+	fake.LsStub = nil
+	fake.lsReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeCore) LsReturnsOnCall(i int, result1 error) {
+	fake.lsMutex.Lock()
+	defer fake.lsMutex.Unlock()
+	fake.LsStub = nil
+	if fake.lsReturnsOnCall == nil {
+		fake.lsReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.lsReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *FakeCore) Node() node.Node {
