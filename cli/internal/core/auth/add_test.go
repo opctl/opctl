@@ -6,8 +6,6 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/cliexiter"
-	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	modelFakes "github.com/opctl/opctl/cli/internal/model/fakes"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -41,7 +39,7 @@ var _ = Context("Adder", func() {
 			}
 
 			/* act */
-			objectUnderTest.Add(
+			err := objectUnderTest.Add(
 				expectedCtx,
 				expectedReq.Resources,
 				expectedReq.Username,
@@ -50,6 +48,7 @@ var _ = Context("Adder", func() {
 
 			/* assert */
 			actualCtx, actualReq := fakeAPIClient.AddAuthArgsForCall(0)
+			Expect(err).To(BeNil())
 			Expect(actualCtx).To(Equal(expectedCtx))
 			Expect(actualReq).To(BeEquivalentTo(expectedReq))
 		})
@@ -66,19 +65,15 @@ var _ = Context("Adder", func() {
 				fakeNodeProvider := new(nodeprovider.Fake)
 				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
-				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 				objectUnderTest := _adder{
-					cliExiter:    fakeCliExiter,
 					nodeProvider: fakeNodeProvider,
 				}
 
 				/* act */
-				objectUnderTest.Add(context.TODO(), "", "", "")
+				err := objectUnderTest.Add(context.TODO(), "", "", "")
 
 				/* assert */
-				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+				Expect(err).To(MatchError(expectedError))
 			})
 		})
 	})
