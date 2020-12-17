@@ -1,0 +1,42 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Get branch name (push)
+      if: github.event_name != 'pull_request'
+      shell: bash
+      id: branch_name_push
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+
+    - name: Get branch name (pull_request)
+      if: github.event_name == 'pull_request'
+      shell: bash
+      id: branch_name_pr
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF})"
+
+    - name: Download opctl
+      uses: dsaltares/fetch-gh-release-asset@0.0.5
+      with:
+        repo: opctl/opctl
+        version: tags/0.1.45
+        file: opctl0.1.45.linux.tgz
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract opctl
+      run: tar -xvzf opctl0.1.45.linux.tgz
+
+    - run: ./opctl run -a gitBranch=${{ steps.branch_name_push.outputs.branch }}${{ steps.branch_name_pr.outputs.branch }} build
