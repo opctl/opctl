@@ -2,8 +2,8 @@ package core
 
 import (
 	"context"
+	"errors"
 
-	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -13,35 +13,31 @@ import (
 type Eventser interface {
 	Events(
 		ctx context.Context,
-	)
+	) error
 }
 
 // newEventser returns an initialized "events" command
 func newEventser(
-	cliExiter cliexiter.CliExiter,
 	cliOutput clioutput.CliOutput,
 	nodeProvider nodeprovider.NodeProvider,
 ) Eventser {
 	return _eventser{
-		cliExiter:    cliExiter,
 		cliOutput:    cliOutput,
 		nodeProvider: nodeProvider,
 	}
 }
 
 type _eventser struct {
-	cliExiter    cliexiter.CliExiter
 	cliOutput    clioutput.CliOutput
 	nodeProvider nodeprovider.NodeProvider
 }
 
 func (ivkr _eventser) Events(
 	ctx context.Context,
-) {
-	nodeHandle, createNodeIfNotExistsErr := ivkr.nodeProvider.CreateNodeIfNotExists()
-	if nil != createNodeIfNotExistsErr {
-		ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: createNodeIfNotExistsErr.Error(), Code: 1})
-		return // support fake exiter
+) error {
+	nodeHandle, err := ivkr.nodeProvider.CreateNodeIfNotExists()
+	if nil != err {
+		return err
 	}
 
 	eventChannel, err := nodeHandle.APIClient().GetEventStream(
@@ -49,22 +45,17 @@ func (ivkr _eventser) Events(
 		&model.GetEventStreamReq{},
 	)
 	if nil != err {
-		ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
-		return // support fake exiter
+		return err
 	}
 
 	for {
 		event, isEventChannelOpen := <-eventChannel
 		if !isEventChannelOpen {
-			ivkr.cliExiter.Exit(
-				cliexiter.ExitReq{
-					Message: "Connection to event stream lost",
-					Code:    1,
-				},
-			)
-			return // support fake exiter
+			return errors.New("Connection to event stream lost")
 		}
 
 		ivkr.cliOutput.Event(&event)
 	}
+
+	return nil
 }

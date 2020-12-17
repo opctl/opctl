@@ -116,7 +116,12 @@ func newCli(
 
 	cli.Command("events", "Stream events", func(eventsCmd *mow.Cmd) {
 		eventsCmd.Action = func() {
-			core.Events(context.TODO())
+			if err := core.Events(context.TODO()); err != nil {
+				core.Exit(cliexiter.ExitReq{
+					Message: err.Error(),
+					Code:    1,
+				})
+			}
 		}
 	})
 

@@ -49,7 +49,6 @@ func New(
 			nodeProvider,
 		),
 		Eventser: newEventser(
-			cliExiter,
 			cliOutput,
 			nodeProvider,
 		),

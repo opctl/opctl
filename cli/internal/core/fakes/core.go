@@ -24,10 +24,16 @@ type FakeCore struct {
 	authReturnsOnCall map[int]struct {
 		result1 auth.Auth
 	}
-	EventsStub        func(context.Context)
+	EventsStub        func(context.Context) error
 	eventsMutex       sync.RWMutex
 	eventsArgsForCall []struct {
 		arg1 context.Context
+	}
+	eventsReturns struct {
+		result1 error
+	}
+	eventsReturnsOnCall map[int]struct {
+		result1 error
 	}
 	ExitStub        func(cliexiter.ExitReq)
 	exitMutex       sync.RWMutex
@@ -139,16 +145,22 @@ func (fake *FakeCore) AuthReturnsOnCall(i int, result1 auth.Auth) {
 	}{result1}
 }
 
-func (fake *FakeCore) Events(arg1 context.Context) {
+func (fake *FakeCore) Events(arg1 context.Context) error {
 	fake.eventsMutex.Lock()
+	ret, specificReturn := fake.eventsReturnsOnCall[len(fake.eventsArgsForCall)]
 	fake.eventsArgsForCall = append(fake.eventsArgsForCall, struct {
 		arg1 context.Context
 	}{arg1})
 	fake.recordInvocation("Events", []interface{}{arg1})
 	fake.eventsMutex.Unlock()
 	if fake.EventsStub != nil {
-		fake.EventsStub(arg1)
+		return fake.EventsStub(arg1)
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.eventsReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeCore) EventsCallCount() int {
@@ -157,7 +169,7 @@ func (fake *FakeCore) EventsCallCount() int {
 	return len(fake.eventsArgsForCall)
 }
 
-func (fake *FakeCore) EventsCalls(stub func(context.Context)) {
+func (fake *FakeCore) EventsCalls(stub func(context.Context) error) {
 	fake.eventsMutex.Lock()
 	defer fake.eventsMutex.Unlock()
 	fake.EventsStub = stub
@@ -168,6 +180,29 @@ func (fake *FakeCore) EventsArgsForCall(i int) context.Context {
 	defer fake.eventsMutex.RUnlock()
 	argsForCall := fake.eventsArgsForCall[i]
 	return argsForCall.arg1
+}
+
+func (fake *FakeCore) EventsReturns(result1 error) {
+	fake.eventsMutex.Lock()
+	defer fake.eventsMutex.Unlock()
+	fake.EventsStub = nil
+	fake.eventsReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeCore) EventsReturnsOnCall(i int, result1 error) {
+	fake.eventsMutex.Lock()
+	defer fake.eventsMutex.Unlock()
+	fake.EventsStub = nil
+	if fake.eventsReturnsOnCall == nil {
+		fake.eventsReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.eventsReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *FakeCore) Exit(arg1 cliexiter.ExitReq) {
