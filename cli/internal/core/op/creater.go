@@ -3,7 +3,6 @@ package op
 import (
 	"path/filepath"
 
-	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/sdks/go/opspec"
 )
 
@@ -13,33 +12,24 @@ type Creater interface {
 		path string,
 		description string,
 		name string,
-	)
+	) error
 }
 
 // newCreater returns an initialized "op create" sub command
-func newCreater(
-	cliExiter cliexiter.CliExiter,
-) Creater {
-	return _creater{
-		cliExiter: cliExiter,
-	}
+func newCreater() Creater {
+	return _creater{}
 }
 
-type _creater struct {
-	cliExiter cliexiter.CliExiter
-}
+type _creater struct{}
 
 func (ivkr _creater) Create(
 	path string,
 	description string,
 	name string,
-) {
-	if err := opspec.Create(
+) error {
+	return opspec.Create(
 		filepath.Join(path, name),
 		name,
 		description,
-	); nil != err {
-		ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
-		return // support fake exiter
-	}
+	)
 }
