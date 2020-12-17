@@ -45,7 +45,6 @@ func New(
 
 	return _core{
 		Auther: newAuther(
-			cliExiter,
 			dataResolver,
 			nodeProvider,
 		),

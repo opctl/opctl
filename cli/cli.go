@@ -102,7 +102,12 @@ func newCli(
 				password := addCmd.StringOpt("p password", "", "Password")
 
 				addCmd.Action = func() {
-					core.Auth().Add(context.TODO(), *resources, *username, *password)
+					if err := core.Auth().Add(context.TODO(), *resources, *username, *password); err != nil {
+						core.Exit(cliexiter.ExitReq{
+							Message: err.Error(),
+							Code:    1,
+						})
+					}
 				}
 			})
 

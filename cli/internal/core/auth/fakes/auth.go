@@ -9,7 +9,7 @@ import (
 )
 
 type FakeAuth struct {
-	AddStub        func(context.Context, string, string, string)
+	AddStub        func(context.Context, string, string, string) error
 	addMutex       sync.RWMutex
 	addArgsForCall []struct {
 		arg1 context.Context
@@ -17,12 +17,19 @@ type FakeAuth struct {
 		arg3 string
 		arg4 string
 	}
+	addReturns struct {
+		result1 error
+	}
+	addReturnsOnCall map[int]struct {
+		result1 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeAuth) Add(arg1 context.Context, arg2 string, arg3 string, arg4 string) {
+func (fake *FakeAuth) Add(arg1 context.Context, arg2 string, arg3 string, arg4 string) error {
 	fake.addMutex.Lock()
+	ret, specificReturn := fake.addReturnsOnCall[len(fake.addArgsForCall)]
 	fake.addArgsForCall = append(fake.addArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
@@ -32,8 +39,13 @@ func (fake *FakeAuth) Add(arg1 context.Context, arg2 string, arg3 string, arg4 s
 	fake.recordInvocation("Add", []interface{}{arg1, arg2, arg3, arg4})
 	fake.addMutex.Unlock()
 	if fake.AddStub != nil {
-		fake.AddStub(arg1, arg2, arg3, arg4)
+		return fake.AddStub(arg1, arg2, arg3, arg4)
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.addReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeAuth) AddCallCount() int {
@@ -42,7 +54,7 @@ func (fake *FakeAuth) AddCallCount() int {
 	return len(fake.addArgsForCall)
 }
 
-func (fake *FakeAuth) AddCalls(stub func(context.Context, string, string, string)) {
+func (fake *FakeAuth) AddCalls(stub func(context.Context, string, string, string) error) {
 	fake.addMutex.Lock()
 	defer fake.addMutex.Unlock()
 	fake.AddStub = stub
@@ -53,6 +65,29 @@ func (fake *FakeAuth) AddArgsForCall(i int) (context.Context, string, string, st
 	defer fake.addMutex.RUnlock()
 	argsForCall := fake.addArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
+}
+
+func (fake *FakeAuth) AddReturns(result1 error) {
+	fake.addMutex.Lock()
+	defer fake.addMutex.Unlock()
+	fake.AddStub = nil
+	fake.addReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeAuth) AddReturnsOnCall(i int, result1 error) {
+	fake.addMutex.Lock()
+	defer fake.addMutex.Unlock()
+	fake.AddStub = nil
+	if fake.addReturnsOnCall == nil {
+		fake.addReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.addReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *FakeAuth) Invocations() map[string][][]interface{} {
