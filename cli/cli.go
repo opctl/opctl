@@ -231,7 +231,20 @@ func newCli(
 		opRef := runCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
 		runCmd.Action = func() {
-			core.Run(context.TODO(), *opRef, &model.RunOpts{Args: *args, ArgFile: *argFile})
+			if err := core.Run(context.TODO(), *opRef, &model.RunOpts{Args: *args, ArgFile: *argFile}); err != nil {
+				re, ok := err.(*corePkg.RunError)
+				if ok {
+					core.Exit(cliexiter.ExitReq{
+						Message: err.Error(),
+						Code:    re.ExitCode,
+					})
+				} else {
+					core.Exit(cliexiter.ExitReq{
+						Message: err.Error(),
+						Code:    re.ExitCode,
+					})
+				}
+			}
 		}
 	})
 

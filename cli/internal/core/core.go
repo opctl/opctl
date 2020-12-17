@@ -63,7 +63,6 @@ func New(
 		),
 		Runer: newRuner(
 			cliColorer,
-			cliExiter,
 			cliOutput,
 			cliParamSatisfier,
 			dataResolver,

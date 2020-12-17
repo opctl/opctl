@@ -8,8 +8,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/clicolorer"
-	"github.com/opctl/opctl/cli/internal/cliexiter"
-	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	clioutputFakes "github.com/opctl/opctl/cli/internal/clioutput/fakes"
 	cliparamsatisfierFakes "github.com/opctl/opctl/cli/internal/cliparamsatisfier/fakes"
 	dataresolver "github.com/opctl/opctl/cli/internal/dataresolver/fakes"
@@ -50,7 +48,6 @@ var _ = Context("Runer", func() {
 
 			objectUnderTest := _runer{
 				dataResolver:      fakeDataResolver,
-				cliExiter:         new(cliexiterFakes.FakeCliExiter),
 				cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 				nodeProvider:      fakeNodeProvider,
 			}
@@ -73,20 +70,16 @@ var _ = Context("Runer", func() {
 				fakeDataResolver := new(dataresolver.FakeDataResolver)
 				fakeDataResolver.ResolveReturns(fakeOpHandle, nil)
 
-				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 				objectUnderTest := _runer{
 					dataResolver:      fakeDataResolver,
-					cliExiter:         fakeCliExiter,
 					cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 				}
 
 				/* act */
-				objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+				err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
 
 				/* assert */
-				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					To(Equal(cliexiter.ExitReq{Message: "", Code: 1}))
+				Expect(err).To(MatchError(""))
 			})
 		})
 		Context("opfile.Get doesn't error", func() {
@@ -129,7 +122,6 @@ var _ = Context("Runer", func() {
 
 				objectUnderTest := _runer{
 					dataResolver:      fakeDataResolver,
-					cliExiter:         new(cliexiterFakes.FakeCliExiter),
 					cliParamSatisfier: fakeCliParamSatisfier,
 					nodeProvider:      fakeNodeProvider,
 				}
@@ -145,7 +137,6 @@ var _ = Context("Runer", func() {
 			Context("apiClient.StartOp errors", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
-					fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 					returnedError := errors.New("dummyError")
 
 					dummyOpDataHandle := getDummyOpDataHandle()
@@ -165,17 +156,15 @@ var _ = Context("Runer", func() {
 
 					objectUnderTest := _runer{
 						dataResolver:      fakeDataResolver,
-						cliExiter:         fakeCliExiter,
 						cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 						nodeProvider:      fakeNodeProvider,
 					}
 
 					/* act */
-					objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+					err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
 
 					/* assert */
-					Expect(fakeCliExiter.ExitArgsForCall(0)).
-						To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
+					Expect(err).To(MatchError(returnedError))
 				})
 			})
 			Context("apiClient.StartOp doesn't error", func() {
@@ -212,7 +201,6 @@ var _ = Context("Runer", func() {
 
 					objectUnderTest := _runer{
 						dataResolver:      fakeDataResolver,
-						cliExiter:         new(cliexiterFakes.FakeCliExiter),
 						cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 						nodeProvider:      fakeNodeProvider,
 					}
@@ -235,7 +223,6 @@ var _ = Context("Runer", func() {
 				Context("apiClient.GetEventStream errors", func() {
 					It("should call exiter w/ expected args", func() {
 						/* arrange */
-						fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 						returnedError := errors.New("dummyError")
 
 						dummyOpDataHandle := getDummyOpDataHandle()
@@ -254,25 +241,21 @@ var _ = Context("Runer", func() {
 
 						objectUnderTest := _runer{
 							dataResolver:      fakeDataResolver,
-							cliExiter:         fakeCliExiter,
 							cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 							nodeProvider:      fakeNodeProvider,
 						}
 
 						/* act */
-						objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+						err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
 
 						/* assert */
-						Expect(fakeCliExiter.ExitArgsForCall(0)).
-							To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
+						Expect(err).To(MatchError(returnedError))
 					})
 				})
 				Context("apiClient.GetEventStream doesn't error", func() {
 					Context("event channel closes", func() {
 						It("should call exiter w/ expected args", func() {
 							/* arrange */
-							fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 							dummyOpDataHandle := getDummyOpDataHandle()
 
 							fakeDataResolver := new(dataresolver.FakeDataResolver)
@@ -291,17 +274,15 @@ var _ = Context("Runer", func() {
 
 							objectUnderTest := _runer{
 								dataResolver:      fakeDataResolver,
-								cliExiter:         fakeCliExiter,
 								cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 								nodeProvider:      fakeNodeProvider,
 							}
 
 							/* act */
-							objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+							err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
 
 							/* assert */
-							Expect(fakeCliExiter.ExitArgsForCall(0)).
-								To(Equal(cliexiter.ExitReq{Message: "Event channel closed unexpectedly", Code: 1}))
+							Expect(err).To(MatchError("Event channel closed unexpectedly"))
 						})
 					})
 					Context("event channel doesn't close", func() {
@@ -321,8 +302,6 @@ var _ = Context("Runer", func() {
 											},
 										}
 
-										fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 										dummyOpDataHandle := getDummyOpDataHandle()
 
 										fakeDataResolver := new(dataresolver.FakeDataResolver)
@@ -344,16 +323,14 @@ var _ = Context("Runer", func() {
 										objectUnderTest := _runer{
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
-											cliExiter:         fakeCliExiter,
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 											nodeProvider:      fakeNodeProvider,
 										}
 
 										/* act/assert */
-										objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
-										Expect(fakeCliExiter.ExitArgsForCall(0)).
-											To(Equal(cliexiter.ExitReq{Code: 0}))
+										err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+										Expect(err).To(BeNil())
 									})
 								})
 								Context("Outcome==KILLED", func() {
@@ -369,8 +346,6 @@ var _ = Context("Runer", func() {
 											},
 										}
 
-										fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 										dummyOpDataHandle := getDummyOpDataHandle()
 
 										fakeDataResolver := new(dataresolver.FakeDataResolver)
@@ -392,16 +367,14 @@ var _ = Context("Runer", func() {
 										objectUnderTest := _runer{
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
-											cliExiter:         fakeCliExiter,
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 											nodeProvider:      fakeNodeProvider,
 										}
 
 										/* act/assert */
-										objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
-										Expect(fakeCliExiter.ExitArgsForCall(0)).
-											To(Equal(cliexiter.ExitReq{Code: 137}))
+										err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+										Expect(err).To(MatchError(&RunError{ExitCode: 137}))
 									})
 
 								})
@@ -418,8 +391,6 @@ var _ = Context("Runer", func() {
 											},
 										}
 
-										fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 										dummyOpDataHandle := getDummyOpDataHandle()
 
 										fakeDataResolver := new(dataresolver.FakeDataResolver)
@@ -441,16 +412,14 @@ var _ = Context("Runer", func() {
 										objectUnderTest := _runer{
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
-											cliExiter:         fakeCliExiter,
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 											nodeProvider:      fakeNodeProvider,
 										}
 
 										/* act/assert */
-										objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
-										Expect(fakeCliExiter.ExitArgsForCall(0)).
-											To(Equal(cliexiter.ExitReq{Code: 1}))
+										err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+										Expect(err).To(MatchError(&RunError{ExitCode: 1}))
 									})
 								})
 								Context("Outcome==?", func() {
@@ -466,8 +435,6 @@ var _ = Context("Runer", func() {
 											},
 										}
 
-										fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 										dummyOpDataHandle := getDummyOpDataHandle()
 
 										fakeDataResolver := new(dataresolver.FakeDataResolver)
@@ -489,16 +456,14 @@ var _ = Context("Runer", func() {
 										objectUnderTest := _runer{
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
-											cliExiter:         fakeCliExiter,
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 											nodeProvider:      fakeNodeProvider,
 										}
 
 										/* act/assert */
-										objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
-										Expect(fakeCliExiter.ExitArgsForCall(0)).
-											To(Equal(cliexiter.ExitReq{Code: 1}))
+										err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+										Expect(err).To(MatchError(&RunError{ExitCode: 1}))
 									})
 								})
 							})
