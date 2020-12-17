@@ -18,7 +18,7 @@ import (
 type Creater interface {
 	Create(
 		opts model.NodeCreateOpts,
-	)
+	) error
 }
 
 // New returns an initialized "node create" command
@@ -30,26 +30,26 @@ type _creater struct{}
 
 func (ivkr _creater) Create(
 	opts model.NodeCreateOpts,
-) {
+) error {
 	dataDir, err := datadir.New(opts.DataDir)
 	if nil != err {
-		panic(err)
+		return err
 	}
 
 	if err := dataDir.InitAndLock(); nil != err {
-		panic(err)
+		return err
 	}
 
 	var containerRuntime containerruntime.ContainerRuntime
 	if "k8s" == opts.ContainerRuntime {
 		containerRuntime, err = k8s.New()
 		if nil != err {
-			panic(err)
+			return err
 		}
 	} else {
 		containerRuntime, err = docker.New()
 		if nil != err {
-			panic(err)
+			return err
 		}
 	}
 
@@ -65,7 +65,8 @@ func (ivkr _creater) Create(
 		)
 
 	if nil != err {
-		panic(err)
+		return err
 	}
 
+	return nil
 }
