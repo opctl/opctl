@@ -9,25 +9,37 @@ import (
 )
 
 type FakeCreater struct {
-	CreateStub        func(model.NodeCreateOpts)
+	CreateStub        func(model.NodeCreateOpts) error
 	createMutex       sync.RWMutex
 	createArgsForCall []struct {
 		arg1 model.NodeCreateOpts
+	}
+	createReturns struct {
+		result1 error
+	}
+	createReturnsOnCall map[int]struct {
+		result1 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeCreater) Create(arg1 model.NodeCreateOpts) {
+func (fake *FakeCreater) Create(arg1 model.NodeCreateOpts) error {
 	fake.createMutex.Lock()
+	ret, specificReturn := fake.createReturnsOnCall[len(fake.createArgsForCall)]
 	fake.createArgsForCall = append(fake.createArgsForCall, struct {
 		arg1 model.NodeCreateOpts
 	}{arg1})
 	fake.recordInvocation("Create", []interface{}{arg1})
 	fake.createMutex.Unlock()
 	if fake.CreateStub != nil {
-		fake.CreateStub(arg1)
+		return fake.CreateStub(arg1)
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.createReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeCreater) CreateCallCount() int {
@@ -36,7 +48,7 @@ func (fake *FakeCreater) CreateCallCount() int {
 	return len(fake.createArgsForCall)
 }
 
-func (fake *FakeCreater) CreateCalls(stub func(model.NodeCreateOpts)) {
+func (fake *FakeCreater) CreateCalls(stub func(model.NodeCreateOpts) error) {
 	fake.createMutex.Lock()
 	defer fake.createMutex.Unlock()
 	fake.CreateStub = stub
@@ -47,6 +59,29 @@ func (fake *FakeCreater) CreateArgsForCall(i int) model.NodeCreateOpts {
 	defer fake.createMutex.RUnlock()
 	argsForCall := fake.createArgsForCall[i]
 	return argsForCall.arg1
+}
+
+func (fake *FakeCreater) CreateReturns(result1 error) {
+	fake.createMutex.Lock()
+	defer fake.createMutex.Unlock()
+	fake.CreateStub = nil
+	fake.createReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeCreater) CreateReturnsOnCall(i int, result1 error) {
+	fake.createMutex.Lock()
+	defer fake.createMutex.Unlock()
+	fake.CreateStub = nil
+	if fake.createReturnsOnCall == nil {
+		fake.createReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.createReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *FakeCreater) Invocations() map[string][][]interface{} {

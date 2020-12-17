@@ -9,10 +9,16 @@ import (
 )
 
 type FakeNode struct {
-	CreateStub        func(model.NodeCreateOpts)
+	CreateStub        func(model.NodeCreateOpts) error
 	createMutex       sync.RWMutex
 	createArgsForCall []struct {
 		arg1 model.NodeCreateOpts
+	}
+	createReturns struct {
+		result1 error
+	}
+	createReturnsOnCall map[int]struct {
+		result1 error
 	}
 	KillStub        func() error
 	killMutex       sync.RWMutex
@@ -28,16 +34,22 @@ type FakeNode struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeNode) Create(arg1 model.NodeCreateOpts) {
+func (fake *FakeNode) Create(arg1 model.NodeCreateOpts) error {
 	fake.createMutex.Lock()
+	ret, specificReturn := fake.createReturnsOnCall[len(fake.createArgsForCall)]
 	fake.createArgsForCall = append(fake.createArgsForCall, struct {
 		arg1 model.NodeCreateOpts
 	}{arg1})
 	fake.recordInvocation("Create", []interface{}{arg1})
 	fake.createMutex.Unlock()
 	if fake.CreateStub != nil {
-		fake.CreateStub(arg1)
+		return fake.CreateStub(arg1)
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.createReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeNode) CreateCallCount() int {
@@ -46,7 +58,7 @@ func (fake *FakeNode) CreateCallCount() int {
 	return len(fake.createArgsForCall)
 }
 
-func (fake *FakeNode) CreateCalls(stub func(model.NodeCreateOpts)) {
+func (fake *FakeNode) CreateCalls(stub func(model.NodeCreateOpts) error) {
 	fake.createMutex.Lock()
 	defer fake.createMutex.Unlock()
 	fake.CreateStub = stub
@@ -57,6 +69,29 @@ func (fake *FakeNode) CreateArgsForCall(i int) model.NodeCreateOpts {
 	defer fake.createMutex.RUnlock()
 	argsForCall := fake.createArgsForCall[i]
 	return argsForCall.arg1
+}
+
+func (fake *FakeNode) CreateReturns(result1 error) {
+	fake.createMutex.Lock()
+	defer fake.createMutex.Unlock()
+	fake.CreateStub = nil
+	fake.createReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeNode) CreateReturnsOnCall(i int, result1 error) {
+	fake.createMutex.Lock()
+	defer fake.createMutex.Unlock()
+	fake.CreateStub = nil
+	if fake.createReturnsOnCall == nil {
+		fake.createReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.createReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *FakeNode) Kill() error {

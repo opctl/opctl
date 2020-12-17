@@ -143,7 +143,7 @@ func newCli(
 
 		nodeCmd.Command("create", "Creates a node", func(createCmd *mow.Cmd) {
 			createCmd.Action = func() {
-				core.Node().Create(nodeCreateOpts)
+				exitWith("", core.Node().Create(nodeCreateOpts))
 			}
 		})
 
