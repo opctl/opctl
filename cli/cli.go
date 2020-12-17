@@ -150,7 +150,12 @@ func newCli(
 
 		nodeCmd.Command("kill", "Kills a node", func(killCmd *mow.Cmd) {
 			killCmd.Action = func() {
-				core.Node().Kill()
+				if err := core.Node().Kill(); err != nil {
+					core.Exit(cliexiter.ExitReq{
+						Message: err.Error(),
+						Code:    1,
+					})
+				}
 			}
 		})
 	})
@@ -186,7 +191,12 @@ func newCli(
 			opID := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
 
 			killCmd.Action = func() {
-				core.Op().Kill(context.TODO(), *opID)
+				if err := core.Op().Kill(context.TODO(), *opID); err != nil {
+					core.Exit(cliexiter.ExitReq{
+						Message: err.Error(),
+						Code:    1,
+					})
+				}
 			}
 		})
 

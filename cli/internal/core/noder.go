@@ -1,7 +1,6 @@
 package core
 
 import (
-	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/core/node"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 )
@@ -12,15 +11,9 @@ type Noder interface {
 }
 
 // newNoder returns an initialized "node" sub command
-func newNoder(
-	cliExiter cliexiter.CliExiter,
-	nodeProvider nodeprovider.NodeProvider,
-) Noder {
+func newNoder(nodeProvider nodeprovider.NodeProvider) Noder {
 	return _noder{
-		node: node.New(
-			cliExiter,
-			nodeProvider,
-		),
+		node: node.New(nodeProvider),
 	}
 }
 

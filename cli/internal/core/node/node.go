@@ -3,7 +3,6 @@ package node
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
-	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/core/node/creater"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 )
@@ -16,16 +15,10 @@ type Node interface {
 }
 
 // New returns an initialized "node" sub command
-func New(
-	cliExiter cliexiter.CliExiter,
-	nodeProvider nodeprovider.NodeProvider,
-) Node {
+func New(nodeProvider nodeprovider.NodeProvider) Node {
 	return _node{
 		Creater: creater.New(),
-		Killer: newKiller(
-			cliExiter,
-			nodeProvider,
-		),
+		Killer:  newKiller(nodeProvider),
 	}
 }
 
