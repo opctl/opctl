@@ -6,8 +6,6 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/cliexiter"
-	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	modelFakes "github.com/opctl/opctl/cli/internal/model/fakes"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -27,14 +25,11 @@ var _ = Context("Eventser", func() {
 			fakeNodeProvider := new(nodeprovider.Fake)
 			fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
-			fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 			eventChannel := make(chan model.Event)
 			close(eventChannel)
 			fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 			objectUnderTest := _eventser{
-				cliExiter:    fakeCliExiter,
 				nodeProvider: fakeNodeProvider,
 			}
 
@@ -54,7 +49,6 @@ var _ = Context("Eventser", func() {
 		Context("client.GetEventStream errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 				returnedError := errors.New("dummyError")
 
 				fakeAPIClient := new(clientFakes.FakeClient)
@@ -67,26 +61,20 @@ var _ = Context("Eventser", func() {
 				fakeAPIClient.GetEventStreamReturns(nil, returnedError)
 
 				objectUnderTest := _eventser{
-					cliExiter:    fakeCliExiter,
 					nodeProvider: fakeNodeProvider,
 				}
 
 				/* act */
-				objectUnderTest.Events(
-					context.Background(),
-				)
+				err := objectUnderTest.Events(context.Background())
 
 				/* assert */
-				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
+				Expect(err).To(MatchError(returnedError))
 			})
 		})
 		Context("client.GetEventStream doesn't error", func() {
 			Context("channel closes unexpectedly", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
-					fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 					fakeAPIClient := new(clientFakes.FakeClient)
 					fakeNodeHandle := new(modelFakes.FakeNodeHandle)
 					fakeNodeHandle.APIClientReturns(fakeAPIClient)
@@ -98,18 +86,14 @@ var _ = Context("Eventser", func() {
 					fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 					objectUnderTest := _eventser{
-						cliExiter:    fakeCliExiter,
 						nodeProvider: fakeNodeProvider,
 					}
 
 					/* act */
-					objectUnderTest.Events(
-						context.Background(),
-					)
+					err := objectUnderTest.Events(context.Background())
 
 					/* assert */
-					Expect(fakeCliExiter.ExitArgsForCall(0)).
-						To(Equal(cliexiter.ExitReq{Message: "Connection to event stream lost", Code: 1}))
+					Expect(err).To(MatchError(err))
 				})
 			})
 		})
