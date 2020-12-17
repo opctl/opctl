@@ -72,12 +72,18 @@ type FakeCore struct {
 	opReturnsOnCall map[int]struct {
 		result1 op.Op
 	}
-	RunStub        func(context.Context, string, *model.RunOpts)
+	RunStub        func(context.Context, string, *model.RunOpts) error
 	runMutex       sync.RWMutex
 	runArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
 		arg3 *model.RunOpts
+	}
+	runReturns struct {
+		result1 error
+	}
+	runReturnsOnCall map[int]struct {
+		result1 error
 	}
 	SelfUpdateStub        func(string) (string, error)
 	selfUpdateMutex       sync.RWMutex
@@ -415,8 +421,9 @@ func (fake *FakeCore) OpReturnsOnCall(i int, result1 op.Op) {
 	}{result1}
 }
 
-func (fake *FakeCore) Run(arg1 context.Context, arg2 string, arg3 *model.RunOpts) {
+func (fake *FakeCore) Run(arg1 context.Context, arg2 string, arg3 *model.RunOpts) error {
 	fake.runMutex.Lock()
+	ret, specificReturn := fake.runReturnsOnCall[len(fake.runArgsForCall)]
 	fake.runArgsForCall = append(fake.runArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
@@ -425,8 +432,13 @@ func (fake *FakeCore) Run(arg1 context.Context, arg2 string, arg3 *model.RunOpts
 	fake.recordInvocation("Run", []interface{}{arg1, arg2, arg3})
 	fake.runMutex.Unlock()
 	if fake.RunStub != nil {
-		fake.RunStub(arg1, arg2, arg3)
+		return fake.RunStub(arg1, arg2, arg3)
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.runReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeCore) RunCallCount() int {
@@ -435,7 +447,7 @@ func (fake *FakeCore) RunCallCount() int {
 	return len(fake.runArgsForCall)
 }
 
-func (fake *FakeCore) RunCalls(stub func(context.Context, string, *model.RunOpts)) {
+func (fake *FakeCore) RunCalls(stub func(context.Context, string, *model.RunOpts) error) {
 	fake.runMutex.Lock()
 	defer fake.runMutex.Unlock()
 	fake.RunStub = stub
@@ -446,6 +458,29 @@ func (fake *FakeCore) RunArgsForCall(i int) (context.Context, string, *model.Run
 	defer fake.runMutex.RUnlock()
 	argsForCall := fake.runArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+}
+
+func (fake *FakeCore) RunReturns(result1 error) {
+	fake.runMutex.Lock()
+	defer fake.runMutex.Unlock()
+	fake.RunStub = nil
+	fake.runReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeCore) RunReturnsOnCall(i int, result1 error) {
+	fake.runMutex.Lock()
+	defer fake.runMutex.Unlock()
+	fake.RunStub = nil
+	if fake.runReturnsOnCall == nil {
+		fake.runReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.runReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *FakeCore) SelfUpdate(arg1 string) (string, error) {
