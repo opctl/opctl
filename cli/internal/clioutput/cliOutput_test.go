@@ -48,6 +48,31 @@ var _ = Context("output", func() {
 				To(Equal(expectedWriteArg))
 		})
 	})
+	Context("Warning", func() {
+		providedFormat := "dummyFormat %v %v"
+		It("should call stdWriter w/ expected args", func() {
+			/* arrange */
+			expectedWriteArg := []byte(
+				fmt.Sprintln(
+					_cliColorer.Error(providedFormat),
+				),
+			)
+
+			fakeErrWriter := new(fakeWriter)
+			objectUnderTest := New(
+				_cliColorer,
+				new(fakeWriter),
+				fakeErrWriter,
+			)
+
+			/* act */
+			objectUnderTest.Warning(providedFormat)
+
+			/* assert */
+			Expect(fakeErrWriter.WriteArgsForCall(0)).
+				To(Equal(expectedWriteArg))
+		})
+	})
 	Context("Error", func() {
 		providedFormat := "dummyFormat %v %v"
 		It("should call errWriter w/ expected args", func() {
@@ -511,6 +536,24 @@ var _ = Context("output", func() {
 			/* assert */
 			Expect(fakeStdWriter.WriteArgsForCall(0)).
 				To(Equal(expectedWriteArg))
+		})
+	})
+	Context("DisableColor", func() {
+		It("should call colorer to disable color", func() {
+			/* arrange */
+			fakeCliColorer := new(clicolorerFakes.FakeCliColorer)
+
+			objectUnderTest := New(
+				fakeCliColorer,
+				new(fakeWriter),
+				new(fakeWriter),
+			)
+
+			/* act */
+			objectUnderTest.DisableColor()
+
+			/* assert */
+			Expect(fakeCliColorer.DisableColorCallCount()).To(Equal(1))
 		})
 	})
 })
