@@ -56,10 +56,7 @@ func New(
 			cliOutput,
 			dataResolver,
 		),
-		Noder: newNoder(
-			cliExiter,
-			nodeProvider,
-		),
+		Noder: newNoder(nodeProvider),
 		Oper: newOper(
 			cliExiter,
 			dataResolver,

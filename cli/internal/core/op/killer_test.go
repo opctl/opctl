@@ -6,8 +6,6 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/cliexiter"
-	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	modelFakes "github.com/opctl/opctl/cli/internal/model/fakes"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -38,10 +36,11 @@ var _ = Context("Killer", func() {
 			}
 
 			/* act */
-			objectUnderTest.Kill(expectedCtx, expectedReq.OpID)
+			err := objectUnderTest.Kill(expectedCtx, expectedReq.OpID)
 
 			/* assert */
 			actualCtx, actualReq := fakeAPIClient.KillOpArgsForCall(0)
+			Expect(err).To(BeNil())
 			Expect(actualCtx).To(Equal(expectedCtx))
 			Expect(actualReq).To(BeEquivalentTo(expectedReq))
 		})
@@ -58,19 +57,15 @@ var _ = Context("Killer", func() {
 				fakeNodeProvider := new(nodeprovider.Fake)
 				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
-				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 				objectUnderTest := _killer{
-					cliExiter:    fakeCliExiter,
 					nodeProvider: fakeNodeProvider,
 				}
 
 				/* act */
-				objectUnderTest.Kill(context.TODO(), "")
+				err := objectUnderTest.Kill(context.TODO(), "")
 
 				/* assert */
-				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+				Expect(err).To(MatchError(expectedError))
 			})
 		})
 	})

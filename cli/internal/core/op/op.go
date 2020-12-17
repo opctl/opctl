@@ -31,10 +31,7 @@ func New(
 			cliExiter,
 			dataResolver,
 		),
-		Killer: newKiller(
-			cliExiter,
-			nodeProvider,
-		),
+		Killer: newKiller(nodeProvider),
 		Validater: newValidater(
 			cliExiter,
 			dataResolver,

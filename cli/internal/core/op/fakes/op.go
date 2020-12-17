@@ -25,11 +25,17 @@ type FakeOp struct {
 		arg4 string
 		arg5 string
 	}
-	KillStub        func(context.Context, string)
+	KillStub        func(context.Context, string) error
 	killMutex       sync.RWMutex
 	killArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
+	}
+	killReturns struct {
+		result1 error
+	}
+	killReturnsOnCall map[int]struct {
+		result1 error
 	}
 	ValidateStub        func(context.Context, string)
 	validateMutex       sync.RWMutex
@@ -109,8 +115,9 @@ func (fake *FakeOp) InstallArgsForCall(i int) (context.Context, string, string, 
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5
 }
 
-func (fake *FakeOp) Kill(arg1 context.Context, arg2 string) {
+func (fake *FakeOp) Kill(arg1 context.Context, arg2 string) error {
 	fake.killMutex.Lock()
+	ret, specificReturn := fake.killReturnsOnCall[len(fake.killArgsForCall)]
 	fake.killArgsForCall = append(fake.killArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
@@ -118,8 +125,13 @@ func (fake *FakeOp) Kill(arg1 context.Context, arg2 string) {
 	fake.recordInvocation("Kill", []interface{}{arg1, arg2})
 	fake.killMutex.Unlock()
 	if fake.KillStub != nil {
-		fake.KillStub(arg1, arg2)
+		return fake.KillStub(arg1, arg2)
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.killReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeOp) KillCallCount() int {
@@ -128,7 +140,7 @@ func (fake *FakeOp) KillCallCount() int {
 	return len(fake.killArgsForCall)
 }
 
-func (fake *FakeOp) KillCalls(stub func(context.Context, string)) {
+func (fake *FakeOp) KillCalls(stub func(context.Context, string) error) {
 	fake.killMutex.Lock()
 	defer fake.killMutex.Unlock()
 	fake.KillStub = stub
@@ -139,6 +151,29 @@ func (fake *FakeOp) KillArgsForCall(i int) (context.Context, string) {
 	defer fake.killMutex.RUnlock()
 	argsForCall := fake.killArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeOp) KillReturns(result1 error) {
+	fake.killMutex.Lock()
+	defer fake.killMutex.Unlock()
+	fake.KillStub = nil
+	fake.killReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeOp) KillReturnsOnCall(i int, result1 error) {
+	fake.killMutex.Lock()
+	defer fake.killMutex.Unlock()
+	fake.KillStub = nil
+	if fake.killReturnsOnCall == nil {
+		fake.killReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.killReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *FakeOp) Validate(arg1 context.Context, arg2 string) {

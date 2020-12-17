@@ -14,9 +14,15 @@ type FakeNode struct {
 	createArgsForCall []struct {
 		arg1 model.NodeCreateOpts
 	}
-	KillStub        func()
+	KillStub        func() error
 	killMutex       sync.RWMutex
 	killArgsForCall []struct {
+	}
+	killReturns struct {
+		result1 error
+	}
+	killReturnsOnCall map[int]struct {
+		result1 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
@@ -53,15 +59,21 @@ func (fake *FakeNode) CreateArgsForCall(i int) model.NodeCreateOpts {
 	return argsForCall.arg1
 }
 
-func (fake *FakeNode) Kill() {
+func (fake *FakeNode) Kill() error {
 	fake.killMutex.Lock()
+	ret, specificReturn := fake.killReturnsOnCall[len(fake.killArgsForCall)]
 	fake.killArgsForCall = append(fake.killArgsForCall, struct {
 	}{})
 	fake.recordInvocation("Kill", []interface{}{})
 	fake.killMutex.Unlock()
 	if fake.KillStub != nil {
-		fake.KillStub()
+		return fake.KillStub()
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.killReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeNode) KillCallCount() int {
@@ -70,10 +82,33 @@ func (fake *FakeNode) KillCallCount() int {
 	return len(fake.killArgsForCall)
 }
 
-func (fake *FakeNode) KillCalls(stub func()) {
+func (fake *FakeNode) KillCalls(stub func() error) {
 	fake.killMutex.Lock()
 	defer fake.killMutex.Unlock()
 	fake.KillStub = stub
+}
+
+func (fake *FakeNode) KillReturns(result1 error) {
+	fake.killMutex.Lock()
+	defer fake.killMutex.Unlock()
+	fake.KillStub = nil
+	fake.killReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeNode) KillReturnsOnCall(i int, result1 error) {
+	fake.killMutex.Lock()
+	defer fake.killMutex.Unlock()
+	fake.KillStub = nil
+	if fake.killReturnsOnCall == nil {
+		fake.killReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.killReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *FakeNode) Invocations() map[string][][]interface{} {

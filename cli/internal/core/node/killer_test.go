@@ -2,10 +2,9 @@ package node
 
 import (
 	"errors"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/cliexiter"
-	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 )
 
@@ -20,9 +19,10 @@ var _ = Context("Killer", func() {
 			}
 
 			/* act */
-			objectUnderTest.Kill()
+			err := objectUnderTest.Kill()
 
 			/* assert */
+			Expect(err).To(BeNil())
 			Expect(fakeNodeProvider.KillNodeIfExistsArgsForCall(0)).To(BeEquivalentTo(""))
 		})
 		Context("nodeProvider.Invoke errors", func() {
@@ -32,19 +32,15 @@ var _ = Context("Killer", func() {
 				expectedError := errors.New("dummyError")
 				fakeNodeProvider.KillNodeIfExistsReturns(expectedError)
 
-				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 				objectUnderTest := _killer{
 					nodeProvider: fakeNodeProvider,
-					cliExiter:    fakeCliExiter,
 				}
 
 				/* act */
-				objectUnderTest.Kill()
+				err := objectUnderTest.Kill()
 
 				/* assert */
-				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+				Expect(err).To(MatchError(expectedError))
 			})
 		})
 	})
