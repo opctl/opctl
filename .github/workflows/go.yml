@@ -22,11 +22,14 @@ jobs:
       id: branch_name
 
     - name: Download opctl
-      uses: jaxxstorm/action-install-gh-release@v1.1.0
+      uses: dsaltares/fetch-gh-release-asset@v0.0.5
       with:
         repo: opctl/opctl
-        tag: v0.1.45
-      env: 
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        version: latest
+        file: opctl0.1.45.linux.tgz
+        token: ${{ secrets.GITHUB_TOKEN }}
 
-    - run: opctl run -a gitBranch=${{ steps.branch_name.outputs.branch }} build
+    - name: Extract opctl
+      run: tar -xvzf opctl0.1.45.linux.tgz
+
+    - run: ./opctl run -a gitBranch=${{ steps.branch_name.outputs.branch }} build
