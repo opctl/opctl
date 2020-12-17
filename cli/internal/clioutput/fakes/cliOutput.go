@@ -14,6 +14,10 @@ type FakeCliOutput struct {
 	attentionArgsForCall []struct {
 		arg1 string
 	}
+	DisableColorStub        func()
+	disableColorMutex       sync.RWMutex
+	disableColorArgsForCall []struct {
+	}
 	ErrorStub        func(string)
 	errorMutex       sync.RWMutex
 	errorArgsForCall []struct {
@@ -32,6 +36,11 @@ type FakeCliOutput struct {
 	SuccessStub        func(string)
 	successMutex       sync.RWMutex
 	successArgsForCall []struct {
+		arg1 string
+	}
+	WarningStub        func(string)
+	warningMutex       sync.RWMutex
+	warningArgsForCall []struct {
 		arg1 string
 	}
 	invocations      map[string][][]interface{}
@@ -67,6 +76,29 @@ func (fake *FakeCliOutput) AttentionArgsForCall(i int) string {
 	defer fake.attentionMutex.RUnlock()
 	argsForCall := fake.attentionArgsForCall[i]
 	return argsForCall.arg1
+}
+
+func (fake *FakeCliOutput) DisableColor() {
+	fake.disableColorMutex.Lock()
+	fake.disableColorArgsForCall = append(fake.disableColorArgsForCall, struct {
+	}{})
+	fake.recordInvocation("DisableColor", []interface{}{})
+	fake.disableColorMutex.Unlock()
+	if fake.DisableColorStub != nil {
+		fake.DisableColorStub()
+	}
+}
+
+func (fake *FakeCliOutput) DisableColorCallCount() int {
+	fake.disableColorMutex.RLock()
+	defer fake.disableColorMutex.RUnlock()
+	return len(fake.disableColorArgsForCall)
+}
+
+func (fake *FakeCliOutput) DisableColorCalls(stub func()) {
+	fake.disableColorMutex.Lock()
+	defer fake.disableColorMutex.Unlock()
+	fake.DisableColorStub = stub
 }
 
 func (fake *FakeCliOutput) Error(arg1 string) {
@@ -193,11 +225,44 @@ func (fake *FakeCliOutput) SuccessArgsForCall(i int) string {
 	return argsForCall.arg1
 }
 
+func (fake *FakeCliOutput) Warning(arg1 string) {
+	fake.warningMutex.Lock()
+	fake.warningArgsForCall = append(fake.warningArgsForCall, struct {
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("Warning", []interface{}{arg1})
+	fake.warningMutex.Unlock()
+	if fake.WarningStub != nil {
+		fake.WarningStub(arg1)
+	}
+}
+
+func (fake *FakeCliOutput) WarningCallCount() int {
+	fake.warningMutex.RLock()
+	defer fake.warningMutex.RUnlock()
+	return len(fake.warningArgsForCall)
+}
+
+func (fake *FakeCliOutput) WarningCalls(stub func(string)) {
+	fake.warningMutex.Lock()
+	defer fake.warningMutex.Unlock()
+	fake.WarningStub = stub
+}
+
+func (fake *FakeCliOutput) WarningArgsForCall(i int) string {
+	fake.warningMutex.RLock()
+	defer fake.warningMutex.RUnlock()
+	argsForCall := fake.warningArgsForCall[i]
+	return argsForCall.arg1
+}
+
 func (fake *FakeCliOutput) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.attentionMutex.RLock()
 	defer fake.attentionMutex.RUnlock()
+	fake.disableColorMutex.RLock()
+	defer fake.disableColorMutex.RUnlock()
 	fake.errorMutex.RLock()
 	defer fake.errorMutex.RUnlock()
 	fake.eventMutex.RLock()
@@ -206,6 +271,8 @@ func (fake *FakeCliOutput) Invocations() map[string][][]interface{} {
 	defer fake.infoMutex.RUnlock()
 	fake.successMutex.RLock()
 	defer fake.successMutex.RUnlock()
+	fake.warningMutex.RLock()
+	defer fake.warningMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

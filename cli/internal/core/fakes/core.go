@@ -5,7 +5,6 @@ import (
 	"context"
 	"sync"
 
-	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/core"
 	"github.com/opctl/opctl/cli/internal/core/auth"
 	"github.com/opctl/opctl/cli/internal/core/node"
@@ -34,11 +33,6 @@ type FakeCore struct {
 	}
 	eventsReturnsOnCall map[int]struct {
 		result1 error
-	}
-	ExitStub        func(cliexiter.ExitReq)
-	exitMutex       sync.RWMutex
-	exitArgsForCall []struct {
-		arg1 cliexiter.ExitReq
 	}
 	LsStub        func(context.Context, string) error
 	lsMutex       sync.RWMutex
@@ -223,37 +217,6 @@ func (fake *FakeCore) EventsReturnsOnCall(i int, result1 error) {
 	fake.eventsReturnsOnCall[i] = struct {
 		result1 error
 	}{result1}
-}
-
-func (fake *FakeCore) Exit(arg1 cliexiter.ExitReq) {
-	fake.exitMutex.Lock()
-	fake.exitArgsForCall = append(fake.exitArgsForCall, struct {
-		arg1 cliexiter.ExitReq
-	}{arg1})
-	fake.recordInvocation("Exit", []interface{}{arg1})
-	fake.exitMutex.Unlock()
-	if fake.ExitStub != nil {
-		fake.ExitStub(arg1)
-	}
-}
-
-func (fake *FakeCore) ExitCallCount() int {
-	fake.exitMutex.RLock()
-	defer fake.exitMutex.RUnlock()
-	return len(fake.exitArgsForCall)
-}
-
-func (fake *FakeCore) ExitCalls(stub func(cliexiter.ExitReq)) {
-	fake.exitMutex.Lock()
-	defer fake.exitMutex.Unlock()
-	fake.ExitStub = stub
-}
-
-func (fake *FakeCore) ExitArgsForCall(i int) cliexiter.ExitReq {
-	fake.exitMutex.RLock()
-	defer fake.exitMutex.RUnlock()
-	argsForCall := fake.exitArgsForCall[i]
-	return argsForCall.arg1
 }
 
 func (fake *FakeCore) Ls(arg1 context.Context, arg2 string) error {
@@ -613,8 +576,6 @@ func (fake *FakeCore) Invocations() map[string][][]interface{} {
 	defer fake.authMutex.RUnlock()
 	fake.eventsMutex.RLock()
 	defer fake.eventsMutex.RUnlock()
-	fake.exitMutex.RLock()
-	defer fake.exitMutex.RUnlock()
 	fake.lsMutex.RLock()
 	defer fake.lsMutex.RUnlock()
 	fake.nodeMutex.RLock()

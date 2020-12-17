@@ -14,8 +14,14 @@ import (
 //CliOutput allows mocking/faking output
 //counterfeiter:generate -o fakes/cliOutput.go . CliOutput
 type CliOutput interface {
+	// silently disables coloring
+	DisableColor()
+
 	// outputs a msg requiring attention
 	Attention(s string)
+
+	// outputs a warning message (looks like an error but on stdout)
+	Warning(s string)
 
 	// outputs an error msg
 	Error(s string)
@@ -49,11 +55,24 @@ type _cliOutput struct {
 	stdWriter  io.Writer
 }
 
+func (this _cliOutput) DisableColor() {
+	this.cliColorer.DisableColor()
+}
+
 func (this _cliOutput) Attention(s string) {
 	io.WriteString(
 		this.stdWriter,
 		fmt.Sprintln(
 			this.cliColorer.Attention(s),
+		),
+	)
+}
+
+func (this _cliOutput) Warning(s string) {
+	io.WriteString(
+		this.stdWriter,
+		fmt.Sprintln(
+			this.cliColorer.Error(s),
 		),
 	)
 }

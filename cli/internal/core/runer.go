@@ -10,7 +10,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/opctl/opctl/cli/internal/clicolorer"
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
@@ -31,14 +30,12 @@ type Runer interface {
 
 // newRuner returns an initialized "run" command
 func newRuner(
-	cliColorer clicolorer.CliColorer,
 	cliOutput clioutput.CliOutput,
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier,
 	dataResolver dataresolver.DataResolver,
 	nodeProvider nodeprovider.NodeProvider,
 ) Runer {
 	return _runer{
-		cliColorer:        cliColorer,
 		cliOutput:         cliOutput,
 		cliParamSatisfier: cliParamSatisfier,
 		dataResolver:      dataResolver,
@@ -48,7 +45,6 @@ func newRuner(
 
 type _runer struct {
 	dataResolver      dataresolver.DataResolver
-	cliColorer        clicolorer.CliColorer
 	cliOutput         clioutput.CliOutput
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier
 	nodeProvider      nodeprovider.NodeProvider
@@ -171,7 +167,7 @@ func (ivkr _runer) Run(
 
 		case <-sigIntChannel:
 			if !aSigIntWasReceivedAlready {
-				fmt.Println(ivkr.cliColorer.Error("Gracefully stopping... (signal Control-C again to force)"))
+				ivkr.cliOutput.Warning("Gracefully stopping... (signal Control-C again to force)")
 				aSigIntWasReceivedAlready = true
 
 				nodeHandle.APIClient().KillOp(
@@ -189,7 +185,7 @@ func (ivkr _runer) Run(
 			}
 
 		case <-sigTermChannel:
-			fmt.Println(ivkr.cliColorer.Error("Gracefully stopping..."))
+			ivkr.cliOutput.Warning("Gracefully stopping...")
 
 			return nodeHandle.APIClient().KillOp(
 				ctx,

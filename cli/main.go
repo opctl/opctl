@@ -5,24 +5,21 @@ import (
 	"os"
 
 	"github.com/opctl/opctl/cli/internal/clicolorer"
+	"github.com/opctl/opctl/cli/internal/clioutput"
 	corePkg "github.com/opctl/opctl/cli/internal/core"
 )
 
 func main() {
-	cliColorer := clicolorer.New()
+	cliOutput := clioutput.New(clicolorer.New(), os.Stderr, os.Stdout)
 	defer func() {
 		if panicArg := recover(); panicArg != nil {
-			fmt.Println(
-				cliColorer.Error(
-					fmt.Sprint(panicArg),
-				),
-			)
+			cliOutput.Error(fmt.Sprint(panicArg))
 			os.Exit(1)
 		}
 	}()
 
 	newCli(
-		cliColorer,
+		cliOutput,
 		corePkg.New,
 	).
 		Run(os.Args)

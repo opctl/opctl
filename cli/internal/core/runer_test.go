@@ -7,7 +7,6 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/clicolorer"
 	clioutputFakes "github.com/opctl/opctl/cli/internal/clioutput/fakes"
 	cliparamsatisfierFakes "github.com/opctl/opctl/cli/internal/cliparamsatisfier/fakes"
 	dataresolver "github.com/opctl/opctl/cli/internal/dataresolver/fakes"
@@ -322,7 +321,6 @@ var _ = Context("Runer", func() {
 
 										objectUnderTest := _runer{
 											dataResolver:      fakeDataResolver,
-											cliColorer:        clicolorer.New(),
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 											nodeProvider:      fakeNodeProvider,
@@ -366,7 +364,6 @@ var _ = Context("Runer", func() {
 
 										objectUnderTest := _runer{
 											dataResolver:      fakeDataResolver,
-											cliColorer:        clicolorer.New(),
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 											nodeProvider:      fakeNodeProvider,
@@ -411,7 +408,6 @@ var _ = Context("Runer", func() {
 
 										objectUnderTest := _runer{
 											dataResolver:      fakeDataResolver,
-											cliColorer:        clicolorer.New(),
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 											nodeProvider:      fakeNodeProvider,
@@ -455,7 +451,6 @@ var _ = Context("Runer", func() {
 
 										objectUnderTest := _runer{
 											dataResolver:      fakeDataResolver,
-											cliColorer:        clicolorer.New(),
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 											nodeProvider:      fakeNodeProvider,

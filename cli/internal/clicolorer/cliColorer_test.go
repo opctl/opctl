@@ -2,6 +2,7 @@ package clicolorer
 
 import (
 	"fmt"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -22,7 +23,7 @@ var _ = Context("cliColorer", func() {
 				expectedString := providedString
 
 				/* act */
-				objectUnderTest.Disable()
+				objectUnderTest.DisableColor()
 
 				/* assert */
 				Expect(objectUnderTest.Attention(providedString)).To(Equal(expectedString))
@@ -35,7 +36,7 @@ var _ = Context("cliColorer", func() {
 				providedString := "providedString"
 
 				/* act */
-				objectUnderTest.Disable()
+				objectUnderTest.DisableColor()
 
 				/* assert */
 				Expect(objectUnderTest.Error(providedString)).To(Equal(providedString))
@@ -48,7 +49,7 @@ var _ = Context("cliColorer", func() {
 				providedString := "providedString"
 
 				/* act */
-				objectUnderTest.Disable()
+				objectUnderTest.DisableColor()
 
 				/* assert */
 				Expect(objectUnderTest.Info(providedString)).To(Equal(providedString))
@@ -61,7 +62,7 @@ var _ = Context("cliColorer", func() {
 				providedString := "providedString"
 
 				/* act */
-				objectUnderTest.Disable()
+				objectUnderTest.DisableColor()
 
 				/* assert */
 				Expect(objectUnderTest.Success(providedString)).To(Equal(providedString))

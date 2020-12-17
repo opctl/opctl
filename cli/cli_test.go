@@ -5,8 +5,8 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/clicolorer"
-	cliColorerFakes "github.com/opctl/opctl/cli/internal/clicolorer/fakes"
+	"github.com/opctl/opctl/cli/internal/clioutput"
+	cliOutputFakes "github.com/opctl/opctl/cli/internal/clioutput/fakes"
 	corePkg "github.com/opctl/opctl/cli/internal/core"
 	authFakes "github.com/opctl/opctl/cli/internal/core/auth/fakes"
 	coreFakes "github.com/opctl/opctl/cli/internal/core/fakes"
@@ -22,12 +22,12 @@ var _ = Context("cli", func() {
 		Context("--no-color", func() {
 			It("should set color.NoColor", func() {
 				/* arrange */
-				fakeCliColorer := new(cliColorerFakes.FakeCliColorer)
+				fakeCliOutput := new(cliOutputFakes.FakeCliOutput)
 
 				objectUnderTest := newCli(
-					fakeCliColorer,
+					fakeCliOutput,
 					func(
-						cliColorer clicolorer.CliColorer,
+						cliOutput clioutput.CliOutput,
 						nodeProvider nodeprovider.NodeProvider,
 					) corePkg.Core {
 						return new(coreFakes.FakeCore)
@@ -38,7 +38,7 @@ var _ = Context("cli", func() {
 				objectUnderTest.Run([]string{"opctl", "--no-color", "ls"})
 
 				/* assert */
-				Expect(fakeCliColorer.DisableCallCount()).To(Equal(1))
+				Expect(fakeCliOutput.DisableColorCallCount()).To(Equal(1))
 			})
 		})
 
@@ -58,9 +58,9 @@ var _ = Context("cli", func() {
 					fakeCore.AuthReturns(fakeAuth)
 
 					objectUnderTest := newCli(
-						new(cliColorerFakes.FakeCliColorer),
+						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliColorer clicolorer.CliColorer,
+							cliOutput clioutput.CliOutput,
 							nodeProvider nodeprovider.NodeProvider,
 						) corePkg.Core {
 							return fakeCore
@@ -92,9 +92,9 @@ var _ = Context("cli", func() {
 				fakeCore := new(coreFakes.FakeCore)
 
 				objectUnderTest := newCli(
-					new(cliColorerFakes.FakeCliColorer),
+					new(cliOutputFakes.FakeCliOutput),
 					func(
-						cliColorer clicolorer.CliColorer,
+						cliOutput clioutput.CliOutput,
 						nodeProvider nodeprovider.NodeProvider,
 					) corePkg.Core {
 						return fakeCore
@@ -119,9 +119,9 @@ var _ = Context("cli", func() {
 
 					expectedDirRef := "dummyPath"
 					objectUnderTest := newCli(
-						new(cliColorerFakes.FakeCliColorer),
+						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliColorer clicolorer.CliColorer,
+							cliOutput clioutput.CliOutput,
 							nodeProvider nodeprovider.NodeProvider,
 						) corePkg.Core {
 							return fakeCore
@@ -147,9 +147,9 @@ var _ = Context("cli", func() {
 
 					expectedDirRef := ".opspec"
 					objectUnderTest := newCli(
-						new(cliColorerFakes.FakeCliColorer),
+						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliColorer clicolorer.CliColorer,
+							cliOutput clioutput.CliOutput,
 							nodeProvider nodeprovider.NodeProvider,
 						) corePkg.Core {
 							return fakeCore
@@ -181,9 +181,9 @@ var _ = Context("cli", func() {
 					fakeCore.NodeReturns(fakeNode)
 
 					objectUnderTest := newCli(
-						new(cliColorerFakes.FakeCliColorer),
+						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliColorer clicolorer.CliColorer,
+							cliOutput clioutput.CliOutput,
 							nodeProvider nodeprovider.NodeProvider,
 						) corePkg.Core {
 							return fakeCore
@@ -209,9 +209,9 @@ var _ = Context("cli", func() {
 					fakeCore.NodeReturns(fakeNode)
 
 					objectUnderTest := newCli(
-						new(cliColorerFakes.FakeCliColorer),
+						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliColorer clicolorer.CliColorer,
+							cliOutput clioutput.CliOutput,
 							nodeProvider nodeprovider.NodeProvider,
 						) corePkg.Core {
 							return fakeCore
@@ -243,9 +243,9 @@ var _ = Context("cli", func() {
 						expectedPath := "dummyPath"
 
 						objectUnderTest := newCli(
-							new(cliColorerFakes.FakeCliColorer),
+							new(cliOutputFakes.FakeCliOutput),
 							func(
-								cliColorer clicolorer.CliColorer,
+								cliOutput clioutput.CliOutput,
 								nodeProvider nodeprovider.NodeProvider,
 							) corePkg.Core {
 								return fakeCore
@@ -275,9 +275,9 @@ var _ = Context("cli", func() {
 						expectedPath := ".opspec"
 
 						objectUnderTest := newCli(
-							new(cliColorerFakes.FakeCliColorer),
+							new(cliOutputFakes.FakeCliOutput),
 							func(
-								cliColorer clicolorer.CliColorer,
+								cliOutput clioutput.CliOutput,
 								nodeProvider nodeprovider.NodeProvider,
 							) corePkg.Core {
 								return fakeCore
@@ -307,9 +307,9 @@ var _ = Context("cli", func() {
 						expectedPath := ".opspec"
 
 						objectUnderTest := newCli(
-							new(cliColorerFakes.FakeCliColorer),
+							new(cliOutputFakes.FakeCliOutput),
 							func(
-								cliColorer clicolorer.CliColorer,
+								cliOutput clioutput.CliOutput,
 								nodeProvider nodeprovider.NodeProvider,
 							) corePkg.Core {
 								return fakeCore
@@ -339,9 +339,9 @@ var _ = Context("cli", func() {
 						expectedPath := ".opspec"
 
 						objectUnderTest := newCli(
-							new(cliColorerFakes.FakeCliColorer),
+							new(cliOutputFakes.FakeCliOutput),
 							func(
-								cliColorer clicolorer.CliColorer,
+								cliOutput clioutput.CliOutput,
 								nodeProvider nodeprovider.NodeProvider,
 							) corePkg.Core {
 								return fakeCore
@@ -374,9 +374,9 @@ var _ = Context("cli", func() {
 					expectedPassword := "dummyPassword"
 
 					objectUnderTest := newCli(
-						new(cliColorerFakes.FakeCliColorer),
+						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliColorer clicolorer.CliColorer,
+							cliOutput clioutput.CliOutput,
 							nodeProvider nodeprovider.NodeProvider,
 						) corePkg.Core {
 							return fakeCore
@@ -423,9 +423,9 @@ var _ = Context("cli", func() {
 					expectedOpID := "dummyOpID"
 
 					objectUnderTest := newCli(
-						new(cliColorerFakes.FakeCliColorer),
+						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliColorer clicolorer.CliColorer,
+							cliOutput clioutput.CliOutput,
 							nodeProvider nodeprovider.NodeProvider,
 						) corePkg.Core {
 							return fakeCore
@@ -456,9 +456,9 @@ var _ = Context("cli", func() {
 					opRef := ".opspec/dummyOpName"
 
 					objectUnderTest := newCli(
-						new(cliColorerFakes.FakeCliColorer),
+						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliColorer clicolorer.CliColorer,
+							cliOutput clioutput.CliOutput,
 							nodeProvider nodeprovider.NodeProvider,
 						) corePkg.Core {
 							return fakeCore
@@ -493,9 +493,9 @@ var _ = Context("cli", func() {
 					expectedOpRef := ".opspec/dummyOpName"
 
 					objectUnderTest := newCli(
-						new(cliColorerFakes.FakeCliColorer),
+						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliColorer clicolorer.CliColorer,
+							cliOutput clioutput.CliOutput,
 							nodeProvider nodeprovider.NodeProvider,
 						) corePkg.Core {
 							return fakeCore
@@ -534,9 +534,9 @@ var _ = Context("cli", func() {
 					expectedOpRef := ".opspec/dummyOpName"
 
 					objectUnderTest := newCli(
-						new(cliColorerFakes.FakeCliColorer),
+						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliColorer clicolorer.CliColorer,
+							cliOutput clioutput.CliOutput,
 							nodeProvider nodeprovider.NodeProvider,
 						) corePkg.Core {
 							return fakeCore
@@ -570,9 +570,9 @@ var _ = Context("cli", func() {
 				fakeCore := new(coreFakes.FakeCore)
 
 				objectUnderTest := newCli(
-					new(cliColorerFakes.FakeCliColorer),
+					new(cliOutputFakes.FakeCliOutput),
 					func(
-						cliColorer clicolorer.CliColorer,
+						cliOutput clioutput.CliOutput,
 						nodeProvider nodeprovider.NodeProvider,
 					) corePkg.Core {
 						return fakeCore
@@ -598,9 +598,9 @@ var _ = Context("cli", func() {
 				fakeCore := new(coreFakes.FakeCore)
 
 				objectUnderTest := newCli(
-					new(cliColorerFakes.FakeCliColorer),
+					new(cliOutputFakes.FakeCliOutput),
 					func(
-						cliColorer clicolorer.CliColorer,
+						cliOutput clioutput.CliOutput,
 						nodeProvider nodeprovider.NodeProvider,
 					) corePkg.Core {
 						return fakeCore
@@ -627,9 +627,9 @@ var _ = Context("cli", func() {
 
 				expectedDirRef := "dummyPath"
 				objectUnderTest := newCli(
-					new(cliColorerFakes.FakeCliColorer),
+					new(cliOutputFakes.FakeCliOutput),
 					func(
-						cliColorer clicolorer.CliColorer,
+						cliOutput clioutput.CliOutput,
 						nodeProvider nodeprovider.NodeProvider,
 					) corePkg.Core {
 						return fakeCore
@@ -653,9 +653,9 @@ var _ = Context("cli", func() {
 
 				expectedDirRef := "."
 				objectUnderTest := newCli(
-					new(cliColorerFakes.FakeCliColorer),
+					new(cliOutputFakes.FakeCliOutput),
 					func(
-						cliColorer clicolorer.CliColorer,
+						cliOutput clioutput.CliOutput,
 						nodeProvider nodeprovider.NodeProvider,
 					) corePkg.Core {
 						return fakeCore

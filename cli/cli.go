@@ -9,8 +9,7 @@ import (
 
 	"github.com/appdataspec/sdk-golang/appdatapath"
 	mow "github.com/jawher/mow.cli"
-	"github.com/opctl/opctl/cli/internal/clicolorer"
-	"github.com/opctl/opctl/cli/internal/cliexiter"
+	"github.com/opctl/opctl/cli/internal/clioutput"
 	corePkg "github.com/opctl/opctl/cli/internal/core"
 	"github.com/opctl/opctl/cli/internal/model"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
@@ -25,12 +24,12 @@ type cli interface {
 
 // newCorer allows swapping out corePkg.New for unit tests
 type newCorer func(
-	cliColorer clicolorer.CliColorer,
+	cliOutput clioutput.CliOutput,
 	nodeProvider nodeprovider.NodeProvider,
 ) corePkg.Core
 
 func newCli(
-	cliColorer clicolorer.CliColorer,
+	cliOutput clioutput.CliOutput,
 	newCorer newCorer,
 ) cli {
 
@@ -78,15 +77,31 @@ func newCli(
 	}
 
 	core := newCorer(
-		cliColorer,
+		cliOutput,
 		localNodeProvider.New(nodeCreateOpts),
 	)
+
+	exitWith := func(successMessage string, err error) {
+		if err == nil {
+			if successMessage != "" {
+				cliOutput.Success(successMessage)
+			}
+			mow.Exit(0)
+		} else {
+			cliOutput.Error(err.Error())
+			if re, ok := err.(*corePkg.RunError); ok {
+				mow.Exit(re.ExitCode)
+			} else {
+				mow.Exit(1)
+			}
+		}
+	}
 
 	noColor := cli.BoolOpt("nc no-color", false, "Disable output coloring")
 
 	cli.Before = func() {
 		if *noColor {
-			cliColorer.Disable()
+			cliOutput.DisableColor()
 		}
 	}
 
@@ -102,26 +117,15 @@ func newCli(
 				password := addCmd.StringOpt("p password", "", "Password")
 
 				addCmd.Action = func() {
-					if err := core.Auth().Add(context.TODO(), *resources, *username, *password); err != nil {
-						core.Exit(cliexiter.ExitReq{
-							Message: err.Error(),
-							Code:    1,
-						})
-					}
+					exitWith("", core.Auth().Add(context.TODO(), *resources, *username, *password))
 				}
 			})
 
-	},
-	)
+	})
 
 	cli.Command("events", "Stream events", func(eventsCmd *mow.Cmd) {
 		eventsCmd.Action = func() {
-			if err := core.Events(context.TODO()); err != nil {
-				core.Exit(cliexiter.ExitReq{
-					Message: err.Error(),
-					Code:    1,
-				})
-			}
+			exitWith("", core.Events(context.TODO()))
 		}
 	})
 
@@ -131,12 +135,7 @@ func newCli(
 			lsCmd.Spec = fmt.Sprintf("[%v]", dirRefArgName)
 			dirRef := lsCmd.StringArg(dirRefArgName, op.DotOpspecDirName, "Reference to dir ops will be listed from")
 			lsCmd.Action = func() {
-				if err := core.Ls(context.TODO(), *dirRef); err != nil {
-					core.Exit(cliexiter.ExitReq{
-						Message: err.Error(),
-						Code:    1,
-					})
-				}
+				exitWith("", core.Ls(context.TODO(), *dirRef))
 			}
 		})
 
@@ -150,12 +149,7 @@ func newCli(
 
 		nodeCmd.Command("kill", "Kills a node", func(killCmd *mow.Cmd) {
 			killCmd.Action = func() {
-				if err := core.Node().Kill(); err != nil {
-					core.Exit(cliexiter.ExitReq{
-						Message: err.Error(),
-						Code:    1,
-					})
-				}
+				exitWith("", core.Node().Kill())
 			}
 		})
 	})
@@ -170,12 +164,7 @@ func newCli(
 				name := createCmd.StringArg("NAME", "", "Op name")
 
 				createCmd.Action = func() {
-					if err := core.Op().Create(*path, *description, *name); err != nil {
-						core.Exit(cliexiter.ExitReq{
-							Message: err.Error(),
-							Code:    1,
-						})
-					}
+					exitWith("", core.Op().Create(*path, *description, *name))
 				}
 			})
 
@@ -188,7 +177,7 @@ func newCli(
 				password := installCmd.StringOpt("p password", "", "Password used to auth w/ the pkg source")
 
 				installCmd.Action = func() {
-					core.Op().Install(context.TODO(), *path, *opRef, *username, *password)
+					exitWith("", core.Op().Install(context.TODO(), *path, *opRef, *username, *password))
 				}
 			})
 
@@ -196,12 +185,7 @@ func newCli(
 			opID := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
 
 			killCmd.Action = func() {
-				if err := core.Op().Kill(context.TODO(), *opID); err != nil {
-					core.Exit(cliexiter.ExitReq{
-						Message: err.Error(),
-						Code:    1,
-					})
-				}
+				exitWith("", core.Op().Kill(context.TODO(), *opID))
 			}
 		})
 
@@ -211,15 +195,7 @@ func newCli(
 				opRef := validateCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
 				validateCmd.Action = func() {
-					successMessage, err := core.Op().Validate(context.TODO(), *opRef)
-					if err != nil {
-						core.Exit(cliexiter.ExitReq{
-							Message: err.Error(),
-							Code:    1,
-						})
-					} else {
-						core.Exit(cliexiter.ExitReq{Message: successMessage})
-					}
+					exitWith(core.Op().Validate(context.TODO(), *opRef))
 				}
 			})
 
@@ -231,35 +207,14 @@ func newCli(
 		opRef := runCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
 		runCmd.Action = func() {
-			if err := core.Run(context.TODO(), *opRef, &model.RunOpts{Args: *args, ArgFile: *argFile}); err != nil {
-				re, ok := err.(*corePkg.RunError)
-				if ok {
-					core.Exit(cliexiter.ExitReq{
-						Message: err.Error(),
-						Code:    re.ExitCode,
-					})
-				} else {
-					core.Exit(cliexiter.ExitReq{
-						Message: err.Error(),
-						Code:    re.ExitCode,
-					})
-				}
-			}
+			exitWith("", core.Run(context.TODO(), *opRef, &model.RunOpts{Args: *args, ArgFile: *argFile}))
 		}
 	})
 
 	cli.Command("self-update", "Update opctl", func(selfUpdateCmd *mow.Cmd) {
 		channel := selfUpdateCmd.StringOpt("c channel", "stable", "Release channel to update from (either `stable`, `alpha`, or `beta`)")
 		selfUpdateCmd.Action = func() {
-			successMessage, err := core.SelfUpdate(*channel)
-			if err != nil {
-				core.Exit(cliexiter.ExitReq{
-					Message: err.Error(),
-					Code:    1,
-				})
-			} else {
-				core.Exit(cliexiter.ExitReq{Message: successMessage})
-			}
+			exitWith(core.SelfUpdate(*channel))
 		}
 	})
 
@@ -269,18 +224,7 @@ func newCli(
 		mountRefArg := uiCmd.StringArg(mountRefArgName, ".", "Reference to mount (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
 		uiCmd.Action = func() {
-			err := core.UI(*mountRefArg)
-			if err != nil {
-				core.Exit(cliexiter.ExitReq{
-					Message: err.Error(),
-					Code:    1,
-				})
-			} else {
-				core.Exit(cliexiter.ExitReq{
-					Message: fmt.Sprint("Opctl web UI opened!\n"),
-					Code:    0,
-				})
-			}
+			exitWith("Opctl web UI opened!", core.UI(*mountRefArg))
 		}
 	})
 
