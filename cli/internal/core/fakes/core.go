@@ -79,10 +79,18 @@ type FakeCore struct {
 		arg2 string
 		arg3 *model.RunOpts
 	}
-	SelfUpdateStub        func(string)
+	SelfUpdateStub        func(string) (string, error)
 	selfUpdateMutex       sync.RWMutex
 	selfUpdateArgsForCall []struct {
 		arg1 string
+	}
+	selfUpdateReturns struct {
+		result1 string
+		result2 error
+	}
+	selfUpdateReturnsOnCall map[int]struct {
+		result1 string
+		result2 error
 	}
 	UIStub        func(string) error
 	uIMutex       sync.RWMutex
@@ -440,16 +448,22 @@ func (fake *FakeCore) RunArgsForCall(i int) (context.Context, string, *model.Run
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeCore) SelfUpdate(arg1 string) {
+func (fake *FakeCore) SelfUpdate(arg1 string) (string, error) {
 	fake.selfUpdateMutex.Lock()
+	ret, specificReturn := fake.selfUpdateReturnsOnCall[len(fake.selfUpdateArgsForCall)]
 	fake.selfUpdateArgsForCall = append(fake.selfUpdateArgsForCall, struct {
 		arg1 string
 	}{arg1})
 	fake.recordInvocation("SelfUpdate", []interface{}{arg1})
 	fake.selfUpdateMutex.Unlock()
 	if fake.SelfUpdateStub != nil {
-		fake.SelfUpdateStub(arg1)
+		return fake.SelfUpdateStub(arg1)
 	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.selfUpdateReturns
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *FakeCore) SelfUpdateCallCount() int {
@@ -458,7 +472,7 @@ func (fake *FakeCore) SelfUpdateCallCount() int {
 	return len(fake.selfUpdateArgsForCall)
 }
 
-func (fake *FakeCore) SelfUpdateCalls(stub func(string)) {
+func (fake *FakeCore) SelfUpdateCalls(stub func(string) (string, error)) {
 	fake.selfUpdateMutex.Lock()
 	defer fake.selfUpdateMutex.Unlock()
 	fake.SelfUpdateStub = stub
@@ -469,6 +483,32 @@ func (fake *FakeCore) SelfUpdateArgsForCall(i int) string {
 	defer fake.selfUpdateMutex.RUnlock()
 	argsForCall := fake.selfUpdateArgsForCall[i]
 	return argsForCall.arg1
+}
+
+func (fake *FakeCore) SelfUpdateReturns(result1 string, result2 error) {
+	fake.selfUpdateMutex.Lock()
+	defer fake.selfUpdateMutex.Unlock()
+	fake.SelfUpdateStub = nil
+	fake.selfUpdateReturns = struct {
+		result1 string
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeCore) SelfUpdateReturnsOnCall(i int, result1 string, result2 error) {
+	fake.selfUpdateMutex.Lock()
+	defer fake.selfUpdateMutex.Unlock()
+	fake.SelfUpdateStub = nil
+	if fake.selfUpdateReturnsOnCall == nil {
+		fake.selfUpdateReturnsOnCall = make(map[int]struct {
+			result1 string
+			result2 error
+		})
+	}
+	fake.selfUpdateReturnsOnCall[i] = struct {
+		result1 string
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeCore) UI(arg1 string) error {

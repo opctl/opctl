@@ -3,10 +3,9 @@ package core
 import (
 	"errors"
 	"fmt"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/cliexiter"
-	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/cli/internal/updater"
 )
@@ -17,21 +16,17 @@ var _ = Context("_selfUpdateInvoker", func() {
 		Context("invalid channel", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 				providedReleaseChannel := "invalidChannel"
 
-				objectUnderTest := _selfUpdateInvoker{
-					cliExiter: fakeCliExiter,
-				}
+				objectUnderTest := _selfUpdateInvoker{}
 
 				/* act */
-				objectUnderTest.SelfUpdate(providedReleaseChannel)
+				_, err := objectUnderTest.SelfUpdate(providedReleaseChannel)
 
 				/* assert */
-				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					To(Equal(cliexiter.ExitReq{Message: fmt.Sprintf(
-						"%v is not an available release channel. "+
-							"Available release channels are 'alpha', 'beta', and 'stable'. \n", providedReleaseChannel), Code: 1}))
+				Expect(err).To(MatchError(fmt.Sprintf(
+					"%v is not an available release channel. "+
+						"Available release channels are 'alpha', 'beta', and 'stable'.", providedReleaseChannel)))
 			})
 		})
 		Context("valid channel", func() {
@@ -40,67 +35,59 @@ var _ = Context("_selfUpdateInvoker", func() {
 				fakeUpdater := new(updater.Fake)
 
 				objectUnderTest := _selfUpdateInvoker{
-					updater:   fakeUpdater,
-					cliExiter: new(cliexiterFakes.FakeCliExiter),
+					updater: fakeUpdater,
 				}
 
 				providedChannel := "beta"
 
 				/* act */
-				objectUnderTest.SelfUpdate(providedChannel)
+				_, err := objectUnderTest.SelfUpdate(providedChannel)
 
 				/* assert */
+				Expect(err).To(BeNil())
 				Expect(fakeUpdater.GetUpdateIfExistsArgsForCall(0)).To(Equal(providedChannel))
 			})
 			Context("updater.GetUpdateIfExists errors", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
-					fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 					returnedError := errors.New("dummyError")
 
 					fakeUpdater := new(updater.Fake)
 					fakeUpdater.GetUpdateIfExistsReturns(&updater.Update{}, returnedError)
 
 					objectUnderTest := _selfUpdateInvoker{
-						updater:   fakeUpdater,
-						cliExiter: fakeCliExiter,
+						updater: fakeUpdater,
 					}
 
 					/* act */
-					objectUnderTest.SelfUpdate("beta")
+					_, err := objectUnderTest.SelfUpdate("beta")
 
 					/* assert */
-					Expect(fakeCliExiter.ExitArgsForCall(0)).
-						To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
+					Expect(err).To(MatchError(returnedError))
 				})
 			})
 			Context("updater.GetUpdateIfExists doesn't error", func() {
 				Context("update doesn't exist", func() {
 					It("should call exiter w/ expected args", func() {
 						/* arrange */
-						fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 						fakeUpdater := new(updater.Fake)
 						fakeUpdater.GetUpdateIfExistsReturns(nil, nil)
 
 						objectUnderTest := _selfUpdateInvoker{
-							updater:   fakeUpdater,
-							cliExiter: fakeCliExiter,
+							updater: fakeUpdater,
 						}
 
 						/* act */
-						objectUnderTest.SelfUpdate("beta")
+						message, err := objectUnderTest.SelfUpdate("beta")
 
 						/* assert */
-						Expect(fakeCliExiter.ExitArgsForCall(0)).
-							To(Equal(cliexiter.ExitReq{Message: "No update available, already at the latest version!", Code: 0}))
+						Expect(err).To(BeNil())
+						Expect(message).To(Equal("No update available, already at the latest version!"))
 					})
 				})
 				Context("update exists", func() {
 					It("should call updater.ApplyUpdate w/ expected args", func() {
 						/* arrange */
-						fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 						fakeUpdater := new(updater.Fake)
 						returnedUpdate := &updater.Update{Version: "dummyVersion"}
 
@@ -108,7 +95,6 @@ var _ = Context("_selfUpdateInvoker", func() {
 
 						objectUnderTest := _selfUpdateInvoker{
 							updater:      fakeUpdater,
-							cliExiter:    fakeCliExiter,
 							nodeProvider: new(nodeprovider.Fake),
 						}
 
@@ -122,7 +108,6 @@ var _ = Context("_selfUpdateInvoker", func() {
 					Context("updater.ApplyUpdate errors", func() {
 						It("should call exiter w/ expected args", func() {
 							/* arrange */
-							fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 							returnedError := errors.New("dummyError")
 
 							fakeUpdater := new(updater.Fake)
@@ -132,16 +117,14 @@ var _ = Context("_selfUpdateInvoker", func() {
 							fakeUpdater.ApplyUpdateReturns(returnedError)
 
 							objectUnderTest := _selfUpdateInvoker{
-								updater:   fakeUpdater,
-								cliExiter: fakeCliExiter,
+								updater: fakeUpdater,
 							}
 
 							/* act */
-							objectUnderTest.SelfUpdate("beta")
+							_, err := objectUnderTest.SelfUpdate("beta")
 
 							/* assert */
-							Expect(fakeCliExiter.ExitArgsForCall(0)).
-								To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
+							Expect(err).To(MatchError(returnedError))
 						})
 					})
 					Context("updater.ApplyUpdate doesn't error", func() {
@@ -156,7 +139,6 @@ var _ = Context("_selfUpdateInvoker", func() {
 
 							objectUnderTest := _selfUpdateInvoker{
 								updater:      fakeUpdater,
-								cliExiter:    new(cliexiterFakes.FakeCliExiter),
 								nodeProvider: fakeNodeProvider,
 							}
 
@@ -169,14 +151,13 @@ var _ = Context("_selfUpdateInvoker", func() {
 						Context("nodeProvider.KillNodeIfExists errors", func() {
 							It("should call exiter w/ expected args", func() {
 								/* arrange */
-								fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 								returnedError := errors.New("dummyError")
 
 								fakeNodeProvider := new(nodeprovider.Fake)
 								fakeNodeProvider.KillNodeIfExistsReturns(returnedError)
 
 								expectedExitMsg :=
-									fmt.Sprintf("Unable to kill running node; run `node kill` to complete the update. Error was: %v", returnedError.Error())
+									fmt.Sprintf("Unable to kill running node; run `node kill` to complete the update. Error was: %v", returnedError)
 
 								fakeUpdater := new(updater.Fake)
 
@@ -185,22 +166,18 @@ var _ = Context("_selfUpdateInvoker", func() {
 								objectUnderTest := _selfUpdateInvoker{
 									nodeProvider: fakeNodeProvider,
 									updater:      fakeUpdater,
-									cliExiter:    fakeCliExiter,
 								}
 
 								/* act */
-								objectUnderTest.SelfUpdate("beta")
+								_, err := objectUnderTest.SelfUpdate("beta")
 
 								/* assert */
-								Expect(fakeCliExiter.ExitArgsForCall(0)).
-									To(Equal(cliexiter.ExitReq{Message: expectedExitMsg, Code: 1}))
+								Expect(err).To(MatchError(expectedExitMsg))
 							})
 						})
 						Context("nodeProvider.KillNodeIfExists doesn't error", func() {
 							It("should call exiter w/ expected args", func() {
 								/* arrange */
-								fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 								fakeUpdater := new(updater.Fake)
 								returnedUpdate := &updater.Update{Version: "dummyVersion"}
 
@@ -208,19 +185,15 @@ var _ = Context("_selfUpdateInvoker", func() {
 
 								objectUnderTest := _selfUpdateInvoker{
 									updater:      fakeUpdater,
-									cliExiter:    fakeCliExiter,
 									nodeProvider: new(nodeprovider.Fake),
 								}
 
 								/* act */
-								objectUnderTest.SelfUpdate("beta")
+								message, err := objectUnderTest.SelfUpdate("beta")
 
 								/* assert */
-								Expect(fakeCliExiter.ExitArgsForCall(0)).
-									To(Equal(cliexiter.ExitReq{
-										Message: fmt.Sprintf("Updated to new version: %s!\n", returnedUpdate.Version),
-										Code:    0,
-									}))
+								Expect(err).To(BeNil())
+								Expect(message).To(Equal(fmt.Sprintf("Updated to new version: %s!", returnedUpdate.Version)))
 							})
 						})
 					})
