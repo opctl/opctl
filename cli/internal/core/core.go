@@ -53,7 +53,6 @@ func New(
 			nodeProvider,
 		),
 		Lser: newLser(
-			cliExiter,
 			cliOutput,
 			dataResolver,
 		),

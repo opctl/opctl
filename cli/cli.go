@@ -131,7 +131,12 @@ func newCli(
 			lsCmd.Spec = fmt.Sprintf("[%v]", dirRefArgName)
 			dirRef := lsCmd.StringArg(dirRefArgName, op.DotOpspecDirName, "Reference to dir ops will be listed from")
 			lsCmd.Action = func() {
-				core.Ls(context.TODO(), *dirRef)
+				if err := core.Ls(context.TODO(), *dirRef); err != nil {
+					core.Exit(cliexiter.ExitReq{
+						Message: err.Error(),
+						Code:    1,
+					})
+				}
 			}
 		})
 

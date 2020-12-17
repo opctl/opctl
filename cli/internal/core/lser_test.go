@@ -7,8 +7,6 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/cliexiter"
-	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	dataresolver "github.com/opctl/opctl/cli/internal/dataresolver/fakes"
 	. "github.com/opctl/opctl/sdks/go/model/fakes"
 )
@@ -20,21 +18,18 @@ var _ = Context("Lser", func() {
 			providedDirRef := "dummyDirRef"
 
 			fakeOpHandle := new(FakeDataHandle)
-			fakeOpHandle.ListDescendantsReturns(nil, errors.New(""))
+			fakeOpHandle.ListDescendantsReturns(nil, nil)
 
 			fakeDataResolver := new(dataresolver.FakeDataResolver)
 			fakeDataResolver.ResolveReturns(fakeOpHandle, nil)
 
-			fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 			objectUnderTest := _lsInvoker{
 				dataResolver: fakeDataResolver,
-				cliExiter:    fakeCliExiter,
 				writer:       os.Stdout,
 			}
 
 			/* act */
-			objectUnderTest.Ls(
+			err := objectUnderTest.Ls(
 				context.Background(),
 				providedDirRef,
 			)
@@ -42,15 +37,13 @@ var _ = Context("Lser", func() {
 			/* assert */
 			actualDirRef,
 				actualPullCreds := fakeDataResolver.ResolveArgsForCall(0)
-
+			Expect(err).To(BeNil())
 			Expect(actualDirRef).To(Equal(providedDirRef))
 			Expect(actualPullCreds).To(BeNil())
 		})
 		Context("opLister.List errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 				fakeOpHandle := new(FakeDataHandle)
 				fakeOpHandle.ListDescendantsReturns(nil, errors.New(""))
 
@@ -59,19 +52,17 @@ var _ = Context("Lser", func() {
 
 				objectUnderTest := _lsInvoker{
 					dataResolver: fakeDataResolver,
-					cliExiter:    fakeCliExiter,
 					writer:       os.Stdout,
 				}
 
 				/* act */
-				objectUnderTest.Ls(
+				err := objectUnderTest.Ls(
 					context.Background(),
 					"dummyDirRef",
 				)
 
 				/* assert */
-				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					To(Equal(cliexiter.ExitReq{Message: "", Code: 1}))
+				Expect(err).To(MatchError(""))
 			})
 		})
 	})
