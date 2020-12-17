@@ -64,10 +64,14 @@ func (ivkr _runer) Run(
 ) {
 	startTime := time.Now().UTC()
 
-	opHandle := ivkr.dataResolver.Resolve(
+	opHandle, err := ivkr.dataResolver.Resolve(
 		opRef,
 		nil,
 	)
+	if nil != err {
+		ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
+		return // support fake exiter
+	}
 
 	opFileReader, err := opHandle.GetContent(
 		ctx,
@@ -99,7 +103,7 @@ func (ivkr _runer) Run(
 		return // support fake exiter
 	}
 
-	argsMap := ivkr.cliParamSatisfier.Satisfy(
+	argsMap, err := ivkr.cliParamSatisfier.Satisfy(
 		cliparamsatisfier.NewInputSourcer(
 			ivkr.cliParamSatisfier.NewSliceInputSrc(opts.Args, "="),
 			ymlFileInputSrc,
@@ -109,6 +113,10 @@ func (ivkr _runer) Run(
 		),
 		opFile.Inputs,
 	)
+	if nil != err {
+		ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
+		return // support fake exiter
+	}
 
 	// init signal channel
 	aSigIntWasReceivedAlready := false

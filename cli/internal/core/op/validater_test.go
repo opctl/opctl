@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
 	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
-	"github.com/opctl/opctl/cli/internal/dataresolver"
+	dataresolver "github.com/opctl/opctl/cli/internal/dataresolver/fakes"
 	. "github.com/opctl/opctl/sdks/go/model/fakes"
 )
 
@@ -20,11 +20,11 @@ var _ = Context("Validater", func() {
 			/* arrange */
 			providedPkgRef := "dummyPkgRef"
 
-			fakeDataResolver := new(dataresolver.Fake)
+			fakeDataResolver := new(dataresolver.FakeDataResolver)
 			opPath := "opPath"
 			fakeOpHandle := new(FakeDataHandle)
 			fakeOpHandle.PathReturns(&opPath)
-			fakeDataResolver.ResolveReturns(fakeOpHandle)
+			fakeDataResolver.ResolveReturns(fakeOpHandle, nil)
 
 			objectUnderTest := _validater{
 				cliExiter:    new(cliexiterFakes.FakeCliExiter),
@@ -47,11 +47,11 @@ var _ = Context("Validater", func() {
 		Context("op.Validate returns errors", func() {
 			It("should call cliExiter.Exit w/ expected args", func() {
 				/* arrange */
-				fakeDataResolver := new(dataresolver.Fake)
+				fakeDataResolver := new(dataresolver.FakeDataResolver)
 
 				fakeOpHandle := new(FakeDataHandle)
 				fakeOpHandle.PathReturns(new(string))
-				fakeDataResolver.ResolveReturns(fakeOpHandle)
+				fakeDataResolver.ResolveReturns(fakeOpHandle, nil)
 
 				expectedExitReq := cliexiter.ExitReq{
 					Message: "open op.yml: no such file or directory",
@@ -89,8 +89,8 @@ var _ = Context("Validater", func() {
 				fakeOpHandle.PathReturns(&opRef)
 				fakeOpHandle.RefReturns(opRef)
 
-				fakeDataResolver := new(dataresolver.Fake)
-				fakeDataResolver.ResolveReturns(fakeOpHandle)
+				fakeDataResolver := new(dataresolver.FakeDataResolver)
+				fakeDataResolver.ResolveReturns(fakeOpHandle, nil)
 
 				expectedExitReq := cliexiter.ExitReq{
 					Message: fmt.Sprintf("%v is valid", opRef),

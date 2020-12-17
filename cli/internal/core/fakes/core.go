@@ -5,6 +5,7 @@ import (
 	"context"
 	"sync"
 
+	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/core"
 	"github.com/opctl/opctl/cli/internal/core/auth"
 	"github.com/opctl/opctl/cli/internal/core/node"
@@ -27,6 +28,11 @@ type FakeCore struct {
 	eventsMutex       sync.RWMutex
 	eventsArgsForCall []struct {
 		arg1 context.Context
+	}
+	ExitStub        func(cliexiter.ExitReq)
+	exitMutex       sync.RWMutex
+	exitArgsForCall []struct {
+		arg1 cliexiter.ExitReq
 	}
 	LsStub        func(context.Context, string)
 	lsMutex       sync.RWMutex
@@ -66,10 +72,16 @@ type FakeCore struct {
 	selfUpdateArgsForCall []struct {
 		arg1 string
 	}
-	UIStub        func(string)
+	UIStub        func(string) error
 	uIMutex       sync.RWMutex
 	uIArgsForCall []struct {
 		arg1 string
+	}
+	uIReturns struct {
+		result1 error
+	}
+	uIReturnsOnCall map[int]struct {
+		result1 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
@@ -155,6 +167,37 @@ func (fake *FakeCore) EventsArgsForCall(i int) context.Context {
 	fake.eventsMutex.RLock()
 	defer fake.eventsMutex.RUnlock()
 	argsForCall := fake.eventsArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *FakeCore) Exit(arg1 cliexiter.ExitReq) {
+	fake.exitMutex.Lock()
+	fake.exitArgsForCall = append(fake.exitArgsForCall, struct {
+		arg1 cliexiter.ExitReq
+	}{arg1})
+	fake.recordInvocation("Exit", []interface{}{arg1})
+	fake.exitMutex.Unlock()
+	if fake.ExitStub != nil {
+		fake.ExitStub(arg1)
+	}
+}
+
+func (fake *FakeCore) ExitCallCount() int {
+	fake.exitMutex.RLock()
+	defer fake.exitMutex.RUnlock()
+	return len(fake.exitArgsForCall)
+}
+
+func (fake *FakeCore) ExitCalls(stub func(cliexiter.ExitReq)) {
+	fake.exitMutex.Lock()
+	defer fake.exitMutex.Unlock()
+	fake.ExitStub = stub
+}
+
+func (fake *FakeCore) ExitArgsForCall(i int) cliexiter.ExitReq {
+	fake.exitMutex.RLock()
+	defer fake.exitMutex.RUnlock()
+	argsForCall := fake.exitArgsForCall[i]
 	return argsForCall.arg1
 }
 
@@ -358,16 +401,22 @@ func (fake *FakeCore) SelfUpdateArgsForCall(i int) string {
 	return argsForCall.arg1
 }
 
-func (fake *FakeCore) UI(arg1 string) {
+func (fake *FakeCore) UI(arg1 string) error {
 	fake.uIMutex.Lock()
+	ret, specificReturn := fake.uIReturnsOnCall[len(fake.uIArgsForCall)]
 	fake.uIArgsForCall = append(fake.uIArgsForCall, struct {
 		arg1 string
 	}{arg1})
 	fake.recordInvocation("UI", []interface{}{arg1})
 	fake.uIMutex.Unlock()
 	if fake.UIStub != nil {
-		fake.UIStub(arg1)
+		return fake.UIStub(arg1)
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.uIReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeCore) UICallCount() int {
@@ -376,7 +425,7 @@ func (fake *FakeCore) UICallCount() int {
 	return len(fake.uIArgsForCall)
 }
 
-func (fake *FakeCore) UICalls(stub func(string)) {
+func (fake *FakeCore) UICalls(stub func(string) error) {
 	fake.uIMutex.Lock()
 	defer fake.uIMutex.Unlock()
 	fake.UIStub = stub
@@ -389,6 +438,29 @@ func (fake *FakeCore) UIArgsForCall(i int) string {
 	return argsForCall.arg1
 }
 
+func (fake *FakeCore) UIReturns(result1 error) {
+	fake.uIMutex.Lock()
+	defer fake.uIMutex.Unlock()
+	fake.UIStub = nil
+	fake.uIReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeCore) UIReturnsOnCall(i int, result1 error) {
+	fake.uIMutex.Lock()
+	defer fake.uIMutex.Unlock()
+	fake.UIStub = nil
+	if fake.uIReturnsOnCall == nil {
+		fake.uIReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.uIReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeCore) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -396,6 +468,8 @@ func (fake *FakeCore) Invocations() map[string][][]interface{} {
 	defer fake.authMutex.RUnlock()
 	fake.eventsMutex.RLock()
 	defer fake.eventsMutex.RUnlock()
+	fake.exitMutex.RLock()
+	defer fake.exitMutex.RUnlock()
 	fake.lsMutex.RLock()
 	defer fake.lsMutex.RUnlock()
 	fake.nodeMutex.RLock()

@@ -57,13 +57,16 @@ func (ivkr _installer) Install(
 		}
 	}
 
-	opDirHandle := ivkr.dataResolver.Resolve(
+	opDirHandle, err := ivkr.dataResolver.Resolve(
 		pkgRef,
 		&model.Creds{
 			Username: username,
 			Password: password,
 		},
 	)
+	if err != nil {
+		ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
+	}
 
 	if err := opspec.Install(
 		ctx,

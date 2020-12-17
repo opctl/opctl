@@ -37,16 +37,21 @@ func (ivkr _validater) Validate(
 	ctx context.Context,
 	opRef string,
 ) {
-	opDirHandle := ivkr.dataResolver.Resolve(
+	opDirHandle, err := ivkr.dataResolver.Resolve(
 		opRef,
 		nil,
 	)
+	if nil != err {
+		ivkr.cliExiter.Exit(cliexiter.ExitReq{
+			Message: err.Error(),
+			Code:    1},
+		)
+	}
 
-	err := opspec.Validate(
+	if err := opspec.Validate(
 		ctx,
 		*opDirHandle.Path(),
-	)
-	if nil != err {
+	); nil != err {
 		ivkr.cliExiter.Exit(cliexiter.ExitReq{
 			Message: err.Error(),
 			Code:    1},

@@ -54,10 +54,14 @@ func (ivkr _lsInvoker) Ls(
 
 	fmt.Fprintln(_tabWriter, "REF\tDESCRIPTION")
 
-	dirHandle := ivkr.dataResolver.Resolve(
+	dirHandle, err := ivkr.dataResolver.Resolve(
 		dirRef,
 		nil,
 	)
+	if nil != err {
+		ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
+		return // support fake exiter
+	}
 
 	opsByPath, err := opspec.List(
 		ctx,

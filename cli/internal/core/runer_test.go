@@ -12,7 +12,7 @@ import (
 	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	clioutputFakes "github.com/opctl/opctl/cli/internal/clioutput/fakes"
 	cliparamsatisfierFakes "github.com/opctl/opctl/cli/internal/cliparamsatisfier/fakes"
-	"github.com/opctl/opctl/cli/internal/dataresolver"
+	dataresolver "github.com/opctl/opctl/cli/internal/dataresolver/fakes"
 	cliModel "github.com/opctl/opctl/cli/internal/model"
 	modelFakes "github.com/opctl/opctl/cli/internal/model/fakes"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
@@ -41,8 +41,8 @@ var _ = Context("Runer", func() {
 
 			dummyOpDataHandle := getDummyOpDataHandle()
 
-			fakeDataResolver := new(dataresolver.Fake)
-			fakeDataResolver.ResolveReturns(dummyOpDataHandle)
+			fakeDataResolver := new(dataresolver.FakeDataResolver)
+			fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
 			fakeNodeProvider := new(nodeprovider.Fake)
 			// error to trigger return
@@ -70,8 +70,8 @@ var _ = Context("Runer", func() {
 				fakeOpHandle := new(FakeDataHandle)
 				fakeOpHandle.GetContentReturns(nil, errors.New(""))
 
-				fakeDataResolver := new(dataresolver.Fake)
-				fakeDataResolver.ResolveReturns(fakeOpHandle)
+				fakeDataResolver := new(dataresolver.FakeDataResolver)
+				fakeDataResolver.ResolveReturns(fakeOpHandle, nil)
 
 				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
@@ -107,8 +107,8 @@ var _ = Context("Runer", func() {
 					},
 				}
 
-				fakeDataResolver := new(dataresolver.Fake)
-				fakeDataResolver.ResolveReturns(dummyOpDataHandle)
+				fakeDataResolver := new(dataresolver.FakeDataResolver)
+				fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
 				// stub node provider
 				fakeAPIClient := new(clientFakes.FakeClient)
@@ -125,7 +125,7 @@ var _ = Context("Runer", func() {
 				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
 				fakeCliParamSatisfier := new(cliparamsatisfierFakes.FakeCLIParamSatisfier)
-				fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args)
+				fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args, nil)
 
 				objectUnderTest := _runer{
 					dataResolver:      fakeDataResolver,
@@ -150,8 +150,8 @@ var _ = Context("Runer", func() {
 
 					dummyOpDataHandle := getDummyOpDataHandle()
 
-					fakeDataResolver := new(dataresolver.Fake)
-					fakeDataResolver.ResolveReturns(dummyOpDataHandle)
+					fakeDataResolver := new(dataresolver.FakeDataResolver)
+					fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
 					// stub node provider
 					fakeAPIClient := new(clientFakes.FakeClient)
@@ -193,8 +193,8 @@ var _ = Context("Runer", func() {
 
 					dummyOpDataHandle := getDummyOpDataHandle()
 
-					fakeDataResolver := new(dataresolver.Fake)
-					fakeDataResolver.ResolveReturns(dummyOpDataHandle)
+					fakeDataResolver := new(dataresolver.FakeDataResolver)
+					fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
 					// stub node provider
 					fakeAPIClient := new(clientFakes.FakeClient)
@@ -240,8 +240,8 @@ var _ = Context("Runer", func() {
 
 						dummyOpDataHandle := getDummyOpDataHandle()
 
-						fakeDataResolver := new(dataresolver.Fake)
-						fakeDataResolver.ResolveReturns(dummyOpDataHandle)
+						fakeDataResolver := new(dataresolver.FakeDataResolver)
+						fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
 						fakeAPIClient := new(clientFakes.FakeClient)
 						fakeAPIClient.GetEventStreamReturns(nil, returnedError)
@@ -275,8 +275,8 @@ var _ = Context("Runer", func() {
 
 							dummyOpDataHandle := getDummyOpDataHandle()
 
-							fakeDataResolver := new(dataresolver.Fake)
-							fakeDataResolver.ResolveReturns(dummyOpDataHandle)
+							fakeDataResolver := new(dataresolver.FakeDataResolver)
+							fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
 							fakeAPIClient := new(clientFakes.FakeClient)
 							eventChannel := make(chan model.Event)
@@ -325,8 +325,8 @@ var _ = Context("Runer", func() {
 
 										dummyOpDataHandle := getDummyOpDataHandle()
 
-										fakeDataResolver := new(dataresolver.Fake)
-										fakeDataResolver.ResolveReturns(dummyOpDataHandle)
+										fakeDataResolver := new(dataresolver.FakeDataResolver)
+										fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
 										fakeAPIClient := new(clientFakes.FakeClient)
 										eventChannel := make(chan model.Event, 10)
@@ -373,8 +373,8 @@ var _ = Context("Runer", func() {
 
 										dummyOpDataHandle := getDummyOpDataHandle()
 
-										fakeDataResolver := new(dataresolver.Fake)
-										fakeDataResolver.ResolveReturns(dummyOpDataHandle)
+										fakeDataResolver := new(dataresolver.FakeDataResolver)
+										fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
 										fakeAPIClient := new(clientFakes.FakeClient)
 										eventChannel := make(chan model.Event, 10)
@@ -422,8 +422,8 @@ var _ = Context("Runer", func() {
 
 										dummyOpDataHandle := getDummyOpDataHandle()
 
-										fakeDataResolver := new(dataresolver.Fake)
-										fakeDataResolver.ResolveReturns(dummyOpDataHandle)
+										fakeDataResolver := new(dataresolver.FakeDataResolver)
+										fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
 										fakeAPIClient := new(clientFakes.FakeClient)
 										eventChannel := make(chan model.Event, 10)
@@ -470,8 +470,8 @@ var _ = Context("Runer", func() {
 
 										dummyOpDataHandle := getDummyOpDataHandle()
 
-										fakeDataResolver := new(dataresolver.Fake)
-										fakeDataResolver.ResolveReturns(dummyOpDataHandle)
+										fakeDataResolver := new(dataresolver.FakeDataResolver)
+										fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
 										fakeAPIClient := new(clientFakes.FakeClient)
 										eventChannel := make(chan model.Event, 10)

@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
 	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
-	"github.com/opctl/opctl/cli/internal/dataresolver"
+	dataresolver "github.com/opctl/opctl/cli/internal/dataresolver/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/model/fakes"
 )
@@ -25,8 +25,8 @@ var _ = Context("Installer", func() {
 				Password: "dummyPassword",
 			}
 
-			fakeDataResolver := new(dataresolver.Fake)
-			fakeDataResolver.ResolveReturns(new(FakeDataHandle))
+			fakeDataResolver := new(dataresolver.FakeDataResolver)
+			fakeDataResolver.ResolveReturns(new(FakeDataHandle), nil)
 
 			objectUnderTest := _installer{
 				dataResolver: fakeDataResolver,
@@ -56,8 +56,8 @@ var _ = Context("Installer", func() {
 				fakeOpHandle := new(FakeDataHandle)
 				fakeOpHandle.ListDescendantsReturns(nil, errors.New(""))
 
-				fakeDataResolver := new(dataresolver.Fake)
-				fakeDataResolver.ResolveReturns(fakeOpHandle)
+				fakeDataResolver := new(dataresolver.FakeDataResolver)
+				fakeDataResolver.ResolveReturns(fakeOpHandle, nil)
 
 				objectUnderTest := _installer{
 					cliExiter:    fakeCliExiter,

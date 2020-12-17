@@ -25,6 +25,7 @@ type Core interface {
 	Runer
 	SelfUpdater
 	UIer
+	cliexiter.CliExiter
 }
 
 // New returns initialized cli core
@@ -35,10 +36,9 @@ func New(
 	_os := ios.New()
 	cliOutput := clioutput.New(cliColorer, os.Stderr, os.Stdout)
 	cliExiter := cliexiter.New(cliOutput, _os)
-	cliParamSatisfier := cliparamsatisfier.New(cliExiter, cliOutput)
+	cliParamSatisfier := cliparamsatisfier.New(cliOutput)
 
 	dataResolver := dataresolver.New(
-		cliExiter,
 		cliParamSatisfier,
 		nodeProvider,
 	)
@@ -81,10 +81,10 @@ func New(
 			nodeProvider,
 		),
 		UIer: newUIer(
-			cliExiter,
 			dataResolver,
 			nodeProvider,
 		),
+		CliExiter: cliExiter,
 	}
 }
 
@@ -97,4 +97,5 @@ type _core struct {
 	Runer
 	SelfUpdater
 	UIer
+	cliexiter.CliExiter
 }
