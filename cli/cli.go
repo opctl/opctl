@@ -238,7 +238,15 @@ func newCli(
 	cli.Command("self-update", "Update opctl", func(selfUpdateCmd *mow.Cmd) {
 		channel := selfUpdateCmd.StringOpt("c channel", "stable", "Release channel to update from (either `stable`, `alpha`, or `beta`)")
 		selfUpdateCmd.Action = func() {
-			core.SelfUpdate(*channel)
+			successMessage, err := core.SelfUpdate(*channel)
+			if err != nil {
+				core.Exit(cliexiter.ExitReq{
+					Message: err.Error(),
+					Code:    1,
+				})
+			} else {
+				core.Exit(cliexiter.ExitReq{Message: successMessage})
+			}
 		}
 	})
 

@@ -69,10 +69,7 @@ func New(
 			dataResolver,
 			nodeProvider,
 		),
-		SelfUpdater: newSelfUpdater(
-			cliExiter,
-			nodeProvider,
-		),
+		SelfUpdater: newSelfUpdater(nodeProvider),
 		UIer: newUIer(
 			dataResolver,
 			nodeProvider,
