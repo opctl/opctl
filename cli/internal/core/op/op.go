@@ -3,7 +3,6 @@ package op
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
-	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 )
@@ -19,21 +18,14 @@ type Op interface {
 
 // New returns an initialized "op" sub command
 func New(
-	cliExiter cliexiter.CliExiter,
 	dataResolver dataresolver.DataResolver,
 	nodeProvider nodeprovider.NodeProvider,
 ) Op {
 	return _op{
-		Creater: newCreater(),
-		Installer: newInstaller(
-			cliExiter,
-			dataResolver,
-		),
-		Killer: newKiller(nodeProvider),
-		Validater: newValidater(
-			cliExiter,
-			dataResolver,
-		),
+		Creater:   newCreater(),
+		Installer: newInstaller(dataResolver),
+		Killer:    newKiller(nodeProvider),
+		Validater: newValidater(dataResolver),
 	}
 }
 
