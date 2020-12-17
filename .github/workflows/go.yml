@@ -16,9 +16,14 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v2
       
+    - name: Get branch ref
+      id: branch_ref
+      shell: bash
+      run: echo "##[set-output name=ref;]$(echo ${GITHUB_HEAD_REF-${GITHUB_REF}})"
+
     - name: Get branch name
       shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF##*/})"
+      run: echo "##[set-output name=branch;]$(echo ${${{ steps.branch_ref.outputs.branch }}##*/-})"
       id: branch_name
 
     - name: Download opctl
