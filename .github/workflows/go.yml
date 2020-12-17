@@ -26,5 +26,7 @@ jobs:
       with:
         repo: opctl/opctl
         tag: v0.1.45
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - run: opctl run -a gitBranch=${{ steps.branch_name.outputs.branch }} build
