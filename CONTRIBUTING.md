@@ -3,6 +3,8 @@ To streamline dev efforts, the opctl project is maintained as a monorepo contain
 
 Typically at a minimum, each sub-project includes it's own `README.md`, `CONTRIBUTING.md`, and`.opspec`. 
 
+The project is configured as a single go module, which allows dependencies to be shared during development, and should allow most IDEs to understand the project configuration without manual configuration.
+
 # How it's laid out
 
 ## [api](api)
