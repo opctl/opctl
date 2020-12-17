@@ -21,7 +21,10 @@ jobs:
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: branch_name
 
-    - uses: Remitly/opctl-action@e5d7594
+    - name: Download opctl
+      uses: jaxxstorm/action-install-gh-release@v1.1.0
       with:
-        # op: "-a gitBranch=${{ steps.branch_name.outputs.branch }} build"
-        op: build
+        repo: opctl/opctl
+        tag: v0.1.45
+
+    - run: opctl run -a gitBranch=${{ steps.branch_name.outputs.branch }} build
