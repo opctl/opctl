@@ -22,7 +22,7 @@ jobs:
       id: branch_name
 
     - name: Download opctl
-      uses: dsaltares/fetch-gh-release-asset@v0.0.5
+      uses: dsaltares/fetch-gh-release-asset@0.0.5
       with:
         repo: opctl/opctl
         version: latest
