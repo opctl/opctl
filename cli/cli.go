@@ -211,7 +211,15 @@ func newCli(
 				opRef := validateCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
 				validateCmd.Action = func() {
-					core.Op().Validate(context.TODO(), *opRef)
+					successMessage, err := core.Op().Validate(context.TODO(), *opRef)
+					if err != nil {
+						core.Exit(cliexiter.ExitReq{
+							Message: err.Error(),
+							Code:    1,
+						})
+					} else {
+						core.Exit(cliexiter.ExitReq{Message: successMessage})
+					}
 				}
 			})
 

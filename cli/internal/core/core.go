@@ -58,7 +58,6 @@ func New(
 		),
 		Noder: newNoder(nodeProvider),
 		Oper: newOper(
-			cliExiter,
 			dataResolver,
 			nodeProvider,
 		),

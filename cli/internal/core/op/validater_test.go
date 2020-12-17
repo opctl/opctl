@@ -8,8 +8,6 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/cliexiter"
-	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	dataresolver "github.com/opctl/opctl/cli/internal/dataresolver/fakes"
 	. "github.com/opctl/opctl/sdks/go/model/fakes"
 )
@@ -27,7 +25,6 @@ var _ = Context("Validater", func() {
 			fakeDataResolver.ResolveReturns(fakeOpHandle, nil)
 
 			objectUnderTest := _validater{
-				cliExiter:    new(cliexiterFakes.FakeCliExiter),
 				dataResolver: fakeDataResolver,
 			}
 
@@ -53,27 +50,18 @@ var _ = Context("Validater", func() {
 				fakeOpHandle.PathReturns(new(string))
 				fakeDataResolver.ResolveReturns(fakeOpHandle, nil)
 
-				expectedExitReq := cliexiter.ExitReq{
-					Message: "open op.yml: no such file or directory",
-					Code:    1,
-				}
-
-				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 				objectUnderTest := _validater{
-					cliExiter:    fakeCliExiter,
 					dataResolver: fakeDataResolver,
 				}
 
 				/* act */
-				objectUnderTest.Validate(
+				_, err := objectUnderTest.Validate(
 					context.Background(),
 					"dummyPkgRef",
 				)
 
 				/* assert */
-
-				Expect(fakeCliExiter.ExitArgsForCall(0)).To(Equal(expectedExitReq))
+				Expect(err).To(MatchError("open op.yml: no such file or directory"))
 			})
 		})
 		Context("pkg.Validate doesn't return errors", func() {
@@ -92,26 +80,19 @@ var _ = Context("Validater", func() {
 				fakeDataResolver := new(dataresolver.FakeDataResolver)
 				fakeDataResolver.ResolveReturns(fakeOpHandle, nil)
 
-				expectedExitReq := cliexiter.ExitReq{
-					Message: fmt.Sprintf("%v is valid", opRef),
-				}
-
-				fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 				objectUnderTest := _validater{
-					cliExiter:    fakeCliExiter,
 					dataResolver: fakeDataResolver,
 				}
 
 				/* act */
-				objectUnderTest.Validate(
+				message, err := objectUnderTest.Validate(
 					context.Background(),
 					opRef,
 				)
 
 				/* assert */
-
-				Expect(fakeCliExiter.ExitArgsForCall(0)).To(Equal(expectedExitReq))
+				Expect(err).To(BeNil())
+				Expect(message).To(Equal(fmt.Sprintf("%v is valid", opRef)))
 			})
 		})
 	})

@@ -22,7 +22,7 @@ type FakeOp struct {
 	createReturnsOnCall map[int]struct {
 		result1 error
 	}
-	InstallStub        func(context.Context, string, string, string, string)
+	InstallStub        func(context.Context, string, string, string, string) error
 	installMutex       sync.RWMutex
 	installArgsForCall []struct {
 		arg1 context.Context
@@ -30,6 +30,12 @@ type FakeOp struct {
 		arg3 string
 		arg4 string
 		arg5 string
+	}
+	installReturns struct {
+		result1 error
+	}
+	installReturnsOnCall map[int]struct {
+		result1 error
 	}
 	KillStub        func(context.Context, string) error
 	killMutex       sync.RWMutex
@@ -43,11 +49,19 @@ type FakeOp struct {
 	killReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ValidateStub        func(context.Context, string)
+	ValidateStub        func(context.Context, string) (string, error)
 	validateMutex       sync.RWMutex
 	validateArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
+	}
+	validateReturns struct {
+		result1 string
+		result2 error
+	}
+	validateReturnsOnCall map[int]struct {
+		result1 string
+		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
@@ -115,8 +129,9 @@ func (fake *FakeOp) CreateReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeOp) Install(arg1 context.Context, arg2 string, arg3 string, arg4 string, arg5 string) {
+func (fake *FakeOp) Install(arg1 context.Context, arg2 string, arg3 string, arg4 string, arg5 string) error {
 	fake.installMutex.Lock()
+	ret, specificReturn := fake.installReturnsOnCall[len(fake.installArgsForCall)]
 	fake.installArgsForCall = append(fake.installArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
@@ -127,8 +142,13 @@ func (fake *FakeOp) Install(arg1 context.Context, arg2 string, arg3 string, arg4
 	fake.recordInvocation("Install", []interface{}{arg1, arg2, arg3, arg4, arg5})
 	fake.installMutex.Unlock()
 	if fake.InstallStub != nil {
-		fake.InstallStub(arg1, arg2, arg3, arg4, arg5)
+		return fake.InstallStub(arg1, arg2, arg3, arg4, arg5)
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.installReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeOp) InstallCallCount() int {
@@ -137,7 +157,7 @@ func (fake *FakeOp) InstallCallCount() int {
 	return len(fake.installArgsForCall)
 }
 
-func (fake *FakeOp) InstallCalls(stub func(context.Context, string, string, string, string)) {
+func (fake *FakeOp) InstallCalls(stub func(context.Context, string, string, string, string) error) {
 	fake.installMutex.Lock()
 	defer fake.installMutex.Unlock()
 	fake.InstallStub = stub
@@ -148,6 +168,29 @@ func (fake *FakeOp) InstallArgsForCall(i int) (context.Context, string, string, 
 	defer fake.installMutex.RUnlock()
 	argsForCall := fake.installArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5
+}
+
+func (fake *FakeOp) InstallReturns(result1 error) {
+	fake.installMutex.Lock()
+	defer fake.installMutex.Unlock()
+	fake.InstallStub = nil
+	fake.installReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeOp) InstallReturnsOnCall(i int, result1 error) {
+	fake.installMutex.Lock()
+	defer fake.installMutex.Unlock()
+	fake.InstallStub = nil
+	if fake.installReturnsOnCall == nil {
+		fake.installReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.installReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *FakeOp) Kill(arg1 context.Context, arg2 string) error {
@@ -211,8 +254,9 @@ func (fake *FakeOp) KillReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeOp) Validate(arg1 context.Context, arg2 string) {
+func (fake *FakeOp) Validate(arg1 context.Context, arg2 string) (string, error) {
 	fake.validateMutex.Lock()
+	ret, specificReturn := fake.validateReturnsOnCall[len(fake.validateArgsForCall)]
 	fake.validateArgsForCall = append(fake.validateArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
@@ -220,8 +264,13 @@ func (fake *FakeOp) Validate(arg1 context.Context, arg2 string) {
 	fake.recordInvocation("Validate", []interface{}{arg1, arg2})
 	fake.validateMutex.Unlock()
 	if fake.ValidateStub != nil {
-		fake.ValidateStub(arg1, arg2)
+		return fake.ValidateStub(arg1, arg2)
 	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.validateReturns
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *FakeOp) ValidateCallCount() int {
@@ -230,7 +279,7 @@ func (fake *FakeOp) ValidateCallCount() int {
 	return len(fake.validateArgsForCall)
 }
 
-func (fake *FakeOp) ValidateCalls(stub func(context.Context, string)) {
+func (fake *FakeOp) ValidateCalls(stub func(context.Context, string) (string, error)) {
 	fake.validateMutex.Lock()
 	defer fake.validateMutex.Unlock()
 	fake.ValidateStub = stub
@@ -241,6 +290,32 @@ func (fake *FakeOp) ValidateArgsForCall(i int) (context.Context, string) {
 	defer fake.validateMutex.RUnlock()
 	argsForCall := fake.validateArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeOp) ValidateReturns(result1 string, result2 error) {
+	fake.validateMutex.Lock()
+	defer fake.validateMutex.Unlock()
+	fake.ValidateStub = nil
+	fake.validateReturns = struct {
+		result1 string
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeOp) ValidateReturnsOnCall(i int, result1 string, result2 error) {
+	fake.validateMutex.Lock()
+	defer fake.validateMutex.Unlock()
+	fake.ValidateStub = nil
+	if fake.validateReturnsOnCall == nil {
+		fake.validateReturnsOnCall = make(map[int]struct {
+			result1 string
+			result2 error
+		})
+	}
+	fake.validateReturnsOnCall[i] = struct {
+		result1 string
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeOp) Invocations() map[string][][]interface{} {
