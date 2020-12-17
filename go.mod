@@ -65,4 +65,4 @@ require (
 	k8s.io/utils v0.0.0-20201104234853-8146046b121e // indirect
 )
 
-replace github.com/opctl/opctl/sdks/go => ../sdks/go
+replace github.com/opctl/opctl/sdks/go => ./sdks/go

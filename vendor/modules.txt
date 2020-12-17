@@ -762,4 +762,4 @@ k8s.io/utils/integer
 sigs.k8s.io/structured-merge-diff/v4/value
 # sigs.k8s.io/yaml v1.2.0
 sigs.k8s.io/yaml
-# github.com/opctl/opctl/sdks/go => ../sdks/go
+# github.com/opctl/opctl/sdks/go => ./sdks/go
