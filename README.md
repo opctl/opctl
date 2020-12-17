@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/opctl/opctl.svg?branch=master)](https://travis-ci.org/opctl/opctl)
+[![Build](https://github.com/opctl/opctl/workflows/Build/badge.svg)](https://github.com/opctl/opctl/actions?query=workflow%3ABuild)
 [![Go Report Card](https://goreportcard.com/badge/github.com/opctl/opctl)](https://goreportcard.com/report/github.com/opctl/opctl)
 [![Coverage](https://codecov.io/gh/opctl/opctl/branch/master/graph/badge.svg)](https://codecov.io/gh/opctl/opctl)
 
