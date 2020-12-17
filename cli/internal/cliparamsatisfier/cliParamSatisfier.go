@@ -10,7 +10,6 @@ import (
 	"sort"
 
 	"github.com/ghodss/yaml"
-	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -27,23 +26,20 @@ type CLIParamSatisfier interface {
 	Satisfy(
 		inputSourcer InputSourcer,
 		inputs map[string]*model.Param,
-	) map[string]*model.Value
+	) (map[string]*model.Value, error)
 }
 
 func New(
-	cliExiter cliexiter.CliExiter,
 	cliOutput clioutput.CliOutput,
 ) CLIParamSatisfier {
 
 	return &_CLIParamSatisfier{
-		cliExiter:       cliExiter,
 		cliOutput:       cliOutput,
 		InputSrcFactory: newInputSrcFactory(),
 	}
 }
 
 type _CLIParamSatisfier struct {
-	cliExiter cliexiter.CliExiter
 	cliOutput clioutput.CliOutput
 	InputSrcFactory
 }
@@ -51,7 +47,7 @@ type _CLIParamSatisfier struct {
 func (cps _CLIParamSatisfier) Satisfy(
 	inputSourcer InputSourcer,
 	inputs map[string]*model.Param,
-) map[string]*model.Value {
+) (map[string]*model.Value, error) {
 
 	argMap := map[string]*model.Value{}
 	for _, paramName := range cps.getSortedParamNames(inputs) {
@@ -63,11 +59,10 @@ func (cps _CLIParamSatisfier) Satisfy(
 
 			rawArg, ok := inputSourcer.Source(paramName)
 			if !ok {
-				msg := fmt.Sprintf(`
+				return nil, fmt.Errorf(`
 -
   Prompt for "%v" failed; running in non-interactive terminal
 -`, paramName)
-				cps.cliExiter.Exit(cliexiter.ExitReq{Message: msg, Code: 1})
 			}
 
 			switch {
@@ -161,7 +156,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 		}
 	}
 
-	return argMap
+	return argMap, nil
 }
 
 func (this _CLIParamSatisfier) getSortedParamNames(

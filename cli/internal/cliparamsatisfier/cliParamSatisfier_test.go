@@ -3,9 +3,9 @@ package cliparamsatisfier
 import (
 	"encoding/json"
 	"fmt"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
 	clioutputFakes "github.com/opctl/opctl/cli/internal/clioutput/fakes"
 	. "github.com/opctl/opctl/cli/internal/cliparamsatisfier/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -16,6 +16,7 @@ var _ = Context("parameterSatisfier", func() {
 		It("should call inputSourcer.Source w/ expected args for each input", func() {
 			/* arrange */
 			providedInputSourcer := new(FakeInputSourcer)
+			providedInputSourcer.SourceReturns(nil, true)
 			providedInputs := map[string]*model.Param{
 				"input1": {String: &model.StringParam{}},
 				"input2": {String: &model.StringParam{}},
@@ -27,12 +28,11 @@ var _ = Context("parameterSatisfier", func() {
 			}
 
 			objectUnderTest := _CLIParamSatisfier{
-				cliExiter: new(cliexiterFakes.FakeCliExiter),
 				cliOutput: new(clioutputFakes.FakeCliOutput),
 			}
 
 			/* act */
-			objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
+			_, err := objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
 
 			/* assert */
 			actualInputNames := map[string]struct{}{}
@@ -41,6 +41,7 @@ var _ = Context("parameterSatisfier", func() {
 				actualInputNames[actualInputName] = struct{}{}
 			}
 
+			Expect(err).To(BeNil())
 			Expect(actualInputNames).To(Equal(expectedInputNames))
 		})
 		Context("param.Array isn't nil", func() {
@@ -69,17 +70,15 @@ var _ = Context("parameterSatisfier", func() {
 					valueString := string(valueBytes)
 					providedInputSourcer.SourceReturns(&valueString, true)
 
-					fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
-
 					objectUnderTest := _CLIParamSatisfier{
-						cliExiter: fakeCliExiter,
 						cliOutput: new(clioutputFakes.FakeCliOutput),
 					}
 
 					/* act */
-					actualOutputs := objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
+					actualOutputs, err := objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
 
 					/* assert */
+					Expect(err).To(BeNil())
 					Expect(actualOutputs).To(Equal(expectedOutputs))
 				})
 			})
@@ -104,14 +103,14 @@ var _ = Context("parameterSatisfier", func() {
 					}
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliExiter: new(cliexiterFakes.FakeCliExiter),
 						cliOutput: new(clioutputFakes.FakeCliOutput),
 					}
 
 					/* act */
-					actualOutputs := objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
+					actualOutputs, err := objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
 
 					/* assert */
+					Expect(err).To(BeNil())
 					Expect(actualOutputs).To(Equal(expectedOutputs))
 				})
 			})
@@ -136,16 +135,14 @@ var _ = Context("parameterSatisfier", func() {
 					}
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliExiter: new(cliexiterFakes.FakeCliExiter),
 						cliOutput: new(clioutputFakes.FakeCliOutput),
 					}
 
 					/* act */
-					objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
+					actualOutputs, err := objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
 
 					/* assert */
-					actualOutputs := objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
-
+					Expect(err).To(BeNil())
 					Expect(actualOutputs).To(Equal(expectedOutputs))
 				})
 			})
@@ -177,16 +174,14 @@ var _ = Context("parameterSatisfier", func() {
 					providedInputSourcer.SourceReturns(&valueString, true)
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliExiter: new(cliexiterFakes.FakeCliExiter),
 						cliOutput: new(clioutputFakes.FakeCliOutput),
 					}
 
 					/* act */
-					objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
+					actualOutputs, err := objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
 
 					/* assert */
-					actualOutputs := objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
-
+					Expect(err).To(BeNil())
 					Expect(actualOutputs).To(Equal(expectedOutputs))
 				})
 			})

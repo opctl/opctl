@@ -10,6 +10,7 @@ import (
 	"github.com/appdataspec/sdk-golang/appdatapath"
 	mow "github.com/jawher/mow.cli"
 	"github.com/opctl/opctl/cli/internal/clicolorer"
+	"github.com/opctl/opctl/cli/internal/cliexiter"
 	corePkg "github.com/opctl/opctl/cli/internal/core"
 	"github.com/opctl/opctl/cli/internal/model"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
@@ -209,7 +210,18 @@ func newCli(
 		mountRefArg := uiCmd.StringArg(mountRefArgName, ".", "Reference to mount (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
 		uiCmd.Action = func() {
-			core.UI(*mountRefArg)
+			err := core.UI(*mountRefArg)
+			if err != nil {
+				core.Exit(cliexiter.ExitReq{
+					Message: err.Error(),
+					Code:    1,
+				})
+			} else {
+				core.Exit(cliexiter.ExitReq{
+					Message: fmt.Sprint("Opctl web UI opened!\n"),
+					Code:    0,
+				})
+			}
 		}
 	})
 

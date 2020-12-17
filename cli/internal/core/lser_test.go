@@ -3,13 +3,14 @@ package core
 import (
 	"context"
 	"errors"
+	"os"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
 	cliexiterFakes "github.com/opctl/opctl/cli/internal/cliexiter/fakes"
-	"github.com/opctl/opctl/cli/internal/dataresolver"
+	dataresolver "github.com/opctl/opctl/cli/internal/dataresolver/fakes"
 	. "github.com/opctl/opctl/sdks/go/model/fakes"
-	"os"
 )
 
 var _ = Context("Lser", func() {
@@ -21,8 +22,8 @@ var _ = Context("Lser", func() {
 			fakeOpHandle := new(FakeDataHandle)
 			fakeOpHandle.ListDescendantsReturns(nil, errors.New(""))
 
-			fakeDataResolver := new(dataresolver.Fake)
-			fakeDataResolver.ResolveReturns(fakeOpHandle)
+			fakeDataResolver := new(dataresolver.FakeDataResolver)
+			fakeDataResolver.ResolveReturns(fakeOpHandle, nil)
 
 			fakeCliExiter := new(cliexiterFakes.FakeCliExiter)
 
@@ -53,8 +54,8 @@ var _ = Context("Lser", func() {
 				fakeOpHandle := new(FakeDataHandle)
 				fakeOpHandle.ListDescendantsReturns(nil, errors.New(""))
 
-				fakeDataResolver := new(dataresolver.Fake)
-				fakeDataResolver.ResolveReturns(fakeOpHandle)
+				fakeDataResolver := new(dataresolver.FakeDataResolver)
+				fakeDataResolver.ResolveReturns(fakeOpHandle, nil)
 
 				objectUnderTest := _lsInvoker{
 					dataResolver: fakeDataResolver,
