@@ -3,11 +3,6 @@ package core
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
-	"os"
-
-	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/cli/internal/clicolorer"
-	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
@@ -25,17 +20,13 @@ type Core interface {
 	Runer
 	SelfUpdater
 	UIer
-	cliexiter.CliExiter
 }
 
 // New returns initialized cli core
 func New(
-	cliColorer clicolorer.CliColorer,
+	cliOutput clioutput.CliOutput,
 	nodeProvider nodeprovider.NodeProvider,
 ) Core {
-	_os := ios.New()
-	cliOutput := clioutput.New(cliColorer, os.Stderr, os.Stdout)
-	cliExiter := cliexiter.New(cliOutput, _os)
 	cliParamSatisfier := cliparamsatisfier.New(cliOutput)
 
 	dataResolver := dataresolver.New(
@@ -62,7 +53,6 @@ func New(
 			nodeProvider,
 		),
 		Runer: newRuner(
-			cliColorer,
 			cliOutput,
 			cliParamSatisfier,
 			dataResolver,
@@ -73,7 +63,6 @@ func New(
 			dataResolver,
 			nodeProvider,
 		),
-		CliExiter: cliExiter,
 	}
 }
 
@@ -86,5 +75,4 @@ type _core struct {
 	Runer
 	SelfUpdater
 	UIer
-	cliexiter.CliExiter
 }

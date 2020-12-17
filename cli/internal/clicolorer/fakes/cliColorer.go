@@ -19,9 +19,9 @@ type FakeCliColorer struct {
 	attentionReturnsOnCall map[int]struct {
 		result1 string
 	}
-	DisableStub        func()
-	disableMutex       sync.RWMutex
-	disableArgsForCall []struct {
+	DisableColorStub        func()
+	disableColorMutex       sync.RWMutex
+	disableColorArgsForCall []struct {
 	}
 	ErrorStub        func(string) string
 	errorMutex       sync.RWMutex
@@ -120,27 +120,27 @@ func (fake *FakeCliColorer) AttentionReturnsOnCall(i int, result1 string) {
 	}{result1}
 }
 
-func (fake *FakeCliColorer) Disable() {
-	fake.disableMutex.Lock()
-	fake.disableArgsForCall = append(fake.disableArgsForCall, struct {
+func (fake *FakeCliColorer) DisableColor() {
+	fake.disableColorMutex.Lock()
+	fake.disableColorArgsForCall = append(fake.disableColorArgsForCall, struct {
 	}{})
-	fake.recordInvocation("Disable", []interface{}{})
-	fake.disableMutex.Unlock()
-	if fake.DisableStub != nil {
-		fake.DisableStub()
+	fake.recordInvocation("DisableColor", []interface{}{})
+	fake.disableColorMutex.Unlock()
+	if fake.DisableColorStub != nil {
+		fake.DisableColorStub()
 	}
 }
 
-func (fake *FakeCliColorer) DisableCallCount() int {
-	fake.disableMutex.RLock()
-	defer fake.disableMutex.RUnlock()
-	return len(fake.disableArgsForCall)
+func (fake *FakeCliColorer) DisableColorCallCount() int {
+	fake.disableColorMutex.RLock()
+	defer fake.disableColorMutex.RUnlock()
+	return len(fake.disableColorArgsForCall)
 }
 
-func (fake *FakeCliColorer) DisableCalls(stub func()) {
-	fake.disableMutex.Lock()
-	defer fake.disableMutex.Unlock()
-	fake.DisableStub = stub
+func (fake *FakeCliColorer) DisableColorCalls(stub func()) {
+	fake.disableColorMutex.Lock()
+	defer fake.disableColorMutex.Unlock()
+	fake.DisableColorStub = stub
 }
 
 func (fake *FakeCliColorer) Error(arg1 string) string {
@@ -328,8 +328,8 @@ func (fake *FakeCliColorer) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.attentionMutex.RLock()
 	defer fake.attentionMutex.RUnlock()
-	fake.disableMutex.RLock()
-	defer fake.disableMutex.RUnlock()
+	fake.disableColorMutex.RLock()
+	defer fake.disableColorMutex.RUnlock()
 	fake.errorMutex.RLock()
 	defer fake.errorMutex.RUnlock()
 	fake.infoMutex.RLock()
