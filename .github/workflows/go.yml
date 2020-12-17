@@ -15,16 +15,16 @@ jobs:
 
     - name: Check out code
       uses: actions/checkout@v2
-      
-    - name: Get branch ref
-      id: branch_ref
-      shell: bash
-      run: echo "##[set-output name=ref;]$(echo ${GITHUB_HEAD_REF-${GITHUB_REF}})"
 
-    - name: Get branch name
+    - name: Get branch name (push)
+      if: github.event_name != 'pull_request'
       shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${${{ steps.branch_ref.outputs.branch }}##*/-})"
-      id: branch_name
+      run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_REF#refs/heads/})"
+
+    - name: Get branch name (pull_request)
+      if: github.event_name == 'pull_request'
+      shell: bash
+      run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_HEAD_REF})"
 
     - name: Download opctl
       uses: dsaltares/fetch-gh-release-asset@0.0.5
@@ -37,4 +37,4 @@ jobs:
     - name: Extract opctl
       run: tar -xvzf opctl0.1.45.linux.tgz
 
-    - run: ./opctl run -a gitBranch=${{ steps.branch_name.outputs.branch }} build
+    - run: ./opctl run -a gitBranch=${{ env.BRANCH_NAME }} build
