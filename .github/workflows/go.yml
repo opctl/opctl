@@ -19,12 +19,14 @@ jobs:
     - name: Get branch name (push)
       if: github.event_name != 'pull_request'
       shell: bash
-      run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_REF#refs/heads/})"
+      id: branch_name_push
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
 
     - name: Get branch name (pull_request)
       if: github.event_name == 'pull_request'
       shell: bash
-      run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_HEAD_REF})"
+      id: branch_name_pr
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF})"
 
     - name: Download opctl
       uses: dsaltares/fetch-gh-release-asset@0.0.5
@@ -37,4 +39,4 @@ jobs:
     - name: Extract opctl
       run: tar -xvzf opctl0.1.45.linux.tgz
 
-    - run: ./opctl run -a gitBranch=${{ env.BRANCH_NAME }} build
+    - run: ./opctl run -a gitBranch=${{ steps.branch_name_push.outputs.branch }}${{ steps.branch_name_pr.outputs.branch }} build
