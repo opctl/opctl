@@ -23,4 +23,5 @@ jobs:
 
     - uses: Remitly/opctl-action@e5d7594
       with:
-        op: "-a gitBranch=${{ steps.branch_name.outputs.branch }} build"
+        # op: "-a gitBranch=${{ steps.branch_name.outputs.branch }} build"
+        op: build
