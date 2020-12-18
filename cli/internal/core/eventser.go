@@ -56,6 +56,4 @@ func (ivkr _eventser) Events(
 
 		ivkr.cliOutput.Event(&event)
 	}
-
-	return nil
 }
