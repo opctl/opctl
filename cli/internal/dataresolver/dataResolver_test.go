@@ -15,6 +15,12 @@ import (
 )
 
 var _ = Context("dataResolver", func() {
+	It("Can be constructed", func() {
+		Expect(New(
+			new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
+			new(nodeprovider.Fake),
+		)).NotTo(BeNil())
+	})
 	Context("Resolve", func() {
 		Context("data.Resolve errs", func() {
 			Context("data.ErrDataProviderAuthorization", func() {
