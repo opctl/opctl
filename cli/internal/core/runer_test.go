@@ -60,7 +60,7 @@ var _ = Context("Runer", func() {
 			Expect(actualPullCreds).To(BeNil())
 		})
 		Context("opfile.GetContent errors", func() {
-			It("should call exiter w/ expected args", func() {
+			It("should return expected error", func() {
 				/* arrange */
 
 				fakeOpHandle := new(FakeDataHandle)
@@ -134,7 +134,7 @@ var _ = Context("Runer", func() {
 				Expect(actualArgs).To(Equal(expectedArgs))
 			})
 			Context("apiClient.StartOp errors", func() {
-				It("should call exiter w/ expected args", func() {
+				It("should return expected error", func() {
 					/* arrange */
 					returnedError := errors.New("dummyError")
 
@@ -220,7 +220,7 @@ var _ = Context("Runer", func() {
 					Expect(actualReq).To(Equal(expectedReq))
 				})
 				Context("apiClient.GetEventStream errors", func() {
-					It("should call exiter w/ expected args", func() {
+					It("should return expected error", func() {
 						/* arrange */
 						returnedError := errors.New("dummyError")
 
@@ -253,7 +253,7 @@ var _ = Context("Runer", func() {
 				})
 				Context("apiClient.GetEventStream doesn't error", func() {
 					Context("event channel closes", func() {
-						It("should call exiter w/ expected args", func() {
+						It("should return expected error", func() {
 							/* arrange */
 							dummyOpDataHandle := getDummyOpDataHandle()
 
@@ -289,7 +289,7 @@ var _ = Context("Runer", func() {
 							rootCallID := "dummyRootCallID"
 							Context("CallEnded", func() {
 								Context("Outcome==SUCCEEDED", func() {
-									It("should call exiter w/ expected args", func() {
+									It("should return expected error", func() {
 										/* arrange */
 										opEnded := model.Event{
 											Timestamp: time.Now(),
@@ -332,7 +332,7 @@ var _ = Context("Runer", func() {
 									})
 								})
 								Context("Outcome==KILLED", func() {
-									It("should call exiter w/ expected args", func() {
+									It("should return expected error", func() {
 										/* arrange */
 										opEnded := model.Event{
 											Timestamp: time.Now(),
@@ -376,7 +376,7 @@ var _ = Context("Runer", func() {
 
 								})
 								Context("Outcome==FAILED", func() {
-									It("should call exiter w/ expected args", func() {
+									It("should return expected error", func() {
 										/* arrange */
 										opEnded := model.Event{
 											Timestamp: time.Now(),
@@ -419,7 +419,7 @@ var _ = Context("Runer", func() {
 									})
 								})
 								Context("Outcome==?", func() {
-									It("should call exiter w/ expected args", func() {
+									It("should return expected error", func() {
 										/* arrange */
 										opEnded := model.Event{
 											Timestamp: time.Now(),

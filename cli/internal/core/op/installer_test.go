@@ -47,7 +47,7 @@ var _ = Context("Installer", func() {
 			Expect(actualPullCreds).To(Equal(providedPullCreds))
 		})
 		Context("op.Install errs", func() {
-			It("should call exiter w/ expected args", func() {
+			It("should return expected error", func() {
 				/* arrange */
 				fakeOpHandle := new(FakeDataHandle)
 				fakeOpHandle.ListDescendantsReturns(nil, errors.New(""))

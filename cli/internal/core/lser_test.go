@@ -42,7 +42,7 @@ var _ = Context("Lser", func() {
 			Expect(actualPullCreds).To(BeNil())
 		})
 		Context("opLister.List errors", func() {
-			It("should call exiter w/ expected args", func() {
+			It("should return expected error", func() {
 				/* arrange */
 				fakeOpHandle := new(FakeDataHandle)
 				fakeOpHandle.ListDescendantsReturns(nil, errors.New(""))

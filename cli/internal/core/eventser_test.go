@@ -47,7 +47,7 @@ var _ = Context("Eventser", func() {
 
 		})
 		Context("client.GetEventStream errors", func() {
-			It("should call exiter w/ expected args", func() {
+			It("should return expected error", func() {
 				/* arrange */
 				returnedError := errors.New("dummyError")
 
@@ -73,7 +73,7 @@ var _ = Context("Eventser", func() {
 		})
 		Context("client.GetEventStream doesn't error", func() {
 			Context("channel closes unexpectedly", func() {
-				It("should call exiter w/ expected args", func() {
+				It("should return expected error", func() {
 					/* arrange */
 					fakeAPIClient := new(clientFakes.FakeClient)
 					fakeNodeHandle := new(modelFakes.FakeNodeHandle)

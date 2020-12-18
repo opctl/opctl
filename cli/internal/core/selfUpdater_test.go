@@ -14,7 +14,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 
 	Context("SelfUpdate", func() {
 		Context("invalid channel", func() {
-			It("should call exiter w/ expected args", func() {
+			It("should return expected error", func() {
 				/* arrange */
 				providedReleaseChannel := "invalidChannel"
 
@@ -48,7 +48,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 				Expect(fakeUpdater.GetUpdateIfExistsArgsForCall(0)).To(Equal(providedChannel))
 			})
 			Context("updater.GetUpdateIfExists errors", func() {
-				It("should call exiter w/ expected args", func() {
+				It("should return expected error", func() {
 					/* arrange */
 					returnedError := errors.New("dummyError")
 
@@ -68,7 +68,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 			})
 			Context("updater.GetUpdateIfExists doesn't error", func() {
 				Context("update doesn't exist", func() {
-					It("should call exiter w/ expected args", func() {
+					It("should return expected error", func() {
 						/* arrange */
 						fakeUpdater := new(updater.Fake)
 						fakeUpdater.GetUpdateIfExistsReturns(nil, nil)
@@ -106,7 +106,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 							To(Equal(returnedUpdate))
 					})
 					Context("updater.ApplyUpdate errors", func() {
-						It("should call exiter w/ expected args", func() {
+						It("should return expected error", func() {
 							/* arrange */
 							returnedError := errors.New("dummyError")
 
@@ -149,7 +149,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 							Expect(fakeNodeProvider.KillNodeIfExistsCallCount()).To(Equal(1))
 						})
 						Context("nodeProvider.KillNodeIfExists errors", func() {
-							It("should call exiter w/ expected args", func() {
+							It("should return expected error", func() {
 								/* arrange */
 								returnedError := errors.New("dummyError")
 
@@ -176,7 +176,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 							})
 						})
 						Context("nodeProvider.KillNodeIfExists doesn't error", func() {
-							It("should call exiter w/ expected args", func() {
+							It("should return expected error", func() {
 								/* arrange */
 								fakeUpdater := new(updater.Fake)
 								returnedUpdate := &updater.Update{Version: "dummyVersion"}
