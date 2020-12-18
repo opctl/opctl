@@ -18,7 +18,7 @@ run:
       op:
         ref: github.com/opspec-pkgs/golang.build.bin#2.0.0
         inputs:
-          name: opctl.$(GOOS)
+          name: cli/opctl.$(GOOS)
           srcDir: $(../../..)
           goVersion: 1.15
           path: ./cli
