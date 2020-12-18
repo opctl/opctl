@@ -12,7 +12,7 @@ run:
           - -ce
           - |
             echo "unit testing code"
-            go test -coverprofile=coverprofile ./...
+            go test -coverprofile=coverprofile ./cli/...
 
             echo "stripping generated code"
             sed '/fake/d' -i coverprofile
@@ -22,7 +22,7 @@ run:
         files:
           /coverprofile: $(coverprofile)
         dirs:
-          /src: $(../../../)
+          /src: $(../../../..)
         envVars:
           GOFLAGS: -mod=vendor -tags=containers_image_openpgp
         image: { ref: 'golang:1.15' }

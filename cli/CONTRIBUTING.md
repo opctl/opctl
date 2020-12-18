@@ -25,7 +25,7 @@ The [opctl webapp](../webapp/README.md) is statically embedded and hosted at run
 1. `opctl run generate` from this directory to (re)generate fake implementations of interfaces as they're added/changed.
 
 
-# Conribution guidelines
+# Contribution guidelines
 - DO follow [go code review comments](https://github.com/golang/go/wiki/CodeReviewComments).
 - DO write tests in `arrange`, `act`, `assert` format w/ the given object under test referred to as `objectUnderTest`.
 - DO keep tests alongside source code; i.e. place `code_test.go` alongside `code.go`.

@@ -18,11 +18,12 @@ run:
       op:
         ref: github.com/opspec-pkgs/golang.build.bin#2.0.0
         inputs:
-          name: opctl.$(GOOS)
-          srcDir: $(../..)
+          name: cli/opctl.$(GOOS)
+          srcDir: $(../../..)
           goVersion: 1.15
+          path: ./cli
           GOOS:
-          GOFLAGS: 
+          GOFLAGS:
             -mod=vendor
             -tags=containers_image_openpgp
             -ldflags=-X=main.version=$(version)
