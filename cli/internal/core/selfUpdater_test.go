@@ -18,7 +18,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 				/* arrange */
 				providedReleaseChannel := "invalidChannel"
 
-				objectUnderTest := _selfUpdateInvoker{}
+				objectUnderTest := newSelfUpdater(new(nodeprovider.Fake))
 
 				/* act */
 				_, err := objectUnderTest.SelfUpdate(providedReleaseChannel)
