@@ -14,6 +14,20 @@ import (
 
 var _ = Context("Killer", func() {
 	Context("Invoke", func() {
+		It("Returns errors from node creation", func() {
+			/* arrange */
+			expectedError := errors.New("expected")
+			fakeNodeProvider := new(nodeprovider.Fake)
+			fakeNodeProvider.CreateNodeIfNotExistsReturns(nil, expectedError)
+
+			objectUnderTest := newKiller(fakeNodeProvider)
+
+			/* act */
+			err := objectUnderTest.Kill(context.Background(), "opID")
+
+			/* assert */
+			Expect(err).To(MatchError(expectedError))
+		})
 		It("should call apiClient.Invoke w/ expected args", func() {
 			/* arrange */
 			fakeAPIClient := new(clientFakes.FakeClient)

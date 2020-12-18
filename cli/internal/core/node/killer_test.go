@@ -14,9 +14,7 @@ var _ = Context("Killer", func() {
 			/* arrange */
 			fakeNodeProvider := new(nodeprovider.Fake)
 
-			objectUnderTest := _killer{
-				nodeProvider: fakeNodeProvider,
-			}
+			objectUnderTest := newKiller(fakeNodeProvider)
 
 			/* act */
 			err := objectUnderTest.Kill()

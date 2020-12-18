@@ -29,17 +29,17 @@ var _ = Context("Creater", func() {
 				panic(err)
 			}
 
-			objectUnderTest := _creater{}
+			objectUnderTest := newCreater()
 
 			/* act */
-			objectUnderTest.Create(providedPath, providedDescription, providedName)
+			err = objectUnderTest.Create(providedPath, providedDescription, providedName)
 
 			/* assert */
+			Expect(err).To(BeNil())
 			actualOpFileBytes, err := ioutil.ReadFile(filepath.Join(providedPath, providedName, "op.yml"))
 			if nil != err {
 				panic(err)
 			}
-
 			Expect(string(actualOpFileBytes)).To(Equal(string(expectedOpFileBytes)))
 		})
 	})

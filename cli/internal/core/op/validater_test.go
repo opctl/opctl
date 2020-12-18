@@ -2,6 +2,7 @@ package op
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -40,6 +41,21 @@ var _ = Context("Validater", func() {
 
 			Expect(actualPkgRef).To(Equal(providedPkgRef))
 			Expect(actualPullCreds).To(BeNil())
+		})
+		It("returns errors from op resolution", func() {
+			/* arrange */
+			expectedError := errors.New("expected")
+
+			fakeDataResolver := new(dataresolver.FakeDataResolver)
+			fakeDataResolver.ResolveReturns(nil, expectedError)
+
+			objectUnderTest := newValidater(fakeDataResolver)
+
+			/* act */
+			_, err := objectUnderTest.Validate(context.Background(), "dummy")
+
+			/* assert */
+			Expect(err).To(MatchError(expectedError))
 		})
 		Context("op.Validate returns errors", func() {
 			It("should call cliExiter.Exit w/ expected args", func() {
