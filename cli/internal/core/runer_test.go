@@ -1,8 +1,11 @@
 package core
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"fmt"
+	"io"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -29,42 +32,90 @@ func getDummyOpDataHandle() model.DataHandle {
 	return dataHandle
 }
 
+// errReadSeekCloser is a mock ReadSeekCloser that returns an error on Read
+type errReadSeekCloser struct {
+	err error // if not specified, will panic with bytes.ErrToLarge
+}
+
+func (e errReadSeekCloser) Read(p []byte) (n int, err error) {
+	return 0, e.err
+}
+func (errReadSeekCloser) Close() error {
+	return nil
+}
+func (errReadSeekCloser) Seek(offset int64, whence int) (int64, error) {
+	return 0, nil
+}
+
+type mockReadSeekCloser struct {
+	io.ReadSeeker
+}
+
+func (mockReadSeekCloser) Close() error {
+	return errors.New("not implemented")
+}
+
 var _ = Context("Runer", func() {
+	It("can be constructed", func() {
+		newRuner(
+			new(clioutputFakes.FakeCliOutput),
+			new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
+			new(dataresolver.FakeDataResolver),
+			new(nodeprovider.Fake),
+		)
+	})
 
 	Context("Run", func() {
-		It("should call dataResolver.Resolve w/ expected args", func() {
+		It("dataResolver.Resolve call", func() {
 			/* arrange */
 			providedOpRef := "dummyOpRef"
 
-			dummyOpDataHandle := getDummyOpDataHandle()
-
+			expected := errors.New("data resolution error")
 			fakeDataResolver := new(dataresolver.FakeDataResolver)
-			fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
-
-			fakeNodeProvider := new(nodeprovider.Fake)
-			// error to trigger return
-			fakeNodeProvider.CreateNodeIfNotExistsReturns(nil, errors.New(""))
+			fakeDataResolver.ResolveReturns(nil, expected)
 
 			objectUnderTest := _runer{
 				dataResolver:      fakeDataResolver,
 				cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-				nodeProvider:      fakeNodeProvider,
+				nodeProvider:      new(nodeprovider.Fake),
 			}
 
 			/* act */
-			objectUnderTest.Run(context.TODO(), providedOpRef, &cliModel.RunOpts{})
+			err := objectUnderTest.Run(context.TODO(), providedOpRef, &cliModel.RunOpts{})
 
 			/* assert */
+			Expect(err).To(MatchError(expected))
 			actualOpRef, actualPullCreds := fakeDataResolver.ResolveArgsForCall(0)
 			Expect(actualOpRef).To(Equal(providedOpRef))
 			Expect(actualPullCreds).To(BeNil())
 		})
-		Context("opfile.GetContent errors", func() {
-			It("should return expected error", func() {
+		It("opfile.GetContent call", func() {
+			/* arrange */
+
+			fakeOpHandle := new(FakeDataHandle)
+			fakeOpHandle.GetContentReturns(nil, errors.New(""))
+
+			fakeDataResolver := new(dataresolver.FakeDataResolver)
+			fakeDataResolver.ResolveReturns(fakeOpHandle, nil)
+
+			objectUnderTest := _runer{
+				dataResolver:      fakeDataResolver,
+				cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
+			}
+
+			/* act */
+			err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+
+			/* assert */
+			Expect(err).To(MatchError(""))
+		})
+		Context("opfile.Get doesn't error", func() {
+			It("opfile.GetContent reader failure", func() {
 				/* arrange */
+				expectedError := errors.New("expected")
 
 				fakeOpHandle := new(FakeDataHandle)
-				fakeOpHandle.GetContentReturns(nil, errors.New(""))
+				fakeOpHandle.GetContentReturns(errReadSeekCloser{err: expectedError}, nil)
 
 				fakeDataResolver := new(dataresolver.FakeDataResolver)
 				fakeDataResolver.ResolveReturns(fakeOpHandle, nil)
@@ -78,10 +129,89 @@ var _ = Context("Runer", func() {
 				err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
 
 				/* assert */
-				Expect(err).To(MatchError(""))
+				Expect(err).To(MatchError(expectedError))
 			})
-		})
-		Context("opfile.Get doesn't error", func() {
+			It("opfile.Unmarshal failure", func() {
+				/* arrange */
+				fakeOpHandle := new(FakeDataHandle)
+				rs := bytes.NewReader([]byte("garbage"))
+				fakeOpHandle.GetContentReturns(mockReadSeekCloser{rs}, nil)
+
+				fakeDataResolver := new(dataresolver.FakeDataResolver)
+				fakeDataResolver.ResolveReturns(fakeOpHandle, nil)
+
+				objectUnderTest := _runer{
+					dataResolver:      fakeDataResolver,
+					cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
+				}
+
+				/* act */
+				err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+
+				/* assert */
+				Expect(err).NotTo(BeNil())
+			})
+			It("cliParamSatisfier yml file failure", func() {
+				/* arrange */
+				expectedError := errors.New("expected")
+				dummyOpDataHandle := getDummyOpDataHandle()
+				fakeDataResolver := new(dataresolver.FakeDataResolver)
+				fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
+				fakeCliParamSatisfier := new(cliparamsatisfierFakes.FakeCLIParamSatisfier)
+				fakeCliParamSatisfier.NewYMLFileInputSrcReturns(nil, expectedError)
+
+				objectUnderTest := _runer{
+					dataResolver:      fakeDataResolver,
+					cliParamSatisfier: fakeCliParamSatisfier,
+				}
+
+				/* act */
+				err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{ArgFile: "argfile"})
+
+				/* assert */
+				Expect(err).To(MatchError(fmt.Errorf("unable to load arg file at '%v'; error was: %v", "argfile", expectedError)))
+			})
+			It("cliParamSatisfier satisfaction failure", func() {
+				/* arrange */
+				expectedError := errors.New("expected")
+				dummyOpDataHandle := getDummyOpDataHandle()
+				fakeDataResolver := new(dataresolver.FakeDataResolver)
+				fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
+				fakeCliParamSatisfier := new(cliparamsatisfierFakes.FakeCLIParamSatisfier)
+				fakeCliParamSatisfier.SatisfyReturns(nil, expectedError)
+
+				objectUnderTest := _runer{
+					dataResolver:      fakeDataResolver,
+					cliParamSatisfier: fakeCliParamSatisfier,
+				}
+
+				/* act */
+				err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{ArgFile: "argfile"})
+
+				/* assert */
+				Expect(err).To(MatchError(expectedError))
+			})
+			It("create node failure", func() {
+				/* arrange */
+				expectedError := errors.New("expected")
+				dummyOpDataHandle := getDummyOpDataHandle()
+				fakeDataResolver := new(dataresolver.FakeDataResolver)
+				fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
+				fakeNodeProvider := new(nodeprovider.Fake)
+				fakeNodeProvider.CreateNodeIfNotExistsReturns(nil, expectedError)
+
+				objectUnderTest := _runer{
+					dataResolver:      fakeDataResolver,
+					cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
+					nodeProvider:      fakeNodeProvider,
+				}
+
+				/* act */
+				err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+
+				/* assert */
+				Expect(err).To(MatchError(expectedError))
+			})
 			It("should call nodeHandle.APIClient().StartOp w/ expected args", func() {
 				/* arrange */
 				dummyOpDataHandle := getDummyOpDataHandle()

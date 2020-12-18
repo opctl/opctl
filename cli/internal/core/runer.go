@@ -50,15 +50,6 @@ type _runer struct {
 	nodeProvider      nodeprovider.NodeProvider
 }
 
-type RunError struct {
-	ExitCode int
-	message  string
-}
-
-func (e *RunError) Error() string {
-	return e.message
-}
-
 func (ivkr _runer) Run(
 	ctx context.Context,
 	opRef string,
