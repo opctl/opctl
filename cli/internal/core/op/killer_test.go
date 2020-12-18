@@ -45,7 +45,7 @@ var _ = Context("Killer", func() {
 			Expect(actualReq).To(BeEquivalentTo(expectedReq))
 		})
 		Context("apiClient.Invoke errors", func() {
-			It("should call exiter w/ expected args", func() {
+			It("should return expected error", func() {
 				/* arrange */
 				fakeAPIClient := new(clientFakes.FakeClient)
 				expectedError := errors.New("dummyError")

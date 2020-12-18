@@ -58,7 +58,7 @@ var _ = Context("dataResolver", func() {
 				})
 			})
 			Context("not data.ErrAuthenticationFailed", func() {
-				It("should call exiter w/ expected args", func() {
+				It("should return expected error", func() {
 					/* arrange */
 					providedDataRef := "dummyDataRef"
 

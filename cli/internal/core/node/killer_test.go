@@ -26,7 +26,7 @@ var _ = Context("Killer", func() {
 			Expect(fakeNodeProvider.KillNodeIfExistsArgsForCall(0)).To(BeEquivalentTo(""))
 		})
 		Context("nodeProvider.Invoke errors", func() {
-			It("should call exiter w/ expected args", func() {
+			It("should return expected error", func() {
 				/* arrange */
 				fakeNodeProvider := new(nodeprovider.Fake)
 				expectedError := errors.New("dummyError")
