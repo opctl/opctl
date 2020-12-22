@@ -1,4 +1,4 @@
-[![Build](https://github.com/opctl/opctl/workflows/Build/badge.svg)](https://github.com/opctl/opctl/actions?query=workflow%3ABuild+branch%3Agithub-actions)
+[![Build](https://github.com/opctl/opctl/workflows/Build/badge.svg?branch=main)](https://github.com/opctl/opctl/actions?query=workflow%3ABuild+branch%3Amain)
 [![Go Report Card](https://goreportcard.com/badge/github.com/opctl/opctl)](https://goreportcard.com/report/github.com/opctl/opctl)
 [![Coverage](https://codecov.io/gh/opctl/opctl/branch/master/graph/badge.svg)](https://codecov.io/gh/opctl/opctl)
 
