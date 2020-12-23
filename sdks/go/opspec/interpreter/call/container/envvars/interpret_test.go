@@ -19,18 +19,17 @@ var _ = Context("Interpret", func() {
 				"$()",
 			)
 
-			/* assert */
+      /* assert */
 			Expect(actualErr).To(Equal(errors.New("unable to interpret '$()' as envVars; error was unable to interpret $() to object; error was unable to interpret '' as reference; '' not in scope")))
 		})
 	})
 	Context("object.Interpret doesn't err", func() {
-		Context("str.Interpret errs", func() {
-
+		Context("value.Construct errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				identifier := "identifier"
 				objectValue := map[string]interface{}{
-					"key": "$()",
+					"key": nil,
 				}
 
 				providedScope := map[string]*model.Value{
@@ -46,10 +45,10 @@ var _ = Context("Interpret", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(errors.New("unable to interpret $() as value of env var 'key'; error was unable to interpret $() to string; error was unable to interpret '' as reference; '' not in scope")))
+				Expect(actualErr).To(Equal(errors.New("unable to construct value for env var key; error was unable to construct value; '<nil>' unexpected type")))
 			})
 		})
-		Context("str.Interpret doesn't err", func() {
+		Context("value.Construct doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				identifier := "identifier"

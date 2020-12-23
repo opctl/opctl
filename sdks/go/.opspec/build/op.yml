@@ -14,8 +14,6 @@ opspec: 0.1.6
 run:
   serial:
     - op:
-        ref: ../clean
-    - op:
         ref: github.com/opspec-pkgs/golang.fmt#1.2.0
         inputs:
           srcDir: $(../..)

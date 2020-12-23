@@ -5,6 +5,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"path/filepath"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 )
@@ -23,7 +24,8 @@ var _ = Context("opCaller", func() {
 	Context("Call", func() {
 		It("should call caller.Call w/ expected args", func() {
 			/* arrange */
-			providedOpPath := "providedOpPath"
+      providedOpPath := "providedOpPath"
+      parentProvidedOpPath := filepath.Dir(providedOpPath)
 
 			dummyString := "dummyString"
 			providedCtx := context.Background()
@@ -52,7 +54,7 @@ var _ = Context("opCaller", func() {
 					Dir: &providedOpPath,
 				},
 				"../": &model.Value{
-					Dir: &providedOpPath,
+					Dir: &parentProvidedOpPath,
 				},
 				"/": &model.Value{
 					Dir: &providedOpPath,

@@ -1,8 +1,0 @@
-name: clean
-description: removes files & dirs ignored by git
-opspec: 0.1.6
-run:
-  op:
-    ref: github.com/opspec-pkgs/git.repo.clean#1.1.0
-    inputs:
-      srcDir: $(../../../../.git)
