@@ -3,9 +3,10 @@ package envvars
 import (
 	"fmt"
 
+	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/value"
 )
 
 // Interpret container envVars
@@ -30,8 +31,13 @@ func Interpret(
 	}
 
 	envVarsStringMap := map[string]string{}
-	for envVarName, envVarValue := range *envVarsMap.Object {
-		envVarValueString, err := str.Interpret(scope, envVarValue)
+	for envVarName, envVarValueInterface := range *envVarsMap.Object {
+		envVarValue, err := value.Construct(envVarValueInterface)
+		if nil != err {
+			return nil, fmt.Errorf("unable to construct value for env var %s; error was %v", envVarName, err.Error())
+		}
+
+		envVarValueString, err := coerce.ToString(envVarValue)
 		if nil != err {
 			return nil, fmt.Errorf(
 				"unable to interpret %+v as value of env var '%v'; error was %v",
@@ -43,6 +49,5 @@ func Interpret(
 
 		envVarsStringMap[envVarName] = *envVarValueString.String
 	}
-
 	return envVarsStringMap, nil
 }

@@ -6,6 +6,12 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.46 - 2020-12-23
+
+### Fixed
+
+- [container.envVars string double interpreted](https://github.com/opctl/opctl/issues/849)
+
 ## 0.1.45 - 2020-11-17
 
 ### Fixed
@@ -20,7 +26,7 @@ accordance with
 
 ### Changed
 
-- [Opspec) use relative paths for file/dir refs #834](https://github.com/opctl/opctl/issues/834)
+- [Opspec) use relative paths for file/dir refs](https://github.com/opctl/opctl/issues/834)
 - [Make input/output binding when calling ops consistent](https://github.com/opctl/opctl/issues/721)
 
 ### Fixed
