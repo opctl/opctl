@@ -6,77 +6,80 @@ import AddCallPopper from '../AddCallPopper'
 
 
 interface Props {
-    parallelLoopCall: ParallelLoopCall
-    parentOpRef: string
+  parallelLoopCall: ParallelLoopCall
+  parentOpRef: string
 }
 
-export default (
-    {
-        parallelLoopCall,
-        parentOpRef
-    }: Props
-) =>
+export default function CallHasParallelLoop(
+  {
+    parallelLoopCall,
+    parentOpRef
+  }: Props
+) {
+  return (
     <div
-        style={{
-            display: 'flex',
-            alignItems: 'center',
-            flexDirection: 'column'
-        }}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column'
+      }}
     >
-        <div
-            style={{
-                backgroundColor: brandColors.lightGray,
-                minHeight: '2.5rem',
-                height: '100%',
-                width: '.1rem'
-            }}
-        ></div>
-        <AddCallPopper>
-            <PlusIcon
-                style={{
-                    backgroundColor: brandColors.white,
-                    cursor: 'pointer',
-                    fill: brandColors.active,
-                    display: 'block'
-                }}
-            />
-        </AddCallPopper>
-        <div
-            style={{
-                backgroundColor: brandColors.lightGray,
-                minHeight: '2.5rem',
-                height: '100%',
-                width: '.1rem'
-            }}
-        ></div>
-        <HasCall
-            call={parallelLoopCall!.run}
-            parentOpRef={parentOpRef}
+      <div
+        style={{
+          backgroundColor: brandColors.lightGray,
+          minHeight: '2.5rem',
+          height: '100%',
+          width: '.1rem'
+        }}
+      ></div>
+      <AddCallPopper>
+        <PlusIcon
+          style={{
+            backgroundColor: brandColors.white,
+            cursor: 'pointer',
+            fill: brandColors.active,
+            display: 'block'
+          }}
         />
-        <div
-            style={{
-                backgroundColor: brandColors.lightGray,
-                minHeight: '2.5rem',
-                height: '100%',
-                width: '.1rem'
-            }}
-        ></div>
-        <AddCallPopper>
-            <PlusIcon
-                style={{
-                    backgroundColor: brandColors.white,
-                    cursor: 'pointer',
-                    fill: brandColors.active,
-                    display: 'block'
-                }}
-            />
-        </AddCallPopper>
-        <div
-            style={{
-                backgroundColor: brandColors.lightGray,
-                minHeight: '2.5rem',
-                height: '100%',
-                width: '.1rem'
-            }}
-        ></div>
+      </AddCallPopper>
+      <div
+        style={{
+          backgroundColor: brandColors.lightGray,
+          minHeight: '2.5rem',
+          height: '100%',
+          width: '.1rem'
+        }}
+      ></div>
+      <HasCall
+        call={parallelLoopCall!.run}
+        parentOpRef={parentOpRef}
+      />
+      <div
+        style={{
+          backgroundColor: brandColors.lightGray,
+          minHeight: '2.5rem',
+          height: '100%',
+          width: '.1rem'
+        }}
+      ></div>
+      <AddCallPopper>
+        <PlusIcon
+          style={{
+            backgroundColor: brandColors.white,
+            cursor: 'pointer',
+            fill: brandColors.active,
+            display: 'block'
+          }}
+        />
+      </AddCallPopper>
+      <div
+        style={{
+          backgroundColor: brandColors.lightGray,
+          minHeight: '2.5rem',
+          height: '100%',
+          width: '.1rem'
+        }}
+      ></div>
     </div>
+  )
+}

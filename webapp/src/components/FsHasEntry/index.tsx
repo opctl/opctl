@@ -8,136 +8,134 @@ import brandColors from '../../brandColors'
 import { WindowContext } from '../WindowContext'
 
 export interface FsEntry {
-    name: string,
-    dir?: FsEntry[]
-    file?: string
-    path: string
+  name: string,
+  dir?: FsEntry[]
+  file?: string
+  path: string
 }
 
 interface Props {
-    fsEntry: FsEntry
-    style?: CSSProperties
+  fsEntry: FsEntry
+  style?: CSSProperties
 }
 
-const FsHasEntry = (
-    {
-        fsEntry,
-        style
-    }: Props
-) => {
-    const [isOpen, setIsOpen] = useState(false)
-    const { openWindow } = useContext(WindowContext)
-    const location = useLocation()
-    const urlSearchParams = new window.URLSearchParams(location.search)
-    const mount = urlSearchParams.get('mount')
+export default function FsHasEntry(
+  {
+    fsEntry,
+    style
+  }: Props
+) {
+  const [isOpen, setIsOpen] = useState(false)
+  const { openWindow } = useContext(WindowContext)
+  const location = useLocation()
+  const urlSearchParams = new window.URLSearchParams(location.search)
+  const mount = urlSearchParams.get('mount')
 
-    useEffect(
-        () => {
-            if (mount && mount.length >= fsEntry.path.length) {
-                setIsOpen(true)
-            }
-        },
-        [
-            mount,
-            fsEntry
-        ]
-    )
+  useEffect(
+    () => {
+      if (mount && mount.length >= fsEntry.path.length) {
+        setIsOpen(true)
+      }
+    },
+    [
+      mount,
+      fsEntry
+    ]
+  )
 
-    return (
+  return (
+    <div
+      style={style}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+      >
         <div
-            style={style}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            minWidth: 0
+          }}
         >
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                }}
-            >
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        minWidth: 0
-                    }}
-                >
-                    {
-                        fsEntry.dir
-                            ? <Fragment>
-                                {
-                                    isOpen
-                                        ? <ArrowDownIcon
-                                            onClick={() => setIsOpen(false)}
-                                            style={{
-                                                flexShrink: 0,
-                                                cursor: 'pointer',
-                                                fill: brandColors.active
-                                            }}
-                                        />
-                                        : <ArrowRightIcon
-                                            onClick={() => setIsOpen(true)}
-                                            style={{
-                                                flexShrink: 0,
-                                                cursor: 'pointer',
-                                                fill: brandColors.active
-                                            }}
-                                        />
-                                }
-                                <div
-                                    style={{
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
-                                        overflow: 'hidden'
-                                    }}
-                                >
-                                    {fsEntry.name}
-                                </div>
-                            </Fragment>
-                            : <Fragment>
-                                <NotesIcon />
-                                <div
-                                    onClick={() => openWindow(
-                                        {
-                                            fsEntry
-                                        }
-                                    )}
-                                    style={{
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
-                                        overflow: 'hidden',
-                                        cursor: 'pointer',
-                                        color: brandColors.active
-                                    }}
-                                >
-                                    {fsEntry.name}
-                                </div>
-                            </Fragment>
-                    }
-                </div>
-                <MoreHorizIcon
-                    style={{
-                        // @TODO: unhide once we need it
-                        visibility: 'hidden',
+          {
+            fsEntry.dir
+              ? <Fragment>
+                {
+                  isOpen
+                    ? <ArrowDownIcon
+                      onClick={() => setIsOpen(false)}
+                      style={{
                         flexShrink: 0,
                         cursor: 'pointer',
                         fill: brandColors.active
-                    }}
-                />
-            </div>
-            {
-                fsEntry.dir && isOpen
-                    ? fsEntry.dir.map(
-                        fsEntry => <FsHasEntry
-                            key={fsEntry.name}
-                            style={{
-                                marginLeft: '.5rem'
-                            }}
-                            fsEntry={fsEntry} />
-                    )
-                    : null
-            }
+                      }}
+                    />
+                    : <ArrowRightIcon
+                      onClick={() => setIsOpen(true)}
+                      style={{
+                        flexShrink: 0,
+                        cursor: 'pointer',
+                        fill: brandColors.active
+                      }}
+                    />
+                }
+                <div
+                  style={{
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {fsEntry.name}
+                </div>
+              </Fragment>
+              : <Fragment>
+                <NotesIcon />
+                <div
+                  onClick={() => openWindow(
+                    {
+                      fsEntry
+                    }
+                  )}
+                  style={{
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    cursor: 'pointer',
+                    color: brandColors.active
+                  }}
+                >
+                  {fsEntry.name}
+                </div>
+              </Fragment>
+          }
         </div>
-    )
+        <MoreHorizIcon
+          style={{
+            // @TODO: unhide once we need it
+            visibility: 'hidden',
+            flexShrink: 0,
+            cursor: 'pointer',
+            fill: brandColors.active
+          }}
+        />
+      </div>
+      {
+        fsEntry.dir && isOpen
+          ? fsEntry.dir.map(
+            fsEntry => <FsHasEntry
+              key={fsEntry.name}
+              style={{
+                marginLeft: '.5rem'
+              }}
+              fsEntry={fsEntry} />
+          )
+          : null
+      }
+    </div>
+  )
 }
-
-export default FsHasEntry

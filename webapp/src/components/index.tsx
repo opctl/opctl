@@ -7,11 +7,14 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.min.css'
 import 'reboot.css'
 
-export default () =>
-  <BrowserRouter>
-    <ToastContainer
-      autoClose={20000}
-      style={{ zIndex: 100000 }}
-    />
-    <Workspace />
-  </BrowserRouter> 
+export default function components() {
+  return (
+    <BrowserRouter>
+      <ToastContainer
+        autoClose={20000}
+        style={{ zIndex: 100000 }}
+      />
+      <Workspace />
+    </BrowserRouter>
+  )
+}

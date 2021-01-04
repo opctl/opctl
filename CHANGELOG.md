@@ -6,7 +6,7 @@ accordance with
 
 ## [Unreleased]
 
-## 0.1.46 - 2020-12-23
+## 0.1.46 - 2021-01-04
 
 ### Fixed
 

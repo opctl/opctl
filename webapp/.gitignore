@@ -5,6 +5,7 @@ yarn-error.log
 ### build
 /build/
 *.json.gz
+.eslintcache
 
 ### jest
 jest*/

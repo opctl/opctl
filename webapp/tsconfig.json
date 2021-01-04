@@ -18,8 +18,9 @@
     "noImplicitAny": false,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "preserve",
-    "rootDir": "src"
+    "jsx": "react-jsx",
+    "rootDir": "src",
+    "noFallthroughCasesInSwitch": true
   },
   "references": [
     {

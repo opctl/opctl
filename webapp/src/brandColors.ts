@@ -1,4 +1,4 @@
-export default {
+const brandColors = {
   black: '#343F4B',
   active: 'purple',
   gray: '#7D8691',
@@ -8,3 +8,5 @@ export default {
   red: '#F95F62',
   white: '#FFFFFF'
 }
+
+export default brandColors
