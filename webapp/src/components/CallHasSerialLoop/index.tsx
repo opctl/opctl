@@ -6,76 +6,80 @@ import AddCallPopper from '../AddCallPopper'
 
 
 interface Props {
-    serialLoopCall: SerialLoopCall
-    parentOpRef: string
+  serialLoopCall: SerialLoopCall
+  parentOpRef: string
 }
 
-export default (
-    {
-        serialLoopCall,
-        parentOpRef
-    }: Props
-) => <div
-        style={{
-            display: 'flex',
-            alignItems: 'center',
-            flexDirection: 'column'
-        }}
+export default function CallHasSerialLoop(
+  {
+    serialLoopCall,
+    parentOpRef
+  }: Props
+) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column'
+      }}
     >
-        <div
-            style={{
-                backgroundColor: brandColors.lightGray,
-                minHeight: '2.5rem',
-                height: '100%',
-                width: '.1rem'
-            }}
-        ></div>
-        <AddCallPopper>
-            <PlusIcon
-                style={{
-                    backgroundColor: brandColors.white,
-                    cursor: 'pointer',
-                    fill: brandColors.active,
-                    display: 'block'
-                }}
-            />
-        </AddCallPopper>
-        <div
-            style={{
-                backgroundColor: brandColors.lightGray,
-                minHeight: '2.5rem',
-                height: '100%',
-                width: '.1rem'
-            }}
-        ></div>
-        <HasCall
-            call={serialLoopCall!.run}
-            parentOpRef={parentOpRef}
+      <div
+        style={{
+          backgroundColor: brandColors.lightGray,
+          minHeight: '2.5rem',
+          height: '100%',
+          width: '.1rem'
+        }}
+      ></div>
+      <AddCallPopper>
+        <PlusIcon
+          style={{
+            backgroundColor: brandColors.white,
+            cursor: 'pointer',
+            fill: brandColors.active,
+            display: 'block'
+          }}
         />
-        <div
-            style={{
-                backgroundColor: brandColors.lightGray,
-                minHeight: '2.5rem',
-                height: '100%',
-                width: '.1rem'
-            }}
-        ></div>
-        <AddCallPopper>
-            <PlusIcon
-                style={{
-                    backgroundColor: brandColors.white,
-                    cursor: 'pointer',
-                    fill: brandColors.active,
-                    display: 'block'
-                }}
-            />
-        </AddCallPopper>
-        <div
-            style={{
-                backgroundColor: brandColors.lightGray,
-                minHeight: '2.5rem',
-                height: '100%',
-                width: '.1rem'
-            }}
-        ></div>
+      </AddCallPopper>
+      <div
+        style={{
+          backgroundColor: brandColors.lightGray,
+          minHeight: '2.5rem',
+          height: '100%',
+          width: '.1rem'
+        }}
+      ></div>
+      <HasCall
+        call={serialLoopCall!.run}
+        parentOpRef={parentOpRef}
+      />
+      <div
+        style={{
+          backgroundColor: brandColors.lightGray,
+          minHeight: '2.5rem',
+          height: '100%',
+          width: '.1rem'
+        }}
+      ></div>
+      <AddCallPopper>
+        <PlusIcon
+          style={{
+            backgroundColor: brandColors.white,
+            cursor: 'pointer',
+            fill: brandColors.active,
+            display: 'block'
+          }}
+        />
+      </AddCallPopper>
+      <div
+        style={{
+          backgroundColor: brandColors.lightGray,
+          minHeight: '2.5rem',
+          height: '100%',
+          width: '.1rem'
+        }}
+      ></div>
     </div>
+  )
+}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import ReactAutosuggest from 'react-autosuggest'
 import brandColors from '../../brandColors'
-import { css, cx } from 'emotion'
+import { css, cx } from '@emotion/css'
 import formElementStyles from '../formElementStyles'
 
 interface Props<TOption> {
@@ -20,7 +20,7 @@ interface Props<TOption> {
 /**
  * An auto complete input
  */
-export default function<TOption>(
+export default function <TOption>(
   {
     autoFocus,
     className,
@@ -85,7 +85,7 @@ export default function<TOption>(
           />
         </div>
       }
-      suggestions={options} 
+      suggestions={options}
       shouldRenderSuggestions={
         shouldSearch
           ? shouldSearch

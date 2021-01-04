@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react'
-import { css, cx } from 'emotion'
+import { css, cx } from '@emotion/css'
 
 interface Props {
   className?: string
@@ -10,25 +10,28 @@ interface Props {
 /**
  * Blocks & Pads content
  */
-export default ( 
+export default function Container(
   {
     className,
     style,
     children
   }: Props
-) =>
-  <div
-    className={
-      cx(
-        css({
-          padding: '1.2rem'
-        }),
-        className
-      )
-    }
-    style={style}
-  >
-    {
-      children
-    }
-  </div>
+) {
+  return (
+    <div
+      className={
+        cx(
+          css({
+            padding: '1.2rem'
+          }),
+          className
+        )
+      }
+      style={style}
+    >
+      {
+        children
+      }
+    </div>
+  )
+}

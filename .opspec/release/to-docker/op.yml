@@ -28,7 +28,7 @@ run:
             echo -n "opctl/opctl:${version}" > /imageRefPrefix
         image: { ref: 'alpine:3.4' }
         files:
-          /opctl: $(../../../opctl.linux)
+          /opctl: $(../../../cli/opctl.linux)
           /imageRefPrefix: $(imageRefPrefix)
           /entrypoint.sh:
         dirs:

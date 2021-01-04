@@ -4,20 +4,23 @@ interface Props {
   style?: CSSProperties
 }
 
-export default (
+export default function Logo(
   {
     style
   }: Props
-) =>
-  <a
-    style={style}
-    href={`//${window.location.host}`}
-  >
-    <img
-      alt='opctl logo'
-      style={{
-        height: '2rem'
-      }}
-      src="/logo.svg"
-    />
-  </a>
+) {
+  return (
+    <a
+      style={style}
+      href={`//${window.location.host}`}
+    >
+      <img
+        alt='opctl logo'
+        style={{
+          height: '2rem'
+        }}
+        src="/logo.svg"
+      />
+    </a>
+  )
+}

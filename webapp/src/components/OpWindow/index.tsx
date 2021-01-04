@@ -13,11 +13,11 @@ interface Props {
 /**
  * A window which enables viewing/editing/running ops WYSIWYG (What You See Is What You Get) style
  */
-export default (
+export default function OpWindow(
     {
         window
     }: Props
-) => {
+) {
     const call = {
         op: {
             ref: path.dirname(window.fsEntry.path)

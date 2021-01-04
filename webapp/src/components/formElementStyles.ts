@@ -1,6 +1,6 @@
-import { ObjectInterpolation } from "emotion"
+import { CSSObject } from '@emotion/css'
 
-const styles: ObjectInterpolation<undefined> = {
+const styles: CSSObject = {
   fontSize: '1rem',
   maxWidth: '100vw',
   border: 0,

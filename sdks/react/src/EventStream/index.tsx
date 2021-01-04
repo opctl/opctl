@@ -9,7 +9,7 @@ import {
   CellMeasurerCache,
   List
 } from 'react-virtualized'
-import {css} from 'emotion'
+import {css} from 'emotion/css'
 import { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer'
 
 interface Props {

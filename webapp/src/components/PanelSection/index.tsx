@@ -1,6 +1,6 @@
 import React from 'react'
 import brandColors from '../../brandColors'
-import { css, cx } from 'emotion'
+import { css, cx } from '@emotion/css'
 
 const commonCss = css({
   backgroundColor: brandColors.reallyReallyLightGray,
@@ -13,34 +13,38 @@ const commonCss = css({
 /**
  * A titled section of the panel containing rows & optionally a summary
  */
-export default (props) =>
-  <div
-    className={css({
-      backgroundColor: brandColors.reallyReallyLightGray,
-      paddingBottom: '1rem'
-    })}
-  >
+export default function PanelSection(props) {
+  return (
     <div
-      className={cx(
-        commonCss,
-        css({
-          borderBottom: `solid .1rem ${brandColors.reallyLightGray} !important`,
-          paddingBottom: '1rem',
-          paddingTop: '1rem'
-        })
-      )}
+      className={css({
+        backgroundColor: brandColors.reallyReallyLightGray,
+        paddingBottom: '1rem'
+      })}
     >
-      {props.title}
-      {
-        props.summary &&
-        <div
-          className={css({
-            fontSize: '.8rem'
-          })}
-        >
-          {props.summary}
-        </div>
-      }
+      <div
+        className={cx(
+          commonCss,
+          css({
+            borderBottom: `solid .1rem ${brandColors.reallyLightGray} !important`,
+            paddingBottom: '1rem',
+            paddingTop: '1rem'
+          })
+        )}
+      >
+        {props.title}
+        {
+          props.summary &&
+          <div
+            className={css({
+              fontSize: '.8rem'
+            })}
+          >
+            {props.summary}
+          </div>
+        }
+      </div>
+      {props.children}
     </div>
-    {props.children}
-  </div>
+
+  )
+}

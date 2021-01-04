@@ -8,7 +8,7 @@ run:
         cmd: [ yarn, start ]
         image: { ref: 'node:12.8.1-alpine' }
         dirs:
-          /src: $(../..)
+          /src: $(../../..)
         ports:
           80: 80
-        workDir: /src
+        workDir: /src/webapp

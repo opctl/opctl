@@ -39,43 +39,43 @@ import 'ace-builds/src-noconflict/mode-yaml'
 import 'ace-builds/src-noconflict/theme-github'
 
 interface Props {
-    window: Window
+  window: Window
 }
 
 /**
  * A window which enables viewing/editing code
  */
-export default (
-    {
-        window
-    }: Props
-) => {
-    const [data, setData] = useState('')
-    useEffect(
-        () => {
-            const load = async () => {
-                setData(await getFsEntryData(window.fsEntry.path))
-            }
+export default function CodeWindow(
+  {
+    window
+  }: Props
+) {
+  const [data, setData] = useState('')
+  useEffect(
+    () => {
+      const load = async () => {
+        setData(await getFsEntryData(window.fsEntry.path))
+      }
 
-            load()
-        },
-        [
-            window.fsEntry.path
-        ]
-    )
+      load()
+    },
+    [
+      window.fsEntry.path
+    ]
+  )
 
-    return (
-        <ReactAce
-            style={{
-                width: '100%',
-                height: '100%'
-            }}
-            mode={modelist.getModeForPath(window.fsEntry.name).mode.replace('ace/mode/', '')}
-            theme='github'
-            //onChange={onChange}
-            name='txt-window'
-            editorProps={{ $blockScrolling: true }}
-            value={data}
-        />
-    )
+  return (
+    <ReactAce
+      style={{
+        width: '100%',
+        height: '100%'
+      }}
+      mode={modelist.getModeForPath(window.fsEntry.name).mode.replace('ace/mode/', '')}
+      theme='github'
+      //onChange={onChange}
+      name='txt-window'
+      editorProps={{ $blockScrolling: true }}
+      value={data}
+    />
+  )
 } 

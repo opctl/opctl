@@ -5,54 +5,54 @@ import constructDataUrl from '../../constructDataUrl'
 import path from 'path'
 
 interface Props {
-    call: Call
-    parentOpRef?: string
+  call: Call
+  parentOpRef?: string
 }
 
-export default (
-    {
-        call,
-        parentOpRef
-    }: Props
-) => {
-    const [url, setUrl] = useState('')
+export default function CallHasIcon(
+  {
+    call,
+    parentOpRef
+  }: Props
+) {
+  const [url, setUrl] = useState('')
 
-    useEffect(
-        () => {
-            const load = async () => {
-                if (call.op) {
-                    const opRef = call.op.ref.startsWith('.') && parentOpRef
-                        ? path.join(parentOpRef, call.op.ref)
-                        : call.op.ref
+  useEffect(
+    () => {
+      const load = async () => {
+        if (call.op) {
+          const opRef = call.op.ref.startsWith('.') && parentOpRef
+            ? path.join(parentOpRef, call.op.ref)
+            : call.op.ref
 
-                    const iconDataRef = path.join(opRef, 'icon.svg')
-                    try {
-                        // try to load icon
-                        await getFsEntryData(iconDataRef)
-                        setUrl(constructDataUrl(iconDataRef))
-                    } catch (err) {
-                        // ignore icon load errors
-                    }
-                }
-            }
+          const iconDataRef = path.join(opRef, 'icon.svg')
+          try {
+            // try to load icon
+            await getFsEntryData(iconDataRef)
+            setUrl(constructDataUrl(iconDataRef))
+          } catch (err) {
+            // ignore icon load errors
+          }
+        }
+      }
 
-            load()
-        },
-        [
-            call,
-            parentOpRef
-        ]
-    )
+      load()
+    },
+    [
+      call,
+      parentOpRef
+    ]
+  )
 
-    if (!url) {
-        return null
-    }
+  if (!url) {
+    return null
+  }
 
-    return (
-        <img
-            src={url}
-            alt={'icon'}
-            style={{ height: '2.8rem', width: '2.8rem', marginRight: '.5rem' }}
-        />
-    )
+  return (
+    <img
+      src={url}
+      alt={'icon'}
+      style={{ height: '2.8rem', width: '2.8rem', marginRight: '.5rem' }}
+    />
+  )
 }
