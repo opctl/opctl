@@ -13,7 +13,7 @@ run:
         image: { ref: 'node:12.4.0-alpine' }
         cmd: [npm, test]
         dirs:
-          /src: $(../..)
+          /src: $(../../../..)
         files:
           /src/coverage/lcov.info: $(coverageReport)
-        workDir: /src
+        workDir: /src/sdks/react
