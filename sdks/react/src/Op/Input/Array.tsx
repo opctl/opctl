@@ -29,7 +29,7 @@ export default (
     onInvalid={onInvalid}
     onValid={(value: any) => onValid(jsYaml.safeLoad(value))}
     opRef={opRef}
-    validate={(value: any) => {
+    validate={(value: string) => {
       try {
         return paramArrayValidate(jsYaml.safeLoad(value), array.constraints)
       } catch (err) {

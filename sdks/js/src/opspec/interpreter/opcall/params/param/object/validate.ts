@@ -8,7 +8,7 @@ const ajv = new Ajv()
  * @return {Array<Error>}
  */
 export default function validate (
-  value: object,
+  value?: object | string,
   constraints?: any
 ) {
   constraints = Object.assign({type: 'object'}, constraints)
