@@ -47,7 +47,7 @@ run:
               - -ce
               - |
                 echo "unit testing code"
-                go test -coverprofile=coverprofile ./sdks/go/...
+                go test -coverprofile=coverprofile ./...
 
                 echo "stripping generated code"
                 sed '/fake/d' -i coverprofile
@@ -57,14 +57,14 @@ run:
             files:
               /coverprofile: $(coverprofile)
             dirs:
-              /src: $(../../../..)
+              /src: $(../..)
             envVars:
               GOFLAGS: -mod=vendor -tags=containers_image_openpgp
             image: { ref: "golang:1.15" }
             workDir: /src
         - op:
             ref: github.com/opspec-pkgs/git.resolve-commit#1.0.2
-            inputs: { dotGitDir: $(../../../.git) }
+            inputs: { dotGitDir: $(../../.git) }
             outputs: { commit: $(gitCommit) }
         - op:
             ref: github.com/opspec-pkgs/codecov.upload#1.1.0
