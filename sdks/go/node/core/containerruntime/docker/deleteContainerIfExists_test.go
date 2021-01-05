@@ -18,7 +18,7 @@ var _ = Context("DeleteContainerIfExists", func() {
 
 		providedCtx := context.Background()
 		providedContainerName := "dummyContainerName"
-		expectedContainerName := providedContainerName
+		expectedContainerName := "opctl_" + providedContainerName
 		expectedContainerRemoveOptions := types.ContainerRemoveOptions{
 			RemoveVolumes: true,
 			Force:         true,
