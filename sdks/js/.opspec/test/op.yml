@@ -12,6 +12,8 @@ run:
     - container:
         image: { ref: 'node:12.4.0-alpine' }
         cmd: [npm, test]
+        envVars:
+          CI: true
         dirs:
           /src: $(../../../..)
         files:
