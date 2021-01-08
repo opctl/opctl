@@ -39,7 +39,7 @@ run:
     # api validation
     - op:
         ref: ../../api/.opspec/test
-    # go unit tests with coverage reporting
+    # go unit tests with coverage reporting (includes CLI and Go SDK)
     - serial:
         - container:
             cmd:
