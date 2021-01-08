@@ -13,7 +13,7 @@ func (ctp _containerRuntime) DeleteContainerIfExists(
 ) error {
 	err := ctp.dockerClient.ContainerRemove(
 		ctx,
-		containerID,
+		getContainerName(containerID),
 		types.ContainerRemoveOptions{
 			RemoveVolumes: true,
 			Force:         true,
