@@ -3,7 +3,7 @@ title: Run a react app
 sidebar_label: run a react app
 ---
 
-We'll now look at an op to run a sample React application. Please see the code at [https://github.com/opctl/opctl/tree/master/examples/run-a-react-app](https://github.com/opctl/opctl/tree/master/examples/run-a-react-app)
+We'll now look at an op to run a sample React application. Please see the code at [https://github.com/opctl/opctl/tree/main/examples/run-a-react-app](https://github.com/opctl/opctl/tree/main/examples/run-a-react-app)
 
 We'll stick to simple node.js conventions of including the run command in an `npm start` script in `package.json`. Because we used `create-react-app` to bootstrap our project, the start script is `react-scripts start`, which will launch the webpack dev server to serve our app for development.
 

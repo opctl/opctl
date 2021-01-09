@@ -13,9 +13,9 @@ just a matter of defining your `.gitlab-ci.yml` as follows:
 
 ### Examples
 
-.gitlab-ci.yml
 ```yaml
-image: opctl/opctl:0.1.45-dind
+# .gitlab-ci.yml
+image: opctl/opctl:0.1.46-dind
 stages:
   - build
   - deploy
@@ -29,7 +29,7 @@ build:
 deploy:
   stage: deploy
   only:
-  - master
+    - master
   script:
     - opctl run deploy
 ```

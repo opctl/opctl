@@ -12,7 +12,7 @@ insert_final_newline = true
 [*]
 charset = utf-8
 
-# Matches the exact files either package.json or .travis.yml
+# Set default indentation
 [*]
 indent_style = space
 indent_size = 2
