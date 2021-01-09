@@ -3,7 +3,7 @@ title: Run a go service
 sidebar_label: run a go service
 ---
 
-We'll now look at an op to run a sample Go application. Please see the code at [https://github.com/opctl/opctl/tree/master/examples/run-a-go-service](https://github.com/opctl/opctl/tree/master/examples/run-a-go-service)
+We'll now look at an op to run a sample Go application. Please see the code at [https://github.com/opctl/opctl/tree/main/examples/run-a-go-service](https://github.com/opctl/opctl/tree/main/examples/run-a-go-service)
 The sample application we have requires a mysql database, therefore to run it locally we need to:
 1. Start a MySQL database with some DB credentials
 2. Seed the DB with sample data
