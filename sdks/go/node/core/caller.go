@@ -160,8 +160,8 @@ func (clr _caller) Call(
 		clr.pubSub.Publish(event)
 	}()
 
-	// Ensure this is emitted just after the deferred operation to emit the end
-	// event is set up, so we always have a matching start and end event
+	// Emit start event just after the deferred operation to emit the end event is
+	// set up, so we always have a matching start and end event
 	clr.pubSub.Publish(
 		model.Event{
 			Timestamp: callStartTime,
