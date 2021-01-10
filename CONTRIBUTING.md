@@ -64,7 +64,7 @@ Pull requests are subject to:
 
 First, ensure dependencies are installed
 
-- [go 1.15](https://golang.org/doc/go1.15)
+- [go](https://golang.org/doc/install) (use the version from the [go.mod file](./go.mod#L3))
 - [gpgme](https://www.gnupg.org/related_software/gpgme/) (on macOS, `brew install gpgme`)
 - [dlv](https://github.com/go-delve/delve) (for debugging) - Because this project uses go modules, install this globally with `go get github.com/go-delve/delve` to run the tool outside of the project directory.
 
