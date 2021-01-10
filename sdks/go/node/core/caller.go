@@ -106,7 +106,15 @@ func (clr _caller) Call(
 	}
 
 	if nil == callSpec {
-		// NOOP
+		clr.pubSub.Publish(
+			model.Event{
+				Timestamp: callStartTime,
+				CallSkipped: &model.CallSkipped{
+					Call: model.Call{},
+					Ref:  opPath,
+				},
+			},
+		)
 		return outputs, err
 	}
 
@@ -123,7 +131,18 @@ func (clr _caller) Call(
 		return nil, err
 	}
 
-	outcome := model.OpOutcomeSucceeded
+	if nil != call.If && !*call.If {
+		clr.pubSub.Publish(
+			model.Event{
+				Timestamp: callStartTime,
+				CallSkipped: &model.CallSkipped{
+					Call: *call,
+					Ref:  opPath,
+				},
+			},
+		)
+		return outputs, err
+	}
 
 	// emit a call ended event after this call is complete
 	defer func() {
@@ -154,7 +173,7 @@ func (clr _caller) Call(
 				Message: err.Error(),
 			}
 		} else {
-			event.CallEnded.Outcome = outcome
+			event.CallEnded.Outcome = model.OpOutcomeSucceeded
 		}
 
 		clr.pubSub.Publish(event)
@@ -171,11 +190,6 @@ func (clr _caller) Call(
 			},
 		},
 	)
-
-	if nil != call.If && !*call.If {
-		outcome = model.OpOutcomeSkipped
-		return outputs, err
-	}
 
 	go func() {
 		defer func() {

@@ -615,11 +615,11 @@ var _ = Context("caller", func() {
 				Expect(fakeSerialLoopCaller.CallCallCount()).To(Equal(0))
 
 				// Emits both a start and end event
-				Expect(fakePubSub.PublishCallCount()).To(Equal(2))
+				Expect(fakePubSub.PublishCallCount()).To(Equal(1))
 				ifValue := false
 				actualEvent1 := fakePubSub.PublishArgsForCall(0)
 				Expect(actualEvent1).To(Equal(model.Event{
-					CallStarted: &model.CallStarted{
+					CallSkipped: &model.CallSkipped{
 						Call: model.Call{
 							ID:       providedCallID,
 							If:       &ifValue,
@@ -629,20 +629,6 @@ var _ = Context("caller", func() {
 						Ref: providedOpPath,
 					},
 					Timestamp: actualEvent1.Timestamp,
-				}))
-				actualEvent2 := fakePubSub.PublishArgsForCall(1)
-				Expect(actualEvent2).To(Equal(model.Event{
-					CallEnded: &model.CallEnded{
-						Call: model.Call{
-							ID:       providedCallID,
-							If:       &ifValue,
-							ParentID: &providedParentID,
-							RootID:   providedRootCallID,
-						},
-						Ref:     providedOpPath,
-						Outcome: model.OpOutcomeSkipped,
-					},
-					Timestamp: actualEvent2.Timestamp,
 				}))
 			})
 		})

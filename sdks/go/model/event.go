@@ -7,6 +7,7 @@ type Event struct {
 	AuthAdded                *AuthAdded                `json:"authAdded,omitempty"`
 	CallEnded                *CallEnded                `json:"callEnded,omitempty"`
 	CallStarted              *CallStarted              `json:"callStarted,omitempty"`
+	CallSkipped              *CallSkipped              `json:"callSkipped,omitempty"`
 	ContainerStdErrWrittenTo *ContainerStdErrWrittenTo `json:"containerStdErrWrittenTo,omitempty"`
 	ContainerStdOutWrittenTo *ContainerStdOutWrittenTo `json:"containerStdOutWrittenTo,omitempty"`
 	CallKillRequested        *CallKillRequested        `json:"callKillRequested,omitempty"`
@@ -15,7 +16,6 @@ type Event struct {
 
 const (
 	OpOutcomeSucceeded = "SUCCEEDED"
-	OpOutcomeSkipped   = "SKIPPED"
 	OpOutcomeFailed    = "FAILED"
 	OpOutcomeKilled    = "KILLED"
 )
@@ -44,6 +44,9 @@ type CallStarted struct {
 	Call Call   `json:"call"`
 	Ref  string `json:"ref"`
 }
+
+// CallSkipped represents an op that was skipped
+type CallSkipped = CallStarted
 
 // CallEndedError represents an error associated w/ an ended call
 type CallEndedError struct {

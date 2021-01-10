@@ -192,17 +192,17 @@ func (ivkr _runer) Run(
 
 			ivkr.cliOutput.Event(&event)
 
-			if nil != event.CallEnded {
-				if event.CallEnded.Call.ID == rootCallID {
-					switch event.CallEnded.Outcome {
-					case model.OpOutcomeSucceeded, model.OpOutcomeSkipped:
-						return nil
-					case model.OpOutcomeKilled:
-						return &RunError{ExitCode: 137}
-					default:
-						return &RunError{ExitCode: 1}
-					}
+			if nil != event.CallEnded && event.CallEnded.Call.ID == rootCallID {
+				switch event.CallEnded.Outcome {
+				case model.OpOutcomeSucceeded:
+					return nil
+				case model.OpOutcomeKilled:
+					return &RunError{ExitCode: 137}
+				default:
+					return &RunError{ExitCode: 1}
 				}
+			} else if nil != event.CallSkipped && event.CallSkipped.Call.ID == rootCallID {
+				return &RunError{ExitCode: 1}
 			}
 		}
 

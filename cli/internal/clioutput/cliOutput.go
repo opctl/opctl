@@ -152,7 +152,7 @@ func (this _cliOutput) containerExited(event *model.Event) {
 	switch event.CallEnded.Outcome {
 	case model.OpOutcomeSucceeded:
 		this.Success(message)
-	case model.OpOutcomeKilled, model.OpOutcomeSkipped:
+	case model.OpOutcomeKilled:
 		this.Info(message)
 	default:
 		this.Error(message)
@@ -200,7 +200,7 @@ func (this _cliOutput) opEnded(event *model.Event) {
 	switch event.CallEnded.Outcome {
 	case model.OpOutcomeSucceeded:
 		this.Success(message)
-	case model.OpOutcomeKilled, model.OpOutcomeSkipped:
+	case model.OpOutcomeKilled:
 		this.Info(message)
 	default:
 		this.Error(message)
