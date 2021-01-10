@@ -180,16 +180,6 @@ func (clr _caller) Call(
 		return outputs, err
 	}
 
-	clr.pubSub.Publish(
-		model.Event{
-			Timestamp: callStartTime,
-			CallStarted: &model.CallStarted{
-				Call: *call,
-				Ref:  opPath,
-			},
-		},
-	)
-
 	go func() {
 		defer func() {
 			if panicArg := recover(); panicArg != nil {

@@ -1,9 +1,9 @@
 package core
 
 import (
-	"path/filepath"
-	"os"
 	"context"
+	"os"
+	"path/filepath"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -39,7 +39,7 @@ var _ = Context("caller", func() {
 				/* act */
 				objectUnderTest := _caller{
 					containerCaller: fakeContainerCaller,
-					dataDirPath: os.TempDir(),
+					dataDirPath:     os.TempDir(),
 					pubSub:          new(FakePubSub),
 				}
 
@@ -69,9 +69,7 @@ var _ = Context("caller", func() {
 				}
 
 				ifSpec := []*model.PredicateSpec{
-					&model.PredicateSpec{
-						Eq: &predicateSpec,
-					},
+					{Eq: &predicateSpec},
 				}
 
 				expectedIf := true
@@ -95,7 +93,7 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					containerCaller: new(FakeContainerCaller),
-					dataDirPath: os.TempDir(),
+					dataDirPath:     os.TempDir(),
 					pubSub:          fakePubSub,
 					serialCaller:    fakeSerialCaller,
 				}
@@ -166,7 +164,7 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					containerCaller: fakeContainerCaller,
-					dataDirPath: os.TempDir(),
+					dataDirPath:     os.TempDir(),
 					pubSub:          fakePubSub,
 				}
 
@@ -200,7 +198,7 @@ var _ = Context("caller", func() {
 			It("should call opCaller.Call w/ expected args", func() {
 				/* arrange */
 				fakeOpCaller := new(FakeOpCaller)
-				
+
 				wd, err := os.Getwd()
 				if nil != err {
 					panic(err)
@@ -233,8 +231,8 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					dataDirPath: os.TempDir(),
-					opCaller: fakeOpCaller,
-					pubSub:   fakePubSub,
+					opCaller:    fakeOpCaller,
+					pubSub:      fakePubSub,
 				}
 
 				/* act */
@@ -372,7 +370,6 @@ var _ = Context("caller", func() {
 		})
 
 		Context("Serial CallSpec", func() {
-
 			It("should call serialCaller.Call w/ expected args", func() {
 				/* arrange */
 				fakeSerialCaller := new(FakeSerialCaller)
@@ -475,6 +472,178 @@ var _ = Context("caller", func() {
 				Expect(actualOpPath).To(Equal(providedOpPath))
 				Expect(*actualParentID).To(Equal(providedParentID))
 				Expect(actualRootCallID).To(Equal(providedRootCallID))
+			})
+		})
+
+		Context("If predicate", func() {
+			providedCallID := "dummyCallID"
+			providedRootCallID := "dummyRootCallID"
+			providedParentID := "providedParentID"
+			providedOpPath := "providedOpPath"
+			providedScope := map[string]*model.Value{}
+
+			It("is true", func() {
+				/* arrange */
+				fakeSerialLoopCaller := new(FakeSerialLoopCaller)
+
+				eq := []interface{}{true, true}
+				predicates := []*model.PredicateSpec{
+					{Eq: &eq},
+				}
+				providedCallSpec := &model.CallSpec{
+					If: &predicates,
+					SerialLoop: &model.SerialLoopCallSpec{
+						Range: []interface{}{},
+					},
+				}
+
+				fakePubSub := new(FakePubSub)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
+
+				objectUnderTest := _caller{
+					serialLoopCaller: fakeSerialLoopCaller,
+					pubSub:           fakePubSub,
+				}
+
+				/* act */
+				objectUnderTest.Call(
+					context.Background(),
+					providedCallID,
+					providedScope,
+					providedCallSpec,
+					providedOpPath,
+					&providedParentID,
+					providedRootCallID,
+				)
+
+				/* assert */
+				_,
+					actualID,
+					actualScope,
+					actualSerialLoopCallSpec,
+					actualOpPath,
+					actualParentID,
+					actualRootCallID := fakeSerialLoopCaller.CallArgsForCall(0)
+
+				Expect(actualID).To(Equal(providedCallID))
+				Expect(actualScope).To(Equal(providedScope))
+				Expect(actualSerialLoopCallSpec).To(Equal(*providedCallSpec.SerialLoop))
+				Expect(actualOpPath).To(Equal(providedOpPath))
+				Expect(*actualParentID).To(Equal(providedParentID))
+				Expect(actualRootCallID).To(Equal(providedRootCallID))
+
+				// Emits both a start and end event
+				Expect(fakePubSub.PublishCallCount()).To(Equal(2))
+				boolVal := true
+				actualEvent1 := fakePubSub.PublishArgsForCall(0)
+				Expect(actualEvent1).To(Equal(model.Event{
+					CallStarted: &model.CallStarted{
+						Call: model.Call{
+							ID:       providedCallID,
+							If:       &boolVal,
+							ParentID: &providedParentID,
+							RootID:   providedRootCallID,
+							SerialLoop: &model.SerialLoopCall{
+								Range: &model.Value{
+									Array: &[]interface{}{},
+								},
+								Run: model.Call{},
+							},
+						},
+						Ref: providedOpPath,
+					},
+					Timestamp: actualEvent1.Timestamp,
+				}))
+				actualEvent2 := fakePubSub.PublishArgsForCall(1)
+				Expect(actualEvent2).To(Equal(model.Event{
+					CallEnded: &model.CallEnded{
+						Call: model.Call{
+							ID:       providedCallID,
+							If:       &boolVal,
+							ParentID: &providedParentID,
+							RootID:   providedRootCallID,
+							SerialLoop: &model.SerialLoopCall{
+								Range: &model.Value{
+									Array: &[]interface{}{},
+								},
+								Run: model.Call{},
+							},
+						},
+						Ref:     providedOpPath,
+						Outcome: model.OpOutcomeSucceeded,
+					},
+					Timestamp: actualEvent2.Timestamp,
+				}))
+			})
+			It("is false", func() {
+				/* arrange */
+				fakeSerialLoopCaller := new(FakeSerialLoopCaller)
+
+				eq := []interface{}{false, true}
+				predicates := []*model.PredicateSpec{
+					{Eq: &eq},
+				}
+				providedCallSpec := &model.CallSpec{
+					If: &predicates,
+					SerialLoop: &model.SerialLoopCallSpec{
+						Range: []interface{}{},
+					},
+				}
+
+				fakePubSub := new(FakePubSub)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
+
+				objectUnderTest := _caller{
+					serialLoopCaller: fakeSerialLoopCaller,
+					pubSub:           fakePubSub,
+				}
+
+				/* act */
+				objectUnderTest.Call(
+					context.Background(),
+					providedCallID,
+					providedScope,
+					providedCallSpec,
+					providedOpPath,
+					&providedParentID,
+					providedRootCallID,
+				)
+
+				/* assert */
+				Expect(fakeSerialLoopCaller.CallCallCount()).To(Equal(0))
+
+				// Emits both a start and end event
+				Expect(fakePubSub.PublishCallCount()).To(Equal(2))
+				ifValue := false
+				actualEvent1 := fakePubSub.PublishArgsForCall(0)
+				Expect(actualEvent1).To(Equal(model.Event{
+					CallStarted: &model.CallStarted{
+						Call: model.Call{
+							ID:       providedCallID,
+							If:       &ifValue,
+							ParentID: &providedParentID,
+							RootID:   providedRootCallID,
+						},
+						Ref: providedOpPath,
+					},
+					Timestamp: actualEvent1.Timestamp,
+				}))
+				actualEvent2 := fakePubSub.PublishArgsForCall(1)
+				Expect(actualEvent2).To(Equal(model.Event{
+					CallEnded: &model.CallEnded{
+						Call: model.Call{
+							ID:       providedCallID,
+							If:       &ifValue,
+							ParentID: &providedParentID,
+							RootID:   providedRootCallID,
+						},
+						Ref:     providedOpPath,
+						Outcome: model.OpOutcomeSkipped,
+					},
+					Timestamp: actualEvent2.Timestamp,
+				}))
 			})
 		})
 	})
