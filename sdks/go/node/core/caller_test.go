@@ -614,7 +614,7 @@ var _ = Context("caller", func() {
 				/* assert */
 				Expect(fakeSerialLoopCaller.CallCallCount()).To(Equal(0))
 
-				// Emits both a start and end event
+				// Emits a skip event
 				Expect(fakePubSub.PublishCallCount()).To(Equal(1))
 				ifValue := false
 				actualEvent1 := fakePubSub.PublishArgsForCall(0)
