@@ -195,7 +195,7 @@ func (ivkr _runer) Run(
 			if nil != event.CallEnded {
 				if event.CallEnded.Call.ID == rootCallID {
 					switch event.CallEnded.Outcome {
-					case model.OpOutcomeSucceeded:
+					case model.OpOutcomeSucceeded, model.OpOutcomeSkipped:
 						return nil
 					case model.OpOutcomeKilled:
 						return &RunError{ExitCode: 137}
