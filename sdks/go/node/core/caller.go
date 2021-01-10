@@ -148,9 +148,6 @@ func (clr _caller) Call(
 		if isKilled || nil != ctx.Err() {
 			// this call or parent call killed/cancelled
 			event.CallEnded.Outcome = model.OpOutcomeKilled
-			event.CallEnded.Error = &model.CallEndedError{
-				Message: ctx.Err().Error(),
-			}
 		} else if nil != err {
 			event.CallEnded.Outcome = model.OpOutcomeFailed
 			event.CallEnded.Error = &model.CallEndedError{
