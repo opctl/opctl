@@ -19,7 +19,7 @@ Type: "Inline"
 
 Script:
 ```bash
-curl -L https://github.com/opctl/opctl/releases/download/0.1.45/opctl0.1.45.linux.tgz | sudo tar -xzv -C /usr/local/bin
+curl -L https://github.com/opctl/opctl/releases/download/0.1.46/opctl0.1.46.linux.tgz | sudo tar -xzv -C /usr/local/bin
 
 # manually create an opctl node.
 # custom node data dir required because VSTS only makes build dir available to docker daemon
@@ -36,4 +36,4 @@ Type: "Inline"
 
 > disables color (because vsts doesn't interpret ansi escape codes), & passes an arg `someArg` to the op from a VSTS "Variable" `someArg`
 
-Script: "opctl --nc run -a someArg=$(someArg) test"
+Script: "opctl --nc run -a someArg=$(someArg) some_op"

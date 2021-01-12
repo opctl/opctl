@@ -14,15 +14,15 @@ a matter of defining your `travis.yml` as follows:
 
 ### Examples
 
-travis.yml
 ```yaml
+# travis.yml
 language: generic
 sudo: required
 before_script:
-- curl -L https://github.com/opctl/opctl/releases/download/0.1.45/opctl0.1.45.linux.tgz | sudo tar -xzv -C /usr/local/bin
+- curl -L https://github.com/opctl/opctl/releases/download/0.1.46/opctl0.1.46.linux.tgz | sudo tar -xzv -C /usr/local/bin
 services:
 - docker
 script:
 # passes an arg `gitBranch` to the op from a travis-ci variable
-- opctl run -a gitBranch=$TRAVIS_BRANCH build
+- opctl run -a gitBranch=$TRAVIS_BRANCH some_op
 ```

@@ -5,7 +5,7 @@ Typically at a minimum, each sub-project includes it's own `README.md`, `CONTRIB
 
 The project is configured as a single go module, which allows dependencies to be shared during development, and should allow most IDEs to understand the project configuration without manual configuration.
 
-# How it's laid out
+# Project structure
 
 ## [api](api)
 OpenAPI spec for the opctl ReST API.
@@ -59,3 +59,23 @@ Pull requests are subject to:
 
 - approval by one or more [maintainers](https://github.com/orgs/opctl/teams/maintainers/members)
 - the [build](.opspec/build) op continuing to run with a successful outcome
+
+# Local development with native go tooling
+
+First, ensure dependencies are installed
+
+- [go](https://golang.org/doc/install) (use the version from the [go.mod file](./go.mod#L3))
+- [gpgme](https://www.gnupg.org/related_software/gpgme/) (on macOS, `brew install gpgme`)
+- [dlv](https://github.com/go-delve/delve) (for debugging) - Because this project uses go modules, install this globally with `go get github.com/go-delve/delve` to run the tool outside of the project directory.
+
+Build a binary with
+
+`go build -o opctl-beta ./cli`
+
+To debug
+
+`go run github.com/go-delve/delve/cmd/dlv --check-go-version=false --listen=127.0.0.1:40000 --headless=true --api-version=2 exec /PATH/TO/OPCTL/opctl-beta run dev`
+
+This will suspend execution until a client connects on port 40000. If using VSCode, you can use the saved run configuration to connect.
+
+On macOS, you can debug exit signal handling by sending an interrupt to the underlying PID. When the debugger connects, it will give you the with a message like: `Got a connection, launched process ../opctl/opctl-beta (pid = 79924).` (path to process and PID will be different). Kill with `kill -SIGINT 72958`.

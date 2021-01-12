@@ -8,6 +8,7 @@ module.exports = {
         "setup/bare-metal",
         "setup/azure-pipelines",
         "setup/docker",
+        "setup/github",
         "setup/gitlab",
         "setup/kubernetes",
         "setup/travis"
@@ -32,7 +33,8 @@ module.exports = {
           label: "Containers",
           items: [
             "training/containers/how-do-i-communicate-with-an-opctl-container",
-            "training/containers/how-do-i-get-opctl-containers-to-communicate"
+            "training/containers/how-do-i-get-opctl-containers-to-communicate",
+            "training/containers/how-do-i-run-a-container"
           ]
         },
         {
@@ -177,17 +179,17 @@ module.exports = {
             {
               type: "link",
               label: "Go",
-              href: "https://github.com/opctl/opctl/tree/master/sdks/go"
+              href: "https://github.com/opctl/opctl/tree/main/sdks/go"
             },
             {
               type: "link",
               label: "Js",
-              href: "https://github.com/opctl/opctl/tree/master/sdks/js"
+              href: "https://github.com/opctl/opctl/tree/main/sdks/js"
             },
             {
               type: "link",
               label: "React",
-              href: "https://github.com/opctl/opctl/tree/master/sdks/react"
+              href: "https://github.com/opctl/opctl/tree/main/sdks/react"
             }
           ]
         }
