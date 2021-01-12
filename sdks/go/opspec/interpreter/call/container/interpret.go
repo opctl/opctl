@@ -10,6 +10,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/envvars"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/files"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/image"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/ports"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/sockets"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
 )
@@ -33,7 +34,7 @@ func Interpret(
 		Sockets:     map[string]string{},
 		WorkDir:     containerCallSpec.WorkDir,
 		ContainerID: containerID,
-		Ports:       containerCallSpec.Ports,
+		Ports:       map[string]string{},
 	}
 
 	// construct dcg container path
@@ -129,6 +130,13 @@ func Interpret(
 	containerCall.Sockets, err = sockets.Interpret(
 		scope,
 		containerCallSpec.Sockets,
+		scratchDirPath,
+	)
+
+	// interpret ports
+	containerCall.Ports, err = ports.Interpret(
+		scope,
+		containerCallSpec.Ports,
 		scratchDirPath,
 	)
 

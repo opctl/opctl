@@ -58,6 +58,7 @@ type Value struct {
 	Object  *map[string]interface{} `json:"object,omitempty"`
 	Socket  *string                 `json:"socket,omitempty"`
 	String  *string                 `json:"string,omitempty"`
+	Port    *uint16                 `json:"port,omitempty"`
 }
 
 // // ValueNode interfaces with a value of any type
@@ -111,6 +112,9 @@ func (vlu Value) Unbox() (interface{}, error) {
 		return *vlu.File, nil
 	} else if nil != vlu.Number {
 		return *vlu.Number, nil
+	} else if nil != vlu.Port {
+		return *vlu.Port, nil
+
 	} else if nil != vlu.Object {
 		nativeObject := map[string]interface{}{}
 		for propKey, propValue := range *vlu.Object {
