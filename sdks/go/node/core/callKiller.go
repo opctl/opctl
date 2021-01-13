@@ -2,9 +2,6 @@ package core
 
 import (
 	"context"
-	"fmt"
-	"runtime/debug"
-	"sync"
 	"time"
 
 	"github.com/opctl/opctl/sdks/go/model"
@@ -50,35 +47,17 @@ func (ckr _callKiller) Kill(
 		callID,
 	)
 
-	var waitGroup sync.WaitGroup
-
 	for _, childCallGraph := range ckr.stateStore.ListWithParentID(callID) {
-		// recursively kill all child calls
-		waitGroup.Add(1)
-		go func(childCallGraph *model.Call) {
-			defer func() {
-				if panicArg := recover(); panicArg != nil {
-					// recover from panics; treat as errors
-					fmt.Println(panicArg, debug.Stack())
-				}
-			}()
-			defer waitGroup.Done()
-
-			ckr.eventPublisher.Publish(
-				model.Event{
-					CallKillRequested: &model.CallKillRequested{
-						Request: model.KillOpReq{
-							OpID:       childCallGraph.ID,
-							RootCallID: rootCallID,
-						},
+		ckr.eventPublisher.Publish(
+			model.Event{
+				CallKillRequested: &model.CallKillRequested{
+					Request: model.KillOpReq{
+						OpID:       childCallGraph.ID,
+						RootCallID: rootCallID,
 					},
-					Timestamp: time.Now().UTC(),
 				},
-			)
-
-		}(childCallGraph)
+				Timestamp: time.Now().UTC(),
+			},
+		)
 	}
-
-	waitGroup.Wait()
-
 }
