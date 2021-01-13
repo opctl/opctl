@@ -81,17 +81,13 @@ func (ps *pubSub) Subscribe(
 		ps.subscriptionsMutex.Unlock()
 
 		// old events
-		eventStoreEventChannel, eventStoreErrChannel := ps.eventStore.List(ctx, filter)
+		eventStoreEventChannel, _ := ps.eventStore.List(ctx, filter)
 		for event := range eventStoreEventChannel {
 			select {
 			case dstEventChannel <- event:
 			case <-ctx.Done():
 				return
 			}
-		}
-
-		if err := <-eventStoreErrChannel; nil != err {
-			panic(err)
 		}
 
 		// new events
