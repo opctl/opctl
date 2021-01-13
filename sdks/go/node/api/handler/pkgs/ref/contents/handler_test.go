@@ -28,7 +28,7 @@ var _ = Context("Handler", func() {
 			fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 			objectUnderTest := _handler{
-				core: fakeCore,
+				opNode: fakeCore,
 			}
 			providedHTTPResp := httptest.NewRecorder()
 
@@ -60,7 +60,7 @@ var _ = Context("Handler", func() {
 				fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 				objectUnderTest := _handler{
-					core: fakeCore,
+					opNode: fakeCore,
 				}
 				providedHTTPResp := httptest.NewRecorder()
 
@@ -95,8 +95,8 @@ var _ = Context("Handler", func() {
 					fakeJSON.NewEncoderReturns(json.NewEncoder(errWriter{Msg: expectedBody}))
 
 					objectUnderTest := _handler{
-						core: fakeCore,
-						json: fakeJSON,
+						opNode: fakeCore,
+						json:   fakeJSON,
 					}
 
 					providedHTTPResp := httptest.NewRecorder()
@@ -143,8 +143,8 @@ var _ = Context("Handler", func() {
 					}
 
 					objectUnderTest := _handler{
-						core: fakeCore,
-						json: fakeJSON,
+						opNode: fakeCore,
+						json:   fakeJSON,
 					}
 
 					providedHTTPResp := httptest.NewRecorder()

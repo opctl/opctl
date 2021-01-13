@@ -24,7 +24,7 @@ var _ = Context("handle", func() {
 			fakeCore := new(nodeFakes.FakeOpNode)
 
 			objectUnderTest := handle{
-				core:      fakeCore,
+				opNode:    fakeCore,
 				dataRef:   dataRef,
 				pullCreds: pullCreds,
 			}
@@ -56,7 +56,7 @@ var _ = Context("handle", func() {
 			fakeCore := new(nodeFakes.FakeOpNode)
 
 			objectUnderTest := handle{
-				core:      fakeCore,
+				opNode:    fakeCore,
 				dataRef:   dataRef,
 				pullCreds: pullCreds,
 			}
@@ -84,7 +84,7 @@ var _ = Context("handle", func() {
 			fakeCore := new(nodeFakes.FakeOpNode)
 
 			objectUnderTest := handle{
-				core:    fakeCore,
+				opNode:  fakeCore,
 				dataRef: dataRef,
 			}
 

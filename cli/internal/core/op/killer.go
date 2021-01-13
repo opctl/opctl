@@ -16,21 +16,21 @@ type Killer interface {
 }
 
 // newKiller returns an initialized "op kill" sub command
-func newKiller(core node.OpNode) Killer {
+func newKiller(opNode node.OpNode) Killer {
 	return _killer{
-		core: core,
+		opNode: opNode,
 	}
 }
 
 type _killer struct {
-	core node.OpNode
+	opNode node.OpNode
 }
 
 func (ivkr _killer) Kill(
 	ctx context.Context,
 	opID string,
 ) error {
-	return ivkr.core.KillOp(
+	return ivkr.opNode.KillOp(
 		ctx,
 		model.KillOpReq{
 			OpID:       opID,

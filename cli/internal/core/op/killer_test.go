@@ -40,7 +40,7 @@ var _ = Context("Killer", func() {
 			fakeCore := new(nodeFakes.FakeOpNode)
 
 			objectUnderTest := _killer{
-				core: fakeCore,
+				opNode: fakeCore,
 			}
 
 			/* act */
@@ -60,7 +60,7 @@ var _ = Context("Killer", func() {
 				fakeCore.KillOpReturns(expectedError)
 
 				objectUnderTest := _killer{
-					core: fakeCore,
+					opNode: fakeCore,
 				}
 
 				/* act */

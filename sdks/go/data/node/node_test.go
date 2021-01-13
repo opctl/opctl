@@ -25,7 +25,7 @@ var _ = Context("_node", func() {
 			}
 
 			objectUnderTest := _node{
-				core:      fakeCore,
+				opNode:    fakeCore,
 				pullCreds: providedPullCreds,
 			}
 
@@ -54,7 +54,7 @@ var _ = Context("_node", func() {
 				fakeCore.ListDescendantsReturns(nil, listDirEntrysErr)
 
 				objectUnderTest := _node{
-					core: fakeCore,
+					opNode: fakeCore,
 				}
 
 				/* act */
@@ -80,7 +80,7 @@ var _ = Context("_node", func() {
 				}
 
 				objectUnderTest := _node{
-					core:      fakeCore,
+					opNode:    fakeCore,
 					pullCreds: providedPullCreds,
 				}
 

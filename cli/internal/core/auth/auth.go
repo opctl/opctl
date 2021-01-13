@@ -16,10 +16,10 @@ type Auth interface {
 // New returns an initialized "auth" sub command
 func New(
 	dataResolver dataresolver.DataResolver,
-	core node.OpNode,
+	opNode node.OpNode,
 ) Auth {
 	return _auth{
-		Adder: newAdder(core),
+		Adder: newAdder(opNode),
 	}
 }
 

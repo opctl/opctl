@@ -23,17 +23,17 @@ type UIer interface {
 // newUIer returns an initialized "ui" command
 func newUIer(
 	dataResolver dataresolver.DataResolver,
-	core node.OpNode,
+	opNode node.OpNode,
 ) UIer {
 	return _uier{
 		dataResolver: dataResolver,
-		core:         core,
+		opNode:       opNode,
 	}
 }
 
 type _uier struct {
 	dataResolver dataresolver.DataResolver
-	core         node.OpNode
+	opNode       node.OpNode
 }
 
 func (ivkr _uier) UI(

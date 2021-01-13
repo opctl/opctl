@@ -8,12 +8,12 @@ import (
 )
 
 func newHandle(
-	core node.OpNode,
+	opNode node.OpNode,
 	dataRef string,
 	pullCreds *model.Creds,
 ) model.DataHandle {
 	return handle{
-		core:      core,
+		opNode:    opNode,
 		dataRef:   dataRef,
 		pullCreds: pullCreds,
 	}
@@ -21,7 +21,7 @@ func newHandle(
 
 // handle allows interacting w/ data sourced from an opspec node
 type handle struct {
-	core      node.OpNode
+	opNode    node.OpNode
 	dataRef   string
 	pullCreds *model.Creds
 }
@@ -33,7 +33,7 @@ func (nh handle) GetContent(
 	model.ReadSeekCloser,
 	error,
 ) {
-	return nh.core.GetData(
+	return nh.opNode.GetData(
 		ctx,
 		model.GetDataReq{
 			ContentPath: contentPath,
@@ -49,7 +49,7 @@ func (nh handle) ListDescendants(
 	[]*model.DirEntry,
 	error,
 ) {
-	return nh.core.ListDescendants(
+	return nh.opNode.ListDescendants(
 		ctx,
 		model.ListDescendantsReq{
 			PkgRef:    nh.dataRef,

@@ -20,10 +20,10 @@ type Handler interface {
 
 // NewHandler returns an initialized Handler instance
 func NewHandler(
-	core node.OpNode,
+	opNode node.OpNode,
 ) Handler {
 	return _handler{
-		addsHandler: adds.NewHandler(core),
+		addsHandler: adds.NewHandler(opNode),
 	}
 }
 

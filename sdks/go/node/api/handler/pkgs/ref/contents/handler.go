@@ -24,17 +24,17 @@ type Handler interface {
 
 // NewHandler returns an initialized Handler instance
 func NewHandler(
-	core node.OpNode,
+	opNode node.OpNode,
 ) Handler {
 	return _handler{
-		core:        core,
+		opNode:      opNode,
 		json:        ijson.New(),
-		pathHandler: path.NewHandler(core),
+		pathHandler: path.NewHandler(opNode),
 	}
 }
 
 type _handler struct {
-	core        node.OpNode
+	opNode      node.OpNode
 	json        ijson.IJSON
 	pathHandler path.Handler
 }

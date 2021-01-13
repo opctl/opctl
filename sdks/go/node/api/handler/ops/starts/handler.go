@@ -20,15 +20,15 @@ type Handler interface {
 
 // NewHandler returns an initialized Handler instance
 func NewHandler(
-	core node.OpNode,
+	opNode node.OpNode,
 ) Handler {
 	return _handler{
-		core: core,
+		opNode: opNode,
 	}
 }
 
 type _handler struct {
-	core node.OpNode
+	opNode node.OpNode
 }
 
 func (hdlr _handler) Handle(
@@ -44,7 +44,7 @@ func (hdlr _handler) Handle(
 		return
 	}
 
-	callID, err := hdlr.core.StartOp(
+	callID, err := hdlr.opNode.StartOp(
 		httpReq.Context(),
 		startOpReq,
 	)

@@ -25,17 +25,17 @@ type Handler interface {
 
 // NewHandler returns an initialized Handler instance
 func NewHandler(
-	core node.OpNode,
+	opNode node.OpNode,
 ) Handler {
 	return _handler{
-		core: core,
-		http: ihttp.New(),
+		opNode: opNode,
+		http:   ihttp.New(),
 	}
 }
 
 type _handler struct {
-	core node.OpNode
-	http ihttp.IHTTP
+	opNode node.OpNode
+	http   ihttp.IHTTP
 }
 
 func (hdlr _handler) Handle(

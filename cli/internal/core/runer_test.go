@@ -74,7 +74,7 @@ var _ = Context("Runer", func() {
 			objectUnderTest := _runer{
 				dataResolver:      fakeDataResolver,
 				cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-				core:              new(nodeFakes.FakeOpNode),
+				opNode:            new(nodeFakes.FakeOpNode),
 			}
 
 			/* act */
@@ -221,7 +221,7 @@ var _ = Context("Runer", func() {
 				objectUnderTest := _runer{
 					dataResolver:      fakeDataResolver,
 					cliParamSatisfier: fakeCliParamSatisfier,
-					core:              fakeCore,
+					opNode:            fakeCore,
 				}
 
 				/* act */
@@ -248,7 +248,7 @@ var _ = Context("Runer", func() {
 					objectUnderTest := _runer{
 						dataResolver:      fakeDataResolver,
 						cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-						core:              fakeCore,
+						opNode:            fakeCore,
 					}
 
 					/* act */
@@ -286,7 +286,7 @@ var _ = Context("Runer", func() {
 					objectUnderTest := _runer{
 						dataResolver:      fakeDataResolver,
 						cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-						core:              fakeCore,
+						opNode:            fakeCore,
 					}
 
 					/* act */
@@ -320,7 +320,7 @@ var _ = Context("Runer", func() {
 						objectUnderTest := _runer{
 							dataResolver:      fakeDataResolver,
 							cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-							core:              fakeCore,
+							opNode:            fakeCore,
 						}
 
 						/* act */
@@ -347,7 +347,7 @@ var _ = Context("Runer", func() {
 							objectUnderTest := _runer{
 								dataResolver:      fakeDataResolver,
 								cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-								core:              fakeCore,
+								opNode:            fakeCore,
 							}
 
 							/* act */
@@ -390,7 +390,7 @@ var _ = Context("Runer", func() {
 											dataResolver:      fakeDataResolver,
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-											core:              fakeCore,
+											opNode:            fakeCore,
 										}
 
 										/* act/assert */
@@ -427,7 +427,7 @@ var _ = Context("Runer", func() {
 											dataResolver:      fakeDataResolver,
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-											core:              fakeCore,
+											opNode:            fakeCore,
 										}
 
 										/* act/assert */
@@ -465,7 +465,7 @@ var _ = Context("Runer", func() {
 											dataResolver:      fakeDataResolver,
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-											core:              fakeCore,
+											opNode:            fakeCore,
 										}
 
 										/* act/assert */
@@ -502,7 +502,7 @@ var _ = Context("Runer", func() {
 											dataResolver:      fakeDataResolver,
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-											core:              fakeCore,
+											opNode:            fakeCore,
 										}
 
 										/* act/assert */
