@@ -14,7 +14,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
-func (c APIClient) GetData(
+func (c apiClient) GetData(
 	ctx context.Context,
 	req model.GetDataReq,
 ) (

@@ -39,7 +39,7 @@ var _ = Context("AddAuth", func() {
 		fakeHttpClient := new(ihttp.FakeClient)
 		fakeHttpClient.DoReturns(&http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte{}))}, nil)
 
-		objectUnderTest := APIClient{
+		objectUnderTest := apiClient{
 			httpClient: fakeHttpClient,
 		}
 

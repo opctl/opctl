@@ -4,11 +4,13 @@ package client
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
+	"context"
 	"net/url"
 
 	iwebsocket "github.com/golang-interfaces/github.com-gorilla-websocket"
 	"github.com/golang-interfaces/ihttp"
 	"github.com/gorilla/websocket"
+	"github.com/opctl/opctl/sdks/go/node"
 	"github.com/sethgrid/pester"
 )
 
@@ -23,7 +25,7 @@ type Opts struct {
 func New(
 	baseURL url.URL,
 	opts *Opts,
-) *APIClient {
+) APIClient {
 
 	httpClient := pester.New()
 	httpClient.Backoff = pester.ExponentialBackoff
@@ -36,17 +38,28 @@ func New(
 		}
 	}
 
-	return &APIClient{
+	return &apiClient{
 		baseURL:    baseURL,
 		httpClient: httpClient,
 		wsDialer:   websocket.DefaultDialer,
 	}
 }
 
-// APIClient is an OpNode that runs ops with a remote OpNode over a network
-// connection
-type APIClient struct {
+type apiClient struct {
 	baseURL    url.URL
 	httpClient ihttp.Client
 	wsDialer   iwebsocket.Dialer
+}
+
+//counterfeiter:generate -o fakes/client.go . APIClient
+
+// APIClient is an OpNode that runs ops with a remote OpNode over a network
+// connection
+type APIClient interface {
+	node.OpNode
+
+	// Liveness checks liveness of the web server
+	Liveness(
+		ctx context.Context,
+	) error
 }

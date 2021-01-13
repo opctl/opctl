@@ -9,7 +9,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
-func (c APIClient) Liveness(
+func (c apiClient) Liveness(
 	ctx context.Context,
 ) error {
 

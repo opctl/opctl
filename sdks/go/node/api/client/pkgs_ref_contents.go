@@ -14,7 +14,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
-func (c APIClient) ListDescendants(
+func (c apiClient) ListDescendants(
 	ctx context.Context,
 	req model.ListDescendantsReq,
 ) (

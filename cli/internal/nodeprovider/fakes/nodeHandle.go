@@ -9,21 +9,21 @@ import (
 )
 
 type FakeNodeHandle struct {
-	APIClientStub        func() *client.APIClient
+	APIClientStub        func() client.APIClient
 	aPIClientMutex       sync.RWMutex
 	aPIClientArgsForCall []struct {
 	}
 	aPIClientReturns struct {
-		result1 *client.APIClient
+		result1 client.APIClient
 	}
 	aPIClientReturnsOnCall map[int]struct {
-		result1 *client.APIClient
+		result1 client.APIClient
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeNodeHandle) APIClient() *client.APIClient {
+func (fake *FakeNodeHandle) APIClient() client.APIClient {
 	fake.aPIClientMutex.Lock()
 	ret, specificReturn := fake.aPIClientReturnsOnCall[len(fake.aPIClientArgsForCall)]
 	fake.aPIClientArgsForCall = append(fake.aPIClientArgsForCall, struct {
@@ -46,32 +46,32 @@ func (fake *FakeNodeHandle) APIClientCallCount() int {
 	return len(fake.aPIClientArgsForCall)
 }
 
-func (fake *FakeNodeHandle) APIClientCalls(stub func() *client.APIClient) {
+func (fake *FakeNodeHandle) APIClientCalls(stub func() client.APIClient) {
 	fake.aPIClientMutex.Lock()
 	defer fake.aPIClientMutex.Unlock()
 	fake.APIClientStub = stub
 }
 
-func (fake *FakeNodeHandle) APIClientReturns(result1 *client.APIClient) {
+func (fake *FakeNodeHandle) APIClientReturns(result1 client.APIClient) {
 	fake.aPIClientMutex.Lock()
 	defer fake.aPIClientMutex.Unlock()
 	fake.APIClientStub = nil
 	fake.aPIClientReturns = struct {
-		result1 *client.APIClient
+		result1 client.APIClient
 	}{result1}
 }
 
-func (fake *FakeNodeHandle) APIClientReturnsOnCall(i int, result1 *client.APIClient) {
+func (fake *FakeNodeHandle) APIClientReturnsOnCall(i int, result1 client.APIClient) {
 	fake.aPIClientMutex.Lock()
 	defer fake.aPIClientMutex.Unlock()
 	fake.APIClientStub = nil
 	if fake.aPIClientReturnsOnCall == nil {
 		fake.aPIClientReturnsOnCall = make(map[int]struct {
-			result1 *client.APIClient
+			result1 client.APIClient
 		})
 	}
 	fake.aPIClientReturnsOnCall[i] = struct {
-		result1 *client.APIClient
+		result1 client.APIClient
 	}{result1}
 }
 
