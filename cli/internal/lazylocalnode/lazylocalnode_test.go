@@ -2,6 +2,7 @@ package lazylocalnode
 
 import (
 	"context"
+	"errors"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -122,6 +123,37 @@ var _ = Context("lazylocalnode", func() {
 			aArg1, aArg2 := fakeAPIClient.ListDescendantsArgsForCall(0)
 			Expect(aArg1).To(Equal(arg1))
 			Expect(aArg2).To(Equal(arg2))
+		})
+	})
+	Context("passes through errors", func() {
+		expectedErr := errors.New("expected")
+		fakeNodeProvider := new(nodeFakes.FakeNodeProvider)
+		fakeNodeProvider.CreateNodeIfNotExistsReturns(nil, expectedErr)
+		lln := New(fakeNodeProvider)
+
+		It("for AddAuth", func() {
+			err := lln.AddAuth(context.Background(), model.AddAuthReq{})
+			Expect(err).To(MatchError(expectedErr))
+		})
+		It("for GetEventStream", func() {
+			_, err := lln.GetEventStream(context.Background(), &model.GetEventStreamReq{})
+			Expect(err).To(MatchError(expectedErr))
+		})
+		It("for KillOp", func() {
+			err := lln.KillOp(context.Background(), model.KillOpReq{})
+			Expect(err).To(MatchError(expectedErr))
+		})
+		It("for StartOp", func() {
+			_, err := lln.StartOp(context.Background(), model.StartOpReq{})
+			Expect(err).To(MatchError(expectedErr))
+		})
+		It("for GetData", func() {
+			_, err := lln.GetData(context.Background(), model.GetDataReq{})
+			Expect(err).To(MatchError(expectedErr))
+		})
+		It("for ListDescendants", func() {
+			_, err := lln.ListDescendants(context.Background(), model.ListDescendantsReq{})
+			Expect(err).To(MatchError(expectedErr))
 		})
 	})
 })
