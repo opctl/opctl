@@ -19,23 +19,23 @@ type Eventser interface {
 // newEventser returns an initialized "events" command
 func newEventser(
 	cliOutput clioutput.CliOutput,
-	core node.OpNode,
+	opNode node.OpNode,
 ) Eventser {
 	return _eventser{
 		cliOutput: cliOutput,
-		core:      core,
+		opNode:    opNode,
 	}
 }
 
 type _eventser struct {
 	cliOutput clioutput.CliOutput
-	core      node.OpNode
+	opNode    node.OpNode
 }
 
 func (ivkr _eventser) Events(
 	ctx context.Context,
 ) error {
-	eventChannel, err := ivkr.core.GetEventStream(
+	eventChannel, err := ivkr.opNode.GetEventStream(
 		ctx,
 		&model.GetEventStreamReq{},
 	)

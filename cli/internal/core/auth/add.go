@@ -19,15 +19,15 @@ type Adder interface {
 
 // newAdder returns an initialized "auth add" sub command
 func newAdder(
-	core node.OpNode,
+	opNode node.OpNode,
 ) Adder {
 	return _adder{
-		core: core,
+		opNode: opNode,
 	}
 }
 
 type _adder struct {
-	core node.OpNode
+	opNode node.OpNode
 }
 
 func (ivkr _adder) Add(
@@ -36,7 +36,7 @@ func (ivkr _adder) Add(
 	username string,
 	password string,
 ) error {
-	return ivkr.core.AddAuth(
+	return ivkr.opNode.AddAuth(
 		ctx,
 		model.AddAuthReq{
 			Resources: resources,

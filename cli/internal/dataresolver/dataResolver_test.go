@@ -44,7 +44,7 @@ var _ = Context("dataResolver", func() {
 					objectUnderTest := _dataResolver{
 						cliParamSatisfier: fakeCliParamSatisfier,
 						os:                new(ios.Fake),
-						core:              fakeCore,
+						opNode:            fakeCore,
 					}
 
 					/* act */
@@ -65,8 +65,8 @@ var _ = Context("dataResolver", func() {
 					fakeCore.ListDescendantsReturns(nil, errors.New(expectedErr))
 
 					objectUnderTest := _dataResolver{
-						os:   new(ios.Fake),
-						core: fakeCore,
+						os:     new(ios.Fake),
+						opNode: fakeCore,
 					}
 
 					/* act */
@@ -84,8 +84,8 @@ var _ = Context("dataResolver", func() {
 				fakeCore := new(nodeFakes.FakeOpNode)
 
 				objectUnderTest := _dataResolver{
-					os:   new(ios.Fake),
-					core: fakeCore,
+					os:     new(ios.Fake),
+					opNode: fakeCore,
 				}
 
 				/* act */

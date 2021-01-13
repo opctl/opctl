@@ -32,7 +32,7 @@ var _ = Context("Handler", func() {
 				fakeUpgrader.UpgradeReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _handler{
-					core:     new(nodeFakes.FakeOpNode),
+					opNode:   new(nodeFakes.FakeOpNode),
 					upgrader: fakeUpgrader,
 				}
 
@@ -57,7 +57,7 @@ var _ = Context("Handler", func() {
 
 					/* arrange */
 					objectUnderTest := _handler{
-						core: new(nodeFakes.FakeOpNode),
+						opNode: new(nodeFakes.FakeOpNode),
 					}
 
 					invalidSince := "notValidTime"
@@ -96,7 +96,7 @@ var _ = Context("Handler", func() {
 					fakeCore.GetEventStreamReturns(eventChannel, nil)
 
 					objectUnderTest := _handler{
-						core: fakeCore,
+						opNode: fakeCore,
 					}
 
 					expectedSince := time.Now().UTC()
@@ -140,7 +140,7 @@ var _ = Context("Handler", func() {
 				fakeCore.GetEventStreamReturns(eventChannel, nil)
 
 				objectUnderTest := _handler{
-					core: fakeCore,
+					opNode: fakeCore,
 				}
 
 				root1 := "dummyRoot1"

@@ -31,7 +31,7 @@ var _ = Context("Handler", func() {
 			fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 			objectUnderTest := _handler{
-				core: fakeCore,
+				opNode: fakeCore,
 			}
 			providedHTTPResp := httptest.NewRecorder()
 
@@ -66,7 +66,7 @@ var _ = Context("Handler", func() {
 				fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 				objectUnderTest := _handler{
-					core: fakeCore,
+					opNode: fakeCore,
 				}
 				providedHTTPResp := httptest.NewRecorder()
 
@@ -111,8 +111,8 @@ var _ = Context("Handler", func() {
 				fakeHTTP := new(ihttp.Fake)
 
 				objectUnderTest := _handler{
-					core: fakeCore,
-					http: fakeHTTP,
+					opNode: fakeCore,
+					http:   fakeHTTP,
 				}
 
 				providedHTTPResp := httptest.NewRecorder()

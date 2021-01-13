@@ -14,12 +14,12 @@ type Auther interface {
 // newAuther returns an initialized "auth" sub command
 func newAuther(
 	dataResolver dataresolver.DataResolver,
-	core node.OpNode,
+	opNode node.OpNode,
 ) Auther {
 	return _auther{
 		auth: auth.New(
 			dataResolver,
-			core,
+			opNode,
 		),
 	}
 }

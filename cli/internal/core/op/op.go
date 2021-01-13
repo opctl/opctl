@@ -19,12 +19,12 @@ type Op interface {
 // New returns an initialized "op" sub command
 func New(
 	dataResolver dataresolver.DataResolver,
-	core node.OpNode,
+	opNode node.OpNode,
 ) Op {
 	return _op{
 		Creater:   newCreater(),
 		Installer: newInstaller(dataResolver),
-		Killer:    newKiller(core),
+		Killer:    newKiller(opNode),
 		Validater: newValidater(dataResolver),
 	}
 }

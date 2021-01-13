@@ -28,7 +28,7 @@ var _ = Context("Adder", func() {
 			}
 
 			objectUnderTest := _adder{
-				core: fakeCore,
+				opNode: fakeCore,
 			}
 
 			/* act */
@@ -53,7 +53,7 @@ var _ = Context("Adder", func() {
 				fakeCore.AddAuthReturns(expectedError)
 
 				objectUnderTest := _adder{
-					core: fakeCore,
+					opNode: fakeCore,
 				}
 
 				/* act */

@@ -14,12 +14,12 @@ type Oper interface {
 // newOper returns an initialized "op" sub command
 func newOper(
 	dataResolver dataresolver.DataResolver,
-	core node.OpNode,
+	opNode node.OpNode,
 ) Oper {
 	return _oper{
 		op: op.New(
 			dataResolver,
-			core,
+			opNode,
 		),
 	}
 }

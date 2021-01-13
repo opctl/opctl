@@ -22,7 +22,7 @@ var _ = Context("Eventser", func() {
 			fakeCore.GetEventStreamReturns(eventChannel, nil)
 
 			objectUnderTest := _eventser{
-				core: fakeCore,
+				opNode: fakeCore,
 			}
 
 			/* act */
@@ -47,7 +47,7 @@ var _ = Context("Eventser", func() {
 				fakeCore.GetEventStreamReturns(nil, returnedError)
 
 				objectUnderTest := _eventser{
-					core: fakeCore,
+					opNode: fakeCore,
 				}
 
 				/* act */
@@ -67,7 +67,7 @@ var _ = Context("Eventser", func() {
 					fakeCore.GetEventStreamReturns(eventChannel, nil)
 
 					objectUnderTest := _eventser{
-						core: fakeCore,
+						opNode: fakeCore,
 					}
 
 					/* act */

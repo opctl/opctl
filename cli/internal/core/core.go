@@ -32,21 +32,21 @@ func New(
 
 	nodeProvider := local.New(nodeProviderOpts)
 
-	core := lazylocalnode.New(nodeProvider)
+	opNode := lazylocalnode.New(nodeProvider)
 
 	dataResolver := dataresolver.New(
 		cliParamSatisfier,
-		core,
+		opNode,
 	)
 
 	return _core{
 		Auther: newAuther(
 			dataResolver,
-			core,
+			opNode,
 		),
 		Eventser: newEventser(
 			cliOutput,
-			core,
+			opNode,
 		),
 		Lser: newLser(
 			cliOutput,
@@ -55,18 +55,18 @@ func New(
 		Noder: newNoder(nodeProvider),
 		Oper: newOper(
 			dataResolver,
-			core,
+			opNode,
 		),
 		Runer: newRuner(
 			cliOutput,
 			cliParamSatisfier,
 			dataResolver,
-			core,
+			opNode,
 		),
 		SelfUpdater: newSelfUpdater(nodeProvider),
 		UIer: newUIer(
 			dataResolver,
-			core,
+			opNode,
 		),
 	}
 }

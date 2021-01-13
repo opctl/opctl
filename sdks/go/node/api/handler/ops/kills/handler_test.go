@@ -24,7 +24,7 @@ var _ = Context("Handler", func() {
 
 				/* arrange */
 				objectUnderTest := _handler{
-					core: new(nodeFakes.FakeOpNode),
+					opNode: new(nodeFakes.FakeOpNode),
 				}
 				providedHTTPResp := httptest.NewRecorder()
 

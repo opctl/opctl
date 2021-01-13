@@ -38,13 +38,13 @@ func newRuner(
 	cliOutput clioutput.CliOutput,
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier,
 	dataResolver dataresolver.DataResolver,
-	core node.OpNode,
+	opNode node.OpNode,
 ) Runer {
 	return _runer{
 		cliOutput:         cliOutput,
 		cliParamSatisfier: cliParamSatisfier,
 		dataResolver:      dataResolver,
-		core:              core,
+		opNode:            opNode,
 	}
 }
 
@@ -52,7 +52,7 @@ type _runer struct {
 	dataResolver      dataresolver.DataResolver
 	cliOutput         clioutput.CliOutput
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier
-	core              node.OpNode
+	opNode            node.OpNode
 }
 
 func (ivkr _runer) Run(
@@ -126,7 +126,7 @@ func (ivkr _runer) Run(
 	)
 
 	// start op
-	rootCallID, err := ivkr.core.StartOp(
+	rootCallID, err := ivkr.opNode.StartOp(
 		ctx,
 		model.StartOpReq{
 			Args: argsMap,
@@ -140,7 +140,7 @@ func (ivkr _runer) Run(
 	}
 
 	// start event loop
-	eventChannel, err := ivkr.core.GetEventStream(
+	eventChannel, err := ivkr.opNode.GetEventStream(
 		ctx,
 		&model.GetEventStreamReq{
 			Filter: model.EventFilter{
@@ -161,7 +161,7 @@ func (ivkr _runer) Run(
 				ivkr.cliOutput.Warning("Gracefully stopping... (signal Control-C again to force)")
 				aSigIntWasReceivedAlready = true
 
-				ivkr.core.KillOp(
+				ivkr.opNode.KillOp(
 					ctx,
 					model.KillOpReq{
 						OpID:       rootCallID,
@@ -178,7 +178,7 @@ func (ivkr _runer) Run(
 		case <-sigTermChannel:
 			ivkr.cliOutput.Warning("Gracefully stopping...")
 
-			return ivkr.core.KillOp(
+			return ivkr.opNode.KillOp(
 				ctx,
 				model.KillOpReq{
 					OpID:       rootCallID,
