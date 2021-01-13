@@ -12,7 +12,7 @@ import (
 
 var _ = Context("Eventser", func() {
 	Context("Events", func() {
-		It("should call nodeHandle.APIClient().GetEventStream w/ expected args", func() {
+		It("should call core.GetEventStream w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
 
@@ -38,7 +38,7 @@ var _ = Context("Eventser", func() {
 			Expect(*actualGetEventStreamReq).To(Equal(model.GetEventStreamReq{}))
 
 		})
-		Context("client.GetEventStream errors", func() {
+		Context("core.GetEventStream errors", func() {
 			It("should return expected error", func() {
 				/* arrange */
 				returnedError := errors.New("dummyError")
@@ -57,7 +57,7 @@ var _ = Context("Eventser", func() {
 				Expect(err).To(MatchError(returnedError))
 			})
 		})
-		Context("client.GetEventStream doesn't error", func() {
+		Context("core.GetEventStream doesn't error", func() {
 			Context("channel closes unexpectedly", func() {
 				It("should return expected error", func() {
 					/* arrange */

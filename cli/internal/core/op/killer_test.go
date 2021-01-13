@@ -27,7 +27,7 @@ var _ = Context("Killer", func() {
 			/* assert */
 			Expect(err).To(MatchError(expectedError))
 		})
-		It("should call apiClient.Invoke w/ expected args", func() {
+		It("should call core.KillOp w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.TODO()
 
@@ -52,7 +52,7 @@ var _ = Context("Killer", func() {
 			Expect(actualCtx).To(Equal(expectedCtx))
 			Expect(actualReq).To(BeEquivalentTo(expectedReq))
 		})
-		Context("apiClient.Invoke errors", func() {
+		Context("errors", func() {
 			It("should return expected error", func() {
 				/* arrange */
 				expectedError := errors.New("dummyError")
