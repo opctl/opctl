@@ -330,7 +330,7 @@ var _ = Context("Runer", func() {
 						Expect(err).To(MatchError(returnedError))
 					})
 				})
-				Context("apiClient.GetEventStream doesn't error", func() {
+				Context("core.GetEventStream doesn't error", func() {
 					Context("event channel closes", func() {
 						It("should return expected error", func() {
 							/* arrange */

@@ -11,8 +11,8 @@ import (
 )
 
 var _ = Context("Adder", func() {
-	Context("Invoke", func() {
-		It("should call apiClient.Invoke w/ expected args", func() {
+	Context("AddAuth", func() {
+		It("should call core.AddAuth w/ expected args", func() {
 			/* arrange */
 			fakeCore := new(nodeFakes.FakeOpNode)
 
@@ -45,7 +45,7 @@ var _ = Context("Adder", func() {
 			Expect(actualCtx).To(Equal(expectedCtx))
 			Expect(actualReq).To(BeEquivalentTo(expectedReq))
 		})
-		Context("apiClient.Invoke errors", func() {
+		Context("core.AddAuth errors", func() {
 			It("should return expected error", func() {
 				/* arrange */
 				fakeCore := new(nodeFakes.FakeOpNode)
