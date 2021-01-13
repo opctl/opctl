@@ -318,7 +318,8 @@ func newCli(
 				"Opctl web UI opened!",
 				ui(
 					cliParamSatisfier,
-					nodeProvider,
+          nodeProvider,
+          *listenAddress,
 					*mountRefArg,
 				),
 			)

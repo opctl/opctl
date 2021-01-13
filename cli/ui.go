@@ -14,7 +14,8 @@ import (
 // ui implements "ui" command
 func ui(
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier,
-	nodeProvider nodeprovider.NodeProvider,
+  nodeProvider nodeprovider.NodeProvider,
+  listenAddress string,
 	mountRefArg string,
 ) error {
 	var resolvedMount string
@@ -49,6 +50,6 @@ func ui(
 	}
 
 	return open.Run(
-		fmt.Sprintf("http://localhost:42224?mount=%s", url.QueryEscape(resolvedMount)),
+    fmt.Sprintf("http://%s/?mount=%s", listenAddress, url.QueryEscape(resolvedMount)),
 	)
 }
