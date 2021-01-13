@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	clientFakes "github.com/opctl/opctl/sdks/go/node/api/client/fakes"
+	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 )
 
 var _ = Context("_node", func() {
@@ -17,7 +17,7 @@ var _ = Context("_node", func() {
 			/* arrange */
 			providedDataRef := "dummyDataRef"
 
-			fakeAPIClient := new(clientFakes.FakeClient)
+			fakeCore := new(nodeFakes.FakeOpNode)
 
 			providedPullCreds := &model.Creds{
 				Username: "dummyUsername",
@@ -25,7 +25,7 @@ var _ = Context("_node", func() {
 			}
 
 			objectUnderTest := _node{
-				apiClient: fakeAPIClient,
+				core:      fakeCore,
 				pullCreds: providedPullCreds,
 			}
 
@@ -37,7 +37,7 @@ var _ = Context("_node", func() {
 
 			/* assert */
 			actualContext,
-				actualReq := fakeAPIClient.ListDescendantsArgsForCall(0)
+				actualReq := fakeCore.ListDescendantsArgsForCall(0)
 
 			Expect(actualContext).To(Equal(context.TODO()))
 			Expect(actualReq).To(Equal(model.ListDescendantsReq{
@@ -45,16 +45,16 @@ var _ = Context("_node", func() {
 				PullCreds: providedPullCreds,
 			}))
 		})
-		Context("apiClient.ListDirEntryd errs", func() {
+		Context("core.ListDescendants errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeAPIClient := new(clientFakes.FakeClient)
+				fakeCore := new(nodeFakes.FakeOpNode)
 
 				listDirEntrysErr := errors.New("dummyError")
-				fakeAPIClient.ListDescendantsReturns(nil, listDirEntrysErr)
+				fakeCore.ListDescendantsReturns(nil, listDirEntrysErr)
 
 				objectUnderTest := _node{
-					apiClient: fakeAPIClient,
+					core: fakeCore,
 				}
 
 				/* act */
@@ -67,12 +67,12 @@ var _ = Context("_node", func() {
 				Expect(actualErr).To(Equal(listDirEntrysErr))
 			})
 		})
-		Context("apiClient.ListDescendants doesn't err", func() {
+		Context("core.ListDescendants doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedDataRef := "dummyDataRef"
 
-				fakeAPIClient := new(clientFakes.FakeClient)
+				fakeCore := new(nodeFakes.FakeOpNode)
 
 				providedPullCreds := &model.Creds{
 					Username: "dummyUsername",
@@ -80,7 +80,7 @@ var _ = Context("_node", func() {
 				}
 
 				objectUnderTest := _node{
-					apiClient: fakeAPIClient,
+					core:      fakeCore,
 					pullCreds: providedPullCreds,
 				}
 
@@ -91,7 +91,7 @@ var _ = Context("_node", func() {
 				)
 
 				/* assert */
-				Expect(actualHandle).To(Equal(newHandle(fakeAPIClient, providedDataRef, providedPullCreds)))
+				Expect(actualHandle).To(Equal(newHandle(fakeCore, providedDataRef, providedPullCreds)))
 				Expect(actualErr).To(BeNil())
 			})
 		})

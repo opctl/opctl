@@ -9,11 +9,11 @@ import (
 
 	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/data/fs"
-	"github.com/opctl/opctl/sdks/go/data/node"
+	dataNode "github.com/opctl/opctl/sdks/go/data/node"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node"
 )
 
 // DataResolver resolves packages
@@ -27,18 +27,18 @@ type DataResolver interface {
 
 func New(
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier,
-	nodeProvider nodeprovider.NodeProvider,
+	core node.OpNode,
 ) DataResolver {
 	return _dataResolver{
 		cliParamSatisfier: cliParamSatisfier,
-		nodeProvider:      nodeProvider,
+		core:              core,
 		os:                ios.New(),
 	}
 }
 
 type _dataResolver struct {
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier
-	nodeProvider      nodeprovider.NodeProvider
+	core              node.OpNode
 	os                ios.IOS
 }
 
@@ -56,18 +56,13 @@ func (dtr _dataResolver) Resolve(
 		cwd,
 	)
 
-	nodeHandle, err := dtr.nodeProvider.CreateNodeIfNotExists()
-	if nil != err {
-		return nil, err
-	}
-
 	for {
 		opDirHandle, err := data.Resolve(
 			context.TODO(),
 			dataRef,
 			fsProvider,
-			node.New(
-				nodeHandle.APIClient(),
+			dataNode.New(
+				dtr.core,
 				pullCreds,
 			),
 		)

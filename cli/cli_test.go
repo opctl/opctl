@@ -12,8 +12,7 @@ import (
 	coreFakes "github.com/opctl/opctl/cli/internal/core/fakes"
 	nodeFakes "github.com/opctl/opctl/cli/internal/core/node/fakes"
 	opFakes "github.com/opctl/opctl/cli/internal/core/op/fakes"
-	"github.com/opctl/opctl/cli/internal/model"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 )
 
 var _ = Context("cli", func() {
@@ -27,8 +26,8 @@ var _ = Context("cli", func() {
 				objectUnderTest := newCli(
 					fakeCliOutput,
 					func(
-						cliOutput clioutput.CliOutput,
-						nodeProvider nodeprovider.NodeProvider,
+						clioutput.CliOutput,
+						local.NodeCreateOpts,
 					) corePkg.Core {
 						return new(coreFakes.FakeCore)
 					},
@@ -60,8 +59,8 @@ var _ = Context("cli", func() {
 					objectUnderTest := newCli(
 						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliOutput clioutput.CliOutput,
-							nodeProvider nodeprovider.NodeProvider,
+							clioutput.CliOutput,
+							local.NodeCreateOpts,
 						) corePkg.Core {
 							return fakeCore
 						},
@@ -94,8 +93,8 @@ var _ = Context("cli", func() {
 				objectUnderTest := newCli(
 					new(cliOutputFakes.FakeCliOutput),
 					func(
-						cliOutput clioutput.CliOutput,
-						nodeProvider nodeprovider.NodeProvider,
+						clioutput.CliOutput,
+						local.NodeCreateOpts,
 					) corePkg.Core {
 						return fakeCore
 					},
@@ -121,8 +120,8 @@ var _ = Context("cli", func() {
 					objectUnderTest := newCli(
 						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliOutput clioutput.CliOutput,
-							nodeProvider nodeprovider.NodeProvider,
+							clioutput.CliOutput,
+							local.NodeCreateOpts,
 						) corePkg.Core {
 							return fakeCore
 						},
@@ -149,8 +148,8 @@ var _ = Context("cli", func() {
 					objectUnderTest := newCli(
 						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliOutput clioutput.CliOutput,
-							nodeProvider nodeprovider.NodeProvider,
+							clioutput.CliOutput,
+							local.NodeCreateOpts,
 						) corePkg.Core {
 							return fakeCore
 						},
@@ -183,8 +182,8 @@ var _ = Context("cli", func() {
 					objectUnderTest := newCli(
 						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliOutput clioutput.CliOutput,
-							nodeProvider nodeprovider.NodeProvider,
+							clioutput.CliOutput,
+							local.NodeCreateOpts,
 						) corePkg.Core {
 							return fakeCore
 						},
@@ -211,8 +210,8 @@ var _ = Context("cli", func() {
 					objectUnderTest := newCli(
 						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliOutput clioutput.CliOutput,
-							nodeProvider nodeprovider.NodeProvider,
+							clioutput.CliOutput,
+							local.NodeCreateOpts,
 						) corePkg.Core {
 							return fakeCore
 						},
@@ -245,8 +244,8 @@ var _ = Context("cli", func() {
 						objectUnderTest := newCli(
 							new(cliOutputFakes.FakeCliOutput),
 							func(
-								cliOutput clioutput.CliOutput,
-								nodeProvider nodeprovider.NodeProvider,
+								clioutput.CliOutput,
+								local.NodeCreateOpts,
 							) corePkg.Core {
 								return fakeCore
 							},
@@ -277,8 +276,8 @@ var _ = Context("cli", func() {
 						objectUnderTest := newCli(
 							new(cliOutputFakes.FakeCliOutput),
 							func(
-								cliOutput clioutput.CliOutput,
-								nodeProvider nodeprovider.NodeProvider,
+								clioutput.CliOutput,
+								local.NodeCreateOpts,
 							) corePkg.Core {
 								return fakeCore
 							},
@@ -309,8 +308,8 @@ var _ = Context("cli", func() {
 						objectUnderTest := newCli(
 							new(cliOutputFakes.FakeCliOutput),
 							func(
-								cliOutput clioutput.CliOutput,
-								nodeProvider nodeprovider.NodeProvider,
+								clioutput.CliOutput,
+								local.NodeCreateOpts,
 							) corePkg.Core {
 								return fakeCore
 							},
@@ -341,8 +340,8 @@ var _ = Context("cli", func() {
 						objectUnderTest := newCli(
 							new(cliOutputFakes.FakeCliOutput),
 							func(
-								cliOutput clioutput.CliOutput,
-								nodeProvider nodeprovider.NodeProvider,
+								clioutput.CliOutput,
+								local.NodeCreateOpts,
 							) corePkg.Core {
 								return fakeCore
 							},
@@ -376,8 +375,8 @@ var _ = Context("cli", func() {
 					objectUnderTest := newCli(
 						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliOutput clioutput.CliOutput,
-							nodeProvider nodeprovider.NodeProvider,
+							clioutput.CliOutput,
+							local.NodeCreateOpts,
 						) corePkg.Core {
 							return fakeCore
 						},
@@ -425,8 +424,8 @@ var _ = Context("cli", func() {
 					objectUnderTest := newCli(
 						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliOutput clioutput.CliOutput,
-							nodeProvider nodeprovider.NodeProvider,
+							clioutput.CliOutput,
+							local.NodeCreateOpts,
 						) corePkg.Core {
 							return fakeCore
 						},
@@ -458,8 +457,8 @@ var _ = Context("cli", func() {
 					objectUnderTest := newCli(
 						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliOutput clioutput.CliOutput,
-							nodeProvider nodeprovider.NodeProvider,
+							clioutput.CliOutput,
+							local.NodeCreateOpts,
 						) corePkg.Core {
 							return fakeCore
 						},
@@ -486,7 +485,7 @@ var _ = Context("cli", func() {
 					/* arrange */
 					fakeCore := new(coreFakes.FakeCore)
 
-					expectedRunOpts := &model.RunOpts{
+					expectedRunOpts := &corePkg.RunOpts{
 						Args:    []string{"arg1Name=arg1Value", "arg2Name=arg2Value"},
 						ArgFile: "dummyArgFile",
 					}
@@ -495,8 +494,8 @@ var _ = Context("cli", func() {
 					objectUnderTest := newCli(
 						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliOutput clioutput.CliOutput,
-							nodeProvider nodeprovider.NodeProvider,
+							clioutput.CliOutput,
+							local.NodeCreateOpts,
 						) corePkg.Core {
 							return fakeCore
 						},
@@ -536,8 +535,8 @@ var _ = Context("cli", func() {
 					objectUnderTest := newCli(
 						new(cliOutputFakes.FakeCliOutput),
 						func(
-							cliOutput clioutput.CliOutput,
-							nodeProvider nodeprovider.NodeProvider,
+							clioutput.CliOutput,
+							local.NodeCreateOpts,
 						) corePkg.Core {
 							return fakeCore
 						},
@@ -572,8 +571,8 @@ var _ = Context("cli", func() {
 				objectUnderTest := newCli(
 					new(cliOutputFakes.FakeCliOutput),
 					func(
-						cliOutput clioutput.CliOutput,
-						nodeProvider nodeprovider.NodeProvider,
+						clioutput.CliOutput,
+						local.NodeCreateOpts,
 					) corePkg.Core {
 						return fakeCore
 					},
@@ -600,8 +599,8 @@ var _ = Context("cli", func() {
 				objectUnderTest := newCli(
 					new(cliOutputFakes.FakeCliOutput),
 					func(
-						cliOutput clioutput.CliOutput,
-						nodeProvider nodeprovider.NodeProvider,
+						clioutput.CliOutput,
+						local.NodeCreateOpts,
 					) corePkg.Core {
 						return fakeCore
 					},
@@ -629,8 +628,8 @@ var _ = Context("cli", func() {
 				objectUnderTest := newCli(
 					new(cliOutputFakes.FakeCliOutput),
 					func(
-						cliOutput clioutput.CliOutput,
-						nodeProvider nodeprovider.NodeProvider,
+						clioutput.CliOutput,
+						local.NodeCreateOpts,
 					) corePkg.Core {
 						return fakeCore
 					},
@@ -655,8 +654,8 @@ var _ = Context("cli", func() {
 				objectUnderTest := newCli(
 					new(cliOutputFakes.FakeCliOutput),
 					func(
-						cliOutput clioutput.CliOutput,
-						nodeProvider nodeprovider.NodeProvider,
+						clioutput.CliOutput,
+						local.NodeCreateOpts,
 					) corePkg.Core {
 						return fakeCore
 					},

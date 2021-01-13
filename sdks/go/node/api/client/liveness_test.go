@@ -40,7 +40,7 @@ var _ = Context("Liveness", func() {
 			nil,
 		)
 
-		objectUnderTest := client{
+		objectUnderTest := APIClient{
 			httpClient: fakeHttpClient,
 		}
 
@@ -69,7 +69,7 @@ var _ = Context("Liveness", func() {
 			fakeHttpClient := new(ihttp.FakeClient)
 			fakeHttpClient.DoReturns(httpResp, nil)
 
-			objectUnderTest := client{
+			objectUnderTest := APIClient{
 				httpClient: fakeHttpClient,
 			}
 
@@ -95,7 +95,7 @@ var _ = Context("Liveness", func() {
 			fakeHttpClient := new(ihttp.FakeClient)
 			fakeHttpClient.DoReturns(httpResp, nil)
 
-			objectUnderTest := client{
+			objectUnderTest := APIClient{
 				httpClient: fakeHttpClient,
 			}
 

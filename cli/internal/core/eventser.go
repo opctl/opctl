@@ -5,8 +5,8 @@ import (
 	"errors"
 
 	"github.com/opctl/opctl/cli/internal/clioutput"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node"
 )
 
 // Eventser exposes the "events" command
@@ -19,28 +19,23 @@ type Eventser interface {
 // newEventser returns an initialized "events" command
 func newEventser(
 	cliOutput clioutput.CliOutput,
-	nodeProvider nodeprovider.NodeProvider,
+	core node.OpNode,
 ) Eventser {
 	return _eventser{
-		cliOutput:    cliOutput,
-		nodeProvider: nodeProvider,
+		cliOutput: cliOutput,
+		core:      core,
 	}
 }
 
 type _eventser struct {
-	cliOutput    clioutput.CliOutput
-	nodeProvider nodeprovider.NodeProvider
+	cliOutput clioutput.CliOutput
+	core      node.OpNode
 }
 
 func (ivkr _eventser) Events(
 	ctx context.Context,
 ) error {
-	nodeHandle, err := ivkr.nodeProvider.CreateNodeIfNotExists()
-	if nil != err {
-		return err
-	}
-
-	eventChannel, err := nodeHandle.APIClient().GetEventStream(
+	eventChannel, err := ivkr.core.GetEventStream(
 		ctx,
 		&model.GetEventStreamReq{},
 	)

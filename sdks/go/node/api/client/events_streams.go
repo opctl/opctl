@@ -2,19 +2,20 @@ package client
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
 	"path"
 	"strings"
 	"time"
+
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
-func (c client) GetEventStream(
+func (c APIClient) GetEventStream(
 	ctx context.Context,
 	req *model.GetEventStreamReq,
-) (chan model.Event, error) {
+) (<-chan model.Event, error) {
 
-	reqURL := c.baseUrl
+	reqURL := c.baseURL
 	reqURL.Scheme = "ws"
 	reqURL.Path = path.Join(reqURL.Path, api.URLEvents_Stream)
 

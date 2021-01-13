@@ -29,7 +29,7 @@ type EventSubscriber interface {
 		filter model.EventFilter,
 	) (
 		<-chan model.Event,
-		<-chan error,
+		error,
 	)
 }
 
@@ -60,14 +60,12 @@ func (ps *pubSub) Subscribe(
 	filter model.EventFilter,
 ) (
 	<-chan model.Event,
-	<-chan error,
+	error,
 ) {
 	dstEventChannel := make(chan model.Event, 1000)
-	dstErrChannel := make(chan error, 1)
 
 	go func() {
 		defer close(dstEventChannel)
-		defer close(dstErrChannel)
 
 		publishEventChannel := make(chan model.Event, 1000)
 		defer ps.gcSubscription(publishEventChannel)
@@ -93,8 +91,7 @@ func (ps *pubSub) Subscribe(
 		}
 
 		if err := <-eventStoreErrChannel; nil != err {
-			dstErrChannel <- err
-			return
+			panic(err)
 		}
 
 		// new events
@@ -107,7 +104,7 @@ func (ps *pubSub) Subscribe(
 		}
 	}()
 
-	return dstEventChannel, dstErrChannel
+	return dstEventChannel, nil
 }
 
 func (ps *pubSub) gcSubscription(

@@ -1,12 +1,12 @@
 package pkgs
 
 import (
-	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 
 	refFakes "github.com/opctl/opctl/sdks/go/node/api/handler/pkgs/ref/fakes"
+	coreFakes "github.com/opctl/opctl/sdks/go/node/core/fakes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -16,7 +16,7 @@ var _ = Context("Handler", func() {
 	Context("NewHandler", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewHandler(new(FakeCore))).Should(Not(BeNil()))
+			Expect(NewHandler(new(coreFakes.FakeCore))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {

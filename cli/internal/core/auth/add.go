@@ -3,8 +3,8 @@ package auth
 import (
 	"context"
 
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node"
 )
 
 // Adder exposes the "auth add" sub command
@@ -19,15 +19,15 @@ type Adder interface {
 
 // newAdder returns an initialized "auth add" sub command
 func newAdder(
-	nodeProvider nodeprovider.NodeProvider,
+	core node.OpNode,
 ) Adder {
 	return _adder{
-		nodeProvider: nodeProvider,
+		core: core,
 	}
 }
 
 type _adder struct {
-	nodeProvider nodeprovider.NodeProvider
+	core node.OpNode
 }
 
 func (ivkr _adder) Add(
@@ -36,12 +36,7 @@ func (ivkr _adder) Add(
 	username string,
 	password string,
 ) error {
-	nodeHandle, err := ivkr.nodeProvider.CreateNodeIfNotExists()
-	if nil != err {
-		return err
-	}
-
-	return nodeHandle.APIClient().AddAuth(
+	return ivkr.core.AddAuth(
 		ctx,
 		model.AddAuthReq{
 			Resources: resources,

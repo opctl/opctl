@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/datadir"
-	"github.com/opctl/opctl/cli/internal/model"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
 )
 
 var _ = Context("listNodes", func() {
@@ -58,7 +58,7 @@ var _ = Context("listNodes", func() {
 			/* arrange */
 			listenAddress := "127.0.0.1:42224"
 			nodeHandle, _ := newNodeHandle(listenAddress)
-			expectedNodes := []model.NodeHandle{
+			expectedNodes := []nodeprovider.NodeHandle{
 				nodeHandle,
 			}
 

@@ -8,19 +8,19 @@ import (
 	"net/http/httptest"
 	"time"
 
-	"github.com/golang-interfaces/github.com-gorilla-websocket"
+	iwebsocket "github.com/golang-interfaces/github.com-gorilla-websocket"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
-	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
+	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 )
 
 var _ = Context("Handler", func() {
 	Context("NewHandler", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewHandler(new(FakeCore))).Should(Not(BeNil()))
+			Expect(NewHandler(new(nodeFakes.FakeOpNode))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {
@@ -32,7 +32,7 @@ var _ = Context("Handler", func() {
 				fakeUpgrader.UpgradeReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _handler{
-					core:     new(FakeCore),
+					core:     new(nodeFakes.FakeOpNode),
 					upgrader: fakeUpgrader,
 				}
 
@@ -57,7 +57,7 @@ var _ = Context("Handler", func() {
 
 					/* arrange */
 					objectUnderTest := _handler{
-						core: new(FakeCore),
+						core: new(nodeFakes.FakeOpNode),
 					}
 
 					invalidSince := "notValidTime"
@@ -89,7 +89,7 @@ var _ = Context("Handler", func() {
 				It("should call core.GetEventStream w/ expected args", func() {
 
 					/* arrange */
-					fakeCore := new(FakeCore)
+					fakeCore := new(nodeFakes.FakeOpNode)
 					eventChannel := make(chan model.Event)
 					// close eventChannel to trigger immediate return
 					close(eventChannel)
@@ -133,7 +133,7 @@ var _ = Context("Handler", func() {
 			It("should call core.GetEventStream w/ expected args", func() {
 
 				/* arrange */
-				fakeCore := new(FakeCore)
+				fakeCore := new(nodeFakes.FakeOpNode)
 				eventChannel := make(chan model.Event)
 				// close eventChannel to trigger immediate return
 				close(eventChannel)

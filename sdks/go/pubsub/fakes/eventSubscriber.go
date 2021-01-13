@@ -10,7 +10,7 @@ import (
 )
 
 type FakeEventSubscriber struct {
-	SubscribeStub        func(context.Context, model.EventFilter) (<-chan model.Event, <-chan error)
+	SubscribeStub        func(context.Context, model.EventFilter) (<-chan model.Event, error)
 	subscribeMutex       sync.RWMutex
 	subscribeArgsForCall []struct {
 		arg1 context.Context
@@ -18,17 +18,17 @@ type FakeEventSubscriber struct {
 	}
 	subscribeReturns struct {
 		result1 <-chan model.Event
-		result2 <-chan error
+		result2 error
 	}
 	subscribeReturnsOnCall map[int]struct {
 		result1 <-chan model.Event
-		result2 <-chan error
+		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeEventSubscriber) Subscribe(arg1 context.Context, arg2 model.EventFilter) (<-chan model.Event, <-chan error) {
+func (fake *FakeEventSubscriber) Subscribe(arg1 context.Context, arg2 model.EventFilter) (<-chan model.Event, error) {
 	fake.subscribeMutex.Lock()
 	ret, specificReturn := fake.subscribeReturnsOnCall[len(fake.subscribeArgsForCall)]
 	fake.subscribeArgsForCall = append(fake.subscribeArgsForCall, struct {
@@ -53,7 +53,7 @@ func (fake *FakeEventSubscriber) SubscribeCallCount() int {
 	return len(fake.subscribeArgsForCall)
 }
 
-func (fake *FakeEventSubscriber) SubscribeCalls(stub func(context.Context, model.EventFilter) (<-chan model.Event, <-chan error)) {
+func (fake *FakeEventSubscriber) SubscribeCalls(stub func(context.Context, model.EventFilter) (<-chan model.Event, error)) {
 	fake.subscribeMutex.Lock()
 	defer fake.subscribeMutex.Unlock()
 	fake.SubscribeStub = stub
@@ -66,29 +66,29 @@ func (fake *FakeEventSubscriber) SubscribeArgsForCall(i int) (context.Context, m
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeEventSubscriber) SubscribeReturns(result1 <-chan model.Event, result2 <-chan error) {
+func (fake *FakeEventSubscriber) SubscribeReturns(result1 <-chan model.Event, result2 error) {
 	fake.subscribeMutex.Lock()
 	defer fake.subscribeMutex.Unlock()
 	fake.SubscribeStub = nil
 	fake.subscribeReturns = struct {
 		result1 <-chan model.Event
-		result2 <-chan error
+		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeEventSubscriber) SubscribeReturnsOnCall(i int, result1 <-chan model.Event, result2 <-chan error) {
+func (fake *FakeEventSubscriber) SubscribeReturnsOnCall(i int, result1 <-chan model.Event, result2 error) {
 	fake.subscribeMutex.Lock()
 	defer fake.subscribeMutex.Unlock()
 	fake.SubscribeStub = nil
 	if fake.subscribeReturnsOnCall == nil {
 		fake.subscribeReturnsOnCall = make(map[int]struct {
 			result1 <-chan model.Event
-			result2 <-chan error
+			result2 error
 		})
 	}
 	fake.subscribeReturnsOnCall[i] = struct {
 		result1 <-chan model.Event
-		result2 <-chan error
+		result2 error
 	}{result1, result2}
 }
 

@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/opctl/opctl/cli/internal/model"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
 )
 
 func newNodeHandle(
 	listenAddress string,
-) (model.NodeHandle, error) {
+) (nodeprovider.NodeHandle, error) {
 	apiBaseURL, err := url.Parse(fmt.Sprintf("http://%s/api", listenAddress))
 	if nil != err {
 		return nil, err
@@ -25,7 +25,7 @@ type _nodeHandle struct {
 	apiBaseURL url.URL
 }
 
-func (nh _nodeHandle) APIClient() client.Client {
+func (nh _nodeHandle) APIClient() *client.APIClient {
 	apiClient := client.New(
 		nh.apiBaseURL,
 		&client.Opts{

@@ -5,14 +5,14 @@ import (
 	"sync"
 
 	"github.com/opctl/opctl/cli/internal/core/node/creater"
-	"github.com/opctl/opctl/cli/internal/model"
+	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 )
 
 type FakeCreater struct {
-	CreateStub        func(model.NodeCreateOpts) error
+	CreateStub        func(local.NodeCreateOpts) error
 	createMutex       sync.RWMutex
 	createArgsForCall []struct {
-		arg1 model.NodeCreateOpts
+		arg1 local.NodeCreateOpts
 	}
 	createReturns struct {
 		result1 error
@@ -24,11 +24,11 @@ type FakeCreater struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeCreater) Create(arg1 model.NodeCreateOpts) error {
+func (fake *FakeCreater) Create(arg1 local.NodeCreateOpts) error {
 	fake.createMutex.Lock()
 	ret, specificReturn := fake.createReturnsOnCall[len(fake.createArgsForCall)]
 	fake.createArgsForCall = append(fake.createArgsForCall, struct {
-		arg1 model.NodeCreateOpts
+		arg1 local.NodeCreateOpts
 	}{arg1})
 	fake.recordInvocation("Create", []interface{}{arg1})
 	fake.createMutex.Unlock()
@@ -48,13 +48,13 @@ func (fake *FakeCreater) CreateCallCount() int {
 	return len(fake.createArgsForCall)
 }
 
-func (fake *FakeCreater) CreateCalls(stub func(model.NodeCreateOpts) error) {
+func (fake *FakeCreater) CreateCalls(stub func(local.NodeCreateOpts) error) {
 	fake.createMutex.Lock()
 	defer fake.createMutex.Unlock()
 	fake.CreateStub = stub
 }
 
-func (fake *FakeCreater) CreateArgsForCall(i int) model.NodeCreateOpts {
+func (fake *FakeCreater) CreateArgsForCall(i int) local.NodeCreateOpts {
 	fake.createMutex.RLock()
 	defer fake.createMutex.RUnlock()
 	argsForCall := fake.createArgsForCall[i]

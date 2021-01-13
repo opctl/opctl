@@ -3,14 +3,15 @@ package client
 import (
 	"context"
 	"errors"
-	"github.com/golang-interfaces/github.com-gorilla-websocket"
+	"net/url"
+	"strings"
+	"time"
+
+	iwebsocket "github.com/golang-interfaces/github.com-gorilla-websocket"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
-	"net/url"
-	"strings"
-	"time"
 )
 
 var _ = Context("GetEventStream", func() {
@@ -47,7 +48,7 @@ var _ = Context("GetEventStream", func() {
 		//error to trigger immediate retur
 		fakeWSDialer.DialReturns(nil, nil, errors.New("dummyError"))
 
-		objectUnderTest := client{
+		objectUnderTest := APIClient{
 			wsDialer: fakeWSDialer,
 		}
 

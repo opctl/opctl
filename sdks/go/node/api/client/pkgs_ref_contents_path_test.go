@@ -3,16 +3,17 @@ package client
 import (
 	"context"
 	"errors"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"strings"
+
 	"github.com/golang-interfaces/ihttp"
 	"github.com/jfbus/httprs"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"strings"
 )
 
 var _ = Context("GetData", func() {
@@ -59,7 +60,7 @@ var _ = Context("GetData", func() {
 			nil,
 		)
 
-		objectUnderTest := client{
+		objectUnderTest := APIClient{
 			httpClient: fakeHttpClient,
 		}
 
@@ -91,7 +92,7 @@ var _ = Context("GetData", func() {
 			fakeHttpClient := new(ihttp.FakeClient)
 			fakeHttpClient.DoReturns(httpResp, nil)
 
-			objectUnderTest := client{
+			objectUnderTest := APIClient{
 				httpClient: fakeHttpClient,
 			}
 
@@ -120,7 +121,7 @@ var _ = Context("GetData", func() {
 				fakeHttpClient := new(ihttp.FakeClient)
 				fakeHttpClient.DoReturns(httpResp, nil)
 
-				objectUnderTest := client{
+				objectUnderTest := APIClient{
 					httpClient: fakeHttpClient,
 				}
 
@@ -147,7 +148,7 @@ var _ = Context("GetData", func() {
 				fakeHttpClient := new(ihttp.FakeClient)
 				fakeHttpClient.DoReturns(httpResp, nil)
 
-				objectUnderTest := client{
+				objectUnderTest := APIClient{
 					httpClient: fakeHttpClient,
 				}
 
@@ -175,7 +176,7 @@ var _ = Context("GetData", func() {
 				fakeHttpClient := new(ihttp.FakeClient)
 				fakeHttpClient.DoReturns(httpResp, nil)
 
-				objectUnderTest := client{
+				objectUnderTest := APIClient{
 					httpClient: fakeHttpClient,
 				}
 
@@ -204,7 +205,7 @@ var _ = Context("GetData", func() {
 				fakeHttpClient := new(ihttp.FakeClient)
 				fakeHttpClient.DoReturns(httpResp, nil)
 
-				objectUnderTest := client{
+				objectUnderTest := APIClient{
 					httpClient: fakeHttpClient,
 				}
 

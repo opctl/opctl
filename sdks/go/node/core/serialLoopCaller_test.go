@@ -31,9 +31,9 @@ var _ = Context("serialLoopCaller", func() {
 				fakeCaller := new(FakeCaller)
 
 				objectUnderTest := _serialLoopCaller{
-					caller:                fakeCaller,
-					pubSub:                new(FakePubSub),
-					uniqueStringFactory:   new(uniquestringFakes.FakeUniqueStringFactory),
+					caller:              fakeCaller,
+					pubSub:              new(FakePubSub),
+					uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
 				}
 
 				/* act */
@@ -66,9 +66,9 @@ var _ = Context("serialLoopCaller", func() {
 				fakeCaller := new(FakeCaller)
 
 				objectUnderTest := _serialLoopCaller{
-					caller:                fakeCaller,
-					pubSub:                new(FakePubSub),
-					uniqueStringFactory:   new(uniquestringFakes.FakeUniqueStringFactory),
+					caller:              fakeCaller,
+					pubSub:              new(FakePubSub),
+					uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
 				}
 
 				/* act */
@@ -118,7 +118,7 @@ var _ = Context("serialLoopCaller", func() {
 
 				fakePubSub := new(FakePubSub)
 				eventChannel := make(chan model.Event, 100)
-				fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
+				fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, error) {
 					eventChannel <- model.Event{
 						CallEnded: &model.CallEnded{
 							Call: model.Call{
@@ -130,16 +130,16 @@ var _ = Context("serialLoopCaller", func() {
 						},
 					}
 
-					return eventChannel, make(chan error)
+					return eventChannel, nil
 				}
 
 				fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
 				fakeUniqueStringFactory.ConstructReturns(callID, nil)
 
 				objectUnderTest := _serialLoopCaller{
-					caller:                fakeCaller,
-					pubSub:                fakePubSub,
-					uniqueStringFactory:   fakeUniqueStringFactory,
+					caller:              fakeCaller,
+					pubSub:              fakePubSub,
+					uniqueStringFactory: fakeUniqueStringFactory,
 				}
 
 				/* act */

@@ -1,21 +1,21 @@
 package events
 
 import (
-	streamFakes "github.com/opctl/opctl/sdks/go/node/api/handler/events/stream/fakes"
-	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	streamFakes "github.com/opctl/opctl/sdks/go/node/api/handler/events/stream/fakes"
+	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 )
 
 var _ = Context("Handler", func() {
 	Context("NewHandler", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewHandler(new(FakeCore))).Should(Not(BeNil()))
+			Expect(NewHandler(new(nodeFakes.FakeOpNode))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {

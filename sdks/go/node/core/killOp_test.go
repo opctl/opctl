@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -27,12 +28,13 @@ var _ = Context("core", func() {
 
 			fakePubSub := new(FakePubSub)
 
-			objectUnderTest := _core{
+			objectUnderTest := core{
 				pubSub: fakePubSub,
 			}
 
 			/* act */
 			objectUnderTest.KillOp(
+				context.Background(),
 				providedReq,
 			)
 

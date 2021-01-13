@@ -2,10 +2,11 @@ package core
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
+
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/data/fs"
 	"github.com/opctl/opctl/sdks/go/data/git"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 // Resolve attempts to resolve data via local filesystem or git
@@ -15,7 +16,7 @@ import (
 //  - ErrDataProviderAuthentication on authentication failure
 //  - ErrDataProviderAuthorization on authorization failure
 //  - ErrDataRefResolution on resolution failure
-func (cr _core) ResolveData(
+func (cr core) ResolveData(
 	ctx context.Context,
 	dataRef string,
 	pullCreds *model.Creds,

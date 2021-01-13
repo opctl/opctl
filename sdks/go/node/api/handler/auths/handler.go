@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/opctl/opctl/sdks/go/internal/urlpath"
+	"github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/auths/adds"
-	"github.com/opctl/opctl/sdks/go/node/core"
 )
 
 //counterfeiter:generate -o fakes/handler.go . Handler
@@ -20,7 +20,7 @@ type Handler interface {
 
 // NewHandler returns an initialized Handler instance
 func NewHandler(
-	core core.Core,
+	core node.OpNode,
 ) Handler {
 	return _handler{
 		addsHandler: adds.NewHandler(core),

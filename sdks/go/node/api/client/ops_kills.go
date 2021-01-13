@@ -5,14 +5,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
 	"io/ioutil"
 	"net/http"
 	"path"
+
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
-func (c client) KillOp(
+func (c APIClient) KillOp(
 	ctx context.Context,
 	req model.KillOpReq,
 ) error {
@@ -22,7 +23,7 @@ func (c client) KillOp(
 		return err
 	}
 
-	reqURL := c.baseUrl
+	reqURL := c.baseURL
 	reqURL.Path = path.Join(reqURL.Path, api.URLOps_Kills)
 
 	httpReq, err := http.NewRequest(

@@ -5,11 +5,11 @@ package contents
 import (
 	"net/http"
 
-	"github.com/golang-interfaces/encoding-ijson"
+	ijson "github.com/golang-interfaces/encoding-ijson"
 	"github.com/opctl/opctl/sdks/go/internal/urlpath"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/pkgs/ref/contents/path"
-	"github.com/opctl/opctl/sdks/go/node/core"
 )
 
 // Handler deprecated
@@ -24,7 +24,7 @@ type Handler interface {
 
 // NewHandler returns an initialized Handler instance
 func NewHandler(
-	core core.Core,
+	core node.OpNode,
 ) Handler {
 	return _handler{
 		core:        core,
@@ -34,7 +34,7 @@ func NewHandler(
 }
 
 type _handler struct {
-	core        core.Core
+	core        node.OpNode
 	json        ijson.IJSON
 	pathHandler path.Handler
 }

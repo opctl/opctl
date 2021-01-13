@@ -6,10 +6,8 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	modelFakes "github.com/opctl/opctl/cli/internal/model/fakes"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
-	clientFakes "github.com/opctl/opctl/sdks/go/node/api/client/fakes"
+	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 )
 
 var _ = Context("Killer", func() {
@@ -17,10 +15,10 @@ var _ = Context("Killer", func() {
 		It("Returns errors from node creation", func() {
 			/* arrange */
 			expectedError := errors.New("expected")
-			fakeNodeProvider := new(nodeprovider.Fake)
-			fakeNodeProvider.CreateNodeIfNotExistsReturns(nil, expectedError)
 
-			objectUnderTest := newKiller(fakeNodeProvider)
+			fakeCore := new(nodeFakes.FakeOpNode)
+
+			objectUnderTest := newKiller(fakeCore)
 
 			/* act */
 			err := objectUnderTest.Kill(context.Background(), "opID")
@@ -30,13 +28,6 @@ var _ = Context("Killer", func() {
 		})
 		It("should call apiClient.Invoke w/ expected args", func() {
 			/* arrange */
-			fakeAPIClient := new(clientFakes.FakeClient)
-			fakeNodeHandle := new(modelFakes.FakeNodeHandle)
-			fakeNodeHandle.APIClientReturns(fakeAPIClient)
-
-			fakeNodeProvider := new(nodeprovider.Fake)
-			fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
-
 			providedCtx := context.TODO()
 
 			expectedCtx := providedCtx
@@ -45,15 +36,17 @@ var _ = Context("Killer", func() {
 				RootCallID: "dummyOpID",
 			}
 
+			fakeCore := new(nodeFakes.FakeOpNode)
+
 			objectUnderTest := _killer{
-				nodeProvider: fakeNodeProvider,
+				core: fakeCore,
 			}
 
 			/* act */
 			err := objectUnderTest.Kill(expectedCtx, expectedReq.OpID)
 
 			/* assert */
-			actualCtx, actualReq := fakeAPIClient.KillOpArgsForCall(0)
+			actualCtx, actualReq := fakeCore.KillOpArgsForCall(0)
 			Expect(err).To(BeNil())
 			Expect(actualCtx).To(Equal(expectedCtx))
 			Expect(actualReq).To(BeEquivalentTo(expectedReq))
@@ -61,18 +54,12 @@ var _ = Context("Killer", func() {
 		Context("apiClient.Invoke errors", func() {
 			It("should return expected error", func() {
 				/* arrange */
-				fakeAPIClient := new(clientFakes.FakeClient)
 				expectedError := errors.New("dummyError")
-				fakeAPIClient.KillOpReturns(expectedError)
-
-				fakeNodeHandle := new(modelFakes.FakeNodeHandle)
-				fakeNodeHandle.APIClientReturns(fakeAPIClient)
-
-				fakeNodeProvider := new(nodeprovider.Fake)
-				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+				fakeCore := new(nodeFakes.FakeOpNode)
+				fakeCore.KillOpReturns(expectedError)
 
 				objectUnderTest := _killer{
-					nodeProvider: fakeNodeProvider,
+					core: fakeCore,
 				}
 
 				/* act */

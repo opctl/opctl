@@ -1,14 +1,16 @@
 package core
 
 import (
+	"context"
 	"time"
 
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
-func (this _core) AddAuth(
+func (this core) AddAuth(
+	ctx context.Context,
 	req model.AddAuthReq,
-) {
+) error {
 	// killing an op is async
 	this.pubSub.Publish(
 		model.Event{
@@ -21,4 +23,5 @@ func (this _core) AddAuth(
 			Timestamp: time.Now().UTC(),
 		},
 	)
+	return nil
 }

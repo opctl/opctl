@@ -1,9 +1,10 @@
 package core
 
 import (
+	"context"
 	"os"
 	"path/filepath"
-	"context"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -18,7 +19,7 @@ var _ = Context("core", func() {
 			// some public repo that's relatively small
 			providedOpRef := "github.com/opspec-pkgs/_.op.create#3.3.1"
 
-			objectUnderTest := _core{
+			objectUnderTest := core{
 				dataCachePath: dataCachePath,
 			}
 

@@ -6,22 +6,22 @@ import (
 	"context"
 
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api/client"
+	"github.com/opctl/opctl/sdks/go/node"
 )
 
 // New returns a data provider which sources pkgs from a node
 func New(
-	apiClient client.Client,
+	core node.OpNode,
 	pullCreds *model.Creds,
 ) model.DataProvider {
 	return _node{
-		apiClient: apiClient,
+		core:      core,
 		pullCreds: pullCreds,
 	}
 }
 
 type _node struct {
-	apiClient client.Client
+	core      node.OpNode
 	pullCreds *model.Creds
 }
 
@@ -31,7 +31,7 @@ func (np _node) TryResolve(
 ) (model.DataHandle, error) {
 
 	// ensure resolvable by listing contents w/out err
-	if _, err := np.apiClient.ListDescendants(
+	if _, err := np.core.ListDescendants(
 		ctx,
 		model.ListDescendantsReq{
 			PkgRef:    dataRef,
@@ -41,5 +41,5 @@ func (np _node) TryResolve(
 		return nil, err
 	}
 
-	return newHandle(np.apiClient, dataRef, np.pullCreds), nil
+	return newHandle(np.core, dataRef, np.pullCreds), nil
 }

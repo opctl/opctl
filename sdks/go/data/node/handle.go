@@ -4,19 +4,26 @@ import (
 	"context"
 
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api/client"
+	"github.com/opctl/opctl/sdks/go/node"
 )
 
 func newHandle(
-	client client.Client,
+	core node.OpNode,
 	dataRef string,
 	pullCreds *model.Creds,
 ) model.DataHandle {
 	return handle{
-		client:    client,
+		core:      core,
 		dataRef:   dataRef,
 		pullCreds: pullCreds,
 	}
+}
+
+// handle allows interacting w/ data sourced from an opspec node
+type handle struct {
+	core      node.OpNode
+	dataRef   string
+	pullCreds *model.Creds
 }
 
 func (nh handle) GetContent(
@@ -26,7 +33,7 @@ func (nh handle) GetContent(
 	model.ReadSeekCloser,
 	error,
 ) {
-	return nh.client.GetData(
+	return nh.core.GetData(
 		ctx,
 		model.GetDataReq{
 			ContentPath: contentPath,
@@ -36,20 +43,13 @@ func (nh handle) GetContent(
 	)
 }
 
-// handle allows interacting w/ data sourced from an opspec node
-type handle struct {
-	client    client.Client
-	dataRef   string
-	pullCreds *model.Creds
-}
-
 func (nh handle) ListDescendants(
 	ctx context.Context,
 ) (
 	[]*model.DirEntry,
 	error,
 ) {
-	return nh.client.ListDescendants(
+	return nh.core.ListDescendants(
 		ctx,
 		model.ListDescendantsReq{
 			PkgRef:    nh.dataRef,
@@ -58,7 +58,7 @@ func (nh handle) ListDescendants(
 	)
 }
 
-func (hn handle) Path() *string {
+func (handle) Path() *string {
 	return nil
 }
 

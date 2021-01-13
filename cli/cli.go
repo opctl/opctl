@@ -11,10 +11,8 @@ import (
 	mow "github.com/jawher/mow.cli"
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	corePkg "github.com/opctl/opctl/cli/internal/core"
-	"github.com/opctl/opctl/cli/internal/model"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
-	localNodeProvider "github.com/opctl/opctl/cli/internal/nodeprovider/local"
-	op "github.com/opctl/opctl/sdks/go/opspec"
+	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
+	"github.com/opctl/opctl/sdks/go/opspec"
 )
 
 //counterfeiter:generate -o internal/fakes/cli.go . cli
@@ -24,8 +22,8 @@ type cli interface {
 
 // newCorer allows swapping out corePkg.New for unit tests
 type newCorer func(
-	cliOutput clioutput.CliOutput,
-	nodeProvider nodeprovider.NodeProvider,
+	clioutput.CliOutput,
+	local.NodeCreateOpts,
 ) corePkg.Core
 
 func newCli(
@@ -70,7 +68,7 @@ func newCli(
 			Value:  "127.0.0.1:42224",
 		},
 	)
-	nodeCreateOpts := model.NodeCreateOpts{
+	nodeCreateOpts := local.NodeCreateOpts{
 		ContainerRuntime: *containerRuntime,
 		DataDir:          *dataDir,
 		ListenAddress:    *listenAddress,
@@ -78,7 +76,7 @@ func newCli(
 
 	core := newCorer(
 		cliOutput,
-		localNodeProvider.New(nodeCreateOpts),
+		nodeCreateOpts,
 	)
 
 	exitWith := func(successMessage string, err error) {
@@ -106,21 +104,17 @@ func newCli(
 	}
 
 	cli.Command("auth", "Manage auth for OCI image registries", func(authCmd *mow.Cmd) {
+		authCmd.Command("add", "Add auth for an OCI image registry", func(addCmd *mow.Cmd) {
+			addCmd.Spec = "RESOURCES [ -u=<username> ] [ -p=<password> ]"
 
-		authCmd.Command(
-			"add", "Add auth for an OCI image registry",
-			func(addCmd *mow.Cmd) {
-				addCmd.Spec = "RESOURCES [ -u=<username> ] [ -p=<password> ]"
+			resources := addCmd.StringArg("RESOURCES", "", "Resources this auth applies to in the form of a host or host/path.")
+			username := addCmd.StringOpt("u username", "", "Username")
+			password := addCmd.StringOpt("p password", "", "Password")
 
-				resources := addCmd.StringArg("RESOURCES", "", "Resources this auth applies to in the form of a host or host/path.")
-				username := addCmd.StringOpt("u username", "", "Username")
-				password := addCmd.StringOpt("p password", "", "Password")
-
-				addCmd.Action = func() {
-					exitWith("", core.Auth().Add(context.TODO(), *resources, *username, *password))
-				}
-			})
-
+			addCmd.Action = func() {
+				exitWith("", core.Auth().Add(context.TODO(), *resources, *username, *password))
+			}
+		})
 	})
 
 	cli.Command("events", "Stream events", func(eventsCmd *mow.Cmd) {
@@ -129,18 +123,16 @@ func newCli(
 		}
 	})
 
-	cli.Command(
-		"ls", "List operations (only valid ops will be listed)", func(lsCmd *mow.Cmd) {
-			const dirRefArgName = "DIR_REF"
-			lsCmd.Spec = fmt.Sprintf("[%v]", dirRefArgName)
-			dirRef := lsCmd.StringArg(dirRefArgName, op.DotOpspecDirName, "Reference to dir ops will be listed from")
-			lsCmd.Action = func() {
-				exitWith("", core.Ls(context.TODO(), *dirRef))
-			}
-		})
+	cli.Command("ls", "List operations (only valid ops will be listed)", func(lsCmd *mow.Cmd) {
+		const dirRefArgName = "DIR_REF"
+		lsCmd.Spec = fmt.Sprintf("[%v]", dirRefArgName)
+		dirRef := lsCmd.StringArg(dirRefArgName, opspec.DotOpspecDirName, "Reference to dir ops will be listed from")
+		lsCmd.Action = func() {
+			exitWith("", core.Ls(context.TODO(), *dirRef))
+		}
+	})
 
 	cli.Command("node", "Manage nodes", func(nodeCmd *mow.Cmd) {
-
 		nodeCmd.Command("create", "Creates a node", func(createCmd *mow.Cmd) {
 			createCmd.Action = func() {
 				exitWith("", core.Node().Create(nodeCreateOpts))
@@ -155,31 +147,26 @@ func newCli(
 	})
 
 	cli.Command("op", "Manage ops", func(opCmd *mow.Cmd) {
+		opCmd.Command("create", "Create an op", func(createCmd *mow.Cmd) {
+			path := createCmd.StringOpt("path", opspec.DotOpspecDirName, "Path the op will be created at")
+			description := createCmd.StringOpt("d description", "", "Op description")
+			name := createCmd.StringArg("NAME", "", "Op name")
 
-		opCmd.Command(
-			"create", "Create an op",
-			func(createCmd *mow.Cmd) {
-				path := createCmd.StringOpt("path", op.DotOpspecDirName, "Path the op will be created at")
-				description := createCmd.StringOpt("d description", "", "Op description")
-				name := createCmd.StringArg("NAME", "", "Op name")
+			createCmd.Action = func() {
+				exitWith("", core.Op().Create(*path, *description, *name))
+			}
+		})
 
-				createCmd.Action = func() {
-					exitWith("", core.Op().Create(*path, *description, *name))
-				}
-			})
+		opCmd.Command("install", "Install an op", func(installCmd *mow.Cmd) {
+			path := installCmd.StringOpt("path", opspec.DotOpspecDirName, "Path the op will be installed at")
+			opRef := installCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
+			username := installCmd.StringOpt("u username", "", "Username used to auth w/ the pkg source")
+			password := installCmd.StringOpt("p password", "", "Password used to auth w/ the pkg source")
 
-		opCmd.Command(
-			"install", "Install an op",
-			func(installCmd *mow.Cmd) {
-				path := installCmd.StringOpt("path", op.DotOpspecDirName, "Path the op will be installed at")
-				opRef := installCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
-				username := installCmd.StringOpt("u username", "", "Username used to auth w/ the pkg source")
-				password := installCmd.StringOpt("p password", "", "Password used to auth w/ the pkg source")
-
-				installCmd.Action = func() {
-					exitWith("", core.Op().Install(context.TODO(), *path, *opRef, *username, *password))
-				}
-			})
+			installCmd.Action = func() {
+				exitWith("", core.Op().Install(context.TODO(), *path, *opRef, *username, *password))
+			}
+		})
 
 		opCmd.Command("kill", "Kill an op", func(killCmd *mow.Cmd) {
 			opID := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
@@ -189,25 +176,22 @@ func newCli(
 			}
 		})
 
-		opCmd.Command(
-			"validate", "Validate an op",
-			func(validateCmd *mow.Cmd) {
-				opRef := validateCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
+		opCmd.Command("validate", "Validate an op", func(validateCmd *mow.Cmd) {
+			opRef := validateCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
-				validateCmd.Action = func() {
-					exitWith(core.Op().Validate(context.TODO(), *opRef))
-				}
-			})
-
+			validateCmd.Action = func() {
+				exitWith(core.Op().Validate(context.TODO(), *opRef))
+			}
+		})
 	})
 
 	cli.Command("run", "Start and wait on an op", func(runCmd *mow.Cmd) {
 		args := runCmd.StringsOpt("a", []string{}, "Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`")
-		argFile := runCmd.StringOpt("arg-file", filepath.Join(op.DotOpspecDirName, "args.yml"), "Read in a file of args in yml format")
+		argFile := runCmd.StringOpt("arg-file", filepath.Join(opspec.DotOpspecDirName, "args.yml"), "Read in a file of args in yml format")
 		opRef := runCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
 		runCmd.Action = func() {
-			exitWith("", core.Run(context.TODO(), *opRef, &model.RunOpts{Args: *args, ArgFile: *argFile}))
+			exitWith("", core.Run(context.TODO(), *opRef, &corePkg.RunOpts{Args: *args, ArgFile: *argFile}))
 		}
 	})
 
@@ -229,5 +213,4 @@ func newCli(
 	})
 
 	return cli
-
 }

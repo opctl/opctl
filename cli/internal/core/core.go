@@ -6,7 +6,8 @@ import (
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	"github.com/opctl/opctl/cli/internal/lazylocalnode"
+	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 )
 
 // Core exposes all cli commands
@@ -25,23 +26,27 @@ type Core interface {
 // New returns initialized cli core
 func New(
 	cliOutput clioutput.CliOutput,
-	nodeProvider nodeprovider.NodeProvider,
+	nodeProviderOpts local.NodeCreateOpts,
 ) Core {
 	cliParamSatisfier := cliparamsatisfier.New(cliOutput)
 
+	nodeProvider := local.New(nodeProviderOpts)
+
+	core := lazylocalnode.New(nodeProvider)
+
 	dataResolver := dataresolver.New(
 		cliParamSatisfier,
-		nodeProvider,
+		core,
 	)
 
 	return _core{
 		Auther: newAuther(
 			dataResolver,
-			nodeProvider,
+			core,
 		),
 		Eventser: newEventser(
 			cliOutput,
-			nodeProvider,
+			core,
 		),
 		Lser: newLser(
 			cliOutput,
@@ -50,18 +55,18 @@ func New(
 		Noder: newNoder(nodeProvider),
 		Oper: newOper(
 			dataResolver,
-			nodeProvider,
+			core,
 		),
 		Runer: newRuner(
 			cliOutput,
 			cliParamSatisfier,
 			dataResolver,
-			nodeProvider,
+			core,
 		),
 		SelfUpdater: newSelfUpdater(nodeProvider),
 		UIer: newUIer(
 			dataResolver,
-			nodeProvider,
+			core,
 		),
 	}
 }

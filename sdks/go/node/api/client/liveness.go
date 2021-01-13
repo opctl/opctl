@@ -9,13 +9,13 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
-func (c client) Liveness(
+func (c APIClient) Liveness(
 	ctx context.Context,
 ) error {
 
 	httpReq, err := http.NewRequest(
 		"GET",
-		c.baseUrl.String()+api.URLLiveness,
+		c.baseURL.String()+api.URLLiveness,
 		nil,
 	)
 	if nil != err {

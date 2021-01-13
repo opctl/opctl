@@ -8,12 +8,12 @@ import (
 	"net/http/httptest"
 	"strings"
 
-	"github.com/golang-interfaces/encoding-ijson"
+	ijson "github.com/golang-interfaces/encoding-ijson"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
-	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
+	coreFakes "github.com/opctl/opctl/sdks/go/node/core/fakes"
 )
 
 var _ = Context("Handler", func() {
@@ -24,7 +24,7 @@ var _ = Context("Handler", func() {
 			// error to trigger immediate return
 			fakeDataHandle.ListDescendantsReturns(nil, errors.New("dummyError"))
 
-			fakeCore := new(FakeCore)
+			fakeCore := new(coreFakes.FakeCore)
 			fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 			objectUnderTest := _handler{
@@ -56,7 +56,7 @@ var _ = Context("Handler", func() {
 				// error to trigger immediate return
 				fakeDataHandle.ListDescendantsReturns(nil, errors.New(expectedBody))
 
-				fakeCore := new(FakeCore)
+				fakeCore := new(coreFakes.FakeCore)
 				fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 				objectUnderTest := _handler{
@@ -89,7 +89,7 @@ var _ = Context("Handler", func() {
 					/* arrange */
 					expectedBody := "dummyErrorMsg"
 
-					fakeCore := new(FakeCore)
+					fakeCore := new(coreFakes.FakeCore)
 
 					fakeJSON := new(ijson.Fake)
 					fakeJSON.NewEncoderReturns(json.NewEncoder(errWriter{Msg: expectedBody}))
@@ -124,7 +124,7 @@ var _ = Context("Handler", func() {
 				It("should return expected result", func() {
 					/* arrange */
 
-					fakeCore := new(FakeCore)
+					fakeCore := new(coreFakes.FakeCore)
 
 					fakeHandle := new(modelFakes.FakeDataHandle)
 					contentsList := []*model.DirEntry{
