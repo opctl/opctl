@@ -12,11 +12,12 @@ import (
 
 var _ = Context("Killer", func() {
 	Context("Invoke", func() {
-		It("Returns errors from node creation", func() {
+		It("Returns errors from node killing", func() {
 			/* arrange */
 			expectedError := errors.New("expected")
 
 			fakeCore := new(nodeFakes.FakeOpNode)
+			fakeCore.KillOpReturns(expectedError)
 
 			objectUnderTest := newKiller(fakeCore)
 
