@@ -2,17 +2,18 @@ package node
 
 import (
 	"context"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	clientFakes "github.com/opctl/opctl/sdks/go/node/api/client/fakes"
+	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 )
 
 var _ = Context("handle", func() {
 
 	Context("GetContent", func() {
 
-		It("should call client.GetData w/ expected args", func() {
+		It("should call core.GetData w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.TODO()
 			providedContentPath := "dummyContentPath"
@@ -20,10 +21,10 @@ var _ = Context("handle", func() {
 			dataRef := "dummyDataRef"
 			pullCreds := &model.Creds{Username: "dummyUsername", Password: "dummyPassword"}
 
-			fakeClient := new(clientFakes.FakeClient)
+			fakeCore := new(nodeFakes.FakeOpNode)
 
 			objectUnderTest := handle{
-				client:    fakeClient,
+				core:      fakeCore,
 				dataRef:   dataRef,
 				pullCreds: pullCreds,
 			}
@@ -33,7 +34,7 @@ var _ = Context("handle", func() {
 
 			/* assert */
 			actualCtx,
-				actualReq := fakeClient.GetDataArgsForCall(0)
+				actualReq := fakeCore.GetDataArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualReq).To(Equal(model.GetDataReq{
@@ -45,17 +46,17 @@ var _ = Context("handle", func() {
 	})
 
 	Context("ListDescendants", func() {
-		It("should call client.ListDescendants w/ expected args", func() {
+		It("should call core.ListDescendants w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.TODO()
 
 			dataRef := "dummyDataRef"
 			pullCreds := &model.Creds{Username: "dummyUsername", Password: "dummyPassword"}
 
-			fakeClient := new(clientFakes.FakeClient)
+			fakeCore := new(nodeFakes.FakeOpNode)
 
 			objectUnderTest := handle{
-				client:    fakeClient,
+				core:      fakeCore,
 				dataRef:   dataRef,
 				pullCreds: pullCreds,
 			}
@@ -65,7 +66,7 @@ var _ = Context("handle", func() {
 
 			/* assert */
 			actualCtx,
-				actualReq := fakeClient.ListDescendantsArgsForCall(0)
+				actualReq := fakeCore.ListDescendantsArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualReq).To(Equal(model.ListDescendantsReq{
@@ -80,10 +81,10 @@ var _ = Context("handle", func() {
 			/* arrange */
 			dataRef := "dummyDataRef"
 
-			fakeClient := new(clientFakes.FakeClient)
+			fakeCore := new(nodeFakes.FakeOpNode)
 
 			objectUnderTest := handle{
-				client:  fakeClient,
+				core:    fakeCore,
 				dataRef: dataRef,
 			}
 

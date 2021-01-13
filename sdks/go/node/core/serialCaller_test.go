@@ -47,7 +47,7 @@ var _ = Context("serialCaller", func() {
 
 			fakePubSub := new(FakePubSub)
 			eventChannel := make(chan model.Event, 100)
-			fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
+			fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, error) {
 				for index := range providedCallSpecSerialCalls {
 					eventChannel <- model.Event{
 						CallEnded: &model.CallEnded{
@@ -57,7 +57,7 @@ var _ = Context("serialCaller", func() {
 						},
 					}
 				}
-				return eventChannel, make(chan error)
+				return eventChannel, nil
 			}
 
 			fakeCaller := new(FakeCaller)
@@ -123,7 +123,7 @@ var _ = Context("serialCaller", func() {
 				expectedErrorMessage := "expectedErrorMessage"
 				fakePubSub := new(FakePubSub)
 				eventChannel := make(chan model.Event, 100)
-				fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
+				fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, error) {
 					for range providedCallSpecSerialCalls {
 						eventChannel <- model.Event{
 							CallEnded: &model.CallEnded{
@@ -137,7 +137,7 @@ var _ = Context("serialCaller", func() {
 						}
 					}
 
-					return eventChannel, make(chan error)
+					return eventChannel, nil
 				}
 
 				fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
@@ -189,7 +189,7 @@ var _ = Context("serialCaller", func() {
 
 					fakePubSub := new(FakePubSub)
 					eventChannel := make(chan model.Event, 100)
-					fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
+					fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, error) {
 						for index := range providedCallSpecSerialCalls {
 							eventChannel <- model.Event{
 								CallEnded: &model.CallEnded{
@@ -200,7 +200,7 @@ var _ = Context("serialCaller", func() {
 							}
 						}
 
-						return eventChannel, make(chan error)
+						return eventChannel, nil
 					}
 
 					fakeCaller := new(FakeCaller)
@@ -273,7 +273,7 @@ var _ = Context("serialCaller", func() {
 
 					fakePubSub := new(FakePubSub)
 					eventChannel := make(chan model.Event, 100)
-					fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
+					fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, error) {
 						for index := range providedCallSpecSerialCalls {
 							eventChannel <- model.Event{
 								CallEnded: &model.CallEnded{
@@ -286,7 +286,7 @@ var _ = Context("serialCaller", func() {
 							}
 						}
 
-						return eventChannel, make(chan error)
+						return eventChannel, nil
 					}
 
 					fakeCaller := new(FakeCaller)

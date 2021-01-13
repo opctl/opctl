@@ -1,22 +1,23 @@
 package ops
 
 import (
-	killsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/ops/kills/fakes"
-	startsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/ops/starts/fakes"
-	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 
+	killsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/ops/kills/fakes"
+	startsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/ops/starts/fakes"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 )
 
 var _ = Context("Handler", func() {
 	Context("NewHandler", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewHandler(new(FakeCore))).Should(Not(BeNil()))
+			Expect(NewHandler(new(nodeFakes.FakeOpNode))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {

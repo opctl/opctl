@@ -14,7 +14,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
-	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
+	coreFakes "github.com/opctl/opctl/sdks/go/node/core/fakes"
 )
 
 var _ = Context("Handler", func() {
@@ -27,7 +27,7 @@ var _ = Context("Handler", func() {
 			// error to trigger immediate return
 			fakeDataHandle.GetContentReturns(nil, errors.New("dummyError"))
 
-			fakeCore := new(FakeCore)
+			fakeCore := new(coreFakes.FakeCore)
 			fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 			objectUnderTest := _handler{
@@ -62,7 +62,7 @@ var _ = Context("Handler", func() {
 				fakeDataHandle := new(modelFakes.FakeDataHandle)
 				fakeDataHandle.GetContentReturns(nil, errors.New(expectedBody))
 
-				fakeCore := new(FakeCore)
+				fakeCore := new(coreFakes.FakeCore)
 				fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 				objectUnderTest := _handler{
@@ -105,7 +105,7 @@ var _ = Context("Handler", func() {
 				fakeDataHandle := new(modelFakes.FakeDataHandle)
 				fakeDataHandle.GetContentReturns(expectedReadSeeker, nil)
 
-				fakeCore := new(FakeCore)
+				fakeCore := new(coreFakes.FakeCore)
 				fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 				fakeHTTP := new(ihttp.Fake)

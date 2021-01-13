@@ -10,12 +10,33 @@ import (
 )
 
 type FakeCore struct {
-	AddAuthStub        func(model.AddAuthReq)
+	AddAuthStub        func(context.Context, model.AddAuthReq) error
 	addAuthMutex       sync.RWMutex
 	addAuthArgsForCall []struct {
-		arg1 model.AddAuthReq
+		arg1 context.Context
+		arg2 model.AddAuthReq
 	}
-	GetEventStreamStub        func(context.Context, *model.GetEventStreamReq) (<-chan model.Event, <-chan error)
+	addAuthReturns struct {
+		result1 error
+	}
+	addAuthReturnsOnCall map[int]struct {
+		result1 error
+	}
+	GetDataStub        func(context.Context, model.GetDataReq) (model.ReadSeekCloser, error)
+	getDataMutex       sync.RWMutex
+	getDataArgsForCall []struct {
+		arg1 context.Context
+		arg2 model.GetDataReq
+	}
+	getDataReturns struct {
+		result1 model.ReadSeekCloser
+		result2 error
+	}
+	getDataReturnsOnCall map[int]struct {
+		result1 model.ReadSeekCloser
+		result2 error
+	}
+	GetEventStreamStub        func(context.Context, *model.GetEventStreamReq) (<-chan model.Event, error)
 	getEventStreamMutex       sync.RWMutex
 	getEventStreamArgsForCall []struct {
 		arg1 context.Context
@@ -23,16 +44,37 @@ type FakeCore struct {
 	}
 	getEventStreamReturns struct {
 		result1 <-chan model.Event
-		result2 <-chan error
+		result2 error
 	}
 	getEventStreamReturnsOnCall map[int]struct {
 		result1 <-chan model.Event
-		result2 <-chan error
+		result2 error
 	}
-	KillOpStub        func(model.KillOpReq)
+	KillOpStub        func(context.Context, model.KillOpReq) error
 	killOpMutex       sync.RWMutex
 	killOpArgsForCall []struct {
-		arg1 model.KillOpReq
+		arg1 context.Context
+		arg2 model.KillOpReq
+	}
+	killOpReturns struct {
+		result1 error
+	}
+	killOpReturnsOnCall map[int]struct {
+		result1 error
+	}
+	ListDescendantsStub        func(context.Context, model.ListDescendantsReq) ([]*model.DirEntry, error)
+	listDescendantsMutex       sync.RWMutex
+	listDescendantsArgsForCall []struct {
+		arg1 context.Context
+		arg2 model.ListDescendantsReq
+	}
+	listDescendantsReturns struct {
+		result1 []*model.DirEntry
+		result2 error
+	}
+	listDescendantsReturnsOnCall map[int]struct {
+		result1 []*model.DirEntry
+		result2 error
 	}
 	ResolveDataStub        func(context.Context, string, *model.Creds) (model.DataHandle, error)
 	resolveDataMutex       sync.RWMutex
@@ -67,16 +109,23 @@ type FakeCore struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeCore) AddAuth(arg1 model.AddAuthReq) {
+func (fake *FakeCore) AddAuth(arg1 context.Context, arg2 model.AddAuthReq) error {
 	fake.addAuthMutex.Lock()
+	ret, specificReturn := fake.addAuthReturnsOnCall[len(fake.addAuthArgsForCall)]
 	fake.addAuthArgsForCall = append(fake.addAuthArgsForCall, struct {
-		arg1 model.AddAuthReq
-	}{arg1})
-	fake.recordInvocation("AddAuth", []interface{}{arg1})
+		arg1 context.Context
+		arg2 model.AddAuthReq
+	}{arg1, arg2})
+	fake.recordInvocation("AddAuth", []interface{}{arg1, arg2})
 	fake.addAuthMutex.Unlock()
 	if fake.AddAuthStub != nil {
-		fake.AddAuthStub(arg1)
+		return fake.AddAuthStub(arg1, arg2)
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.addAuthReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeCore) AddAuthCallCount() int {
@@ -85,20 +134,107 @@ func (fake *FakeCore) AddAuthCallCount() int {
 	return len(fake.addAuthArgsForCall)
 }
 
-func (fake *FakeCore) AddAuthCalls(stub func(model.AddAuthReq)) {
+func (fake *FakeCore) AddAuthCalls(stub func(context.Context, model.AddAuthReq) error) {
 	fake.addAuthMutex.Lock()
 	defer fake.addAuthMutex.Unlock()
 	fake.AddAuthStub = stub
 }
 
-func (fake *FakeCore) AddAuthArgsForCall(i int) model.AddAuthReq {
+func (fake *FakeCore) AddAuthArgsForCall(i int) (context.Context, model.AddAuthReq) {
 	fake.addAuthMutex.RLock()
 	defer fake.addAuthMutex.RUnlock()
 	argsForCall := fake.addAuthArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCore) GetEventStream(arg1 context.Context, arg2 *model.GetEventStreamReq) (<-chan model.Event, <-chan error) {
+func (fake *FakeCore) AddAuthReturns(result1 error) {
+	fake.addAuthMutex.Lock()
+	defer fake.addAuthMutex.Unlock()
+	fake.AddAuthStub = nil
+	fake.addAuthReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeCore) AddAuthReturnsOnCall(i int, result1 error) {
+	fake.addAuthMutex.Lock()
+	defer fake.addAuthMutex.Unlock()
+	fake.AddAuthStub = nil
+	if fake.addAuthReturnsOnCall == nil {
+		fake.addAuthReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.addAuthReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeCore) GetData(arg1 context.Context, arg2 model.GetDataReq) (model.ReadSeekCloser, error) {
+	fake.getDataMutex.Lock()
+	ret, specificReturn := fake.getDataReturnsOnCall[len(fake.getDataArgsForCall)]
+	fake.getDataArgsForCall = append(fake.getDataArgsForCall, struct {
+		arg1 context.Context
+		arg2 model.GetDataReq
+	}{arg1, arg2})
+	fake.recordInvocation("GetData", []interface{}{arg1, arg2})
+	fake.getDataMutex.Unlock()
+	if fake.GetDataStub != nil {
+		return fake.GetDataStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.getDataReturns
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeCore) GetDataCallCount() int {
+	fake.getDataMutex.RLock()
+	defer fake.getDataMutex.RUnlock()
+	return len(fake.getDataArgsForCall)
+}
+
+func (fake *FakeCore) GetDataCalls(stub func(context.Context, model.GetDataReq) (model.ReadSeekCloser, error)) {
+	fake.getDataMutex.Lock()
+	defer fake.getDataMutex.Unlock()
+	fake.GetDataStub = stub
+}
+
+func (fake *FakeCore) GetDataArgsForCall(i int) (context.Context, model.GetDataReq) {
+	fake.getDataMutex.RLock()
+	defer fake.getDataMutex.RUnlock()
+	argsForCall := fake.getDataArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeCore) GetDataReturns(result1 model.ReadSeekCloser, result2 error) {
+	fake.getDataMutex.Lock()
+	defer fake.getDataMutex.Unlock()
+	fake.GetDataStub = nil
+	fake.getDataReturns = struct {
+		result1 model.ReadSeekCloser
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeCore) GetDataReturnsOnCall(i int, result1 model.ReadSeekCloser, result2 error) {
+	fake.getDataMutex.Lock()
+	defer fake.getDataMutex.Unlock()
+	fake.GetDataStub = nil
+	if fake.getDataReturnsOnCall == nil {
+		fake.getDataReturnsOnCall = make(map[int]struct {
+			result1 model.ReadSeekCloser
+			result2 error
+		})
+	}
+	fake.getDataReturnsOnCall[i] = struct {
+		result1 model.ReadSeekCloser
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeCore) GetEventStream(arg1 context.Context, arg2 *model.GetEventStreamReq) (<-chan model.Event, error) {
 	fake.getEventStreamMutex.Lock()
 	ret, specificReturn := fake.getEventStreamReturnsOnCall[len(fake.getEventStreamArgsForCall)]
 	fake.getEventStreamArgsForCall = append(fake.getEventStreamArgsForCall, struct {
@@ -123,7 +259,7 @@ func (fake *FakeCore) GetEventStreamCallCount() int {
 	return len(fake.getEventStreamArgsForCall)
 }
 
-func (fake *FakeCore) GetEventStreamCalls(stub func(context.Context, *model.GetEventStreamReq) (<-chan model.Event, <-chan error)) {
+func (fake *FakeCore) GetEventStreamCalls(stub func(context.Context, *model.GetEventStreamReq) (<-chan model.Event, error)) {
 	fake.getEventStreamMutex.Lock()
 	defer fake.getEventStreamMutex.Unlock()
 	fake.GetEventStreamStub = stub
@@ -136,42 +272,49 @@ func (fake *FakeCore) GetEventStreamArgsForCall(i int) (context.Context, *model.
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCore) GetEventStreamReturns(result1 <-chan model.Event, result2 <-chan error) {
+func (fake *FakeCore) GetEventStreamReturns(result1 <-chan model.Event, result2 error) {
 	fake.getEventStreamMutex.Lock()
 	defer fake.getEventStreamMutex.Unlock()
 	fake.GetEventStreamStub = nil
 	fake.getEventStreamReturns = struct {
 		result1 <-chan model.Event
-		result2 <-chan error
+		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCore) GetEventStreamReturnsOnCall(i int, result1 <-chan model.Event, result2 <-chan error) {
+func (fake *FakeCore) GetEventStreamReturnsOnCall(i int, result1 <-chan model.Event, result2 error) {
 	fake.getEventStreamMutex.Lock()
 	defer fake.getEventStreamMutex.Unlock()
 	fake.GetEventStreamStub = nil
 	if fake.getEventStreamReturnsOnCall == nil {
 		fake.getEventStreamReturnsOnCall = make(map[int]struct {
 			result1 <-chan model.Event
-			result2 <-chan error
+			result2 error
 		})
 	}
 	fake.getEventStreamReturnsOnCall[i] = struct {
 		result1 <-chan model.Event
-		result2 <-chan error
+		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCore) KillOp(arg1 model.KillOpReq) {
+func (fake *FakeCore) KillOp(arg1 context.Context, arg2 model.KillOpReq) error {
 	fake.killOpMutex.Lock()
+	ret, specificReturn := fake.killOpReturnsOnCall[len(fake.killOpArgsForCall)]
 	fake.killOpArgsForCall = append(fake.killOpArgsForCall, struct {
-		arg1 model.KillOpReq
-	}{arg1})
-	fake.recordInvocation("KillOp", []interface{}{arg1})
+		arg1 context.Context
+		arg2 model.KillOpReq
+	}{arg1, arg2})
+	fake.recordInvocation("KillOp", []interface{}{arg1, arg2})
 	fake.killOpMutex.Unlock()
 	if fake.KillOpStub != nil {
-		fake.KillOpStub(arg1)
+		return fake.KillOpStub(arg1, arg2)
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.killOpReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeCore) KillOpCallCount() int {
@@ -180,17 +323,104 @@ func (fake *FakeCore) KillOpCallCount() int {
 	return len(fake.killOpArgsForCall)
 }
 
-func (fake *FakeCore) KillOpCalls(stub func(model.KillOpReq)) {
+func (fake *FakeCore) KillOpCalls(stub func(context.Context, model.KillOpReq) error) {
 	fake.killOpMutex.Lock()
 	defer fake.killOpMutex.Unlock()
 	fake.KillOpStub = stub
 }
 
-func (fake *FakeCore) KillOpArgsForCall(i int) model.KillOpReq {
+func (fake *FakeCore) KillOpArgsForCall(i int) (context.Context, model.KillOpReq) {
 	fake.killOpMutex.RLock()
 	defer fake.killOpMutex.RUnlock()
 	argsForCall := fake.killOpArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeCore) KillOpReturns(result1 error) {
+	fake.killOpMutex.Lock()
+	defer fake.killOpMutex.Unlock()
+	fake.KillOpStub = nil
+	fake.killOpReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeCore) KillOpReturnsOnCall(i int, result1 error) {
+	fake.killOpMutex.Lock()
+	defer fake.killOpMutex.Unlock()
+	fake.KillOpStub = nil
+	if fake.killOpReturnsOnCall == nil {
+		fake.killOpReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.killOpReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeCore) ListDescendants(arg1 context.Context, arg2 model.ListDescendantsReq) ([]*model.DirEntry, error) {
+	fake.listDescendantsMutex.Lock()
+	ret, specificReturn := fake.listDescendantsReturnsOnCall[len(fake.listDescendantsArgsForCall)]
+	fake.listDescendantsArgsForCall = append(fake.listDescendantsArgsForCall, struct {
+		arg1 context.Context
+		arg2 model.ListDescendantsReq
+	}{arg1, arg2})
+	fake.recordInvocation("ListDescendants", []interface{}{arg1, arg2})
+	fake.listDescendantsMutex.Unlock()
+	if fake.ListDescendantsStub != nil {
+		return fake.ListDescendantsStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.listDescendantsReturns
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeCore) ListDescendantsCallCount() int {
+	fake.listDescendantsMutex.RLock()
+	defer fake.listDescendantsMutex.RUnlock()
+	return len(fake.listDescendantsArgsForCall)
+}
+
+func (fake *FakeCore) ListDescendantsCalls(stub func(context.Context, model.ListDescendantsReq) ([]*model.DirEntry, error)) {
+	fake.listDescendantsMutex.Lock()
+	defer fake.listDescendantsMutex.Unlock()
+	fake.ListDescendantsStub = stub
+}
+
+func (fake *FakeCore) ListDescendantsArgsForCall(i int) (context.Context, model.ListDescendantsReq) {
+	fake.listDescendantsMutex.RLock()
+	defer fake.listDescendantsMutex.RUnlock()
+	argsForCall := fake.listDescendantsArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeCore) ListDescendantsReturns(result1 []*model.DirEntry, result2 error) {
+	fake.listDescendantsMutex.Lock()
+	defer fake.listDescendantsMutex.Unlock()
+	fake.ListDescendantsStub = nil
+	fake.listDescendantsReturns = struct {
+		result1 []*model.DirEntry
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeCore) ListDescendantsReturnsOnCall(i int, result1 []*model.DirEntry, result2 error) {
+	fake.listDescendantsMutex.Lock()
+	defer fake.listDescendantsMutex.Unlock()
+	fake.ListDescendantsStub = nil
+	if fake.listDescendantsReturnsOnCall == nil {
+		fake.listDescendantsReturnsOnCall = make(map[int]struct {
+			result1 []*model.DirEntry
+			result2 error
+		})
+	}
+	fake.listDescendantsReturnsOnCall[i] = struct {
+		result1 []*model.DirEntry
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeCore) ResolveData(arg1 context.Context, arg2 string, arg3 *model.Creds) (model.DataHandle, error) {
@@ -327,10 +557,14 @@ func (fake *FakeCore) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.addAuthMutex.RLock()
 	defer fake.addAuthMutex.RUnlock()
+	fake.getDataMutex.RLock()
+	defer fake.getDataMutex.RUnlock()
 	fake.getEventStreamMutex.RLock()
 	defer fake.getEventStreamMutex.RUnlock()
 	fake.killOpMutex.RLock()
 	defer fake.killOpMutex.RUnlock()
+	fake.listDescendantsMutex.RLock()
+	defer fake.listDescendantsMutex.RUnlock()
 	fake.resolveDataMutex.RLock()
 	defer fake.resolveDataMutex.RUnlock()
 	fake.startOpMutex.RLock()

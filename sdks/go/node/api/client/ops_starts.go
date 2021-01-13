@@ -14,7 +14,7 @@ import (
 )
 
 // StartOp starts an op & returns its root op id (ROId)
-func (c client) StartOp(
+func (c APIClient) StartOp(
 	ctx context.Context,
 	req model.StartOpReq,
 ) (string, error) {
@@ -24,7 +24,7 @@ func (c client) StartOp(
 		return "", err
 	}
 
-	reqURL := c.baseUrl
+	reqURL := c.baseURL
 	reqURL.Path = path.Join(reqURL.Path, api.URLOps_Starts)
 
 	httpReq, err := http.NewRequest(

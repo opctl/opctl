@@ -14,7 +14,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
-func (c client) ListDescendants(
+func (c APIClient) ListDescendants(
 	ctx context.Context,
 	req model.ListDescendantsReq,
 ) (
@@ -27,7 +27,7 @@ func (c client) ListDescendants(
 
 	httpReq, err := http.NewRequest(
 		"GET",
-		c.baseUrl.String()+path,
+		c.baseURL.String()+path,
 		nil,
 	)
 	if nil != err {

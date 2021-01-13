@@ -27,7 +27,7 @@ var _ = Context("core", func() {
 					},
 				}
 
-				objectUnderTest := _core{}
+				objectUnderTest := core{}
 
 				/* act */
 				_, actualErr := objectUnderTest.StartOp(
@@ -93,7 +93,7 @@ var _ = Context("core", func() {
 					fakeCaller := new(FakeCaller)
 					dataCachePath := os.TempDir()
 
-					objectUnderTest := _core{
+					objectUnderTest := core{
 						caller:              fakeCaller,
 						dataCachePath:       dataCachePath,
 						pubSub:              new(FakePubSub),

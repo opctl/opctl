@@ -1,11 +1,12 @@
 package local
 
 import (
-	"github.com/opctl/opctl/cli/internal/model"
 	"path/filepath"
+
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
 )
 
-func (np nodeProvider) ListNodes() ([]model.NodeHandle, error) {
+func (np nodeProvider) ListNodes() ([]nodeprovider.NodeHandle, error) {
 	pIDOfLockOwner := np.lockfile.PIdOfOwner(
 		filepath.Join(
 			np.dataDir.Path(),
@@ -18,10 +19,10 @@ func (np nodeProvider) ListNodes() ([]model.NodeHandle, error) {
 			return nil, err
 		}
 
-		return []model.NodeHandle{
+		return []nodeprovider.NodeHandle{
 			nodeHandle,
 		}, nil
 	}
 
-	return []model.NodeHandle{}, nil
+	return []nodeprovider.NodeHandle{}, nil
 }

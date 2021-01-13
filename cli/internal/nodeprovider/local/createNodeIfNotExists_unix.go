@@ -11,10 +11,10 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"github.com/opctl/opctl/cli/internal/model"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
 )
 
-func (np nodeProvider) CreateNodeIfNotExists() (model.NodeHandle, error) {
+func (np nodeProvider) CreateNodeIfNotExists() (nodeprovider.NodeHandle, error) {
 	nodes, err := np.ListNodes()
 	if nil != err {
 		return nil, err

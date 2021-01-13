@@ -9,7 +9,7 @@ import (
 
 	"github.com/golang-interfaces/ihttp"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/node"
 )
 
 // Handler deprecated
@@ -25,7 +25,7 @@ type Handler interface {
 
 // NewHandler returns an initialized Handler instance
 func NewHandler(
-	core core.Core,
+	core node.OpNode,
 ) Handler {
 	return _handler{
 		core: core,
@@ -34,7 +34,7 @@ func NewHandler(
 }
 
 type _handler struct {
-	core core.Core
+	core node.OpNode
 	http ihttp.IHTTP
 }
 

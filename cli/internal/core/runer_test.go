@@ -13,13 +13,10 @@ import (
 	clioutputFakes "github.com/opctl/opctl/cli/internal/clioutput/fakes"
 	cliparamsatisfierFakes "github.com/opctl/opctl/cli/internal/cliparamsatisfier/fakes"
 	dataresolver "github.com/opctl/opctl/cli/internal/dataresolver/fakes"
-	cliModel "github.com/opctl/opctl/cli/internal/model"
-	modelFakes "github.com/opctl/opctl/cli/internal/model/fakes"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/data/fs"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/model/fakes"
-	clientFakes "github.com/opctl/opctl/sdks/go/node/api/client/fakes"
+	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 )
 
 var fsDataProvider = fs.New("testdata")
@@ -61,7 +58,7 @@ var _ = Context("Runer", func() {
 			new(clioutputFakes.FakeCliOutput),
 			new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
 			new(dataresolver.FakeDataResolver),
-			new(nodeprovider.Fake),
+			new(nodeFakes.FakeOpNode),
 		)
 	})
 
@@ -77,11 +74,11 @@ var _ = Context("Runer", func() {
 			objectUnderTest := _runer{
 				dataResolver:      fakeDataResolver,
 				cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-				nodeProvider:      new(nodeprovider.Fake),
+				core:              new(nodeFakes.FakeOpNode),
 			}
 
 			/* act */
-			err := objectUnderTest.Run(context.TODO(), providedOpRef, &cliModel.RunOpts{})
+			err := objectUnderTest.Run(context.TODO(), providedOpRef, &RunOpts{})
 
 			/* assert */
 			Expect(err).To(MatchError(expected))
@@ -104,7 +101,7 @@ var _ = Context("Runer", func() {
 			}
 
 			/* act */
-			err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+			err := objectUnderTest.Run(context.TODO(), "", &RunOpts{})
 
 			/* assert */
 			Expect(err).To(MatchError(""))
@@ -126,7 +123,7 @@ var _ = Context("Runer", func() {
 				}
 
 				/* act */
-				err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+				err := objectUnderTest.Run(context.TODO(), "", &RunOpts{})
 
 				/* assert */
 				Expect(err).To(MatchError(expectedError))
@@ -146,7 +143,7 @@ var _ = Context("Runer", func() {
 				}
 
 				/* act */
-				err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+				err := objectUnderTest.Run(context.TODO(), "", &RunOpts{})
 
 				/* assert */
 				Expect(err).NotTo(BeNil())
@@ -166,7 +163,7 @@ var _ = Context("Runer", func() {
 				}
 
 				/* act */
-				err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{ArgFile: "argfile"})
+				err := objectUnderTest.Run(context.TODO(), "", &RunOpts{ArgFile: "argfile"})
 
 				/* assert */
 				Expect(err).To(MatchError(fmt.Errorf("unable to load arg file at '%v'; error was: %v", "argfile", expectedError)))
@@ -186,33 +183,12 @@ var _ = Context("Runer", func() {
 				}
 
 				/* act */
-				err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{ArgFile: "argfile"})
+				err := objectUnderTest.Run(context.TODO(), "", &RunOpts{ArgFile: "argfile"})
 
 				/* assert */
 				Expect(err).To(MatchError(expectedError))
 			})
-			It("create node failure", func() {
-				/* arrange */
-				expectedError := errors.New("expected")
-				dummyOpDataHandle := getDummyOpDataHandle()
-				fakeDataResolver := new(dataresolver.FakeDataResolver)
-				fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
-				fakeNodeProvider := new(nodeprovider.Fake)
-				fakeNodeProvider.CreateNodeIfNotExistsReturns(nil, expectedError)
-
-				objectUnderTest := _runer{
-					dataResolver:      fakeDataResolver,
-					cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-					nodeProvider:      fakeNodeProvider,
-				}
-
-				/* act */
-				err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
-
-				/* assert */
-				Expect(err).To(MatchError(expectedError))
-			})
-			It("should call nodeHandle.APIClient().StartOp w/ expected args", func() {
+			It("should call core.StartOp w/ expected args", func() {
 				/* arrange */
 				dummyOpDataHandle := getDummyOpDataHandle()
 
@@ -232,19 +208,12 @@ var _ = Context("Runer", func() {
 				fakeDataResolver := new(dataresolver.FakeDataResolver)
 				fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
-				// stub node provider
-				fakeAPIClient := new(clientFakes.FakeClient)
+				fakeCore := new(nodeFakes.FakeOpNode)
 
 				// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
 				eventChannel := make(chan model.Event)
 				close(eventChannel)
-				fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-
-				fakeNodeHandle := new(modelFakes.FakeNodeHandle)
-				fakeNodeHandle.APIClientReturns(fakeAPIClient)
-
-				fakeNodeProvider := new(nodeprovider.Fake)
-				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+				fakeCore.GetEventStreamReturns(eventChannel, nil)
 
 				fakeCliParamSatisfier := new(cliparamsatisfierFakes.FakeCLIParamSatisfier)
 				fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args, nil)
@@ -252,18 +221,18 @@ var _ = Context("Runer", func() {
 				objectUnderTest := _runer{
 					dataResolver:      fakeDataResolver,
 					cliParamSatisfier: fakeCliParamSatisfier,
-					nodeProvider:      fakeNodeProvider,
+					core:              fakeCore,
 				}
 
 				/* act */
-				objectUnderTest.Run(providedContext, "", &cliModel.RunOpts{})
+				objectUnderTest.Run(providedContext, "", &RunOpts{})
 
 				/* assert */
-				actualCtx, actualArgs := fakeAPIClient.StartOpArgsForCall(0)
+				actualCtx, actualArgs := fakeCore.StartOpArgsForCall(0)
 				Expect(actualCtx).To(Equal(expectedCtx))
 				Expect(actualArgs).To(Equal(expectedArgs))
 			})
-			Context("apiClient.StartOp errors", func() {
+			Context("core.StartOp errors", func() {
 				It("should return expected error", func() {
 					/* arrange */
 					returnedError := errors.New("dummyError")
@@ -273,31 +242,24 @@ var _ = Context("Runer", func() {
 					fakeDataResolver := new(dataresolver.FakeDataResolver)
 					fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
-					// stub node provider
-					fakeAPIClient := new(clientFakes.FakeClient)
-					fakeAPIClient.StartOpReturns("dummyCallID", returnedError)
-
-					fakeNodeHandle := new(modelFakes.FakeNodeHandle)
-					fakeNodeHandle.APIClientReturns(fakeAPIClient)
-
-					fakeNodeProvider := new(nodeprovider.Fake)
-					fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+					fakeCore := new(nodeFakes.FakeOpNode)
+					fakeCore.StartOpReturns("dummyCallID", returnedError)
 
 					objectUnderTest := _runer{
 						dataResolver:      fakeDataResolver,
 						cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-						nodeProvider:      fakeNodeProvider,
+						core:              fakeCore,
 					}
 
 					/* act */
-					err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+					err := objectUnderTest.Run(context.TODO(), "", &RunOpts{})
 
 					/* assert */
 					Expect(err).To(MatchError(returnedError))
 				})
 			})
-			Context("apiClient.StartOp doesn't error", func() {
-				It("should call nodeHandle.APIClient().GetEventStream w/ expected args", func() {
+			Context("core.StartOp doesn't error", func() {
+				It("should call core.GetEventStream w/ expected args", func() {
 					/* arrange */
 					providedCtx := context.Background()
 					rootCallIDReturnedFromStartOp := "dummyRootCallID"
@@ -314,32 +276,25 @@ var _ = Context("Runer", func() {
 					fakeDataResolver := new(dataresolver.FakeDataResolver)
 					fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
-					// stub node provider
-					fakeAPIClient := new(clientFakes.FakeClient)
-					fakeAPIClient.StartOpReturns(rootCallIDReturnedFromStartOp, nil)
-
-					fakeNodeHandle := new(modelFakes.FakeNodeHandle)
-					fakeNodeHandle.APIClientReturns(fakeAPIClient)
-
-					fakeNodeProvider := new(nodeprovider.Fake)
-					fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+					fakeCore := new(nodeFakes.FakeOpNode)
+					fakeCore.StartOpReturns(rootCallIDReturnedFromStartOp, nil)
 
 					eventChannel := make(chan model.Event)
 					close(eventChannel)
-					fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
+					fakeCore.GetEventStreamReturns(eventChannel, nil)
 
 					objectUnderTest := _runer{
 						dataResolver:      fakeDataResolver,
 						cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-						nodeProvider:      fakeNodeProvider,
+						core:              fakeCore,
 					}
 
 					/* act */
-					objectUnderTest.Run(providedCtx, "", &cliModel.RunOpts{})
+					objectUnderTest.Run(providedCtx, "", &RunOpts{})
 
 					/* assert */
 					actualCtx,
-						actualReq := fakeAPIClient.GetEventStreamArgsForCall(0)
+						actualReq := fakeCore.GetEventStreamArgsForCall(0)
 
 					// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
 					Expect(*actualReq.Filter.Since).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
@@ -349,7 +304,7 @@ var _ = Context("Runer", func() {
 					Expect(actualCtx).To(Equal(providedCtx))
 					Expect(actualReq).To(Equal(expectedReq))
 				})
-				Context("apiClient.GetEventStream errors", func() {
+				Context("core.GetEventStream errors", func() {
 					It("should return expected error", func() {
 						/* arrange */
 						returnedError := errors.New("dummyError")
@@ -359,23 +314,17 @@ var _ = Context("Runer", func() {
 						fakeDataResolver := new(dataresolver.FakeDataResolver)
 						fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
-						fakeAPIClient := new(clientFakes.FakeClient)
-						fakeAPIClient.GetEventStreamReturns(nil, returnedError)
-
-						fakeNodeHandle := new(modelFakes.FakeNodeHandle)
-						fakeNodeHandle.APIClientReturns(fakeAPIClient)
-
-						fakeNodeProvider := new(nodeprovider.Fake)
-						fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+						fakeCore := new(nodeFakes.FakeOpNode)
+						fakeCore.GetEventStreamReturns(nil, returnedError)
 
 						objectUnderTest := _runer{
 							dataResolver:      fakeDataResolver,
 							cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-							nodeProvider:      fakeNodeProvider,
+							core:              fakeCore,
 						}
 
 						/* act */
-						err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+						err := objectUnderTest.Run(context.TODO(), "", &RunOpts{})
 
 						/* assert */
 						Expect(err).To(MatchError(returnedError))
@@ -390,25 +339,19 @@ var _ = Context("Runer", func() {
 							fakeDataResolver := new(dataresolver.FakeDataResolver)
 							fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
-							fakeAPIClient := new(clientFakes.FakeClient)
+							fakeCore := new(nodeFakes.FakeOpNode)
 							eventChannel := make(chan model.Event)
 							close(eventChannel)
-							fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-
-							fakeNodeHandle := new(modelFakes.FakeNodeHandle)
-							fakeNodeHandle.APIClientReturns(fakeAPIClient)
-
-							fakeNodeProvider := new(nodeprovider.Fake)
-							fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+							fakeCore.GetEventStreamReturns(eventChannel, nil)
 
 							objectUnderTest := _runer{
 								dataResolver:      fakeDataResolver,
 								cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-								nodeProvider:      fakeNodeProvider,
+								core:              fakeCore,
 							}
 
 							/* act */
-							err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+							err := objectUnderTest.Run(context.TODO(), "", &RunOpts{})
 
 							/* assert */
 							Expect(err).To(MatchError("Event channel closed unexpectedly"))
@@ -436,28 +379,22 @@ var _ = Context("Runer", func() {
 										fakeDataResolver := new(dataresolver.FakeDataResolver)
 										fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
-										fakeAPIClient := new(clientFakes.FakeClient)
+										fakeCore := new(nodeFakes.FakeOpNode)
 										eventChannel := make(chan model.Event, 10)
 										eventChannel <- opEnded
 										defer close(eventChannel)
-										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEnded.CallEnded.Call.ID, nil)
-
-										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
-										fakeNodeHandle.APIClientReturns(fakeAPIClient)
-
-										fakeNodeProvider := new(nodeprovider.Fake)
-										fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+										fakeCore.GetEventStreamReturns(eventChannel, nil)
+										fakeCore.StartOpReturns(opEnded.CallEnded.Call.ID, nil)
 
 										objectUnderTest := _runer{
 											dataResolver:      fakeDataResolver,
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-											nodeProvider:      fakeNodeProvider,
+											core:              fakeCore,
 										}
 
 										/* act/assert */
-										err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+										err := objectUnderTest.Run(context.TODO(), "", &RunOpts{})
 										Expect(err).To(BeNil())
 									})
 								})
@@ -479,28 +416,22 @@ var _ = Context("Runer", func() {
 										fakeDataResolver := new(dataresolver.FakeDataResolver)
 										fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
-										fakeAPIClient := new(clientFakes.FakeClient)
+										fakeCore := new(nodeFakes.FakeOpNode)
 										eventChannel := make(chan model.Event, 10)
 										eventChannel <- opEnded
 										defer close(eventChannel)
-										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEnded.CallEnded.Call.ID, nil)
-
-										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
-										fakeNodeHandle.APIClientReturns(fakeAPIClient)
-
-										fakeNodeProvider := new(nodeprovider.Fake)
-										fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+										fakeCore.GetEventStreamReturns(eventChannel, nil)
+										fakeCore.StartOpReturns(opEnded.CallEnded.Call.ID, nil)
 
 										objectUnderTest := _runer{
 											dataResolver:      fakeDataResolver,
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-											nodeProvider:      fakeNodeProvider,
+											core:              fakeCore,
 										}
 
 										/* act/assert */
-										err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+										err := objectUnderTest.Run(context.TODO(), "", &RunOpts{})
 										Expect(err).To(MatchError(&RunError{ExitCode: 137}))
 									})
 
@@ -523,28 +454,22 @@ var _ = Context("Runer", func() {
 										fakeDataResolver := new(dataresolver.FakeDataResolver)
 										fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
-										fakeAPIClient := new(clientFakes.FakeClient)
+										fakeCore := new(nodeFakes.FakeOpNode)
 										eventChannel := make(chan model.Event, 10)
 										eventChannel <- opEnded
 										defer close(eventChannel)
-										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEnded.CallEnded.Call.ID, nil)
-
-										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
-										fakeNodeHandle.APIClientReturns(fakeAPIClient)
-
-										fakeNodeProvider := new(nodeprovider.Fake)
-										fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+										fakeCore.GetEventStreamReturns(eventChannel, nil)
+										fakeCore.StartOpReturns(opEnded.CallEnded.Call.ID, nil)
 
 										objectUnderTest := _runer{
 											dataResolver:      fakeDataResolver,
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-											nodeProvider:      fakeNodeProvider,
+											core:              fakeCore,
 										}
 
 										/* act/assert */
-										err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+										err := objectUnderTest.Run(context.TODO(), "", &RunOpts{})
 										Expect(err).To(MatchError(&RunError{ExitCode: 1}))
 									})
 								})
@@ -566,28 +491,22 @@ var _ = Context("Runer", func() {
 										fakeDataResolver := new(dataresolver.FakeDataResolver)
 										fakeDataResolver.ResolveReturns(dummyOpDataHandle, nil)
 
-										fakeAPIClient := new(clientFakes.FakeClient)
+										fakeCore := new(nodeFakes.FakeOpNode)
 										eventChannel := make(chan model.Event, 10)
 										eventChannel <- opEnded
 										defer close(eventChannel)
-										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeAPIClient.StartOpReturns(opEnded.CallEnded.Call.ID, nil)
-
-										fakeNodeHandle := new(modelFakes.FakeNodeHandle)
-										fakeNodeHandle.APIClientReturns(fakeAPIClient)
-
-										fakeNodeProvider := new(nodeprovider.Fake)
-										fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+										fakeCore.GetEventStreamReturns(eventChannel, nil)
+										fakeCore.StartOpReturns(opEnded.CallEnded.Call.ID, nil)
 
 										objectUnderTest := _runer{
 											dataResolver:      fakeDataResolver,
 											cliOutput:         new(clioutputFakes.FakeCliOutput),
 											cliParamSatisfier: new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-											nodeProvider:      fakeNodeProvider,
+											core:              fakeCore,
 										}
 
 										/* act/assert */
-										err := objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
+										err := objectUnderTest.Run(context.TODO(), "", &RunOpts{})
 										Expect(err).To(MatchError(&RunError{ExitCode: 1}))
 									})
 								})

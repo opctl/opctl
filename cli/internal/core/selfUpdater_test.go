@@ -6,7 +6,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	nodeproviderFakes "github.com/opctl/opctl/cli/internal/nodeprovider/fakes"
 	"github.com/opctl/opctl/cli/internal/updater"
 )
 
@@ -18,7 +18,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 				/* arrange */
 				providedReleaseChannel := "invalidChannel"
 
-				objectUnderTest := newSelfUpdater(new(nodeprovider.Fake))
+				objectUnderTest := newSelfUpdater(new(nodeproviderFakes.FakeNodeProvider))
 
 				/* act */
 				_, err := objectUnderTest.SelfUpdate(providedReleaseChannel)
@@ -95,7 +95,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 
 						objectUnderTest := _selfUpdateInvoker{
 							updater:      fakeUpdater,
-							nodeProvider: new(nodeprovider.Fake),
+							nodeProvider: new(nodeproviderFakes.FakeNodeProvider),
 						}
 
 						/* act */
@@ -130,7 +130,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 					Context("updater.ApplyUpdate doesn't error", func() {
 						It("should call nodeProvider.KillNodeIfExists", func() {
 							/* arrange */
-							fakeNodeProvider := new(nodeprovider.Fake)
+							fakeNodeProvider := new(nodeproviderFakes.FakeNodeProvider)
 
 							fakeUpdater := new(updater.Fake)
 							returnedUpdate := &updater.Update{Version: "dummyVersion"}
@@ -153,7 +153,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 								/* arrange */
 								returnedError := errors.New("dummyError")
 
-								fakeNodeProvider := new(nodeprovider.Fake)
+								fakeNodeProvider := new(nodeproviderFakes.FakeNodeProvider)
 								fakeNodeProvider.KillNodeIfExistsReturns(returnedError)
 
 								expectedExitMsg :=
@@ -185,7 +185,7 @@ var _ = Context("_selfUpdateInvoker", func() {
 
 								objectUnderTest := _selfUpdateInvoker{
 									updater:      fakeUpdater,
-									nodeProvider: new(nodeprovider.Fake),
+									nodeProvider: new(nodeproviderFakes.FakeNodeProvider),
 								}
 
 								/* act */

@@ -5,23 +5,22 @@ import (
 	"net/http/httptest"
 	"strings"
 
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	authsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/auths/fakes"
 	dataFakes "github.com/opctl/opctl/sdks/go/node/api/handler/data/fakes"
 	eventsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/events/fakes"
 	livenessFakes "github.com/opctl/opctl/sdks/go/node/api/handler/liveness/fakes"
 	opsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/ops/fakes"
 	pkgsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/pkgs/fakes"
-	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
-
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	coreFakes "github.com/opctl/opctl/sdks/go/node/core/fakes"
 )
 
 var _ = Context("Handler", func() {
 	Context("New", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(New(new(FakeCore))).Should(Not(BeNil()))
+			Expect(New(new(coreFakes.FakeCore))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {

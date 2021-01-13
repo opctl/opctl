@@ -8,17 +8,15 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	cliparamsatisfierFakes "github.com/opctl/opctl/cli/internal/cliparamsatisfier/fakes"
-	modelFakes "github.com/opctl/opctl/cli/internal/model/fakes"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
-	clientFakes "github.com/opctl/opctl/sdks/go/node/api/client/fakes"
+	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 )
 
 var _ = Context("dataResolver", func() {
 	It("Can be constructed", func() {
 		Expect(New(
 			new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-			new(nodeprovider.Fake),
+			new(nodeFakes.FakeOpNode),
 		)).NotTo(BeNil())
 	})
 	Context("Resolve", func() {
@@ -26,16 +24,10 @@ var _ = Context("dataResolver", func() {
 			Context("data.ErrDataProviderAuthorization", func() {
 				It("should call cliParamSatisfier.Satisfy w/ expected args", func() {
 					/* arrange */
-					fakeAPIClient := new(clientFakes.FakeClient)
+					fakeCore := new(nodeFakes.FakeOpNode)
 
-					fakeAPIClient.ListDescendantsReturnsOnCall(0, nil, model.ErrDataProviderAuthorization{})
-					fakeAPIClient.ListDescendantsReturnsOnCall(1, nil, errors.New(""))
-
-					fakeNodeHandle := new(modelFakes.FakeNodeHandle)
-					fakeNodeHandle.APIClientReturns(fakeAPIClient)
-
-					fakeNodeProvider := new(nodeprovider.Fake)
-					fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+					fakeCore.ListDescendantsReturnsOnCall(0, nil, model.ErrDataProviderAuthorization{})
+					fakeCore.ListDescendantsReturnsOnCall(1, nil, errors.New(""))
 
 					username := "dummyUsername"
 					password := "dummyPassword"
@@ -52,7 +44,7 @@ var _ = Context("dataResolver", func() {
 					objectUnderTest := _dataResolver{
 						cliParamSatisfier: fakeCliParamSatisfier,
 						os:                new(ios.Fake),
-						nodeProvider:      fakeNodeProvider,
+						core:              fakeCore,
 					}
 
 					/* act */
@@ -69,18 +61,12 @@ var _ = Context("dataResolver", func() {
 					providedDataRef := "dummyDataRef"
 
 					expectedErr := "expectedErr"
-					fakeAPIClient := new(clientFakes.FakeClient)
-					fakeAPIClient.ListDescendantsReturns(nil, errors.New(expectedErr))
-
-					fakeNodeHandle := new(modelFakes.FakeNodeHandle)
-					fakeNodeHandle.APIClientReturns(fakeAPIClient)
-
-					fakeNodeProvider := new(nodeprovider.Fake)
-					fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+					fakeCore := new(nodeFakes.FakeOpNode)
+					fakeCore.ListDescendantsReturns(nil, errors.New(expectedErr))
 
 					objectUnderTest := _dataResolver{
-						os:           new(ios.Fake),
-						nodeProvider: fakeNodeProvider,
+						os:   new(ios.Fake),
+						core: fakeCore,
 					}
 
 					/* act */
@@ -95,16 +81,11 @@ var _ = Context("dataResolver", func() {
 		Context("data.Resolve doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeAPIClient := new(clientFakes.FakeClient)
-				fakeNodeHandle := new(modelFakes.FakeNodeHandle)
-				fakeNodeHandle.APIClientReturns(fakeAPIClient)
-
-				fakeNodeProvider := new(nodeprovider.Fake)
-				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+				fakeCore := new(nodeFakes.FakeOpNode)
 
 				objectUnderTest := _dataResolver{
-					os:           new(ios.Fake),
-					nodeProvider: fakeNodeProvider,
+					os:   new(ios.Fake),
+					core: fakeCore,
 				}
 
 				/* act */

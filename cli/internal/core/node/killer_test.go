@@ -5,14 +5,14 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	"github.com/opctl/opctl/cli/internal/nodeprovider/fakes"
 )
 
 var _ = Context("Killer", func() {
 	Context("Kill", func() {
 		It("should call nodeProvider.Invoke w/ expected args", func() {
 			/* arrange */
-			fakeNodeProvider := new(nodeprovider.Fake)
+			fakeNodeProvider := new(fakes.FakeNodeProvider)
 
 			objectUnderTest := newKiller(fakeNodeProvider)
 
@@ -26,7 +26,7 @@ var _ = Context("Killer", func() {
 		Context("nodeProvider.Invoke errors", func() {
 			It("should return expected error", func() {
 				/* arrange */
-				fakeNodeProvider := new(nodeprovider.Fake)
+				fakeNodeProvider := new(fakes.FakeNodeProvider)
 				expectedError := errors.New("dummyError")
 				fakeNodeProvider.KillNodeIfExistsReturns(expectedError)
 

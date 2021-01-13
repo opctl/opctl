@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/node"
 )
 
 //counterfeiter:generate -o fakes/handler.go . Handler
@@ -20,7 +20,7 @@ type Handler interface {
 
 // NewHandler returns an initialized Handler instance
 func NewHandler(
-	core core.Core,
+	core node.OpNode,
 ) Handler {
 	return _handler{
 		core: core,
@@ -28,7 +28,7 @@ func NewHandler(
 }
 
 type _handler struct {
-	core core.Core
+	core node.OpNode
 }
 
 func (hdlr _handler) Handle(

@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -23,7 +24,7 @@ var _ = Context("core", func() {
 
 			fakePubSub := new(FakePubSub)
 
-			objectUnderTest := _core{
+			objectUnderTest := core{
 				pubSub: fakePubSub,
 			}
 

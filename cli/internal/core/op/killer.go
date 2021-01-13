@@ -3,8 +3,8 @@ package op
 import (
 	"context"
 
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node"
 )
 
 // Killer exposes the "op kill" sub command
@@ -16,26 +16,21 @@ type Killer interface {
 }
 
 // newKiller returns an initialized "op kill" sub command
-func newKiller(nodeProvider nodeprovider.NodeProvider) Killer {
+func newKiller(core node.OpNode) Killer {
 	return _killer{
-		nodeProvider: nodeProvider,
+		core: core,
 	}
 }
 
 type _killer struct {
-	nodeProvider nodeprovider.NodeProvider
+	core node.OpNode
 }
 
 func (ivkr _killer) Kill(
 	ctx context.Context,
 	opID string,
 ) error {
-	nodeHandle, err := ivkr.nodeProvider.CreateNodeIfNotExists()
-	if nil != err {
-		return err
-	}
-
-	return nodeHandle.APIClient().KillOp(
+	return ivkr.core.KillOp(
 		ctx,
 		model.KillOpReq{
 			OpID:       opID,

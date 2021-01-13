@@ -1,11 +1,12 @@
 package auths
 
 import (
-	addsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/auths/adds/fakes"
-	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
 	"net/http"
 	"net/http/httptest"
 	"strings"
+
+	addsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/auths/adds/fakes"
+	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -15,7 +16,7 @@ var _ = Context("Handler", func() {
 	Context("NewHandler", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewHandler(new(FakeCore))).Should(Not(BeNil()))
+			Expect(NewHandler(new(nodeFakes.FakeOpNode))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {

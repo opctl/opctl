@@ -13,18 +13,23 @@ import (
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
-	cliModel "github.com/opctl/opctl/cli/internal/model"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
+
+// RunOpts are options to run a given op through the CLI
+type RunOpts struct {
+	ArgFile string
+	Args    []string
+}
 
 // Runer exposes the "run" command
 type Runer interface {
 	Run(
 		ctx context.Context,
 		opRef string,
-		opts *cliModel.RunOpts,
+		opts *RunOpts,
 	) error
 }
 
@@ -33,13 +38,13 @@ func newRuner(
 	cliOutput clioutput.CliOutput,
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier,
 	dataResolver dataresolver.DataResolver,
-	nodeProvider nodeprovider.NodeProvider,
+	core node.OpNode,
 ) Runer {
 	return _runer{
 		cliOutput:         cliOutput,
 		cliParamSatisfier: cliParamSatisfier,
 		dataResolver:      dataResolver,
-		nodeProvider:      nodeProvider,
+		core:              core,
 	}
 }
 
@@ -47,13 +52,13 @@ type _runer struct {
 	dataResolver      dataresolver.DataResolver
 	cliOutput         clioutput.CliOutput
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier
-	nodeProvider      nodeprovider.NodeProvider
+	core              node.OpNode
 }
 
 func (ivkr _runer) Run(
 	ctx context.Context,
 	opRef string,
-	opts *cliModel.RunOpts,
+	opts *RunOpts,
 ) error {
 	startTime := time.Now().UTC()
 
@@ -120,13 +125,8 @@ func (ivkr _runer) Run(
 		syscall.SIGTERM,
 	)
 
-	nodeHandle, err := ivkr.nodeProvider.CreateNodeIfNotExists()
-	if nil != err {
-		return err
-	}
-
 	// start op
-	rootCallID, err := nodeHandle.APIClient().StartOp(
+	rootCallID, err := ivkr.core.StartOp(
 		ctx,
 		model.StartOpReq{
 			Args: argsMap,
@@ -140,7 +140,7 @@ func (ivkr _runer) Run(
 	}
 
 	// start event loop
-	eventChannel, err := nodeHandle.APIClient().GetEventStream(
+	eventChannel, err := ivkr.core.GetEventStream(
 		ctx,
 		&model.GetEventStreamReq{
 			Filter: model.EventFilter{
@@ -161,7 +161,7 @@ func (ivkr _runer) Run(
 				ivkr.cliOutput.Warning("Gracefully stopping... (signal Control-C again to force)")
 				aSigIntWasReceivedAlready = true
 
-				nodeHandle.APIClient().KillOp(
+				ivkr.core.KillOp(
 					ctx,
 					model.KillOpReq{
 						OpID:       rootCallID,
@@ -178,7 +178,7 @@ func (ivkr _runer) Run(
 		case <-sigTermChannel:
 			ivkr.cliOutput.Warning("Gracefully stopping...")
 
-			return nodeHandle.APIClient().KillOp(
+			return ivkr.core.KillOp(
 				ctx,
 				model.KillOpReq{
 					OpID:       rootCallID,

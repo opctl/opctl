@@ -6,7 +6,7 @@ import (
 	"context"
 
 	"github.com/opctl/opctl/cli/internal/datadir"
-	"github.com/opctl/opctl/cli/internal/model"
+	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 	"github.com/opctl/opctl/sdks/go/node/core"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker"
@@ -17,7 +17,7 @@ import (
 //counterfeiter:generate -o fakes/creater.go . Creater
 type Creater interface {
 	Create(
-		opts model.NodeCreateOpts,
+		opts local.NodeCreateOpts,
 	) error
 }
 
@@ -29,7 +29,7 @@ func New() Creater {
 type _creater struct{}
 
 func (ivkr _creater) Create(
-	opts model.NodeCreateOpts,
+	opts local.NodeCreateOpts,
 ) error {
 	dataDir, err := datadir.New(opts.DataDir)
 	if nil != err {

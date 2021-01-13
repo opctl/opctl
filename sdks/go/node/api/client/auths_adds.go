@@ -5,14 +5,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
 	"io/ioutil"
 	"net/http"
 	"path"
+
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
-func (c client) AddAuth(
+func (c APIClient) AddAuth(
 	ctx context.Context,
 	req model.AddAuthReq,
 ) error {
@@ -22,7 +23,7 @@ func (c client) AddAuth(
 		return err
 	}
 
-	reqURL := c.baseUrl
+	reqURL := c.baseURL
 	reqURL.Path = path.Join(reqURL.Path, api.URLAuths_Adds)
 
 	httpReq, err := http.NewRequest(

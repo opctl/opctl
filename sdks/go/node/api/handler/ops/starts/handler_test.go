@@ -2,19 +2,20 @@ package starts
 
 import (
 	"bytes"
+	"net/http"
+	"net/http/httptest"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/node/api"
-	. "github.com/opctl/opctl/sdks/go/node/core/fakes"
-	"net/http"
-	"net/http/httptest"
+	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 )
 
 var _ = Context("Handler", func() {
 	Context("NewHandler", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewHandler(new(FakeCore))).Should(Not(BeNil()))
+			Expect(NewHandler(new(nodeFakes.FakeOpNode))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {
@@ -23,7 +24,7 @@ var _ = Context("Handler", func() {
 
 				/* arrange */
 				objectUnderTest := _handler{
-					core: new(FakeCore),
+					core: new(nodeFakes.FakeOpNode),
 				}
 				providedHTTPResp := httptest.NewRecorder()
 

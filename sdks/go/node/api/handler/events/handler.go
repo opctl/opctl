@@ -3,10 +3,11 @@ package events
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
-	"github.com/opctl/opctl/sdks/go/internal/urlpath"
-	"github.com/opctl/opctl/sdks/go/node/api/handler/events/stream"
-	"github.com/opctl/opctl/sdks/go/node/core"
 	"net/http"
+
+	"github.com/opctl/opctl/sdks/go/internal/urlpath"
+	"github.com/opctl/opctl/sdks/go/node"
+	"github.com/opctl/opctl/sdks/go/node/api/handler/events/stream"
 )
 
 //counterfeiter:generate -o fakes/handler.go . Handler
@@ -19,7 +20,7 @@ type Handler interface {
 
 // NewHandler returns an initialized Handler instance
 func NewHandler(
-	core core.Core,
+	core node.OpNode,
 ) Handler {
 	return _handler{
 		streamHandler: stream.NewHandler(core),

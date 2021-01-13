@@ -4,16 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/jfbus/httprs"
-	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/jfbus/httprs"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
-func (c client) GetData(
+func (c APIClient) GetData(
 	ctx context.Context,
 	req model.GetDataReq,
 ) (
@@ -27,7 +28,7 @@ func (c client) GetData(
 
 	httpReq, err := http.NewRequest(
 		"GET",
-		c.baseUrl.String()+path,
+		c.baseURL.String()+path,
 		nil,
 	)
 	if nil != err {

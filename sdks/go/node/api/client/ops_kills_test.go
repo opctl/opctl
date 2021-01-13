@@ -4,14 +4,15 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+
 	"github.com/golang-interfaces/ihttp"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
-	"io/ioutil"
-	"net/http"
-	"net/url"
 )
 
 var _ = Context("KillOp", func() {
@@ -38,7 +39,7 @@ var _ = Context("KillOp", func() {
 		fakeHttpClient := new(ihttp.FakeClient)
 		fakeHttpClient.DoReturns(&http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte{}))}, nil)
 
-		objectUnderTest := client{
+		objectUnderTest := APIClient{
 			httpClient: fakeHttpClient,
 		}
 

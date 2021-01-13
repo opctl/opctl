@@ -18,52 +18,11 @@ import (
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
-//counterfeiter:generate -o fakes/core.go . Core
-type Core interface {
-	AddAuth(
-		req model.AddAuthReq,
-	)
-	GetEventStream(
-		ctx context.Context,
-		req *model.GetEventStreamReq,
-	) (
-		<-chan model.Event,
-		<-chan error,
-	)
-
-	KillOp(
-		req model.KillOpReq,
-	)
-
-	StartOp(
-		ctx context.Context,
-		req model.StartOpReq,
-	) (
-		callID string,
-		err error,
-	)
-
-	// Resolve attempts to resolve an op via local filesystem or git
-	// nil pullCreds will be ignored
-	//
-	// expected errs:
-	//  - ErrDataProviderAuthentication on authentication failure
-	//  - ErrDataProviderAuthorization on authorization failure
-	//  - ErrDataRefResolution on resolution failure
-	ResolveData(
-		ctx context.Context,
-		dataRef string,
-		pullCreds *model.Creds,
-	) (
-		model.DataHandle,
-		error,
-	)
-}
-
+// New returns a new LocalCore initialized with the given options
 func New(
 	containerRuntime containerruntime.ContainerRuntime,
 	dataDirPath string,
-) Core {
+) core {
 	eventDbPath := path.Join(dataDirPath, "dcg", "events")
 	err := os.MkdirAll(eventDbPath, 0700)
 	if nil != err {
@@ -133,7 +92,7 @@ func New(
 		}
 	}()
 
-	return _core{
+	return core{
 		caller:           caller,
 		containerRuntime: containerRuntime,
 		dataCachePath:    filepath.Join(dataDirPath, "ops"),
@@ -148,7 +107,8 @@ func New(
 	}
 }
 
-type _core struct {
+// core is an OpNode that supports running ops directly on the host
+type core struct {
 	caller              caller
 	containerRuntime    containerruntime.ContainerRuntime
 	dataCachePath       string
@@ -156,4 +116,84 @@ type _core struct {
 	pubSub              pubsub.PubSub
 	stateStore          stateStore
 	uniqueStringFactory uniquestring.UniqueStringFactory
+}
+
+//counterfeiter:generate -o fakes/core.go . Core
+
+// Core is an OpNode that supports running ops directly on the host
+type Core interface {
+	// AddAuth records authentication within the core
+	AddAuth(
+		ctx context.Context,
+		req model.AddAuthReq,
+	) error
+
+	GetEventStream(
+		ctx context.Context,
+		req *model.GetEventStreamReq,
+	) (
+		<-chan model.Event,
+		error,
+	)
+
+	// KillOp kills a running op
+	KillOp(
+		ctx context.Context,
+		req model.KillOpReq,
+	) (
+		err error,
+	)
+
+	// StartOp starts an op and returns the root call ID
+	StartOp(
+		ctx context.Context,
+		req model.StartOpReq,
+	) (
+		rootCallID string,
+		err error,
+	)
+
+	// GetData gets data
+	//
+	// expected errs:
+	//  - ErrDataProviderAuthentication on authentication failure
+	//  - ErrDataProviderAuthorization on authorization failure
+	//  - ErrDataRefResolution on resolution failure
+	GetData(
+		ctx context.Context,
+		req model.GetDataReq,
+	) (
+		model.ReadSeekCloser,
+		error,
+	)
+
+	// ListDescendants lists file system entries
+	//
+	// expected errs:
+	//  - ErrDataProviderAuthentication on authentication failure
+	//  - ErrDataProviderAuthorization on authorization failure
+	//  - ErrDataRefResolution on resolution failure
+	ListDescendants(
+		ctx context.Context,
+		req model.ListDescendantsReq,
+	) (
+		[]*model.DirEntry,
+		error,
+	)
+
+	// Resolve attempts to resolve data via local filesystem or git
+	// nil pullCreds will be ignored
+	//
+	// expected errs:
+	//  - ErrDataProviderAuthentication on authentication failure
+	//  - ErrDataProviderAuthorization on authorization failure
+	//  - ErrDataRefResolution on resolution failure
+	ResolveData(
+		ctx context.Context,
+		dataRef string,
+		pullCreds *model.Creds,
+	) (
+		model.DataHandle,
+		error,
+	)
 }

@@ -9,11 +9,11 @@ import (
 	"strings"
 
 	"github.com/opctl/opctl/cli/internal/dataresolver"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	"github.com/opctl/opctl/sdks/go/node"
 	"github.com/skratchdot/open-golang/open"
 )
 
-// Uier exposes the "ui" command
+// UIer exposes the "ui" command
 type UIer interface {
 	UI(
 		mountRef string,
@@ -23,27 +23,22 @@ type UIer interface {
 // newUIer returns an initialized "ui" command
 func newUIer(
 	dataResolver dataresolver.DataResolver,
-	nodeProvider nodeprovider.NodeProvider,
+	core node.OpNode,
 ) UIer {
 	return _uier{
 		dataResolver: dataResolver,
-		nodeProvider: nodeProvider,
+		core:         core,
 	}
 }
 
 type _uier struct {
 	dataResolver dataresolver.DataResolver
-	nodeProvider nodeprovider.NodeProvider
+	core         node.OpNode
 }
 
 func (ivkr _uier) UI(
 	mountRef string,
 ) error {
-
-	if _, err := ivkr.nodeProvider.CreateNodeIfNotExists(); err != nil {
-		return err
-	}
-
 	var resolvedMount string
 	var err error
 	if strings.HasPrefix(mountRef, ".") {
