@@ -13,6 +13,8 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/core"
 )
 
+// New returns an is an http server that wraps the given Core op runner with
+// an http API. APIClient provides an OpNode interface for interacting with it
 func New(
 	core core.Core,
 ) http.Handler {
