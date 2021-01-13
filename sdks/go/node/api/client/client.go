@@ -43,7 +43,8 @@ func New(
 	}
 }
 
-// APIClient is an OpNode that runs ops via a remote OpNode over http
+// APIClient is an OpNode that runs ops with a remote OpNode over a network
+// connection
 type APIClient struct {
 	baseURL    url.URL
 	httpClient ihttp.Client

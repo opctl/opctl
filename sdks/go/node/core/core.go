@@ -120,7 +120,7 @@ type core struct {
 
 //counterfeiter:generate -o fakes/core.go . Core
 
-// Core is an OpNode that supports running ops directly on the host
+// Core is an OpNode that supports running ops directly on the current machine
 type Core interface {
 	// AddAuth records authentication within the core
 	AddAuth(
