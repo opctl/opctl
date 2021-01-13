@@ -14,7 +14,7 @@ import (
 )
 
 // StartOp starts an op & returns its root op id (ROId)
-func (c APIClient) StartOp(
+func (c apiClient) StartOp(
 	ctx context.Context,
 	req model.StartOpReq,
 ) (string, error) {

@@ -60,7 +60,7 @@ var _ = Context("GetData", func() {
 			nil,
 		)
 
-		objectUnderTest := APIClient{
+		objectUnderTest := apiClient{
 			httpClient: fakeHttpClient,
 		}
 
@@ -92,7 +92,7 @@ var _ = Context("GetData", func() {
 			fakeHttpClient := new(ihttp.FakeClient)
 			fakeHttpClient.DoReturns(httpResp, nil)
 
-			objectUnderTest := APIClient{
+			objectUnderTest := apiClient{
 				httpClient: fakeHttpClient,
 			}
 
@@ -121,7 +121,7 @@ var _ = Context("GetData", func() {
 				fakeHttpClient := new(ihttp.FakeClient)
 				fakeHttpClient.DoReturns(httpResp, nil)
 
-				objectUnderTest := APIClient{
+				objectUnderTest := apiClient{
 					httpClient: fakeHttpClient,
 				}
 
@@ -148,7 +148,7 @@ var _ = Context("GetData", func() {
 				fakeHttpClient := new(ihttp.FakeClient)
 				fakeHttpClient.DoReturns(httpResp, nil)
 
-				objectUnderTest := APIClient{
+				objectUnderTest := apiClient{
 					httpClient: fakeHttpClient,
 				}
 
@@ -176,7 +176,7 @@ var _ = Context("GetData", func() {
 				fakeHttpClient := new(ihttp.FakeClient)
 				fakeHttpClient.DoReturns(httpResp, nil)
 
-				objectUnderTest := APIClient{
+				objectUnderTest := apiClient{
 					httpClient: fakeHttpClient,
 				}
 
@@ -205,7 +205,7 @@ var _ = Context("GetData", func() {
 				fakeHttpClient := new(ihttp.FakeClient)
 				fakeHttpClient.DoReturns(httpResp, nil)
 
-				objectUnderTest := APIClient{
+				objectUnderTest := apiClient{
 					httpClient: fakeHttpClient,
 				}
 

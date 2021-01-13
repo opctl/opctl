@@ -53,7 +53,7 @@ var _ = Context("StartOp", func() {
 			nil,
 		)
 
-		objectUnderTest := APIClient{
+		objectUnderTest := apiClient{
 			httpClient: fakeHTTPClient,
 		}
 

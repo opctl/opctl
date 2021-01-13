@@ -53,7 +53,7 @@ var _ = Context("ListDescendants", func() {
 			nil,
 		)
 
-		objectUnderTest := APIClient{
+		objectUnderTest := apiClient{
 			httpClient: fakeHttpClient,
 		}
 
@@ -82,7 +82,7 @@ var _ = Context("ListDescendants", func() {
 			fakeHttpClient := new(ihttp.FakeClient)
 			fakeHttpClient.DoReturns(httpResp, nil)
 
-			objectUnderTest := APIClient{
+			objectUnderTest := apiClient{
 				httpClient: fakeHttpClient,
 			}
 
@@ -111,7 +111,7 @@ var _ = Context("ListDescendants", func() {
 				fakeHttpClient := new(ihttp.FakeClient)
 				fakeHttpClient.DoReturns(httpResp, nil)
 
-				objectUnderTest := APIClient{
+				objectUnderTest := apiClient{
 					httpClient: fakeHttpClient,
 				}
 
@@ -138,7 +138,7 @@ var _ = Context("ListDescendants", func() {
 				fakeHttpClient := new(ihttp.FakeClient)
 				fakeHttpClient.DoReturns(httpResp, nil)
 
-				objectUnderTest := APIClient{
+				objectUnderTest := apiClient{
 					httpClient: fakeHttpClient,
 				}
 
@@ -166,7 +166,7 @@ var _ = Context("ListDescendants", func() {
 				fakeHttpClient := new(ihttp.FakeClient)
 				fakeHttpClient.DoReturns(httpResp, nil)
 
-				objectUnderTest := APIClient{
+				objectUnderTest := apiClient{
 					httpClient: fakeHttpClient,
 				}
 
@@ -195,7 +195,7 @@ var _ = Context("ListDescendants", func() {
 				fakeHttpClient := new(ihttp.FakeClient)
 				fakeHttpClient.DoReturns(httpResp, nil)
 
-				objectUnderTest := APIClient{
+				objectUnderTest := apiClient{
 					httpClient: fakeHttpClient,
 				}
 

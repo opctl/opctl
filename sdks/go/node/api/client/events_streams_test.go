@@ -48,7 +48,7 @@ var _ = Context("GetEventStream", func() {
 		//error to trigger immediate retur
 		fakeWSDialer.DialReturns(nil, nil, errors.New("dummyError"))
 
-		objectUnderTest := APIClient{
+		objectUnderTest := apiClient{
 			wsDialer: fakeWSDialer,
 		}
 

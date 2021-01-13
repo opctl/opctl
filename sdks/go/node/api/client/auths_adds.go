@@ -13,7 +13,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
-func (c APIClient) AddAuth(
+func (c apiClient) AddAuth(
 	ctx context.Context,
 	req model.AddAuthReq,
 ) error {

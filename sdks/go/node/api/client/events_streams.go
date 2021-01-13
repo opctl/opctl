@@ -10,7 +10,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
-func (c APIClient) GetEventStream(
+func (c apiClient) GetEventStream(
 	ctx context.Context,
 	req *model.GetEventStreamReq,
 ) (<-chan model.Event, error) {

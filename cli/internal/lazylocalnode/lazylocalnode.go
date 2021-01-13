@@ -6,14 +6,13 @@ import (
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node"
-	"github.com/opctl/opctl/sdks/go/node/api/client"
 )
 
 type lazyLocalNode struct {
 	nodeProvider nodeprovider.NodeProvider
 }
 
-// New returns a new core object that lazily ensures a new local node is started
+// New returns a new OpNode object that lazily ensures a new local node is started
 // before it tries to do stuff.
 func New(nodeProvider nodeprovider.NodeProvider) node.OpNode {
 	return &lazyLocalNode{
@@ -23,7 +22,7 @@ func New(nodeProvider nodeprovider.NodeProvider) node.OpNode {
 
 // getAPICore ensures a local opctl node is running before returning
 // an api handle to it
-func (l lazyLocalNode) getAPICore() (*client.APIClient, error) {
+func (l lazyLocalNode) getAPICore() (node.OpNode, error) {
 	nodeHandle, err := l.nodeProvider.CreateNodeIfNotExists()
 	if err != nil {
 		return nil, err
@@ -35,11 +34,11 @@ func (l lazyLocalNode) AddAuth(
 	ctx context.Context,
 	req model.AddAuthReq,
 ) error {
-	core, err := l.getAPICore()
+	c, err := l.getAPICore()
 	if err != nil {
 		return err
 	}
-	return core.AddAuth(ctx, req)
+	return c.AddAuth(ctx, req)
 }
 
 func (l lazyLocalNode) GetEventStream(
@@ -49,11 +48,11 @@ func (l lazyLocalNode) GetEventStream(
 	<-chan model.Event,
 	error,
 ) {
-	core, err := l.getAPICore()
+	c, err := l.getAPICore()
 	if err != nil {
 		return nil, err
 	}
-	return core.GetEventStream(ctx, req)
+	return c.GetEventStream(ctx, req)
 }
 
 func (l lazyLocalNode) KillOp(
@@ -62,11 +61,11 @@ func (l lazyLocalNode) KillOp(
 ) (
 	err error,
 ) {
-	core, err := l.getAPICore()
+	c, err := l.getAPICore()
 	if err != nil {
 		return err
 	}
-	return core.KillOp(ctx, req)
+	return c.KillOp(ctx, req)
 }
 
 func (l lazyLocalNode) StartOp(
@@ -76,21 +75,11 @@ func (l lazyLocalNode) StartOp(
 	rootCallID string,
 	err error,
 ) {
-	core, err := l.getAPICore()
+	c, err := l.getAPICore()
 	if err != nil {
 		return "", err
 	}
-	return core.StartOp(ctx, req)
-}
-
-func (l lazyLocalNode) Liveness(
-	ctx context.Context,
-) error {
-	core, err := l.getAPICore()
-	if err != nil {
-		return err
-	}
-	return core.Liveness(ctx)
+	return c.StartOp(ctx, req)
 }
 
 func (l lazyLocalNode) GetData(
@@ -100,11 +89,11 @@ func (l lazyLocalNode) GetData(
 	model.ReadSeekCloser,
 	error,
 ) {
-	core, err := l.getAPICore()
+	c, err := l.getAPICore()
 	if err != nil {
 		return nil, err
 	}
-	return core.GetData(ctx, req)
+	return c.GetData(ctx, req)
 }
 
 func (l lazyLocalNode) ListDescendants(
@@ -114,9 +103,9 @@ func (l lazyLocalNode) ListDescendants(
 	[]*model.DirEntry,
 	error,
 ) {
-	core, err := l.getAPICore()
+	c, err := l.getAPICore()
 	if err != nil {
 		return nil, err
 	}
-	return core.ListDescendants(ctx, req)
+	return c.ListDescendants(ctx, req)
 }

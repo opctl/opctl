@@ -25,7 +25,7 @@ type _nodeHandle struct {
 	apiBaseURL url.URL
 }
 
-func (nh _nodeHandle) APIClient() *client.APIClient {
+func (nh _nodeHandle) APIClient() client.APIClient {
 	apiClient := client.New(
 		nh.apiBaseURL,
 		&client.Opts{

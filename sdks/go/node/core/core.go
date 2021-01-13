@@ -14,6 +14,7 @@ import (
 	"github.com/dgraph-io/badger/v2"
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
@@ -22,7 +23,7 @@ import (
 func New(
 	containerRuntime containerruntime.ContainerRuntime,
 	dataDirPath string,
-) core {
+) Core {
 	eventDbPath := path.Join(dataDirPath, "dcg", "events")
 	err := os.MkdirAll(eventDbPath, 0700)
 	if nil != err {
@@ -122,64 +123,7 @@ type core struct {
 
 // Core is an OpNode that supports running ops directly on the current machine
 type Core interface {
-	// AddAuth records authentication within the core
-	AddAuth(
-		ctx context.Context,
-		req model.AddAuthReq,
-	) error
-
-	GetEventStream(
-		ctx context.Context,
-		req *model.GetEventStreamReq,
-	) (
-		<-chan model.Event,
-		error,
-	)
-
-	// KillOp kills a running op
-	KillOp(
-		ctx context.Context,
-		req model.KillOpReq,
-	) (
-		err error,
-	)
-
-	// StartOp starts an op and returns the root call ID
-	StartOp(
-		ctx context.Context,
-		req model.StartOpReq,
-	) (
-		rootCallID string,
-		err error,
-	)
-
-	// GetData gets data
-	//
-	// expected errs:
-	//  - ErrDataProviderAuthentication on authentication failure
-	//  - ErrDataProviderAuthorization on authorization failure
-	//  - ErrDataRefResolution on resolution failure
-	GetData(
-		ctx context.Context,
-		req model.GetDataReq,
-	) (
-		model.ReadSeekCloser,
-		error,
-	)
-
-	// ListDescendants lists file system entries
-	//
-	// expected errs:
-	//  - ErrDataProviderAuthentication on authentication failure
-	//  - ErrDataProviderAuthorization on authorization failure
-	//  - ErrDataRefResolution on resolution failure
-	ListDescendants(
-		ctx context.Context,
-		req model.ListDescendantsReq,
-	) (
-		[]*model.DirEntry,
-		error,
-	)
+	node.OpNode
 
 	// Resolve attempts to resolve data via local filesystem or git
 	// nil pullCreds will be ignored

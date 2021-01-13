@@ -13,7 +13,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
-func (c APIClient) KillOp(
+func (c apiClient) KillOp(
 	ctx context.Context,
 	req model.KillOpReq,
 ) error {
