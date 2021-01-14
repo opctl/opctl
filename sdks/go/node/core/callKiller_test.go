@@ -59,9 +59,7 @@ var _ = Context("_callKiller", func() {
 				}
 				db.DropAll()
 
-				pubSub := pubsub.New(
-					db,
-				)
+				pubSub := pubsub.New(db)
 
 				eventChanCtx, cancelEventChan := context.WithCancel(context.Background())
 				eventChannel, _ := pubSub.Subscribe(
@@ -69,18 +67,11 @@ var _ = Context("_callKiller", func() {
 					model.EventFilter{},
 				)
 
-				actualCalls := []model.Event{}
-				go func() {
-					for event := range eventChannel {
-						actualCalls = append(actualCalls, event)
-					}
-				}()
-
-				objectUnderTest := _callKiller{
-					containerRuntime: new(FakeContainerRuntime),
-					stateStore:       fakeStateStore,
-					eventPublisher:   pubSub,
-				}
+				objectUnderTest := newCallKiller(
+					fakeStateStore,
+					new(FakeContainerRuntime),
+					pubSub,
+				)
 
 				/* act */
 				objectUnderTest.Kill(
@@ -89,11 +80,18 @@ var _ = Context("_callKiller", func() {
 					"rootCallID",
 				)
 
+				actualCalls := []string{
+					(<-eventChannel).CallKillRequested.Request.OpID,
+					(<-eventChannel).CallKillRequested.Request.OpID,
+					(<-eventChannel).CallKillRequested.Request.OpID,
+				}
+
 				/* assert */
 				cancelEventChan()
-				Eventually(func() int {
-					return len(actualCalls)
-				}).Should(Equal(len(nodesReturnedFromStateStore)))
+				Expect(len(actualCalls)).To(Equal(len(nodesReturnedFromStateStore)))
+				Expect(actualCalls).To(ContainElement(nodesReturnedFromStateStore[0].ID))
+				Expect(actualCalls).To(ContainElement(nodesReturnedFromStateStore[1].ID))
+				Expect(actualCalls).To(ContainElement(nodesReturnedFromStateStore[2].ID))
 			})
 		})
 	})
