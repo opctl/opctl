@@ -14,24 +14,27 @@ import (
 
 var _ = Context("lazylocalnode", func() {
 	It("conforms to the OpNode interfaces", func() {
-		lln := New(new(nodeFakes.FakeNodeProvider))
+		objectUnderTest := New(new(nodeFakes.FakeNodeProvider))
 		test := func(n node.OpNode) {
 			Expect(n).NotTo(BeNil())
 		}
-		test(lln)
+		test(objectUnderTest)
 	})
 	Context("wraps an APIClient, first ensuring the remote node is initialized", func() {
 		It("for AddAuth", func() {
+			// arrange
 			fakeNodeProvider := new(nodeFakes.FakeNodeProvider)
 			fakeNodeHandle := new(nodeFakes.FakeNodeHandle)
 			fakeAPIClient := new(apiClientFakes.FakeAPIClient)
 			fakeNodeHandle.APIClientReturns(fakeAPIClient)
 			fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
-			lln := New(fakeNodeProvider)
+			objectUnderTest := New(fakeNodeProvider)
 			arg1, arg2 := context.Background(), model.AddAuthReq{}
 
-			lln.AddAuth(arg1, arg2)
+			// act
+			objectUnderTest.AddAuth(arg1, arg2)
 
+			// assert
 			Expect(fakeNodeProvider.CreateNodeIfNotExistsCallCount()).To(Equal(1))
 			Expect(fakeNodeHandle.APIClientCallCount()).To(Equal(1))
 			aArg1, aArg2 := fakeAPIClient.AddAuthArgsForCall(0)
@@ -39,16 +42,19 @@ var _ = Context("lazylocalnode", func() {
 			Expect(aArg2).To(Equal(arg2))
 		})
 		It("for GetEventStream", func() {
+			// arrange
 			fakeNodeProvider := new(nodeFakes.FakeNodeProvider)
 			fakeNodeHandle := new(nodeFakes.FakeNodeHandle)
 			fakeAPIClient := new(apiClientFakes.FakeAPIClient)
 			fakeNodeHandle.APIClientReturns(fakeAPIClient)
 			fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
-			lln := New(fakeNodeProvider)
+			objectUnderTest := New(fakeNodeProvider)
 			arg1, arg2 := context.Background(), &model.GetEventStreamReq{}
 
-			lln.GetEventStream(arg1, arg2)
+			// act
+			objectUnderTest.GetEventStream(arg1, arg2)
 
+			// assert
 			Expect(fakeNodeProvider.CreateNodeIfNotExistsCallCount()).To(Equal(1))
 			Expect(fakeNodeHandle.APIClientCallCount()).To(Equal(1))
 			aArg1, aArg2 := fakeAPIClient.GetEventStreamArgsForCall(0)
@@ -56,16 +62,19 @@ var _ = Context("lazylocalnode", func() {
 			Expect(aArg2).To(Equal(arg2))
 		})
 		It("for KillOp", func() {
+			// arrange
 			fakeNodeProvider := new(nodeFakes.FakeNodeProvider)
 			fakeNodeHandle := new(nodeFakes.FakeNodeHandle)
 			fakeAPIClient := new(apiClientFakes.FakeAPIClient)
 			fakeNodeHandle.APIClientReturns(fakeAPIClient)
 			fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
-			lln := New(fakeNodeProvider)
+			objectUnderTest := New(fakeNodeProvider)
 			arg1, arg2 := context.Background(), model.KillOpReq{}
 
-			lln.KillOp(arg1, arg2)
+			// act
+			objectUnderTest.KillOp(arg1, arg2)
 
+			// assert
 			Expect(fakeNodeProvider.CreateNodeIfNotExistsCallCount()).To(Equal(1))
 			Expect(fakeNodeHandle.APIClientCallCount()).To(Equal(1))
 			aArg1, aArg2 := fakeAPIClient.KillOpArgsForCall(0)
@@ -73,16 +82,19 @@ var _ = Context("lazylocalnode", func() {
 			Expect(aArg2).To(Equal(arg2))
 		})
 		It("for StartOp", func() {
+			// arrange
 			fakeNodeProvider := new(nodeFakes.FakeNodeProvider)
 			fakeNodeHandle := new(nodeFakes.FakeNodeHandle)
 			fakeAPIClient := new(apiClientFakes.FakeAPIClient)
 			fakeNodeHandle.APIClientReturns(fakeAPIClient)
 			fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
-			lln := New(fakeNodeProvider)
+			objectUnderTest := New(fakeNodeProvider)
 			arg1, arg2 := context.Background(), model.StartOpReq{}
 
-			lln.StartOp(arg1, arg2)
+			// act
+			objectUnderTest.StartOp(arg1, arg2)
 
+			// assert
 			Expect(fakeNodeProvider.CreateNodeIfNotExistsCallCount()).To(Equal(1))
 			Expect(fakeNodeHandle.APIClientCallCount()).To(Equal(1))
 			aArg1, aArg2 := fakeAPIClient.StartOpArgsForCall(0)
@@ -90,16 +102,19 @@ var _ = Context("lazylocalnode", func() {
 			Expect(aArg2).To(Equal(arg2))
 		})
 		It("for GetData", func() {
+			// arrange
 			fakeNodeProvider := new(nodeFakes.FakeNodeProvider)
 			fakeNodeHandle := new(nodeFakes.FakeNodeHandle)
 			fakeAPIClient := new(apiClientFakes.FakeAPIClient)
 			fakeNodeHandle.APIClientReturns(fakeAPIClient)
 			fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
-			lln := New(fakeNodeProvider)
+			objectUnderTest := New(fakeNodeProvider)
 			arg1, arg2 := context.Background(), model.GetDataReq{}
 
-			lln.GetData(arg1, arg2)
+			// act
+			objectUnderTest.GetData(arg1, arg2)
 
+			// assert
 			Expect(fakeNodeProvider.CreateNodeIfNotExistsCallCount()).To(Equal(1))
 			Expect(fakeNodeHandle.APIClientCallCount()).To(Equal(1))
 			aArg1, aArg2 := fakeAPIClient.GetDataArgsForCall(0)
@@ -108,16 +123,19 @@ var _ = Context("lazylocalnode", func() {
 
 		})
 		It("for ListDescendants", func() {
+			// arrange
 			fakeNodeProvider := new(nodeFakes.FakeNodeProvider)
 			fakeNodeHandle := new(nodeFakes.FakeNodeHandle)
 			fakeAPIClient := new(apiClientFakes.FakeAPIClient)
 			fakeNodeHandle.APIClientReturns(fakeAPIClient)
 			fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
-			lln := New(fakeNodeProvider)
+			objectUnderTest := New(fakeNodeProvider)
 			arg1, arg2 := context.Background(), model.ListDescendantsReq{}
 
-			lln.ListDescendants(arg1, arg2)
+			// act
+			objectUnderTest.ListDescendants(arg1, arg2)
 
+			// assert
 			Expect(fakeNodeProvider.CreateNodeIfNotExistsCallCount()).To(Equal(1))
 			Expect(fakeNodeHandle.APIClientCallCount()).To(Equal(1))
 			aArg1, aArg2 := fakeAPIClient.ListDescendantsArgsForCall(0)
@@ -126,33 +144,46 @@ var _ = Context("lazylocalnode", func() {
 		})
 	})
 	Context("passes through errors", func() {
+		// arrange
 		expectedErr := errors.New("expected")
 		fakeNodeProvider := new(nodeFakes.FakeNodeProvider)
 		fakeNodeProvider.CreateNodeIfNotExistsReturns(nil, expectedErr)
-		lln := New(fakeNodeProvider)
+		objectUnderTest := New(fakeNodeProvider)
 
 		It("for AddAuth", func() {
-			err := lln.AddAuth(context.Background(), model.AddAuthReq{})
+			// act
+			err := objectUnderTest.AddAuth(context.Background(), model.AddAuthReq{})
+			// assert
 			Expect(err).To(MatchError(expectedErr))
 		})
 		It("for GetEventStream", func() {
-			_, err := lln.GetEventStream(context.Background(), &model.GetEventStreamReq{})
+			// act
+			_, err := objectUnderTest.GetEventStream(context.Background(), &model.GetEventStreamReq{})
+			// assert
 			Expect(err).To(MatchError(expectedErr))
 		})
 		It("for KillOp", func() {
-			err := lln.KillOp(context.Background(), model.KillOpReq{})
+			// act
+			err := objectUnderTest.KillOp(context.Background(), model.KillOpReq{})
+			// assert
 			Expect(err).To(MatchError(expectedErr))
 		})
 		It("for StartOp", func() {
-			_, err := lln.StartOp(context.Background(), model.StartOpReq{})
+			// act
+			_, err := objectUnderTest.StartOp(context.Background(), model.StartOpReq{})
+			// assert
 			Expect(err).To(MatchError(expectedErr))
 		})
 		It("for GetData", func() {
-			_, err := lln.GetData(context.Background(), model.GetDataReq{})
+			// act
+			_, err := objectUnderTest.GetData(context.Background(), model.GetDataReq{})
+			// assert
 			Expect(err).To(MatchError(expectedErr))
 		})
 		It("for ListDescendants", func() {
-			_, err := lln.ListDescendants(context.Background(), model.ListDescendantsReq{})
+			// act
+			_, err := objectUnderTest.ListDescendants(context.Background(), model.ListDescendantsReq{})
+			// assert
 			Expect(err).To(MatchError(expectedErr))
 		})
 	})

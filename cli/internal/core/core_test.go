@@ -9,16 +9,19 @@ import (
 )
 
 func TestNewCore(t *testing.T) {
-	core := New(
+	// arrange
+	objectUnderTest := New(
 		new(cliOutputFakes.FakeCliOutput),
 		local.NodeCreateOpts{
 			DataDir: os.TempDir(),
 		},
 	)
-	if core.Auth() == nil {
+
+	// assert
+	if objectUnderTest.Auth() == nil {
 		t.Error("core should provide Auth")
 	}
-	if core.Op() == nil {
+	if objectUnderTest.Op() == nil {
 		t.Error("core should provide Op")
 	}
 }
