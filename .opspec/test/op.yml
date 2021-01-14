@@ -1,0 +1,75 @@
+name: test
+description: runs all tests
+inputs:
+  compile:
+    boolean:
+      description: build the cli binary before running tests that use it
+      default: true
+  gitBranch:
+    string:
+      constraints: { minLength: 1 }
+      description: git branch the coverage should be associated with
+      default: master
+  version:
+    string:
+      default: 0.0.0
+      constraints:
+        format: semver
+run:
+  parallel:
+    # cli system opspec tests
+    - serial:
+        - if:
+          - eq: [$(compile), true]
+          op:
+            ref: ../../cli/.opspec/compile
+            inputs:
+              version:
+        - op:
+            ref: ../../cli/.opspec/test/system/opspec
+    # webapp tests
+    - op:
+        ref: ../../webapp/.opspec/test
+    # js SDK tests
+    - op:
+        ref: ../../sdks/js/.opspec/test
+    # react SDK tests
+    - op:
+        ref: ../../sdks/react/.opspec/test
+    # api validation
+    - op:
+        ref: ../../api/.opspec/test
+    # go unit tests with coverage reporting (includes CLI and Go SDK)
+    - serial:
+        - container:
+            cmd:
+              - sh
+              - -ce
+              - |
+                echo "unit testing code"
+                go test -coverprofile=coverprofile ./...
+
+                echo "stripping generated code"
+                sed '/fake/d' -i coverprofile
+                sed '/bindata/d' -i coverprofile
+
+                cat coverprofile > /coverprofile
+            files:
+              /coverprofile: $(coverprofile)
+            dirs:
+              /src: $(../..)
+            envVars:
+              GOFLAGS: -mod=vendor -tags=containers_image_openpgp
+            image: { ref: "golang:1.15" }
+            workDir: /src
+        - op:
+            ref: github.com/opspec-pkgs/git.resolve-commit#1.0.2
+            inputs: { dotGitDir: $(../../.git) }
+            outputs: { commit: $(gitCommit) }
+        - op:
+            ref: github.com/opspec-pkgs/codecov.upload#1.1.0
+            inputs:
+              gitBranch:
+              gitCommit:
+              token: b432a3b8-8220-4c1d-bcee-db76e68d0128
+              report: $(coverprofile)

@@ -1,21 +1,13 @@
-description: runs go generate YOUR_PATH
+description: Runs go code generation for the go SDK
 name: generate
 inputs:
   path:
     string:
-      description: relative path to file containing a 'go:generate ...' pre-processing directive
+      description: Go path spec to the file/files to generate from
       default: ./sdks/go/...
 opspec: 0.1.6
 run:
-  container:
-    cmd:
-      - go
-      - generate
-      - $(path)
-    envVars:
-      GOFLAGS: -mod=vendor -tags=containers_image_openpgp
-    dirs:
-      /src: $(../../../..)
-    # @TODO: identify why fake generation breaks on 1.14
-    image: { ref: 'golang:1.15' }
-    workDir: /src
+  op:
+    ref: ../../../.opspec/generate
+    inputs:
+      path:

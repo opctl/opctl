@@ -4,4 +4,4 @@ run:
   op:
     ref: github.com/opspec-pkgs/openapispec.v3.validate-spec#1.0.0
     inputs:
-      spec: $(./openapi.yaml)
+      spec: $(../../openapi.yaml)

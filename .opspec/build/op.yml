@@ -1,11 +1,11 @@
 name: build
-description: runs ops necessary to go from src to vetted artifact(s)
+description: runs ops necessary to go from src to vetted artifact(s) and tests everything
 inputs:
   gitBranch:
     string:
       constraints: { minLength: 1 }
       description: git branch the coverage should be associated with
-      default: master
+      default: main
   version:
     string:
       default: 0.0.0
@@ -28,7 +28,12 @@ run:
         image: { ref: 'golang:1.15' }
         workDir: /src/cli
     - op:
-        ref: ../../cli/.opspec/build
+        ref: ../../cli/.opspec/compile
+        inputs:
+          version:
+    - op:
+        ref: ./test
         inputs:
           gitBranch:
           version:
+          compile: false

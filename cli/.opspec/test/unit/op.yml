@@ -1,34 +1,15 @@
-description: runs unit tests
-name: test/unit
-outputs:
-  coverprofile:
-    file:
-      description: aggregate coverprofile
+name: test
+description: runs all CLI go tests
+opspec: 0.1.6
 run:
-  serial:
-    - container:
-        cmd:
-          - sh
-          - -ce
-          - |
-            echo "unit testing code"
-            go test -coverprofile=coverprofile ./cli/...
-
-            echo "stripping generated code"
-            sed '/fake/d' -i coverprofile
-            sed '/bindata/d' -i coverprofile
-
-            cat coverprofile > /coverprofile
-        files:
-          /coverprofile: $(coverprofile)
-        dirs:
-          /src: $(../../../..)
-        envVars:
-          GOFLAGS: -mod=vendor -tags=containers_image_openpgp
-        image: { ref: 'golang:1.15' }
-        workDir: /src
-    - op:
-        ref: github.com/opspec-pkgs/golang.coverprofile.assert#1.1.0
-        inputs:
-          coverprofile:
-          minCoverage: 37
+  container:
+    cmd:
+      - go
+      - test
+      - ./cli/...
+    dirs:
+      /src: $(../../../..)
+    envVars:
+      GOFLAGS: -mod=vendor -tags=containers_image_openpgp
+    image: { ref: "golang:1.15" }
+    workDir: /src

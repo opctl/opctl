@@ -5,8 +5,10 @@ run:
     - op:
         ref: ../init
     - container:
-        cmd: [ yarn, test ]
+        cmd: [yarn, test]
         image: { ref: 'node:12.8.1-alpine' }
+        envVars:
+          CI: true
         dirs:
           /src: $(../../..)
         workDir: /src/webapp

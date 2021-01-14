@@ -10,10 +10,12 @@ run:
     - op:
         ref: ../init
     - container:
-        image: { ref: 'node:11.13.0-alpine' }
+        image: { ref: 'node:12.4.0-alpine' }
         cmd: [npm, test]
+        envVars:
+          CI: true
         dirs:
-          /src: $(srcDir)
+          /src: $(../../../..)
         files:
           /src/coverage/lcov.info: $(coverageReport)
-        workDir: /src
+        workDir: /src/sdks/js
