@@ -43,7 +43,7 @@ func (cr _containerRuntime) DeleteContainerIfExists(
 	containerID string,
 ) error {
 	err := cr.k8sClient.CoreV1().Pods("opctl").Delete(
-		context.TODO(),
+		ctx,
 		constructPodName(containerID),
 		metaV1.DeleteOptions{},
 	)
@@ -129,7 +129,7 @@ func (cr _containerRuntime) RunContainer(
 					Follow: true,
 				},
 			)
-			logSrc, err := logsResult.Stream(context.TODO())
+			logSrc, err := logsResult.Stream(ctx)
 			if err != nil {
 				return nil, fmt.Errorf("running, LogStreamError %s", err)
 			}

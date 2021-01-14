@@ -21,6 +21,7 @@ import (
 
 // New returns a new LocalCore initialized with the given options
 func New(
+	ctx context.Context,
 	containerRuntime containerruntime.ContainerRuntime,
 	dataDirPath string,
 ) Core {
@@ -47,6 +48,7 @@ func New(
 	uniqueStringFactory := uniquestring.NewUniqueStringFactory()
 
 	stateStore := newStateStore(
+		ctx,
 		db,
 		pubSub,
 	)
@@ -68,8 +70,6 @@ func New(
 			containerRuntime,
 			pubSub,
 		)
-
-		ctx := context.Background()
 
 		since := time.Now().UTC()
 		eventChannel, _ := pubSub.Subscribe(

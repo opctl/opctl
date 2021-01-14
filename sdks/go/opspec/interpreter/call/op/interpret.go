@@ -19,6 +19,7 @@ import (
 
 // Interpret interprets an OpCallSpec into a OpCall
 func Interpret(
+	ctx context.Context,
 	scope map[string]*model.Value,
 	opCallSpec *model.OpCallSpec,
 	opID string,
@@ -60,7 +61,7 @@ func Interpret(
 		opPath = *dirValue.Dir
 	} else {
 		opHandle, err := data.Resolve(
-			context.TODO(),
+			ctx,
 			opCallSpec.Ref,
 			fs.New(parentOpPath, filepath.Dir(parentOpPath)),
 			git.New(filepath.Join(dataDirPath, "ops"), pkgPullCreds),
@@ -72,7 +73,7 @@ func Interpret(
 	}
 
 	opFile, err := opfile.Get(
-		context.TODO(),
+		ctx,
 		opPath,
 	)
 	if nil != err {

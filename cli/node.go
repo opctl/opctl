@@ -12,6 +12,7 @@ import (
 
 // node command
 func node(
+  ctx context.Context,
 	nodeCreateOpts local.NodeCreateOpts,
 ) error {
 	dataDir, err := datadir.New(nodeCreateOpts.DataDir)
@@ -30,7 +31,7 @@ func node(
 			return err
 		}
 	} else {
-		containerRuntime, err = docker.New()
+		containerRuntime, err = docker.New(ctx)
 		if nil != err {
 			return err
 		}
@@ -38,12 +39,13 @@ func node(
 
 	return newHTTPListener(
 		core.New(
+      ctx,
 			containerRuntime,
 			dataDir.Path(),
 		),
 	).
 		listen(
-			context.Background(),
+			ctx,
 			nodeCreateOpts.ListenAddress,
 		)
 

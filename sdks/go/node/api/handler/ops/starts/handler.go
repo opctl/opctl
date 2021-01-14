@@ -3,6 +3,7 @@ package starts
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
@@ -44,8 +45,11 @@ func (hdlr _handler) Handle(
 		return
 	}
 
+	// This uses a fresh context because the running op continues running
+	// after the http request closes
+	ctx := context.Background()
 	callID, err := hdlr.node.StartOp(
-		httpReq.Context(),
+		ctx,
 		startOpReq,
 	)
 	if nil != err {

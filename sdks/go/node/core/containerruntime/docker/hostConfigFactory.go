@@ -1,11 +1,13 @@
 package docker
 
 import (
+	"context"
+	"strings"
+
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
-	"strings"
 )
 
 //counterfeiter:generate -o internal/fakes/hostConfigFactory.go . hostConfigFactory
@@ -19,9 +21,10 @@ type hostConfigFactory interface {
 }
 
 func newHostConfigFactory(
+	ctx context.Context,
 	dockerClient dockerClientPkg.CommonAPIClient,
 ) (hostConfigFactory, error) {
-	fspc, err := newFSPathConverter(dockerClient)
+	fspc, err := newFSPathConverter(ctx, dockerClient)
 	if err != nil {
 		return _hostConfigFactory{}, err
 	}
