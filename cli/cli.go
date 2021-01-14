@@ -105,6 +105,12 @@ func newCli(
 		if *noColor {
 			cliOutput.DisableColor()
 		}
+  }	
+  
+  ctx, cancel := context.WithCancel(context.Background())
+
+	cli.After = func() {
+		cancel()
 	}
 
 	cli.Command("auth", "Manage auth for OCI image registries", func(authCmd *mow.Cmd) {
@@ -119,7 +125,7 @@ func newCli(
 				exitWith(
 					"",
 					auth(
-						context.TODO(),
+						ctx,
 						nodeProvider,
 						model.AddAuthReq{
 							Resources: *resources,
@@ -139,7 +145,7 @@ func newCli(
 			exitWith(
 				"",
 				events(
-					context.TODO(),
+					ctx,
 					cliOutput,
 					nodeProvider,
 				),
@@ -156,7 +162,7 @@ func newCli(
 			exitWith(
 				"",
 				ls(
-					context.TODO(),
+					ctx,
 					cliParamSatisfier,
 					nodeProvider,
 					*dirRef,
@@ -170,7 +176,10 @@ func newCli(
 			createCmd.Action = func() {
 				exitWith(
 					"",
-					node(nodeCreateOpts),
+					node(
+            ctx,
+            nodeCreateOpts,
+          ),
 				)
 			}
 		})
@@ -220,7 +229,7 @@ func newCli(
 				exitWith(
 					"",
 					opInstall(
-						context.TODO(),
+						ctx,
 						dataResolver,
 						*opRef,
 						*path,
@@ -240,7 +249,7 @@ func newCli(
 				exitWith(
 					"",
 					node.KillOp(
-						context.TODO(),
+						ctx,
 						model.KillOpReq{
 							OpID:       *opID,
 							RootCallID: *opID,
@@ -257,7 +266,7 @@ func newCli(
 				exitWith(
 					fmt.Sprintf("%v is valid", *opRef),
 					opValidate(
-						context.TODO(),
+						ctx,
 						dataResolver,
 						*opRef,
 					),
@@ -275,7 +284,7 @@ func newCli(
 			exitWith(
 				"",
 				run(
-					context.TODO(),
+					ctx,
 					cliOutput,
 					cliParamSatisfier,
 					nodeProvider,

@@ -28,9 +28,10 @@ type runContainer interface {
 }
 
 func newRunContainer(
+	ctx context.Context,
 	dockerClient dockerClientPkg.CommonAPIClient,
 ) (runContainer, error) {
-	hcf, err := newHostConfigFactory(dockerClient)
+	hcf, err := newHostConfigFactory(ctx, dockerClient)
 	if err != nil {
 		return _runContainer{}, err
 	}
@@ -83,7 +84,7 @@ func (cr _runContainer) RunContainer(
 	defer func() {
 		// ensure container always cleaned up
 		cr.dockerClient.ContainerRemove(
-			context.Background(),
+			context.Background(), // always use a fresh context, to clean up after cancellation
 			containerName,
 			types.ContainerRemoveOptions{
 				RemoveVolumes: true,

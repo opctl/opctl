@@ -1,6 +1,7 @@
 package call
 
 import (
+	"context"
 	"errors"
 	"os"
 	"path/filepath"
@@ -17,12 +18,11 @@ var _ = Context("Interpret", func() {
 		Context("predicates returns err", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				predicateSpec := []*model.PredicateSpec{
-					&model.PredicateSpec{},
-				}
+				predicateSpec := []*model.PredicateSpec{{}}
 
 				/* act */
 				_, actualError := Interpret(
+					context.Background(),
 					map[string]*model.Value{},
 					&model.CallSpec{
 						If: &predicateSpec,
@@ -76,6 +76,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			actualCall, actualError := Interpret(
+				context.Background(),
 				providedScope,
 				&model.CallSpec{
 					Container: &containerSpec,
@@ -90,7 +91,6 @@ var _ = Context("Interpret", func() {
 			/* assert */
 			Expect(actualError).To(BeNil())
 			Expect(actualCall).To(Equal(expectedCall))
-
 		})
 	})
 	Context("callSpec.Op not nil", func() {
@@ -115,6 +115,7 @@ var _ = Context("Interpret", func() {
 			}
 
 			expectedOp, err := op.Interpret(
+				context.Background(),
 				providedScope,
 				&opSpec,
 				providedID,
@@ -134,6 +135,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			actualCall, actualError := Interpret(
+				context.Background(),
 				providedScope,
 				&model.CallSpec{
 					Op: &opSpec,
@@ -175,6 +177,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			actualCall, actualError := Interpret(
+				context.Background(),
 				providedScope,
 				&model.CallSpec{
 					Parallel: &parallelSpec,
@@ -214,6 +217,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			actualCall, actualError := Interpret(
+				context.Background(),
 				providedScope,
 				&model.CallSpec{
 					Serial: &serialSpec,

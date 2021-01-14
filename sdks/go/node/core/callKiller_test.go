@@ -48,7 +48,7 @@ var _ = Context("_callKiller", func() {
 					panic(err)
 				}
 
-				stateStore := newStateStore(db, pubSub)
+				stateStore := newStateStore(context.Background(), db, pubSub)
 
 				// seed call
 				pubSub.Publish(model.Event{
@@ -75,7 +75,7 @@ var _ = Context("_callKiller", func() {
 					})
 				}
 
-				// give stateStore time to receive & apply start events
+				// give stateStore time to receive & apply events
 				time.Sleep(time.Second)
 
 				objectUnderTest := newCallKiller(

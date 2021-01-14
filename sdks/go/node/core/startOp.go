@@ -64,7 +64,7 @@ func (this core) StartOp(
 		opCallSpec.Outputs[name] = ""
 	}
 
-	opCtx, cancelOp := context.WithCancel(context.Background())
+	opCtx, cancelOp := context.WithCancel(ctx)
 	go func() {
 		defer func() {
 			if panicArg := recover(); panicArg != nil {

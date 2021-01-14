@@ -38,7 +38,7 @@ var _ = Context("containerCaller", func() {
 			Expect(newContainerCaller(
 				new(FakeContainerRuntime),
 				new(FakePubSub),
-				newStateStore(db, new(FakePubSub)),
+				newStateStore(context.Background(), db, new(FakePubSub)),
 			)).To(Not(BeNil()))
 		})
 	})

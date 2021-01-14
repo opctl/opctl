@@ -2,10 +2,11 @@ package hostruntime
 
 import (
 	"context"
+	"time"
+
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/pkg/errors"
-	"time"
 )
 
 // RuntimeInfo provides relation between opctl and docker engine host
@@ -18,9 +19,9 @@ type RuntimeInfo struct {
 	HostPathMap HostPathMap
 }
 
-func New(cli containerInspector) (RuntimeInfo, error) {
-	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
-	return newContainerRuntimeInfo(ctx, cli, defaultContainerUtils)
+func New(ctx context.Context, cli containerInspector) (RuntimeInfo, error) {
+	timeoutCtx, _ := context.WithTimeout(ctx, 3*time.Second)
+	return newContainerRuntimeInfo(timeoutCtx, cli, defaultContainerUtils)
 }
 
 func newContainerRuntimeInfo(ctx context.Context, cli containerInspector, cu containerUtils) (RuntimeInfo, error) {

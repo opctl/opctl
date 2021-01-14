@@ -2,12 +2,14 @@ package core
 
 import (
 	"context"
+	"github.com/dgraph-io/badger/v2"
+	"io/ioutil"
 	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
+	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 var _ = Context("core", func() {
@@ -23,6 +25,27 @@ var _ = Context("core", func() {
 				Resources: "resources",
 			}
 
+			dbDir, err := ioutil.TempDir("", "")
+			if nil != err {
+				panic(err)
+			}
+
+			db, err := badger.Open(
+				badger.DefaultOptions(dbDir).WithLogger(nil),
+			)
+			if nil != err {
+				panic(err)
+			}
+
+			pubSub := pubsub.New(db)
+			eventChannel, err := pubSub.Subscribe(
+				context.Background(),
+				model.EventFilter{},
+			)
+			if nil != err {
+				panic(err)
+			}
+
 			expectedEvent := model.Event{
 				AuthAdded: &model.AuthAdded{
 					Auth: model.Auth{
@@ -33,10 +56,8 @@ var _ = Context("core", func() {
 				Timestamp: time.Now().UTC(),
 			}
 
-			fakePubSub := new(FakePubSub)
-
 			objectUnderTest := core{
-				pubSub: fakePubSub,
+				pubSub: pubSub,
 			}
 
 			/* act */
@@ -46,14 +67,22 @@ var _ = Context("core", func() {
 			)
 
 			/* assert */
-			actualEvent := fakePubSub.PublishArgsForCall(0)
+			var actualEvent model.Event
+			go func() {
+				for event := range eventChannel {
+					if nil != event.AuthAdded {
+						// ignore timestamp from assertion
+            event.Timestamp = expectedEvent.Timestamp
+            actualEvent = event
+					}
+				}
+			}()
 
-			// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
-			Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
-			// set temporal fields to expected vals since they're already asserted
-			actualEvent.Timestamp = expectedEvent.Timestamp
-
-			Expect(actualEvent).To(Equal(expectedEvent))
+			Eventually(
+				func() model.Event { return actualEvent },
+			).Should(
+				Equal(expectedEvent),
+			)
 		})
 	})
 })

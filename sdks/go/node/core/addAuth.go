@@ -11,7 +11,6 @@ func (this core) AddAuth(
 	ctx context.Context,
 	req model.AddAuthReq,
 ) error {
-	// killing an op is async
 	this.pubSub.Publish(
 		model.Event{
 			AuthAdded: &model.AuthAdded{

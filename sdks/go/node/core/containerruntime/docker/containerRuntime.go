@@ -10,7 +10,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-func New() (
+func New(ctx context.Context) (
 	containerRuntime containerruntime.ContainerRuntime,
 	err error,
 ) {
@@ -21,9 +21,9 @@ func New() (
 	}
 
 	// degrade client version to version of server
-	dockerClient.NegotiateAPIVersion(context.TODO())
+	dockerClient.NegotiateAPIVersion(ctx)
 
-	rc, err := newRunContainer(dockerClient)
+	rc, err := newRunContainer(ctx, dockerClient)
 	if nil != err {
 		return
 	}
