@@ -1,9 +1,9 @@
-description: runs go generate YOUR_PATH
+description: runs go code generatation
 name: generate
 inputs:
   path:
     string:
-      description: relative path to file containing a 'go:generate ...' pre-processing directive
+      description: Go path spec to the file/files to generate from
       default: ./...
 run:
   container:
