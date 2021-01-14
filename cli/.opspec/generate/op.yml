@@ -1,10 +1,10 @@
-description: Runs go code generation for the go SDK
+description: Runs go code generation for the CLI
 name: generate
 inputs:
   path:
     string:
       description: Go path spec to the file/files to generate from
-      default: ./sdks/go/...
+      default: ./cli/...
 opspec: 0.1.6
 run:
   op:
