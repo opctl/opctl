@@ -24,10 +24,10 @@ type Handler interface {
 
 // NewHandler returns an initialized Handler instance
 func NewHandler(
-	opNode node.OpNode,
+	node node.Node,
 ) Handler {
 	return _handler{
-		opNode: opNode,
+		node: node,
 		upgrader: &websocket.Upgrader{
 			ReadBufferSize:  4096,
 			WriteBufferSize: 4096,
@@ -39,7 +39,7 @@ func NewHandler(
 }
 
 type _handler struct {
-	opNode   node.OpNode
+	node     node.Node
 	upgrader iwebsocket.Upgrader
 }
 
@@ -77,7 +77,7 @@ func (hdlr _handler) Handle(
 	defer cancel()
 
 	// @TODO: handle err channel
-	eventChannel, _ := hdlr.opNode.GetEventStream(
+	eventChannel, _ := hdlr.node.GetEventStream(
 		ctx,
 		req,
 	)

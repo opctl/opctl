@@ -22,7 +22,7 @@ run:
           - -ce
           - |
             echo "embedding webapp in node"
-            go run github.com/rakyll/statik -src ../webapp/build -dest internal/core/node/creater -f
+            go run github.com/rakyll/statik -src ../webapp/build -dest internal -f
         dirs:
           /src: $(../..)
         image: { ref: 'golang:1.15' }

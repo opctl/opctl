@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"io"
+	"io/ioutil"
 
+	"github.com/dgraph-io/badger/v2"
 	"github.com/golang-interfaces/iio"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
-	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
@@ -19,13 +20,25 @@ var _ = Context("containerCaller", func() {
 	closedPipeReader.Close()
 	closedPipeWriter.Close()
 
+	dbDir, err := ioutil.TempDir("", "")
+	if nil != err {
+		panic(err)
+	}
+
+	db, err := badger.Open(
+		badger.DefaultOptions(dbDir).WithLogger(nil),
+	)
+	if nil != err {
+		panic(err)
+	}
+
 	Context("newContainerCaller", func() {
 		It("should return containerCaller", func() {
 			/* arrange/act/assert */
 			Expect(newContainerCaller(
 				new(FakeContainerRuntime),
 				new(FakePubSub),
-				new(FakeStateStore),
+				newStateStore(db, new(FakePubSub)),
 			)).To(Not(BeNil()))
 		})
 	})
@@ -48,7 +61,6 @@ var _ = Context("containerCaller", func() {
 			objectUnderTest := _containerCaller{
 				containerRuntime: fakeContainerRuntime,
 				pubSub:           fakePubSub,
-				stateStore:       new(FakeStateStore),
 				io:               fakeIIO,
 			}
 
@@ -87,7 +99,6 @@ var _ = Context("containerCaller", func() {
 				objectUnderTest := _containerCaller{
 					containerRuntime: fakeContainerRuntime,
 					pubSub:           fakePubSub,
-					stateStore:       new(FakeStateStore),
 					io:               fakeIIO,
 				}
 
@@ -129,7 +140,6 @@ var _ = Context("containerCaller", func() {
 		objectUnderTest := _containerCaller{
 			containerRuntime: new(FakeContainerRuntime),
 			pubSub:           new(FakePubSub),
-			stateStore:       new(FakeStateStore),
 			io:               fakeIIO,
 		}
 

@@ -1,8 +1,8 @@
 package outputs
 
 import (
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params"
 )
 
 // Interpret applies defaults to & validates output args

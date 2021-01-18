@@ -5,9 +5,9 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"path/filepath"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	"path/filepath"
 )
 
 var _ = Context("opCaller", func() {
@@ -15,7 +15,6 @@ var _ = Context("opCaller", func() {
 		It("should return opCaller", func() {
 			/* arrange/act/assert */
 			Expect(newOpCaller(
-				new(FakeStateStore),
 				new(FakeCaller),
 				"",
 			)).To(Not(BeNil()))
@@ -24,8 +23,8 @@ var _ = Context("opCaller", func() {
 	Context("Call", func() {
 		It("should call caller.Call w/ expected args", func() {
 			/* arrange */
-      providedOpPath := "providedOpPath"
-      parentProvidedOpPath := filepath.Dir(providedOpPath)
+			providedOpPath := "providedOpPath"
+			parentProvidedOpPath := filepath.Dir(providedOpPath)
 
 			dummyString := "dummyString"
 			providedCtx := context.Background()
@@ -64,8 +63,7 @@ var _ = Context("opCaller", func() {
 			fakeCaller := new(FakeCaller)
 
 			objectUnderTest := _opCaller{
-				caller:       fakeCaller,
-				stateStore:   new(FakeStateStore),
+				caller: fakeCaller,
 			}
 
 			/* act */
@@ -133,8 +131,7 @@ var _ = Context("opCaller", func() {
 			)
 
 			objectUnderTest := _opCaller{
-				caller:             fakeCaller,
-				stateStore:         new(FakeStateStore),
+				caller: fakeCaller,
 			}
 
 			/* act */

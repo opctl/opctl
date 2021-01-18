@@ -3,11 +3,11 @@ package core
 import (
 	"context"
 
-	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
+	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
@@ -29,9 +29,9 @@ var _ = Context("parallelLoopCaller", func() {
 				fakeCaller := new(FakeCaller)
 
 				objectUnderTest := _parallelLoopCaller{
-					caller:                  fakeCaller,
-					pubSub:                  new(FakePubSub),
-					uniqueStringFactory:     new(uniquestringFakes.FakeUniqueStringFactory),
+					caller:              fakeCaller,
+					pubSub:              new(FakePubSub),
+					uniqueStringFactory: new(uniquestringFakes.FakeUniqueStringFactory),
 				}
 
 				/* act */
@@ -118,9 +118,9 @@ var _ = Context("parallelLoopCaller", func() {
 			fakeUniqueStringFactory.ConstructReturns(callID, nil)
 
 			objectUnderTest := _parallelLoopCaller{
-				caller:                  fakeCaller,
-				pubSub:                  fakePubSub,
-				uniqueStringFactory:     fakeUniqueStringFactory,
+				caller:              fakeCaller,
+				pubSub:              fakePubSub,
+				uniqueStringFactory: fakeUniqueStringFactory,
 			}
 
 			/* act */

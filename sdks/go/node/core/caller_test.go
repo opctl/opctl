@@ -1,9 +1,9 @@
 package core
 
 import (
-	"path/filepath"
-	"os"
 	"context"
+	"os"
+	"path/filepath"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -21,7 +21,6 @@ var _ = Context("caller", func() {
 				newCaller(
 					new(FakeContainerCaller),
 					"dummyDataDir",
-					new(FakeStateStore),
 					new(FakePubSub),
 				),
 			).To(Not(BeNil()))
@@ -39,7 +38,7 @@ var _ = Context("caller", func() {
 				/* act */
 				objectUnderTest := _caller{
 					containerCaller: fakeContainerCaller,
-					dataDirPath: os.TempDir(),
+					dataDirPath:     os.TempDir(),
 					pubSub:          new(FakePubSub),
 				}
 
@@ -69,7 +68,7 @@ var _ = Context("caller", func() {
 				}
 
 				ifSpec := []*model.PredicateSpec{
-					&model.PredicateSpec{
+					{
 						Eq: &predicateSpec,
 					},
 				}
@@ -95,7 +94,7 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					containerCaller: new(FakeContainerCaller),
-					dataDirPath: os.TempDir(),
+					dataDirPath:     os.TempDir(),
 					pubSub:          fakePubSub,
 					serialCaller:    fakeSerialCaller,
 				}
@@ -166,7 +165,7 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					containerCaller: fakeContainerCaller,
-					dataDirPath: os.TempDir(),
+					dataDirPath:     os.TempDir(),
 					pubSub:          fakePubSub,
 				}
 
@@ -200,7 +199,7 @@ var _ = Context("caller", func() {
 			It("should call opCaller.Call w/ expected args", func() {
 				/* arrange */
 				fakeOpCaller := new(FakeOpCaller)
-				
+
 				wd, err := os.Getwd()
 				if nil != err {
 					panic(err)
@@ -233,8 +232,8 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					dataDirPath: os.TempDir(),
-					opCaller: fakeOpCaller,
-					pubSub:   fakePubSub,
+					opCaller:    fakeOpCaller,
+					pubSub:      fakePubSub,
 				}
 
 				/* act */

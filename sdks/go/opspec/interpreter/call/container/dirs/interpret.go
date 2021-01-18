@@ -46,7 +46,7 @@ dirLoop:
 			containerCallDirs[callSpecContainerDirPath] = *dirValue.Dir
 			continue dirLoop
 		}
-		
+
 		// copy cached files to ensure can't be mutated
 		containerCallDirs[callSpecContainerDirPath] = filepath.Join(scratchDirPath, callSpecContainerDirPath)
 

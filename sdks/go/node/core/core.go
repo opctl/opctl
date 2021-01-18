@@ -58,7 +58,6 @@ func New(
 			stateStore,
 		),
 		dataDirPath,
-		stateStore,
 		pubSub,
 	)
 
@@ -98,7 +97,6 @@ func New(
 		containerRuntime: containerRuntime,
 		dataCachePath:    filepath.Join(dataDirPath, "ops"),
 		opCaller: newOpCaller(
-			stateStore,
 			caller,
 			dataDirPath,
 		),
@@ -108,7 +106,7 @@ func New(
 	}
 }
 
-// core is an OpNode that supports running ops directly on the host
+// core is an Node that supports running ops directly on the host
 type core struct {
 	caller              caller
 	containerRuntime    containerruntime.ContainerRuntime
@@ -119,11 +117,17 @@ type core struct {
 	uniqueStringFactory uniquestring.UniqueStringFactory
 }
 
+func (c core) Liveness(
+	ctx context.Context,
+) error {
+	return nil
+}
+
 //counterfeiter:generate -o fakes/core.go . Core
 
-// Core is an OpNode that supports running ops directly on the current machine
+// Core is an Node that supports running ops directly on the current machine
 type Core interface {
-	node.OpNode
+	node.Node
 
 	// Resolve attempts to resolve data via local filesystem or git
 	// nil pullCreds will be ignored

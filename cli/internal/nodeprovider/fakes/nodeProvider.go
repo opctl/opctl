@@ -5,19 +5,20 @@ import (
 	"sync"
 
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	"github.com/opctl/opctl/sdks/go/node"
 )
 
 type FakeNodeProvider struct {
-	CreateNodeIfNotExistsStub        func() (nodeprovider.NodeHandle, error)
+	CreateNodeIfNotExistsStub        func() (node.Node, error)
 	createNodeIfNotExistsMutex       sync.RWMutex
 	createNodeIfNotExistsArgsForCall []struct {
 	}
 	createNodeIfNotExistsReturns struct {
-		result1 nodeprovider.NodeHandle
+		result1 node.Node
 		result2 error
 	}
 	createNodeIfNotExistsReturnsOnCall map[int]struct {
-		result1 nodeprovider.NodeHandle
+		result1 node.Node
 		result2 error
 	}
 	KillNodeIfExistsStub        func(string) error
@@ -31,23 +32,23 @@ type FakeNodeProvider struct {
 	killNodeIfExistsReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ListNodesStub        func() ([]nodeprovider.NodeHandle, error)
+	ListNodesStub        func() ([]node.Node, error)
 	listNodesMutex       sync.RWMutex
 	listNodesArgsForCall []struct {
 	}
 	listNodesReturns struct {
-		result1 []nodeprovider.NodeHandle
+		result1 []node.Node
 		result2 error
 	}
 	listNodesReturnsOnCall map[int]struct {
-		result1 []nodeprovider.NodeHandle
+		result1 []node.Node
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeNodeProvider) CreateNodeIfNotExists() (nodeprovider.NodeHandle, error) {
+func (fake *FakeNodeProvider) CreateNodeIfNotExists() (node.Node, error) {
 	fake.createNodeIfNotExistsMutex.Lock()
 	ret, specificReturn := fake.createNodeIfNotExistsReturnsOnCall[len(fake.createNodeIfNotExistsArgsForCall)]
 	fake.createNodeIfNotExistsArgsForCall = append(fake.createNodeIfNotExistsArgsForCall, struct {
@@ -70,34 +71,34 @@ func (fake *FakeNodeProvider) CreateNodeIfNotExistsCallCount() int {
 	return len(fake.createNodeIfNotExistsArgsForCall)
 }
 
-func (fake *FakeNodeProvider) CreateNodeIfNotExistsCalls(stub func() (nodeprovider.NodeHandle, error)) {
+func (fake *FakeNodeProvider) CreateNodeIfNotExistsCalls(stub func() (node.Node, error)) {
 	fake.createNodeIfNotExistsMutex.Lock()
 	defer fake.createNodeIfNotExistsMutex.Unlock()
 	fake.CreateNodeIfNotExistsStub = stub
 }
 
-func (fake *FakeNodeProvider) CreateNodeIfNotExistsReturns(result1 nodeprovider.NodeHandle, result2 error) {
+func (fake *FakeNodeProvider) CreateNodeIfNotExistsReturns(result1 node.Node, result2 error) {
 	fake.createNodeIfNotExistsMutex.Lock()
 	defer fake.createNodeIfNotExistsMutex.Unlock()
 	fake.CreateNodeIfNotExistsStub = nil
 	fake.createNodeIfNotExistsReturns = struct {
-		result1 nodeprovider.NodeHandle
+		result1 node.Node
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeNodeProvider) CreateNodeIfNotExistsReturnsOnCall(i int, result1 nodeprovider.NodeHandle, result2 error) {
+func (fake *FakeNodeProvider) CreateNodeIfNotExistsReturnsOnCall(i int, result1 node.Node, result2 error) {
 	fake.createNodeIfNotExistsMutex.Lock()
 	defer fake.createNodeIfNotExistsMutex.Unlock()
 	fake.CreateNodeIfNotExistsStub = nil
 	if fake.createNodeIfNotExistsReturnsOnCall == nil {
 		fake.createNodeIfNotExistsReturnsOnCall = make(map[int]struct {
-			result1 nodeprovider.NodeHandle
+			result1 node.Node
 			result2 error
 		})
 	}
 	fake.createNodeIfNotExistsReturnsOnCall[i] = struct {
-		result1 nodeprovider.NodeHandle
+		result1 node.Node
 		result2 error
 	}{result1, result2}
 }
@@ -162,7 +163,7 @@ func (fake *FakeNodeProvider) KillNodeIfExistsReturnsOnCall(i int, result1 error
 	}{result1}
 }
 
-func (fake *FakeNodeProvider) ListNodes() ([]nodeprovider.NodeHandle, error) {
+func (fake *FakeNodeProvider) ListNodes() ([]node.Node, error) {
 	fake.listNodesMutex.Lock()
 	ret, specificReturn := fake.listNodesReturnsOnCall[len(fake.listNodesArgsForCall)]
 	fake.listNodesArgsForCall = append(fake.listNodesArgsForCall, struct {
@@ -185,34 +186,34 @@ func (fake *FakeNodeProvider) ListNodesCallCount() int {
 	return len(fake.listNodesArgsForCall)
 }
 
-func (fake *FakeNodeProvider) ListNodesCalls(stub func() ([]nodeprovider.NodeHandle, error)) {
+func (fake *FakeNodeProvider) ListNodesCalls(stub func() ([]node.Node, error)) {
 	fake.listNodesMutex.Lock()
 	defer fake.listNodesMutex.Unlock()
 	fake.ListNodesStub = stub
 }
 
-func (fake *FakeNodeProvider) ListNodesReturns(result1 []nodeprovider.NodeHandle, result2 error) {
+func (fake *FakeNodeProvider) ListNodesReturns(result1 []node.Node, result2 error) {
 	fake.listNodesMutex.Lock()
 	defer fake.listNodesMutex.Unlock()
 	fake.ListNodesStub = nil
 	fake.listNodesReturns = struct {
-		result1 []nodeprovider.NodeHandle
+		result1 []node.Node
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeNodeProvider) ListNodesReturnsOnCall(i int, result1 []nodeprovider.NodeHandle, result2 error) {
+func (fake *FakeNodeProvider) ListNodesReturnsOnCall(i int, result1 []node.Node, result2 error) {
 	fake.listNodesMutex.Lock()
 	defer fake.listNodesMutex.Unlock()
 	fake.ListNodesStub = nil
 	if fake.listNodesReturnsOnCall == nil {
 		fake.listNodesReturnsOnCall = make(map[int]struct {
-			result1 []nodeprovider.NodeHandle
+			result1 []node.Node
 			result2 error
 		})
 	}
 	fake.listNodesReturnsOnCall[i] = struct {
-		result1 []nodeprovider.NodeHandle
+		result1 []node.Node
 		result2 error
 	}{result1, result2}
 }

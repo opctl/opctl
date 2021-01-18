@@ -17,7 +17,7 @@ var _ = Context("_node", func() {
 			/* arrange */
 			providedDataRef := "dummyDataRef"
 
-			fakeCore := new(nodeFakes.FakeOpNode)
+			fakeCore := new(nodeFakes.FakeNode)
 
 			providedPullCreds := &model.Creds{
 				Username: "dummyUsername",
@@ -25,7 +25,7 @@ var _ = Context("_node", func() {
 			}
 
 			objectUnderTest := _node{
-				opNode:    fakeCore,
+				node:      fakeCore,
 				pullCreds: providedPullCreds,
 			}
 
@@ -48,13 +48,13 @@ var _ = Context("_node", func() {
 		Context("core.ListDescendants errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeCore := new(nodeFakes.FakeOpNode)
+				fakeCore := new(nodeFakes.FakeNode)
 
 				listDirEntrysErr := errors.New("dummyError")
 				fakeCore.ListDescendantsReturns(nil, listDirEntrysErr)
 
 				objectUnderTest := _node{
-					opNode: fakeCore,
+					node: fakeCore,
 				}
 
 				/* act */
@@ -72,7 +72,7 @@ var _ = Context("_node", func() {
 				/* arrange */
 				providedDataRef := "dummyDataRef"
 
-				fakeCore := new(nodeFakes.FakeOpNode)
+				fakeCore := new(nodeFakes.FakeNode)
 
 				providedPullCreds := &model.Creds{
 					Username: "dummyUsername",
@@ -80,7 +80,7 @@ var _ = Context("_node", func() {
 				}
 
 				objectUnderTest := _node{
-					opNode:    fakeCore,
+					node:      fakeCore,
 					pullCreds: providedPullCreds,
 				}
 

@@ -1,8 +1,8 @@
 package dir
 
 import (
-	"regexp"
 	"fmt"
+	"regexp"
 
 	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"

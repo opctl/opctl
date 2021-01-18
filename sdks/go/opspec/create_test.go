@@ -17,7 +17,7 @@ var _ = Context("Create", func() {
 	It("should create expected op", func() {
 
 		/* arrange */
-		providedPath, err := ioutil.TempDir("","")
+		providedPath, err := ioutil.TempDir("", "")
 		if nil != err {
 			panic(err)
 		}
@@ -44,7 +44,7 @@ var _ = Context("Create", func() {
 		if nil != err {
 			panic(err)
 		}
-		
+
 		Expect(string(actualOpFileBytes)).To(Equal(string(expectedOpFileBytes)))
 	})
 

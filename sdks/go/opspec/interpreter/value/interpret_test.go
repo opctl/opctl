@@ -77,7 +77,7 @@ var _ = Context("Interpret", func() {
 	})
 	It("should return expected result", func() {
 		/* arrange */
-		identifier  := "identifier"
+		identifier := "identifier"
 		stringValue := model.Value{String: new(string)}
 
 		/* act */

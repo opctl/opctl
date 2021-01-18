@@ -154,7 +154,7 @@ var _ = Context("ToDir", func() {
 				actualValue, actualErr := ToDir(providedValue, providedScratchDir)
 
 				/* assert */
-				Expect(actualErr).To(BeNil())
+        Expect(actualErr).To(BeNil())
 				Expect(strings.HasPrefix(*actualValue.Dir, providedScratchDir)).To(BeTrue())
 
 			})

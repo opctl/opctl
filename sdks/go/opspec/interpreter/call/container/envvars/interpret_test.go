@@ -19,7 +19,7 @@ var _ = Context("Interpret", func() {
 				"$()",
 			)
 
-      /* assert */
+			/* assert */
 			Expect(actualErr).To(Equal(errors.New("unable to interpret '$()' as envVars; error was unable to interpret $() to object; error was unable to interpret '' as reference; '' not in scope")))
 		})
 	})

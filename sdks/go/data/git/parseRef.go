@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 )
+
 // parseRef string to object
 func parseRef(
 	dataRef string,

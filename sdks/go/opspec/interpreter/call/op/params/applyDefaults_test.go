@@ -185,7 +185,7 @@ var _ = Context("ApplyDefaults", func() {
 				providedOutputParams := map[string]*model.Param{
 					providedOutputName: {String: &model.StringParam{Default: &providedOutputDefault}},
 				}
-				
+
 				expectedOutputs := map[string]*model.Value{
 					providedOutputName: {String: &providedOutputDefault},
 				}

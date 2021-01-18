@@ -2,8 +2,8 @@ package dir
 
 import (
 	"errors"
-	"os"
 	"fmt"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

@@ -1,9 +1,9 @@
 package call
 
 import (
-	"path/filepath"
 	"errors"
 	"os"
+	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -206,7 +206,7 @@ var _ = Context("Interpret", func() {
 			serialSpec := []*model.CallSpec{}
 
 			expectedCall := &model.Call{
-				Serial: serialSpec,
+				Serial:   serialSpec,
 				ID:       providedID,
 				ParentID: providedParentID,
 				RootID:   providedRootCallID,

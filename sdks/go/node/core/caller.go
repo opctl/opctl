@@ -31,7 +31,6 @@ type caller interface {
 func newCaller(
 	containerCaller containerCaller,
 	dataDirPath string,
-	stateStore stateStore,
 	pubSub pubsub.PubSub,
 ) caller {
 	instance := &_caller{
@@ -41,7 +40,6 @@ func newCaller(
 	}
 
 	instance.opCaller = newOpCaller(
-		stateStore,
 		instance,
 		dataDirPath,
 	)
