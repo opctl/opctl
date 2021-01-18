@@ -2,8 +2,8 @@ package value
 
 import (
 	"fmt"
-	"regexp"
 	"io/ioutil"
+	"regexp"
 
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater"

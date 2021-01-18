@@ -20,7 +20,7 @@ var _ = Context("Handler", func() {
 	Context("NewHandler", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewHandler(new(nodeFakes.FakeOpNode))).Should(Not(BeNil()))
+			Expect(NewHandler(new(nodeFakes.FakeNode))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {
@@ -32,7 +32,7 @@ var _ = Context("Handler", func() {
 				fakeUpgrader.UpgradeReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _handler{
-					opNode:   new(nodeFakes.FakeOpNode),
+					node:     new(nodeFakes.FakeNode),
 					upgrader: fakeUpgrader,
 				}
 
@@ -57,7 +57,7 @@ var _ = Context("Handler", func() {
 
 					/* arrange */
 					objectUnderTest := _handler{
-						opNode: new(nodeFakes.FakeOpNode),
+						node: new(nodeFakes.FakeNode),
 					}
 
 					invalidSince := "notValidTime"
@@ -89,14 +89,14 @@ var _ = Context("Handler", func() {
 				It("should call core.GetEventStream w/ expected args", func() {
 
 					/* arrange */
-					fakeCore := new(nodeFakes.FakeOpNode)
+					fakeCore := new(nodeFakes.FakeNode)
 					eventChannel := make(chan model.Event)
 					// close eventChannel to trigger immediate return
 					close(eventChannel)
 					fakeCore.GetEventStreamReturns(eventChannel, nil)
 
 					objectUnderTest := _handler{
-						opNode: fakeCore,
+						node: fakeCore,
 					}
 
 					expectedSince := time.Now().UTC()
@@ -133,14 +133,14 @@ var _ = Context("Handler", func() {
 			It("should call core.GetEventStream w/ expected args", func() {
 
 				/* arrange */
-				fakeCore := new(nodeFakes.FakeOpNode)
+				fakeCore := new(nodeFakes.FakeNode)
 				eventChannel := make(chan model.Event)
 				// close eventChannel to trigger immediate return
 				close(eventChannel)
 				fakeCore.GetEventStreamReturns(eventChannel, nil)
 
 				objectUnderTest := _handler{
-					opNode: fakeCore,
+					node: fakeCore,
 				}
 
 				root1 := "dummyRoot1"

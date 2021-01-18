@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
 )
 
 func refToVariable(ref *string) string {

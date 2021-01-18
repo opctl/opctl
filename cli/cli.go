@@ -1,34 +1,29 @@
 package main
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
-
 import (
 	"context"
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/appdataspec/sdk-golang/appdatapath"
 	mow "github.com/jawher/mow.cli"
 	"github.com/opctl/opctl/cli/internal/clioutput"
-	corePkg "github.com/opctl/opctl/cli/internal/core"
+	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
+	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
+	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
 )
 
-//counterfeiter:generate -o internal/fakes/cli.go . cli
+var testModeEnvVar = "OPCTL_TEST_MODE"
+
 type cli interface {
 	Run(args []string) error
 }
 
-// newCorer allows swapping out corePkg.New for unit tests
-type newCorer func(
-	clioutput.CliOutput,
-	local.NodeCreateOpts,
-) corePkg.Core
-
 func newCli(
 	cliOutput clioutput.CliOutput,
-	newCorer newCorer,
 ) cli {
 
 	cli := mow.App(
@@ -37,9 +32,32 @@ func newCli(
 	)
 	cli.Version("v version", version)
 
+	exitWith := func(successMessage string, err error) {
+		if err == nil {
+			if successMessage != "" {
+				cliOutput.Success(successMessage)
+			}
+			mow.Exit(0)
+		} else {
+			cliOutput.Error(err.Error())
+
+			// @TODO find a better way to support tests & remove this
+			// currently mow.Exit(non-zero) blows up test harness
+			if _, isTestMode := os.LookupEnv(testModeEnvVar); isTestMode {
+				os.Exit(0)
+			}
+
+			if re, ok := err.(*RunError); ok {
+				mow.Exit(re.ExitCode)
+			} else {
+				mow.Exit(1)
+			}
+		}
+	}
+
 	perUserAppDataPath, err := appdatapath.New().PerUser()
 	if nil != err {
-		panic(err)
+		exitWith("", err)
 	}
 
 	containerRuntime := cli.String(
@@ -68,32 +86,18 @@ func newCli(
 			Value:  "127.0.0.1:42224",
 		},
 	)
+
 	nodeCreateOpts := local.NodeCreateOpts{
 		ContainerRuntime: *containerRuntime,
 		DataDir:          *dataDir,
 		ListenAddress:    *listenAddress,
 	}
 
-	core := newCorer(
-		cliOutput,
+	nodeProvider := local.New(
 		nodeCreateOpts,
 	)
 
-	exitWith := func(successMessage string, err error) {
-		if err == nil {
-			if successMessage != "" {
-				cliOutput.Success(successMessage)
-			}
-			mow.Exit(0)
-		} else {
-			cliOutput.Error(err.Error())
-			if re, ok := err.(*corePkg.RunError); ok {
-				mow.Exit(re.ExitCode)
-			} else {
-				mow.Exit(1)
-			}
-		}
-	}
+	cliParamSatisfier := cliparamsatisfier.New(cliOutput)
 
 	noColor := cli.BoolOpt("nc no-color", false, "Disable output coloring")
 
@@ -107,53 +111,102 @@ func newCli(
 		authCmd.Command("add", "Add auth for an OCI image registry", func(addCmd *mow.Cmd) {
 			addCmd.Spec = "RESOURCES [ -u=<username> ] [ -p=<password> ]"
 
-			resources := addCmd.StringArg("RESOURCES", "", "Resources this auth applies to in the form of a host or host/path.")
+			resources := addCmd.StringArg("RESOURCES", "", "Resources this auth applies to in the form of a host or host/path (e.g. docker.io)")
 			username := addCmd.StringOpt("u username", "", "Username")
 			password := addCmd.StringOpt("p password", "", "Password")
 
 			addCmd.Action = func() {
-				exitWith("", core.Auth().Add(context.TODO(), *resources, *username, *password))
+				exitWith(
+					"",
+					auth(
+						context.TODO(),
+						nodeProvider,
+						model.AddAuthReq{
+							Resources: *resources,
+							Creds: model.Creds{
+								Username: *username,
+								Password: *password,
+							},
+						},
+					),
+				)
 			}
 		})
 	})
 
 	cli.Command("events", "Stream events", func(eventsCmd *mow.Cmd) {
 		eventsCmd.Action = func() {
-			exitWith("", core.Events(context.TODO()))
+			exitWith(
+				"",
+				events(
+					context.TODO(),
+					cliOutput,
+					nodeProvider,
+				),
+			)
 		}
 	})
 
-	cli.Command("ls", "List operations (only valid ops will be listed)", func(lsCmd *mow.Cmd) {
+	cli.Command("ls", "List operations", func(lsCmd *mow.Cmd) {
 		const dirRefArgName = "DIR_REF"
 		lsCmd.Spec = fmt.Sprintf("[%v]", dirRefArgName)
 		dirRef := lsCmd.StringArg(dirRefArgName, opspec.DotOpspecDirName, "Reference to dir ops will be listed from")
+
 		lsCmd.Action = func() {
-			exitWith("", core.Ls(context.TODO(), *dirRef))
+			exitWith(
+				"",
+				ls(
+					context.TODO(),
+					cliParamSatisfier,
+					nodeProvider,
+					*dirRef,
+				),
+			)
 		}
 	})
 
 	cli.Command("node", "Manage nodes", func(nodeCmd *mow.Cmd) {
 		nodeCmd.Command("create", "Creates a node", func(createCmd *mow.Cmd) {
 			createCmd.Action = func() {
-				exitWith("", core.Node().Create(nodeCreateOpts))
+				exitWith(
+					"",
+					node(nodeCreateOpts),
+				)
 			}
 		})
 
 		nodeCmd.Command("kill", "Kills a node", func(killCmd *mow.Cmd) {
 			killCmd.Action = func() {
-				exitWith("", core.Node().Kill())
+				exitWith("", nodeProvider.KillNodeIfExists(""))
 			}
 		})
 	})
 
 	cli.Command("op", "Manage ops", func(opCmd *mow.Cmd) {
+		node, err := nodeProvider.CreateNodeIfNotExists()
+		if err != nil {
+			exitWith("", err)
+		}
+
+		dataResolver := dataresolver.New(
+			cliParamSatisfier,
+			node,
+		)
+
 		opCmd.Command("create", "Create an op", func(createCmd *mow.Cmd) {
 			path := createCmd.StringOpt("path", opspec.DotOpspecDirName, "Path the op will be created at")
 			description := createCmd.StringOpt("d description", "", "Op description")
 			name := createCmd.StringArg("NAME", "", "Op name")
 
 			createCmd.Action = func() {
-				exitWith("", core.Op().Create(*path, *description, *name))
+				exitWith(
+					"",
+					opspec.Create(
+						filepath.Join(*path, *name),
+						*name,
+						*description,
+					),
+				)
 			}
 		})
 
@@ -164,7 +217,19 @@ func newCli(
 			password := installCmd.StringOpt("p password", "", "Password used to auth w/ the pkg source")
 
 			installCmd.Action = func() {
-				exitWith("", core.Op().Install(context.TODO(), *path, *opRef, *username, *password))
+				exitWith(
+					"",
+					opInstall(
+						context.TODO(),
+						dataResolver,
+						*opRef,
+						*path,
+						&model.Creds{
+							Username: *username,
+							Password: *password,
+						},
+					),
+				)
 			}
 		})
 
@@ -172,7 +237,16 @@ func newCli(
 			opID := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
 
 			killCmd.Action = func() {
-				exitWith("", core.Op().Kill(context.TODO(), *opID))
+				exitWith(
+					"",
+					node.KillOp(
+						context.TODO(),
+						model.KillOpReq{
+							OpID:       *opID,
+							RootCallID: *opID,
+						},
+					),
+				)
 			}
 		})
 
@@ -180,7 +254,14 @@ func newCli(
 			opRef := validateCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
 			validateCmd.Action = func() {
-				exitWith(core.Op().Validate(context.TODO(), *opRef))
+				exitWith(
+					fmt.Sprintf("%v is valid", *opRef),
+					opValidate(
+						context.TODO(),
+						dataResolver,
+						*opRef,
+					),
+				)
 			}
 		})
 	})
@@ -191,14 +272,30 @@ func newCli(
 		opRef := runCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
 		runCmd.Action = func() {
-			exitWith("", core.Run(context.TODO(), *opRef, &corePkg.RunOpts{Args: *args, ArgFile: *argFile}))
+			exitWith(
+				"",
+				run(
+					context.TODO(),
+					cliOutput,
+					cliParamSatisfier,
+					nodeProvider,
+					*args,
+					*argFile,
+					*opRef,
+				),
+			)
 		}
 	})
 
 	cli.Command("self-update", "Update opctl", func(selfUpdateCmd *mow.Cmd) {
 		channel := selfUpdateCmd.StringOpt("c channel", "stable", "Release channel to update from (either `stable`, `alpha`, or `beta`)")
 		selfUpdateCmd.Action = func() {
-			exitWith(core.SelfUpdate(*channel))
+			exitWith(
+				selfUpdate(
+					nodeProvider,
+					*channel,
+				),
+			)
 		}
 	})
 
@@ -208,7 +305,14 @@ func newCli(
 		mountRefArg := uiCmd.StringArg(mountRefArgName, ".", "Reference to mount (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
 		uiCmd.Action = func() {
-			exitWith("Opctl web UI opened!", core.UI(*mountRefArg))
+			exitWith(
+				"Opctl web UI opened!",
+				ui(
+					cliParamSatisfier,
+					nodeProvider,
+					*mountRefArg,
+				),
+			)
 		}
 	})
 

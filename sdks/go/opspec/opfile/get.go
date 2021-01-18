@@ -2,8 +2,8 @@ package opfile
 
 import (
 	"context"
-	"path/filepath"
 	"io/ioutil"
+	"path/filepath"
 
 	"github.com/opctl/opctl/sdks/go/model"
 )

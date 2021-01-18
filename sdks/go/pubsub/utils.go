@@ -8,19 +8,17 @@ func isRootCallIDExcludedByFilter(
 	rootCallID string,
 	filter model.EventFilter,
 ) bool {
-	if nil != filter.Roots {
-		isMatchFound := false
-		for _, includedRootCallID := range filter.Roots {
-			if includedRootCallID == rootCallID {
-				isMatchFound = true
-				break
-			}
-		}
-		if !isMatchFound {
-			return true
+	if nil == filter.Roots {
+		return false
+	}
+
+	for _, includedRootCallID := range filter.Roots {
+		if includedRootCallID == rootCallID {
+			return false
 		}
 	}
-	return false
+
+	return true
 }
 
 func getEventRootCallID(

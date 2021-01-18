@@ -36,16 +36,16 @@ func newSerialLoopCaller(
 	pubSub pubsub.PubSub,
 ) serialLoopCaller {
 	return _serialLoopCaller{
-		caller:                caller,
-		pubSub:                pubSub,
-		uniqueStringFactory:   uniquestring.NewUniqueStringFactory(),
+		caller:              caller,
+		pubSub:              pubSub,
+		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
 	}
 }
 
 type _serialLoopCaller struct {
-	caller                caller
-	pubSub                pubsub.PubSub
-	uniqueStringFactory   uniquestring.UniqueStringFactory
+	caller              caller
+	pubSub              pubsub.PubSub
+	uniqueStringFactory uniquestring.UniqueStringFactory
 }
 
 func (lpr _serialLoopCaller) Call(

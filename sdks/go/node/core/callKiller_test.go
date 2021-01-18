@@ -2,73 +2,84 @@ package core
 
 import (
 	"context"
-	"os"
+	"io/ioutil"
+	"time"
 
 	"github.com/dgraph-io/badger/v2"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
-	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/pubsub"
-	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("_callKiller", func() {
 	Context("Kill", func() {
-		It("should call stateStore.ListWithParentID w/ expected args", func() {
-			/* arrange */
-			providedCallID := "providedCallID"
-
-			fakeStateStore := new(FakeStateStore)
-
-			objectUnderTest := _callKiller{
-				containerRuntime: new(FakeContainerRuntime),
-				stateStore:       fakeStateStore,
-				eventPublisher:   new(FakeEventPublisher),
-			}
-
-			/* act */
-			objectUnderTest.Kill(
-				context.Background(),
-				providedCallID,
-				"rootCallID",
-			)
-
-			/* assert */
-			Expect(fakeStateStore.ListWithParentIDArgsForCall(0)).To(Equal(providedCallID))
-		})
 		Context("stateStore.ListWithParentID returns nodes", func() {
 			It("should call pubsub.Publish for each", func() {
 				/* arrange */
 				providedCallID := "providedCallID"
+				providedRootCallID := "providedRootCallID"
 
-				nodesReturnedFromStateStore := []*model.Call{
-					{ID: "dummyNode1ID"},
-					{ID: "dummyNode2ID"},
-					{ID: "dummyNode3ID"},
+				expectedChildCallIDs := []string{
+					"childCallID1",
+					"childCallID2",
+					"childCallID3",
 				}
-				fakeStateStore := new(FakeStateStore)
-				fakeStateStore.ListWithParentIDReturnsOnCall(0, nodesReturnedFromStateStore)
 
-				db, err := badger.Open(
-					badger.DefaultOptions(os.TempDir()).WithLogger(nil),
-				)
-				if err != nil {
+				dbDir, err := ioutil.TempDir("", "")
+				if nil != err {
 					panic(err)
 				}
-				db.DropAll()
+
+				db, err := badger.Open(
+					badger.DefaultOptions(dbDir).WithLogger(nil),
+				)
+				if nil != err {
+					panic(err)
+				}
 
 				pubSub := pubsub.New(db)
-
-				eventChanCtx, cancelEventChan := context.WithCancel(context.Background())
-				eventChannel, _ := pubSub.Subscribe(
-					eventChanCtx,
+				eventChannel, err := pubSub.Subscribe(
+					context.Background(),
 					model.EventFilter{},
 				)
+				if nil != err {
+					panic(err)
+				}
+
+				stateStore := newStateStore(db, pubSub)
+
+				// seed call
+				pubSub.Publish(model.Event{
+					CallStarted: &model.CallStarted{
+						Call: model.Call{
+							ID:     providedCallID,
+							RootID: providedRootCallID,
+						},
+					},
+					Timestamp: time.Now().UTC(),
+				})
+
+				// seed child calls
+				for _, childCallID := range expectedChildCallIDs {
+					pubSub.Publish(model.Event{
+						CallStarted: &model.CallStarted{
+							Call: model.Call{
+								ID:       childCallID,
+								ParentID: &providedCallID,
+								RootID:   providedRootCallID,
+							},
+						},
+						Timestamp: time.Now().UTC(),
+					})
+				}
+
+				// give stateStore time to receive & apply start events
+				time.Sleep(time.Second)
 
 				objectUnderTest := newCallKiller(
-					fakeStateStore,
+					stateStore,
 					new(FakeContainerRuntime),
 					pubSub,
 				)
@@ -77,21 +88,24 @@ var _ = Context("_callKiller", func() {
 				objectUnderTest.Kill(
 					context.Background(),
 					providedCallID,
-					"rootCallID",
+					providedRootCallID,
 				)
 
-				actualCalls := []string{
-					(<-eventChannel).CallKillRequested.Request.OpID,
-					(<-eventChannel).CallKillRequested.Request.OpID,
-					(<-eventChannel).CallKillRequested.Request.OpID,
-				}
-
 				/* assert */
-				cancelEventChan()
-				Expect(len(actualCalls)).To(Equal(len(nodesReturnedFromStateStore)))
-				Expect(actualCalls).To(ContainElement(nodesReturnedFromStateStore[0].ID))
-				Expect(actualCalls).To(ContainElement(nodesReturnedFromStateStore[1].ID))
-				Expect(actualCalls).To(ContainElement(nodesReturnedFromStateStore[2].ID))
+				actualChildCallIDs := []string{}
+				go func() {
+					for event := range eventChannel {
+						if nil != event.CallKillRequested {
+							actualChildCallIDs = append(actualChildCallIDs, event.CallKillRequested.Request.OpID)
+						}
+					}
+				}()
+
+				Eventually(
+					func() []string { return actualChildCallIDs },
+				).Should(
+					ConsistOf(expectedChildCallIDs),
+				)
 			})
 		})
 	})

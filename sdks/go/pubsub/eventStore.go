@@ -29,7 +29,7 @@ func newEventStore(
 ) EventStore {
 	return &_eventStore{
 		eventsByTimestampKeyPrefix: "eventsByTimestamp_",
-		db:                         db,
+		db: db,
 	}
 }
 

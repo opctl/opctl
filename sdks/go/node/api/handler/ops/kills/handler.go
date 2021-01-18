@@ -20,15 +20,15 @@ type Handler interface {
 
 // NewHandler returns an initialized Handler instance
 func NewHandler(
-	opNode node.OpNode,
+	node node.Node,
 ) Handler {
 	return _handler{
-		opNode: opNode,
+		node: node,
 	}
 }
 
 type _handler struct {
-	opNode node.OpNode
+	node node.Node
 }
 
 func (hdlr _handler) Handle(
@@ -43,7 +43,7 @@ func (hdlr _handler) Handle(
 		return
 	}
 
-	hdlr.opNode.KillOp(httpReq.Context(), killOpReq)
+	hdlr.node.KillOp(httpReq.Context(), killOpReq)
 
 	httpResp.WriteHeader(http.StatusCreated)
 	httpResp.Header().Set("Content-Type", "text/plain; charset=UTF-8")

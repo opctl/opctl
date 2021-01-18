@@ -101,7 +101,9 @@ func rCreateFileItem(
 
 		switch v := v.(type) {
 		case map[string]interface{}:
-			return rCreateFileItem(rootPath, relChildPath, v)
+			if err := rCreateFileItem(rootPath, relChildPath, v); nil != err {
+				return err
+			}
 		default:
 			return fmt.Errorf("%s not a valid file/dir initializer", relChildPath)
 		}

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/array"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/boolean"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/dir"
@@ -12,7 +13,6 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/object"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/socket"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/str"
-	"github.com/opctl/opctl/sdks/go/model"
 )
 
 // Validate validates a value against a parameter

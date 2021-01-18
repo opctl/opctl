@@ -27,18 +27,18 @@ type DataResolver interface {
 
 func New(
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier,
-	opNode node.OpNode,
+	node node.Node,
 ) DataResolver {
 	return _dataResolver{
 		cliParamSatisfier: cliParamSatisfier,
-		opNode:            opNode,
+		node:              node,
 		os:                ios.New(),
 	}
 }
 
 type _dataResolver struct {
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier
-	opNode            node.OpNode
+	node              node.Node
 	os                ios.IOS
 }
 
@@ -62,7 +62,7 @@ func (dtr _dataResolver) Resolve(
 			dataRef,
 			fsProvider,
 			dataNode.New(
-				dtr.opNode,
+				dtr.node,
 				pullCreds,
 			),
 		)
