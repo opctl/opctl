@@ -4,7 +4,6 @@ package client
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
-	"context"
 	"net/url"
 
 	iwebsocket "github.com/golang-interfaces/github.com-gorilla-websocket"
@@ -14,20 +13,21 @@ import (
 	"github.com/sethgrid/pester"
 )
 
-// Opts is options for APIClient
+// Opts is options for an api client node
 type Opts struct {
 	// RetryLogHook will be executed anytime a request is retried
 	RetryLogHook func(err error)
 }
 
-// New returns a new APIClient
+// New returns a new api client node
 // nil opts will be ignored
 func New(
 	baseURL url.URL,
 	opts *Opts,
-) APIClient {
+) node.Node {
 
 	httpClient := pester.New()
+	httpClient.MaxRetries = 5
 	httpClient.Backoff = pester.ExponentialBackoff
 
 	if nil != opts {
@@ -49,17 +49,4 @@ type apiClient struct {
 	baseURL    url.URL
 	httpClient ihttp.Client
 	wsDialer   iwebsocket.Dialer
-}
-
-//counterfeiter:generate -o fakes/client.go . APIClient
-
-// APIClient is an OpNode that runs ops with a remote OpNode over a network
-// connection
-type APIClient interface {
-	node.OpNode
-
-	// Liveness checks liveness of the web server
-	Liveness(
-		ctx context.Context,
-	) error
 }

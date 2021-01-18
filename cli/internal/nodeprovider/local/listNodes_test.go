@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/datadir"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	"github.com/opctl/opctl/sdks/go/node"
 )
 
 var _ = Context("listNodes", func() {
@@ -57,9 +57,13 @@ var _ = Context("listNodes", func() {
 		It("should return expected results", func() {
 			/* arrange */
 			listenAddress := "127.0.0.1:42224"
-			nodeHandle, _ := newNodeHandle(listenAddress)
-			expectedNodes := []nodeprovider.NodeHandle{
-				nodeHandle,
+      expectedNode, err := newAPIClientNode(listenAddress)
+      if nil != err {
+        panic(err)
+      }
+
+			expectedNodes := []node.Node{
+				expectedNode,
 			}
 
 			fakeLockFile := new(lockfile.Fake)
@@ -75,7 +79,7 @@ var _ = Context("listNodes", func() {
 			actualNodes, actualError := objectUnderTest.ListNodes()
 
 			/* assert */
-			Expect(actualNodes).To(Equal(expectedNodes))
+      Expect(actualNodes).To(HaveLen(len(expectedNodes)))
 			Expect(actualError).To(BeNil())
 		})
 	})

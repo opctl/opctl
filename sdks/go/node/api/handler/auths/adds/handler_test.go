@@ -15,7 +15,7 @@ var _ = Context("Handler", func() {
 	Context("NewHandler", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewHandler(new(nodeFakes.FakeOpNode))).Should(Not(BeNil()))
+			Expect(NewHandler(new(nodeFakes.FakeNode))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {
@@ -24,7 +24,7 @@ var _ = Context("Handler", func() {
 
 				/* arrange */
 				objectUnderTest := _handler{
-					opNode: new(nodeFakes.FakeOpNode),
+					node: new(nodeFakes.FakeNode),
 				}
 				providedHTTPResp := httptest.NewRecorder()
 

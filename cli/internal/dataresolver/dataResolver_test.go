@@ -16,7 +16,7 @@ var _ = Context("dataResolver", func() {
 	It("Can be constructed", func() {
 		Expect(New(
 			new(cliparamsatisfierFakes.FakeCLIParamSatisfier),
-			new(nodeFakes.FakeOpNode),
+			new(nodeFakes.FakeNode),
 		)).NotTo(BeNil())
 	})
 	Context("Resolve", func() {
@@ -24,7 +24,7 @@ var _ = Context("dataResolver", func() {
 			Context("data.ErrDataProviderAuthorization", func() {
 				It("should call cliParamSatisfier.Satisfy w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(nodeFakes.FakeOpNode)
+					fakeCore := new(nodeFakes.FakeNode)
 
 					fakeCore.ListDescendantsReturnsOnCall(0, nil, model.ErrDataProviderAuthorization{})
 					fakeCore.ListDescendantsReturnsOnCall(1, nil, errors.New(""))
@@ -44,7 +44,7 @@ var _ = Context("dataResolver", func() {
 					objectUnderTest := _dataResolver{
 						cliParamSatisfier: fakeCliParamSatisfier,
 						os:                new(ios.Fake),
-						opNode:            fakeCore,
+						node:              fakeCore,
 					}
 
 					/* act */
@@ -61,12 +61,12 @@ var _ = Context("dataResolver", func() {
 					providedDataRef := "dummyDataRef"
 
 					expectedErr := "expectedErr"
-					fakeCore := new(nodeFakes.FakeOpNode)
+					fakeCore := new(nodeFakes.FakeNode)
 					fakeCore.ListDescendantsReturns(nil, errors.New(expectedErr))
 
 					objectUnderTest := _dataResolver{
-						os:     new(ios.Fake),
-						opNode: fakeCore,
+						os:   new(ios.Fake),
+						node: fakeCore,
 					}
 
 					/* act */
@@ -81,11 +81,11 @@ var _ = Context("dataResolver", func() {
 		Context("data.Resolve doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeCore := new(nodeFakes.FakeOpNode)
+				fakeCore := new(nodeFakes.FakeNode)
 
 				objectUnderTest := _dataResolver{
-					os:     new(ios.Fake),
-					opNode: fakeCore,
+					os:   new(ios.Fake),
+					node: fakeCore,
 				}
 
 				/* act */

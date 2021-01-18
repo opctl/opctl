@@ -20,8 +20,7 @@ var _ = Context("caller", func() {
 			Expect(
 				newCaller(
 					new(FakeContainerCaller),
-					"dummyDataDir",
-					new(FakeStateStore),
+          "dummyDataDir",
 					new(FakePubSub),
 				),
 			).To(Not(BeNil()))
@@ -69,7 +68,7 @@ var _ = Context("caller", func() {
 				}
 
 				ifSpec := []*model.PredicateSpec{
-					&model.PredicateSpec{
+					{
 						Eq: &predicateSpec,
 					},
 				}

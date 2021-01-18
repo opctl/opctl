@@ -28,19 +28,16 @@ type opCaller interface {
 }
 
 func newOpCaller(
-	stateStore stateStore,
 	caller caller,
 	dataDirPath string,
 ) opCaller {
 	return _opCaller{
 		caller:             caller,
-		stateStore:         stateStore,
 		callScratchDir:     filepath.Join(dataDirPath, "call"),
 	}
 }
 
 type _opCaller struct {
-	stateStore         stateStore
 	caller             caller
 	callScratchDir     string
 }

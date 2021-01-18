@@ -76,6 +76,17 @@ type FakeCore struct {
 		result1 []*model.DirEntry
 		result2 error
 	}
+	LivenessStub        func(context.Context) error
+	livenessMutex       sync.RWMutex
+	livenessArgsForCall []struct {
+		arg1 context.Context
+	}
+	livenessReturns struct {
+		result1 error
+	}
+	livenessReturnsOnCall map[int]struct {
+		result1 error
+	}
 	ResolveDataStub        func(context.Context, string, *model.Creds) (model.DataHandle, error)
 	resolveDataMutex       sync.RWMutex
 	resolveDataArgsForCall []struct {
@@ -423,6 +434,66 @@ func (fake *FakeCore) ListDescendantsReturnsOnCall(i int, result1 []*model.DirEn
 	}{result1, result2}
 }
 
+func (fake *FakeCore) Liveness(arg1 context.Context) error {
+	fake.livenessMutex.Lock()
+	ret, specificReturn := fake.livenessReturnsOnCall[len(fake.livenessArgsForCall)]
+	fake.livenessArgsForCall = append(fake.livenessArgsForCall, struct {
+		arg1 context.Context
+	}{arg1})
+	fake.recordInvocation("Liveness", []interface{}{arg1})
+	fake.livenessMutex.Unlock()
+	if fake.LivenessStub != nil {
+		return fake.LivenessStub(arg1)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.livenessReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeCore) LivenessCallCount() int {
+	fake.livenessMutex.RLock()
+	defer fake.livenessMutex.RUnlock()
+	return len(fake.livenessArgsForCall)
+}
+
+func (fake *FakeCore) LivenessCalls(stub func(context.Context) error) {
+	fake.livenessMutex.Lock()
+	defer fake.livenessMutex.Unlock()
+	fake.LivenessStub = stub
+}
+
+func (fake *FakeCore) LivenessArgsForCall(i int) context.Context {
+	fake.livenessMutex.RLock()
+	defer fake.livenessMutex.RUnlock()
+	argsForCall := fake.livenessArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *FakeCore) LivenessReturns(result1 error) {
+	fake.livenessMutex.Lock()
+	defer fake.livenessMutex.Unlock()
+	fake.LivenessStub = nil
+	fake.livenessReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeCore) LivenessReturnsOnCall(i int, result1 error) {
+	fake.livenessMutex.Lock()
+	defer fake.livenessMutex.Unlock()
+	fake.LivenessStub = nil
+	if fake.livenessReturnsOnCall == nil {
+		fake.livenessReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.livenessReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeCore) ResolveData(arg1 context.Context, arg2 string, arg3 *model.Creds) (model.DataHandle, error) {
 	fake.resolveDataMutex.Lock()
 	ret, specificReturn := fake.resolveDataReturnsOnCall[len(fake.resolveDataArgsForCall)]
@@ -565,6 +636,8 @@ func (fake *FakeCore) Invocations() map[string][][]interface{} {
 	defer fake.killOpMutex.RUnlock()
 	fake.listDescendantsMutex.RLock()
 	defer fake.listDescendantsMutex.RUnlock()
+	fake.livenessMutex.RLock()
+	defer fake.livenessMutex.RUnlock()
 	fake.resolveDataMutex.RLock()
 	defer fake.resolveDataMutex.RUnlock()
 	fake.startOpMutex.RLock()

@@ -15,7 +15,6 @@ var _ = Context("opCaller", func() {
 		It("should return opCaller", func() {
 			/* arrange/act/assert */
 			Expect(newOpCaller(
-				new(FakeStateStore),
 				new(FakeCaller),
 				"",
 			)).To(Not(BeNil()))
@@ -65,7 +64,6 @@ var _ = Context("opCaller", func() {
 
 			objectUnderTest := _opCaller{
 				caller:       fakeCaller,
-				stateStore:   new(FakeStateStore),
 			}
 
 			/* act */
@@ -134,7 +132,6 @@ var _ = Context("opCaller", func() {
 
 			objectUnderTest := _opCaller{
 				caller:             fakeCaller,
-				stateStore:         new(FakeStateStore),
 			}
 
 			/* act */

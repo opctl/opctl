@@ -8,10 +8,10 @@ import (
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
-//counterfeiter:generate -o fakes/core.go . OpNode
+//counterfeiter:generate -o fakes/core.go . Node
 
-// OpNode is the main structure to run and interact with ops
-type OpNode interface {
+// Node is the main structure to run and interact with ops
+type Node interface {
 	// AddAuth records authentication within the core
 	AddAuth(
 		ctx context.Context,
@@ -33,6 +33,11 @@ type OpNode interface {
 	) (
 		err error,
 	)
+
+	// Liveness checks liveness of the node
+	Liveness(
+		ctx context.Context,
+	) error
 
 	// StartOp starts an op and returns the root call ID
 	StartOp(
