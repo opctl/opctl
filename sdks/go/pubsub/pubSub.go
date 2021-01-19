@@ -88,9 +88,9 @@ func (ps *pubSub) Subscribe(
 		// new events
 		for event := range publishEventChannel {
 			select {
-			case dstEventChannel <- event:
 			case <-ctx.Done():
 				return
+			case dstEventChannel <- event:
 			}
 		}
 	}()
@@ -120,19 +120,15 @@ func (ps *pubSub) Publish(
 	defer ps.subscriptionsMutex.RUnlock()
 
 	for publishEventChannel, subscriptionInfo := range ps.subscriptions {
-
-		RootCallID := getEventRootCallID(event)
-		if !isRootCallIDExcludedByFilter(RootCallID, subscriptionInfo.Filter) {
-
-			// use go routine because this publishEventChannel could be blocked
+		rootCallID := getEventRootCallID(event)
+		if !isRootCallIDExcludedByFilter(rootCallID, subscriptionInfo.Filter) {
+			// use goroutine because this publishEventChannel could be blocked
 			// for valid reasons such as replaying events from event store.
 			//
 			// In such a case, we don't want to hold up delivery to any
 			// other subscriptions
 			go ps.publishToSubscription(publishEventChannel, subscriptionInfo, event)
-
 		}
-
 	}
 }
 

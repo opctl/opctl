@@ -79,8 +79,8 @@ func (es _eventStore) List(
 
 				if !isRootCallIDExcludedByFilter(getEventRootCallID(event), filter) {
 					select {
-					case eventChannel <- event:
 					case <-ctx.Done():
+					case eventChannel <- event:
 						return ctx.Err()
 					}
 				}
