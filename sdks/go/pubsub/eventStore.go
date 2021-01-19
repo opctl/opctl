@@ -10,18 +10,21 @@ import (
 	"github.com/dgraph-io/badger/v2"
 )
 
+// EventStore stores events outside the context of a subscription.
+// It allows inspecting events that have happened before a subscription is created.
 type EventStore interface {
 	Add(event model.Event) error
 	List(
 		ctx context.Context,
 		filter model.EventFilter,
+		until time.Time,
 		eventChannel chan model.Event,
 	) error
 }
 
 const sortableRFC3339Nano = "2006-01-02T15:04:05.000000000Z07:00"
 
-//newEventStore returns an EventStore implementation leveraging [Badger DB](https://github.com/dgraph-io/badger)
+// newEventStore returns an EventStore implementation leveraging [Badger DB](https://github.com/dgraph-io/badger)
 func newEventStore(
 	db *badger.DB,
 ) EventStore {
@@ -54,10 +57,14 @@ func (es *_eventStore) Add(
 	})
 }
 
+// List sends events that occurred to an event channel. It's intended to be used
+// to replay events that happened before a subscription channel was created.
+//
 // O(n) (n being number of events that exist); threadsafe
 func (es _eventStore) List(
 	ctx context.Context,
 	filter model.EventFilter,
+	until time.Time,
 	eventChannel chan model.Event,
 ) error {
 	if err := es.db.View(func(txn *badger.Txn) error {
@@ -75,6 +82,12 @@ func (es _eventStore) List(
 				var event model.Event
 				if err := json.Unmarshal(v, &event); nil != err {
 					return err
+				}
+
+				// ignore events generated after the list operation started
+				if event.Timestamp.After(until) {
+					it.Close()
+					return nil
 				}
 
 				if !isRootCallIDExcludedByFilter(getEventRootCallID(event), filter) {
