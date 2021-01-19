@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/dgraph-io/badger/v2"
@@ -91,6 +92,11 @@ var _ = Context("_callKiller", func() {
 
 				/* assert */
 				cancelEventChan()
+				go func() {
+					for event := range eventChannel {
+						Fail(fmt.Sprintf("eventChannel still has items: %v", event))
+					}
+				}()
 				Expect(len(actualCalls)).To(Equal(len(nodesReturnedFromStateStore)))
 				Expect(actualCalls).To(ContainElement(nodesReturnedFromStateStore[0].ID))
 				Expect(actualCalls).To(ContainElement(nodesReturnedFromStateStore[1].ID))
