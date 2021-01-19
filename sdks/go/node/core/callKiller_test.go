@@ -57,7 +57,10 @@ var _ = Context("_callKiller", func() {
 				if err != nil {
 					panic(err)
 				}
-				db.DropAll()
+				err = db.DropAll()
+				if err != nil {
+					panic(err)
+				}
 
 				pubSub := pubsub.New(db)
 

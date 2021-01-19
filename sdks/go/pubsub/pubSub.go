@@ -62,18 +62,17 @@ func (ps *pubSub) Subscribe(
 	<-chan model.Event,
 	error,
 ) {
-	dstEventChannel := make(chan model.Event, 1000)
+	dstEventChannel := make(chan model.Event)
 
 	go func() {
 		defer close(dstEventChannel)
 
-		publishEventChannel := make(chan model.Event, 1000)
-		defer ps.gcSubscription(publishEventChannel)
+		publishEventChannel := make(chan model.Event)
+		defer ps.closeSubscription(publishEventChannel)
 
 		subscriptionInfo := subscriptionInfo{
 			Filter: filter,
-			// Done is closed when the subscription is garbage collected
-			Done: make(chan struct{}, 1),
+			Done:   make(chan struct{}, 1),
 		}
 
 		ps.subscriptionsMutex.Lock()
@@ -81,13 +80,9 @@ func (ps *pubSub) Subscribe(
 		ps.subscriptionsMutex.Unlock()
 
 		// old events
-		eventStoreEventChannel, _ := ps.eventStore.List(ctx, filter)
-		for event := range eventStoreEventChannel {
-			select {
-			case dstEventChannel <- event:
-			case <-ctx.Done():
-				return
-			}
+		err := ps.eventStore.List(ctx, filter, dstEventChannel)
+		if err != nil {
+			return
 		}
 
 		// new events
@@ -103,7 +98,7 @@ func (ps *pubSub) Subscribe(
 	return dstEventChannel, nil
 }
 
-func (ps *pubSub) gcSubscription(
+func (ps *pubSub) closeSubscription(
 	channel chan model.Event,
 ) {
 	ps.subscriptionsMutex.RLock()

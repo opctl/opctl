@@ -15,10 +15,8 @@ type EventStore interface {
 	List(
 		ctx context.Context,
 		filter model.EventFilter,
-	) (
-		<-chan model.Event,
-		<-chan error,
-	)
+		eventChannel chan model.Event,
+	) error
 }
 
 const sortableRFC3339Nano = "2006-01-02T15:04:05.000000000Z07:00"
@@ -60,47 +58,39 @@ func (es *_eventStore) Add(
 func (es _eventStore) List(
 	ctx context.Context,
 	filter model.EventFilter,
-) (<-chan model.Event, <-chan error) {
-	eventChannel := make(chan model.Event, 1000)
-	errChannel := make(chan error, 1)
-
-	go func() {
-		defer close(eventChannel)
-		defer close(errChannel)
-
-		if err := es.db.View(func(txn *badger.Txn) error {
-			sinceTime := new(time.Time)
-			if nil != filter.Since {
-				sinceTime = filter.Since
-			}
-
-			it := txn.NewIterator(badger.DefaultIteratorOptions)
-			defer it.Close()
-			sinceBytes := []byte(es.eventsByTimestampKeyPrefix + sinceTime.Format(sortableRFC3339Nano))
-			for it.Seek(sinceBytes); it.ValidForPrefix([]byte(es.eventsByTimestampKeyPrefix)); it.Next() {
-				item := it.Item()
-				item.Value(func(v []byte) error {
-					event := model.Event{}
-					if err := json.Unmarshal(v, &event); nil != err {
-						return err
-					}
-
-					if !isRootCallIDExcludedByFilter(getEventRootCallID(event), filter) {
-						select {
-						case <-ctx.Done():
-							return ctx.Err()
-						case eventChannel <- event:
-						}
-					}
-					return nil
-				})
-			}
-
-			return nil
-		}); nil != err {
-			errChannel <- err
+	eventChannel chan model.Event,
+) error {
+	if err := es.db.View(func(txn *badger.Txn) error {
+		sinceTime := new(time.Time)
+		if nil != filter.Since {
+			sinceTime = filter.Since
 		}
-	}()
 
-	return eventChannel, errChannel
+		it := txn.NewIterator(badger.DefaultIteratorOptions)
+		defer it.Close()
+		sinceBytes := []byte(es.eventsByTimestampKeyPrefix + sinceTime.Format(sortableRFC3339Nano))
+		for it.Seek(sinceBytes); it.ValidForPrefix([]byte(es.eventsByTimestampKeyPrefix)); it.Next() {
+			it.Item().Value(func(v []byte) error {
+				var event model.Event
+				if err := json.Unmarshal(v, &event); nil != err {
+					return err
+				}
+
+				if !isRootCallIDExcludedByFilter(getEventRootCallID(event), filter) {
+					select {
+					case eventChannel <- event:
+					case <-ctx.Done():
+						return ctx.Err()
+					}
+				}
+				return nil
+			})
+		}
+
+		return nil
+	}); nil != err {
+		return err
+	}
+
+	return nil
 }
