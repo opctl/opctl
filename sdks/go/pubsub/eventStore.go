@@ -68,9 +68,10 @@ func (es _eventStore) List(
 
 		it := txn.NewIterator(badger.DefaultIteratorOptions)
 		defer it.Close()
+
 		sinceBytes := []byte(es.eventsByTimestampKeyPrefix + sinceTime.Format(sortableRFC3339Nano))
 		for it.Seek(sinceBytes); it.ValidForPrefix([]byte(es.eventsByTimestampKeyPrefix)); it.Next() {
-			it.Item().Value(func(v []byte) error {
+			if err := it.Item().Value(func(v []byte) error {
 				var event model.Event
 				if err := json.Unmarshal(v, &event); nil != err {
 					return err
@@ -84,7 +85,9 @@ func (es _eventStore) List(
 					}
 				}
 				return nil
-			})
+			}); err != nil {
+				return err
+			}
 		}
 
 		return nil
