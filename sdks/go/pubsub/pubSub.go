@@ -5,7 +5,6 @@ package pubsub
 import (
 	"context"
 	"sync"
-	"time"
 
 	"github.com/dgraph-io/badger/v2"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -78,14 +77,14 @@ func (ps *pubSub) Subscribe(
 
 		ps.subscriptionsMutex.Lock()
 		ps.subscriptions[publishEventChannel] = subscriptionInfo
-		subscriptionStartedAt := time.Now()
-		ps.subscriptionsMutex.Unlock()
 
 		// old events
-		err := ps.eventStore.List(ctx, filter, subscriptionStartedAt, dstEventChannel)
+		err := ps.eventStore.List(ctx, filter, dstEventChannel)
 		if err != nil {
 			return
 		}
+
+		ps.subscriptionsMutex.Unlock()
 
 		// new events
 		for event := range publishEventChannel {

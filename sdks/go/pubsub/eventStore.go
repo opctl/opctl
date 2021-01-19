@@ -17,7 +17,6 @@ type EventStore interface {
 	List(
 		ctx context.Context,
 		filter model.EventFilter,
-		until time.Time,
 		eventChannel chan model.Event,
 	) error
 }
@@ -64,7 +63,6 @@ func (es *_eventStore) Add(
 func (es _eventStore) List(
 	ctx context.Context,
 	filter model.EventFilter,
-	until time.Time,
 	eventChannel chan model.Event,
 ) error {
 	if err := es.db.View(func(txn *badger.Txn) error {
@@ -82,12 +80,6 @@ func (es _eventStore) List(
 				var event model.Event
 				if err := json.Unmarshal(v, &event); nil != err {
 					return err
-				}
-
-				// ignore events generated after the list operation started
-				if event.Timestamp.After(until) {
-					it.Close()
-					return nil
 				}
 
 				if !isRootCallIDExcludedByFilter(getEventRootCallID(event), filter) {
