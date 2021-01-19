@@ -160,10 +160,19 @@ var _ = Context("pubSub", func() {
 								ID: "id",
 							},
 						},
-						Timestamp: time.Now(),
+						Timestamp: time.Now().Add(-time.Second),
 					}
 
 					expectedEvent2 := model.Event{
+						CallStarted: &model.CallStarted{
+							Call: model.Call{
+								RootID: "rootID",
+							},
+						},
+						Timestamp: time.Now(),
+					}
+
+					notExpectedEvent := model.Event{
 						CallStarted: &model.CallStarted{
 							Call: model.Call{
 								RootID: "rootID",
@@ -174,12 +183,15 @@ var _ = Context("pubSub", func() {
 
 					objectUnderTest := New(db)
 					objectUnderTest.Publish(expectedEvent1)
+					objectUnderTest.Publish(notExpectedEvent)
 					objectUnderTest.Publish(expectedEvent2)
 
 					/* act */
-					eventChannel, _ := objectUnderTest.Subscribe(context.TODO(), model.EventFilter{})
+					eventChannel, err := objectUnderTest.Subscribe(context.TODO(), model.EventFilter{})
 
 					/* assert */
+					Expect(err).To(BeNil())
+
 					var actualEvent1 model.Event
 					Eventually(eventChannel).Should(Receive(&actualEvent1))
 					// ignore timestamp
