@@ -4,32 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
-	"syscall"
-	"time"
 
 	"github.com/appdataspec/sdk-golang/appdatapath"
 	mow "github.com/jawher/mow.cli"
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
-	"github.com/opctl/opctl/cli/internal/datadir"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
-	"github.com/opctl/opctl/cli/internal/updater"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/core"
-	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
-	"github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker"
-	"github.com/opctl/opctl/sdks/go/node/core/containerruntime/k8s"
 	"github.com/opctl/opctl/sdks/go/opspec"
-	"github.com/opctl/opctl/sdks/go/opspec/opfile"
-	"github.com/skratchdot/open-golang/open"
-	"os/signal"
-	"text/tabwriter"
 )
 
 var testModeEnvVar = "OPCTL_TEST_MODE"
@@ -196,90 +182,14 @@ func newCli(
 				node,
 			)
 
-			_tabWriter := new(tabwriter.Writer)
-			defer _tabWriter.Flush()
-			_tabWriter.Init(os.Stdout, 0, 8, 1, '\t', 0)
-
-			fmt.Fprintln(_tabWriter, "REF\tDESCRIPTION")
-
-			dirHandle, err := dataResolver.Resolve(
-				*dirRef,
-				nil,
-			)
-			if nil != err {
-				exitWith("", err)
-			}
-
-			opsByPath, err := opspec.List(
-				context.TODO(),
-				dirHandle,
-			)
-			if nil != err {
-				exitWith("", err)
-			}
-
-			cwd, err := os.Getwd()
-			if nil != err {
-				exitWith("", err)
-			}
-
-			for path, op := range opsByPath {
-				opRef := filepath.Join(dirHandle.Ref(), path)
-				if filepath.IsAbs(opRef) {
-					// make absolute paths relative
-					relOpRef, err := filepath.Rel(cwd, opRef)
-					if nil != err {
-						exitWith("", err)
-					}
-
-					opRef = strings.TrimPrefix(relOpRef, ".opspec/")
-				}
-
-				fmt.Fprintf(_tabWriter, "%v\t%v", opRef, op.Description)
-				fmt.Fprintln(_tabWriter)
-			}
+			exitWith("", ls(node, *dirRef, dataResolver))
 		}
 	})
 
 	cli.Command("node", "Manage nodes", func(nodeCmd *mow.Cmd) {
 		nodeCmd.Command("create", "Creates a node", func(createCmd *mow.Cmd) {
 			createCmd.Action = func() {
-
-				dataDir, err := datadir.New(nodeCreateOpts.DataDir)
-				if nil != err {
-					exitWith("", err)
-				}
-
-				if err := dataDir.InitAndLock(); nil != err {
-					exitWith("", err)
-				}
-
-				var containerRuntime containerruntime.ContainerRuntime
-				if "k8s" == nodeCreateOpts.ContainerRuntime {
-					containerRuntime, err = k8s.New()
-					if nil != err {
-						exitWith("", err)
-					}
-				} else {
-					containerRuntime, err = docker.New()
-					if nil != err {
-						exitWith("", err)
-					}
-				}
-
-				exitWith(
-					"",
-					newHTTPListener(
-						core.New(
-							containerRuntime,
-							dataDir.Path(),
-						),
-					).
-						listen(
-							context.Background(),
-							nodeCreateOpts.ListenAddress,
-						),
-				)
+				exitWith("", createNode(nodeCreateOpts))
 			}
 		})
 
@@ -401,195 +311,16 @@ func newCli(
 		opRef := runCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
 		runCmd.Action = func() {
-			startTime := time.Now().UTC()
 			ctx := context.TODO()
 
-			node, err := nodeProvider.CreateNodeIfNotExists()
-			if err != nil {
-				exitWith("", err)
-			}
-
-			dataResolver := dataresolver.New(
-				cliParamSatisfier,
-				node,
-			)
-
-			opHandle, err := dataResolver.Resolve(
-				*opRef,
-				nil,
-			)
-			if nil != err {
-				exitWith("", err)
-			}
-
-			opFileReader, err := opHandle.GetContent(
-				ctx,
-				opfile.FileName,
-			)
-			if nil != err {
-				exitWith("", err)
-			}
-
-			opFileBytes, err := ioutil.ReadAll(opFileReader)
-			if nil != err {
-				exitWith("", err)
-			}
-
-			opFile, err := opfile.Unmarshal(
-				opFileBytes,
-			)
-			if nil != err {
-				exitWith("", err)
-			}
-
-			ymlFileInputSrc, err := cliParamSatisfier.NewYMLFileInputSrc(*argFile)
-			if nil != err {
-				exitWith("", fmt.Errorf("unable to load arg file at '%v'; error was: %v", *argFile, err.Error()))
-			}
-
-			argsMap, err := cliParamSatisfier.Satisfy(
-				cliparamsatisfier.NewInputSourcer(
-					cliParamSatisfier.NewSliceInputSrc(*args, "="),
-					ymlFileInputSrc,
-					cliParamSatisfier.NewEnvVarInputSrc(),
-					cliParamSatisfier.NewParamDefaultInputSrc(opFile.Inputs),
-					cliParamSatisfier.NewCliPromptInputSrc(opFile.Inputs),
-				),
-				opFile.Inputs,
-			)
-			if nil != err {
-				exitWith("", err)
-			}
-
-			// init signal channels
-			aSigIntWasReceivedAlready := false
-			sigIntChannel := make(chan os.Signal, 1)
-			defer close(sigIntChannel)
-			signal.Notify(
-				sigIntChannel,
-				syscall.SIGINT,
-			)
-
-			sigTermChannel := make(chan os.Signal, 1)
-			defer close(sigTermChannel)
-			signal.Notify(
-				sigTermChannel,
-				syscall.SIGTERM,
-			)
-
-			// start op
-			rootCallID, err := node.StartOp(
-				ctx,
-				model.StartOpReq{
-					Args: argsMap,
-					Op: model.StartOpReqOp{
-						Ref: opHandle.Ref(),
-					},
-				},
-			)
-			if nil != err {
-				exitWith("", err)
-			}
-
-			// start event loop
-			eventChannel, err := node.GetEventStream(
-				ctx,
-				&model.GetEventStreamReq{
-					Filter: model.EventFilter{
-						Roots: []string{rootCallID},
-						Since: &startTime,
-					},
-				},
-			)
-			if nil != err {
-				exitWith("", err)
-			}
-
-			for {
-				select {
-
-				case <-sigIntChannel:
-					if !aSigIntWasReceivedAlready {
-						cliOutput.Warning("Gracefully stopping... (signal Control-C again to force)")
-						aSigIntWasReceivedAlready = true
-
-						node.KillOp(
-							ctx,
-							model.KillOpReq{
-								OpID:       rootCallID,
-								RootCallID: rootCallID,
-							},
-						)
-					} else {
-						exitWith("", &RunError{
-							ExitCode: 130,
-							message:  "Terminated by Control-C",
-						})
-					}
-
-				case <-sigTermChannel:
-					cliOutput.Warning("Gracefully stopping...")
-
-					exitWith(
-						"",
-						node.KillOp(
-							ctx,
-							model.KillOpReq{
-								OpID:       rootCallID,
-								RootCallID: rootCallID,
-							},
-						),
-					)
-				case event, isEventChannelOpen := <-eventChannel:
-					if !isEventChannelOpen {
-						exitWith("", errors.New("Event channel closed unexpectedly"))
-					}
-
-					cliOutput.Event(&event)
-
-					if nil != event.CallEnded {
-						if event.CallEnded.Call.ID == rootCallID {
-							switch event.CallEnded.Outcome {
-							case model.OpOutcomeSucceeded:
-								exitWith("", nil)
-							case model.OpOutcomeKilled:
-								exitWith("", &RunError{ExitCode: 137})
-							default:
-								exitWith("", &RunError{ExitCode: 1})
-							}
-						}
-					}
-				}
-			}
+			exitWith("", runOp(ctx, nodeProvider, cliParamSatisfier, cliOutput, opRef, args, argFile))
 		}
 	})
 
 	cli.Command("self-update", "Update opctl", func(selfUpdateCmd *mow.Cmd) {
 		channel := selfUpdateCmd.StringOpt("c channel", "stable", "Release channel to update from (either `stable`, `alpha`, or `beta`)")
 		selfUpdateCmd.Action = func() {
-			updater := updater.New()
-			update, err := updater.GetUpdateIfExists(*channel)
-			if nil != err {
-				exitWith("", err)
-			} else if nil == update {
-				exitWith("No update available, already at the latest version!", nil)
-			}
-
-			err = updater.ApplyUpdate(update)
-			if nil != err {
-				exitWith("", err)
-			}
-
-			// kill local node to ensure outdated version not left running
-			// @TODO start node maintaining previous user
-			err = nodeProvider.KillNodeIfExists("")
-			if nil != err {
-				err = fmt.Errorf("Unable to kill running node; run `node kill` to complete the update. Error was: %v", err)
-			}
-			exitWith(
-				fmt.Sprintf("Updated to new version: %s!", update.Version),
-				err,
-			)
+			exitWith(update(nodeProvider, *channel))
 		}
 	})
 
@@ -599,43 +330,7 @@ func newCli(
 		mountRefArg := uiCmd.StringArg(mountRefArgName, ".", "Reference to mount (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
 		uiCmd.Action = func() {
-			var resolvedMount string
-			var err error
-			if strings.HasPrefix(*mountRefArg, ".") {
-				// treat dot paths as regular rel paths
-				resolvedMount, err = filepath.Abs(*mountRefArg)
-				if nil != err {
-					exitWith("", err)
-				}
-			} else {
-				node, err := nodeProvider.CreateNodeIfNotExists()
-				if err != nil {
-					exitWith("", err)
-				}
-
-				dataResolver := dataresolver.New(
-					cliParamSatisfier,
-					node,
-				)
-
-				// otherwise use same resolution as run
-				mountHandle, err := dataResolver.Resolve(
-					*mountRefArg,
-					nil,
-				)
-				if nil != err {
-					exitWith("", err)
-				}
-
-				resolvedMount = mountHandle.Ref()
-			}
-
-			exitWith(
-				"Opctl web UI opened!",
-				open.Run(
-					fmt.Sprintf("http://localhost:42224?mount=%s", url.QueryEscape(resolvedMount)),
-				),
-			)
+			exitWith("Opctl web UI opened!", openUI(nodeProvider, cliParamSatisfier, *mountRefArg))
 		}
 	})
 
