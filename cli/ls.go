@@ -14,11 +14,11 @@ import (
 )
 
 func ls(node node.Node, dirRef string, dataResolver dataresolver.DataResolver) error {
-	_tabWriter := new(tabwriter.Writer)
-	defer _tabWriter.Flush()
-	_tabWriter.Init(os.Stdout, 0, 8, 1, '\t', 0)
+	tabWriter := new(tabwriter.Writer)
+	defer tabWriter.Flush()
+	tabWriter.Init(os.Stdout, 0, 8, 1, '\t', 0)
 
-	fmt.Fprintln(_tabWriter, "REF\tDESCRIPTION")
+	fmt.Fprintln(tabWriter, "REF\tDESCRIPTION")
 
 	dirHandle, err := dataResolver.Resolve(
 		dirRef,
@@ -53,8 +53,8 @@ func ls(node node.Node, dirRef string, dataResolver dataresolver.DataResolver) e
 			opRef = strings.TrimPrefix(relOpRef, ".opspec/")
 		}
 
-		fmt.Fprintf(_tabWriter, "%v\t%v", opRef, op.Description)
-		fmt.Fprintln(_tabWriter)
+		fmt.Fprintf(tabWriter, "%v\t%v", opRef, op.Description)
+		fmt.Fprintln(tabWriter)
 	}
 
 	return nil
