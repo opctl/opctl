@@ -1,7 +1,5 @@
 package clioutput
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
-
 import (
 	"fmt"
 	"io"
@@ -12,7 +10,6 @@ import (
 )
 
 //CliOutput allows mocking/faking output
-//counterfeiter:generate -o fakes/cliOutput.go . CliOutput
 type CliOutput interface {
 	// silently disables coloring
 	DisableColor()

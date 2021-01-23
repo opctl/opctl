@@ -3,10 +3,12 @@ package cliparamsatisfier
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	clioutputFakes "github.com/opctl/opctl/cli/internal/clioutput/fakes"
+	"github.com/opctl/opctl/cli/internal/clicolorer"
+	"github.com/opctl/opctl/cli/internal/clioutput"
 	. "github.com/opctl/opctl/cli/internal/cliparamsatisfier/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
 )
@@ -28,7 +30,7 @@ var _ = Context("parameterSatisfier", func() {
 			}
 
 			objectUnderTest := _CLIParamSatisfier{
-				cliOutput: new(clioutputFakes.FakeCliOutput),
+				cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
 			}
 
 			/* act */
@@ -71,7 +73,7 @@ var _ = Context("parameterSatisfier", func() {
 					providedInputSourcer.SourceReturns(&valueString, true)
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliOutput: new(clioutputFakes.FakeCliOutput),
+						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
 					}
 
 					/* act */
@@ -103,7 +105,7 @@ var _ = Context("parameterSatisfier", func() {
 					}
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliOutput: new(clioutputFakes.FakeCliOutput),
+						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
 					}
 
 					/* act */
@@ -135,7 +137,7 @@ var _ = Context("parameterSatisfier", func() {
 					}
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliOutput: new(clioutputFakes.FakeCliOutput),
+						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
 					}
 
 					/* act */
@@ -174,7 +176,7 @@ var _ = Context("parameterSatisfier", func() {
 					providedInputSourcer.SourceReturns(&valueString, true)
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliOutput: new(clioutputFakes.FakeCliOutput),
+						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
 					}
 
 					/* act */

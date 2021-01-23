@@ -31,6 +31,7 @@ func opInstall(
 	}
 
 	opDirHandle, err := dataResolver.Resolve(
+		ctx,
 		pkgRef,
 		creds,
 	)

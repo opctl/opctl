@@ -6,6 +6,16 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.47 - 2021-01-22
+
+### Added
+
+- [Improve CLI prompts for username and password](https://github.com/opctl/opctl/issues/745)
+
+### Fixed
+
+- Dir initializer doesn't initialize more than one child entry
+
 ## 0.1.46 - 2021-01-04
 
 ### Fixed
