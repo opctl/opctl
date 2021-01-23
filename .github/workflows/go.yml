@@ -32,11 +32,11 @@ jobs:
       uses: dsaltares/fetch-gh-release-asset@0.0.5
       with:
         repo: opctl/opctl
-        version: tags/0.1.45
-        file: opctl0.1.45.linux.tgz
+        version: tags/0.1.46
+        file: opctl0.1.46.linux.tgz
         token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Extract opctl
-      run: tar -xvzf opctl0.1.45.linux.tgz
+      run: tar -xvzf opctl0.1.46.linux.tgz
 
     - run: ./opctl run -a gitBranch=${{ steps.branch_name_push.outputs.branch }}${{ steps.branch_name_pr.outputs.branch }} build

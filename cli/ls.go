@@ -37,6 +37,7 @@ func ls(
 	fmt.Fprintln(_tabWriter, "REF\tDESCRIPTION")
 
 	dirHandle, err := dataResolver.Resolve(
+		ctx,
 		dirRef,
 		nil,
 	)

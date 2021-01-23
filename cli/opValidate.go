@@ -12,6 +12,7 @@ func opValidate(
 	opRef string,
 ) error {
 	opDirHandle, err := dataResolver.Resolve(
+		ctx,
 		opRef,
 		nil,
 	)

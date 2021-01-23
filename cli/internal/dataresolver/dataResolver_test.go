@@ -1,6 +1,7 @@
 package dataresolver
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -41,6 +42,26 @@ var _ = Context("dataResolver", func() {
 						nil,
 					)
 
+					expectedInputs := map[string]*model.Param{
+						usernameInputName: {
+							String: &model.StringParam{
+								Description: "Username for github.com.",
+								Constraints: map[string]interface{}{
+									"MinLength": 1,
+								},
+							},
+						},
+						passwordInputName: {
+							String: &model.StringParam{
+								Description: "Personal access token for github.com with 'Repo' permissions.",
+								Constraints: map[string]interface{}{
+									"MinLength": 1,
+								},
+								IsSecret: true,
+							},
+						},
+					}
+
 					objectUnderTest := _dataResolver{
 						cliParamSatisfier: fakeCliParamSatisfier,
 						os:                new(ios.Fake),
@@ -48,11 +69,11 @@ var _ = Context("dataResolver", func() {
 					}
 
 					/* act */
-					objectUnderTest.Resolve("ref", &model.Creds{})
+					objectUnderTest.Resolve(context.Background(), "github.com/opctl/opctl/.opspec/build", &model.Creds{})
 
 					/* assert */
 					_, actualInputs := fakeCliParamSatisfier.SatisfyArgsForCall(0)
-					Expect(actualInputs).To(Equal(credsPromptInputs))
+					Expect(actualInputs).To(BeEquivalentTo(expectedInputs))
 				})
 			})
 			Context("not data.ErrAuthenticationFailed", func() {
@@ -70,11 +91,11 @@ var _ = Context("dataResolver", func() {
 					}
 
 					/* act */
-					response, err := objectUnderTest.Resolve(providedDataRef, &model.Creds{})
+					response, err := objectUnderTest.Resolve(context.Background(), providedDataRef, &model.Creds{})
 
 					/* assert */
 					Expect(response).To(BeNil())
-					Expect(err.Error()).To(Equal(fmt.Sprintf("Unable to resolve pkg 'dummyDataRef'; error was %s", expectedErr)))
+					Expect(err.Error()).To(Equal(fmt.Sprintf("Unable to resolve 'dummyDataRef'; error was %s", expectedErr)))
 				})
 			})
 		})
@@ -90,6 +111,7 @@ var _ = Context("dataResolver", func() {
 
 				/* act */
 				actualPkgHandle, err := objectUnderTest.Resolve(
+					context.Background(),
 					"testdata/dummy-op",
 					&model.Creds{},
 				)

@@ -12,7 +12,7 @@ import (
 
 // node command
 func node(
-  ctx context.Context,
+	ctx context.Context,
 	nodeCreateOpts local.NodeCreateOpts,
 ) error {
 	dataDir, err := datadir.New(nodeCreateOpts.DataDir)
@@ -39,7 +39,7 @@ func node(
 
 	return newHTTPListener(
 		core.New(
-      ctx,
+			ctx,
 			containerRuntime,
 			dataDir.Path(),
 		),

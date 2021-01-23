@@ -1,21 +1,24 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"net/url"
+	"path/filepath"
+	"strings"
+
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/skratchdot/open-golang/open"
-	"net/url"
-	"path/filepath"
-	"strings"
 )
 
 // ui implements "ui" command
 func ui(
+	ctx context.Context,
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier,
-  nodeProvider nodeprovider.NodeProvider,
-  listenAddress string,
+	nodeProvider nodeprovider.NodeProvider,
+	listenAddress string,
 	mountRefArg string,
 ) error {
 	var resolvedMount string
@@ -39,6 +42,7 @@ func ui(
 
 		// otherwise use same resolution as run
 		mountHandle, err := dataResolver.Resolve(
+			ctx,
 			mountRefArg,
 			nil,
 		)
@@ -50,6 +54,6 @@ func ui(
 	}
 
 	return open.Run(
-    fmt.Sprintf("http://%s/?mount=%s", listenAddress, url.QueryEscape(resolvedMount)),
+		fmt.Sprintf("http://%s/?mount=%s", listenAddress, url.QueryEscape(resolvedMount)),
 	)
 }

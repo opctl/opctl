@@ -50,7 +50,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 ) (map[string]*model.Value, error) {
 
 	argMap := map[string]*model.Value{}
-	for _, paramName := range cps.getSortedParamNames(inputs) {
+	for _, paramName := range getSortedParamNames(inputs) {
 		param := inputs[paramName]
 
 	paramLoop:
@@ -159,14 +159,28 @@ func (cps _CLIParamSatisfier) Satisfy(
 	return argMap, nil
 }
 
-func (this _CLIParamSatisfier) getSortedParamNames(
+func getSortedParamNames(
 	params map[string]*model.Param,
 ) []string {
 	paramNames := []string{}
-	for paramname := range params {
-		paramNames = append(paramNames, paramname)
+
+	_, hasUsername := params["username"]
+	_, hasPassword := params["password"]
+	if len(params) == 2 && hasUsername && hasPassword {
+		// sort username/password logically
+		paramNames = []string{
+			"username",
+			"password",
+		}
+	} else {
+		// sort everything else alphabetically
+		for paramname := range params {
+			paramNames = append(paramNames, paramname)
+		}
+
+		sort.Strings(paramNames)
 	}
-	sort.Strings(paramNames)
+
 	return paramNames
 }
 

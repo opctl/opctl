@@ -105,9 +105,9 @@ func newCli(
 		if *noColor {
 			cliOutput.DisableColor()
 		}
-  }	
-  
-  ctx, cancel := context.WithCancel(context.Background())
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
 
 	cli.After = func() {
 		cancel()
@@ -177,9 +177,9 @@ func newCli(
 				exitWith(
 					"",
 					node(
-            ctx,
-            nodeCreateOpts,
-          ),
+						ctx,
+						nodeCreateOpts,
+					),
 				)
 			}
 		})
@@ -317,9 +317,10 @@ func newCli(
 			exitWith(
 				"Opctl web UI opened!",
 				ui(
+					ctx,
 					cliParamSatisfier,
-          nodeProvider,
-          *listenAddress,
+					nodeProvider,
+					*listenAddress,
 					*mountRefArg,
 				),
 			)

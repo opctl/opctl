@@ -41,6 +41,7 @@ func run(
 	)
 
 	opHandle, err := dataResolver.Resolve(
+		ctx,
 		opRef,
 		nil,
 	)
