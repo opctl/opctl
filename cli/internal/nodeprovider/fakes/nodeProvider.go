@@ -2,6 +2,7 @@
 package fakes
 
 import (
+	"context"
 	"sync"
 
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
@@ -9,9 +10,10 @@ import (
 )
 
 type FakeNodeProvider struct {
-	CreateNodeIfNotExistsStub        func() (node.Node, error)
+	CreateNodeIfNotExistsStub        func(context.Context) (node.Node, error)
 	createNodeIfNotExistsMutex       sync.RWMutex
 	createNodeIfNotExistsArgsForCall []struct {
+		arg1 context.Context
 	}
 	createNodeIfNotExistsReturns struct {
 		result1 node.Node
@@ -48,15 +50,16 @@ type FakeNodeProvider struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeNodeProvider) CreateNodeIfNotExists() (node.Node, error) {
+func (fake *FakeNodeProvider) CreateNodeIfNotExists(arg1 context.Context) (node.Node, error) {
 	fake.createNodeIfNotExistsMutex.Lock()
 	ret, specificReturn := fake.createNodeIfNotExistsReturnsOnCall[len(fake.createNodeIfNotExistsArgsForCall)]
 	fake.createNodeIfNotExistsArgsForCall = append(fake.createNodeIfNotExistsArgsForCall, struct {
-	}{})
-	fake.recordInvocation("CreateNodeIfNotExists", []interface{}{})
+		arg1 context.Context
+	}{arg1})
+	fake.recordInvocation("CreateNodeIfNotExists", []interface{}{arg1})
 	fake.createNodeIfNotExistsMutex.Unlock()
 	if fake.CreateNodeIfNotExistsStub != nil {
-		return fake.CreateNodeIfNotExistsStub()
+		return fake.CreateNodeIfNotExistsStub(arg1)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -71,10 +74,17 @@ func (fake *FakeNodeProvider) CreateNodeIfNotExistsCallCount() int {
 	return len(fake.createNodeIfNotExistsArgsForCall)
 }
 
-func (fake *FakeNodeProvider) CreateNodeIfNotExistsCalls(stub func() (node.Node, error)) {
+func (fake *FakeNodeProvider) CreateNodeIfNotExistsCalls(stub func(context.Context) (node.Node, error)) {
 	fake.createNodeIfNotExistsMutex.Lock()
 	defer fake.createNodeIfNotExistsMutex.Unlock()
 	fake.CreateNodeIfNotExistsStub = stub
+}
+
+func (fake *FakeNodeProvider) CreateNodeIfNotExistsArgsForCall(i int) context.Context {
+	fake.createNodeIfNotExistsMutex.RLock()
+	defer fake.createNodeIfNotExistsMutex.RUnlock()
+	argsForCall := fake.createNodeIfNotExistsArgsForCall[i]
+	return argsForCall.arg1
 }
 
 func (fake *FakeNodeProvider) CreateNodeIfNotExistsReturns(result1 node.Node, result2 error) {

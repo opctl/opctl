@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -14,7 +15,7 @@ func events(
 	cliOutput clioutput.CliOutput,
 	nodeProvider nodeprovider.NodeProvider,
 ) error {
-	node, err := nodeProvider.CreateNodeIfNotExists()
+	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
 	if err != nil {
 		return err
 	}

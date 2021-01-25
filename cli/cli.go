@@ -192,7 +192,7 @@ func newCli(
 	})
 
 	cli.Command("op", "Manage ops", func(opCmd *mow.Cmd) {
-		node, err := nodeProvider.CreateNodeIfNotExists()
+		node, err := nodeProvider.CreateNodeIfNotExists(ctx)
 		if err != nil {
 			exitWith("", err)
 		}
