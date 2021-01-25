@@ -4,17 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
-	"io/ioutil"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 // run implements "run" command
@@ -30,7 +31,7 @@ func run(
 
 	startTime := time.Now().UTC()
 
-	node, err := nodeProvider.CreateNodeIfNotExists()
+	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
 	if err != nil {
 		return err
 	}

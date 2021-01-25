@@ -1,6 +1,8 @@
 package nodeprovider
 
 import (
+	"context"
+
 	"github.com/opctl/opctl/sdks/go/node"
 )
 
@@ -9,6 +11,6 @@ import (
 //counterfeiter:generate -o fakes/nodeProvider.go . NodeProvider
 type NodeProvider interface {
 	ListNodes() ([]node.Node, error)
-	CreateNodeIfNotExists() (node.Node, error)
+	CreateNodeIfNotExists(ctx context.Context) (node.Node, error)
 	KillNodeIfExists(nodeID string) error
 }

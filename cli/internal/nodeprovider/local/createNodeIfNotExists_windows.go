@@ -12,7 +12,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/node"
 )
 
-func (np nodeProvider) CreateNodeIfNotExists() (node.Node, error) {
+func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, error) {
 	nodes, err := np.ListNodes()
 	if nil != err {
 		return nil, err
@@ -70,7 +70,7 @@ func (np nodeProvider) CreateNodeIfNotExists() (node.Node, error) {
 		return nil, err
 	}
 
-	err = apiClientNode.Liveness(context.TODO())
+	err = apiClientNode.Liveness(ctx)
 	nodeLogBytes, _ := ioutil.ReadFile(nodeLogFilePath)
 	fmt.Println(string(nodeLogBytes))
 	if nil != err {

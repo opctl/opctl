@@ -30,7 +30,7 @@ func ui(
 			return err
 		}
 	} else {
-		node, err := nodeProvider.CreateNodeIfNotExists()
+		node, err := nodeProvider.CreateNodeIfNotExists(ctx)
 		if err != nil {
 			return err
 		}

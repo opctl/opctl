@@ -3,14 +3,15 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
-	"github.com/opctl/opctl/cli/internal/dataresolver"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
-	"github.com/opctl/opctl/sdks/go/opspec"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/tabwriter"
+
+	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
+	"github.com/opctl/opctl/cli/internal/dataresolver"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	"github.com/opctl/opctl/sdks/go/opspec"
 )
 
 // ls implements "ls" command
@@ -20,7 +21,7 @@ func ls(
 	nodeProvider nodeprovider.NodeProvider,
 	dirRef string,
 ) error {
-	node, err := nodeProvider.CreateNodeIfNotExists()
+	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
 	if err != nil {
 		return err
 	}

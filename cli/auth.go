@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
 )
@@ -12,7 +13,7 @@ func auth(
 	nodeProvider nodeprovider.NodeProvider,
 	addAuthReq model.AddAuthReq,
 ) error {
-	node, err := nodeProvider.CreateNodeIfNotExists()
+	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
 	if nil != err {
 		return err
 	}
