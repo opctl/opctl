@@ -6,6 +6,16 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.48 - 2021-02-28
+
+### Changed
+
+- Self-update now uses github releases instead of equinox.io
+
+### Removed
+
+- Windows build; use linux build via WSL 2 instead.
+
 ## 0.1.47 - 2021-01-22
 
 ### Added

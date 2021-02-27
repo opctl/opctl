@@ -10,7 +10,7 @@ The [opctl webapp](../webapp/README.md) is statically embedded and hosted at run
 1. `opctl ls` from this directory will print a full operation manual.
 
 ## Build
-1. `opctl run build` from this directory to compile and test the CLI. On success, `opctl.linux`, `opctl.darwin`, `opctl.windows` will exist in this directory.
+1. `opctl run compile` from this directory to compile and test the CLI. On success, `opctl-linux-amd64`, `opctl-darwin-amd64` will exist in this directory.
 
 ## (Re)Vendor
 1. `go mod vendor` from this directory will (re)vendor all go dependencies.

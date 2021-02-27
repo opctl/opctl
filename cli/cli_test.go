@@ -335,40 +335,18 @@ var _ = Context("cli", func() {
 
 		Context("self-update", func() {
 
-			Context("with channel flag", func() {
+      It("should not err", func() {
+        /* arrange */
+        objectUnderTest := newCli(
+          cliOutput,
+        )
 
-				It("should not err", func() {
-					/* arrange */
-					expectedChannel := "beta"
+        /* act */
+        actualErr := objectUnderTest.Run([]string{"opctl", "self-update"})
 
-					objectUnderTest := newCli(
-						cliOutput,
-					)
-
-					/* act */
-					actualErr := objectUnderTest.Run([]string{"opctl", "self-update", "-c", expectedChannel})
-
-					/* assert */
-					Expect(actualErr).To(BeNil())
-				})
-
-			})
-
-			Context("without channel flag", func() {
-
-				It("should not err", func() {
-					/* arrange */
-					objectUnderTest := newCli(
-						cliOutput,
-					)
-
-					/* act */
-					actualErr := objectUnderTest.Run([]string{"opctl", "self-update"})
-
-					/* assert */
-					Expect(actualErr).To(BeNil())
-				})
-			})
+        /* assert */
+        Expect(actualErr).To(BeNil())
+      })
 
 		})
 

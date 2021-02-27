@@ -297,12 +297,10 @@ func newCli(
 	})
 
 	cli.Command("self-update", "Update opctl", func(selfUpdateCmd *mow.Cmd) {
-		channel := selfUpdateCmd.StringOpt("c channel", "stable", "Release channel to update from (either `stable`, `alpha`, or `beta`)")
 		selfUpdateCmd.Action = func() {
 			exitWith(
 				selfUpdate(
 					nodeProvider,
-					*channel,
 				),
 			)
 		}
