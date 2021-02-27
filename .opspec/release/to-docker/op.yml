@@ -1,4 +1,4 @@
-name: release/to-docker
+name: to-docker
 description: releases opctl to [docker hub](https://hub.docker.com/r/opctl/opctl/)
 inputs:
   dockerPassword:
@@ -10,52 +10,38 @@ inputs:
     string:
       constraints: { minLength: 1 }
       description: username for docker registry
+  version:
+    string:
+      constraints: { format: semver }
+      description: version of opctl being released
 run:
-  serial:
-    - container:
-        cmd:
-          - sh
-          - -ce
-          - |
-            # construct context
-            chmod +x /opctl
-            cp /opctl /context/opctl
-            cp /entrypoint.sh /context/entrypoint.sh
-
-            # construct version
-            echo "opctl -v returned: \$(/opctl -v 2>&1)"
-            version=\$(/opctl -v 2>&1)
-            echo -n "opctl/opctl:${version}" > /imageRefPrefix
-        image: { ref: 'alpine:3.4' }
-        files:
-          /opctl: $(../../../cli/opctl.linux)
-          /imageRefPrefix: $(imageRefPrefix)
-          /entrypoint.sh:
-        dirs:
-          /context: $(context)
-    - parallelLoop:
-        range:
-          - dind
-          - dood
-        vars:
-          value: $(imageRefVariant)
-        run:
-          serial:
-            - op:
-                ref: github.com/opspec-pkgs/docker.image.build#2.1.0
-                inputs:
-                  imageName: $(imageRefPrefix)-$(imageRefVariant)
-                  dockerfile: $(/$(imageRefVariant).Dockerfile)
-                  context:
-                  username: $(dockerUsername)
-                  password: $(dockerPassword)
-                  registry: https://docker.io
-                outputs:
-                  imageTar:
-            - op:
-                ref: github.com/opspec-pkgs/docker.image.push#2.1.0
-                inputs:
-                  imageTar:
-                  imageName: $(imageRefPrefix)-$(imageRefVariant)
-                  username: $(dockerUsername)
-                  password: $(dockerPassword)
+  parallelLoop:
+    range:
+      - dind
+      - dood
+    vars:
+      value: $(imageRefVariant)
+    run:
+      serial:
+        - op:
+            ref: github.com/opspec-pkgs/docker.image.build#2.1.0
+            inputs:
+              imageName: opctl/opctl:$(version)-$(imageRefVariant)
+              dockerfile: $(./$(imageRefVariant).Dockerfile)
+              context:
+                /opctl:
+                  data: $(../../../cli/opctl-linux-amd64)
+                /entrypoint.sh: 
+                  data: $(./entrypoint.sh)
+              username: $(dockerUsername)
+              password: $(dockerPassword)
+              registry: https://docker.io
+            outputs:
+              imageTar:
+        - op:
+            ref: github.com/opspec-pkgs/docker.image.push#2.1.0
+            inputs:
+              imageTar:
+              imageName: opctl/opctl:$(version)-$(imageRefVariant)
+              username: $(dockerUsername)
+              password: $(dockerPassword)

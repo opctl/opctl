@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 // indirect
 	github.com/appdataspec/sdk-golang v0.0.0-20170917062448-0c0ade7a92f7
-	github.com/blang/semver v0.0.0-20190414102917-ba2c2ddd8906
+	github.com/blang/semver v3.5.1+incompatible
 	github.com/containerd/containerd v1.2.7 // indirect
 	github.com/containers/image/v5 v5.0.0
 	github.com/containers/storage v1.13.5 // indirect
@@ -15,7 +15,6 @@ require (
 	github.com/docker/docker v17.12.0-ce-rc1.0.20200916142827-bd33bbf0497b+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/docker/go-metrics v0.0.1 // indirect
-	github.com/equinox-io/equinox v1.2.0
 	github.com/fatih/color v1.7.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-delve/delve v1.3.2
@@ -49,6 +48,7 @@ require (
 	github.com/peterh/liner v1.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7-0.20191104211043-6b2f3ee522b6
+	github.com/rhysd/go-github-selfupdate v1.2.3
 	github.com/satori/go.uuid v0.0.0-20181028125025-b2ce2384e17b
 	github.com/sethgrid/pester v0.0.0-20180430140037-03e26c9abbbf
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966

@@ -2,11 +2,15 @@ package local
 
 import (
 	"os"
-	"testing"
+	. "github.com/onsi/ginkgo"
 )
 
-func TestNewLocalNode(t *testing.T) {
-	New(NodeCreateOpts{
-		DataDir: os.TempDir(),
-	})
-}
+var _ = Context("New", func() {
+    It("shouldn't panic", func() {
+      /* arrange/act/assert */
+      New(NodeCreateOpts{
+        DataDir: os.TempDir(),
+      })
+    })
+  
+})

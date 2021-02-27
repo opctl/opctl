@@ -10,15 +10,19 @@ inputs:
     string:
       constraints: { minLength: 1 }
       description: username for docker registry
-  equinoxSigningKey:
-    string:
-      description: signing key for artifacts published to equinox.io
-      isSecret: true
-  equinoxToken:
-    string:
-      constraints: { minLength: 1 }
-      description: equinox.io auth token
-      isSecret: true
+  github:
+    object:
+      constraints:
+        properties:
+          accessToken:
+            minLength: 1
+            type: string
+            writeOnly: true
+          username:
+            minLength: 1
+            type: string
+        required: [accessToken, username]
+      description: configuration required to interact w/ github
   gitBranch:
     string:
       constraints: { minLength: 1 }
@@ -32,16 +36,18 @@ run:
   serial:
     - op:
         ref: ../build
-        inputs: { gitBranch, version }
+        inputs: 
+          gitBranch:
+          version:
     - parallel:
         - op:
-            ref: ../release/to-docker
+            ref: ./to-docker
             inputs:
               dockerPassword:
               dockerUsername:
-        # @TODO: either remove equinox or figure out how to obtain explicit versions of equinox artifacts.
-        # At present, equinox doesn't support downloading explicit versions of artifacts so can't be used for anything
-        # requiring the current build artifact such as system testing or publishing to docker.
+              version:
         - op:
-            ref: ../release/to-equinox
-            inputs: { equinoxSigningKey, equinoxToken, version }
+            ref: ./to-github
+            inputs:
+              github:
+              version:
