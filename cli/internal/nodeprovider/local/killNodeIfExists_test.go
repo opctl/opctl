@@ -1,8 +1,8 @@
 package local
 
 import (
-	"os"
 	. "github.com/onsi/ginkgo"
+	"os"
 )
 
 var _ = Context("KillNodeIfExists", func() {

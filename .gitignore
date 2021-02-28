@@ -5,6 +5,7 @@ coverprofile
 /build/
 node_modules/
 coverage/
+/vendor/
 
 ## goland
 .idea/

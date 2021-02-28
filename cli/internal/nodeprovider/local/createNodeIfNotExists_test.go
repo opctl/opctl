@@ -15,7 +15,7 @@ var _ = Context("CreateNodeIfNotExists", func() {
 
 		/* act */
 		nodeProvider.CreateNodeIfNotExists(
-      context.Background(),
-    )
+			context.Background(),
+		)
 	})
 })
