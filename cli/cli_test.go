@@ -335,18 +335,18 @@ var _ = Context("cli", func() {
 
 		Context("self-update", func() {
 
-      It("should not err", func() {
-        /* arrange */
-        objectUnderTest := newCli(
-          cliOutput,
-        )
+			It("should not err", func() {
+				/* arrange */
+				objectUnderTest := newCli(
+					cliOutput,
+				)
 
-        /* act */
-        actualErr := objectUnderTest.Run([]string{"opctl", "self-update"})
+				/* act */
+				actualErr := objectUnderTest.Run([]string{"opctl", "self-update"})
 
-        /* assert */
-        Expect(actualErr).To(BeNil())
-      })
+				/* assert */
+				Expect(actualErr).To(BeNil())
+			})
 
 		})
 
