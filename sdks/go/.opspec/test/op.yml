@@ -1,6 +1,9 @@
 name: test
 description: runs all go SDK tests
-opspec: 0.1.6
+inputs:
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
 run:
   container:
     cmd:
@@ -9,7 +12,8 @@ run:
       - ./sdks/go/...
     dirs:
       /src: $(../../../..)
+      /go/pkg: $(HOME/pkg)
     envVars:
-      GOFLAGS: -mod=vendor -tags=containers_image_openpgp
+      GOFLAGS: -tags=containers_image_openpgp
     image: { ref: "golang:1.15" }
     workDir: /src

@@ -9,7 +9,10 @@ inputs:
     string:
       constraints: { minLength: 1 }
       description: git branch the coverage should be associated with
-      default: master
+      default: main
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
   version:
     string:
       default: 0.0.0
@@ -24,6 +27,7 @@ run:
           op:
             ref: ../../cli/.opspec/compile
             inputs:
+              HOME:
               version:
         - op:
             ref: ../../cli/.opspec/test/system/opspec
@@ -58,8 +62,9 @@ run:
               /coverprofile: $(coverprofile)
             dirs:
               /src: $(../..)
+              /go/pkg: $(HOME/pkg)
             envVars:
-              GOFLAGS: -mod=vendor -tags=containers_image_openpgp
+              GOFLAGS: -tags=containers_image_openpgp
             image: { ref: "golang:1.15" }
             workDir: /src
         - op:

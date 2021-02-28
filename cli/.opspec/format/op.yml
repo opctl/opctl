@@ -1,7 +1,12 @@
 name: format
 description: runs go fmt
 run:
-  op:
-    ref: github.com/opspec-pkgs/golang.fmt#1.1.0
-    inputs:
-      srcDir: $(../..)
+  container:
+    cmd:
+      - go
+      - fmt
+      - ./...
+    dirs:
+      /src: $(../..)
+    image: { ref: 'golang:1.15' }
+    workDir: /src

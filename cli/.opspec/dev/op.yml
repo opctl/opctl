@@ -4,6 +4,9 @@ inputs:
   dockerSocket:
     socket:
       description: docker socket to use as container runtime
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
 run:
   serial:
     - op:
@@ -23,11 +26,10 @@ run:
           - github.com/opspec-pkgs/uuid.v4.generate#1.1.0
         dirs:
           /src: $(../../..)
-        envVars:
-          GOFLAGS: -mod=vendor
+          /go/pkg: $(HOME/pkg)
         ports:
           # debug port for delve
           40000: 40000
         sockets:
-          /var/run/docker.sock: dockerSocket
+          /var/run/docker.sock: $(dockerSocket)
         workDir: /src

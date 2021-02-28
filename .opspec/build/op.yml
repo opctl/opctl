@@ -11,6 +11,9 @@ inputs:
       default: 0.0.0
       constraints:
         format: semver
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
 run:
   serial:
     - op:
@@ -25,15 +28,18 @@ run:
             go run github.com/rakyll/statik -src ../webapp/build -dest internal -f
         dirs:
           /src: $(../..)
+          /go/pkg: $(HOME/pkg)
         image: { ref: 'golang:1.15' }
         workDir: /src/cli
     - op:
         ref: ../../cli/.opspec/compile
         inputs:
+          HOME:
           version:
     - op:
-        ref: ./test
+        ref: ../test
         inputs:
-          gitBranch:
-          version:
           compile: false
+          gitBranch:
+          HOME:
+          version:
