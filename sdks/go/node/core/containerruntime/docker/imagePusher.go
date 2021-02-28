@@ -40,7 +40,7 @@ func (ip _imagePusher) Push(
 	}
 
 	srcImageRef, srcErr := layout.NewReference(
-		*imageSrc.Dir,
+		*imageSrc.Link,
 		"",
 	)
 	if nil != srcErr {

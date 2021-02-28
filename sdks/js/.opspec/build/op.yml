@@ -5,7 +5,7 @@ inputs:
     string:
       constraints: { minLength: 1 }
       description: git branch coverage should be associated with
-      default: master
+      default: main
 opspec: 0.1.6
 run:
   serial:

@@ -4,7 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/opctl/opctl/sdks/go/model"
-	"io/ioutil"
+  "io/ioutil"
+  "os"
 	"strconv"
 )
 
@@ -17,10 +18,17 @@ func ToNumber(
 		return &model.Value{Number: new(float64)}, nil
 	case nil != value.Array:
 		return nil, errors.New("unable to coerce array to number; incompatible types")
-	case nil != value.Dir:
-		return nil, errors.New("unable to coerce dir to number; incompatible types")
-	case nil != value.File:
-		fileBytes, err := ioutil.ReadFile(*value.File)
+	case nil != value.Link:
+		fi, err := os.Stat(*value.Link)
+		if nil != err {
+			return nil, fmt.Errorf("unable to coerce link to number; error was %v", err.Error())
+		}
+
+		if fi.IsDir() {
+      return nil, errors.New("unable to coerce dir to number; incompatible types")
+    }
+    
+		fileBytes, err := ioutil.ReadFile(*value.Link)
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce file to number; error was %v", err.Error())
 		}

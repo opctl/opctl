@@ -52,38 +52,12 @@ type DirEntry struct {
 type Value struct {
 	Array   *[]interface{}          `json:"array,omitempty"`
 	Boolean *bool                   `json:"boolean,omitempty"`
-	Dir     *string                 `json:"dir,omitempty"`
-	File    *string                 `json:"file,omitempty"`
 	Number  *float64                `json:"number,omitempty"`
 	Object  *map[string]interface{} `json:"object,omitempty"`
 	Socket  *string                 `json:"socket,omitempty"`
 	String  *string                 `json:"string,omitempty"`
+	Link    *string                 `json:"link,omitempty"`
 }
-
-// // ValueNode interfaces with a value of any type
-// type ValueNode interface {
-// 	// ID returns a globally unique id for this value
-// 	ID() string
-// }
-
-// // FileValue interfaces with a file typed value
-// type FileValue interface {
-// 	GetReadSeekCloser() (ReadSeekCloser, error)
-
-// 	ValueNode
-// }
-
-// // DirValue interfaces with a directory typed value
-// type DirValue interface {
-// 	GetDescendant(
-// 		ref string,
-// 	) (
-// 		Value,
-// 		error,
-// 	)
-
-// 	ValueNode
-// }
 
 // Unbox unboxes a Value into a native go type
 func (vlu Value) Unbox() (interface{}, error) {
@@ -105,10 +79,8 @@ func (vlu Value) Unbox() (interface{}, error) {
 		return nativeArray, nil
 	} else if nil != vlu.Boolean {
 		return *vlu.Boolean, nil
-	} else if nil != vlu.Dir {
-		return *vlu.Dir, nil
-	} else if nil != vlu.File {
-		return *vlu.File, nil
+	} else if nil != vlu.Link {
+		return *vlu.Link, nil
 	} else if nil != vlu.Number {
 		return *vlu.Number, nil
 	} else if nil != vlu.Object {

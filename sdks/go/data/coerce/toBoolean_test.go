@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"path"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -79,78 +79,34 @@ var _ = Context("ToBoolean", func() {
 			Expect(actualErr).To(BeNil())
 		})
 	})
-	Context("Value.Dir isn't nil", func() {
-		Context("ioutil.ReadDir errs", func() {
-			It("should return expected result", func() {
-				/* arrange */
-
-				/* act */
-				actualValue, actualErr := ToBoolean(
-					&model.Value{Dir: new(string)},
-				)
-
-				/* assert */
-				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(errors.New("unable to coerce dir to boolean; error was open : no such file or directory")))
-			})
-		})
-		Context("ioutil.ReadDir doesn't err", func() {
-			Context("Directory empty", func() {
-				It("should return expected result", func() {
-					/* arrange */
-					expectedBoolean := false
-
-					dirPath, err := ioutil.TempDir("", "")
-					if nil != err {
-						panic(err)
-					}
-
-					/* act */
-					actualValue, actualErr := ToBoolean(
-						&model.Value{Dir: &dirPath},
-					)
-
-					/* assert */
-					Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
-					Expect(actualErr).To(BeNil())
-				})
-			})
-			Context("Directory not empty", func() {
-				It("should return expected result", func() {
-					/* arrange */
-					tmpFile, err := ioutil.TempFile("", "")
-					if nil != err {
-						panic(err)
-					}
-
-					dirPath := path.Dir(tmpFile.Name())
-
-					expectedBoolean := true
-
-					/* act */
-					actualValue, actualErr := ToBoolean(
-						&model.Value{Dir: &dirPath},
-					)
-
-					/* assert */
-					Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
-					Expect(actualErr).To(BeNil())
-				})
-			})
-		})
-	})
-	Context("Value.File isn't nil", func() {
-		Context("ioutil.ReadFile errs", func() {
+	Context("Value.Link isn't nil", func() {
+		Context("is unresolvable", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				/* act */
 				actualValue, actualErr := ToBoolean(
-					&model.Value{File: new(string)},
+					&model.Value{Link: new(string)},
 				)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(errors.New("unable to coerce file to boolean; error was open : no such file or directory")))
+				Expect(actualErr).To(Equal(errors.New("unable to coerce link to boolean; error was stat : no such file or directory")))
+			})
+		})
+		Context("is dir", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				tmpDir := os.TempDir()
+				providedValue := &model.Value{
+					Link: &tmpDir,
+				}
+
+				/* act */
+				actualValue, actualErr := ToBoolean(providedValue)
+
+				/* assert */
+				Expect(actualValue).To(BeNil())
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir to boolean; incompatible types")))
 			})
 		})
 		Context("ioutil.ReadFile doesn't err", func() {
@@ -172,7 +128,7 @@ var _ = Context("ToBoolean", func() {
 
 					/* act */
 					actualValue, actualErr := ToBoolean(
-						&model.Value{File: &filePath},
+						&model.Value{Link: &filePath},
 					)
 
 					/* assert */
@@ -198,7 +154,7 @@ var _ = Context("ToBoolean", func() {
 
 					/* act */
 					actualValue, actualErr := ToBoolean(
-						&model.Value{File: &filePath},
+						&model.Value{Link: &filePath},
 					)
 
 					/* assert */

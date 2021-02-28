@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 
 	. "github.com/onsi/ginkgo"
@@ -56,26 +57,34 @@ var _ = Context("ToDir", func() {
 			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce boolean to dir; incompatible types")))
 		})
 	})
-	Context("Value.Dir isn't nil", func() {
-		It("should return expected result", func() {
-			/* arrange */
-			providedValue := &model.Value{
-				Dir: new(string),
-			}
+	Context("Value.Link isn't nil", func() {
+		Context("is dir", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				tmpDir := os.TempDir()
+				providedValue := &model.Value{
+					Link: &tmpDir,
+				}
 
-			/* act */
-			actualValue, actualErr := ToDir(providedValue, "scratchDir")
+				/* act */
+				actualValue, actualErr := ToDir(providedValue, "scratchDir")
 
-			/* assert */
-			Expect(actualValue).To(Equal(providedValue))
-			Expect(actualErr).To(BeNil())
+				/* assert */
+				Expect(actualValue).To(Equal(providedValue))
+				Expect(actualErr).To(BeNil())
+			})
 		})
-	})
-	Context("Value.File isn't nil", func() {
 		It("should return expected result", func() {
-			/* arrange */
+      /* arrange */
+      tmpFile, err := ioutil.TempFile("","")
+      if nil != err {
+        panic(err)
+      }
+
+      tmpFilePath := tmpFile.Name()
+
 			providedValue := &model.Value{
-				File: new(string),
+				Link: &tmpFilePath,
 			}
 
 			/* act */
@@ -129,7 +138,7 @@ var _ = Context("ToDir", func() {
 
 				/* assert */
 				Expect(actualErr).To(BeNil())
-				Expect(strings.HasPrefix(*actualValue.Dir, providedScratchDir)).To(BeTrue())
+				Expect(strings.HasPrefix(*actualValue.Link, providedScratchDir)).To(BeTrue())
 
 			})
 		})
@@ -154,8 +163,8 @@ var _ = Context("ToDir", func() {
 				actualValue, actualErr := ToDir(providedValue, providedScratchDir)
 
 				/* assert */
-        Expect(actualErr).To(BeNil())
-				Expect(strings.HasPrefix(*actualValue.Dir, providedScratchDir)).To(BeTrue())
+				Expect(actualErr).To(BeNil())
+				Expect(strings.HasPrefix(*actualValue.Link, providedScratchDir)).To(BeTrue())
 
 			})
 		})

@@ -10,6 +10,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/core"
 )
 
+// Handler deprecated; use data
 //counterfeiter:generate -o fakes/handler.go . Handler
 type Handler interface {
 	Handle(

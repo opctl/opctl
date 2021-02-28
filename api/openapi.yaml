@@ -133,170 +133,12 @@ paths:
           $ref: "#/components/responses/badRequest"
         "500":
           $ref: "#/components/responses/internalServerError"
-  "/data/{ref}":
-    get:
-      summary: Gets data
-      tags:
-        - data
-      parameters:
-        - name: ref
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: path
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: Range
-          description: HTTP/1.1 ["Range" header field](https://tools.ietf.org/html/rfc7233#section-3.1)
-          in: header
-          required: false
-          schema:
-            type: string
-      responses:
-        "200":
-          description: HTTP/1.1 ["OK" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.1)
-          headers:
-            Accept-Ranges:
-              description: HTTP/1.1 ["Accept-Ranges" header field](https://tools.ietf.org/html/rfc7233#section-2.3)
-              schema:
-                type: string
-                enum:
-                  - bytes
-            Content-Length:
-              description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
-              schema:
-                type: integer
-          content:
-            application/octet-stream: {}
-            multipart/byteranges: {}
-            text/plain: {}
-            application/json: {}
-            application/vnd.opspec.0.1.6.dir+json:
-              schema:
-                items:
-                  properties:
-                    path:
-                      description: absolute path within dir
-                      type: string
-                    size:
-                      type: integer
-                    mode:
-                      description: golang [FileMode](https://golang.org/pkg/os/#FileMode)
-                      type: integer
-                type: array
-        "206":
-          description: HTTP/1.1 ["Partial Content" response status code](https://tools.ietf.org/html/rfc7233#section-4.1)
-          headers:
-            Content-Length:
-              description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
-              schema:
-                type: integer
-            Content-Range:
-              description: HTTP/1.1 ["Content-Range" header field](https://tools.ietf.org/html/rfc7233#section-4.2)
-              schema:
-                type: string
-          content:
-            application/octet-stream:
-              schema:
-                type: string
-            multipart/byteranges:
-              schema:
-                type: string
-            text/plain:
-              schema:
-                type: string
-            application/json:
-              schema:
-                type: string
-        "401":
-          $ref: "#/components/responses/unauthorized"
-        "403":
-          $ref: "#/components/responses/forbidden"
-        "404":
-          $ref: "#/components/responses/notFound"
-        "416":
-          $ref: "#/components/responses/rangeNotSatisfiable"
-        "500":
-          $ref: "#/components/responses/internalServerError"
-    head:
-      summary: Same as GET operation but only returns headers
-      tags:
-        - data
-      parameters:
-        - name: ref
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: path
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: Range
-          description: HTTP/1.1 ["Range" header field](https://tools.ietf.org/html/rfc7233#section-3.1)
-          in: header
-          required: false
-          schema:
-            type: string
-      responses:
-        "200":
-          description: HTTP/1.1 ["OK" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.1)
-          headers:
-            Accept-Ranges:
-              description: HTTP/1.1 ["Accept-Ranges" header field](https://tools.ietf.org/html/rfc7233#section-2.3)
-              schema:
-                type: string
-                enum:
-                  - bytes
-            Content-Length:
-              description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
-              schema:
-                type: integer
-        "206":
-          description: HTTP/1.1 ["Partial Content" response status code](https://tools.ietf.org/html/rfc7233#section-4.1)
-          headers:
-            Content-Length:
-              description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
-              schema:
-                type: integer
-            Content-Range:
-              description: HTTP/1.1 ["Content-Range" header field](https://tools.ietf.org/html/rfc7233#section-4.2)
-              schema:
-                type: string
-          content:
-            application/octet-stream:
-              schema:
-                type: string
-            multipart/byteranges:
-              schema:
-                type: string
-            text/plain:
-              schema:
-                type: string
-            application/json:
-              schema:
-                type: string
-        "401":
-          $ref: "#/components/responses/unauthorized"
-        "403":
-          $ref: "#/components/responses/forbidden"
-        "404":
-          $ref: "#/components/responses/notFound"
-        "416":
-          $ref: "#/components/responses/rangeNotSatisfiable"
-        "500":
-          $ref: "#/components/responses/internalServerError"
 
-  "/pkgs/{ref}/contents":
+  "/data/{ref}/contents":
     get:
-      deprecated: true
       summary: Lists package contents
       tags:
-        - pkgs
+        - data
       parameters:
         - name: ref
           in: path
@@ -317,7 +159,7 @@ paths:
                 items:
                   properties:
                     path:
-                      description: absolute path within pkg
+                      description: absolute path of content
                       type: string
                     size:
                       type: integer
@@ -335,12 +177,11 @@ paths:
           $ref: "#/components/responses/notFound"
         "500":
           $ref: "#/components/responses/internalServerError"
-  "/pkgs/{ref}/contents/{path}":
+  "/data/{ref}/contents/{path}":
     get:
-      deprecated: true
-      summary: Gets pkg content at path
+      summary: Gets content at path
       tags:
-        - pkgs
+        - data
       parameters:
         - name: ref
           in: path
@@ -412,10 +253,9 @@ paths:
         "500":
           $ref: "#/components/responses/internalServerError"
     head:
-      deprecated: true
       summary: Gets pkg content at path
       tags:
-        - pkgs
+        - data
       parameters:
         - name: ref
           in: path

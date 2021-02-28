@@ -3,6 +3,7 @@ package value
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"regexp"
 
 	"github.com/opctl/opctl/sdks/go/model"
@@ -47,16 +48,23 @@ func Interpret(
 				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; error was %v", propertyKeyExpression, propertyValueExpression, err)
 			}
 
-			if nil != propertyValue.File {
-				fileBytes, err := ioutil.ReadFile(*propertyValue.File)
+			if nil != propertyValue.Link {
+				fi, err := os.Stat(*propertyValue.Link)
+				if nil != err {
+					return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; error was %v", propertyKeyExpression, propertyValueExpression, err)
+				}
+
+				if fi.IsDir() {
+					return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; directories aren't valid object properties", propertyKeyExpression, propertyValueExpression)
+				}
+
+				fileBytes, err := ioutil.ReadFile(*propertyValue.Link)
 				if nil != err {
 					return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; error was %v", propertyKeyExpression, propertyValueExpression, err)
 				}
 
 				value[propertyKey] = string(fileBytes)
 				continue
-			} else if nil != propertyValue.Dir {
-				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; directories aren't valid object properties", propertyKeyExpression, propertyValueExpression)
 			} else if nil != propertyValue.Socket {
 				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; sockets aren't valid object properties", propertyKeyExpression, propertyValueExpression)
 			}

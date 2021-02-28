@@ -36,7 +36,7 @@ var _ = Context("Interpret", func() {
 		})
 	})
 	Context("dir.Interpret doesn't err", func() {
-		Context("value.Dir not prefixed by dataCachePath", func() {
+		Context("value.Link not prefixed by dataCachePath", func() {
 			It("should return expected results", func() {
 				/* arrange */
 				identifier := "identifier"
@@ -53,7 +53,7 @@ var _ = Context("Interpret", func() {
 				/* act */
 				actualContainerCallDirs, actualErr := Interpret(
 					map[string]*model.Value{
-						identifier: &model.Value{Dir: &dirPath},
+						identifier: &model.Value{Link: &dirPath},
 					},
 					map[string]interface{}{
 						// implicitly bound
@@ -69,7 +69,7 @@ var _ = Context("Interpret", func() {
 
 			})
 		})
-		Context("value.Dir prefixed by dataCachePath", func() {
+		Context("value.Link prefixed by dataCachePath", func() {
 			Context("dircopier.OS errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
@@ -92,7 +92,7 @@ var _ = Context("Interpret", func() {
 					/* act */
 					actualResult, actualErr := Interpret(
 						map[string]*model.Value{
-							identifier: &model.Value{Dir: &dirValue},
+							identifier: {Link: &dirValue},
 						},
 						map[string]interface{}{
 							// implicitly bound

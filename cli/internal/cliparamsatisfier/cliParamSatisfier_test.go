@@ -153,7 +153,7 @@ var _ = Context("parameterSatisfier", func() {
 					providedInputSourcer.SourceReturns(&valueDir, true)
 
 					expectedOutputs := map[string]*model.Value{
-						inputIdentifier: &model.Value{Dir: &valueDir},
+						inputIdentifier: &model.Value{Link: &valueDir},
 					}
 
 					objectUnderTest := _CLIParamSatisfier{
@@ -189,7 +189,7 @@ var _ = Context("parameterSatisfier", func() {
 					providedInputSourcer.SourceReturns(&valueFile, true)
 
 					expectedOutputs := map[string]*model.Value{
-						inputIdentifier: {File: &valueFile},
+						inputIdentifier: {Link: &valueFile},
 					}
 
 					objectUnderTest := _CLIParamSatisfier{

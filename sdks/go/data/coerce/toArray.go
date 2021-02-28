@@ -3,8 +3,10 @@ package coerce
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/opctl/opctl/sdks/go/model"
 	"io/ioutil"
+	"os"
+
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 // ToArray coerces a value to an array value
@@ -18,10 +20,17 @@ func ToArray(
 		return value, nil
 	case nil != value.Boolean:
 		return nil, fmt.Errorf("unable to coerce boolean to array; incompatible types")
-	case nil != value.Dir:
-		return nil, fmt.Errorf("unable to coerce dir to array; incompatible types")
-	case nil != value.File:
-		fileBytes, err := ioutil.ReadFile(*value.File)
+  case nil != value.Link:
+    fi, err := os.Stat(*value.Link)
+    if nil != err {
+      return nil, fmt.Errorf("unable to coerce link to array; error was %v", err.Error())
+    }
+
+    if (fi.IsDir()) {
+      return nil, fmt.Errorf("unable to coerce dir to array; incompatible types")
+    }
+
+		fileBytes, err := ioutil.ReadFile(*value.Link)
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce file to array; error was %v", err.Error())
 		}

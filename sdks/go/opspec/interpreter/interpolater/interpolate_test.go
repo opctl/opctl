@@ -2,6 +2,7 @@ package interpolater
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -53,19 +54,20 @@ var _ = Context("Interpolate", func() {
 							}
 
 							for _, scenario := range scenarioOpFile {
-								// add op dir to scope
 								if 0 == len(scenario.Scope) {
 									scenario.Scope = map[string]*model.Value{}
 								}
-								scenario.Scope["/"] = &model.Value{Dir: opHandle.Path()}
 
 								for name, value := range scenario.Scope {
-									// make file refs absolute
-									if nil != value.File {
-										absFilePath := filepath.Join(absPath, *value.File)
-										scenario.Scope[name] = &model.Value{File: &absFilePath}
+									// make links absolute
+									if nil != value.Link {
+										absFilePath := filepath.Join(absPath, *value.Link)
+										scenario.Scope[name] = &model.Value{Link: &absFilePath}
 									}
 								}
+
+								// add op dir to scope
+								scenario.Scope["./"] = &model.Value{Link: opHandle.Path()}
 
 								/* act */
 								actualResult, actualErr := Interpolate(
@@ -75,6 +77,10 @@ var _ = Context("Interpolate", func() {
 
 								/* assert */
 								description := fmt.Sprintf("scenario:\n  path: '%v'\n  name: '%v'", path, scenario.Name)
+								if nil != err {
+									scenarioBytes, _ := json.Marshal(scenario)
+									panic(string(scenarioBytes))
+								}
 								Expect(actualErr).To(BeNil(), description)
 								Expect(actualResult).To(Equal(scenario.Expected), description)
 							}

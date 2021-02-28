@@ -56,9 +56,9 @@ func Interpret(
 			false,
 		)
 		if nil != err {
-			return nil, fmt.Errorf("error encountered interpreting image src; error was: %v", err)
+			return nil, fmt.Errorf("error encountered interpreting op ref; error was: %v", err)
 		}
-		opPath = *dirValue.Dir
+		opPath = *dirValue.Link
 	} else {
 		opHandle, err := data.Resolve(
 			ctx,

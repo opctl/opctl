@@ -3,14 +3,15 @@ package file
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"io/ioutil"
 )
 
 var _ = Context("Validate", func() {
-	Context("value.File nil", func() {
+	Context("value.Link nil", func() {
 		It("should return expected errors", func() {
 
 			/* arrange */
@@ -30,14 +31,14 @@ var _ = Context("Validate", func() {
 
 		})
 	})
-	Context("value.File isn't empty", func() {
+	Context("value.Link isn't empty", func() {
 		Context("fs.Stat errors", func() {
 			It("should return expected errors", func() {
 
 				/* arrange */
 				providedValueFile := "dummyFile"
 				providedValue := &model.Value{
-					File: &providedValueFile,
+					Link: &providedValueFile,
 				}
 
 				/* act */
@@ -65,7 +66,7 @@ var _ = Context("Validate", func() {
 					tmpFilePath := tmpFile.Name()
 
 					providedValue := &model.Value{
-						File: &tmpFilePath,
+						Link: &tmpFilePath,
 					}
 
 					expectedErrors := []error{}
@@ -91,7 +92,7 @@ var _ = Context("Validate", func() {
 					}
 
 					providedValue := &model.Value{
-						File: &tmpDirPath,
+						Link: &tmpDirPath,
 					}
 
 					expectedErrors := []error{

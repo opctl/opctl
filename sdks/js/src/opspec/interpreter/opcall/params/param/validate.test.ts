@@ -89,7 +89,7 @@ describe('validate', () => {
   describe('param.dir not falsy', () => {
     it('it calls dirValidate w/ expected args & returns result', () => {
       /* arrange */
-      const providedValue = { dir: 'dummyDir' }
+      const providedValue = { link: 'dummyDir' }
       const providedParam = { dir: { } }
 
       const expectedResult = [new Error('dummyError')]
@@ -105,7 +105,7 @@ describe('validate', () => {
       expect(
         dirValidate
       ).toBeCalledWith(
-        providedValue.dir
+        providedValue.link
       )
 
       expect(actualResult).toEqual(expectedResult)
@@ -114,7 +114,7 @@ describe('validate', () => {
   describe('param.file not falsy', () => {
     it('it calls fileValidate w/ expected args & returns result', () => {
       /* arrange */
-      const providedValue = { file: 'dummyFile' }
+      const providedValue = { link: 'dummyFile' }
       const providedParam = { file: { } }
 
       const expectedResult = [new Error('dummyError')]
@@ -130,7 +130,7 @@ describe('validate', () => {
       expect(
         fileValidate
       ).toBeCalledWith(
-        providedValue.file
+        providedValue.link
       )
 
       expect(actualResult).toEqual(expectedResult)

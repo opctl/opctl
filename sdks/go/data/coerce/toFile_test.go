@@ -2,6 +2,7 @@ package coerce
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	. "github.com/onsi/ginkgo"
@@ -24,7 +25,7 @@ var _ = Context("ToFile", func() {
 				)
 
 				/* assert */
-				Expect(*actualValue.File).To(HaveLen(32 + 1 + len(tmpDir)))
+				Expect(*actualValue.Link).To(HaveLen(32 + 1 + len(tmpDir)))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -45,7 +46,7 @@ var _ = Context("ToFile", func() {
 					)
 
 					/* assert */
-					Expect(*actualValue.File).To(HaveLen(32 + 1 + len(tmpDir)))
+					Expect(*actualValue.Link).To(HaveLen(32 + 1 + len(tmpDir)))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -66,41 +67,41 @@ var _ = Context("ToFile", func() {
 				)
 
 				/* assert */
-				Expect(*actualValue.File).To(HaveLen(32 + 1 + len(tmpDir)))
+				Expect(*actualValue.Link).To(HaveLen(32 + 1 + len(tmpDir)))
 				Expect(actualErr).To(BeNil())
 			})
 		})
 	})
-	Context("Value.Dir isn't nil", func() {
-		It("should return expected result", func() {
-			/* arrange */
-			providedScratchDir := tmpDir
+	Context("Value.Link isn't nil", func() {
+		Context("is dir", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				providedValue := &model.Value{
+					Link: &tmpDir,
+				}
 
-			providedDir := "dummyValue"
-			providedValue := &model.Value{
-				Dir: &providedDir,
-			}
+				/* act */
+				actualValue, actualErr := ToFile(providedValue, tmpDir)
 
-			/* act */
-			actualValue, actualErr := ToFile(providedValue, providedScratchDir)
-
-			/* assert */
-			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to file; incompatible types", providedDir)))
+				/* assert */
+				Expect(actualValue).To(BeNil())
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to file; incompatible types", tmpDir)))
+			})
 		})
-	})
-	Context("Value.File isn't nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedScratchDir := tmpDir
+			tmpFile, err := ioutil.TempFile("", "")
+			if nil != err {
+				panic(err)
+			}
 
-			providedFile := "dummyFile"
+			tmpFilePath := tmpFile.Name()
 			providedValue := &model.Value{
-				File: &providedFile,
+				Link: &tmpFilePath,
 			}
 
 			/* act */
-			actualValue, actualErr := ToFile(providedValue, providedScratchDir)
+			actualValue, actualErr := ToFile(providedValue, tmpDir)
 
 			/* assert */
 			Expect(actualValue).To(Equal(providedValue))
@@ -122,7 +123,7 @@ var _ = Context("ToFile", func() {
 				)
 
 				/* assert */
-				Expect(*actualValue.File).To(HaveLen(32 + 1 + len(tmpDir)))
+				Expect(*actualValue.Link).To(HaveLen(32 + 1 + len(tmpDir)))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -143,7 +144,7 @@ var _ = Context("ToFile", func() {
 					)
 
 					/* assert */
-					Expect(*actualValue.File).To(HaveLen(32 + 1 + len(tmpDir)))
+					Expect(*actualValue.Link).To(HaveLen(32 + 1 + len(tmpDir)))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -164,12 +165,12 @@ var _ = Context("ToFile", func() {
 				)
 
 				/* assert */
-				Expect(*actualValue.File).To(HaveLen(32 + 1 + len(tmpDir)))
+				Expect(*actualValue.Link).To(HaveLen(32 + 1 + len(tmpDir)))
 				Expect(actualErr).To(BeNil())
 			})
 		})
 	})
-	Context("Value.Dir,File,Number,Object,String nil", func() {
+	Context("Value.Link,Number,Object,String nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedScratchDir := tmpDir
@@ -200,7 +201,7 @@ var _ = Context("ToFile", func() {
 					)
 
 					/* assert */
-					Expect(*actualValue.File).To(HaveLen(32 + 1 + len(tmpDir)))
+					Expect(*actualValue.Link).To(HaveLen(32 + 1 + len(tmpDir)))
 					Expect(actualErr).To(BeNil())
 				})
 			})

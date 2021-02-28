@@ -24,7 +24,7 @@ var _ = Context("Interpret", func() {
 			/* act */
 			_, actualErr := Interpret(
 				map[string]*model.Value{
-					identifier: &model.Value{Socket: new(string)},
+					identifier: {Socket: new(string)},
 				},
 				providedContainerCallSpecFiles,
 				"dummyScratchDirPath",
@@ -35,12 +35,19 @@ var _ = Context("Interpret", func() {
 			Expect(actualErr).To(Equal(errors.New("unable to bind /somewhere to $(identifier); error was unable to coerce '{\"socket\":\"\"}' to file")))
 		})
 	})
-	Context("value.File not prefixed by dataDirPath", func() {
+	Context("value.Link not prefixed by dataDirPath", func() {
 		It("should return expected results", func() {
 			/* arrange */
+			tmpFile, err := ioutil.TempFile("", "")
+			if nil != err {
+				panic(err)
+			}
+
+			tmpFilePath := tmpFile.Name()
 			identifier := "identifier"
+
 			providedScope := map[string]*model.Value{
-				identifier: &model.Value{File: new(string)},
+				identifier: {Link: &tmpFilePath},
 			}
 
 			containerPath := "/somewhere"
@@ -51,7 +58,7 @@ var _ = Context("Interpret", func() {
 			}
 
 			expectedResult := map[string]string{
-				containerPath: *providedScope[identifier].File,
+				containerPath: *providedScope[identifier].Link,
 			}
 
 			/* act */
@@ -68,7 +75,7 @@ var _ = Context("Interpret", func() {
 
 		})
 	})
-	Context("value.File prefixed by dataDirPath", func() {
+	Context("value.Link prefixed by dataDirPath", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			identifier := "identifier"
@@ -93,8 +100,8 @@ var _ = Context("Interpret", func() {
 			/* act */
 			actualResult, actualErr := Interpret(
 				map[string]*model.Value{
-					identifier: &model.Value{
-						File: &referencedFilePath,
+					identifier: {
+						Link: &referencedFilePath,
 					},
 				},
 				map[string]interface{}{

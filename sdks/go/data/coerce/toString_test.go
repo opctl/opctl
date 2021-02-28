@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strconv"
 
 	. "github.com/onsi/ginkgo"
@@ -58,34 +59,34 @@ var _ = Context("ToString", func() {
 			Expect(actualErr).To(BeNil())
 		})
 	})
-	Context("Value.Dir isn't nil", func() {
-		It("should return expected result", func() {
-			/* arrange */
-			providedDir := "dummyValue"
-			providedValue := &model.Value{
-				Dir: &providedDir,
-			}
-
-			/* act */
-			actualValue, actualErr := ToString(providedValue)
-
-			/* assert */
-			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to string; incompatible types", providedDir)))
-		})
-	})
-	Context("Value.File isn't nil", func() {
-		Context("ioutil.ReadFile errs", func() {
+	Context("Value.Link isn't nil", func() {
+		Context("is unresolvable", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				/* act */
 				actualValue, actualErr := ToString(
-					&model.Value{File: new(string)},
+					&model.Value{Link: new(string)},
 				)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(errors.New("unable to coerce file to string; error was open : no such file or directory")))
+				Expect(actualErr).To(Equal(errors.New("unable to coerce link to string; error was stat : no such file or directory")))
+			})
+		})
+		Context("is dir", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				tmpDir := os.TempDir()
+				providedValue := &model.Value{
+					Link: &tmpDir,
+				}
+
+				/* act */
+				actualValue, actualErr := ToString(providedValue)
+
+				/* assert */
+				Expect(actualValue).To(BeNil())
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to string; incompatible types", tmpDir)))
 			})
 		})
 		Context("ioutil.ReadFile doesn't err", func() {
@@ -108,7 +109,7 @@ var _ = Context("ToString", func() {
 
 				/* act */
 				actualValue, actualErr := ToString(
-					&model.Value{File: &filePath},
+					&model.Value{Link: &filePath},
 				)
 
 				/* assert */
@@ -171,7 +172,7 @@ var _ = Context("ToString", func() {
 			Expect(actualErr).To(BeNil())
 		})
 	})
-	Context("Value.Dir,File,Number,Object,String nil", func() {
+	Context("Value.Link,Number,Object,String nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedValue := &model.Value{}

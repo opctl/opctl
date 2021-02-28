@@ -9,9 +9,11 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/internal/urlpath"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/api/handler/data/ref/contents"
 	"github.com/opctl/opctl/sdks/go/node/core"
 )
 
+// Handler deprecated
 //counterfeiter:generate -o fakes/handler.go . Handler
 type Handler interface {
 	Handle(
@@ -26,14 +28,14 @@ func NewHandler(
 	core core.Core,
 ) Handler {
 	return _handler{
-		handleGetOrHeader: newHandleGetOrHeader(core),
-		core:              core,
+		contentsHandler: contents.NewHandler(core),
+		core:            core,
 	}
 }
 
 type _handler struct {
-	handleGetOrHeader handleGetOrHeader
-	core              core.Core
+	contentsHandler contents.Handler
+	core            core.Core
 }
 
 func (hdlr _handler) Handle(
@@ -49,6 +51,9 @@ func (hdlr _handler) Handle(
 
 	switch pathSegment {
 	case "":
+		http.Error(httpResp, "", http.StatusNotFound)
+		return
+	default:
 		var pullCreds *model.Creds
 		pullUsername, pullPassword, hasBasicAuth := httpReq.BasicAuth()
 		if hasBasicAuth {
@@ -81,10 +86,7 @@ func (hdlr _handler) Handle(
 			return
 		}
 
-		hdlr.handleGetOrHeader.HandleGetOrHead(dataHandle, httpResp, httpReq)
-	default:
-		http.Error(httpResp, "", http.StatusNotFound)
-		return
+		hdlr.contentsHandler.Handle(dataHandle, httpResp, httpReq)
 	}
 }
 

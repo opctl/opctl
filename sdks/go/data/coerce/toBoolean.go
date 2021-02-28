@@ -2,6 +2,7 @@ package coerce
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"io/ioutil"
@@ -35,16 +36,17 @@ func ToBoolean(
 		return &model.Value{Boolean: &booleanValue}, nil
 	case nil != value.Boolean:
 		return value, nil
-	case nil != value.Dir:
-		fileInfos, err := ioutil.ReadDir(*value.Dir)
+	case nil != value.Link:
+		fi, err := os.Stat(*value.Link)
 		if nil != err {
-			return nil, fmt.Errorf("unable to coerce dir to boolean; error was %v", err.Error())
+			return nil, fmt.Errorf("unable to coerce link to boolean; error was %v", err.Error())
 		}
 
-		booleanValue := len(fileInfos) > 0
-		return &model.Value{Boolean: &booleanValue}, nil
-	case nil != value.File:
-		fileBytes, err := ioutil.ReadFile(*value.File)
+		if fi.IsDir() {
+			return nil, fmt.Errorf("unable to coerce dir to boolean; incompatible types")
+		}
+
+		fileBytes, err := ioutil.ReadFile(*value.Link)
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce file to boolean; error was %v", err.Error())
 		}

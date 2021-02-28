@@ -9,7 +9,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/node"
 )
 
-// New returns a data provider which sources pkgs from a node
+// New returns a data provider which sources data from a node
 func New(
 	node node.Node,
 	pullCreds *model.Creds,

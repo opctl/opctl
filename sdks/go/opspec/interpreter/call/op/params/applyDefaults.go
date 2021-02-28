@@ -25,10 +25,10 @@ func ApplyDefaults(
 				argsWithDefaults[paramName] = &model.Value{Boolean: paramValue.Boolean.Default}
 			case nil != paramValue.Dir && nil != paramValue.Dir.Default && strings.HasPrefix(*paramValue.Dir.Default, "/"):
 				dirValue := filepath.Join(opPath, *paramValue.Dir.Default)
-				argsWithDefaults[paramName] = &model.Value{Dir: &dirValue}
+				argsWithDefaults[paramName] = &model.Value{Link: &dirValue}
 			case nil != paramValue.File && nil != paramValue.File.Default && strings.HasPrefix(*paramValue.File.Default, "/"):
 				fileValue := filepath.Join(opPath, *paramValue.File.Default)
-				argsWithDefaults[paramName] = &model.Value{File: &fileValue}
+				argsWithDefaults[paramName] = &model.Value{Link: &fileValue}
 			case nil != paramValue.Number && nil != paramValue.Number.Default:
 				argsWithDefaults[paramName] = &model.Value{Number: paramValue.Number.Default}
 			case nil != paramValue.Object && nil != paramValue.Object.Default:

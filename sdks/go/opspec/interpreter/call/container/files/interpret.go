@@ -43,9 +43,9 @@ fileLoop:
 			)
 		}
 
-		if !strings.HasPrefix(*fileValue.File, dataCachePath) {
+		if !strings.HasPrefix(*fileValue.Link, dataCachePath) {
 			// bound to non dataCachePath
-			containerCallFiles[callSpecContainerFilePath] = *fileValue.File
+			containerCallFiles[callSpecContainerFilePath] = *fileValue.Link
 			continue fileLoop
 		}
 
@@ -68,7 +68,7 @@ fileLoop:
 		// copy file
 		fileCopier := filecopier.New()
 		err = fileCopier.OS(
-			*fileValue.File,
+			*fileValue.Link,
 			containerCallFiles[callSpecContainerFilePath],
 		)
 		if nil != err {

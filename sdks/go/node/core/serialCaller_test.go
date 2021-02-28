@@ -173,7 +173,7 @@ var _ = Context("serialCaller", func() {
 					providedScopeName2Dir := "dummyParentVar2Data"
 					providedInboundScope := map[string]*model.Value{
 						"dummyVar1Name": {String: &providedScopeName1String},
-						"dummyVar2Name": {Dir: &providedScopeName2Dir},
+						"dummyVar2Name": {Link: &providedScopeName2Dir},
 					}
 					expectedInboundScopeToSecondChild := providedInboundScope
 					providedRootCallID := "dummyRootCallID"
@@ -245,15 +245,15 @@ var _ = Context("serialCaller", func() {
 					providedInboundVar3File := "dummyParentVar3Data"
 					providedInboundScope := map[string]*model.Value{
 						"dummyVar1Name": {String: &providedInboundVar1String},
-						"dummyVar2Name": {Dir: &providedInboundVar2Dir},
-						"dummyVar3Name": {File: &providedInboundVar3File},
+						"dummyVar2Name": {Link: &providedInboundVar2Dir},
+						"dummyVar3Name": {Link: &providedInboundVar3File},
 					}
 
 					firstChildOutput1String := "dummyFirstChildVar1Data"
 					firstChildOutput2String := "dummyFirstChildVar2Data"
 					firstChildOutputs := map[string]*model.Value{
 						"dummyVar1Name": {String: &firstChildOutput1String},
-						"dummyVar2Name": {Dir: &firstChildOutput2String},
+						"dummyVar2Name": {Link: &firstChildOutput2String},
 					}
 
 					expectedInboundScopeToSecondChild := map[string]*model.Value{

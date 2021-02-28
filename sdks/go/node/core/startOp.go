@@ -16,6 +16,14 @@ func (this core) StartOp(
 	ctx context.Context,
 	req model.StartOpReq,
 ) (string, error) {
+	if nil == req.Op.PullCreds {
+		auth := this.stateStore.TryGetAuth(req.Op.Ref)
+		if nil != auth {
+			// if explicit pull creds not provided and auth exists; use it
+			req.Op.PullCreds = &auth.Creds
+		}
+	}
+
 	opHandle, err := data.Resolve(
 		ctx,
 		req.Op.Ref,

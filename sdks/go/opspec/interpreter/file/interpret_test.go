@@ -3,6 +3,7 @@ package file
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	. "github.com/onsi/ginkgo"
@@ -32,8 +33,14 @@ var _ = Context("Interpret", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				identifier := "identifier"
+				tmpFile, err := ioutil.TempFile("", "")
+				if nil != err {
+					panic(err)
+				}
 
-				expectedValue := model.Value{File: new(string)}
+				tmpFilePath := tmpFile.Name()
+
+				expectedValue := model.Value{Link: &tmpFilePath}
 
 				/* act */
 				actualResultValue, actualErr := Interpret(
@@ -69,7 +76,13 @@ var _ = Context("Interpret", func() {
 	Context("value.Interpret doesn't err", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedExpression := model.Value{File: new(string)}
+			tmpFile, err := ioutil.TempFile("", "")
+			if nil != err {
+				panic(err)
+			}
+
+			tmpFilePath := tmpFile.Name()
+			providedExpression := model.Value{Link: &tmpFilePath}
 
 			/* act */
 			actualResultValue, actualErr := Interpret(

@@ -1,7 +1,6 @@
 package ymlfile
 
 import (
-	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"os"
@@ -18,9 +17,6 @@ var _ = Describe("ymlFileInputSrc", func() {
 		Context("yml doesn't contain entry w/ provided inputName", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeOS := new(ios.Fake)
-				fakeOS.StatReturns(nil, os.ErrNotExist)
-
 				objectUnderTest, err := New(argsYmlTestDataPath)
 				if err != nil {
 					Fail(err.Error())

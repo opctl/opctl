@@ -11,15 +11,15 @@ import (
 func Validate(
 	value *model.Value,
 ) []error {
-	if nil == value || nil == value.Dir {
+	if nil == value || nil == value.Link {
 		return []error{errors.New("dir required")}
 	}
 
-	fileInfo, err := os.Stat(*value.Dir)
+	fileInfo, err := os.Stat(*value.Link)
 	if nil != err {
 		return []error{err}
 	} else if !fileInfo.IsDir() {
-		return []error{fmt.Errorf("%v not a dir", *value.Dir)}
+		return []error{fmt.Errorf("%v not a dir", *value.Link)}
 	}
 	return []error{}
 }

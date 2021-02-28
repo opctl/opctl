@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -37,36 +38,36 @@ var _ = Context("ToObject", func() {
 			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce array to object; incompatible types")))
 		})
 	})
-	Context("Value.Dir isn't nil", func() {
-		It("should return expected result", func() {
-			/* arrange */
-			providedDir := "dummyValue"
-			providedValue := &model.Value{
-				Dir: &providedDir,
-			}
-
-			/* act */
-			actualValue, actualErr := ToObject(providedValue)
-
-			/* assert */
-			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to object; incompatible types", providedDir)))
-		})
-	})
-	Context("Value.File isn't nil", func() {
-		Context("ioutil.ReadFile errs", func() {
+	Context("Value.Link isn't nil", func() {
+		Context("is unresolvable", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				nonExistentPath := "nonExistent"
 
 				/* act */
 				actualValue, actualErr := ToObject(
-					&model.Value{File: &nonExistentPath},
+					&model.Value{Link: &nonExistentPath},
 				)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(errors.New("unable to coerce file to object; error was open nonExistent: no such file or directory")))
+				Expect(actualErr).To(Equal(errors.New("unable to coerce link to object; error was stat nonExistent: no such file or directory")))
+			})
+		})
+		Context("is dir", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				tmpDir := os.TempDir()
+				providedValue := &model.Value{
+					Link: &tmpDir,
+				}
+
+				/* act */
+				actualValue, actualErr := ToObject(providedValue)
+
+				/* assert */
+				Expect(actualValue).To(BeNil())
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to object; incompatible types", tmpDir)))
 			})
 		})
 		Context("ioutil.ReadFile doesn't err", func() {
@@ -83,7 +84,7 @@ var _ = Context("ToObject", func() {
 
 					/* act */
 					actualValue, actualErr := ToObject(
-						&model.Value{File: &filePath},
+						&model.Value{Link: &filePath},
 					)
 
 					/* assert */
@@ -116,7 +117,7 @@ var _ = Context("ToObject", func() {
 
 					/* act */
 					actualValue, actualErr := ToObject(
-						&model.Value{File: &filePath},
+						&model.Value{Link: &filePath},
 					)
 
 					/* assert */
@@ -195,7 +196,7 @@ var _ = Context("ToObject", func() {
 			})
 		})
 	})
-	Context("Value.Array,Value.Dir,File,Number,Object,String nil", func() {
+	Context("Value.Array,Link,Number,Object,String nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedValue := &model.Value{}

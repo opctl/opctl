@@ -68,7 +68,8 @@ func Interpret(
 		ref,
 		data,
 		opts,
-	)
+  )
+  
 	return data, err
 }
 
@@ -163,11 +164,11 @@ func getRootValue(
 		switch opts.Type {
 		case "Dir":
 			os.MkdirAll(fsPath, 0700)
-			return &model.Value{Dir: &fsPath}, "", nil
+			return &model.Value{Link: &fsPath}, "", nil
 		case "File":
 			os.MkdirAll(filepath.Dir(fsPath), 0700)
 			os.Create(fsPath)
-			return &model.Value{File: &fsPath}, "", nil
+			return &model.Value{Link: &fsPath}, "", nil
 		}
 	}
 

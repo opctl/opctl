@@ -13,14 +13,9 @@ export default interface Value {
     boolean?: boolean | null | undefined
 
     /**
-     * String typed value
+     * Link to a value (currently an absolute path)
      */
-    dir?: string | null | undefined
-
-    /**
-     * File typed value
-     */
-    file?: string | null | undefined
+    link?: string | null | undefined
 
     /**
      * Number typed value

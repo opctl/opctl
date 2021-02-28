@@ -77,7 +77,7 @@ var _ = Context("ApplyDefaults", func() {
 
 				expectedOutputValue := filepath.Join(providedOpPath, providedOutputDefault)
 				expectedOutputs := map[string]*model.Value{
-					providedOutputName: {Dir: &expectedOutputValue},
+					providedOutputName: {Link: &expectedOutputValue},
 				}
 
 				/* act */
@@ -106,7 +106,7 @@ var _ = Context("ApplyDefaults", func() {
 
 				expectedOutputValue := filepath.Join(providedOpPath, providedOutputDefault)
 				expectedOutputs := map[string]*model.Value{
-					providedOutputName: {File: &expectedOutputValue},
+					providedOutputName: {Link: &expectedOutputValue},
 				}
 
 				/* act */

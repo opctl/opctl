@@ -1,6 +1,3 @@
-[![Build Status](https://travis-ci.org/opctl/sdk-react.svg?branch=master)](https://travis-ci.org/opctl/sdk-react)
-[![Coverage](https://codecov.io/gh/opctl/sdk-react/branch/master/graph/badge.svg)](https://codecov.io/gh/opctl/sdk-react)
-
 > *Be advised: this project is currently at Major version zero. Per the
 > semantic versioning spec: "Major version zero (0.y.z) is for initial
 > development. Anything may change at any time. The public API should

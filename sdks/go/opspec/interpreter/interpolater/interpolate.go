@@ -88,7 +88,7 @@ func tryDeRef(
 				value, err := reference.Interpret(fmt.Sprintf("$(%v)", string(refBuffer[1:])), scope, nil)
 				if nil != err {
 					return "", 0, err
-				}
+        }
 
 				valueAsString, err := coerce.ToString(value)
 				if nil != err {

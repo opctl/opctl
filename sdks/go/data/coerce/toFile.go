@@ -33,9 +33,16 @@ func ToFile(
 		}
 	case nil != value.Boolean:
 		data = []byte(strconv.FormatBool(*value.Boolean))
-	case nil != value.Dir:
-		return nil, fmt.Errorf("unable to coerce dir '%v' to file; incompatible types", *value.Dir)
-	case nil != value.File:
+	case nil != value.Link:
+		fi, err := os.Stat(*value.Link)
+		if nil != err {
+			return nil, fmt.Errorf("unable to coerce link to file; error was %v", err.Error())
+		}
+
+		if fi.IsDir() {
+			return nil, fmt.Errorf("unable to coerce dir '%v' to file; incompatible types", *value.Link)
+		}
+
 		return value, nil
 	case nil != value.Number:
 		data = []byte(strconv.FormatFloat(*value.Number, 'f', -1, 64))
@@ -83,5 +90,5 @@ func ToFile(
 		return nil, fmt.Errorf("unable to coerce '%#v' to file; error was %v", value, err.Error())
 	}
 
-	return &model.Value{File: &path}, nil
+	return &model.Value{Link: &path}, nil
 }

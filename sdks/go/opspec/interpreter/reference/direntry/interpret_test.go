@@ -49,13 +49,13 @@ var _ = Context("Interpret", func() {
 
 			actualRefRemainder, actualValue, actualErr := Interpret(
 				providedRef,
-				&model.Value{Dir: &dirData},
+				&model.Value{Link: &dirData},
 				nil,
 			)
 
 			/* assert */
 			Expect(actualRefRemainder).To(BeEmpty())
-			Expect(*actualValue).To(Equal(model.Value{File: &expectedPath}))
+			Expect(*actualValue).To(Equal(model.Value{Link: &expectedPath}))
 			Expect(actualErr).To(BeNil())
 
 		})
@@ -79,13 +79,13 @@ var _ = Context("Interpret", func() {
 
 			actualRefRemainder, actualValue, actualErr := Interpret(
 				providedRef,
-				&model.Value{Dir: &dirData},
+				&model.Value{Link: &dirData},
 				nil,
 			)
 
 			/* assert */
 			Expect(actualRefRemainder).To(BeEmpty())
-			Expect(*actualValue).To(Equal(model.Value{Dir: &expectedPath}))
+			Expect(*actualValue).To(Equal(model.Value{Link: &expectedPath}))
 			Expect(actualErr).To(BeNil())
 
 		})

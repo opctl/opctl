@@ -6,15 +6,32 @@ import (
 	"path/filepath"
 	"time"
 
+	"io/ioutil"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"github.com/dgraph-io/badger/v2"
 	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	"github.com/opctl/opctl/sdks/go/pubsub"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("core", func() {
+	dbDir, err := ioutil.TempDir("", "")
+	if nil != err {
+		panic(err)
+	}
+
+	db, err := badger.Open(
+		badger.DefaultOptions(dbDir).WithLogger(nil),
+	)
+	if nil != err {
+		panic(err)
+	}
+
 	Context("StartOp", func() {
 		Context("data.Resolve errs", func() {
 			It("should return expected result", func() {
@@ -27,7 +44,9 @@ var _ = Context("core", func() {
 					},
 				}
 
-				objectUnderTest := core{}
+				objectUnderTest := core{
+					stateStore: newStateStore(context.Background(), db, pubsub.New(db)),
+				}
 
 				/* act */
 				_, actualErr := objectUnderTest.StartOp(
@@ -58,9 +77,9 @@ var _ = Context("core", func() {
 					providedReq := model.StartOpReq{
 						Args: map[string]*model.Value{
 							"dummyArg1Name": {String: &providedArg1String},
-							"dummyArg2Name": {Dir: &providedArg2Dir},
-							"dummyArg3Name": {Dir: &providedArg3Dir},
-							"dummyArg4Name": {Dir: &providedArg4Dir},
+							"dummyArg2Name": {Link: &providedArg2Dir},
+							"dummyArg3Name": {Link: &providedArg3Dir},
+							"dummyArg4Name": {Link: &providedArg4Dir},
 						},
 						Op: model.StartOpReqOp{
 							Ref: providedOpPath,
@@ -97,6 +116,7 @@ var _ = Context("core", func() {
 						caller:              fakeCaller,
 						dataCachePath:       dataCachePath,
 						pubSub:              new(FakePubSub),
+            stateStore: newStateStore(context.Background(), db, pubsub.New(db)),
 						uniqueStringFactory: fakeUniqueStringFactory,
 					}
 

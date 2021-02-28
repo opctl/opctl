@@ -3,10 +3,11 @@ package dir
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"io/ioutil"
 )
 
 var _ = Context("Validate", func() {
@@ -31,14 +32,14 @@ var _ = Context("Validate", func() {
 		})
 	})
 	Context("value not nil", func() {
-		Context("value.Dir not nil", func() {
+		Context("value.Link not nil", func() {
 			Context("fs.Stat errors", func() {
 				It("should return expected errors", func() {
 
 					/* arrange */
 					providedValueDir := "dummyDir"
 					providedValue := &model.Value{
-						Dir: &providedValueDir,
+						Link: &providedValueDir,
 					}
 
 					/* act */
@@ -64,7 +65,7 @@ var _ = Context("Validate", func() {
 						}
 
 						providedValue := &model.Value{
-							Dir: &tmpDirPath,
+							Link: &tmpDirPath,
 						}
 
 						expectedErrors := []error{}
@@ -92,7 +93,7 @@ var _ = Context("Validate", func() {
 						tmpFilePath := tmpFile.Name()
 
 						providedValue := &model.Value{
-							Dir: &tmpFilePath,
+							Link: &tmpFilePath,
 						}
 
 						expectedErrors := []error{

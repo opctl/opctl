@@ -23,9 +23,16 @@ func ToDir(
 		return nil, fmt.Errorf("unable to coerce array to dir; incompatible types")
 	case nil != value.Boolean:
 		return nil, fmt.Errorf("unable to coerce boolean to dir; incompatible types")
-	case nil != value.Dir:
-		return value, nil
-	case nil != value.File:
+	case nil != value.Link:
+    fi, err := os.Stat(*value.Link)
+    if nil != err {
+      return nil, fmt.Errorf("unable to coerce link to dir; error was %v", err.Error())
+    }
+
+    if (fi.IsDir()) {
+      return value, nil
+    }
+
 		return nil, fmt.Errorf("unable to coerce file to dir; incompatible types")
 	case nil != value.Number:
 		return nil, fmt.Errorf("unable to coerce number to dir; incompatible types")
@@ -41,7 +48,7 @@ func ToDir(
 			return nil, fmt.Errorf("unable to coerce object to dir; error was %v", err.Error())
 		}
 
-		return &model.Value{Dir: &rootDirPath}, nil
+		return &model.Value{Link: &rootDirPath}, nil
 	case nil != value.Socket:
 		return nil, fmt.Errorf("unable to coerce socket to dir; incompatible types")
 	case nil != value.String:

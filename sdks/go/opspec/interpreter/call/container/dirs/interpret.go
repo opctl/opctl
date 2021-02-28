@@ -41,9 +41,9 @@ dirLoop:
 			)
 		}
 
-		if "" != *dirValue.Dir && !strings.HasPrefix(*dirValue.Dir, dataCachePath) {
+		if "" != *dirValue.Link && !strings.HasPrefix(*dirValue.Link, dataCachePath) {
 			// bound to non dataCachePath
-			containerCallDirs[callSpecContainerDirPath] = *dirValue.Dir
+			containerCallDirs[callSpecContainerDirPath] = *dirValue.Link
 			continue dirLoop
 		}
 
@@ -52,7 +52,7 @@ dirLoop:
 
 		dirCopier := dircopier.New()
 		if err := dirCopier.OS(
-			*dirValue.Dir,
+			*dirValue.Link,
 			containerCallDirs[callSpecContainerDirPath],
 		); nil != err {
 			return nil, fmt.Errorf(

@@ -98,7 +98,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				arg = &model.Value{Dir: &absPath}
+				arg = &model.Value{Link: &absPath}
 			case nil != param.File:
 				absPath, err := filepath.Abs(*rawArg)
 				if nil != err {
@@ -106,7 +106,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				arg = &model.Value{File: &absPath}
+				arg = &model.Value{Link: &absPath}
 			case nil != param.Number:
 				var err error
 				if arg, err = coerce.ToNumber(&model.Value{String: rawArg}); nil != err {

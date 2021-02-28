@@ -39,13 +39,13 @@ import stringValidate from './string/validate'
 
     if (param.dir) {
       return dirValidate(
-        value.dir!
+        value.link
       )
     }
 
     if (param.file) {
       return fileValidate(
-        value.file!
+        value.link
       )
     }
 

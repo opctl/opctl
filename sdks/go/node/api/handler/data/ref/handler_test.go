@@ -7,11 +7,12 @@ import (
 	"net/http/httptest"
 	"strings"
 
+	contentsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/data/ref/contents/fakes"
+
 	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
 	coreFakes "github.com/opctl/opctl/sdks/go/node/core/fakes"
 
 	"github.com/opctl/opctl/sdks/go/model"
-	. "github.com/opctl/opctl/sdks/go/node/api/handler/data/ref/internal/fakes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -25,13 +26,13 @@ var _ = Context("Handler", func() {
 		})
 	})
 	Context("Handle", func() {
-		Context("next URL path segment not empty", func() {
+		Context("next URL path segment is empty", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				objectUnderTest := _handler{}
 				providedHTTPResp := httptest.NewRecorder()
 
-				providedHTTPReq, err := http.NewRequest("dummyMethod", "dummyPath", nil)
+				providedHTTPReq, err := http.NewRequest("dummyMethod", "", nil)
 				if nil != err {
 					panic(err.Error())
 				}
@@ -47,7 +48,7 @@ var _ = Context("Handler", func() {
 				Expect(providedHTTPResp.Code).To(Equal(http.StatusNotFound))
 			})
 		})
-		Context("next URL path segment isn't empty", func() {
+		Context("next URL path segment is 'contents'", func() {
 			Context("req has BasicAuth", func() {
 				It("should call core.ResolveData w/ expected args", func() {
 					/* arrange */
@@ -63,7 +64,7 @@ var _ = Context("Handler", func() {
 						core: fakeCore,
 					}
 
-					providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "", nil)
+					providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
 					if nil != err {
 						panic(err.Error())
 					}
@@ -106,7 +107,7 @@ var _ = Context("Handler", func() {
 					core: fakeCore,
 				}
 
-				providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "", nil)
+				providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
 				if nil != err {
 					panic(err.Error())
 				}
@@ -141,7 +142,7 @@ var _ = Context("Handler", func() {
 						}
 						providedHTTPResp := httptest.NewRecorder()
 
-						providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "", nil)
+						providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
 						if nil != err {
 							panic(err.Error())
 						}
@@ -172,7 +173,7 @@ var _ = Context("Handler", func() {
 						}
 						providedHTTPResp := httptest.NewRecorder()
 
-						providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "", nil)
+						providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
 						if nil != err {
 							panic(err.Error())
 						}
@@ -200,7 +201,7 @@ var _ = Context("Handler", func() {
 						}
 						providedHTTPResp := httptest.NewRecorder()
 
-						providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "", nil)
+						providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
 						if nil != err {
 							panic(err.Error())
 						}
@@ -226,14 +227,14 @@ var _ = Context("Handler", func() {
 					fakeDataHandle := new(modelFakes.FakeDataHandle)
 					fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
-					fakeHandleGetOrHeader := new(FakeHandleGetOrHeader)
+					fakeContentsHandler := new(contentsFakes.FakeHandler)
 
 					objectUnderTest := _handler{
-						core:              fakeCore,
-						handleGetOrHeader: fakeHandleGetOrHeader,
+						core:            fakeCore,
+						contentsHandler: fakeContentsHandler,
 					}
 
-					providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "", nil)
+					providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
 					if nil != err {
 						panic(err.Error())
 					}
@@ -248,7 +249,7 @@ var _ = Context("Handler", func() {
 					/* assert */
 					actualDataHandle,
 						_,
-						actualHTTPReq := fakeHandleGetOrHeader.HandleGetOrHeadArgsForCall(0)
+						actualHTTPReq := fakeContentsHandler.HandleArgsForCall(0)
 
 					Expect(actualDataHandle).To(Equal(fakeDataHandle))
 					Expect(actualHTTPReq.URL.Path).To(BeEmpty())

@@ -3,6 +3,8 @@ package input
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -65,7 +67,7 @@ var _ = Context("Interpret", func() {
 			It("should return expected results", func() {
 				name := "name"
 				providedScope := map[string]*model.Value{
-					name: &model.Value{Array: new([]interface{})},
+					name: {Array: new([]interface{})},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
 
@@ -92,7 +94,7 @@ var _ = Context("Interpret", func() {
 			It("should return expected results", func() {
 				name := "name"
 				providedScope := map[string]*model.Value{
-					name: &model.Value{Boolean: new(bool)},
+					name: {Boolean: new(bool)},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
 
@@ -118,8 +120,10 @@ var _ = Context("Interpret", func() {
 		Context("Input is dir", func() {
 			It("should return expected results", func() {
 				name := "name"
+				tmpDir := os.TempDir()
+
 				providedScope := map[string]*model.Value{
-					name: &model.Value{Dir: new(string)},
+					name: {Link: &tmpDir},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
 				providedScratchDirPath := "dummyScratchDir"
@@ -145,9 +149,17 @@ var _ = Context("Interpret", func() {
 		})
 		Context("Input is file", func() {
 			It("should return expected results", func() {
+				tmpFile, err := ioutil.TempFile("", "")
+				if nil != err {
+					panic(err)
+				}
+
+				tmpFilePath := tmpFile.Name()
+
 				name := "name"
+
 				providedScope := map[string]*model.Value{
-					name: &model.Value{File: new(string)},
+					name: {Link: &tmpFilePath},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
 				providedScratchDirPath := "dummyScratchDir"

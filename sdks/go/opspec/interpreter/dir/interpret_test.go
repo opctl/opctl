@@ -34,12 +34,12 @@ var _ = Context("Interpret", func() {
 			})
 		})
 		Context("reference.Interpret doesn't error", func() {
-			Context("value.Dir nil", func() {
+			Context("value.Link nil", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					identifier := "identifier"
 					providedScope := map[string]*model.Value{
-						identifier: &model.Value{Dir: nil},
+						identifier: {Link: nil},
 					}
 					providedExpression := fmt.Sprintf("$(%s)", identifier)
 
@@ -52,15 +52,17 @@ var _ = Context("Interpret", func() {
 					)
 
 					/* assert */
-					Expect(actualErr).To(Equal(errors.New("unable to interpret $(identifier) to dir; error was unable to coerce '&{Array:<nil> Boolean:<nil> Dir:<nil> File:<nil> Number:<nil> Object:<nil> Socket:<nil> String:<nil>}' to dir")))
+					Expect(actualErr).To(Equal(errors.New("unable to interpret $(identifier) to dir; error was unable to coerce '&{Array:<nil> Boolean:<nil> Number:<nil> Object:<nil> Socket:<nil> String:<nil> Link:<nil>}' to dir")))
 				})
 			})
-			Context("value.Dir not nil", func() {
+			Context("value.Link not nil", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					identifier := "identifier"
+					tmpDir := os.TempDir()
+
 					providedScope := map[string]*model.Value{
-						identifier: &model.Value{Dir: new(string)},
+						identifier: {Link: &tmpDir},
 					}
 
 					/* act */

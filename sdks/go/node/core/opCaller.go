@@ -63,17 +63,17 @@ func (oc _opCaller) Call(
 	}
 	// add deprecated absolute path to scope
 	opCallScope["/"] = &model.Value{
-		Dir: &opCall.OpPath,
+		Link: &opCall.OpPath,
 	}
 	// add current directory to scope
 	opCallScope["./"] = &model.Value{
-		Dir: &opCall.OpPath,
+		Link: &opCall.OpPath,
 	}
 
 	// add parent directory to scope
 	parentDirPath := filepath.Dir(opCall.OpPath)
 	opCallScope["../"] = &model.Value{
-		Dir: &parentDirPath,
+		Link: &parentDirPath,
 	}
 
 	opOutputs, err := oc.caller.Call(

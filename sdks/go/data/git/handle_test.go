@@ -6,40 +6,35 @@ import (
 	"path/filepath"
 
 	"github.com/golang-interfaces/iioutil"
-	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
 var _ = Context("handle", func() {
-
-	Context("GetContent", func() {
-
-		It("should call os.Open w/ expected args", func() {
-			/* arrange */
-			providedOpPath := "dummyOpPath"
-			providedContentPath := "dummyContentPath"
-
-			fakeOS := new(ios.Fake)
-
-			objectUnderTest := handle{
-				os:   fakeOS,
-				path: providedOpPath,
-			}
-
-			/* act */
-			objectUnderTest.GetContent(nil, providedContentPath)
-
-			/* assert */
-			Expect(fakeOS.OpenArgsForCall(0)).To(Equal(filepath.Join(providedOpPath, providedContentPath)))
-		})
-	})
-
 	wd, err := os.Getwd()
 	if nil != err {
 		panic(err)
 	}
+
+	Context("GetContent", func() {
+		It("should not err", func() {
+      /* arrange */
+      
+			providedOpPath := wd
+			providedContentPath := "testdata/file1.txt"
+
+			objectUnderTest := handle{
+				path: providedOpPath,
+			}
+
+			/* act */
+			_, actualErr := objectUnderTest.GetContent(nil, providedContentPath)
+
+      /* assert */
+      Expect(actualErr).To(BeNil())
+		})
+	})
 	Context("ListDescendants", func() {
 		It("should call ioutil.ReadDir w/ expected args", func() {
 			/* arrange */

@@ -11,15 +11,15 @@ import (
 func Validate(
 	value *model.Value,
 ) []error {
-	if nil == value || nil == value.File {
+	if nil == value || nil == value.Link {
 		return []error{errors.New("file required")}
 	}
 
-	fileInfo, err := os.Stat(*value.File)
+	fileInfo, err := os.Stat(*value.Link)
 	if nil != err {
 		return []error{err}
 	} else if !fileInfo.Mode().IsRegular() {
-		return []error{fmt.Errorf("%v not a file", *value.File)}
+		return []error{fmt.Errorf("%v not a file", *value.Link)}
 	}
 	return []error{}
 }

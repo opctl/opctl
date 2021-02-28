@@ -335,10 +335,6 @@ github.com/golang-interfaces/ihttp v0.0.0-20170731143308-228dd9eedf13 h1:yDWO64L
 github.com/golang-interfaces/ihttp v0.0.0-20170731143308-228dd9eedf13 h1:yDWO64LqfZDxygDvBUKxA53Aft4UrJZYNf9HXei9JmA=
 github.com/golang-interfaces/ihttp v0.0.0-20170731143308-228dd9eedf13/go.mod h1:KlJAztOus0bxzLi/Xewl9EoLhDzvSRcnVzZbN0CPpDE=
 github.com/golang-interfaces/ihttp v0.0.0-20170731143308-228dd9eedf13/go.mod h1:KlJAztOus0bxzLi/Xewl9EoLhDzvSRcnVzZbN0CPpDE=
-github.com/golang-interfaces/iio v0.0.0-20170731143437-c90328b79385 h1:YvsH80pVtkxUkUGnnorVP5Xhfk1mRcLsv/Ydz5XO79M=
-github.com/golang-interfaces/iio v0.0.0-20170731143437-c90328b79385 h1:YvsH80pVtkxUkUGnnorVP5Xhfk1mRcLsv/Ydz5XO79M=
-github.com/golang-interfaces/iio v0.0.0-20170731143437-c90328b79385/go.mod h1:IQulCZupB/SliM7yMmbdHZzo24UcO0rcHmLIzOlu9pc=
-github.com/golang-interfaces/iio v0.0.0-20170731143437-c90328b79385/go.mod h1:IQulCZupB/SliM7yMmbdHZzo24UcO0rcHmLIzOlu9pc=
 github.com/golang-interfaces/iioutil v0.0.0-20170803194630-7d1c0886acdc h1:J98T48OIENjW8z8uOsZYq2Nprbn5iX3cPsRMaPHdXMs=
 github.com/golang-interfaces/iioutil v0.0.0-20170803194630-7d1c0886acdc h1:J98T48OIENjW8z8uOsZYq2Nprbn5iX3cPsRMaPHdXMs=
 github.com/golang-interfaces/iioutil v0.0.0-20170803194630-7d1c0886acdc/go.mod h1:KutS7pJ3VjHY3k+I+MaXpBCRWbMIwME5dyJObdagWSE=

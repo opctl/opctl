@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/opctl/opctl/sdks/go/model"
 	"io/ioutil"
+	"os"
 	"strconv"
 )
 
@@ -30,13 +31,21 @@ func ToString(
 	case nil != value.Boolean:
 		booleanString := strconv.FormatBool(*value.Boolean)
 		return &model.Value{String: &booleanString}, nil
-	case nil != value.Dir:
-		return nil, fmt.Errorf("unable to coerce dir '%v' to string; incompatible types", *value.Dir)
-	case nil != value.File:
-		fileBytes, err := ioutil.ReadFile(*value.File)
+	case nil != value.Link:
+		fi, err := os.Stat(*value.Link)
+		if nil != err {
+			return nil, fmt.Errorf("unable to coerce link to string; error was %v", err.Error())
+		}
+
+		if fi.IsDir() {
+			return nil, fmt.Errorf("unable to coerce dir '%v' to string; incompatible types", *value.Link)
+		}
+
+		fileBytes, err := ioutil.ReadFile(*value.Link)
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce file to string; error was %v", err.Error())
 		}
+
 		fileString := string(fileBytes)
 		return &model.Value{String: &fileString}, nil
 	case nil != value.Number:

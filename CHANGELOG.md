@@ -6,8 +6,6 @@ accordance with
 
 ## [Unreleased]
 
-## 0.1.48 - 2021-02-28
-
 ### Changed
 
 - Self-update now uses github releases instead of equinox.io
