@@ -38,14 +38,14 @@ func newParallelLoopCaller(
 	pubSub pubsub.PubSub,
 ) parallelLoopCaller {
 	return _parallelLoopCaller{
-		caller:              caller,
-		pubSub:              pubSub,
+		caller: caller,
+		pubSub: pubSub,
 	}
 }
 
 type _parallelLoopCaller struct {
-	caller              caller
-	pubSub              pubsub.PubSub
+	caller caller
+	pubSub pubsub.PubSub
 }
 
 func (plpr _parallelLoopCaller) Call(
