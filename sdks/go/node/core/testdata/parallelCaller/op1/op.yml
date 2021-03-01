@@ -1,0 +1,8 @@
+name: op1
+inputs:
+  input1:
+    string: {}
+run:
+  container:
+    image:
+      ref: alpine

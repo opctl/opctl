@@ -1,41 +1,23 @@
 package envvar
 
 import (
-	"github.com/golang-interfaces/ios"
+	"os"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("envVarInputSrc", func() {
 	Context("ReadString()", func() {
-		It("should call os.Getenv w/ expected args", func() {
-			/* arrange */
-			providedInputName := "dummyInputName"
-
-			fakeOS := new(ios.Fake)
-			objectUnderTest := envVarInputSrc{
-				os:          fakeOS,
-				readHistory: map[string]struct{}{},
-			}
-
-			/* act */
-			objectUnderTest.ReadString(providedInputName)
-
-			/* assert */
-			Expect(fakeOS.GetenvArgsForCall(0)).To(Equal(providedInputName))
-		})
 		Context("os.Getenv returns empty value", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeOS := new(ios.Fake)
-
 				objectUnderTest := envVarInputSrc{
-					os:          fakeOS,
 					readHistory: map[string]struct{}{},
 				}
 
 				/* act */
-				actualValue, actualOk := objectUnderTest.ReadString("")
+				actualValue, actualOk := objectUnderTest.ReadString("DOESNT_EXIST")
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
@@ -45,18 +27,17 @@ var _ = Describe("envVarInputSrc", func() {
 		Context("os.Getenv returns non-empty value", func() {
 			It("should return value", func() {
 				/* arrange */
+				envVarName := "DOES_EXIST"
 				expectedValue := "dummyValue"
 
-				fakeOS := new(ios.Fake)
-				fakeOS.GetenvReturns(expectedValue)
+				os.Setenv(envVarName, expectedValue)
 
 				objectUnderTest := envVarInputSrc{
-					os:          fakeOS,
 					readHistory: map[string]struct{}{},
 				}
 
 				/* act */
-				actualValue, actualOk := objectUnderTest.ReadString("")
+				actualValue, actualOk := objectUnderTest.ReadString(envVarName)
 
 				/* assert */
 				Expect(*actualValue).To(Equal(expectedValue))
@@ -64,19 +45,18 @@ var _ = Describe("envVarInputSrc", func() {
 			})
 			It("should return value only once", func() {
 				/* arrange */
+				envVarName := "DOES_EXIST"
 				expectedValue := "dummyValue"
 
-				fakeOS := new(ios.Fake)
-				fakeOS.GetenvReturns(expectedValue)
+				os.Setenv(envVarName, expectedValue)
 
 				objectUnderTest := envVarInputSrc{
-					os:          fakeOS,
 					readHistory: map[string]struct{}{},
 				}
 
 				/* act */
-				actualValue1, actualOk1 := objectUnderTest.ReadString("")
-				actualValue2, actualOk2 := objectUnderTest.ReadString("")
+				actualValue1, actualOk1 := objectUnderTest.ReadString(envVarName)
+				actualValue2, actualOk2 := objectUnderTest.ReadString(envVarName)
 
 				/* assert */
 				Expect(*actualValue1).To(Equal(expectedValue))

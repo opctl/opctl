@@ -10,7 +10,7 @@ inputs:
 run:
   serial:
     - op:
-        ref: ../build
+        ref: ../compile
     - container:
         image: { ref: 'golang:1.15' }
         cmd:
