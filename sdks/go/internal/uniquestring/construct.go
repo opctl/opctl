@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Construct returns a globally unique string
 func Construct() (string, error) {
 	uuid, err := uuid.NewV4()
 	if nil != err {

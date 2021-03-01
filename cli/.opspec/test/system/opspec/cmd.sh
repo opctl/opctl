@@ -8,6 +8,11 @@ nohup dockerd \
 echo "installing jq"
 apk add -U jq
 
+# dummy account for these tests so we don't hit rate limits
+# it is not secret as it has no access to anything
+# and is use solely for this purpose
+/src/cli/opctl-linux-amd64 auth add docker.io -u 3hhyyicl1mzqsr6tggmg -p '%7Oe^4#fGGwc96rGcV&4'
+
 test_description="opspec test-suite scenarios"
 
 . sharness/sharness.sh

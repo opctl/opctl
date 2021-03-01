@@ -3,9 +3,9 @@ package contents
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
+	"encoding/json"
 	"net/http"
 
-	ijson "github.com/golang-interfaces/encoding-ijson"
 	"github.com/opctl/opctl/sdks/go/internal/urlpath"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node"
@@ -28,14 +28,12 @@ func NewHandler(
 ) Handler {
 	return _handler{
 		node:        node,
-		json:        ijson.New(),
 		pathHandler: path.NewHandler(node),
 	}
 }
 
 type _handler struct {
 	node        node.Node
-	json        ijson.IJSON
 	pathHandler path.Handler
 }
 
@@ -62,7 +60,7 @@ func (hdlr _handler) Handle(
 
 		httpResp.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-		if err := hdlr.json.NewEncoder(httpResp).Encode(dirEntriesList); nil != err {
+		if err := json.NewEncoder(httpResp).Encode(dirEntriesList); nil != err {
 			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 			return
 		}

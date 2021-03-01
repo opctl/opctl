@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/dgraph-io/badger/v2"
-	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
@@ -44,8 +43,6 @@ func New(
 	}
 
 	pubSub := pubsub.New(db)
-
-	uniqueStringFactory := uniquestring.NewUniqueStringFactory()
 
 	stateStore := newStateStore(
 		ctx,
@@ -102,7 +99,6 @@ func New(
 		),
 		pubSub:              pubSub,
 		stateStore:          stateStore,
-		uniqueStringFactory: uniqueStringFactory,
 	}
 }
 
@@ -114,7 +110,6 @@ type core struct {
 	opCaller            opCaller
 	pubSub              pubsub.PubSub
 	stateStore          stateStore
-	uniqueStringFactory uniquestring.UniqueStringFactory
 }
 
 func (c core) Liveness(
