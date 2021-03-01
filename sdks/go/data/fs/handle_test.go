@@ -38,12 +38,12 @@ var _ = Context("handle", func() {
 		Context("ioutil.ReadDir errors", func() {
 			It("should be returned", func() {
 
-        /* arrange */
-        providedPath := "doesnt-exist"
+				/* arrange */
+				providedPath := "doesnt-exist"
 
 				objectUnderTest := handle{
-          path: providedPath,
-        }
+					path: providedPath,
+				}
 
 				/* act */
 				_, actualError := objectUnderTest.ListDescendants(nil)
@@ -87,7 +87,7 @@ var _ = Context("handle", func() {
 				}
 
 				objectUnderTest := handle{
-					path:   rootOpPath,
+					path: rootOpPath,
 				}
 
 				/* act */

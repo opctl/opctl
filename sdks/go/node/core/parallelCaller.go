@@ -35,8 +35,8 @@ func newParallelCaller(
 ) parallelCaller {
 
 	return _parallelCaller{
-		caller:              caller,
-		pubSub:              pubSub,
+		caller: caller,
+		pubSub: pubSub,
 	}
 
 }
@@ -46,8 +46,8 @@ func refToName(ref string) string {
 }
 
 type _parallelCaller struct {
-	caller              caller
-	pubSub              pubsub.PubSub
+	caller caller
+	pubSub pubsub.PubSub
 }
 
 func (pc _parallelCaller) Call(
