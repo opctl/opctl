@@ -37,9 +37,9 @@ func newStateStore(
 ) stateStore {
 
 	stateStore := &_stateStore{
-		authsByResourcesKeyPrefix: "authsByResources_",
-		callsByID:                 make(map[string]*model.Call),
-		db:                        db,
+		authsByResourcesKeyPrefix:    "authsByResources_",
+		callsByID:                    make(map[string]*model.Call),
+		db:                           db,
 		lastAppliedEventTimestampKey: "lastAppliedEventTimestamp",
 	}
 
