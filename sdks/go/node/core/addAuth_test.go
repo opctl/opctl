@@ -72,8 +72,8 @@ var _ = Context("core", func() {
 				for event := range eventChannel {
 					if nil != event.AuthAdded {
 						// ignore timestamp from assertion
-            event.Timestamp = expectedEvent.Timestamp
-            actualEvent = event
+						event.Timestamp = expectedEvent.Timestamp
+						actualEvent = event
 					}
 				}
 			}()
