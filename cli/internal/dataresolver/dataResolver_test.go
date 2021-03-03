@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+	"path"
 
-	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	cliparamsatisfierFakes "github.com/opctl/opctl/cli/internal/cliparamsatisfier/fakes"
@@ -64,7 +65,6 @@ var _ = Context("dataResolver", func() {
 
 					objectUnderTest := _dataResolver{
 						cliParamSatisfier: fakeCliParamSatisfier,
-						os:                new(ios.Fake),
 						node:              fakeCore,
 					}
 
@@ -86,7 +86,6 @@ var _ = Context("dataResolver", func() {
 					fakeCore.ListDescendantsReturns(nil, errors.New(expectedErr))
 
 					objectUnderTest := _dataResolver{
-						os:   new(ios.Fake),
 						node: fakeCore,
 					}
 
@@ -102,23 +101,28 @@ var _ = Context("dataResolver", func() {
 		Context("data.Resolve doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
+				wd, err := os.Getwd()
+				if nil != err {
+					panic(err)
+				}
+
 				fakeCore := new(nodeFakes.FakeNode)
+				providedDataRef := "testdata/dummy-op"
 
 				objectUnderTest := _dataResolver{
-					os:   new(ios.Fake),
 					node: fakeCore,
 				}
 
 				/* act */
 				actualPkgHandle, err := objectUnderTest.Resolve(
 					context.Background(),
-					"testdata/dummy-op",
+					providedDataRef,
 					&model.Creds{},
 				)
 
 				/* assert */
 				Expect(err).To(BeNil())
-				Expect(actualPkgHandle.Ref()).To(Equal("testdata/dummy-op"))
+				Expect(actualPkgHandle.Ref()).To(Equal(path.Join(wd, providedDataRef)))
 			})
 		})
 	})

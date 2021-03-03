@@ -37,7 +37,6 @@ func newParallelCaller(
 	return _parallelCaller{
 		caller:              caller,
 		pubSub:              pubSub,
-		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
 	}
 
 }
@@ -49,7 +48,6 @@ func refToName(ref string) string {
 type _parallelCaller struct {
 	caller              caller
 	pubSub              pubsub.PubSub
-	uniqueStringFactory uniquestring.UniqueStringFactory
 }
 
 func (pc _parallelCaller) Call(
@@ -83,7 +81,7 @@ func (pc _parallelCaller) Call(
 	// perform calls in parallel w/ cancellation
 	for childCallIndex, childCall := range callSpecParallelCall {
 
-		childCallID, err := pc.uniqueStringFactory.Construct()
+		childCallID, err := uniquestring.Construct()
 		if nil != err {
 			// end run immediately on any error
 			return nil, err

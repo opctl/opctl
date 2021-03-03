@@ -3,10 +3,10 @@ package dataresolver
 import (
 	"context"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/data/fs"
@@ -31,14 +31,12 @@ func New(
 	return _dataResolver{
 		cliParamSatisfier: cliParamSatisfier,
 		node:              node,
-		os:                ios.New(),
 	}
 }
 
 type _dataResolver struct {
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier
 	node              node.Node
-	os                ios.IOS
 }
 
 func (dtr _dataResolver) Resolve(
@@ -46,7 +44,7 @@ func (dtr _dataResolver) Resolve(
 	dataRef string,
 	pullCreds *model.Creds,
 ) (model.DataHandle, error) {
-	cwd, err := dtr.os.Getwd()
+	cwd, err := os.Getwd()
 	if nil != err {
 		return nil, err
 	}

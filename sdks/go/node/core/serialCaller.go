@@ -34,7 +34,6 @@ func newSerialCaller(
 	return _serialCaller{
 		caller:              caller,
 		pubSub:              pubSub,
-		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
 	}
 
 }
@@ -42,7 +41,6 @@ func newSerialCaller(
 type _serialCaller struct {
 	caller              caller
 	pubSub              pubsub.PubSub
-	uniqueStringFactory uniquestring.UniqueStringFactory
 }
 
 func (sc _serialCaller) Call(
@@ -75,7 +73,7 @@ func (sc _serialCaller) Call(
 	for _, callSpecCall := range callSpecSerialCall {
 
 		var childCallID string
-		childCallID, err := sc.uniqueStringFactory.Construct()
+		childCallID, err := uniquestring.Construct()
 		if nil != err {
 			// end run immediately on any error
 			return nil, err
