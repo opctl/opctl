@@ -78,3 +78,16 @@ run:
               gitCommit:
               token: b432a3b8-8220-4c1d-bcee-db76e68d0128
               report: $(coverprofile)
+    # check go fmt has been run
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            test -z "\$(gofmt -l . | tee /tmp/output)" || (echo "Fix formatting issues with 'opctl run format'" && cat /tmp/output && exit 1)
+        dirs:
+          /src: $(../..)
+        envVars:
+          GOFLAGS: -tags=containers_image_openpgp
+        image: { ref: "golang:1.15" }
+        workDir: /src

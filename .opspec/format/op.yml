@@ -1,0 +1,14 @@
+name: format
+description: formats code
+run:
+  container:
+    cmd:
+      - go
+      - fmt
+      - ./...
+    dirs:
+      /src: $(../..)
+    envVars:
+      GOFLAGS: -tags=containers_image_openpgp
+    image: { ref: "golang:1.15" }
+    workDir: /src
