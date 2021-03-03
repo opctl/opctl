@@ -36,13 +36,7 @@ func ToBoolean(
 	case nil != value.Boolean:
 		return value, nil
 	case nil != value.Dir:
-		fileInfos, err := ioutil.ReadDir(*value.Dir)
-		if nil != err {
-			return nil, fmt.Errorf("unable to coerce dir to boolean; error was %v", err.Error())
-		}
-
-		booleanValue := len(fileInfos) > 0
-		return &model.Value{Boolean: &booleanValue}, nil
+		return nil, fmt.Errorf("unable to coerce dir to boolean; incompatible types")
 	case nil != value.File:
 		fileBytes, err := ioutil.ReadFile(*value.File)
 		if nil != err {

@@ -2,11 +2,10 @@ package fs
 
 import (
 	"context"
-	"errors"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
-	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -14,50 +13,23 @@ import (
 var _ = Context("_fs", func() {
 	Context("TryResolve", func() {
 		Context("dataRef is absolute path", func() {
-			It("should call fs.Stat w/ expected args", func() {
-				/* arrange */
-				providedDataRef := "/dummyFullyQualifiedName"
-
-				fakeOS := new(ios.Fake)
-				// error to trigger immediate return
-				fakeOS.StatReturns(nil, errors.New("dummyError"))
-
-				objectUnderTest := _fs{
-					os: fakeOS,
-				}
-
-				/* act */
-				objectUnderTest.TryResolve(
-					context.Background(),
-					providedDataRef,
-				)
-
-				/* assert */
-				Expect(fakeOS.StatArgsForCall(0)).To(Equal(providedDataRef))
-			})
-			Context("os.Stat errs", func() {
+			Context("doesnt exist", func() {
 				It("should return err", func() {
 					/* arrange */
-					expectedErr := errors.New("dummyError")
-
-					fakeOS := new(ios.Fake)
-					fakeOS.StatReturns(nil, expectedErr)
-
-					objectUnderTest := _fs{
-						os: fakeOS,
-					}
+					objectUnderTest := _fs{}
 
 					/* act */
-					_, actualError := objectUnderTest.TryResolve(
+					actualHandle, actualError := objectUnderTest.TryResolve(
 						context.Background(),
-						"/dummyDataRef",
+						"/doesnt-exist",
 					)
 
 					/* assert */
-					Expect(actualError).To(Equal(expectedErr))
+					Expect(actualHandle).To(BeNil())
+					Expect(actualError).To(BeNil())
 				})
 			})
-			Context("os.Stat doesn't err", func() {
+			Context("exists", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					file, err := ioutil.TempFile("", "")
@@ -67,12 +39,7 @@ var _ = Context("_fs", func() {
 
 					expectedHandle := newHandle(file.Name())
 
-					fakeOS := new(ios.Fake)
-					fakeOS.StatReturns(nil, nil)
-
-					objectUnderTest := _fs{
-						os: fakeOS,
-					}
+					objectUnderTest := _fs{}
 
 					/* act */
 					actualHandle, actualError := objectUnderTest.TryResolve(
@@ -87,60 +54,31 @@ var _ = Context("_fs", func() {
 			})
 		})
 		Context("dataRef isn't absolute path", func() {
-			It("should call fs.Stat w/ expected args", func() {
-				/* arrange */
-				providedDataRef := "dummyDataRef"
-				basePath := "dummyBasePath"
-
-				expectedPath := filepath.Join(
-					basePath,
-					providedDataRef,
-				)
-
-				fakeOS := new(ios.Fake)
-
-				objectUnderTest := _fs{
-					basePaths: []string{basePath},
-					os:        fakeOS,
-				}
-
-				/* act */
-				objectUnderTest.TryResolve(
-					context.Background(),
-					providedDataRef,
-				)
-
-				/* assert */
-				Expect(fakeOS.StatArgsForCall(0)).To(Equal(expectedPath))
-			})
-			Context("fs.Stat errors", func() {
+			Context("doesnt exist", func() {
 				It("should return err", func() {
 					/* arrange */
-					expectedErr := errors.New("dummyError")
-
-					fakeOS := new(ios.Fake)
-					fakeOS.StatReturnsOnCall(0, nil, expectedErr)
-
-					objectUnderTest := _fs{
-						basePaths: []string{"dummyBasePath"},
-						os:        fakeOS,
-					}
+					objectUnderTest := _fs{}
 
 					/* act */
-					_, actualError := objectUnderTest.TryResolve(
+					actualHandle, actualError := objectUnderTest.TryResolve(
 						context.Background(),
-						"dummyDataRef",
+						"doesnt-exist",
 					)
 
 					/* assert */
-					Expect(actualError).To(Equal(expectedErr))
+					Expect(actualHandle).To(BeNil())
+					Expect(actualError).To(BeNil())
 				})
 			})
-			Context("fs.Stat doesn't err", func() {
+			Context("exists", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					providedDataRef := "dummyDataRef"
-					basePath := "dummyBasePath"
+					basePath, err := os.Getwd()
+					if nil != err {
+						panic(err)
+					}
+
+					providedDataRef := "testdata/file1.txt"
 
 					expectedHandle := newHandle(filepath.Join(
 						basePath,
@@ -149,7 +87,6 @@ var _ = Context("_fs", func() {
 
 					objectUnderTest := _fs{
 						basePaths: []string{basePath},
-						os:        new(ios.Fake),
 					}
 
 					/* act */

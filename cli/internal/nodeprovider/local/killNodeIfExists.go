@@ -1,6 +1,7 @@
 package local
 
 import (
+	"os"
 	"path/filepath"
 )
 
@@ -14,7 +15,7 @@ func (np nodeProvider) KillNodeIfExists(
 		),
 	)
 	if 0 != pIDOfLockOwner {
-		nodeProcess, err := np.os.FindProcess(pIDOfLockOwner)
+		nodeProcess, err := os.FindProcess(pIDOfLockOwner)
 		if nil != err {
 			return err
 		}

@@ -40,14 +40,12 @@ func newParallelLoopCaller(
 	return _parallelLoopCaller{
 		caller:              caller,
 		pubSub:              pubSub,
-		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
 	}
 }
 
 type _parallelLoopCaller struct {
 	caller              caller
 	pubSub              pubsub.PubSub
-	uniqueStringFactory uniquestring.UniqueStringFactory
 }
 
 func (plpr _parallelLoopCaller) Call(
@@ -72,7 +70,7 @@ func (plpr _parallelLoopCaller) Call(
 
 	for {
 
-		childCallID, err := plpr.uniqueStringFactory.Construct()
+		childCallID, err := uniquestring.Construct()
 		if nil != err {
 			// end run immediately on any error
 			return nil, err

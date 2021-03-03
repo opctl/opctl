@@ -32,7 +32,7 @@ var _ = Context("Interpret", func() {
 			Range: fmt.Sprintf("$(%s)", identifier),
 		}
 		providedScope := map[string]*model.Value{
-			identifier: &model.Value{Array: new([]interface{})},
+			identifier: {Array: new([]interface{})},
 		}
 
 		/* act */

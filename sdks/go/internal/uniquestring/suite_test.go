@@ -9,5 +9,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "opctl/internal/uniquestring")
+	RunSpecs(t, "opctl/sdks/go/internal/uniquestring")
 }

@@ -38,14 +38,12 @@ func newSerialLoopCaller(
 	return _serialLoopCaller{
 		caller:              caller,
 		pubSub:              pubSub,
-		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
 	}
 }
 
 type _serialLoopCaller struct {
 	caller              caller
 	pubSub              pubsub.PubSub
-	uniqueStringFactory uniquestring.UniqueStringFactory
 }
 
 func (lpr _serialLoopCaller) Call(
@@ -87,7 +85,7 @@ func (lpr _serialLoopCaller) Call(
 		eventFilterSince := time.Now().UTC()
 
 		var callID string
-		callID, err = lpr.uniqueStringFactory.Construct()
+		callID, err = uniquestring.Construct()
 		if nil != err {
 			return nil, err
 		}

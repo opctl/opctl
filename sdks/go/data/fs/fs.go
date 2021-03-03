@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -16,13 +15,11 @@ func New(
 	basePaths ...string,
 ) model.DataProvider {
 	return _fs{
-		os:        ios.New(),
 		basePaths: basePaths,
 	}
 }
 
 type _fs struct {
-	os        ios.IOS
 	basePaths []string
 }
 
@@ -32,7 +29,7 @@ func (fp _fs) TryResolve(
 ) (model.DataHandle, error) {
 
 	if filepath.IsAbs(dataRef) {
-		_, err := fp.os.Stat(dataRef)
+		_, err := os.Stat(dataRef)
 		if nil == err {
 			return newHandle(dataRef), nil
 		} else if !os.IsNotExist(err) {
@@ -46,7 +43,7 @@ func (fp _fs) TryResolve(
 
 		// attempt to resolve from basePath
 		testPath := filepath.Join(basePath, dataRef)
-		_, err := fp.os.Stat(testPath)
+		_, err := os.Stat(testPath)
 		if nil == err {
 			return newHandle(testPath), nil
 		} else if !os.IsNotExist(err) {

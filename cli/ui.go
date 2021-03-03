@@ -22,7 +22,11 @@ func ui(
 	mountRefArg string,
 ) error {
 	var resolvedMount string
-	var err error
+	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
+	if err != nil {
+		return err
+	}
+
 	if strings.HasPrefix(mountRefArg, ".") {
 		// treat dot paths as regular rel paths
 		resolvedMount, err = filepath.Abs(mountRefArg)
@@ -30,11 +34,6 @@ func ui(
 			return err
 		}
 	} else {
-		node, err := nodeProvider.CreateNodeIfNotExists(ctx)
-		if err != nil {
-			return err
-		}
-
 		dataResolver := dataresolver.New(
 			cliParamSatisfier,
 			node,
