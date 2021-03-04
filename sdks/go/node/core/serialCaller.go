@@ -32,15 +32,15 @@ func newSerialCaller(
 ) serialCaller {
 
 	return _serialCaller{
-		caller:              caller,
-		pubSub:              pubSub,
+		caller: caller,
+		pubSub: pubSub,
 	}
 
 }
 
 type _serialCaller struct {
-	caller              caller
-	pubSub              pubsub.PubSub
+	caller caller
+	pubSub pubsub.PubSub
 }
 
 func (sc _serialCaller) Call(

@@ -13,13 +13,13 @@ func newHandle(
 	path string,
 ) model.DataHandle {
 	return handle{
-		path:   path,
+		path: path,
 	}
 }
 
 // handle allows interacting w/ data sourced from the filesystem
 type handle struct {
-	path   string
+	path string
 }
 
 func (lh handle) GetContent(

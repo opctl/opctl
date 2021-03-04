@@ -89,9 +89,9 @@ var _ = Context("core", func() {
 					dataCachePath := os.TempDir()
 
 					objectUnderTest := core{
-						caller:              fakeCaller,
-						dataCachePath:       dataCachePath,
-						pubSub:              new(FakePubSub),
+						caller:        fakeCaller,
+						dataCachePath: dataCachePath,
+						pubSub:        new(FakePubSub),
 					}
 
 					/* act */

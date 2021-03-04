@@ -99,20 +99,20 @@ var _ = Context("containerCaller", func() {
 
 				fakeContainerRuntime := new(FakeContainerRuntime)
 
-        fakeContainerRuntime.RunContainerStub = func(
-          ctx context.Context,
-          req *model.ContainerCall,
-          rootCallID string,
-          eventPublisher pubsub.EventPublisher,
-          stdOut io.WriteCloser,
-          stdErr io.WriteCloser,
-        ) (*int64, error) {
-  
-          stdErr.Close()
-          stdOut.Close()
-  
-          return nil, errors.New(expectedErrorMessage)
-        }
+				fakeContainerRuntime.RunContainerStub = func(
+					ctx context.Context,
+					req *model.ContainerCall,
+					rootCallID string,
+					eventPublisher pubsub.EventPublisher,
+					stdOut io.WriteCloser,
+					stdErr io.WriteCloser,
+				) (*int64, error) {
+
+					stdErr.Close()
+					stdOut.Close()
+
+					return nil, errors.New(expectedErrorMessage)
+				}
 
 				objectUnderTest := _containerCaller{
 					containerRuntime: fakeContainerRuntime,
@@ -149,25 +149,25 @@ var _ = Context("containerCaller", func() {
 			Image:       &model.ContainerCallImage{},
 		}
 		providedInboundScope := map[string]*model.Value{}
-    providedContainerCallSpec := &model.ContainerCallSpec{}
-    
-    fakeContainerRuntime := new(FakeContainerRuntime)
+		providedContainerCallSpec := &model.ContainerCallSpec{}
 
-    expectedErr := errors.New("io: read/write on closed pipe")
-    fakeContainerRuntime.RunContainerStub = func(
-      ctx context.Context,
-      req *model.ContainerCall,
-      rootCallID string,
-      eventPublisher pubsub.EventPublisher,
-      stdOut io.WriteCloser,
-      stdErr io.WriteCloser,
-    ) (*int64, error) {
+		fakeContainerRuntime := new(FakeContainerRuntime)
 
-      stdErr.Close()
-      stdOut.Close()
+		expectedErr := errors.New("io: read/write on closed pipe")
+		fakeContainerRuntime.RunContainerStub = func(
+			ctx context.Context,
+			req *model.ContainerCall,
+			rootCallID string,
+			eventPublisher pubsub.EventPublisher,
+			stdOut io.WriteCloser,
+			stdErr io.WriteCloser,
+		) (*int64, error) {
 
-      return nil, expectedErr
-    }
+			stdErr.Close()
+			stdOut.Close()
+
+			return nil, expectedErr
+		}
 
 		objectUnderTest := _containerCaller{
 			containerRuntime: fakeContainerRuntime,

@@ -97,19 +97,19 @@ func New(
 			caller,
 			dataDirPath,
 		),
-		pubSub:              pubSub,
-		stateStore:          stateStore,
+		pubSub:     pubSub,
+		stateStore: stateStore,
 	}
 }
 
 // core is an Node that supports running ops directly on the host
 type core struct {
-	caller              caller
-	containerRuntime    containerruntime.ContainerRuntime
-	dataCachePath       string
-	opCaller            opCaller
-	pubSub              pubsub.PubSub
-	stateStore          stateStore
+	caller           caller
+	containerRuntime containerruntime.ContainerRuntime
+	dataCachePath    string
+	opCaller         opCaller
+	pubSub           pubsub.PubSub
+	stateStore       stateStore
 }
 
 func (c core) Liveness(

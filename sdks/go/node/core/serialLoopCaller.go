@@ -36,14 +36,14 @@ func newSerialLoopCaller(
 	pubSub pubsub.PubSub,
 ) serialLoopCaller {
 	return _serialLoopCaller{
-		caller:              caller,
-		pubSub:              pubSub,
+		caller: caller,
+		pubSub: pubSub,
 	}
 }
 
 type _serialLoopCaller struct {
-	caller              caller
-	pubSub              pubsub.PubSub
+	caller caller
+	pubSub pubsub.PubSub
 }
 
 func (lpr _serialLoopCaller) Call(
