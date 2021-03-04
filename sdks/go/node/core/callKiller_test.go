@@ -104,7 +104,7 @@ var _ = Context("_callKiller", func() {
 				Eventually(
 					func() []string { return actualChildCallIDs },
 				).Should(
-					ConsistOf(expectedChildCallIDs),
+					ContainElements(expectedChildCallIDs),
 				)
 			})
 		})

@@ -259,7 +259,7 @@ var _ = Context("serialLoopCaller", func() {
 				Eventually(
 					func() []model.CallStarted { return actualChildCalls },
 				).Should(
-					ConsistOf(
+					ContainElements(
 						[]model.CallStarted{
 							{
 								Call: model.Call{
