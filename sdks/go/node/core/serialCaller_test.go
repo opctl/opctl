@@ -214,7 +214,7 @@ var _ = Context("serialCaller", func() {
 			Eventually(
 				func() []model.CallStarted { return actualChildCalls },
 			).Should(
-				ConsistOf(
+				ContainElements(
 					[]model.CallStarted{
 						{
 							Call: model.Call{

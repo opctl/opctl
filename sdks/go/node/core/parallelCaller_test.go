@@ -207,7 +207,7 @@ var _ = Context("parallelCaller", func() {
 			Eventually(
 				func() []model.CallStarted { return actualChildCalls },
 			).Should(
-				ConsistOf(
+				ContainElements(
 					[]model.CallStarted{
 						{
 							Call: model.Call{
