@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/pkg/errors"
 )
 
 // Resolve "dataRef" from "providers" in order
@@ -20,15 +21,18 @@ func Resolve(
 	model.DataHandle,
 	error,
 ) {
+	var errs []error
 	for _, src := range providers {
 		handle, err := src.TryResolve(ctx, dataRef)
-		if nil != err {
-			return nil, err
-		} else if nil != handle {
+		if err != nil {
+			errs = append(errs, errors.Wrap(err, src.Label()))
+		} else if handle != nil {
 			return handle, nil
 		}
 	}
 
-	// if we reached this point resolution failed, return err
-	return nil, model.ErrDataRefResolution{}
+	return nil, ErrDataResolution{
+		dataRef: dataRef,
+		errs:    errs,
+	}
 }

@@ -94,7 +94,9 @@ var _ = Context("dataResolver", func() {
 
 					/* assert */
 					Expect(response).To(BeNil())
-					Expect(err.Error()).To(Equal(fmt.Sprintf("Unable to resolve 'dummyDataRef'; error was %s", expectedErr)))
+					Expect(err.Error()).To(Equal(fmt.Sprintf(`unable to resolve op "dummyDataRef":
+- filesystem: not found
+- opctl node: %s`, expectedErr)))
 				})
 			})
 		})

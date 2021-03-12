@@ -25,7 +25,7 @@ var _ = Context("_git", func() {
 				)
 
 				/* assert */
-				Expect(actualError.Error()).To(Equal(`Get "https:///not/exists/info/refs?service=git-upload-pack": http: no Host in request URL`))
+				Expect(actualError).To(MatchError("invalid git ref: missing version"))
 			})
 		})
 		Context("localFSProvider.TryResolve doesn't err", func() {
@@ -62,7 +62,7 @@ var _ = Context("_git", func() {
 						)
 
 						/* assert */
-						Expect(actualErr.Error()).To(Equal(`Get "https://not/exists/info/refs?service=git-upload-pack": dial tcp: lookup not on 127.0.0.11:53: no such host`))
+						Expect(actualErr).To(MatchError("invalid git ref: missing version"))
 					})
 				})
 				Context("puller.Pull doesn't error", func() {
@@ -73,6 +73,7 @@ var _ = Context("_git", func() {
 
 						basePath := os.TempDir()
 						objectUnderTest := New(basePath, nil)
+						expectedHandle := newHandle(filepath.Join(basePath, providedRef), providedRef)
 
 						/* act */
 						actualHandle, actualError := objectUnderTest.TryResolve(
@@ -81,7 +82,7 @@ var _ = Context("_git", func() {
 						)
 
 						/* assert */
-						Expect(actualHandle).To(Equal(newHandle(filepath.Join(basePath, providedRef), providedRef)))
+						Expect(actualHandle).To(Equal(expectedHandle))
 						Expect(actualError).To(BeNil())
 					})
 				})

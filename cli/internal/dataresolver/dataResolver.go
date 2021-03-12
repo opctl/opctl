@@ -82,6 +82,8 @@ func (dtr _dataResolver) Resolve(
 		},
 	}
 
+	reattemptedAuth := false
+
 	for {
 		opDirHandle, err := data.Resolve(
 			ctx,
@@ -93,23 +95,16 @@ func (dtr _dataResolver) Resolve(
 			),
 		)
 
-		var isAuthError bool
-		switch err.(type) {
-		case model.ErrDataProviderAuthorization:
-			isAuthError = true
-		case model.ErrDataProviderAuthentication:
-			isAuthError = true
+		if err == nil {
+			return opDirHandle, nil
 		}
 
-		switch {
-		case nil == err:
-			return opDirHandle, err
-		case isAuthError:
+		if model.IsAuthError(err) && !reattemptedAuth {
 			// auth errors can be fixed by supplying correct creds so don't give up; prompt
+			cliPromptInputSrc := dtr.cliParamSatisfier.NewCliPromptInputSrc(credsPromptInputs)
+
 			argMap, err := dtr.cliParamSatisfier.Satisfy(
-				cliparamsatisfier.NewInputSourcer(
-					dtr.cliParamSatisfier.NewCliPromptInputSrc(credsPromptInputs),
-				),
+				cliparamsatisfier.NewInputSourcer(cliPromptInputSrc),
 				credsPromptInputs,
 			)
 			if nil != err {
@@ -121,14 +116,12 @@ func (dtr _dataResolver) Resolve(
 				Username: *(argMap[usernameInputName].String),
 				Password: *(argMap[passwordInputName].String),
 			}
+			reattemptedAuth = true
 			continue
-		default:
-			// uncorrectable error.. give up
-			return nil, fmt.Errorf("Unable to resolve '%v'; error was %v", dataRef, err.Error())
 		}
 
+		return nil, err
 	}
-
 }
 
 const (

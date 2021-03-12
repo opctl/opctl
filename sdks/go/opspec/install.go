@@ -21,7 +21,6 @@ func Install(
 	}
 
 	for _, content := range contentsList {
-
 		dstPath := filepath.Join(path, content.Path)
 
 		if _, statErr := os.Stat(dstPath); nil == statErr {
@@ -33,20 +32,12 @@ func Install(
 
 		if content.Mode.IsDir() {
 			// ensure content path exists
-			err = os.MkdirAll(
-				dstPath,
-				content.Mode,
-			)
-			if nil != err {
+			if err = os.MkdirAll(dstPath, content.Mode); err != nil {
 				return err
 			}
 		} else {
 			// ensure content dir exists
-			err = os.MkdirAll(
-				filepath.Dir(dstPath),
-				0777,
-			)
-			if nil != err {
+			if err = os.MkdirAll(filepath.Dir(dstPath), 0777); err != nil {
 				return err
 			}
 
@@ -54,9 +45,9 @@ func Install(
 			if nil != err {
 				return err
 			}
+			defer dst.Close()
 
-			err = os.Chmod(dstPath, content.Mode)
-			if nil != err {
+			if err = os.Chmod(dstPath, content.Mode); err != nil {
 				return err
 			}
 
@@ -64,13 +55,13 @@ func Install(
 			if nil != err {
 				return err
 			}
+			defer src.Close()
 
-			_, err = io.Copy(dst, src)
-			src.Close()
-			dst.Close()
+			if _, err = io.Copy(dst, src); err != nil {
+				return err
+			}
 		}
 	}
 
-	return err
-
+	return nil
 }

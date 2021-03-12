@@ -22,8 +22,10 @@ var _ = Context("Pull", func() {
 				nil,
 			)
 
+			fmt.Print(actualError.Error())
+
 			/* assert */
-			Expect(actualError.Error()).To(Equal(`parse "\\///%%&": invalid URL escape "%%&"`))
+			Expect(actualError).To(MatchError(`invalid git ref: parse "\\///%%&": invalid URL escape "%%&"`))
 		})
 	})
 	Context("parseRef doesn't err", func() {
@@ -109,13 +111,12 @@ var _ = Context("Pull", func() {
 			})
 			Context("err.Error() returns other error", func() {
 				It("should return error", func() {
-
 					/* arrange */
 					providedPath := os.TempDir()
 					// non existent
 					providedRef := "dummyDataRef#0.0.0"
 
-					expectedMsg := fmt.Sprint(`Get "https://dummyDataRef/info/refs?service=git-upload-pack": dial tcp: lookup dummyDataRef on 127.0.0.11:53: no such host`)
+					expectedMsg := `Get "https://dummyDataRef/info/refs?service=git-upload-pack": dial tcp: lookup dummyDataRef on 127.0.0.11:53: no such host`
 
 					/* act */
 					actualError := Pull(

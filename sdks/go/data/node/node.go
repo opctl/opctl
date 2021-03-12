@@ -25,6 +25,10 @@ type _node struct {
 	pullCreds *model.Creds
 }
 
+func (np _node) Label() string {
+	return "opctl node"
+}
+
 func (np _node) TryResolve(
 	ctx context.Context,
 	dataRef string,

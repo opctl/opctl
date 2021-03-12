@@ -1,22 +1,30 @@
 package model
 
+import "errors"
+
 // ErrDataProviderAuthentication conveys data pull failed due to authentication
 type ErrDataProviderAuthentication struct{}
 
 func (ear ErrDataProviderAuthentication) Error() string {
-	return "Data pull failed due to invalid/lack of authentication"
+	return "unauthenticated"
 }
 
 // ErrDataProviderAuthorization conveys data pull failed due to authorization
 type ErrDataProviderAuthorization struct{}
 
 func (ear ErrDataProviderAuthorization) Error() string {
-	return "Data pull failed due to insufficient/lack of authorization"
+	return "unauthorized"
 }
 
 // ErrDataRefResolution conveys no such data could be found
 type ErrDataRefResolution struct{}
 
 func (ear ErrDataRefResolution) Error() string {
-	return "Provider failed to resolve the requested data"
+	return "not found"
+}
+
+// IsAuthError returns true if this is an authorization or authentication error
+func IsAuthError(err error) bool {
+	return errors.Is(err, ErrDataProviderAuthorization{}) ||
+		errors.Is(err, ErrDataProviderAuthentication{})
 }

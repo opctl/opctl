@@ -26,7 +26,7 @@ var _ = Context("_fs", func() {
 
 					/* assert */
 					Expect(actualHandle).To(BeNil())
-					Expect(actualError).To(BeNil())
+					Expect(actualError).To(MatchError("not found"))
 				})
 			})
 			Context("exists", func() {
@@ -67,7 +67,7 @@ var _ = Context("_fs", func() {
 
 					/* assert */
 					Expect(actualHandle).To(BeNil())
-					Expect(actualError).To(BeNil())
+					Expect(actualError).To(MatchError("not found"))
 				})
 			})
 			Context("exists", func() {
