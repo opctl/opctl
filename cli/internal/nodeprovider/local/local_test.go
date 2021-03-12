@@ -1,16 +1,19 @@
 package local
 
 import (
+	"io/ioutil"
+
 	. "github.com/onsi/ginkgo"
-	"os"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Context("New", func() {
 	It("shouldn't panic", func() {
 		/* arrange/act/assert */
+		dataDir, err := ioutil.TempDir("", "")
+		Expect(err).To(BeNil())
 		New(NodeCreateOpts{
-			DataDir: os.TempDir(),
+			DataDir: dataDir,
 		})
 	})
-
 })

@@ -2,7 +2,7 @@ package coerce
 
 import (
 	"fmt"
-	"os"
+	"io/ioutil"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -10,7 +10,11 @@ import (
 )
 
 var _ = Context("ToFile", func() {
-	tmpDir := os.TempDir()
+	tmpDir, err := ioutil.TempDir("", "")
+	if err != nil {
+		panic(err)
+	}
+
 	Context("Value is nil", func() {
 		Context("ioutil.WriteFile doesn't err", func() {
 			It("should return expected result", func() {

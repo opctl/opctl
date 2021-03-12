@@ -3,7 +3,7 @@ package git
 import (
 	"context"
 	"fmt"
-	"os"
+	"io/ioutil"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -32,7 +32,8 @@ var _ = Context("Pull", func() {
 				It("shouldn't error", func() {
 
 					/* arrange */
-					providedPath := os.TempDir()
+					providedPath, err := ioutil.TempDir("", "")
+					Expect(err).To(BeNil())
 					// some small public repo
 					providedRef := "github.com/opspec-pkgs/_.op.create#3.2.0"
 
@@ -62,7 +63,8 @@ var _ = Context("Pull", func() {
 				It("should return expected error", func() {
 
 					/* arrange */
-					providedPath := os.TempDir()
+					providedPath, err := ioutil.TempDir("", "")
+					Expect(err).To(BeNil())
 
 					// some small private repo
 					providedRef := "github.com/Remitly/infra-ops#9.1.6"
@@ -85,7 +87,8 @@ var _ = Context("Pull", func() {
 				It("should return expected error", func() {
 
 					/* arrange */
-					providedPath := os.TempDir()
+					providedPath, err := ioutil.TempDir("", "")
+					Expect(err).To(BeNil())
 
 					// gitlab cuz github returns 404 not 403
 					providedRef := "gitlab.com/joetesterperson1/private#0.0.0"
@@ -111,7 +114,8 @@ var _ = Context("Pull", func() {
 				It("should return error", func() {
 
 					/* arrange */
-					providedPath := os.TempDir()
+					providedPath, err := ioutil.TempDir("", "")
+					Expect(err).To(BeNil())
 					// non existent
 					providedRef := "dummyDataRef#0.0.0"
 

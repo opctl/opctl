@@ -2,7 +2,7 @@ package core
 
 import (
 	"context"
-	"os"
+	"io/ioutil"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -13,11 +13,13 @@ var _ = Context("core", func() {
 	Context("New", func() {
 		It("should return Core", func() {
 			/* arrange/act/assert */
+			dataDir, err := ioutil.TempDir("", "")
+			Expect(err).To(BeNil())
 			Expect(
 				New(
 					context.Background(),
 					new(FakeContainerRuntime),
-					os.TempDir(),
+					dataDir,
 				),
 			).To(Not(BeNil()))
 		})

@@ -3,7 +3,7 @@ package dir
 import (
 	"errors"
 	"fmt"
-	"os"
+	"io/ioutil"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -16,15 +16,18 @@ var _ = Context("Interpret", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				identifier := "identifier"
+				scratchDir, err := ioutil.TempDir("", "")
+				Expect(err).To(BeNil())
+
 				/* act */
 				_, actualErr := Interpret(
 					map[string]*model.Value{
-						identifier: &model.Value{
+						identifier: {
 							Socket: new(string),
 						},
 					},
 					fmt.Sprintf("$(%s)", identifier),
-					os.TempDir(),
+					scratchDir,
 					true,
 				)
 
@@ -39,15 +42,17 @@ var _ = Context("Interpret", func() {
 					/* arrange */
 					identifier := "identifier"
 					providedScope := map[string]*model.Value{
-						identifier: &model.Value{Dir: nil},
+						identifier: {Dir: nil},
 					}
 					providedExpression := fmt.Sprintf("$(%s)", identifier)
+					scratchDir, err := ioutil.TempDir("", "")
+					Expect(err).To(BeNil())
 
 					/* act */
 					_, actualErr := Interpret(
 						providedScope,
 						providedExpression,
-						os.TempDir(),
+						scratchDir,
 						true,
 					)
 
@@ -60,14 +65,16 @@ var _ = Context("Interpret", func() {
 					/* arrange */
 					identifier := "identifier"
 					providedScope := map[string]*model.Value{
-						identifier: &model.Value{Dir: new(string)},
+						identifier: {Dir: new(string)},
 					}
+					scratchDir, err := ioutil.TempDir("", "")
+					Expect(err).To(BeNil())
 
 					/* act */
 					actualResult, actualErr := Interpret(
 						providedScope,
 						fmt.Sprintf("$(%s)", identifier),
-						os.TempDir(),
+						scratchDir,
 						true,
 					)
 
