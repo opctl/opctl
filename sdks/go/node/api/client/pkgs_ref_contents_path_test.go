@@ -114,7 +114,7 @@ var _ = Context("GetData", func() {
 
 				/* arrange */
 				httpResp := &http.Response{
-					Body:       ioutil.NopCloser(nil),
+					Body:       ioutil.NopCloser(strings.NewReader("response")),
 					StatusCode: http.StatusUnauthorized,
 				}
 
@@ -132,7 +132,8 @@ var _ = Context("GetData", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(model.ErrDataProviderAuthentication{}))
+				Expect(actualErr).To(MatchError(model.ErrDataProviderAuthentication{}))
+				Expect(actualErr.Error()).To(ContainSubstring("response"))
 
 			})
 		})
@@ -141,7 +142,7 @@ var _ = Context("GetData", func() {
 
 				/* arrange */
 				httpResp := &http.Response{
-					Body:       ioutil.NopCloser(nil),
+					Body:       ioutil.NopCloser(strings.NewReader("response")),
 					StatusCode: http.StatusForbidden,
 				}
 
@@ -159,7 +160,8 @@ var _ = Context("GetData", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(model.ErrDataProviderAuthorization{}))
+				Expect(actualErr).To(MatchError(model.ErrDataProviderAuthorization{}))
+				Expect(actualErr.Error()).To(ContainSubstring("response"))
 
 			})
 
@@ -169,7 +171,7 @@ var _ = Context("GetData", func() {
 
 				/* arrange */
 				httpResp := &http.Response{
-					Body:       ioutil.NopCloser(nil),
+					Body:       ioutil.NopCloser(strings.NewReader("response")),
 					StatusCode: http.StatusNotFound,
 				}
 

@@ -14,10 +14,10 @@ import (
 )
 
 var _ = Context("Install", func() {
+	providedCtx := context.Background()
+
 	It("should call handle.ListDescendants w/ expected args", func() {
 		/* arrange */
-		providedCtx := context.TODO()
-
 		fakeHandle := new(modelFakes.FakeDataHandle)
 
 		/* act */
@@ -35,7 +35,7 @@ var _ = Context("Install", func() {
 			fakeHandle.ListDescendantsReturns(nil, expectedError)
 
 			/* act */
-			actualError := Install(nil, "", fakeHandle)
+			actualError := Install(providedCtx, "", fakeHandle)
 
 			/* assert */
 			Expect(actualError).To(Equal(expectedError))
@@ -44,8 +44,6 @@ var _ = Context("Install", func() {
 	Context("handle.ListDescendants doesn't err", func() {
 		It("should call handle.GetContent w/ expected args", func() {
 			/* arrange */
-			providedCtx := context.TODO()
-
 			fakeHandle := new(modelFakes.FakeDataHandle)
 			contentsList := []*model.DirEntry{
 				{
@@ -87,7 +85,7 @@ var _ = Context("Install", func() {
 				fakeHandle.GetContentReturns(nil, expectedError)
 
 				/* act */
-				actualError := Install(nil, "", fakeHandle)
+				actualError := Install(providedCtx, "", fakeHandle)
 
 				/* assert */
 				Expect(actualError).To(Equal(expectedError))
@@ -101,7 +99,7 @@ var _ = Context("Install", func() {
 							/* arrange */
 							fsDataSource := fs.New("")
 							ref := "testdata/testop"
-							handle, err := fsDataSource.TryResolve(context.Background(), ref)
+							handle, err := fsDataSource.TryResolve(providedCtx, ref)
 							if nil != err {
 								panic(err)
 							}
@@ -118,7 +116,7 @@ var _ = Context("Install", func() {
 							}
 
 							/* act */
-							Install(context.Background(), tmpDir, handle)
+							Install(providedCtx, tmpDir, handle)
 
 							/* assert */
 							actualContent, err := ioutil.ReadFile(filepath.Join(tmpDir, "op.yml"))

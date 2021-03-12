@@ -3,6 +3,7 @@ package ref
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -65,16 +66,15 @@ func (hdlr _handler) Handle(
 		)
 		if nil != err {
 			var status int
-			switch err.(type) {
-			case model.ErrDataProviderAuthentication:
+			if errors.Is(err, model.ErrDataProviderAuthentication{}) {
 				hdlr.setWWWAuthenticateHeader(dataRef, httpResp.Header())
 				status = http.StatusUnauthorized
-			case model.ErrDataProviderAuthorization:
+			} else if errors.Is(err, model.ErrDataProviderAuthorization{}) {
 				hdlr.setWWWAuthenticateHeader(dataRef, httpResp.Header())
 				status = http.StatusForbidden
-			case model.ErrDataRefResolution:
+			} else if errors.Is(err, model.ErrDataRefResolution{}) {
 				status = http.StatusNotFound
-			default:
+			} else {
 				status = http.StatusInternalServerError
 			}
 			http.Error(httpResp, err.Error(), status)

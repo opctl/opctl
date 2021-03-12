@@ -11,6 +11,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/pkg/errors"
 )
 
 // Pull pulls 'dataRef' to 'path'
@@ -28,7 +29,7 @@ func Pull(
 
 	parsedPkgRef, err := parseRef(dataRef)
 	if nil != err {
-		return err
+		return errors.Wrap(err, "invalid git ref")
 	}
 
 	opPath := parsedPkgRef.ToPath(path)
@@ -52,17 +53,21 @@ func Pull(
 		false,
 		cloneOptions,
 	); nil != err {
-		switch err.Error() {
-		case transport.ErrAuthenticationRequired.Error():
-			return model.ErrDataProviderAuthentication{}
-		case transport.ErrAuthorizationFailed.Error():
-			return model.ErrDataProviderAuthorization{}
-		case git.ErrRepositoryAlreadyExists.Error():
-			return nil
-			// NoOp on repo already exists
-		default:
-			return err
+		if _, ok := err.(git.NoMatchingRefSpecError); ok {
+			return fmt.Errorf("version \"%s\" not found", parsedPkgRef.Version)
 		}
+		if errors.Is(err, transport.ErrAuthenticationRequired) {
+			return model.ErrDataProviderAuthentication{}
+		}
+		if errors.Is(err, transport.ErrAuthorizationFailed) {
+			return model.ErrDataProviderAuthorization{}
+		}
+		if errors.Is(err, git.ErrRepositoryAlreadyExists) {
+			// if the repository already exists, it's already been cloned and we can
+			// procede. Maybe a concurrent puller got it?
+			return nil
+		}
+		return err
 	}
 
 	// remove pkg '.git' sub dir

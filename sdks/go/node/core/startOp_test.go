@@ -9,6 +9,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
@@ -18,7 +19,6 @@ var _ = Context("core", func() {
 	Context("StartOp", func() {
 		Context("data.Resolve errs", func() {
 			It("should return expected result", func() {
-
 				/* arrange */
 				providedCtx := context.Background()
 				providedStartOpReq := model.StartOpReq{
@@ -36,7 +36,8 @@ var _ = Context("core", func() {
 				)
 
 				/* assert */
-				Expect(actualErr.Error()).To(Equal(`Get "https://dummyOpRef/info/refs?service=git-upload-pack": dial tcp: lookup dummyOpRef on 127.0.0.11:53: no such host`))
+				_, isDataResolutionErr := actualErr.(data.ErrDataResolution)
+				Expect(isDataResolutionErr).To(BeTrue())
 			})
 		})
 		Context("data.Resolve doesn't err", func() {

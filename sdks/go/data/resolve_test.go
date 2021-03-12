@@ -9,6 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data/fs"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/pkg/errors"
 )
 
 var _ = Context("Resolve", func() {
@@ -16,18 +17,21 @@ var _ = Context("Resolve", func() {
 		It("should return error", func() {
 			/* arrange */
 			provider0 := fs.New()
-
 			providedProviders := []model.DataProvider{provider0}
+			dataRef := "\\not/exist"
 
 			/* act */
 			_, actualErr := Resolve(
 				context.Background(),
-				"\\not/exist",
+				dataRef,
 				providedProviders...,
 			)
 
 			/* assert */
-			Expect(actualErr).To(Equal(model.ErrDataRefResolution{}))
+			Expect(actualErr).To(MatchError(ErrDataResolution{
+				dataRef: dataRef,
+				errs:    []error{errors.Wrap(errors.New("not found"), provider0.Label())},
+			}.Error()))
 		})
 	})
 	Context("providers[0].TryResolve doesn't err", func() {
