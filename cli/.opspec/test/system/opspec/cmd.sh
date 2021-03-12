@@ -8,6 +8,11 @@ nohup dockerd \
 echo "installing jq"
 apk add -U jq
 
+# dummy account for these tests so we don't hit rate limits
+# it is not secret as it has no access to anything
+# and is use solely for this purpose
+/src/cli/opctl-linux-amd64 auth add docker.io -u 3hhyyicl1mzqsr6tggmg -p '%7Oe^4#fGGwc96rGcV&4'
+
 test_description="opspec test-suite scenarios"
 
 . sharness/sharness.sh
@@ -34,12 +39,12 @@ do
       case "$expect" in
         success)
           test_expect_success "$scenario_description" "
-              /src/cli/opctl.linux run --arg-file /args.yml "$dir"
+              /src/cli/opctl-linux-amd64 run --arg-file /args.yml "$dir"
           "
           ;;
         failure)
           test_expect_success "$scenario_description" "
-              test_must_fail /src/cli/opctl.linux run --arg-file /args.yml "$dir"
+              test_must_fail /src/cli/opctl-linux-amd64 run --arg-file /args.yml "$dir"
           "
           ;;
       esac

@@ -2,11 +2,10 @@ package fs
 
 import (
 	"context"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
-	"github.com/golang-interfaces/iioutil"
-	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -14,17 +13,13 @@ func newHandle(
 	path string,
 ) model.DataHandle {
 	return handle{
-		ioUtil: iioutil.New(),
-		os:     ios.New(),
-		path:   path,
+		path: path,
 	}
 }
 
 // handle allows interacting w/ data sourced from the filesystem
 type handle struct {
-	ioUtil iioutil.IIOUtil
-	os     ios.IOS
-	path   string
+	path string
 }
 
 func (lh handle) GetContent(
@@ -34,7 +29,7 @@ func (lh handle) GetContent(
 	model.ReadSeekCloser,
 	error,
 ) {
-	return lh.os.Open(filepath.Join(lh.path, contentPath))
+	return os.Open(filepath.Join(lh.path, contentPath))
 }
 
 func (lh handle) ListDescendants(
@@ -53,7 +48,7 @@ func (lh handle) rListDescendants(
 	[]*model.DirEntry,
 	error,
 ) {
-	childFileInfos, err := lh.ioUtil.ReadDir(path)
+	childFileInfos, err := ioutil.ReadDir(path)
 	if nil != err {
 		return nil, err
 	}

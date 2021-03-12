@@ -4,20 +4,29 @@ import (
 	"context"
 	"errors"
 	"io"
+	"io/ioutil"
 
-	"github.com/golang-interfaces/iio"
+	"github.com/dgraph-io/badger/v2"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
-	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	"github.com/opctl/opctl/sdks/go/pubsub"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("containerCaller", func() {
-	closedPipeReader, closedPipeWriter := io.Pipe()
-	closedPipeReader.Close()
-	closedPipeWriter.Close()
+	dbDir, err := ioutil.TempDir("", "")
+	if nil != err {
+		panic(err)
+	}
+
+	db, err := badger.Open(
+		badger.DefaultOptions(dbDir).WithLogger(nil),
+	)
+	if nil != err {
+		panic(err)
+	}
 
 	Context("newContainerCaller", func() {
 		It("should return containerCaller", func() {
@@ -25,7 +34,7 @@ var _ = Context("containerCaller", func() {
 			Expect(newContainerCaller(
 				new(FakeContainerRuntime),
 				new(FakePubSub),
-				new(FakeStateStore),
+				newStateStore(context.Background(), db, new(FakePubSub)),
 			)).To(Not(BeNil()))
 		})
 	})
@@ -40,16 +49,26 @@ var _ = Context("containerCaller", func() {
 			providedRootCallID := "providedRootCallID"
 			fakeContainerRuntime := new(FakeContainerRuntime)
 
-			fakePubSub := new(FakePubSub)
+			fakeContainerRuntime.RunContainerStub = func(
+				ctx context.Context,
+				req *model.ContainerCall,
+				rootCallID string,
+				eventPublisher pubsub.EventPublisher,
+				stdOut io.WriteCloser,
+				stdErr io.WriteCloser,
+			) (*int64, error) {
 
-			fakeIIO := new(iio.Fake)
-			fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
+				stdErr.Close()
+				stdOut.Close()
+
+				return nil, nil
+			}
+
+			fakePubSub := new(FakePubSub)
 
 			objectUnderTest := _containerCaller{
 				containerRuntime: fakeContainerRuntime,
 				pubSub:           fakePubSub,
-				stateStore:       new(FakeStateStore),
-				io:               fakeIIO,
 			}
 
 			/* act */
@@ -79,16 +98,25 @@ var _ = Context("containerCaller", func() {
 				fakePubSub := new(FakePubSub)
 
 				fakeContainerRuntime := new(FakeContainerRuntime)
-				fakeContainerRuntime.RunContainerReturns(nil, errors.New(expectedErrorMessage))
 
-				fakeIIO := new(iio.Fake)
-				fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
+				fakeContainerRuntime.RunContainerStub = func(
+					ctx context.Context,
+					req *model.ContainerCall,
+					rootCallID string,
+					eventPublisher pubsub.EventPublisher,
+					stdOut io.WriteCloser,
+					stdErr io.WriteCloser,
+				) (*int64, error) {
+
+					stdErr.Close()
+					stdOut.Close()
+
+					return nil, errors.New(expectedErrorMessage)
+				}
 
 				objectUnderTest := _containerCaller{
 					containerRuntime: fakeContainerRuntime,
 					pubSub:           fakePubSub,
-					stateStore:       new(FakeStateStore),
-					io:               fakeIIO,
 				}
 
 				/* act */
@@ -123,14 +151,27 @@ var _ = Context("containerCaller", func() {
 		providedInboundScope := map[string]*model.Value{}
 		providedContainerCallSpec := &model.ContainerCallSpec{}
 
-		fakeIIO := new(iio.Fake)
-		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
+		fakeContainerRuntime := new(FakeContainerRuntime)
+
+		expectedErr := errors.New("io: read/write on closed pipe")
+		fakeContainerRuntime.RunContainerStub = func(
+			ctx context.Context,
+			req *model.ContainerCall,
+			rootCallID string,
+			eventPublisher pubsub.EventPublisher,
+			stdOut io.WriteCloser,
+			stdErr io.WriteCloser,
+		) (*int64, error) {
+
+			stdErr.Close()
+			stdOut.Close()
+
+			return nil, expectedErr
+		}
 
 		objectUnderTest := _containerCaller{
-			containerRuntime: new(FakeContainerRuntime),
+			containerRuntime: fakeContainerRuntime,
 			pubSub:           new(FakePubSub),
-			stateStore:       new(FakeStateStore),
-			io:               fakeIIO,
 		}
 
 		/* act */
@@ -144,6 +185,6 @@ var _ = Context("containerCaller", func() {
 
 		/* assert */
 		Expect(actualOutputs).To(Equal(map[string]*model.Value{}))
-		Expect(actualErr).To(Equal(errors.New("io: read/write on closed pipe")))
+		Expect(actualErr).To(Equal(expectedErr))
 	})
 })

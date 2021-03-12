@@ -1,12 +1,9 @@
 package fs
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 
-	"github.com/golang-interfaces/iioutil"
-	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -14,71 +11,45 @@ import (
 
 var _ = Context("handle", func() {
 
-	Context("GetContent", func() {
-
-		It("should call os.Open w/ expected args", func() {
-			/* arrange */
-			providedOpPath := "dummyOpPath"
-			providedContentPath := "dummyContentPath"
-
-			fakeOS := new(ios.Fake)
-
-			objectUnderTest := handle{
-				os:   fakeOS,
-				path: providedOpPath,
-			}
-
-			/* act */
-			objectUnderTest.GetContent(nil, providedContentPath)
-
-			/* assert */
-			Expect(fakeOS.OpenArgsForCall(0)).To(Equal(filepath.Join(providedOpPath, providedContentPath)))
-		})
-	})
-
 	wd, err := os.Getwd()
 	if nil != err {
 		panic(err)
 	}
-	Context("ListDescendants", func() {
-		It("should call ioutil.ReadDir w/ expected args", func() {
+
+	Context("GetContent", func() {
+		It("should not err", func() {
 			/* arrange */
-			providedOpPath := "dummyOpPath"
 
-			fakeIOUtil := new(iioutil.Fake)
-
-			// error to trigger immediate return
-			fakeIOUtil.ReadDirReturns(nil, errors.New("dummyError"))
+			providedPath := wd
+			providedContentPath := "testdata/file1.txt"
 
 			objectUnderTest := handle{
-				ioUtil: fakeIOUtil,
-				path:   providedOpPath,
+				path: providedPath,
 			}
 
 			/* act */
-			objectUnderTest.ListDescendants(nil)
+			_, actualErr := objectUnderTest.GetContent(nil, providedContentPath)
 
 			/* assert */
-			Expect(fakeIOUtil.ReadDirArgsForCall(0)).To(Equal(providedOpPath))
+			Expect(actualErr).To(BeNil())
 		})
+	})
+	Context("ListDescendants", func() {
 		Context("ioutil.ReadDir errors", func() {
 			It("should be returned", func() {
 
 				/* arrange */
-				expectedError := errors.New("dummyError")
-
-				fakeIOUtil := new(iioutil.Fake)
-				fakeIOUtil.ReadDirReturns(nil, expectedError)
+				providedPath := "doesnt-exist"
 
 				objectUnderTest := handle{
-					ioUtil: fakeIOUtil,
+					path: providedPath,
 				}
 
 				/* act */
 				_, actualError := objectUnderTest.ListDescendants(nil)
 
 				/* assert */
-				Expect(actualError).To(Equal(expectedError))
+				Expect(actualError.Error()).To(Equal("open doesnt-exist: no such file or directory"))
 
 			})
 		})
@@ -116,8 +87,7 @@ var _ = Context("handle", func() {
 				}
 
 				objectUnderTest := handle{
-					ioUtil: iioutil.New(),
-					path:   rootOpPath,
+					path: rootOpPath,
 				}
 
 				/* act */

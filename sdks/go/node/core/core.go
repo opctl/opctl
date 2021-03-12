@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/dgraph-io/badger/v2"
-	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
@@ -21,6 +20,7 @@ import (
 
 // New returns a new LocalCore initialized with the given options
 func New(
+	ctx context.Context,
 	containerRuntime containerruntime.ContainerRuntime,
 	dataDirPath string,
 ) Core {
@@ -44,9 +44,8 @@ func New(
 
 	pubSub := pubsub.New(db)
 
-	uniqueStringFactory := uniquestring.NewUniqueStringFactory()
-
 	stateStore := newStateStore(
+		ctx,
 		db,
 		pubSub,
 	)
@@ -58,7 +57,6 @@ func New(
 			stateStore,
 		),
 		dataDirPath,
-		stateStore,
 		pubSub,
 	)
 
@@ -69,8 +67,6 @@ func New(
 			containerRuntime,
 			pubSub,
 		)
-
-		ctx := context.Background()
 
 		since := time.Now().UTC()
 		eventChannel, _ := pubSub.Subscribe(
@@ -98,32 +94,35 @@ func New(
 		containerRuntime: containerRuntime,
 		dataCachePath:    filepath.Join(dataDirPath, "ops"),
 		opCaller: newOpCaller(
-			stateStore,
 			caller,
 			dataDirPath,
 		),
-		pubSub:              pubSub,
-		stateStore:          stateStore,
-		uniqueStringFactory: uniqueStringFactory,
+		pubSub:     pubSub,
+		stateStore: stateStore,
 	}
 }
 
-// core is an OpNode that supports running ops directly on the host
+// core is an Node that supports running ops directly on the host
 type core struct {
-	caller              caller
-	containerRuntime    containerruntime.ContainerRuntime
-	dataCachePath       string
-	opCaller            opCaller
-	pubSub              pubsub.PubSub
-	stateStore          stateStore
-	uniqueStringFactory uniquestring.UniqueStringFactory
+	caller           caller
+	containerRuntime containerruntime.ContainerRuntime
+	dataCachePath    string
+	opCaller         opCaller
+	pubSub           pubsub.PubSub
+	stateStore       stateStore
+}
+
+func (c core) Liveness(
+	ctx context.Context,
+) error {
+	return nil
 }
 
 //counterfeiter:generate -o fakes/core.go . Core
 
-// Core is an OpNode that supports running ops directly on the current machine
+// Core is an Node that supports running ops directly on the current machine
 type Core interface {
-	node.OpNode
+	node.Node
 
 	// Resolve attempts to resolve data via local filesystem or git
 	// nil pullCreds will be ignored

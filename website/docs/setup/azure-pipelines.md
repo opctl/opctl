@@ -19,7 +19,7 @@ Type: "Inline"
 
 Script:
 ```bash
-curl -L https://github.com/opctl/opctl/releases/download/0.1.46/opctl0.1.46.linux.tgz | sudo tar -xzv -C /usr/local/bin
+curl -L https://github.com/opctl/opctl/releases/download/latest/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
 
 # manually create an opctl node.
 # custom node data dir required because VSTS only makes build dir available to docker daemon

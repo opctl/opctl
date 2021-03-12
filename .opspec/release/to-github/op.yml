@@ -1,0 +1,70 @@
+name: to-github
+description: releases opctl to [github](https://github.com/opctl/opctl/)
+inputs:
+  github:
+    object:
+      constraints:
+        properties:
+          accessToken:
+            minLength: 1
+            type: string
+            writeOnly: true
+          username:
+            minLength: 1
+            type: string
+        required: [accessToken, username]
+      description: configuration required to interact w/ github
+  version:
+    string:
+      constraints: { format: semver }
+      description: version of opctl being released
+run:
+  serial:
+    # create github release
+    - op:
+        ref: github.com/opspec-pkgs/git.repo.resolve-commit#1.0.2
+        inputs:
+          dotGitDir: $(../../../.git)
+        outputs:
+          commit:
+    - op:
+        ref: github.com/opspec-pkgs/github.release.create#1.2.0
+        inputs:
+          commitish: $(commit)
+          loginPassword: $(github.accessToken)
+          loginUsername: $(github.username)
+          owner: opctl
+          repo: opctl
+          tag: v$(version)
+          name: v$(version)
+        outputs:
+          id: $(releaseId)
+    - parallelLoop:
+        range:
+          - darwin
+          - linux
+        vars:
+          value: $(os)
+        run:
+          serial:
+            - container:
+                image:
+                  ref: alpine
+                cmd:
+                  - tar
+                  - -czf
+                  - /opctl.tgz
+                  - /opctl
+                files:
+                  /opctl: $(../../../cli/opctl-$(os)-amd64)
+                  /opctl.tgz: $(opctlTgz)
+            - op:
+                ref: github.com/opspec-pkgs/github.release.upload#1.0.0
+                inputs:
+                  asset: $(opctlTgz)
+                  id: $(releaseId)
+                  loginPassword: $(github.accessToken)
+                  loginUsername: $(github.username)
+                  name: opctl-$(os)-amd64.tgz
+                  owner: opctl
+                  repo: opctl

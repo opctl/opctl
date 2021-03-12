@@ -26,7 +26,8 @@ func (c apiClient) GetData(
 	path := strings.Replace(api.URLPkgs_Ref_Contents_Path, "{ref}", url.PathEscape(req.PkgRef), 1)
 	path = strings.Replace(path, "{path}", url.PathEscape(req.ContentPath), 1)
 
-	httpReq, err := http.NewRequest(
+	httpReq, err := http.NewRequestWithContext(
+		ctx,
 		"GET",
 		c.baseURL.String()+path,
 		nil,
@@ -35,7 +36,6 @@ func (c apiClient) GetData(
 		return nil, err
 	}
 
-	httpReq = httpReq.WithContext(ctx)
 	if nil != req.PullCreds {
 		httpReq.SetBasicAuth(
 			req.PullCreds.Username,

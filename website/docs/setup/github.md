@@ -26,7 +26,7 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Install Opctl
-      run: curl -L https://github.com/opctl/opctl/releases/download/0.1.46/opctl0.1.46.linux.tgz | sudo tar -xzv -C /usr/local/bin
+      run: curl -L https://github.com/opctl/opctl/releases/download/latest/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
     
     - name: Build
       run: opctl run build

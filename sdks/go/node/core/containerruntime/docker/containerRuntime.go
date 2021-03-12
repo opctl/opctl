@@ -5,12 +5,11 @@ package docker
 
 import (
 	dockerClientPkg "github.com/docker/docker/client"
-	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
 	"golang.org/x/net/context"
 )
 
-func New() (
+func New(ctx context.Context) (
 	containerRuntime containerruntime.ContainerRuntime,
 	err error,
 ) {
@@ -21,9 +20,9 @@ func New() (
 	}
 
 	// degrade client version to version of server
-	dockerClient.NegotiateAPIVersion(context.TODO())
+	dockerClient.NegotiateAPIVersion(ctx)
 
-	rc, err := newRunContainer(dockerClient)
+	rc, err := newRunContainer(ctx, dockerClient)
 	if nil != err {
 		return
 	}
@@ -31,14 +30,12 @@ func New() (
 	return _containerRuntime{
 		runContainer: rc,
 		dockerClient: dockerClient,
-		os:           ios.New(),
 	}, nil
 }
 
 type _containerRuntime struct {
 	runContainer
 	dockerClient dockerClientPkg.CommonAPIClient
-	os           ios.IOS
 }
 
 const dockerNetworkName = "opctl"

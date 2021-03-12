@@ -13,10 +13,9 @@ import (
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
-//counterfeiter:generate -o internal/fakes/stateStore.go . stateStore
 // stateStore allows efficiently querying the current state of opctl.
 //
-// State is materialized by applying events in the order in which they are/were received.
+// State is materialized by applying events in the order in which they are received.
 //
 // efficient startup:
 // A lastAppliedEventTimestamp is maintained and used at startup to pickup applying events
@@ -32,6 +31,7 @@ type stateStore interface {
 }
 
 func newStateStore(
+	ctx context.Context,
 	db *badger.DB,
 	pubSub pubsub.PubSub,
 ) stateStore {
@@ -54,7 +54,7 @@ func newStateStore(
 		since := lastAppliedEventTimestamp.Add(-time.Second)
 
 		eventChannel, _ := pubSub.Subscribe(
-			context.Background(),
+			ctx,
 			model.EventFilter{
 				Since: &since,
 			},

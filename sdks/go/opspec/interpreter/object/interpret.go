@@ -3,9 +3,9 @@ package object
 import (
 	"fmt"
 
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
 	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
 )
 
 // Interpret an expression to an object value.

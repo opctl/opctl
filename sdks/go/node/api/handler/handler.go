@@ -14,7 +14,7 @@ import (
 )
 
 // New returns an http server that wraps the given Core op runner with an http
-// API. APIClient provides an OpNode interface for interacting with it.
+// API. APIClient provides an Node interface for interacting with it.
 func New(
 	core core.Core,
 ) http.Handler {

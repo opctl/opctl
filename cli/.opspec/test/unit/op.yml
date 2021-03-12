@@ -1,7 +1,10 @@
 name: test
 description: runs all CLI go tests
-opspec: 0.1.6
-run:
+inputs:
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
+run:  
   container:
     cmd:
       - go
@@ -9,7 +12,8 @@ run:
       - ./cli/...
     dirs:
       /src: $(../../../..)
+      /go/pkg: $(HOME/pkg)
     envVars:
-      GOFLAGS: -mod=vendor -tags=containers_image_openpgp
-    image: { ref: "golang:1.15" }
+      GOFLAGS: -tags=containers_image_openpgp
+    image: { ref: 'golang:1.15' }
     workDir: /src

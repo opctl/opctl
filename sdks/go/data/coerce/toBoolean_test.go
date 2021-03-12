@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"path"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -80,63 +79,17 @@ var _ = Context("ToBoolean", func() {
 		})
 	})
 	Context("Value.Dir isn't nil", func() {
-		Context("ioutil.ReadDir errs", func() {
-			It("should return expected result", func() {
-				/* arrange */
+		It("should return expected result", func() {
+			/* arrange */
 
-				/* act */
-				actualValue, actualErr := ToBoolean(
-					&model.Value{Dir: new(string)},
-				)
+			/* act */
+			actualValue, actualErr := ToBoolean(
+				&model.Value{Dir: new(string)},
+			)
 
-				/* assert */
-				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(errors.New("unable to coerce dir to boolean; error was open : no such file or directory")))
-			})
-		})
-		Context("ioutil.ReadDir doesn't err", func() {
-			Context("Directory empty", func() {
-				It("should return expected result", func() {
-					/* arrange */
-					expectedBoolean := false
-
-					dirPath, err := ioutil.TempDir("", "")
-					if nil != err {
-						panic(err)
-					}
-
-					/* act */
-					actualValue, actualErr := ToBoolean(
-						&model.Value{Dir: &dirPath},
-					)
-
-					/* assert */
-					Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
-					Expect(actualErr).To(BeNil())
-				})
-			})
-			Context("Directory not empty", func() {
-				It("should return expected result", func() {
-					/* arrange */
-					tmpFile, err := ioutil.TempFile("", "")
-					if nil != err {
-						panic(err)
-					}
-
-					dirPath := path.Dir(tmpFile.Name())
-
-					expectedBoolean := true
-
-					/* act */
-					actualValue, actualErr := ToBoolean(
-						&model.Value{Dir: &dirPath},
-					)
-
-					/* assert */
-					Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
-					Expect(actualErr).To(BeNil())
-				})
-			})
+			/* assert */
+			Expect(actualValue).To(BeNil())
+			Expect(actualErr).To(Equal(errors.New("unable to coerce dir to boolean; incompatible types")))
 		})
 	})
 	Context("Value.File isn't nil", func() {

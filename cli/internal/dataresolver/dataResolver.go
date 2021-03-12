@@ -1,13 +1,12 @@
 package dataresolver
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
-
 import (
 	"context"
 	"fmt"
+	"os"
 	"path/filepath"
+	"strings"
 
-	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/data/fs"
@@ -17,9 +16,9 @@ import (
 )
 
 // DataResolver resolves packages
-//counterfeiter:generate -o fakes/dataResolver.go . DataResolver
 type DataResolver interface {
 	Resolve(
+		ctx context.Context,
 		dataRef string,
 		pullCreds *model.Creds,
 	) (model.DataHandle, error)
@@ -27,26 +26,25 @@ type DataResolver interface {
 
 func New(
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier,
-	opNode node.OpNode,
+	node node.Node,
 ) DataResolver {
 	return _dataResolver{
 		cliParamSatisfier: cliParamSatisfier,
-		opNode:            opNode,
-		os:                ios.New(),
+		node:              node,
 	}
 }
 
 type _dataResolver struct {
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier
-	opNode            node.OpNode
-	os                ios.IOS
+	node              node.Node
 }
 
 func (dtr _dataResolver) Resolve(
+	ctx context.Context,
 	dataRef string,
 	pullCreds *model.Creds,
 ) (model.DataHandle, error) {
-	cwd, err := dtr.os.Getwd()
+	cwd, err := os.Getwd()
 	if nil != err {
 		return nil, err
 	}
@@ -56,13 +54,41 @@ func (dtr _dataResolver) Resolve(
 		cwd,
 	)
 
+	domain := strings.Split(dataRef, "/")[0]
+
+	passwordDescription := fmt.Sprintf("Password for %s.", domain)
+	if domain == "github.com" {
+		// customize github.com password description...
+		passwordDescription = "Personal access token for github.com with 'Repo' permissions."
+	}
+
+	credsPromptInputs := map[string]*model.Param{
+		usernameInputName: {
+			String: &model.StringParam{
+				Description: fmt.Sprintf("Username for %s.", domain),
+				Constraints: map[string]interface{}{
+					"MinLength": 1,
+				},
+			},
+		},
+		passwordInputName: {
+			String: &model.StringParam{
+				Description: passwordDescription,
+				Constraints: map[string]interface{}{
+					"MinLength": 1,
+				},
+				IsSecret: true,
+			},
+		},
+	}
+
 	for {
 		opDirHandle, err := data.Resolve(
-			context.TODO(),
+			ctx,
 			dataRef,
 			fsProvider,
 			dataNode.New(
-				dtr.opNode,
+				dtr.node,
 				pullCreds,
 			),
 		)
@@ -98,7 +124,7 @@ func (dtr _dataResolver) Resolve(
 			continue
 		default:
 			// uncorrectable error.. give up
-			return nil, fmt.Errorf("Unable to resolve pkg '%v'; error was %v", dataRef, err.Error())
+			return nil, fmt.Errorf("Unable to resolve '%v'; error was %v", dataRef, err.Error())
 		}
 
 	}
@@ -108,26 +134,4 @@ func (dtr _dataResolver) Resolve(
 const (
 	usernameInputName = "username"
 	passwordInputName = "password"
-)
-
-var (
-	credsPromptInputs = map[string]*model.Param{
-		usernameInputName: {
-			String: &model.StringParam{
-				Description: "username used to auth w/ the pkg source",
-				Constraints: map[string]interface{}{
-					"MinLength": 1,
-				},
-			},
-		},
-		passwordInputName: {
-			String: &model.StringParam{
-				Description: "password used to auth w/ the pkg source",
-				Constraints: map[string]interface{}{
-					"MinLength": 1,
-				},
-				IsSecret: true,
-			},
-		},
-	}
 )

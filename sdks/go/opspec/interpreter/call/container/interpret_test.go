@@ -1,8 +1,8 @@
 package container
 
 import (
-	"fmt"
 	"errors"
+	"fmt"
 	"os"
 
 	. "github.com/onsi/ginkgo"
@@ -148,9 +148,9 @@ var _ = Context("Interpret", func() {
 				OpPath: providedOpPath,
 			},
 			ContainerID: providedContainerID,
-			Cmd: []string{},
-			Dirs: map[string]string{},
-			Files: map[string]string{},
+			Cmd:         []string{},
+			Dirs:        map[string]string{},
+			Files:       map[string]string{},
 			Image: &model.ContainerCallImage{
 				Ref: &expectedRef,
 			},

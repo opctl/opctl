@@ -26,7 +26,8 @@ func (c apiClient) AddAuth(
 	reqURL := c.baseURL
 	reqURL.Path = path.Join(reqURL.Path, api.URLAuths_Adds)
 
-	httpReq, err := http.NewRequest(
+	httpReq, err := http.NewRequestWithContext(
+		ctx,
 		"POST",
 		reqURL.String(),
 		bytes.NewBuffer(reqBytes),
@@ -34,8 +35,6 @@ func (c apiClient) AddAuth(
 	if nil != err {
 		return err
 	}
-
-	httpReq = httpReq.WithContext(ctx)
 
 	httpResp, err := c.httpClient.Do(httpReq)
 	if nil != err {

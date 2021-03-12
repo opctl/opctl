@@ -11,22 +11,22 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	"github.com/opctl/opctl/sdks/go/node"
 )
 
-func (np nodeProvider) CreateNodeIfNotExists() (nodeprovider.NodeHandle, error) {
+func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, error) {
 	nodes, err := np.ListNodes()
 	if nil != err {
 		return nil, err
 	}
 
-	nodeHandle, err := newNodeHandle(np.listenAddress)
+	apiClientNode, err := newAPIClientNode(np.listenAddress)
 	if nil != err {
 		return nil, err
 	}
 
 	if len(nodes) > 0 {
-		return nodeHandle, nil
+		return apiClientNode, nil
 	}
 
 	pathToOpctlBin, err := os.Executable()
@@ -72,12 +72,12 @@ func (np nodeProvider) CreateNodeIfNotExists() (nodeprovider.NodeHandle, error) 
 		return nil, err
 	}
 
-	err = nodeHandle.APIClient().Liveness(context.TODO())
+	err = apiClientNode.Liveness(ctx)
 	nodeLogBytes, _ := ioutil.ReadFile(nodeLogFilePath)
 	fmt.Println(string(nodeLogBytes))
 	if nil != err {
-		return nil, fmt.Errorf("Error encountered creating daemonized opctl node")
+		return nil, fmt.Errorf("Error encountered creating daemonized opctl node; error was %s", err)
 	}
 
-	return nodeHandle, nil
+	return apiClientNode, nil
 }

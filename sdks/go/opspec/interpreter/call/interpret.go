@@ -1,6 +1,7 @@
 package call
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/opctl/opctl/sdks/go/model"
@@ -13,6 +14,7 @@ import (
 
 //Interpret a spec into a call
 func Interpret(
+	ctx context.Context,
 	scope map[string]*model.Value,
 	callSpec *model.CallSpec,
 	id string,
@@ -59,6 +61,7 @@ func Interpret(
 		return call, err
 	case nil != callSpec.Op:
 		call.Op, err = op.Interpret(
+			ctx,
 			scope,
 			callSpec.Op,
 			id,

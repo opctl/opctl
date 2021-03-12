@@ -3,10 +3,10 @@ package local
 import (
 	"path/filepath"
 
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	"github.com/opctl/opctl/sdks/go/node"
 )
 
-func (np nodeProvider) ListNodes() ([]nodeprovider.NodeHandle, error) {
+func (np nodeProvider) ListNodes() ([]node.Node, error) {
 	pIDOfLockOwner := np.lockfile.PIdOfOwner(
 		filepath.Join(
 			np.dataDir.Path(),
@@ -14,15 +14,15 @@ func (np nodeProvider) ListNodes() ([]nodeprovider.NodeHandle, error) {
 		),
 	)
 	if 0 != pIDOfLockOwner {
-		nodeHandle, err := newNodeHandle(np.listenAddress)
+		apiClientNode, err := newAPIClientNode(np.listenAddress)
 		if nil != err {
 			return nil, err
 		}
 
-		return []nodeprovider.NodeHandle{
-			nodeHandle,
+		return []node.Node{
+			apiClientNode,
 		}, nil
 	}
 
-	return []nodeprovider.NodeHandle{}, nil
+	return []node.Node{}, nil
 }

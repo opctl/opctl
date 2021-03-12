@@ -8,6 +8,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/data/fs"
 	"github.com/opctl/opctl/sdks/go/data/git"
+	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
@@ -26,7 +27,7 @@ func (this core) StartOp(
 		return "", err
 	}
 
-	callID, err := this.uniqueStringFactory.Construct()
+	callID, err := uniquestring.Construct()
 	if nil != err {
 		// end run immediately on any error
 		return "", err
@@ -64,7 +65,7 @@ func (this core) StartOp(
 		opCallSpec.Outputs[name] = ""
 	}
 
-	opCtx, cancelOp := context.WithCancel(context.Background())
+	opCtx, cancelOp := context.WithCancel(ctx)
 	go func() {
 		defer func() {
 			if panicArg := recover(); panicArg != nil {

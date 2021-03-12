@@ -20,9 +20,7 @@ type EventPublisher interface {
 //counterfeiter:generate -o fakes/eventSubscriber.go . EventSubscriber
 type EventSubscriber interface {
 	// Subscribe returns a filtered event stream
-	// events will be sent to the subscription until either:
-	//  - ctx is canceled
-	//  - returned channel is blocked for 10 seconds
+	// events will be sent to the subscription until ctx is canceled.
 	// note: method signature is based on https://medium.com/statuscode/pipeline-patterns-in-go-a37bb3a7e61d
 	Subscribe(
 		ctx context.Context,

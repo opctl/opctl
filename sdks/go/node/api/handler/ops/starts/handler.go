@@ -3,6 +3,7 @@ package starts
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
@@ -20,15 +21,15 @@ type Handler interface {
 
 // NewHandler returns an initialized Handler instance
 func NewHandler(
-	opNode node.OpNode,
+	node node.Node,
 ) Handler {
 	return _handler{
-		opNode: opNode,
+		node: node,
 	}
 }
 
 type _handler struct {
-	opNode node.OpNode
+	node node.Node
 }
 
 func (hdlr _handler) Handle(
@@ -44,8 +45,11 @@ func (hdlr _handler) Handle(
 		return
 	}
 
-	callID, err := hdlr.opNode.StartOp(
-		httpReq.Context(),
+	// This uses a fresh context because the running op continues running
+	// after the http request closes
+	ctx := context.Background()
+	callID, err := hdlr.node.StartOp(
+		ctx,
 		startOpReq,
 	)
 	if nil != err {

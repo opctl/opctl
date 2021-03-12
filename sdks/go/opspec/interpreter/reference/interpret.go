@@ -134,8 +134,8 @@ func getRootValue(
 	if strings.HasPrefix(ref, "/") {
 		// handle deprecated absolute path reference
 		return scope["/"], ref, nil
-	}	
-	
+	}
+
 	if strings.HasPrefix(ref, "./") {
 		// handle current directory reference
 		return scope["./"], ref[1:], nil

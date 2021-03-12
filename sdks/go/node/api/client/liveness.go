@@ -13,7 +13,8 @@ func (c apiClient) Liveness(
 	ctx context.Context,
 ) error {
 
-	httpReq, err := http.NewRequest(
+	httpReq, err := http.NewRequestWithContext(
+		ctx,
 		"GET",
 		c.baseURL.String()+api.URLLiveness,
 		nil,
@@ -21,8 +22,6 @@ func (c apiClient) Liveness(
 	if nil != err {
 		return err
 	}
-
-	httpReq = httpReq.WithContext(ctx)
 
 	httpResp, err := c.httpClient.Do(httpReq)
 	if nil != err {

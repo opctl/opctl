@@ -2,15 +2,18 @@ package core
 
 import (
 	"context"
-	"errors"
-	"fmt"
-	"sync"
+	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 
+	"github.com/dgraph-io/badger/v2"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
+	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	"github.com/opctl/opctl/sdks/go/pubsub"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
@@ -25,318 +28,218 @@ var _ = Context("parallelCaller", func() {
 		})
 	})
 	Context("Call", func() {
-		It("should call caller for every parallelCall w/ expected args", func() {
-			/* arrange */
-			providedCallID := "dummyCallID"
-			providedInboundScope := map[string]*model.Value{}
-			providedRootCallID := "dummyRootCallID"
-			providedOpPath := "providedOpPath"
-			providedCallSpecParallelCalls := []*model.CallSpec{
-				{
-					Container: &model.ContainerCallSpec{},
-				},
-				{
-					Op: &model.OpCallSpec{},
-				},
-				{
-					Parallel: &[]*model.CallSpec{},
-				},
-				{
-					Serial: &[]*model.CallSpec{},
-				},
-			}
 
-			mtx := sync.Mutex{}
+		Context("caller errors", func() {
 
-			fakeCaller := new(FakeCaller)
-			eventChannel := make(chan model.Event, 100)
-			callerCallIndex := 0
-			fakeCaller.CallStub = func(
-				context.Context,
-				string,
-				map[string]*model.Value,
-				*model.CallSpec,
-				string,
-				*string,
-				string,
-			) (
-				map[string]*model.Value,
-				error,
-			) {
-				mtx.Lock()
-				eventChannel <- model.Event{
-					CallEnded: &model.CallEnded{
-						Call: model.Call{
-							ID: fmt.Sprintf("%v", callerCallIndex),
-						},
-					},
+			It("should return expected results", func() {
+				/* arrange */
+				dbDir, err := ioutil.TempDir("", "")
+				if nil != err {
+					panic(err)
 				}
 
-				callerCallIndex++
+				db, err := badger.Open(
+					badger.DefaultOptions(dbDir).WithLogger(nil),
+				)
+				if nil != err {
+					panic(err)
+				}
+				pubSub := pubsub.New(db)
 
-				mtx.Unlock()
+				objectUnderTest := _parallelCaller{
+					caller: newCaller(
+						newContainerCaller(
+							new(containerRuntimeFakes.FakeContainerRuntime),
+							pubSub,
+							newStateStore(
+								context.Background(),
+								db,
+								pubSub,
+							),
+						),
+						dbDir,
+						pubSub,
+					),
+					pubSub: pubSub,
+				}
+
+				/* act */
+				_, actualErr := objectUnderTest.Call(
+					context.Background(),
+					"callID",
+					map[string]*model.Value{},
+					"rootCallID",
+					"opPath",
+					[]*model.CallSpec{
+						{
+							// intentionally invalid
+							Container: &model.ContainerCallSpec{},
+						},
+					},
+				)
+
+				/* assert */
+				Expect(actualErr.Error()).To(Equal("child call failed"))
+			})
+		})
+
+		It("should start each child as expected", func() {
+
+			/* arrange */
+			dbDir, err := ioutil.TempDir("", "")
+			if nil != err {
+				panic(err)
+			}
+
+			db, err := badger.Open(
+				badger.DefaultOptions(dbDir).WithLogger(nil),
+			)
+			if nil != err {
+				panic(err)
+			}
+			pubSub := pubsub.New(db)
+
+			wd, err := os.Getwd()
+			if nil != err {
+				panic(err)
+			}
+			providedOpRef := "providedOpRef"
+			providedParentID := "providedParentID"
+			providedRootID := "providedRootID"
+			childOpRef := filepath.Join(wd, "testdata/parallelCaller")
+			input1Key := "input1"
+			childOp1Path := filepath.Join(childOpRef, "op1")
+			childOp2Path := filepath.Join(childOpRef, "op2")
+
+			ctx := context.Background()
+
+			fakeContainerRuntime := new(containerRuntimeFakes.FakeContainerRuntime)
+			fakeContainerRuntime.RunContainerStub = func(
+				ctx context.Context,
+				req *model.ContainerCall,
+				rootCallID string,
+				eventPublisher pubsub.EventPublisher,
+				stdOut io.WriteCloser,
+				stdErr io.WriteCloser,
+			) (*int64, error) {
+
+				stdErr.Close()
+				stdOut.Close()
 
 				return nil, nil
 			}
 
-			fakePubSub := new(FakePubSub)
-			fakePubSub.SubscribeReturns(eventChannel, nil)
+			eventChannel, err := pubSub.Subscribe(
+				ctx,
+				model.EventFilter{},
+			)
+			if nil != err {
+				panic(err)
+			}
 
-			fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
-			uniqueStringCallIndex := 0
-			expectedChildCallIDs := []string{}
-			fakeUniqueStringFactory.ConstructStub = func() (string, error) {
-				defer func() {
-					uniqueStringCallIndex++
-				}()
-				childCallID := fmt.Sprintf("%v", uniqueStringCallIndex)
-				expectedChildCallIDs = append(expectedChildCallIDs, fmt.Sprintf("%v", uniqueStringCallIndex))
-				return childCallID, nil
+			input1Value := "input1Value"
+			providedInboundScope := map[string]*model.Value{
+				input1Key: {String: &input1Value},
 			}
 
 			objectUnderTest := _parallelCaller{
-				caller:              fakeCaller,
-				pubSub:              fakePubSub,
-				uniqueStringFactory: fakeUniqueStringFactory,
+				caller: newCaller(
+					newContainerCaller(
+						fakeContainerRuntime,
+						pubSub,
+						newStateStore(
+							ctx,
+							db,
+							pubSub,
+						),
+					),
+					dbDir,
+					pubSub,
+				),
+				pubSub: pubSub,
 			}
 
 			/* act */
-			objectUnderTest.Call(
-				context.Background(),
-				providedCallID,
+			_, actualErr := objectUnderTest.Call(
+				ctx,
+				providedParentID,
 				providedInboundScope,
-				providedRootCallID,
-				providedOpPath,
-				providedCallSpecParallelCalls,
+				providedRootID,
+				providedOpRef,
+				[]*model.CallSpec{
+					{
+						Op: &model.OpCallSpec{
+							Ref: childOp1Path,
+							Inputs: map[string]interface{}{
+								input1Key: nil,
+							},
+						},
+					},
+					{
+						Op: &model.OpCallSpec{
+							Ref: childOp2Path,
+							Inputs: map[string]interface{}{
+								input1Key: nil,
+							},
+						},
+					},
+				},
 			)
 
 			/* assert */
-			for callIndex := range providedCallSpecParallelCalls {
-				_,
-					actualNodeID,
-					actualChildOutboundScope,
-					actualCallSpec,
-					actualOpPath,
-					actualParentCallID,
-					actualRootCallID := fakeCaller.CallArgsForCall(callIndex)
+			Expect(actualErr).To(BeNil())
 
-				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
-				Expect(actualOpPath).To(Equal(providedOpPath))
-				Expect(actualParentCallID).To(Equal(&providedCallID))
-				Expect(actualRootCallID).To(Equal(providedRootCallID))
+			actualChildCalls := []model.CallStarted{}
+			go func() {
+				for event := range eventChannel {
+					if nil != event.CallStarted && nil != event.CallStarted.Call.Op {
+						// ignore props we can't readily assert
+						event.CallStarted.Call.Op.ChildCallCallSpec = nil
+						event.CallStarted.Call.Op.ChildCallID = ""
+						event.CallStarted.Call.Op.OpID = ""
+						event.CallStarted.Call.ID = ""
 
-				// handle unordered asserts because call order can't be relied on within go statement
-				Expect(expectedChildCallIDs).To(ContainElement(actualNodeID))
-				Expect(providedCallSpecParallelCalls).To(ContainElement(actualCallSpec))
-			}
-		})
-		Context("CallEnded event received w/ Error", func() {
-			It("should publish expected CallEnded", func() {
-				/* arrange */
-				providedCallID := "dummyCallID"
-				providedInboundScope := map[string]*model.Value{}
-				providedRootCallID := "dummyRootCallID"
-				providedOpPath := "providedOpPath"
-				providedCallSpecParallelCalls := []*model.CallSpec{
-					{
-						Container: &model.ContainerCallSpec{},
-					},
-					{
-						Op: &model.OpCallSpec{},
-					},
-					{
-						Parallel: &[]*model.CallSpec{},
-					},
-					{
-						Serial: &[]*model.CallSpec{},
-					},
-				}
-
-				errorMessage := "errorMessage"
-				childErrorMessages := []string{}
-				for range providedCallSpecParallelCalls {
-					childErrorMessages = append(childErrorMessages, errorMessage)
-				}
-
-				mtx := sync.Mutex{}
-
-				fakeCaller := new(FakeCaller)
-				eventChannel := make(chan model.Event, 100)
-				callerCallIndex := 0
-				fakeCaller.CallStub = func(
-					context.Context,
-					string,
-					map[string]*model.Value,
-					*model.CallSpec,
-					string,
-					*string,
-					string,
-				) (
-					map[string]*model.Value,
-					error,
-				) {
-					mtx.Lock()
-
-					eventChannel <- model.Event{
-						CallEnded: &model.CallEnded{
-							Call: model.Call{
-								ID: fmt.Sprintf("%v", callerCallIndex),
-							},
-							Error: &model.CallEndedError{
-								Message: errorMessage,
-							},
-						},
+						actualChildCalls = append(actualChildCalls, *event.CallStarted)
 					}
-
-					callerCallIndex++
-
-					mtx.Unlock()
-
-					return nil, nil
 				}
+			}()
 
-				fakePubSub := new(FakePubSub)
-				fakePubSub.SubscribeReturns(eventChannel, nil)
-
-				fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
-				uniqueStringCallIndex := 0
-				expectedChildCallIDs := []string{}
-				fakeUniqueStringFactory.ConstructStub = func() (string, error) {
-					defer func() {
-						uniqueStringCallIndex++
-					}()
-					childCallID := fmt.Sprintf("%v", uniqueStringCallIndex)
-					expectedChildCallIDs = append(expectedChildCallIDs, childCallID)
-					return childCallID, nil
-				}
-
-				objectUnderTest := _parallelCaller{
-					caller:              fakeCaller,
-					pubSub:              fakePubSub,
-					uniqueStringFactory: fakeUniqueStringFactory,
-				}
-
-				/* act */
-				actualOutputs, actualErr := objectUnderTest.Call(
-					context.Background(),
-					providedCallID,
-					providedInboundScope,
-					providedRootCallID,
-					providedOpPath,
-					providedCallSpecParallelCalls,
-				)
-
-				/* assert */
-				Expect(actualOutputs).To(BeNil())
-				Expect(actualErr).To(Equal(errors.New("child call failed")))
-			})
-		})
-		Context("caller doesn't error", func() {
-			It("shouldn't exit until all childCalls complete & not error", func() {
-				/* arrange */
-				providedCallID := "dummyCallID"
-				providedInboundScope := map[string]*model.Value{}
-				providedRootCallID := "dummyRootCallID"
-				providedOpPath := "providedOpPath"
-				providedCallSpecParallelCalls := []*model.CallSpec{
-					{
-						Container: &model.ContainerCallSpec{},
-					},
-					{
-						Op: &model.OpCallSpec{},
-					},
-					{
-						Parallel: &[]*model.CallSpec{},
-					},
-					{
-						Serial: &[]*model.CallSpec{},
-					},
-				}
-
-				mtx := sync.Mutex{}
-
-				fakeCaller := new(FakeCaller)
-				eventChannel := make(chan model.Event, 100)
-				callerCallIndex := 0
-				fakeCaller.CallStub = func(
-					context.Context,
-					string,
-					map[string]*model.Value,
-					*model.CallSpec,
-					string,
-					*string,
-					string,
-				) (
-					map[string]*model.Value,
-					error,
-				) {
-					mtx.Lock()
-
-					eventChannel <- model.Event{
-						CallEnded: &model.CallEnded{
+			Eventually(
+				func() []model.CallStarted { return actualChildCalls },
+			).Should(
+				ContainElements(
+					[]model.CallStarted{
+						{
 							Call: model.Call{
-								ID: fmt.Sprintf("%v", callerCallIndex),
+								Op: &model.OpCall{
+									BaseCall: model.BaseCall{
+										OpPath: childOp1Path,
+									},
+									Inputs:            providedInboundScope,
+									ChildCallCallSpec: nil,
+								},
+								ParentID: &providedParentID,
+								RootID:   providedRootID,
 							},
+							Ref: providedOpRef,
 						},
-					}
-
-					callerCallIndex++
-					mtx.Unlock()
-
-					return nil, nil
-				}
-
-				fakePubSub := new(FakePubSub)
-				fakePubSub.SubscribeReturns(eventChannel, nil)
-
-				fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
-				uniqueStringCallIndex := 0
-				expectedChildCallIDs := []string{}
-				fakeUniqueStringFactory.ConstructStub = func() (string, error) {
-					defer func() {
-						uniqueStringCallIndex++
-					}()
-					childCallID := fmt.Sprintf("%v", uniqueStringCallIndex)
-					expectedChildCallIDs = append(expectedChildCallIDs, fmt.Sprintf("%v", uniqueStringCallIndex))
-					return childCallID, nil
-				}
-
-				objectUnderTest := _parallelCaller{
-					caller:              fakeCaller,
-					pubSub:              fakePubSub,
-					uniqueStringFactory: fakeUniqueStringFactory,
-				}
-
-				/* act */
-				objectUnderTest.Call(
-					context.Background(),
-					providedCallID,
-					providedInboundScope,
-					providedRootCallID,
-					providedOpPath,
-					providedCallSpecParallelCalls,
-				)
-
-				/* assert */
-				for callIndex := range providedCallSpecParallelCalls {
-					_,
-						actualNodeID,
-						actualChildOutboundScope,
-						actualCallSpec,
-						actualOpPath,
-						actualParentCallID,
-						actualRootCallID := fakeCaller.CallArgsForCall(callIndex)
-
-					Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
-					Expect(actualOpPath).To(Equal(providedOpPath))
-					Expect(actualParentCallID).To(Equal(&providedCallID))
-					Expect(actualRootCallID).To(Equal(providedRootCallID))
-
-					// handle unordered asserts because call order can't be relied on within go statement
-					Expect(expectedChildCallIDs).To(ContainElement(actualNodeID))
-					Expect(providedCallSpecParallelCalls).To(ContainElement(actualCallSpec))
-				}
-			})
+						{
+							Call: model.Call{
+								Op: &model.OpCall{
+									BaseCall: model.BaseCall{
+										OpPath: childOp2Path,
+									},
+									Inputs:            providedInboundScope,
+									ChildCallCallSpec: nil,
+								},
+								ParentID: &providedParentID,
+								RootID:   providedRootID,
+							},
+							Ref: providedOpRef,
+						},
+					},
+				),
+			)
 		})
 	})
 })

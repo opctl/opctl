@@ -3,15 +3,33 @@ package cliparamsatisfier
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	clioutputFakes "github.com/opctl/opctl/cli/internal/clioutput/fakes"
+	"github.com/opctl/opctl/cli/internal/clicolorer"
+	"github.com/opctl/opctl/cli/internal/clioutput"
 	. "github.com/opctl/opctl/cli/internal/cliparamsatisfier/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
+	"path/filepath"
 )
 
 var _ = Context("parameterSatisfier", func() {
+	wd, err := os.Getwd()
+	if nil != err {
+		panic(err)
+	}
+	Context("New", func() {
+		It("should return truthy result", func() {
+			/* arrange/act */
+			actual := New(
+				clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
+			)
+
+			/* assert */
+			Expect(actual).To(Not(BeNil()))
+		})
+	})
 	Context("Satisfy", func() {
 		It("should call inputSourcer.Source w/ expected args for each input", func() {
 			/* arrange */
@@ -28,7 +46,7 @@ var _ = Context("parameterSatisfier", func() {
 			}
 
 			objectUnderTest := _CLIParamSatisfier{
-				cliOutput: new(clioutputFakes.FakeCliOutput),
+				cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
 			}
 
 			/* act */
@@ -71,7 +89,7 @@ var _ = Context("parameterSatisfier", func() {
 					providedInputSourcer.SourceReturns(&valueString, true)
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliOutput: new(clioutputFakes.FakeCliOutput),
+						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
 					}
 
 					/* act */
@@ -103,7 +121,79 @@ var _ = Context("parameterSatisfier", func() {
 					}
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliOutput: new(clioutputFakes.FakeCliOutput),
+						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
+					}
+
+					/* act */
+					actualOutputs, err := objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
+
+					/* assert */
+					Expect(err).To(BeNil())
+					Expect(actualOutputs).To(Equal(expectedOutputs))
+				})
+			})
+		})
+		Context("param.Dir isn't nil", func() {
+			Context("value isn't nil", func() {
+				It("should return expected outputs", func() {
+					/* arrange */
+					providedInputSourcer := new(FakeInputSourcer)
+					inputIdentifier := "inputIdentifier"
+
+					providedInputs := map[string]*model.Param{
+						inputIdentifier: {Dir: &model.DirParam{}},
+					}
+
+					valueDir := wd
+					_, err := filepath.Abs(valueDir)
+					if nil != err {
+						panic(err)
+					}
+
+					providedInputSourcer.SourceReturns(&valueDir, true)
+
+					expectedOutputs := map[string]*model.Value{
+						inputIdentifier: &model.Value{Dir: &valueDir},
+					}
+
+					objectUnderTest := _CLIParamSatisfier{
+						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
+					}
+
+					/* act */
+					actualOutputs, err := objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
+
+					/* assert */
+					Expect(err).To(BeNil())
+					Expect(actualOutputs).To(Equal(expectedOutputs))
+				})
+			})
+		})
+		Context("param.File isn't nil", func() {
+			Context("value isn't nil", func() {
+				It("should return expected outputs", func() {
+					/* arrange */
+					providedInputSourcer := new(FakeInputSourcer)
+					inputIdentifier := "inputIdentifier"
+
+					providedInputs := map[string]*model.Param{
+						inputIdentifier: {File: &model.FileParam{}},
+					}
+
+					valueFile := filepath.Join(wd, "inputSourcer.go")
+					_, err := filepath.Abs(valueFile)
+					if nil != err {
+						panic(err)
+					}
+
+					providedInputSourcer.SourceReturns(&valueFile, true)
+
+					expectedOutputs := map[string]*model.Value{
+						inputIdentifier: {File: &valueFile},
+					}
+
+					objectUnderTest := _CLIParamSatisfier{
+						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
 					}
 
 					/* act */
@@ -135,7 +225,7 @@ var _ = Context("parameterSatisfier", func() {
 					}
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliOutput: new(clioutputFakes.FakeCliOutput),
+						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
 					}
 
 					/* act */
@@ -174,7 +264,7 @@ var _ = Context("parameterSatisfier", func() {
 					providedInputSourcer.SourceReturns(&valueString, true)
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliOutput: new(clioutputFakes.FakeCliOutput),
+						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
 					}
 
 					/* act */

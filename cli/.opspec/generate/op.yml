@@ -5,9 +5,18 @@ inputs:
     string:
       description: Go path spec to the file/files to generate from
       default: ./cli/...
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
 opspec: 0.1.6
 run:
-  op:
-    ref: ../../../.opspec/generate
-    inputs:
-      path:
+  container:
+    cmd:
+      - go
+      - generate
+      - $(path)
+    dirs:
+      /src: $(../../..)
+      /go/pkg: $(HOME/pkg)
+    image: { ref: 'golang:1.15' }
+    workDir: /src

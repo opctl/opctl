@@ -6,24 +6,33 @@ inputs:
       default: 0.0.1
       constraints:
         format: semver
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
 run:
   parallelLoop:
     range:
       - darwin
       - linux
-      - windows
     vars:
       value: $(GOOS)
     run:
-      op:
-        ref: github.com/opspec-pkgs/golang.build.bin#2.0.0
-        inputs:
-          name: cli/opctl.$(GOOS)
-          srcDir: $(../../..)
-          goVersion: 1.15
-          path: ./cli
+      container:
+        cmd:
+          - go
+          - build
+          - -o
+          - cli/opctl-$(GOOS)-amd64
+          - ./cli
+        dirs:
+          /src: $(../../..)
+          /go/pkg: $(HOME/go/pkg)
+        envVars:
           GOOS:
+          CGO_ENABLED: 0
+          GOARCH: amd64
           GOFLAGS:
-            -mod=vendor
             -tags=containers_image_openpgp
             -ldflags=-X=main.version=$(version)
+        image: { ref: 'golang:1.15' }
+        workDir: /src

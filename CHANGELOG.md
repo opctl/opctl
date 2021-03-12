@@ -6,6 +6,26 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.48 - 2021-02-28
+
+### Changed
+
+- Self-update now uses github releases instead of equinox.io
+
+### Removed
+
+- Windows build; use linux build via WSL 2 instead.
+
+## 0.1.47 - 2021-01-22
+
+### Added
+
+- [Improve CLI prompts for username and password](https://github.com/opctl/opctl/issues/745)
+
+### Fixed
+
+- Dir initializer doesn't initialize more than one child entry
+
 ## 0.1.46 - 2021-01-04
 
 ### Fixed

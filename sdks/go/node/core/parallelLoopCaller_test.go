@@ -2,12 +2,16 @@ package core
 
 import (
 	"context"
+	"io"
+	"io/ioutil"
 
-	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	"github.com/dgraph-io/badger/v2"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	uniquestringFakes "github.com/opctl/opctl/sdks/go/internal/uniquestring/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
+	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	"github.com/opctl/opctl/sdks/go/pubsub"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
@@ -29,9 +33,8 @@ var _ = Context("parallelLoopCaller", func() {
 				fakeCaller := new(FakeCaller)
 
 				objectUnderTest := _parallelLoopCaller{
-					caller:                  fakeCaller,
-					pubSub:                  new(FakePubSub),
-					uniqueStringFactory:     new(uniquestringFakes.FakeUniqueStringFactory),
+					caller: fakeCaller,
+					pubSub: new(FakePubSub),
 				}
 
 				/* act */
@@ -51,104 +54,217 @@ var _ = Context("parallelLoopCaller", func() {
 				Expect(fakeCaller.CallCallCount()).To(Equal(0))
 			})
 		})
-		It("should call caller.Call w/ expected args", func() {
-			/* arrange */
-			providedCtx := context.Background()
-			providedScope := map[string]*model.Value{}
-			index := "index"
-			providedParallelLoopCallSpec := model.ParallelLoopCallSpec{
-				Range: []interface{}{
-					"one",
-				},
-				Vars: &model.LoopVarsSpec{
-					Index: &index,
-				},
-				Run: model.CallSpec{
-					Container: &model.ContainerCallSpec{
-						Image: &model.ContainerCallImageSpec{
-							Ref: "ref",
-						},
-					},
-				},
-			}
-			providedOpPath := "providedOpPath"
-			providedParentCallIDValue := "providedParentCallID"
-			providedParentCallID := &providedParentCallIDValue
-			providedRootCallID := "providedRootCallID"
 
-			expectedScope := map[string]*model.Value{
-				index: &model.Value{Number: new(float64)},
-			}
+		Context("iteration spec invalid", func() {
 
-			callID := "callID"
-
-			fakeCaller := new(FakeCaller)
-
-			eventChannel := make(chan model.Event, 100)
-			fakeCaller.CallStub = func(
-				context.Context,
-				string,
-				map[string]*model.Value,
-				*model.CallSpec,
-				string,
-				*string,
-				string,
-			) (
-				map[string]*model.Value,
-				error,
-			) {
-				eventChannel <- model.Event{
-					CallEnded: &model.CallEnded{
-						Call: model.Call{
-							ID: callID,
-						},
-						Error: &model.CallEndedError{
-							Message: "message",
-						},
-					},
+			It("should return expected results", func() {
+				/* arrange */
+				dbDir, err := ioutil.TempDir("", "")
+				if nil != err {
+					panic(err)
 				}
+
+				db, err := badger.Open(
+					badger.DefaultOptions(dbDir).WithLogger(nil),
+				)
+				if nil != err {
+					panic(err)
+				}
+				pubSub := pubsub.New(db)
+
+				providedCtx := context.Background()
+				providedScope := map[string]*model.Value{}
+
+				caller := newCaller(
+					newContainerCaller(
+						new(containerRuntimeFakes.FakeContainerRuntime),
+						pubSub,
+						newStateStore(
+							providedCtx,
+							db,
+							pubSub,
+						),
+					),
+					dbDir,
+					pubSub,
+				)
+
+				objectUnderTest := _parallelLoopCaller{
+					caller: caller,
+					pubSub: pubSub,
+				}
+
+				/* act */
+				actualOutputs, actualErr := objectUnderTest.Call(
+					providedCtx,
+					"id",
+					providedScope,
+					model.ParallelLoopCallSpec{
+						Range: model.Value{
+							Array: &[]interface{}{0},
+						},
+						Run: model.CallSpec{
+							Container: &model.ContainerCallSpec{},
+						},
+					},
+					"opPath",
+					new(string),
+					"rootCallID",
+				)
+
+				/* assert */
+				Expect(actualErr.Error()).To(Equal("child call failed"))
+				Expect(actualOutputs).To(BeNil())
+			})
+		})
+
+		It("should start each child as expected", func() {
+			/* arrange */
+			dbDir, err := ioutil.TempDir("", "")
+			if nil != err {
+				panic(err)
+			}
+
+			db, err := badger.Open(
+				badger.DefaultOptions(dbDir).WithLogger(nil),
+			)
+			if nil != err {
+				panic(err)
+			}
+			pubSub := pubsub.New(db)
+
+			providedOpRef := "providedOpRef"
+			providedParentID := "providedParentID"
+			providedRootID := "providedRootID"
+			imageRef := "docker.io/library/alpine"
+
+			ctx := context.Background()
+
+			fakeContainerRuntime := new(containerRuntimeFakes.FakeContainerRuntime)
+			fakeContainerRuntime.RunContainerStub = func(
+				ctx context.Context,
+				req *model.ContainerCall,
+				rootCallID string,
+				eventPublisher pubsub.EventPublisher,
+				stdOut io.WriteCloser,
+				stdErr io.WriteCloser,
+			) (*int64, error) {
+
+				stdErr.Close()
+				stdOut.Close()
 
 				return nil, nil
 			}
 
-			fakePubSub := new(FakePubSub)
-			fakePubSub.SubscribeReturns(eventChannel, nil)
-
-			fakeUniqueStringFactory := new(uniquestringFakes.FakeUniqueStringFactory)
-			fakeUniqueStringFactory.ConstructReturns(callID, nil)
+			eventChannel, err := pubSub.Subscribe(
+				ctx,
+				model.EventFilter{},
+			)
+			if nil != err {
+				panic(err)
+			}
 
 			objectUnderTest := _parallelLoopCaller{
-				caller:                  fakeCaller,
-				pubSub:                  fakePubSub,
-				uniqueStringFactory:     fakeUniqueStringFactory,
+				caller: newCaller(
+					newContainerCaller(
+						fakeContainerRuntime,
+						pubSub,
+						newStateStore(
+							ctx,
+							db,
+							pubSub,
+						),
+					),
+					dbDir,
+					pubSub,
+				),
+				pubSub: pubSub,
 			}
 
 			/* act */
-			objectUnderTest.Call(
-				providedCtx,
-				"id",
-				providedScope,
-				providedParallelLoopCallSpec,
-				providedOpPath,
-				providedParentCallID,
-				providedRootCallID,
+			_, actualErr := objectUnderTest.Call(
+				ctx,
+				"",
+				map[string]*model.Value{},
+				model.ParallelLoopCallSpec{
+					Range: model.Value{
+						Array: &[]interface{}{0, 1},
+					},
+					Run: model.CallSpec{
+						Container: &model.ContainerCallSpec{
+							Image: &model.ContainerCallImageSpec{
+								Ref: imageRef,
+							},
+						},
+					},
+				},
+				providedOpRef,
+				&providedParentID,
+				providedRootID,
 			)
 
 			/* assert */
-			_,
-				actualCallID,
-				actualScope,
-				actualCallSpec,
-				actualOpPath,
-				actualParentCallID,
-				actualRootCallID := fakeCaller.CallArgsForCall(0)
+			Expect(actualErr).To(BeNil())
 
-			Expect(actualCallID).To(Equal(callID))
-			Expect(actualScope).To(Equal(expectedScope))
-			Expect(actualCallSpec).To(Equal(&providedParallelLoopCallSpec.Run))
-			Expect(actualOpPath).To(Equal(providedOpPath))
-			Expect(actualParentCallID).To(Equal(providedParentCallID))
-			Expect(actualRootCallID).To(Equal(providedRootCallID))
+			actualChildCalls := []model.CallStarted{}
+			go func() {
+				for event := range eventChannel {
+					if nil != event.CallStarted && nil != event.CallStarted.Call.Container {
+						// ignore props we can't readily assert
+						event.CallStarted.Call.Container.ContainerID = ""
+						event.CallStarted.Call.ID = ""
+
+						actualChildCalls = append(actualChildCalls, *event.CallStarted)
+					}
+				}
+			}()
+
+			Eventually(
+				func() []model.CallStarted { return actualChildCalls },
+			).Should(
+				ContainElements(
+					[]model.CallStarted{
+						{
+							Call: model.Call{
+								Container: &model.ContainerCall{
+									BaseCall: model.BaseCall{
+										OpPath: providedOpRef,
+									},
+									Cmd:   []string{},
+									Dirs:  map[string]string{},
+									Files: map[string]string{},
+									Image: &model.ContainerCallImage{
+										Ref: &imageRef,
+									},
+									Sockets: map[string]string{},
+								},
+								ParentID: &providedParentID,
+								RootID:   providedRootID,
+							},
+							Ref: providedOpRef,
+						},
+						{
+							Call: model.Call{
+								Container: &model.ContainerCall{
+									BaseCall: model.BaseCall{
+										OpPath: providedOpRef,
+									},
+									Cmd:   []string{},
+									Dirs:  map[string]string{},
+									Files: map[string]string{},
+									Image: &model.ContainerCallImage{
+										Ref: &imageRef,
+									},
+									Sockets: map[string]string{},
+								},
+								ParentID: &providedParentID,
+								RootID:   providedRootID,
+							},
+							Ref: providedOpRef,
+						},
+					},
+				),
+			)
 		})
 	})
 })

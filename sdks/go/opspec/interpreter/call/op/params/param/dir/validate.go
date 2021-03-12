@@ -3,8 +3,8 @@ package dir
 import (
 	"errors"
 	"fmt"
-	"os"
 	"github.com/opctl/opctl/sdks/go/model"
+	"os"
 )
 
 // Validate validates a value against a string parameter

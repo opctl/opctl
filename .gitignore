@@ -5,10 +5,11 @@ coverprofile
 /build/
 node_modules/
 coverage/
+/vendor/
 
 ## goland
 .idea/
 
 ### build
-/cli/opctl.*
-/opctl.*
+/cli/opctl-*
+/opctl-*

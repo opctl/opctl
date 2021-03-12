@@ -1,20 +1,19 @@
 package envvar
 
 import (
-	"github.com/golang-interfaces/ios"
+	"os"
+
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier/inputsrc"
 )
 
 func New() inputsrc.InputSrc {
 	return envVarInputSrc{
-		os:          ios.New(),
 		readHistory: map[string]struct{}{},
 	}
 }
 
 // envVarInputSrc implements InputSrc interface by sourcing inputs from env vars
 type envVarInputSrc struct {
-	os          ios.IOS
 	readHistory map[string]struct{} // tracks reads
 }
 
@@ -26,7 +25,7 @@ func (this envVarInputSrc) ReadString(
 		return nil, false
 	}
 
-	if inputValue := this.os.Getenv(inputName); "" != inputValue {
+	if inputValue := os.Getenv(inputName); "" != inputValue {
 		// track read history
 		this.readHistory[inputName] = struct{}{}
 

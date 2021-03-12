@@ -21,10 +21,10 @@ var _ = Context("handle", func() {
 			dataRef := "dummyDataRef"
 			pullCreds := &model.Creds{Username: "dummyUsername", Password: "dummyPassword"}
 
-			fakeCore := new(nodeFakes.FakeOpNode)
+			fakeCore := new(nodeFakes.FakeNode)
 
 			objectUnderTest := handle{
-				opNode:    fakeCore,
+				node:      fakeCore,
 				dataRef:   dataRef,
 				pullCreds: pullCreds,
 			}
@@ -53,10 +53,10 @@ var _ = Context("handle", func() {
 			dataRef := "dummyDataRef"
 			pullCreds := &model.Creds{Username: "dummyUsername", Password: "dummyPassword"}
 
-			fakeCore := new(nodeFakes.FakeOpNode)
+			fakeCore := new(nodeFakes.FakeNode)
 
 			objectUnderTest := handle{
-				opNode:    fakeCore,
+				node:      fakeCore,
 				dataRef:   dataRef,
 				pullCreds: pullCreds,
 			}
@@ -81,10 +81,10 @@ var _ = Context("handle", func() {
 			/* arrange */
 			dataRef := "dummyDataRef"
 
-			fakeCore := new(nodeFakes.FakeOpNode)
+			fakeCore := new(nodeFakes.FakeNode)
 
 			objectUnderTest := handle{
-				opNode:  fakeCore,
+				node:    fakeCore,
 				dataRef: dataRef,
 			}
 

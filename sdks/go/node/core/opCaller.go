@@ -1,10 +1,10 @@
 package core
 
 import (
-	"strings"
-	"regexp"
 	"context"
 	"path/filepath"
+	"regexp"
+	"strings"
 
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs"
@@ -28,21 +28,18 @@ type opCaller interface {
 }
 
 func newOpCaller(
-	stateStore stateStore,
 	caller caller,
 	dataDirPath string,
 ) opCaller {
 	return _opCaller{
-		caller:             caller,
-		stateStore:         stateStore,
-		callScratchDir:     filepath.Join(dataDirPath, "call"),
+		caller:         caller,
+		callScratchDir: filepath.Join(dataDirPath, "call"),
 	}
 }
 
 type _opCaller struct {
-	stateStore         stateStore
-	caller             caller
-	callScratchDir     string
+	caller         caller
+	callScratchDir string
 }
 
 func (oc _opCaller) Call(

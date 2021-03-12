@@ -9,7 +9,10 @@ inputs:
     string:
       constraints: { minLength: 1 }
       description: git branch the coverage should be associated with
-      default: master
+      default: main
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
   version:
     string:
       default: 0.0.0
@@ -24,6 +27,7 @@ run:
           op:
             ref: ../../cli/.opspec/compile
             inputs:
+              HOME:
               version:
         - op:
             ref: ../../cli/.opspec/test/system/opspec
@@ -58,8 +62,9 @@ run:
               /coverprofile: $(coverprofile)
             dirs:
               /src: $(../..)
+              /go/pkg: $(HOME/pkg)
             envVars:
-              GOFLAGS: -mod=vendor -tags=containers_image_openpgp
+              GOFLAGS: -tags=containers_image_openpgp
             image: { ref: "golang:1.15" }
             workDir: /src
         - op:
@@ -73,3 +78,16 @@ run:
               gitCommit:
               token: b432a3b8-8220-4c1d-bcee-db76e68d0128
               report: $(coverprofile)
+    # check go fmt has been run
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            test -z "\$(gofmt -l . | tee /tmp/output)" || (echo "Fix formatting issues with 'opctl run format'" && cat /tmp/output && exit 1)
+        dirs:
+          /src: $(../..)
+        envVars:
+          GOFLAGS: -tags=containers_image_openpgp
+        image: { ref: "golang:1.15" }
+        workDir: /src
