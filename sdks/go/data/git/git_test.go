@@ -2,6 +2,7 @@ package git
 
 import (
 	"context"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
@@ -16,7 +17,9 @@ var _ = Context("_git", func() {
 		Context("localFSProvider.TryResolve errors", func() {
 			It("should return err", func() {
 				/* arrange */
-				objectUnderTest := New(os.TempDir(), nil)
+				dataDir, err := ioutil.TempDir("", "")
+				Expect(err).To(BeNil())
+				objectUnderTest := New(dataDir, nil)
 
 				/* act */
 				_, actualError := objectUnderTest.TryResolve(
@@ -53,7 +56,9 @@ var _ = Context("_git", func() {
 			Context("FSProvider.TryResolve doesn't return a handle", func() {
 				Context("puller.Pull errors", func() {
 					It("should return err", func() {
-						objectUnderTest := New(os.TempDir(), nil)
+						dataDir, err := ioutil.TempDir("", "")
+						Expect(err).To(BeNil())
+						objectUnderTest := New(dataDir, nil)
 
 						/* act */
 						_, actualErr := objectUnderTest.TryResolve(
@@ -71,7 +76,8 @@ var _ = Context("_git", func() {
 						// some public repo that's relatively small
 						providedRef := "github.com/opspec-pkgs/_.op.create#3.3.1"
 
-						basePath := os.TempDir()
+						basePath, err := ioutil.TempDir("", "")
+						Expect(err).To(BeNil())
 						objectUnderTest := New(basePath, nil)
 
 						/* act */
@@ -93,7 +99,8 @@ var _ = Context("_git", func() {
 				// some public repo that's relatively small
 				providedRef := "github.com/opspec-pkgs/_.op.create#3.3.1"
 
-				basePath := os.TempDir()
+				basePath, err := ioutil.TempDir("", "")
+				Expect(err).To(BeNil())
 				objectUnderTest := New(basePath, nil)
 
 				expectedResult := newHandle(filepath.Join(basePath, providedRef), providedRef)
@@ -143,7 +150,8 @@ var _ = Context("_git", func() {
 				providedRef1 := "github.com/opspec-pkgs/_.op.create#3.3.1"
 				providedRef2 := "github.com/opspec-pkgs/_.op.create#3.0.0"
 
-				basePath := os.TempDir()
+				basePath, err := ioutil.TempDir("", "")
+				Expect(err).To(BeNil())
 				objectUnderTest := New(basePath, nil)
 
 				expectedResult1 := newHandle(filepath.Join(basePath, providedRef1), providedRef1)

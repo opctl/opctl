@@ -2,15 +2,19 @@ package local
 
 import (
 	"context"
+	"io/ioutil"
+
 	. "github.com/onsi/ginkgo"
-	"os"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Context("CreateNodeIfNotExists", func() {
 	It("shouldn't panic", func() {
 		/* arrange */
+		dataDir, err := ioutil.TempDir("", "")
+		Expect(err).To(BeNil())
 		nodeProvider := New(NodeCreateOpts{
-			DataDir: os.TempDir(),
+			DataDir: dataDir,
 		})
 
 		/* act */

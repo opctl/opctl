@@ -3,7 +3,7 @@ package container
 import (
 	"errors"
 	"fmt"
-	"os"
+	"io/ioutil"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -14,6 +14,9 @@ var _ = Context("Interpret", func() {
 	Context("cmd.Interpret errors", func() {
 		It("should return expected error", func() {
 			/* arrange */
+			dataDir, err := ioutil.TempDir("", "")
+			Expect(err).To(BeNil())
+
 			/* act */
 			_, actualErr := Interpret(
 				map[string]*model.Value{},
@@ -27,7 +30,7 @@ var _ = Context("Interpret", func() {
 				},
 				"dummyContainerID",
 				"dummyOpPath",
-				os.TempDir(),
+				dataDir,
 			)
 
 			/* assert */
@@ -39,6 +42,8 @@ var _ = Context("Interpret", func() {
 		It("should return expected error", func() {
 			/* arrange */
 			identifier := "identifier"
+			dataDir, err := ioutil.TempDir("", "")
+			Expect(err).To(BeNil())
 
 			/* act */
 			_, actualErr := Interpret(
@@ -57,7 +62,7 @@ var _ = Context("Interpret", func() {
 				},
 				"dummyContainerID",
 				"dummyOpPath",
-				os.TempDir(),
+				dataDir,
 			)
 
 			/* assert */
@@ -68,6 +73,9 @@ var _ = Context("Interpret", func() {
 	Context("envVars.Interpret errors", func() {
 		It("should return expected error", func() {
 			/* arrange */
+			dataDir, err := ioutil.TempDir("", "")
+			Expect(err).To(BeNil())
+
 			/* act */
 			_, actualErr := Interpret(
 				map[string]*model.Value{},
@@ -79,7 +87,7 @@ var _ = Context("Interpret", func() {
 				},
 				"dummyContainerID",
 				"dummyOpPath",
-				os.TempDir(),
+				dataDir,
 			)
 
 			/* assert */
@@ -90,6 +98,9 @@ var _ = Context("Interpret", func() {
 	Context("files.Interpret errors", func() {
 		It("should return expected error", func() {
 			/* arrange */
+			dataDir, err := ioutil.TempDir("", "")
+			Expect(err).To(BeNil())
+
 			/* act */
 			_, actualErr := Interpret(
 				map[string]*model.Value{
@@ -107,7 +118,7 @@ var _ = Context("Interpret", func() {
 				},
 				"dummyContainerID",
 				"dummyOpPath",
-				os.TempDir(),
+				dataDir,
 			)
 
 			/* assert */
@@ -118,6 +129,9 @@ var _ = Context("Interpret", func() {
 	Context("image.Interpret errors", func() {
 		It("should return expected error", func() {
 			/* arrange */
+			dataDir, err := ioutil.TempDir("", "")
+			Expect(err).To(BeNil())
+
 			/* act */
 			_, actualErr := Interpret(
 				map[string]*model.Value{},
@@ -128,7 +142,7 @@ var _ = Context("Interpret", func() {
 				},
 				"dummyContainerID",
 				"dummyOpPath",
-				os.TempDir(),
+				dataDir,
 			)
 
 			/* assert */
@@ -158,6 +172,9 @@ var _ = Context("Interpret", func() {
 			WorkDir: "",
 		}
 
+		dataDir, err := ioutil.TempDir("", "")
+		Expect(err).To(BeNil())
+
 		/* act */
 		actualResult, actualErr := Interpret(
 			map[string]*model.Value{},
@@ -168,7 +185,7 @@ var _ = Context("Interpret", func() {
 			},
 			providedContainerID,
 			providedOpPath,
-			os.TempDir(),
+			dataDir,
 		)
 
 		/* assert */
