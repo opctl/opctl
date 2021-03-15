@@ -47,7 +47,7 @@ func (gp _git) TryResolve(
 		func() (interface{}, error) {
 			// attempt to resolve from cache
 			handle, _ := gp.localFSProvider.TryResolve(ctx, dataRef)
-			// ignore errors from local resolution
+			// ignore errors from local resolution, since we'll try to pull from a remote
 			if handle != nil {
 				return handle, nil
 			}
