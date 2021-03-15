@@ -8,7 +8,6 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
@@ -35,8 +34,7 @@ var _ = Context("core", func() {
 				)
 
 				/* assert */
-				_, isDataResolutionErr := actualErr.(data.ErrDataResolution)
-				Expect(isDataResolutionErr).To(BeTrue())
+				Expect(actualErr).NotTo(BeNil())
 			})
 		})
 		Context("data.Resolve doesn't err", func() {

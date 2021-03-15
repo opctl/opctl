@@ -3,7 +3,6 @@ package dataresolver
 import (
 	"context"
 	"errors"
-	"fmt"
 	"os"
 	"path"
 
@@ -81,9 +80,8 @@ var _ = Context("dataResolver", func() {
 					/* arrange */
 					providedDataRef := "dummyDataRef"
 
-					expectedErr := "expectedErr"
 					fakeCore := new(nodeFakes.FakeNode)
-					fakeCore.ListDescendantsReturns(nil, errors.New(expectedErr))
+					fakeCore.ListDescendantsReturns(nil, errors.New("expectedErr"))
 
 					objectUnderTest := _dataResolver{
 						node: fakeCore,
@@ -94,9 +92,11 @@ var _ = Context("dataResolver", func() {
 
 					/* assert */
 					Expect(response).To(BeNil())
-					Expect(err.Error()).To(Equal(fmt.Sprintf(`unable to resolve op "dummyDataRef":
-- filesystem: not found
-- opctl node: %s`, expectedErr)))
+					Expect(err).To(MatchError(`unable to resolve op 'dummyDataRef':` + " " + `
+- filesystem:` + " " + `
+  - path /src/cli/internal/dataresolver/.opspec/dummyDataRef not found
+  - path /src/cli/internal/dataresolver/dummyDataRef not found
+- opctl node: expectedErr`))
 				})
 			})
 		})

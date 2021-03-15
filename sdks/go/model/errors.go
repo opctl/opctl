@@ -5,21 +5,21 @@ import "errors"
 // ErrDataProviderAuthentication conveys data pull failed due to authentication
 type ErrDataProviderAuthentication struct{}
 
-func (ear ErrDataProviderAuthentication) Error() string {
+func (ErrDataProviderAuthentication) Error() string {
 	return "unauthenticated"
 }
 
 // ErrDataProviderAuthorization conveys data pull failed due to authorization
 type ErrDataProviderAuthorization struct{}
 
-func (ear ErrDataProviderAuthorization) Error() string {
+func (ErrDataProviderAuthorization) Error() string {
 	return "unauthorized"
 }
 
 // ErrDataRefResolution conveys no such data could be found
 type ErrDataRefResolution struct{}
 
-func (ear ErrDataRefResolution) Error() string {
+func (ErrDataRefResolution) Error() string {
 	return "not found"
 }
 

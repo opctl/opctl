@@ -5,9 +5,11 @@ package fs
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 
+	aggregateError "github.com/opctl/opctl/sdks/go/aggregate_error"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -36,11 +38,17 @@ func (fp _fs) TryResolve(
 	if filepath.IsAbs(dataRef) {
 		if _, err := os.Stat(dataRef); err != nil {
 			if os.IsNotExist(err) {
-				return nil, errors.New("not found")
+				return nil, fmt.Errorf("path %s not found", dataRef)
 			}
 			return nil, err
 		}
 		return newHandle(dataRef), nil
+	}
+
+	var aggregateErr aggregateError.ErrAggregate
+
+	if len(fp.basePaths) == 0 {
+		return nil, errors.New("skipped")
 	}
 
 	for _, basePath := range fp.basePaths {
@@ -52,7 +60,8 @@ func (fp _fs) TryResolve(
 			// don't return not found errors, instead continue checking other base paths
 			return nil, err
 		}
+		aggregateErr.AddError(fmt.Errorf("path %s not found", testPath))
 	}
 
-	return nil, errors.New("not found")
+	return nil, aggregateErr
 }

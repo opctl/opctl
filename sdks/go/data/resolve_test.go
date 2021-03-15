@@ -2,11 +2,13 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	aggregateError "github.com/opctl/opctl/sdks/go/aggregate_error"
 	"github.com/opctl/opctl/sdks/go/data/fs"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/pkg/errors"
@@ -28,10 +30,9 @@ var _ = Context("Resolve", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(MatchError(ErrDataResolution{
-				dataRef: dataRef,
-				errs:    []error{errors.Wrap(errors.New("not found"), provider0.Label())},
-			}.Error()))
+			var expected aggregateError.ErrAggregate
+			expected.AddError(errors.Wrap(fmt.Errorf("skipped"), provider0.Label()))
+			Expect(actualErr).To(MatchError(errors.Wrap(expected, "unable to resolve op '\\not/exist'").Error()))
 		})
 	})
 	Context("providers[0].TryResolve doesn't err", func() {

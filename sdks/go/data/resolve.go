@@ -2,7 +2,9 @@ package data
 
 import (
 	"context"
+	"fmt"
 
+	aggregateError "github.com/opctl/opctl/sdks/go/aggregate_error"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/pkg/errors"
 )
@@ -21,18 +23,15 @@ func Resolve(
 	model.DataHandle,
 	error,
 ) {
-	var errs []error
+	var agg aggregateError.ErrAggregate
 	for _, src := range providers {
 		handle, err := src.TryResolve(ctx, dataRef)
 		if err != nil {
-			errs = append(errs, errors.Wrap(err, src.Label()))
+			agg.AddError(errors.Wrap(err, src.Label()))
 		} else if handle != nil {
 			return handle, nil
 		}
 	}
 
-	return nil, ErrDataResolution{
-		dataRef: dataRef,
-		errs:    errs,
-	}
+	return nil, errors.Wrap(agg, fmt.Sprintf("unable to resolve op '%s'", dataRef))
 }
