@@ -2,13 +2,13 @@ package docker
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/containers/image/v5/copy"
 	"github.com/containers/image/v5/docker/daemon"
 	"github.com/containers/image/v5/oci/layout"
 	"github.com/containers/image/v5/signature"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/pkg/errors"
 )
 
 //counterfeiter:generate -o internal/fakes/imagePusher.go . imagePusher
@@ -31,38 +31,29 @@ func (ip _imagePusher) Push(
 	imageRef string,
 	imageSrc *model.Value,
 ) error {
-
-	policyCtx, policyCtxErr := signature.NewPolicyContext(
-		&signature.Policy{Default: []signature.PolicyRequirement{signature.NewPRInsecureAcceptAnything()}},
+	policyCtx, err := signature.NewPolicyContext(
+		&signature.Policy{
+			Default: []signature.PolicyRequirement{
+				signature.NewPRInsecureAcceptAnything(),
+			},
+		},
 	)
-	if nil != policyCtxErr {
-		return fmt.Errorf("error encountered loading image; error was: %v", policyCtxErr)
+	if err != nil {
+		return errors.Wrap(err, "error loading image")
 	}
 
-	srcImageRef, srcErr := layout.NewReference(
-		*imageSrc.Dir,
-		"",
-	)
-	if nil != srcErr {
-		return fmt.Errorf("error encountered loading image; error was: %v", srcErr)
+	srcImageRef, err := layout.NewReference(*imageSrc.Dir, "")
+	if err != nil {
+		return errors.Wrap(err, "error loading image")
 	}
 
-	dstImageRef, dstErr := daemon.ParseReference(
-		imageRef,
-	)
-	if nil != dstErr {
-		return fmt.Errorf("error encountered loading image; error was: %v", dstErr)
+	dstImageRef, err := daemon.ParseReference(imageRef)
+	if err != nil {
+		return errors.Wrap(err, "error loading image")
 	}
 
-	_, copyErr := copy.Image(
-		ctx,
-		policyCtx,
-		dstImageRef,
-		srcImageRef,
-		nil,
-	)
-	if nil != copyErr {
-		return fmt.Errorf("error encountered loading image; error was: %v", copyErr)
+	if _, err := copy.Image(ctx, policyCtx, dstImageRef, srcImageRef, nil); err != nil {
+		return errors.Wrap(err, "error loading image")
 	}
 
 	return nil

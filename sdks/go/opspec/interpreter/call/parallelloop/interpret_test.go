@@ -1,7 +1,6 @@
 package parallelloop
 
 import (
-	"errors"
 	"fmt"
 
 	. "github.com/onsi/ginkgo"
@@ -22,7 +21,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualError).To(Equal(errors.New("unable to coerce string to object; error was invalid character 'r' looking for beginning of value")))
+			Expect(actualError).To(MatchError("unable to coerce string to object: invalid character 'r' looking for beginning of value"))
 		})
 	})
 	It("should return expected result", func() {

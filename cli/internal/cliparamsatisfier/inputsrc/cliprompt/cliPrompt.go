@@ -64,7 +64,7 @@ func (this cliPromptInputSrc) ReadString(
 		this.cliOutput.Attention(
 			fmt.Sprintf(`
 -
-  Please provide "%v".
+  Please provide '%v'.
   Description: %v
 -`,
 				inputName,

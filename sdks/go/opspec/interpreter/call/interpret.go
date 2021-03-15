@@ -88,6 +88,6 @@ func Interpret(
 		)
 		return call, err
 	default:
-		return nil, fmt.Errorf("invalid call graph %+v", callSpec)
+		return nil, fmt.Errorf("invalid call graph '%+v'", callSpec)
 	}
 }

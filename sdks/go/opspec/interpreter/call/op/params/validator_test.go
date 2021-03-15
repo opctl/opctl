@@ -1,7 +1,6 @@
 package params
 
 import (
-	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -34,6 +33,6 @@ var _ = Context("Validate", func() {
 		)
 
 		/* assert */
-		Expect(actualErr).To(Equal(errors.New("\n-\n  validation error(s):\n\n    - expectedName1: String length must be greater than or equal to 10\n\n-")))
+		Expect(actualErr).To(MatchError("\n-\n  validation error(s):\n\n    - expectedName1: String length must be greater than or equal to 10\n\n-"))
 	})
 })

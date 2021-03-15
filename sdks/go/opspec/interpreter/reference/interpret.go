@@ -86,7 +86,7 @@ func interpolate(
 			nestedRefStartIndex := i + len(RefStart)
 			nestedRefEndBracketOffset := strings.Index(ref[nestedRefStartIndex:], RefEnd)
 			if nestedRefEndBracketOffset < 0 {
-				return "", fmt.Errorf("unable to interpret '%v' as reference; expected ')'", ref[i:])
+				return "", fmt.Errorf("unable to interpret '%v' as reference: expected ')'", ref[i:])
 			}
 			nestedRefEndBracketIndex := nestedRefStartIndex + nestedRefEndBracketOffset
 			nestedRef := ref[nestedRefStartIndex:nestedRefEndBracketIndex]
@@ -171,7 +171,7 @@ func getRootValue(
 		}
 	}
 
-	return nil, "", fmt.Errorf("unable to interpret '%v' as reference; '%v' not in scope", ref, identifier)
+	return nil, "", fmt.Errorf("unable to interpret '%v' as reference: '%v' not in scope", ref, identifier)
 }
 
 // rInterpret interprets refs of the form:
@@ -218,7 +218,7 @@ func rInterpret(
 
 		return rInterpret(ref, data, opts)
 	default:
-		return "", nil, fmt.Errorf("unable to interpret '%v' as reference; expected '[', '.', or '/'", ref)
+		return "", nil, fmt.Errorf("unable to interpret '%v' as reference: expected '[', '.', or '/'", ref)
 	}
 
 }

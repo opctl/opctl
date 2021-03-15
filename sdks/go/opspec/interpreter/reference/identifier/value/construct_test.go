@@ -1,8 +1,6 @@
 package value
 
 import (
-	"fmt"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -90,14 +88,11 @@ var _ = Context("Construct", func() {
 	})
 	Context("data is unexpected type", func() {
 		It("should return expected result", func() {
-			/* arrange */
-			expectedErr := fmt.Errorf("unable to construct value; '%+v' unexpected type", nil)
-
 			/* act */
 			_, actualErr := Construct(nil)
 
 			/* assert */
-			Expect(actualErr).To(Equal(expectedErr))
+			Expect(actualErr).To(MatchError("unable to construct value: '<nil>' unexpected type"))
 		})
 	})
 })

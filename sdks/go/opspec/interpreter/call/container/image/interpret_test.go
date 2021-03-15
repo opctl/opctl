@@ -22,7 +22,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualError).To(Equal(fmt.Errorf("image required")))
+			Expect(actualError).To(MatchError("image required"))
 		})
 	})
 	Context("containerCallImageSpec isn't nil", func() {
@@ -37,13 +37,13 @@ var _ = Context("Interpret", func() {
 			passwordValue := "passwordValue"
 
 			providedScope := map[string]*model.Value{
-				usernameVariable: &model.Value{
+				usernameVariable: {
 					String: &usernameValue,
 				},
-				passwordVariable: &model.Value{
+				passwordVariable: {
 					String: &passwordValue,
 				},
-				refVariable: &model.Value{
+				refVariable: {
 					String: &refValue,
 				},
 			}

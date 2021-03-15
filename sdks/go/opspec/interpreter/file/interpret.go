@@ -5,15 +5,13 @@ import (
 	"regexp"
 
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
+	"github.com/pkg/errors"
 
 	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
 )
 
-var fileType = "File"
-
-//
 // Interpret an expression to a file value.
 // Expression must be a type supported by coerce.ToFile
 // scratchDir will be used as the containing dir if file creation necessary
@@ -46,7 +44,7 @@ func Interpret(
 			opts,
 		)
 		if nil != err {
-			return nil, fmt.Errorf("unable to interpret %+v to file; error was %v", expression, err)
+			return nil, errors.Wrap(err, fmt.Sprintf("unable to interpret %+v to file", expression))
 		}
 		return coerce.ToFile(value, scratchDir)
 	}
@@ -56,7 +54,7 @@ func Interpret(
 		scope,
 	)
 	if nil != err {
-		return nil, fmt.Errorf("unable to interpret %+v to file; error was %v", expression, err)
+		return nil, errors.Wrap(err, fmt.Sprintf("unable to interpret %+v to file", expression))
 	}
 
 	return coerce.ToFile(&value, scratchDir)

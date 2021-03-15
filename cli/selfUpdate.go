@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/blang/semver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	"github.com/pkg/errors"
 	"github.com/rhysd/go-github-selfupdate/selfupdate"
 )
 
@@ -24,7 +26,7 @@ func selfUpdate(
 	// @TODO start node maintaining previous user
 	err = nodeProvider.KillNodeIfExists("")
 	if nil != err {
-		err = fmt.Errorf("Unable to kill running node; run `node kill` to complete the update. Error was: %v", err)
+		err = errors.Wrap(err, "unable to kill running node; run `node kill` to complete the update")
 	}
 	return fmt.Sprintf("Updated to new version: %s!", latest.Version), err
 }

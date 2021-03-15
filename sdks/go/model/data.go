@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/pkg/errors"
 )
 
 type ReadSeekCloser interface {
@@ -86,15 +88,15 @@ type Value struct {
 // }
 
 // Unbox unboxes a Value into a native go type
-func (vlu Value) Unbox() (interface{}, error) {
-	if nil != vlu.Array {
+func (value Value) Unbox() (interface{}, error) {
+	if nil != value.Array {
 		nativeArray := []interface{}{}
-		for itemKey, itemValue := range *vlu.Array {
+		for itemKey, itemValue := range *value.Array {
 			switch typedItemValue := itemValue.(type) {
 			case Value:
 				nativeItem, err := typedItemValue.Unbox()
 				if nil != err {
-					return nil, fmt.Errorf("unable to unbox array; error unboxing item '%v' was %v", itemKey, err)
+					return nil, errors.Wrap(err, fmt.Sprintf("unable to unbox item '%v' from array", itemKey))
 				}
 
 				nativeArray = append(nativeArray, nativeItem)
@@ -103,32 +105,32 @@ func (vlu Value) Unbox() (interface{}, error) {
 			}
 		}
 		return nativeArray, nil
-	} else if nil != vlu.Boolean {
-		return *vlu.Boolean, nil
-	} else if nil != vlu.Dir {
-		return *vlu.Dir, nil
-	} else if nil != vlu.File {
-		return *vlu.File, nil
-	} else if nil != vlu.Number {
-		return *vlu.Number, nil
-	} else if nil != vlu.Object {
+	} else if nil != value.Boolean {
+		return *value.Boolean, nil
+	} else if nil != value.Dir {
+		return *value.Dir, nil
+	} else if nil != value.File {
+		return *value.File, nil
+	} else if nil != value.Number {
+		return *value.Number, nil
+	} else if nil != value.Object {
 		nativeObject := map[string]interface{}{}
-		for propKey, propValue := range *vlu.Object {
+		for propKey, propValue := range *value.Object {
 			switch typedPropValue := propValue.(type) {
 			case Value:
 				var err error
 				if nativeObject[propKey], err = typedPropValue.Unbox(); nil != err {
-					return nil, fmt.Errorf("unable to unbox object; error unboxing property '%v' was %v", propKey, err)
+					return nil, errors.Wrap(err, fmt.Sprintf("unable to unbox property '%v' from object", propKey))
 				}
 			default:
 				nativeObject[propKey] = propValue
 			}
 		}
 		return nativeObject, nil
-	} else if nil != vlu.Socket {
-		return *vlu.Socket, nil
-	} else if nil != vlu.String {
-		return *vlu.String, nil
+	} else if nil != value.Socket {
+		return *value.Socket, nil
+	} else if nil != value.String {
+		return *value.String, nil
 	}
-	return nil, fmt.Errorf("unable to unbox value %+v; box unknown", vlu)
+	return nil, fmt.Errorf("unable to unbox value '%+v'", value)
 }

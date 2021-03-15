@@ -1,8 +1,6 @@
 package opfile
 
 import (
-	"errors"
-
 	"github.com/ghodss/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -17,7 +15,7 @@ var _ = Context("Unmarshal", func() {
 			_, actualError := Unmarshal([]byte("&"))
 
 			/* assert */
-			Expect(actualError).To(Equal(errors.New("\n-\n  Error(s):\n    - error converting YAML to JSON: yaml: did not find expected alphabetic or numeric character\n-")))
+			Expect(actualError).To(MatchError("\n-\n  Error(s):\n    - error converting YAML to JSON: yaml: did not find expected alphabetic or numeric character\n-"))
 		})
 	})
 	Context("Validator.Validate doesn't return errors", func() {

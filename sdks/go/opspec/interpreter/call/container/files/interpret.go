@@ -10,6 +10,7 @@ import (
 	"github.com/golang-utils/filecopier"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/file"
+	"github.com/pkg/errors"
 )
 
 // Interpret container files
@@ -35,12 +36,11 @@ fileLoop:
 			true,
 		)
 		if nil != err {
-			return nil, fmt.Errorf(
-				"unable to bind %v to %v; error was %v",
+			return nil, errors.Wrap(err, fmt.Sprintf(
+				"unable to bind %v to %v",
 				callSpecContainerFilePath,
 				fileExpression,
-				err,
-			)
+			))
 		}
 
 		if !strings.HasPrefix(*fileValue.File, dataCachePath) {
@@ -57,12 +57,11 @@ fileLoop:
 			filepath.Dir(containerCallFiles[callSpecContainerFilePath]),
 			0777,
 		); nil != err {
-			return nil, fmt.Errorf(
-				"unable to bind %v to %v; error was %v",
+			return nil, errors.Wrap(err, fmt.Sprintf(
+				"unable to bind %v to %v",
 				callSpecContainerFilePath,
 				fileExpression,
-				err,
-			)
+			))
 		}
 
 		// copy file
@@ -72,12 +71,11 @@ fileLoop:
 			containerCallFiles[callSpecContainerFilePath],
 		)
 		if nil != err {
-			return nil, fmt.Errorf(
-				"unable to bind %v to %v; error was %v",
+			return nil, errors.Wrap(err, fmt.Sprintf(
+				"unable to bind %v to %v",
 				callSpecContainerFilePath,
 				fileExpression,
-				err,
-			)
+			))
 		}
 
 	}

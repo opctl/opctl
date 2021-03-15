@@ -1,8 +1,6 @@
 package coerce
 
 import (
-	"errors"
-	"fmt"
 	"io/ioutil"
 
 	. "github.com/onsi/ginkgo"
@@ -89,7 +87,7 @@ var _ = Context("ToBoolean", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(errors.New("unable to coerce dir to boolean; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to coerce dir to boolean: incompatible types"))
 		})
 	})
 	Context("Value.File isn't nil", func() {
@@ -103,7 +101,7 @@ var _ = Context("ToBoolean", func() {
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(errors.New("unable to coerce file to boolean; error was open : no such file or directory")))
+				Expect(actualErr).To(MatchError("unable to coerce file to boolean: open : no such file or directory"))
 			})
 		})
 		Context("ioutil.ReadFile doesn't err", func() {
@@ -249,7 +247,7 @@ var _ = Context("ToBoolean", func() {
 
 			/* assert */
 			Expect(actualBoolean).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%+v' to boolean", providedValue)))
+			Expect(actualErr).To(MatchError("unable to coerce '&{Array:<nil> Boolean:<nil> Dir:<nil> File:<nil> Number:<nil> Object:<nil> Socket:<nil> String:<nil>}' to boolean"))
 		})
 	})
 })

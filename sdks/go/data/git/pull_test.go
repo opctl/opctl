@@ -86,7 +86,7 @@ var _ = Context("Pull", func() {
 					)
 
 					/* assert */
-					Expect(actualError).To(Equal(expectedError))
+					Expect(actualError).To(MatchError(expectedError))
 				})
 			})
 			Context("err.Error() returns transport.ErrAuthorizationFailed error", func() {
@@ -115,7 +115,7 @@ var _ = Context("Pull", func() {
 					)
 
 					/* assert */
-					Expect(actualError).To(Equal(expectedError))
+					Expect(actualError).To(MatchError(expectedError))
 				})
 			})
 			Context("err.Error() returns other error", func() {

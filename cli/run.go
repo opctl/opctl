@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -16,6 +15,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/pkg/errors"
 )
 
 // run implements "run" command
@@ -72,7 +72,7 @@ func run(
 
 	ymlFileInputSrc, err := cliParamSatisfier.NewYMLFileInputSrc(argFile)
 	if nil != err {
-		return fmt.Errorf("unable to load arg file at '%v'; error was: %v", argFile, err.Error())
+		return errors.Wrap(err, fmt.Sprintf("unable to load arg file at '%v'", argFile))
 	}
 
 	argsMap, err := cliParamSatisfier.Satisfy(

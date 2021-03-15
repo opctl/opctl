@@ -1,7 +1,6 @@
 package coerce
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 
@@ -34,7 +33,7 @@ var _ = Context("ToObject", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce array to object; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to coerce array to object: incompatible types"))
 		})
 	})
 	Context("Value.Dir isn't nil", func() {
@@ -50,7 +49,7 @@ var _ = Context("ToObject", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to object; incompatible types", providedDir)))
+			Expect(actualErr).To(MatchError("unable to coerce dir 'dummyValue' to object: incompatible types"))
 		})
 	})
 	Context("Value.File isn't nil", func() {
@@ -66,7 +65,7 @@ var _ = Context("ToObject", func() {
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(errors.New("unable to coerce file to object; error was open nonExistent: no such file or directory")))
+				Expect(actualErr).To(MatchError("unable to coerce file to object: open nonExistent: no such file or directory"))
 			})
 		})
 		Context("ioutil.ReadFile doesn't err", func() {
@@ -88,7 +87,7 @@ var _ = Context("ToObject", func() {
 
 					/* assert */
 					Expect(actualValue).To(BeNil())
-					Expect(actualErr).To(Equal(errors.New("unable to coerce file to object; error was unexpected end of JSON input")))
+					Expect(actualErr).To(MatchError("unable to coerce file to object: unexpected end of JSON input"))
 				})
 			})
 			Context("json.Unmarshal doesn't err", func() {
@@ -139,7 +138,7 @@ var _ = Context("ToObject", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce number '%v' to object; incompatible types", providedNumber)))
+			Expect(actualErr).To(MatchError("unable to coerce number '2.2' to object: incompatible types"))
 		})
 	})
 	Context("Value.Object isn't nil", func() {
@@ -169,7 +168,7 @@ var _ = Context("ToObject", func() {
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(errors.New("unable to coerce string to object; error was unexpected end of JSON input")))
+				Expect(actualErr).To(MatchError("unable to coerce string to object: unexpected end of JSON input"))
 			})
 		})
 		Context("json.Unmarshal doesn't err", func() {
@@ -205,7 +204,7 @@ var _ = Context("ToObject", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%+v' to object", providedValue)))
+			Expect(actualErr).To(MatchError("unable to coerce '&{Array:<nil> Boolean:<nil> Dir:<nil> File:<nil> Number:<nil> Object:<nil> Socket:<nil> String:<nil>}' to object"))
 		})
 	})
 })

@@ -2,12 +2,12 @@ package docker
 
 import (
 	"context"
-	"errors"
-	"fmt"
+
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/internal/fakes"
+	"github.com/pkg/errors"
 )
 
 var _ = Context("EnsureNetworkExistser", func() {
@@ -92,8 +92,6 @@ var _ = Context("EnsureNetworkExistser", func() {
 			Context("dockerClient.NetworkCreate errors", func() {
 				It("should return expected error", func() {
 					/* arrange */
-					errorReturnedFromNetworkCreate := errors.New("dummyError")
-
 					fakeDockerClient := new(FakeCommonAPIClient)
 
 					fakeDockerClient.NetworkInspectReturns(
@@ -103,12 +101,7 @@ var _ = Context("EnsureNetworkExistser", func() {
 						},
 					)
 
-					fakeDockerClient.NetworkCreateReturns(types.NetworkCreateResponse{}, errorReturnedFromNetworkCreate)
-
-					expectedError := fmt.Errorf(
-						"unable to create network. Response from docker was: %v",
-						errorReturnedFromNetworkCreate.Error(),
-					)
+					fakeDockerClient.NetworkCreateReturns(types.NetworkCreateResponse{}, errors.New("dummyError"))
 
 					objectUnderTest := _ensureNetworkExistser{
 						dockerClient: fakeDockerClient,
@@ -121,7 +114,7 @@ var _ = Context("EnsureNetworkExistser", func() {
 					)
 
 					/* assert */
-					Expect(actualError).To(Equal(expectedError))
+					Expect(actualError).To(MatchError("unable to create network: dummyError"))
 				})
 			})
 			Context("dockerClient.NetworkCreate doesn't error", func() {
@@ -154,15 +147,8 @@ var _ = Context("EnsureNetworkExistser", func() {
 		Context("isn't NotFoundErr", func() {
 			It("should return expected error", func() {
 				/* arrange */
-				errorReturnedFromNetworkInspect := errors.New("dummyError")
-
 				fakeDockerClient := new(FakeCommonAPIClient)
-				fakeDockerClient.NetworkInspectReturns(types.NetworkResource{}, errorReturnedFromNetworkInspect)
-
-				expectedError := fmt.Errorf(
-					"unable to inspect network. Response from docker was: %v",
-					errorReturnedFromNetworkInspect.Error(),
-				)
+				fakeDockerClient.NetworkInspectReturns(types.NetworkResource{}, errors.New("dummyError"))
 
 				objectUnderTest := _ensureNetworkExistser{
 					dockerClient: fakeDockerClient,
@@ -175,7 +161,7 @@ var _ = Context("EnsureNetworkExistser", func() {
 				)
 
 				/* assert */
-				Expect(actualError).To(Equal(expectedError))
+				Expect(actualError).To(MatchError("unable to inspect network: dummyError"))
 			})
 		})
 	})
@@ -185,6 +171,6 @@ type dockerNotFoundError struct {
 	error
 }
 
-func (this dockerNotFoundError) NotFound() bool {
+func (dockerNotFoundError) NotFound() bool {
 	return true
 }

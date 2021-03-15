@@ -61,7 +61,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 			if !ok {
 				return nil, fmt.Errorf(`
 -
-  Prompt for "%v" failed; running in non-interactive terminal
+  Prompt for '%v' failed; running in non-interactive terminal
 -`, paramName)
 			}
 

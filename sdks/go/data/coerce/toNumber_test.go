@@ -1,7 +1,6 @@
 package coerce
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"strconv"
@@ -35,7 +34,7 @@ var _ = Context("ToNumber", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(errors.New("unable to coerce array to number; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to coerce array to number: incompatible types"))
 		})
 	})
 	Context("Value.Dir isn't nil", func() {
@@ -51,7 +50,7 @@ var _ = Context("ToNumber", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(errors.New("unable to coerce dir to number; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to coerce dir to number: incompatible types"))
 		})
 	})
 	Context("Value.File isn't nil", func() {
@@ -65,7 +64,7 @@ var _ = Context("ToNumber", func() {
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(errors.New("unable to coerce file to number; error was open : no such file or directory")))
+				Expect(actualErr).To(MatchError("unable to coerce file to number: open : no such file or directory"))
 			})
 		})
 		Context("ioutil.ReadFile doesn't err", func() {
@@ -122,7 +121,7 @@ var _ = Context("ToNumber", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(errors.New("unable to coerce object to number; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to coerce object to number: incompatible types"))
 		})
 	})
 	Context("Value.String isn't nil", func() {
@@ -156,7 +155,7 @@ var _ = Context("ToNumber", func() {
 
 			/* assert */
 			Expect(actualNumber).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%+v' to number", providedValue)))
+			Expect(actualErr).To(MatchError("unable to coerce '&{Array:<nil> Boolean:<nil> Dir:<nil> File:<nil> Number:<nil> Object:<nil> Socket:<nil> String:<nil>}' to number"))
 		})
 	})
 })
