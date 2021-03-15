@@ -12,9 +12,13 @@ import (
 var _ = Context("core", func() {
 	Context("New", func() {
 		It("should return Core", func() {
-			/* arrange/act/assert */
+			/* arrange */
 			dataDir, err := ioutil.TempDir("", "")
-			Expect(err).To(BeNil())
+			if err != nil {
+				panic(err)
+			}
+
+			/* act/assert */
 			Expect(
 				New(
 					context.Background(),

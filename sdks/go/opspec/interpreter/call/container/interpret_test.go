@@ -15,7 +15,9 @@ var _ = Context("Interpret", func() {
 		It("should return expected error", func() {
 			/* arrange */
 			dataDir, err := ioutil.TempDir("", "")
-			Expect(err).To(BeNil())
+			if err != nil {
+				panic(err)
+			}
 
 			/* act */
 			_, actualErr := Interpret(
@@ -43,7 +45,9 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			identifier := "identifier"
 			dataDir, err := ioutil.TempDir("", "")
-			Expect(err).To(BeNil())
+			if err != nil {
+				panic(err)
+			}
 
 			/* act */
 			_, actualErr := Interpret(
@@ -74,7 +78,9 @@ var _ = Context("Interpret", func() {
 		It("should return expected error", func() {
 			/* arrange */
 			dataDir, err := ioutil.TempDir("", "")
-			Expect(err).To(BeNil())
+			if err != nil {
+				panic(err)
+			}
 
 			/* act */
 			_, actualErr := Interpret(
@@ -99,7 +105,9 @@ var _ = Context("Interpret", func() {
 		It("should return expected error", func() {
 			/* arrange */
 			dataDir, err := ioutil.TempDir("", "")
-			Expect(err).To(BeNil())
+			if err != nil {
+				panic(err)
+			}
 
 			/* act */
 			_, actualErr := Interpret(
@@ -130,7 +138,9 @@ var _ = Context("Interpret", func() {
 		It("should return expected error", func() {
 			/* arrange */
 			dataDir, err := ioutil.TempDir("", "")
-			Expect(err).To(BeNil())
+			if err != nil {
+				panic(err)
+			}
 
 			/* act */
 			_, actualErr := Interpret(
@@ -173,7 +183,9 @@ var _ = Context("Interpret", func() {
 		}
 
 		dataDir, err := ioutil.TempDir("", "")
-		Expect(err).To(BeNil())
+		if err != nil {
+			panic(err)
+		}
 
 		/* act */
 		actualResult, actualErr := Interpret(

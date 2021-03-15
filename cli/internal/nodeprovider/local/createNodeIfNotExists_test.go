@@ -12,7 +12,9 @@ var _ = Context("CreateNodeIfNotExists", func() {
 	It("shouldn't panic", func() {
 		/* arrange */
 		dataDir, err := ioutil.TempDir("", "")
-		Expect(err).To(BeNil())
+		if err != nil {
+			panic(err)
+		}
 		nodeProvider := New(NodeCreateOpts{
 			DataDir: dataDir,
 		})

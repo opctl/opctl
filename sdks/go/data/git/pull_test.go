@@ -33,7 +33,9 @@ var _ = Context("Pull", func() {
 
 					/* arrange */
 					providedPath, err := ioutil.TempDir("", "")
-					Expect(err).To(BeNil())
+					if err != nil {
+						panic(err)
+					}
 					// some small public repo
 					providedRef := "github.com/opspec-pkgs/_.op.create#3.2.0"
 
@@ -64,7 +66,9 @@ var _ = Context("Pull", func() {
 
 					/* arrange */
 					providedPath, err := ioutil.TempDir("", "")
-					Expect(err).To(BeNil())
+					if err != nil {
+						panic(err)
+					}
 
 					// some small private repo
 					providedRef := "github.com/Remitly/infra-ops#9.1.6"
@@ -88,7 +92,9 @@ var _ = Context("Pull", func() {
 
 					/* arrange */
 					providedPath, err := ioutil.TempDir("", "")
-					Expect(err).To(BeNil())
+					if err != nil {
+						panic(err)
+					}
 
 					// gitlab cuz github returns 404 not 403
 					providedRef := "gitlab.com/joetesterperson1/private#0.0.0"
@@ -115,7 +121,10 @@ var _ = Context("Pull", func() {
 
 					/* arrange */
 					providedPath, err := ioutil.TempDir("", "")
-					Expect(err).To(BeNil())
+					if err != nil {
+						panic(err)
+					}
+
 					// non existent
 					providedRef := "dummyDataRef#0.0.0"
 

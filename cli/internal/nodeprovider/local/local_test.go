@@ -9,9 +9,13 @@ import (
 
 var _ = Context("New", func() {
 	It("shouldn't panic", func() {
-		/* arrange/act/assert */
+		/* arrange */
 		dataDir, err := ioutil.TempDir("", "")
-		Expect(err).To(BeNil())
+		if err != nil {
+			panic(err)
+		}
+
+		/* act */
 		New(NodeCreateOpts{
 			DataDir: dataDir,
 		})

@@ -14,7 +14,9 @@ var _ = Context("core", func() {
 		It("should call data.Resolve w/ expected args", func() {
 			/* arrange */
 			dataCachePath, err := ioutil.TempDir("", "")
-			Expect(err).To(BeNil())
+			if err != nil {
+				panic(err)
+			}
 
 			providedCtx := context.Background()
 			// some public repo that's relatively small

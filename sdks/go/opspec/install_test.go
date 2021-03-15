@@ -59,7 +59,9 @@ var _ = Context("Install", func() {
 			)
 
 			dataDir, err := ioutil.TempDir("", "")
-			Expect(err).To(BeNil())
+			if err != nil {
+				panic(err)
+			}
 
 			// error to trigger immediate return
 			fakeHandle.GetContentReturns(nil, errors.New("dummyError"))
