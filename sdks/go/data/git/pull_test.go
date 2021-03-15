@@ -2,8 +2,11 @@ package git
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -32,7 +35,6 @@ var _ = Context("Pull", func() {
 		Context("git.PlainClone errors", func() {
 			Context("err.Error() returns git.ErrRepositoryAlreadyExists", func() {
 				It("shouldn't error", func() {
-
 					/* arrange */
 					providedPath, err := ioutil.TempDir("", "")
 					if err != nil {
@@ -65,15 +67,24 @@ var _ = Context("Pull", func() {
 			})
 			Context("err.Error() returns transport.ErrAuthenticationRequired error", func() {
 				It("should return expected error", func() {
-
 					/* arrange */
+					testServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						w.WriteHeader(http.StatusUnauthorized)
+					}))
+					defer testServer.Close()
+
+					// ignore unknown certificate signatory in mock tls server
+					http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+					defer func() {
+						http.DefaultTransport.(*http.Transport).TLSClientConfig = nil
+					}()
+
+					providedRef := fmt.Sprintf("%s#version", testServer.URL)
+
 					providedPath, err := ioutil.TempDir("", "")
 					if err != nil {
 						panic(err)
 					}
-
-					// some small private repo
-					providedRef := "github.com/Remitly/infra-ops#9.1.6"
 
 					expectedError := model.ErrDataProviderAuthentication{}
 
@@ -91,15 +102,24 @@ var _ = Context("Pull", func() {
 			})
 			Context("err.Error() returns transport.ErrAuthorizationFailed error", func() {
 				It("should return expected error", func() {
-
 					/* arrange */
+					testServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						w.WriteHeader(http.StatusForbidden)
+					}))
+					defer testServer.Close()
+
+					// ignore unknown certificate signatory in mock tls server
+					http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+					defer func() {
+						http.DefaultTransport.(*http.Transport).TLSClientConfig = nil
+					}()
+
+					providedRef := fmt.Sprintf("%s#version", testServer.URL)
+
 					providedPath, err := ioutil.TempDir("", "")
 					if err != nil {
 						panic(err)
 					}
-
-					// gitlab cuz github returns 404 not 403
-					providedRef := "gitlab.com/joetesterperson1/private#0.0.0"
 
 					expectedError := model.ErrDataProviderAuthorization{}
 
@@ -121,15 +141,23 @@ var _ = Context("Pull", func() {
 			Context("err.Error() returns other error", func() {
 				It("should return error", func() {
 					/* arrange */
+					testServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						w.WriteHeader(http.StatusInternalServerError)
+					}))
+					defer testServer.Close()
+
+					// ignore unknown certificate signatory in mock tls server
+					http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+					defer func() {
+						http.DefaultTransport.(*http.Transport).TLSClientConfig = nil
+					}()
+
+					providedRef := fmt.Sprintf("%s#version", testServer.URL)
+
 					providedPath, err := ioutil.TempDir("", "")
 					if err != nil {
 						panic(err)
 					}
-
-					// non existent
-					providedRef := "dummyDataRef#0.0.0"
-
-					expectedMsg := `Get "https://dummyDataRef/info/refs?service=git-upload-pack": dial tcp: lookup dummyDataRef on 127.0.0.11:53: no such host`
 
 					/* act */
 					actualError := Pull(
@@ -139,8 +167,10 @@ var _ = Context("Pull", func() {
 						nil,
 					)
 
+					fmt.Println(actualError.Error())
+
 					/* assert */
-					Expect(actualError.Error()).To(Equal(expectedMsg))
+					Expect(actualError).To(MatchError(fmt.Sprintf(`unexpected client error: unexpected requesting "%s/info/refs?service=git-upload-pack" status code: 500`, testServer.URL)))
 				})
 			})
 		})
