@@ -2,15 +2,20 @@ package local
 
 import (
 	"context"
+	"io/ioutil"
+
 	. "github.com/onsi/ginkgo"
-	"os"
 )
 
 var _ = Context("CreateNodeIfNotExists", func() {
 	It("shouldn't panic", func() {
 		/* arrange */
+		dataDir, err := ioutil.TempDir("", "")
+		if err != nil {
+			panic(err)
+		}
 		nodeProvider := New(NodeCreateOpts{
-			DataDir: os.TempDir(),
+			DataDir: dataDir,
 		})
 
 		/* act */

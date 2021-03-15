@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
@@ -57,11 +56,16 @@ var _ = Context("Install", func() {
 				nil,
 			)
 
+			dataDir, err := ioutil.TempDir("", "")
+			if err != nil {
+				panic(err)
+			}
+
 			// error to trigger immediate return
 			fakeHandle.GetContentReturns(nil, errors.New("dummyError"))
 
 			/* act */
-			Install(providedCtx, os.TempDir(), fakeHandle)
+			Install(providedCtx, dataDir, fakeHandle)
 
 			/* assert */
 			actualContext,

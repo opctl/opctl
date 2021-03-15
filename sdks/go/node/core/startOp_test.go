@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -85,7 +86,10 @@ var _ = Context("core", func() {
 					}
 
 					fakeCaller := new(FakeCaller)
-					dataCachePath := os.TempDir()
+					dataCachePath, err := ioutil.TempDir("", "")
+					if err != nil {
+						panic(err)
+					}
 
 					objectUnderTest := core{
 						caller:        fakeCaller,

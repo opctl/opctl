@@ -2,7 +2,7 @@ package core
 
 import (
 	"context"
-	"os"
+	"io/ioutil"
 	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
@@ -13,7 +13,10 @@ var _ = Context("core", func() {
 	Context("ResolveData", func() {
 		It("should call data.Resolve w/ expected args", func() {
 			/* arrange */
-			dataCachePath := os.TempDir()
+			dataCachePath, err := ioutil.TempDir("", "")
+			if err != nil {
+				panic(err)
+			}
 
 			providedCtx := context.Background()
 			// some public repo that's relatively small

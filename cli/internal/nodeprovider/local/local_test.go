@@ -1,16 +1,22 @@
 package local
 
 import (
+	"io/ioutil"
+
 	. "github.com/onsi/ginkgo"
-	"os"
 )
 
 var _ = Context("New", func() {
 	It("shouldn't panic", func() {
-		/* arrange/act/assert */
+		/* arrange */
+		dataDir, err := ioutil.TempDir("", "")
+		if err != nil {
+			panic(err)
+		}
+
+		/* act */
 		New(NodeCreateOpts{
-			DataDir: os.TempDir(),
+			DataDir: dataDir,
 		})
 	})
-
 })

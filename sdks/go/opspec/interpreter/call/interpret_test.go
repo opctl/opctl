@@ -3,6 +3,7 @@ package call
 import (
 	"context"
 	"errors"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -19,6 +20,10 @@ var _ = Context("Interpret", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				predicateSpec := []*model.PredicateSpec{{}}
+				dataDir, err := ioutil.TempDir("", "")
+				if err != nil {
+					panic(err)
+				}
 
 				/* act */
 				_, actualError := Interpret(
@@ -31,7 +36,7 @@ var _ = Context("Interpret", func() {
 					"dummyOpPath",
 					nil,
 					"providedRootCallID",
-					os.TempDir(),
+					dataDir,
 				)
 
 				/* assert */
@@ -48,7 +53,10 @@ var _ = Context("Interpret", func() {
 			providedParentIDValue := "providedParentID"
 			providedParentID := &providedParentIDValue
 			providedRootCallID := "providedRootCallID"
-			providedDataDirPath := os.TempDir()
+			providedDataDirPath, err := ioutil.TempDir("", "")
+			if err != nil {
+				panic(err)
+			}
 
 			containerSpec := model.ContainerCallSpec{
 				Image: &model.ContainerCallImageSpec{
@@ -102,7 +110,10 @@ var _ = Context("Interpret", func() {
 			providedParentIDValue := "providedParentID"
 			providedParentID := &providedParentIDValue
 			providedRootCallID := "providedRootCallID"
-			providedDataDirPath := os.TempDir()
+			providedDataDirPath, err := ioutil.TempDir("", "")
+			if err != nil {
+				panic(err)
+			}
 
 			wd, err := os.Getwd()
 			if nil != err {
@@ -164,7 +175,10 @@ var _ = Context("Interpret", func() {
 			providedParentIDValue := "providedParentID"
 			providedParentID := &providedParentIDValue
 			providedRootCallID := "providedRootCallID"
-			providedDataDirPath := os.TempDir()
+			providedDataDirPath, err := ioutil.TempDir("", "")
+			if err != nil {
+				panic(err)
+			}
 
 			parallelSpec := []*model.CallSpec{}
 
@@ -204,7 +218,10 @@ var _ = Context("Interpret", func() {
 			providedParentIDValue := "providedParentID"
 			providedParentID := &providedParentIDValue
 			providedRootCallID := "providedRootCallID"
-			providedDataDirPath := os.TempDir()
+			providedDataDirPath, err := ioutil.TempDir("", "")
+			if err != nil {
+				panic(err)
+			}
 
 			serialSpec := []*model.CallSpec{}
 
