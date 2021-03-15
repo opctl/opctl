@@ -4,7 +4,6 @@ import (
 	"io/ioutil"
 
 	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 )
 
 var _ = Context("KillNodeIfExists", func() {
