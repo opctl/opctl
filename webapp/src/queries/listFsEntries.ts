@@ -1,4 +1,5 @@
 import _assertStatusSuccessful from './_assertStatusSuccessful'
+import constructDataUrl from '../constructDataUrl'
 
 interface FsEntry {
     Mode: string
@@ -8,9 +9,9 @@ interface FsEntry {
 
 export default async function get(
     dataRef: string
-): Promise<FsEntry[]> { 
+): Promise<FsEntry[]> {
     return fetch(
-        `http://localhost:42224/api/pkgs/${encodeURIComponent(dataRef)}/contents`
+        constructDataUrl(dataRef)
     )
         .then(_assertStatusSuccessful)
         .then(response => response.json() as Promise<FsEntry[]>)
