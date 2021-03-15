@@ -1,7 +1,9 @@
 package ref
 
 import (
+	"encoding/json"
 	"net/http"
+	"os"
 	"path"
 	"time"
 
@@ -47,6 +49,31 @@ func (hg _handleGetOrHeader) HandleGetOrHead(
 
 	if httpReq.Method != http.MethodGet && httpReq.Method != http.MethodHead {
 		http.Error(httpResp, "Request MUST be GET or HEAD", http.StatusMethodNotAllowed)
+		return
+	}
+
+	dataPath := dataHandle.Path()
+	dataFileInfo, err := os.Stat(*dataPath)
+	if nil != err {
+		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if dataFileInfo.IsDir() {
+		dirEntriesList, err := dataHandle.ListDescendants(
+			httpReq.Context(),
+		)
+		if nil != err {
+			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		httpResp.Header().Set("Content-Type", "application/vnd.opspec.0.1.6.dir+json; charset=UTF-8")
+
+		if err := json.NewEncoder(httpResp).Encode(dirEntriesList); nil != err {
+			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		return
 	}
 
