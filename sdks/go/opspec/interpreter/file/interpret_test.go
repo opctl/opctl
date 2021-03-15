@@ -34,7 +34,9 @@ var _ = Context("Interpret", func() {
 				identifier := "identifier"
 				expectedValue := model.Value{File: new(string)}
 				scratchDir, err := ioutil.TempDir("", "")
-				Expect(err).To(BeNil())
+				if err != nil {
+					panic(err)
+				}
 
 				/* act */
 				actualResultValue, actualErr := Interpret(
@@ -56,7 +58,9 @@ var _ = Context("Interpret", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			scratchDir, err := ioutil.TempDir("", "")
-			Expect(err).To(BeNil())
+			if err != nil {
+				panic(err)
+			}
 
 			/* act */
 			_, actualErr := Interpret(
@@ -75,7 +79,9 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			providedExpression := model.Value{File: new(string)}
 			scratchDir, err := ioutil.TempDir("", "")
-			Expect(err).To(BeNil())
+			if err != nil {
+				panic(err)
+			}
 
 			/* act */
 			actualResultValue, actualErr := Interpret(

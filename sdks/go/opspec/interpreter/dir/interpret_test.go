@@ -17,7 +17,9 @@ var _ = Context("Interpret", func() {
 				/* arrange */
 				identifier := "identifier"
 				scratchDir, err := ioutil.TempDir("", "")
-				Expect(err).To(BeNil())
+				if err != nil {
+					panic(err)
+				}
 
 				/* act */
 				_, actualErr := Interpret(
@@ -46,7 +48,9 @@ var _ = Context("Interpret", func() {
 					}
 					providedExpression := fmt.Sprintf("$(%s)", identifier)
 					scratchDir, err := ioutil.TempDir("", "")
-					Expect(err).To(BeNil())
+					if err != nil {
+						panic(err)
+					}
 
 					/* act */
 					_, actualErr := Interpret(
@@ -68,7 +72,9 @@ var _ = Context("Interpret", func() {
 						identifier: {Dir: new(string)},
 					}
 					scratchDir, err := ioutil.TempDir("", "")
-					Expect(err).To(BeNil())
+					if err != nil {
+						panic(err)
+					}
 
 					/* act */
 					actualResult, actualErr := Interpret(

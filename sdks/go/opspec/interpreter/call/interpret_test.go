@@ -21,7 +21,9 @@ var _ = Context("Interpret", func() {
 				/* arrange */
 				predicateSpec := []*model.PredicateSpec{{}}
 				dataDir, err := ioutil.TempDir("", "")
-				Expect(err).To(BeNil())
+				if err != nil {
+					panic(err)
+				}
 
 				/* act */
 				_, actualError := Interpret(
@@ -52,7 +54,9 @@ var _ = Context("Interpret", func() {
 			providedParentID := &providedParentIDValue
 			providedRootCallID := "providedRootCallID"
 			providedDataDirPath, err := ioutil.TempDir("", "")
-			Expect(err).To(BeNil())
+			if err != nil {
+				panic(err)
+			}
 
 			containerSpec := model.ContainerCallSpec{
 				Image: &model.ContainerCallImageSpec{
@@ -107,7 +111,9 @@ var _ = Context("Interpret", func() {
 			providedParentID := &providedParentIDValue
 			providedRootCallID := "providedRootCallID"
 			providedDataDirPath, err := ioutil.TempDir("", "")
-			Expect(err).To(BeNil())
+			if err != nil {
+				panic(err)
+			}
 
 			wd, err := os.Getwd()
 			if nil != err {
@@ -170,7 +176,9 @@ var _ = Context("Interpret", func() {
 			providedParentID := &providedParentIDValue
 			providedRootCallID := "providedRootCallID"
 			providedDataDirPath, err := ioutil.TempDir("", "")
-			Expect(err).To(BeNil())
+			if err != nil {
+				panic(err)
+			}
 
 			parallelSpec := []*model.CallSpec{}
 
@@ -211,7 +219,9 @@ var _ = Context("Interpret", func() {
 			providedParentID := &providedParentIDValue
 			providedRootCallID := "providedRootCallID"
 			providedDataDirPath, err := ioutil.TempDir("", "")
-			Expect(err).To(BeNil())
+			if err != nil {
+				panic(err)
+			}
 
 			serialSpec := []*model.CallSpec{}
 

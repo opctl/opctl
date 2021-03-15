@@ -36,7 +36,9 @@ var _ = Context("caller", func() {
 				/* arrange */
 				fakeContainerCaller := new(FakeContainerCaller)
 				dataDir, err := ioutil.TempDir("", "")
-				Expect(err).To(BeNil())
+				if err != nil {
+					panic(err)
+				}
 
 				/* act */
 				objectUnderTest := _caller{
@@ -96,7 +98,9 @@ var _ = Context("caller", func() {
 				fakeSerialCaller := new(FakeSerialCaller)
 
 				dataDir, err := ioutil.TempDir("", "")
-				Expect(err).To(BeNil())
+				if err != nil {
+					panic(err)
+				}
 
 				objectUnderTest := _caller{
 					containerCaller: new(FakeContainerCaller),
@@ -170,7 +174,9 @@ var _ = Context("caller", func() {
 				fakePubSub.SubscribeReturns(closedEventChan, nil)
 
 				dataDir, err := ioutil.TempDir("", "")
-				Expect(err).To(BeNil())
+				if err != nil {
+					panic(err)
+				}
 
 				objectUnderTest := _caller{
 					containerCaller: fakeContainerCaller,
@@ -240,7 +246,9 @@ var _ = Context("caller", func() {
 				fakePubSub.SubscribeReturns(closedEventChan, nil)
 
 				dataDir, err := ioutil.TempDir("", "")
-				Expect(err).To(BeNil())
+				if err != nil {
+					panic(err)
+				}
 
 				objectUnderTest := _caller{
 					dataDirPath: dataDir,

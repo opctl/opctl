@@ -88,7 +88,9 @@ var _ = Context("core", func() {
 
 					fakeCaller := new(FakeCaller)
 					dataCachePath, err := ioutil.TempDir("", "")
-					Expect(err).To(BeNil())
+					if err != nil {
+						panic(err)
+					}
 
 					objectUnderTest := core{
 						caller:        fakeCaller,

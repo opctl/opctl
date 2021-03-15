@@ -17,7 +17,9 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			identifier := "identifier"
 			dataDir, err := ioutil.TempDir("", "")
-			Expect(err).To(BeNil())
+			if err != nil {
+				panic(err)
+			}
 
 			/* act */
 			_, actualErr := Interpret(
@@ -98,7 +100,7 @@ var _ = Context("Interpret", func() {
 					/* act */
 					actualResult, actualErr := Interpret(
 						map[string]*model.Value{
-							identifier: &model.Value{Dir: &dirValue},
+							identifier: {Dir: &dirValue},
 						},
 						map[string]interface{}{
 							// implicitly bound

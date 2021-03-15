@@ -18,7 +18,9 @@ var _ = Context("_git", func() {
 			It("should return err", func() {
 				/* arrange */
 				dataDir, err := ioutil.TempDir("", "")
-				Expect(err).To(BeNil())
+				if err != nil {
+					panic(err)
+				}
 				objectUnderTest := New(dataDir, nil)
 
 				/* act */
@@ -57,7 +59,9 @@ var _ = Context("_git", func() {
 				Context("puller.Pull errors", func() {
 					It("should return err", func() {
 						dataDir, err := ioutil.TempDir("", "")
-						Expect(err).To(BeNil())
+						if err != nil {
+							panic(err)
+						}
 						objectUnderTest := New(dataDir, nil)
 
 						/* act */
@@ -75,9 +79,10 @@ var _ = Context("_git", func() {
 						/* arrange */
 						// some public repo that's relatively small
 						providedRef := "github.com/opspec-pkgs/_.op.create#3.3.1"
-
 						basePath, err := ioutil.TempDir("", "")
-						Expect(err).To(BeNil())
+						if err != nil {
+							panic(err)
+						}
 						objectUnderTest := New(basePath, nil)
 
 						/* act */
@@ -100,7 +105,10 @@ var _ = Context("_git", func() {
 				providedRef := "github.com/opspec-pkgs/_.op.create#3.3.1"
 
 				basePath, err := ioutil.TempDir("", "")
-				Expect(err).To(BeNil())
+				if err != nil {
+					panic(err)
+				}
+
 				objectUnderTest := New(basePath, nil)
 
 				expectedResult := newHandle(filepath.Join(basePath, providedRef), providedRef)
@@ -151,7 +159,10 @@ var _ = Context("_git", func() {
 				providedRef2 := "github.com/opspec-pkgs/_.op.create#3.0.0"
 
 				basePath, err := ioutil.TempDir("", "")
-				Expect(err).To(BeNil())
+				if err != nil {
+					panic(err)
+				}
+
 				objectUnderTest := New(basePath, nil)
 
 				expectedResult1 := newHandle(filepath.Join(basePath, providedRef1), providedRef1)
