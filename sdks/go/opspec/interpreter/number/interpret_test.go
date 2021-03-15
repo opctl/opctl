@@ -1,7 +1,6 @@
 package number
 
 import (
-	"errors"
 	"fmt"
 
 	. "github.com/onsi/ginkgo"
@@ -19,7 +18,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(Equal(errors.New("unable to interpret $() to number; error was unable to interpret '' as reference; '' not in scope")))
+			Expect(actualErr).To(MatchError("unable to interpret $() to number: unable to interpret '' as reference: '' not in scope"))
 
 		})
 	})

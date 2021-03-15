@@ -8,6 +8,7 @@ import (
 	"github.com/golang-utils/dircopier"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
+	"github.com/pkg/errors"
 )
 
 // Interpret container dirs
@@ -33,15 +34,14 @@ dirLoop:
 			true,
 		)
 		if nil != err {
-			return nil, fmt.Errorf(
-				"unable to bind %v to %v; error was %v",
+			return nil, errors.Wrap(err, fmt.Sprintf(
+				"unable to bind %v to %v",
 				callSpecContainerDirPath,
 				dirExpression,
-				err,
-			)
+			))
 		}
 
-		if "" != *dirValue.Dir && !strings.HasPrefix(*dirValue.Dir, dataCachePath) {
+		if *dirValue.Dir != "" && !strings.HasPrefix(*dirValue.Dir, dataCachePath) {
 			// bound to non dataCachePath
 			containerCallDirs[callSpecContainerDirPath] = *dirValue.Dir
 			continue dirLoop
@@ -55,12 +55,11 @@ dirLoop:
 			*dirValue.Dir,
 			containerCallDirs[callSpecContainerDirPath],
 		); nil != err {
-			return nil, fmt.Errorf(
-				"unable to bind %v to %v; error was %v",
+			return nil, errors.Wrap(err, fmt.Sprintf(
+				"unable to bind %v to %v",
 				callSpecContainerDirPath,
 				dirExpression,
-				err,
-			)
+			))
 		}
 
 	}

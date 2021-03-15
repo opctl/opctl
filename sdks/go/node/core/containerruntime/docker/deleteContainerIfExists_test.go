@@ -2,13 +2,12 @@ package docker
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/internal/fakes"
+	"github.com/pkg/errors"
 )
 
 var _ = Context("DeleteContainerIfExists", func() {
@@ -46,15 +45,8 @@ var _ = Context("DeleteContainerIfExists", func() {
 	Context("dockerClient.ContainerRemove errors", func() {
 		It("should return", func() {
 			/* arrange */
-			errorReturnedFromContainerRemove := errors.New("dummyError")
-
 			fakeDockerClient := new(FakeCommonAPIClient)
-			fakeDockerClient.ContainerRemoveReturns(errorReturnedFromContainerRemove)
-
-			expectedError := fmt.Errorf(
-				"unable to delete container. Response from docker was: %v",
-				errorReturnedFromContainerRemove.Error(),
-			)
+			fakeDockerClient.ContainerRemoveReturns(errors.New("dummyError"))
 
 			objectUnderTest := _containerRuntime{
 				dockerClient: fakeDockerClient,
@@ -67,7 +59,7 @@ var _ = Context("DeleteContainerIfExists", func() {
 			)
 
 			/* assert */
-			Expect(actualError).To(Equal(expectedError))
+			Expect(actualError).To(MatchError("unable to delete container: dummyError"))
 		})
 	})
 	Context("dockerClient.ContainerRemove doesn't error", func() {

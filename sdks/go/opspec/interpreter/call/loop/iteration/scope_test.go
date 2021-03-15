@@ -1,8 +1,6 @@
 package iteration
 
 import (
-	"errors"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -60,7 +58,7 @@ var _ = Context("Scope", func() {
 					)
 
 					/* assert */
-					Expect(actualErr).To(Equal(errors.New("unable to coerce string to object; error was invalid character 'p' looking for beginning of value")))
+					Expect(actualErr).To(MatchError("unable to coerce string to object: invalid character 'p' looking for beginning of value"))
 				})
 			})
 		})

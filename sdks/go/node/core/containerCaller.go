@@ -100,7 +100,7 @@ func (cc _containerCaller) Call(
 	}
 
 	if exitCode != 0 {
-		err = fmt.Errorf("nonzero container exit code. Exit code was: %v", exitCode)
+		err = fmt.Errorf("nonzero container exit code: %d", exitCode)
 	}
 
 	// wait on logChan

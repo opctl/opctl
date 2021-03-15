@@ -12,14 +12,14 @@ import (
 	"bytes"
 	"crypto/rsa"
 	"crypto/tls"
-	"errors"
-	"fmt"
 	"net"
 	"net/url"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 var (
@@ -529,7 +529,7 @@ func parseDSNParams(cfg *Config, params string) (err error) {
 		case "serverPubKey":
 			name, err := url.QueryUnescape(value)
 			if err != nil {
-				return fmt.Errorf("invalid value for server pub key name: %v", err)
+				return errors.Wrap(err, "invalid value for server pub key name")
 			}
 
 			if pubKey := getServerPubKey(name); pubKey != nil {
@@ -566,7 +566,7 @@ func parseDSNParams(cfg *Config, params string) (err error) {
 			} else {
 				name, err := url.QueryUnescape(value)
 				if err != nil {
-					return fmt.Errorf("invalid value for TLS config name: %v", err)
+					return errors.Wrap(err, "invalid value for TLS config name")
 				}
 
 				if tlsConfig := getTLSConfigClone(name); tlsConfig != nil {

@@ -102,7 +102,7 @@ var _ = Context("List", func() {
 						/* assert */
 						Expect(actualOpYmls).To(BeEmpty())
 						Expect(actualErr).
-							To(Equal(fmt.Errorf("error opening %s%s; %s", expectedRef, expectedPath, getContentErr)))
+							To(MatchError(fmt.Sprintf("error opening %s%s: %s", expectedRef, expectedPath, getContentErr)))
 					})
 				})
 			})

@@ -7,6 +7,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/value"
+	"github.com/pkg/errors"
 )
 
 // Interpret container envVars
@@ -23,28 +24,26 @@ func Interpret(
 		containerCallSpecEnvVars,
 	)
 	if nil != err {
-		return nil, fmt.Errorf(
-			"unable to interpret '%v' as envVars; error was %v",
+		return nil, errors.Wrap(err, fmt.Sprintf(
+			"unable to interpret '%v' as envVars",
 			containerCallSpecEnvVars,
-			err,
-		)
+		))
 	}
 
 	envVarsStringMap := map[string]string{}
 	for envVarName, envVarValueInterface := range *envVarsMap.Object {
 		envVarValue, err := value.Construct(envVarValueInterface)
 		if nil != err {
-			return nil, fmt.Errorf("unable to construct value for env var %s; error was %v", envVarName, err.Error())
+			return nil, errors.Wrap(err, fmt.Sprintf("unable to construct value for env var '%s'", envVarName))
 		}
 
 		envVarValueString, err := coerce.ToString(envVarValue)
 		if nil != err {
-			return nil, fmt.Errorf(
-				"unable to interpret %+v as value of env var '%v'; error was %v",
+			return nil, errors.Wrap(err, fmt.Sprintf(
+				"unable to interpret '%+v' as value of env var '%v'",
 				envVarValue,
 				envVarName,
-				err,
-			)
+			))
 		}
 
 		envVarsStringMap[envVarName] = *envVarValueString.String

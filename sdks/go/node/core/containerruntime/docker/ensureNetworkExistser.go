@@ -1,11 +1,9 @@
 package docker
 
 import (
-	"fmt"
-
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
 	dockerClientPkg "github.com/docker/docker/client"
+	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 	"golang.org/x/sync/singleflight"
 )
@@ -46,8 +44,8 @@ func (ene _ensureNetworkExistser) EnsureNetworkExists(
 		return nil
 	}
 
-	if !client.IsErrNotFound(networkInspectErr) {
-		return fmt.Errorf("unable to inspect network. Response from docker was: %v", networkInspectErr.Error())
+	if !dockerClientPkg.IsErrNotFound(networkInspectErr) {
+		return errors.Wrap(networkInspectErr, "unable to inspect network")
 	}
 
 	// attempt to resolve within singleFlight.Group to ensure concurrent creates don't race
@@ -65,7 +63,7 @@ func (ene _ensureNetworkExistser) EnsureNetworkExists(
 		},
 	)
 	if nil != err {
-		return fmt.Errorf("unable to create network. Response from docker was: %v", err.Error())
+		return errors.Wrap(err, "unable to create network")
 	}
 
 	return nil

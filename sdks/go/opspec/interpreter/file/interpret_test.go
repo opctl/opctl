@@ -1,7 +1,6 @@
 package file
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 
@@ -25,7 +24,7 @@ var _ = Context("Interpret", func() {
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(errors.New("unable to interpret $() to file; error was unable to interpret '' as reference; '' not in scope")))
+				Expect(actualErr).To(MatchError("unable to interpret $() to file: unable to interpret '' as reference: '' not in scope"))
 			})
 		})
 		Context("reference.Interpret doesn't error", func() {
@@ -71,7 +70,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(Equal(errors.New("unable to interpret <nil> to file; error was unable to interpret <nil> as value; unsupported type")))
+			Expect(actualErr).To(MatchError("unable to interpret <nil> to file: unable to interpret <nil> as value: unsupported type"))
 		})
 	})
 	Context("value.Interpret doesn't err", func() {

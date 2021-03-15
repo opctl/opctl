@@ -1,7 +1,6 @@
 package input
 
 import (
-	"errors"
 	"fmt"
 
 	. "github.com/onsi/ginkgo"
@@ -23,7 +22,7 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			providedName := "dummyName"
 
-			expectedError := fmt.Errorf("unable to bind to '%v'; '%v' not a defined input", providedName, providedName)
+			expectedError := fmt.Sprintf("unable to bind to '%v': '%v' not a defined input", providedName, providedName)
 
 			/* act */
 			_, actualError := Interpret(
@@ -35,7 +34,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualError).To(Equal(expectedError))
+			Expect(actualError).To(MatchError(expectedError))
 		})
 	})
 	Context("Implicit arg", func() {
@@ -44,7 +43,7 @@ var _ = Context("Interpret", func() {
 				/* arrange */
 				providedName := "dummyName"
 
-				expectedError := fmt.Errorf("unable to bind to '%v' via implicit ref; '%v' not in scope", providedName, providedName)
+				expectedError := fmt.Sprintf("unable to bind to '%v' via implicit ref: '%v' not in scope", providedName, providedName)
 
 				/* act */
 				_, actualError := Interpret(
@@ -56,7 +55,7 @@ var _ = Context("Interpret", func() {
 				)
 
 				/* assert */
-				Expect(actualError).To(Equal(expectedError))
+				Expect(actualError).To(MatchError(expectedError))
 			})
 		})
 	})
@@ -65,7 +64,7 @@ var _ = Context("Interpret", func() {
 			It("should return expected results", func() {
 				name := "name"
 				providedScope := map[string]*model.Value{
-					name: &model.Value{Array: new([]interface{})},
+					name: {Array: new([]interface{})},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
 
@@ -92,7 +91,7 @@ var _ = Context("Interpret", func() {
 			It("should return expected results", func() {
 				name := "name"
 				providedScope := map[string]*model.Value{
-					name: &model.Value{Boolean: new(bool)},
+					name: {Boolean: new(bool)},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
 
@@ -119,7 +118,7 @@ var _ = Context("Interpret", func() {
 			It("should return expected results", func() {
 				name := "name"
 				providedScope := map[string]*model.Value{
-					name: &model.Value{Dir: new(string)},
+					name: {Dir: new(string)},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
 				providedScratchDirPath := "dummyScratchDir"
@@ -147,7 +146,7 @@ var _ = Context("Interpret", func() {
 			It("should return expected results", func() {
 				name := "name"
 				providedScope := map[string]*model.Value{
-					name: &model.Value{File: new(string)},
+					name: {File: new(string)},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
 				providedScratchDirPath := "dummyScratchDir"
@@ -175,7 +174,7 @@ var _ = Context("Interpret", func() {
 			It("should return expected results", func() {
 				name := "name"
 				providedScope := map[string]*model.Value{
-					name: &model.Value{Number: new(float64)},
+					name: {Number: new(float64)},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
 
@@ -202,7 +201,7 @@ var _ = Context("Interpret", func() {
 			It("should return expected result", func() {
 				name := "name"
 				providedScope := map[string]*model.Value{
-					name: &model.Value{Object: new(map[string]interface{})},
+					name: {Object: new(map[string]interface{})},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
 
@@ -229,7 +228,7 @@ var _ = Context("Interpret", func() {
 			It("should return expected result", func() {
 				name := "name"
 				providedScope := map[string]*model.Value{
-					name: &model.Value{String: new(string)},
+					name: {String: new(string)},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
 
@@ -267,13 +266,13 @@ var _ = Context("Interpret", func() {
 					)
 
 					/* assert */
-					Expect(actualError).To(Equal(errors.New("unable to bind 'name' to '$(name)'; error was: 'unable to interpret $(name) to array; error was unable to interpret 'name' as reference; 'name' not in scope'")))
+					Expect(actualError).To(MatchError("unable to bind 'name' to '$(name)': unable to interpret $(name) to array: unable to interpret 'name' as reference: 'name' not in scope"))
 				})
 			})
 			It("should return expected result", func() {
 				name := "name"
 				providedScope := map[string]*model.Value{
-					name: &model.Value{Socket: new(string)},
+					name: {Socket: new(string)},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
 

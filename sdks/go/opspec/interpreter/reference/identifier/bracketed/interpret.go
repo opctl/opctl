@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/bracketed/item"
+	"github.com/pkg/errors"
 
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/value"
 
@@ -20,17 +21,17 @@ func Interpret(
 ) (string, *model.Value, error) {
 
 	if !strings.HasPrefix(ref, "[") {
-		return "", nil, fmt.Errorf("unable to interpret '%v'; expected '['", ref)
+		return "", nil, fmt.Errorf("unable to interpret '%v': expected '['", ref)
 	}
 
 	indexOfNextCloseBracket := strings.Index(ref, "]")
 	if indexOfNextCloseBracket < 0 {
-		return "", nil, fmt.Errorf("unable to interpret '%v'; expected ']'", ref)
+		return "", nil, fmt.Errorf("unable to interpret '%v': expected ']'", ref)
 	}
 
 	data, err := CoerceToArrayOrObject(data)
 	if nil != err {
-		return "", nil, fmt.Errorf("unable to interpret '%v'; error was %v", ref, err.Error())
+		return "", nil, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v'", ref))
 	}
 
 	identifier := ref[1:indexOfNextCloseBracket]
@@ -50,7 +51,7 @@ func Interpret(
 	property := (*data.Object)[identifier]
 	propertyValue, err := value.Construct(property)
 	if nil != err {
-		return "", nil, fmt.Errorf("unable to interpret property; error was %v", err.Error())
+		return "", nil, errors.Wrap(err, "unable to interpret property")
 	}
 	return refRemainder, propertyValue, nil
 }

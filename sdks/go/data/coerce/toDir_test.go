@@ -1,8 +1,6 @@
 package coerce
 
 import (
-	"errors"
-	"fmt"
 	"io/ioutil"
 	"strings"
 
@@ -21,7 +19,7 @@ var _ = Context("ToDir", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(errors.New("unable to coerce null to dir")))
+			Expect(actualErr).To(MatchError("unable to coerce null to dir"))
 		})
 	})
 	Context("Value.Array isn't nil", func() {
@@ -37,7 +35,7 @@ var _ = Context("ToDir", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce array to dir; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to coerce array to dir: incompatible types"))
 		})
 	})
 	Context("Value.Boolean isn't nil", func() {
@@ -53,7 +51,7 @@ var _ = Context("ToDir", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce boolean to dir; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to coerce boolean to dir: incompatible types"))
 		})
 	})
 	Context("Value.Dir isn't nil", func() {
@@ -83,7 +81,7 @@ var _ = Context("ToDir", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce file to dir; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to coerce file to dir: incompatible types"))
 		})
 	})
 	Context("Value.Number isn't nil", func() {
@@ -99,7 +97,7 @@ var _ = Context("ToDir", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce number to dir; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to coerce number to dir: incompatible types"))
 		})
 	})
 	Context("Value.Object isn't nil", func() {
@@ -173,7 +171,7 @@ var _ = Context("ToDir", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce socket to dir; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to coerce socket to dir: incompatible types"))
 		})
 	})
 	Context("Value.String isn't nil", func() {
@@ -188,7 +186,7 @@ var _ = Context("ToDir", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce string to dir; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to coerce string to dir: incompatible types"))
 		})
 	})
 	Context("Value.Array,Dir,File,Number,Dir,Socket,String nil", func() {
@@ -201,7 +199,7 @@ var _ = Context("ToDir", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%+v' to dir", providedValue)))
+			Expect(actualErr).To(MatchError("unable to coerce '&{Array:<nil> Boolean:<nil> Dir:<nil> File:<nil> Number:<nil> Object:<nil> Socket:<nil> String:<nil>}' to dir"))
 		})
 	})
 })

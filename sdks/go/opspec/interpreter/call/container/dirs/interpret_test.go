@@ -1,7 +1,6 @@
 package dirs
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
@@ -36,7 +35,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(Equal(errors.New("unable to bind /something to $(identifier); error was unable to interpret $(identifier) to dir; error was unable to coerce socket to dir; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to bind /something to $(identifier): unable to interpret $(identifier) to dir: unable to coerce socket to dir: incompatible types"))
 		})
 	})
 	Context("dir.Interpret doesn't err", func() {

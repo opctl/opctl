@@ -38,7 +38,7 @@ var _ = Context("Install", func() {
 			actualError := Install(providedCtx, "", fakeHandle)
 
 			/* assert */
-			Expect(actualError).To(Equal(expectedError))
+			Expect(actualError).To(MatchError(expectedError))
 		})
 	})
 	Context("handle.ListDescendants doesn't err", func() {
@@ -88,7 +88,7 @@ var _ = Context("Install", func() {
 				actualError := Install(providedCtx, "", fakeHandle)
 
 				/* assert */
-				Expect(actualError).To(Equal(expectedError))
+				Expect(actualError).To(MatchError(expectedError))
 			})
 		})
 		Context("handle.GetContent doesn't err", func() {

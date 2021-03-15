@@ -1,7 +1,6 @@
 package coerce
 
 import (
-	"errors"
 	"fmt"
 
 	"io/ioutil"
@@ -21,7 +20,7 @@ var _ = Context("ToArray", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(errors.New("unable to coerce null to array")))
+			Expect(actualErr).To(MatchError("unable to coerce null to array"))
 		})
 	})
 	Context("Value.Array isn't nil", func() {
@@ -53,7 +52,7 @@ var _ = Context("ToArray", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce boolean to array; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to coerce boolean to array: incompatible types"))
 		})
 	})
 	Context("Value.Dir isn't nil", func() {
@@ -69,7 +68,7 @@ var _ = Context("ToArray", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir to array; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to coerce dir to array: incompatible types"))
 		})
 	})
 	Context("Value.File isn't nil", func() {
@@ -85,7 +84,7 @@ var _ = Context("ToArray", func() {
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(errors.New("unable to coerce file to array; error was open nonExistent: no such file or directory")))
+				Expect(actualErr).To(MatchError("unable to coerce file to array: open nonExistent: no such file or directory"))
 			})
 		})
 		Context("ioutil.ReadFile doesn't err", func() {
@@ -107,7 +106,7 @@ var _ = Context("ToArray", func() {
 
 					/* assert */
 					Expect(actualValue).To(BeNil())
-					Expect(actualErr).To(Equal(errors.New("unable to coerce file to array; error was unexpected end of JSON input")))
+					Expect(actualErr).To(MatchError("unable to coerce file to array: unexpected end of JSON input"))
 				})
 			})
 			Context("json.Unmarshal doesn't err", func() {
@@ -155,7 +154,7 @@ var _ = Context("ToArray", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce number to array; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to coerce number to array: incompatible types"))
 		})
 	})
 	Context("Value.Socket isn't nil", func() {
@@ -171,7 +170,7 @@ var _ = Context("ToArray", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce socket to array; incompatible types")))
+			Expect(actualErr).To(MatchError("unable to coerce socket to array: incompatible types"))
 		})
 	})
 	Context("Value.String isn't nil", func() {
@@ -186,7 +185,7 @@ var _ = Context("ToArray", func() {
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(errors.New("unable to coerce string to array; error was unexpected end of JSON input")))
+				Expect(actualErr).To(MatchError("unable to coerce string to array: unexpected end of JSON input"))
 			})
 		})
 		Context("json.Unmarshal doesn't err", func() {
@@ -219,7 +218,7 @@ var _ = Context("ToArray", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%+v' to array", providedValue)))
+			Expect(actualErr).To(MatchError("unable to coerce '&{Array:<nil> Boolean:<nil> Dir:<nil> File:<nil> Number:<nil> Object:<nil> Socket:<nil> String:<nil>}' to array"))
 		})
 	})
 })

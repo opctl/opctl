@@ -2,6 +2,7 @@ package value
 
 import (
 	"fmt"
+
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -24,6 +25,6 @@ func Construct(
 	case []interface{}:
 		return &model.Value{Array: &data}, nil
 	default:
-		return nil, fmt.Errorf("unable to construct value; '%v' unexpected type", data)
+		return nil, fmt.Errorf("unable to construct value: '%v' unexpected type", data)
 	}
 }

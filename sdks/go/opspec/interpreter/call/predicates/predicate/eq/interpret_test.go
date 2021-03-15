@@ -1,8 +1,6 @@
 package eq
 
 import (
-	"errors"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -19,7 +17,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualError).To(Equal(errors.New("unable to interpret <nil> to string; error was unable to interpret <nil> as value; unsupported type")))
+			Expect(actualError).To(MatchError("unable to interpret <nil> to string: unable to interpret <nil> as value: unsupported type"))
 		})
 	})
 	Context("str.Interpret returns equal items", func() {
