@@ -17,7 +17,7 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			providedRef := "dummyRef"
 
-			expectedErr := fmt.Errorf("unable to interpret '%v' as dir entry ref; expected '/'", providedRef)
+			expectedErr := fmt.Errorf("unable to interpret '%v' as dir entry ref: expected '/'", providedRef)
 
 			/* act */
 			_, _, actualErr := Interpret(

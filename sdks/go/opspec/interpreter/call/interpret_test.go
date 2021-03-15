@@ -2,7 +2,6 @@ package call
 
 import (
 	"context"
-	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -40,7 +39,7 @@ var _ = Context("Interpret", func() {
 				)
 
 				/* assert */
-				Expect(actualError).To(Equal(errors.New("unable to interpret predicate; predicate was unexpected type &{Eq:<nil> Exists:<nil> Ne:<nil> NotExists:<nil>}")))
+				Expect(actualError).To(MatchError("unable to interpret predicate: predicate was unexpected type &{Eq:<nil> Exists:<nil> Ne:<nil> NotExists:<nil>}"))
 			})
 		})
 	})

@@ -1,13 +1,13 @@
 package image
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/docker/distribution/reference"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
+	"github.com/pkg/errors"
 )
 
 // Interpret container image
@@ -18,7 +18,7 @@ func Interpret(
 ) (*model.ContainerCallImage, error) {
 
 	if nil == containerCallImageSpec {
-		return nil, fmt.Errorf("image required")
+		return nil, errors.New("image required")
 	}
 
 	// try to interpret as dir
@@ -55,12 +55,12 @@ func Interpret(
 	if nil != containerCallImageSpec.PullCreds {
 		username, err := str.Interpret(scope, containerCallImageSpec.PullCreds.Username)
 		if nil != err {
-			return nil, fmt.Errorf("error encountered interpreting image pullcreds username; error was: %v", err)
+			return nil, errors.Wrap(err, "error encountered interpreting image pullcreds username")
 		}
 
 		password, err := str.Interpret(scope, containerCallImageSpec.PullCreds.Password)
 		if nil != err {
-			return nil, fmt.Errorf("error encountered interpreting image pullcreds password; error was: %v", err)
+			return nil, errors.Wrap(err, "error encountered interpreting image pullcreds password")
 		}
 
 		containerCallImage.PullCreds = &model.Creds{

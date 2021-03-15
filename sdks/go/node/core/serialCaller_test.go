@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"errors"
 	"os"
 
 	"io/ioutil"
@@ -81,7 +80,7 @@ var _ = Context("serialCaller", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(errors.New("image required")))
+				Expect(actualErr).To(MatchError("image required"))
 			})
 		})
 		It("should start each child as expected", func() {

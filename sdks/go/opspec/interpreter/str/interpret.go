@@ -6,6 +6,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
+	"github.com/pkg/errors"
 )
 
 // Interpret an expression to a string value.
@@ -18,7 +19,7 @@ func Interpret(
 		scope,
 	)
 	if nil != err {
-		return nil, fmt.Errorf("unable to interpret %+v to string; error was %v", expression, err)
+		return nil, errors.Wrap(err, fmt.Sprintf("unable to interpret %+v to string", expression))
 	}
 
 	return coerce.ToString(&v)

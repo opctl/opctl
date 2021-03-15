@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/opctl/opctl/sdks/go/node"
+	"github.com/pkg/errors"
 )
 
 func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, error) {
@@ -74,7 +75,7 @@ func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, er
 	nodeLogBytes, _ := ioutil.ReadFile(nodeLogFilePath)
 	fmt.Println(string(nodeLogBytes))
 	if nil != err {
-		return nil, fmt.Errorf("Error encountered creating daemonized opctl node; error was %s", err)
+		return nil, errors.Wrap(err, "failed to create daemonized opctl node")
 	}
 
 	return apiClientNode, nil

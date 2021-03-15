@@ -1,8 +1,6 @@
 package coerce
 
 import (
-	"errors"
-	"fmt"
 	"io/ioutil"
 	"strconv"
 
@@ -71,7 +69,7 @@ var _ = Context("ToString", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to string; incompatible types", providedDir)))
+			Expect(actualErr).To(MatchError("unable to coerce dir 'dummyValue' to string: incompatible types"))
 		})
 	})
 	Context("Value.File isn't nil", func() {
@@ -85,7 +83,7 @@ var _ = Context("ToString", func() {
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(errors.New("unable to coerce file to string; error was open : no such file or directory")))
+				Expect(actualErr).To(MatchError("unable to coerce file to string: open : no such file or directory"))
 			})
 		})
 		Context("ioutil.ReadFile doesn't err", func() {
@@ -181,7 +179,7 @@ var _ = Context("ToString", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%+v' to string", providedValue)))
+			Expect(actualErr).To(MatchError("unable to coerce '&{Array:<nil> Boolean:<nil> Dir:<nil> File:<nil> Number:<nil> Object:<nil> Socket:<nil> String:<nil>}' to string"))
 		})
 	})
 })

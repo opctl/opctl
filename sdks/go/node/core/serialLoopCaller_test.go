@@ -2,14 +2,14 @@ package core
 
 import (
 	"context"
-	"errors"
 	"io/ioutil"
+
+	"io"
 
 	"github.com/dgraph-io/badger/v2"
 	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/pubsub"
-	"io"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -150,7 +150,7 @@ var _ = Context("serialLoopCaller", func() {
 					)
 
 					/* assert */
-					Expect(actualErr).To(Equal(errors.New("image required")))
+					Expect(actualErr).To(MatchError("image required"))
 					Expect(actualOutputs).To(BeNil())
 				})
 			})

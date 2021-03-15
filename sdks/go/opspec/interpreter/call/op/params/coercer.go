@@ -48,7 +48,7 @@ paramLoop:
 			coercedValues[paramName] = value
 			continue paramLoop
 		default:
-			err = fmt.Errorf("unable to coerce arg; param was unexpected type %+v", paramValue)
+			err = fmt.Errorf("unable to coerce arg: param was unexpected type %+v", paramValue)
 		}
 
 		if nil != err {

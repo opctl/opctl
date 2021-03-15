@@ -1,8 +1,6 @@
 package array
 
 import (
-	"errors"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -19,7 +17,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(Equal(errors.New("unable to interpret $() to array; error was unable to interpret '' as reference; '' not in scope")))
+			Expect(actualErr).To(MatchError("unable to interpret $() to array: unable to interpret '' as reference: '' not in scope"))
 
 		})
 	})

@@ -8,6 +8,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
+	"github.com/pkg/errors"
 )
 
 // Interpret an expression to a dir value.
@@ -41,12 +42,12 @@ func Interpret(
 				opts,
 			)
 			if nil != err {
-				return nil, fmt.Errorf("unable to interpret %+v to dir; error was %v", expression, err)
+				return nil, errors.Wrap(err, fmt.Sprintf("unable to interpret %+v to dir", expression))
 			}
 
 			result, err := coerce.ToDir(value, scratchDir)
 			if nil != err {
-				err = fmt.Errorf("unable to interpret %+v to dir; error was %v", expression, err)
+				err = errors.Wrap(err, fmt.Sprintf("unable to interpret %+v to dir", expression))
 			}
 			return result, err
 
@@ -58,13 +59,12 @@ func Interpret(
 		scope,
 	)
 	if nil != err {
-		return nil, fmt.Errorf("unable to interpret %+v to dir; error was %v", expression, err)
+		return nil, errors.Wrap(err, fmt.Sprintf("unable to interpret %+v to dir", expression))
 	}
 
 	result, err := coerce.ToDir(&value, scratchDir)
 	if nil != err {
-		err = fmt.Errorf("unable to interpret %+v to dir; error was %v", expression, err)
+		err = errors.Wrap(err, fmt.Sprintf("unable to interpret %+v to dir", expression))
 	}
 	return result, err
-
 }

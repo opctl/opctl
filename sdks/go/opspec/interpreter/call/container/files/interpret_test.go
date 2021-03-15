@@ -1,7 +1,6 @@
 package files
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
@@ -32,7 +31,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(Equal(errors.New("unable to bind /somewhere to $(identifier); error was unable to coerce '{\"socket\":\"\"}' to file")))
+			Expect(actualErr).To(MatchError("unable to bind /somewhere to $(identifier): unable to coerce '{\"socket\":\"\"}' to file"))
 		})
 	})
 	Context("value.File not prefixed by dataDirPath", func() {

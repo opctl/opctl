@@ -8,6 +8,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
+	"github.com/pkg/errors"
 )
 
 // Interpret an expression to a value
@@ -44,21 +45,21 @@ func Interpret(
 				scope,
 			)
 			if nil != err {
-				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; error was %v", propertyKeyExpression, propertyValueExpression, err)
+				return model.Value{}, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v: %v' as object initializer property", propertyKeyExpression, propertyValueExpression))
 			}
 
 			if nil != propertyValue.File {
 				fileBytes, err := ioutil.ReadFile(*propertyValue.File)
 				if nil != err {
-					return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; error was %v", propertyKeyExpression, propertyValueExpression, err)
+					return model.Value{}, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v: %v' as object initializer property", propertyKeyExpression, propertyValueExpression))
 				}
 
 				value[propertyKey] = string(fileBytes)
 				continue
 			} else if nil != propertyValue.Dir {
-				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; directories aren't valid object properties", propertyKeyExpression, propertyValueExpression)
+				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property: directories aren't valid object properties", propertyKeyExpression, propertyValueExpression)
 			} else if nil != propertyValue.Socket {
-				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; sockets aren't valid object properties", propertyKeyExpression, propertyValueExpression)
+				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property: sockets aren't valid object properties", propertyKeyExpression, propertyValueExpression)
 			}
 
 			unboxedPropertyValue, unboxErr := propertyValue.Unbox()
@@ -79,7 +80,7 @@ func Interpret(
 				scope,
 			)
 			if nil != err {
-				return model.Value{}, fmt.Errorf("unable to interpret '%+v' as array initializer item; error was %v", itemExpression, err)
+				return model.Value{}, errors.Wrap(err, fmt.Sprintf("unable to interpret '%+v' as array initializer item", itemExpression))
 			}
 			value = append(value, itemValue)
 		}
@@ -112,6 +113,6 @@ func Interpret(
 	case model.Value:
 		return typedValueExpression, nil
 	default:
-		return model.Value{}, fmt.Errorf("unable to interpret %+v as value; unsupported type", typedValueExpression)
+		return model.Value{}, fmt.Errorf("unable to interpret %+v as value: unsupported type", typedValueExpression)
 	}
 }

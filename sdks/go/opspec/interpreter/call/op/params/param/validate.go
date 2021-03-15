@@ -43,6 +43,6 @@ func Validate(
 	case nil != param.Socket:
 		return socket.Validate(value)
 	default:
-		return []error{fmt.Errorf("unable to validate value; param was unexpected type %+v", param)}
+		return []error{fmt.Errorf("unable to validate value: param was unexpected type %+v", param)}
 	}
 }

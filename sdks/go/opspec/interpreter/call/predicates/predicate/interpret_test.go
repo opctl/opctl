@@ -96,7 +96,7 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			providedScgPredicate := &model.PredicateSpec{}
 
-			expectedError := fmt.Errorf("unable to interpret predicate; predicate was unexpected type %+v", providedScgPredicate)
+			expectedError := fmt.Errorf("unable to interpret predicate: predicate was unexpected type %+v", providedScgPredicate)
 
 			/* act */
 			_, actualError := Interpret(
@@ -105,7 +105,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualError).To(Equal(expectedError))
+			Expect(actualError).To(MatchError(expectedError))
 		})
 	})
 })

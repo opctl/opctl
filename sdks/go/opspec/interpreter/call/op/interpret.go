@@ -15,6 +15,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/pkg/errors"
 )
 
 // Interpret interprets an OpCallSpec into a OpCall
@@ -56,7 +57,7 @@ func Interpret(
 			false,
 		)
 		if nil != err {
-			return nil, fmt.Errorf("error encountered interpreting image src; error was: %v", err)
+			return nil, errors.Wrap(err, "error encountered interpreting image src")
 		}
 		opPath = *dirValue.Dir
 	} else {
@@ -102,7 +103,7 @@ func Interpret(
 		scratchDirPath,
 	)
 	if nil != err {
-		return nil, fmt.Errorf("unable to interpret call to %v; error was: %v", opCallSpec.Ref, err)
+		return nil, errors.Wrap(err, fmt.Sprintf("unable to interpret call to %v", opCallSpec.Ref))
 	}
 
 	return opCall, nil

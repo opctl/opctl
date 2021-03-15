@@ -1,7 +1,6 @@
 package bracketed
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/bracketed/item"
@@ -18,7 +17,7 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			providedRef := "dummyRef"
 
-			expectedErr := fmt.Errorf("unable to interpret '%v'; expected '['", providedRef)
+			expectedErr := fmt.Errorf("unable to interpret '%v': expected '['", providedRef)
 
 			/* act */
 			_, _, actualErr := Interpret(
@@ -35,7 +34,7 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			providedRef := "[dummyRef"
 
-			expectedErr := fmt.Errorf("unable to interpret '%v'; expected ']'", providedRef)
+			expectedErr := fmt.Errorf("unable to interpret '%v': expected ']'", providedRef)
 
 			/* act */
 			_, _, actualErr := Interpret(
@@ -62,7 +61,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(Equal(errors.New("unable to interpret '[]'; error was unable to coerce string to object; error was unexpected end of JSON input")))
+			Expect(actualErr).To(MatchError("unable to interpret '[]': unable to coerce string to object: unexpected end of JSON input"))
 		})
 	})
 	Context("data is array", func() {
@@ -83,7 +82,7 @@ var _ = Context("Interpret", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(errors.New("unable to interpret item; error was strconv.ParseInt: parsing \"dummyIdentifier\": invalid syntax")))
+				Expect(actualErr).To(MatchError("unable to interpret item: strconv.ParseInt: parsing \"dummyIdentifier\": invalid syntax"))
 			})
 		})
 		Context("item.Interpret doesn't err", func() {
@@ -133,7 +132,7 @@ var _ = Context("Interpret", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(errors.New("unable to interpret property; error was unable to construct value; '<nil>' unexpected type")))
+				Expect(actualErr).To(MatchError("unable to interpret property: unable to construct value: '<nil>' unexpected type"))
 			})
 		})
 		Context("value.Construct doesn't err", func() {

@@ -2,13 +2,12 @@ package object
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/formats"
+	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -37,7 +36,7 @@ func Validate(
 			// handle syntax errors specially
 			return append(
 				errs,
-				fmt.Errorf("error validating parameter. Details: %v", err.Error()),
+				errors.Wrap(err, "error validating parameter"),
 			)
 		}
 
@@ -49,7 +48,7 @@ func Validate(
 			// handle syntax errors specially
 			return append(
 				errs,
-				fmt.Errorf("error validating param. Details: %v", err.Error()),
+				errors.Wrap(err, "error validating parameter"),
 			)
 		}
 

@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -189,7 +188,7 @@ var _ = Context("GetData", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(model.ErrDataRefResolution{}))
+				Expect(actualErr).To(MatchError(model.ErrDataRefResolution{}))
 
 			})
 
@@ -198,9 +197,8 @@ var _ = Context("GetData", func() {
 			It("should return expected result", func() {
 
 				/* arrange */
-				expectedErr := errors.New("dummyMsg")
 				httpResp := &http.Response{
-					Body:       ioutil.NopCloser(strings.NewReader(expectedErr.Error())),
+					Body:       ioutil.NopCloser(strings.NewReader("dummyMsg")),
 					StatusCode: http.StatusInternalServerError,
 				}
 
@@ -218,7 +216,7 @@ var _ = Context("GetData", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(expectedErr))
+				Expect(actualErr).To(MatchError("dummyMsg"))
 
 			})
 

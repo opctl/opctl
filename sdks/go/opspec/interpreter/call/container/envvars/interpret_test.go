@@ -1,7 +1,6 @@
 package envvars
 
 import (
-	"errors"
 	"fmt"
 
 	. "github.com/onsi/ginkgo"
@@ -20,7 +19,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(Equal(errors.New("unable to interpret '$()' as envVars; error was unable to interpret $() to object; error was unable to interpret '' as reference; '' not in scope")))
+			Expect(actualErr).To(MatchError("unable to interpret '$()' as envVars: unable to interpret $() to object: unable to interpret '' as reference: '' not in scope"))
 		})
 	})
 	Context("object.Interpret doesn't err", func() {
@@ -45,7 +44,7 @@ var _ = Context("Interpret", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(errors.New("unable to construct value for env var key; error was unable to construct value; '<nil>' unexpected type")))
+				Expect(actualErr).To(MatchError("unable to construct value for env var 'key': unable to construct value: '<nil>' unexpected type"))
 			})
 		})
 		Context("value.Construct doesn't err", func() {

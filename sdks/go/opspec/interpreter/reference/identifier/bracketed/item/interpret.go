@@ -1,9 +1,9 @@
 package item
 
 import (
-	"fmt"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/value"
+	"github.com/pkg/errors"
 )
 
 // Interpret an item from data via indexString.
@@ -14,13 +14,13 @@ func Interpret(
 ) (*model.Value, error) {
 	itemIndex, err := ParseIndex(indexString, *data.Array)
 	if nil != err {
-		return nil, fmt.Errorf("unable to interpret item; error was %v", err.Error())
+		return nil, errors.Wrap(err, "unable to interpret item")
 	}
 
 	item := (*data.Array)[itemIndex]
 	itemValue, err := value.Construct(item)
 	if nil != err {
-		return nil, fmt.Errorf("unable to interpret item; error was %v", err.Error())
+		return nil, errors.Wrap(err, "unable to interpret item")
 	}
 
 	return itemValue, nil

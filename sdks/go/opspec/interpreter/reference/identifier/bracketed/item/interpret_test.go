@@ -1,8 +1,6 @@
 package item
 
 import (
-	"errors"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -21,7 +19,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(Equal(errors.New("unable to interpret item; error was strconv.ParseInt: parsing \"dummyIndexString\": invalid syntax")))
+			Expect(actualErr).To(MatchError("unable to interpret item: strconv.ParseInt: parsing \"dummyIndexString\": invalid syntax"))
 		})
 	})
 	Context("parseIndexer.ParseIndex doesn't err", func() {
@@ -41,7 +39,7 @@ var _ = Context("Interpret", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(errors.New("unable to interpret item; error was unable to construct value; '<nil>' unexpected type")))
+				Expect(actualErr).To(MatchError("unable to interpret item: unable to construct value: '<nil>' unexpected type"))
 			})
 		})
 		Context("value.Construct doesn't err", func() {

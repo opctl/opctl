@@ -1,7 +1,6 @@
 package unbracketed
 
 import (
-	"errors"
 	"fmt"
 
 	. "github.com/onsi/ginkgo"
@@ -25,7 +24,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(Equal(errors.New("unable to interpret 'dummyRef'; error was unable to coerce string to object; error was unexpected end of JSON input")))
+			Expect(actualErr).To(MatchError("unable to interpret 'dummyRef': unable to coerce string to object: unexpected end of JSON input"))
 		})
 	})
 	Context("coerce.ToObject doesn't err", func() {
@@ -39,7 +38,7 @@ var _ = Context("Interpret", func() {
 
 				objectData := map[string]interface{}{}
 
-				expectedErr := fmt.Errorf("unable to interpret '%v'; '%v' doesn't exist", providedRef, identifier)
+				expectedErr := fmt.Errorf("unable to interpret '%v': '%v' doesn't exist", providedRef, identifier)
 
 				/* act */
 				_, _, actualErr := Interpret(
@@ -70,7 +69,7 @@ var _ = Context("Interpret", func() {
 					)
 
 					/* assert */
-					Expect(actualErr).To(Equal(errors.New("unable to interpret 'identifier.'; error was unable to construct value; '<nil>' unexpected type")))
+					Expect(actualErr).To(MatchError("unable to interpret 'identifier.': unable to construct value: '<nil>' unexpected type"))
 				})
 			})
 			Context("value.Construct doesn't err", func() {

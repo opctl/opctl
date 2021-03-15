@@ -37,6 +37,6 @@ func Interpret(
 			scope,
 		)
 	default:
-		return false, fmt.Errorf("unable to interpret predicate; predicate was unexpected type %+v", predicateSpec)
+		return false, fmt.Errorf("unable to interpret predicate: predicate was unexpected type %+v", predicateSpec)
 	}
 }

@@ -1,7 +1,6 @@
 package coerce
 
 import (
-	"fmt"
 	"io/ioutil"
 
 	. "github.com/onsi/ginkgo"
@@ -90,7 +89,7 @@ var _ = Context("ToFile", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to file; incompatible types", providedDir)))
+			Expect(actualErr).To(MatchError("unable to coerce dir 'dummyValue' to file: incompatible types"))
 		})
 	})
 	Context("Value.File isn't nil", func() {

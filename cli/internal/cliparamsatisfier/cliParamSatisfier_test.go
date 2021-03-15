@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
+
+	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -11,7 +14,6 @@ import (
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	. "github.com/opctl/opctl/cli/internal/cliparamsatisfier/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/model"
-	"path/filepath"
 )
 
 var _ = Context("parameterSatisfier", func() {
@@ -113,11 +115,11 @@ var _ = Context("parameterSatisfier", func() {
 					}
 
 					valueBool := true
-					valueString := fmt.Sprintf("%v", valueBool)
+					valueString := strconv.FormatBool(valueBool)
 					providedInputSourcer.SourceReturns(&valueString, true)
 
 					expectedOutputs := map[string]*model.Value{
-						inputIdentifier: &model.Value{Boolean: &valueBool},
+						inputIdentifier: {Boolean: &valueBool},
 					}
 
 					objectUnderTest := _CLIParamSatisfier{
@@ -153,7 +155,7 @@ var _ = Context("parameterSatisfier", func() {
 					providedInputSourcer.SourceReturns(&valueDir, true)
 
 					expectedOutputs := map[string]*model.Value{
-						inputIdentifier: &model.Value{Dir: &valueDir},
+						inputIdentifier: {Dir: &valueDir},
 					}
 
 					objectUnderTest := _CLIParamSatisfier{
@@ -221,7 +223,7 @@ var _ = Context("parameterSatisfier", func() {
 					providedInputSourcer.SourceReturns(&valueString, true)
 
 					expectedOutputs := map[string]*model.Value{
-						inputIdentifier: &model.Value{Number: &valueNumber},
+						inputIdentifier: {Number: &valueNumber},
 					}
 
 					objectUnderTest := _CLIParamSatisfier{

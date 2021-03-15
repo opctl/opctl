@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/pkg/errors"
 )
 
 // isStringTruthy ensures value isn't:
@@ -36,11 +37,11 @@ func ToBoolean(
 	case nil != value.Boolean:
 		return value, nil
 	case nil != value.Dir:
-		return nil, fmt.Errorf("unable to coerce dir to boolean; incompatible types")
+		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce dir to boolean")
 	case nil != value.File:
 		fileBytes, err := ioutil.ReadFile(*value.File)
 		if nil != err {
-			return nil, fmt.Errorf("unable to coerce file to boolean; error was %v", err.Error())
+			return nil, errors.Wrap(err, "unable to coerce file to boolean")
 		}
 
 		booleanValue := isStringTruthy(string(fileBytes))
