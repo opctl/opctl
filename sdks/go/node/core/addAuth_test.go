@@ -2,9 +2,10 @@ package core
 
 import (
 	"context"
-	"github.com/dgraph-io/badger/v2"
-	"io/ioutil"
+	"os"
 	"time"
+
+	"github.com/dgraph-io/badger/v2"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -25,7 +26,7 @@ var _ = Context("core", func() {
 				Resources: "resources",
 			}
 
-			dbDir, err := ioutil.TempDir("", "")
+			dbDir, err := os.MkdirTemp("", "")
 			if nil != err {
 				panic(err)
 			}

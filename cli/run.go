@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"os/signal"
 	"syscall"
@@ -58,7 +58,7 @@ func run(
 		return err
 	}
 
-	opFileBytes, err := ioutil.ReadAll(opFileReader)
+	opFileBytes, err := io.ReadAll(opFileReader)
 	if nil != err {
 		return err
 	}

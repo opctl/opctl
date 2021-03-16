@@ -3,7 +3,7 @@ package git
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -34,7 +34,7 @@ var _ = Context("Pull", func() {
 				It("shouldn't error", func() {
 
 					/* arrange */
-					providedPath, err := ioutil.TempDir("", "")
+					providedPath, err := os.MkdirTemp("", "")
 					if err != nil {
 						panic(err)
 					}
@@ -67,7 +67,7 @@ var _ = Context("Pull", func() {
 				It("should return expected error", func() {
 
 					/* arrange */
-					providedPath, err := ioutil.TempDir("", "")
+					providedPath, err := os.MkdirTemp("", "")
 					if err != nil {
 						panic(err)
 					}
@@ -93,7 +93,7 @@ var _ = Context("Pull", func() {
 				It("should return expected error", func() {
 
 					/* arrange */
-					providedPath, err := ioutil.TempDir("", "")
+					providedPath, err := os.MkdirTemp("", "")
 					if err != nil {
 						panic(err)
 					}
@@ -121,7 +121,7 @@ var _ = Context("Pull", func() {
 			Context("err.Error() returns other error", func() {
 				It("should return error", func() {
 					/* arrange */
-					providedPath, err := ioutil.TempDir("", "")
+					providedPath, err := os.MkdirTemp("", "")
 					if err != nil {
 						panic(err)
 					}

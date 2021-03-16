@@ -3,7 +3,7 @@ package coerce
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/pkg/errors"
@@ -23,7 +23,7 @@ func ToArray(
 	case nil != value.Dir:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce dir to array")
 	case nil != value.File:
-		fileBytes, err := ioutil.ReadFile(*value.File)
+		fileBytes, err := os.ReadFile(*value.File)
 		if nil != err {
 			return nil, errors.Wrap(err, "unable to coerce file to array")
 		}

@@ -2,7 +2,6 @@ package hostruntime
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
@@ -39,7 +38,7 @@ func getDockerID() (string, error) {
 	}
 
 	// https://forums.docker.com/t/get-a-containers-full-id-from-inside-of-itself/37237
-	cpuset, err := ioutil.ReadFile("/proc/1/cpuset")
+	cpuset, err := os.ReadFile("/proc/1/cpuset")
 	if err != nil {
 		return "", err
 	}

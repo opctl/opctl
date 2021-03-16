@@ -2,7 +2,7 @@ package core
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -13,7 +13,7 @@ var _ = Context("core", func() {
 	Context("New", func() {
 		It("should return Core", func() {
 			/* arrange */
-			dataDir, err := ioutil.TempDir("", "")
+			dataDir, err := os.MkdirTemp("", "")
 			if err != nil {
 				panic(err)
 			}

@@ -1,7 +1,7 @@
 package local
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/golang-utils/lockfile"
@@ -12,7 +12,7 @@ import (
 )
 
 var _ = Context("listNodes", func() {
-	tmpDir, err := ioutil.TempDir("", "")
+	tmpDir, err := os.MkdirTemp("", "")
 	if nil != err {
 		panic(err)
 	}

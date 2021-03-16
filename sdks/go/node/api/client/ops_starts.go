@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"path"
 
@@ -44,7 +44,7 @@ func (c apiClient) StartOp(
 	// don't leak resources
 	defer httpResp.Body.Close()
 
-	bodyBytes, err := ioutil.ReadAll(httpResp.Body)
+	bodyBytes, err := io.ReadAll(httpResp.Body)
 	if nil != err {
 		return "", err
 	}

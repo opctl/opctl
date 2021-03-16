@@ -35,7 +35,7 @@ var _ = Context("handle", func() {
 		})
 	})
 	Context("ListDescendants", func() {
-		Context("ioutil.ReadDir errors", func() {
+		Context("os.ReadDir errors", func() {
 			It("should be returned", func() {
 
 				/* arrange */
@@ -53,7 +53,7 @@ var _ = Context("handle", func() {
 
 			})
 		})
-		Context("ioutil.ReadDir doesn't error", func() {
+		Context("os.ReadDir doesn't error", func() {
 			It("should return expected contentList", func() {
 				/* arrange */
 				rootOpPath := filepath.Join(wd, "../testdata/listDescendants")

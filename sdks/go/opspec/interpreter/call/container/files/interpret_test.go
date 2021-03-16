@@ -2,7 +2,7 @@ package files
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
@@ -73,12 +73,12 @@ var _ = Context("Interpret", func() {
 			identifier := "identifier"
 			containerFilePath := "/somewhere"
 
-			scratchDirPath, err := ioutil.TempDir("", "")
+			scratchDirPath, err := os.MkdirTemp("", "")
 			if nil != err {
 				panic(err)
 			}
 
-			referencedFile, err := ioutil.TempFile("", "")
+			referencedFile, err := os.CreateTemp("", "")
 			if nil != err {
 				panic(err)
 			}

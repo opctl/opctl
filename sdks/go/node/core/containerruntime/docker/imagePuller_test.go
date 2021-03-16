@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
@@ -22,7 +22,7 @@ var _ = Context("imagePuller", func() {
 			expectedImagePullOptions := types.ImagePullOptions{}
 			providedCtx := context.Background()
 
-			imagePullResponse := ioutil.NopCloser(bytes.NewBufferString(""))
+			imagePullResponse := io.NopCloser(bytes.NewBufferString(""))
 
 			_fakeDockerClient := new(FakeCommonAPIClient)
 			_fakeDockerClient.ImagePullReturns(imagePullResponse, nil)
@@ -55,7 +55,7 @@ var _ = Context("imagePuller", func() {
 				/* arrange */
 				imagePullError := errors.New("dummyerror")
 				expectedError := imagePullError
-				imagePullResponse := ioutil.NopCloser(bytes.NewBufferString(""))
+				imagePullResponse := io.NopCloser(bytes.NewBufferString(""))
 
 				_fakeDockerClient := new(FakeCommonAPIClient)
 				_fakeDockerClient.ImagePullReturns(imagePullResponse, imagePullError)

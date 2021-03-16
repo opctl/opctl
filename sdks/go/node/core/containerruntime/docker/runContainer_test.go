@@ -3,7 +3,7 @@ package docker
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -51,8 +51,8 @@ var _ = Context("RunContainer", func() {
 			providedReq,
 			"rootCallID",
 			new(FakeEventPublisher),
-			nopWriteCloser{ioutil.Discard},
-			nopWriteCloser{ioutil.Discard},
+			nopWriteCloser{io.Discard},
+			nopWriteCloser{io.Discard},
 		)
 
 		/* assert */
@@ -85,8 +85,8 @@ var _ = Context("RunContainer", func() {
 				},
 				"rootCallID",
 				new(FakeEventPublisher),
-				nopWriteCloser{ioutil.Discard},
-				nopWriteCloser{ioutil.Discard},
+				nopWriteCloser{io.Discard},
+				nopWriteCloser{io.Discard},
 			)
 
 			/* assert */
@@ -142,8 +142,8 @@ var _ = Context("RunContainer", func() {
 				providedReq,
 				"rootCallID",
 				new(FakeEventPublisher),
-				nopWriteCloser{ioutil.Discard},
-				nopWriteCloser{ioutil.Discard},
+				nopWriteCloser{io.Discard},
+				nopWriteCloser{io.Discard},
 			)
 
 			/* assert */
@@ -190,8 +190,8 @@ var _ = Context("RunContainer", func() {
 				providedReq,
 				providedRootCallID,
 				providedEventPublisher,
-				nopWriteCloser{ioutil.Discard},
-				nopWriteCloser{ioutil.Discard},
+				nopWriteCloser{io.Discard},
+				nopWriteCloser{io.Discard},
 			)
 
 			/* assert */
@@ -265,8 +265,8 @@ var _ = Context("RunContainer", func() {
 				providedReq,
 				"rootCallID",
 				new(FakeEventPublisher),
-				nopWriteCloser{ioutil.Discard},
-				nopWriteCloser{ioutil.Discard},
+				nopWriteCloser{io.Discard},
+				nopWriteCloser{io.Discard},
 			)
 
 			/* assert */

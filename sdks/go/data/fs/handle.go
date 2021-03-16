@@ -2,7 +2,7 @@ package fs
 
 import (
 	"context"
-	"io/ioutil"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -48,17 +48,18 @@ func (lh handle) rListDescendants(
 	[]*model.DirEntry,
 	error,
 ) {
-	childFileInfos, err := ioutil.ReadDir(path)
+	childFiles, err := os.ReadDir(path)
 	if nil != err {
 		return nil, err
 	}
 
+	rootFS := os.DirFS(path)
+
 	var contents []*model.DirEntry
-	for _, contentFileInfo := range childFileInfos {
+	for _, childFile := range childFiles {
+		absContentPath := filepath.Join(path, childFile.Name())
 
-		absContentPath := filepath.Join(path, contentFileInfo.Name())
-
-		if contentFileInfo.IsDir() {
+		if childFile.IsDir() {
 			// recurse into child dirs
 			childContents, err := lh.rListDescendants(absContentPath)
 			if nil != err {
@@ -71,15 +72,20 @@ func (lh handle) rListDescendants(
 		if nil != err {
 			return nil, err
 		}
+
+		fileInfo, err := fs.Stat(rootFS, childFile.Name())
+		if err != nil {
+			return nil, err
+		}
+
 		contents = append(
 			contents,
 			&model.DirEntry{
-				Mode: contentFileInfo.Mode(),
+				Mode: fileInfo.Mode(),
 				Path: filepath.Join(string(os.PathSeparator), relContentPath),
-				Size: contentFileInfo.Size(),
+				Size: fileInfo.Size(),
 			},
 		)
-
 	}
 
 	return contents, err

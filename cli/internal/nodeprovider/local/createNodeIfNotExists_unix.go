@@ -5,7 +5,6 @@ package local
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -74,7 +73,7 @@ func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, er
 	}
 
 	err = apiClientNode.Liveness(ctx)
-	nodeLogBytes, _ := ioutil.ReadFile(nodeLogFilePath)
+	nodeLogBytes, _ := os.ReadFile(nodeLogFilePath)
 	fmt.Println(string(nodeLogBytes))
 	if nil != err {
 		return nil, errors.Wrap(err, "failed to create daemonized opctl node")

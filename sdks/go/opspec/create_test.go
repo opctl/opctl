@@ -1,7 +1,7 @@
 package opspec
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
@@ -17,7 +17,7 @@ var _ = Context("Create", func() {
 	It("should create expected op", func() {
 
 		/* arrange */
-		providedPath, err := ioutil.TempDir("", "")
+		providedPath, err := os.MkdirTemp("", "")
 		if nil != err {
 			panic(err)
 		}
@@ -40,7 +40,7 @@ var _ = Context("Create", func() {
 		)
 
 		/* assert */
-		actualOpFileBytes, err := ioutil.ReadFile(filepath.Join(providedPath, opfile.FileName))
+		actualOpFileBytes, err := os.ReadFile(filepath.Join(providedPath, opfile.FileName))
 		if nil != err {
 			panic(err)
 		}

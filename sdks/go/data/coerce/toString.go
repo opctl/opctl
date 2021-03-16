@@ -3,7 +3,7 @@ package coerce
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strconv"
 
 	"github.com/opctl/opctl/sdks/go/model"
@@ -35,7 +35,7 @@ func ToString(
 	case nil != value.Dir:
 		return nil, errors.Wrap(errIncompatibleTypes, fmt.Sprintf("unable to coerce dir '%v' to string", *value.Dir))
 	case nil != value.File:
-		fileBytes, err := ioutil.ReadFile(*value.File)
+		fileBytes, err := os.ReadFile(*value.File)
 		if nil != err {
 			return nil, errors.Wrap(err, "unable to coerce file to string")
 		}

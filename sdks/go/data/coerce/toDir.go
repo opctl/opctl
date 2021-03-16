@@ -2,7 +2,6 @@ package coerce
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -76,7 +75,7 @@ func rCreateFileItem(
 			return errors.Wrap(err, "error creating "+itemPath)
 		}
 
-		err = ioutil.WriteFile(itemPath, []byte(dataString), 0777)
+		err = os.WriteFile(itemPath, []byte(dataString), 0777)
 		if nil != err {
 			return errors.Wrap(err, "error creating "+itemPath)
 		}

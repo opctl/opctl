@@ -3,9 +3,9 @@ package path
 import (
 	"context"
 	"errors"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"path"
 	"strings"
 	"time"
@@ -99,7 +99,7 @@ var _ = Context("Handler", func() {
 				/* arrange */
 				providedPath := "dummyPath"
 
-				expectedReadSeeker, err := ioutil.TempFile("", "")
+				expectedReadSeeker, err := os.CreateTemp("", "")
 				defer expectedReadSeeker.Close()
 
 				fakeDataHandle := new(modelFakes.FakeDataHandle)

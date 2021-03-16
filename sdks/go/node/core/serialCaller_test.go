@@ -4,8 +4,6 @@ import (
 	"context"
 	"os"
 
-	"io/ioutil"
-
 	"io"
 	"path/filepath"
 
@@ -34,7 +32,7 @@ var _ = Context("serialCaller", func() {
 		Context("caller errors", func() {
 			It("should return expected results", func() {
 				/* arrange */
-				dbDir, err := ioutil.TempDir("", "")
+				dbDir, err := os.MkdirTemp("", "")
 				if nil != err {
 					panic(err)
 				}
@@ -85,7 +83,7 @@ var _ = Context("serialCaller", func() {
 		})
 		It("should start each child as expected", func() {
 			/* arrange */
-			dbDir, err := ioutil.TempDir("", "")
+			dbDir, err := os.MkdirTemp("", "")
 			if nil != err {
 				panic(err)
 			}

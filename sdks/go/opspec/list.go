@@ -3,7 +3,7 @@ package opspec
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"path/filepath"
 
 	"github.com/opctl/opctl/sdks/go/model"
@@ -31,7 +31,7 @@ func List(
 				return nil, errors.Wrap(err, fmt.Sprintf("error opening %s%s", dirHandle.Ref(), content.Path))
 			}
 
-			opFileBytes, err := ioutil.ReadAll(opFileReader)
+			opFileBytes, err := io.ReadAll(opFileReader)
 			opFileReader.Close()
 			if nil != err {
 				return nil, errors.Wrap(err, fmt.Sprintf("error reading %s%s", dirHandle.Ref(), content.Path))

@@ -1,9 +1,8 @@
 package sockets
 
 import (
+	"os"
 	"path/filepath"
-
-	"io/ioutil"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -29,7 +28,7 @@ var _ = Context("Interpret", func() {
 			providedCurrentScopeRef2: providedCurrentScopeRef2String,
 		}
 
-		providedScratchDirPath, err := ioutil.TempDir("", "")
+		providedScratchDirPath, err := os.MkdirTemp("", "")
 		if nil != err {
 			panic(err)
 		}

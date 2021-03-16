@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 
@@ -47,7 +47,7 @@ var _ = Context("StartOp", func() {
 		fakeHTTPClient := new(ihttp.FakeClient)
 		fakeHTTPClient.DoReturns(
 			&http.Response{
-				Body:       ioutil.NopCloser(bytes.NewReader([]byte(expectedResult))),
+				Body:       io.NopCloser(bytes.NewReader([]byte(expectedResult))),
 				StatusCode: http.StatusCreated,
 			},
 			nil,

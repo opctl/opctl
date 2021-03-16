@@ -2,7 +2,7 @@ package coerce
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strconv"
 
 	"github.com/opctl/opctl/sdks/go/model"
@@ -21,7 +21,7 @@ func ToNumber(
 	case nil != value.Dir:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce dir to number")
 	case nil != value.File:
-		fileBytes, err := ioutil.ReadFile(*value.File)
+		fileBytes, err := os.ReadFile(*value.File)
 		if nil != err {
 			return nil, errors.Wrap(err, "unable to coerce file to number")
 		}

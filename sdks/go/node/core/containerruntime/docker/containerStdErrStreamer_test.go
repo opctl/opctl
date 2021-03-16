@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"io/ioutil"
 
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
@@ -43,7 +42,7 @@ var _ = Context("containerStdErrStreamer", func() {
 			objectUnderTest.Stream(
 				providedCtx,
 				providedContainerName,
-				nopWriteCloser{ioutil.Discard},
+				nopWriteCloser{io.Discard},
 			)
 
 			/* assert */
@@ -70,7 +69,7 @@ var _ = Context("containerStdErrStreamer", func() {
 				actualErr := objectUnderTest.Stream(
 					context.Background(),
 					"dummyContainerName",
-					nopWriteCloser{ioutil.Discard},
+					nopWriteCloser{io.Discard},
 				)
 
 				/* assert */
@@ -92,7 +91,7 @@ var _ = Context("containerStdErrStreamer", func() {
 					container string,
 					options types.ContainerLogsOptions,
 				) (io.ReadCloser, error) {
-					return ioutil.NopCloser(bytes.NewBufferString(expectedLogs)), nil
+					return io.NopCloser(bytes.NewBufferString(expectedLogs)), nil
 				}
 
 				objectUnderTest := _containerStdErrStreamer{

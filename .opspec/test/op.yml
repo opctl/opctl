@@ -65,7 +65,7 @@ run:
               /go/pkg: $(HOME/pkg)
             envVars:
               GOFLAGS: -tags=containers_image_openpgp
-            image: { ref: "golang:1.15" }
+            image: { ref: "golang:1.16" }
             workDir: /src
         - op:
             ref: github.com/opspec-pkgs/git.resolve-commit#1.0.2
@@ -89,5 +89,5 @@ run:
           /src: $(../..)
         envVars:
           GOFLAGS: -tags=containers_image_openpgp
-        image: { ref: "golang:1.15" }
+        image: { ref: "golang:1.16" }
         workDir: /src

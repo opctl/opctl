@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -33,7 +32,7 @@ var _ = Context("parallelCaller", func() {
 
 			It("should return expected results", func() {
 				/* arrange */
-				dbDir, err := ioutil.TempDir("", "")
+				dbDir, err := os.MkdirTemp("", "")
 				if nil != err {
 					panic(err)
 				}
@@ -86,7 +85,7 @@ var _ = Context("parallelCaller", func() {
 		It("should start each child as expected", func() {
 
 			/* arrange */
-			dbDir, err := ioutil.TempDir("", "")
+			dbDir, err := os.MkdirTemp("", "")
 			if nil != err {
 				panic(err)
 			}

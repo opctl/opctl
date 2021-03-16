@@ -1,7 +1,7 @@
 package coerce
 
 import (
-	"io/ioutil"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -91,7 +91,7 @@ var _ = Context("ToBoolean", func() {
 		})
 	})
 	Context("Value.File isn't nil", func() {
-		Context("ioutil.ReadFile errs", func() {
+		Context("os.ReadFile errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				/* act */
@@ -104,17 +104,17 @@ var _ = Context("ToBoolean", func() {
 				Expect(actualErr).To(MatchError("unable to coerce file to boolean: open : no such file or directory"))
 			})
 		})
-		Context("ioutil.ReadFile doesn't err", func() {
+		Context("os.ReadFile doesn't err", func() {
 			Context("File content truthy", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					tmpFile, err := ioutil.TempFile("", "")
+					tmpFile, err := os.CreateTemp("", "")
 					if nil != err {
 						panic(err)
 					}
 
 					filePath := tmpFile.Name()
-					err = ioutil.WriteFile(filePath, []byte("true"), 0777)
+					err = os.WriteFile(filePath, []byte("true"), 0777)
 					if nil != err {
 						panic(err)
 					}
@@ -134,13 +134,13 @@ var _ = Context("ToBoolean", func() {
 			Context("File content falsy", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					tmpFile, err := ioutil.TempFile("", "")
+					tmpFile, err := os.CreateTemp("", "")
 					if nil != err {
 						panic(err)
 					}
 
 					filePath := tmpFile.Name()
-					err = ioutil.WriteFile(filePath, []byte("false"), 0777)
+					err = os.WriteFile(filePath, []byte("false"), 0777)
 					if nil != err {
 						panic(err)
 					}

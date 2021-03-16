@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -52,7 +52,7 @@ var _ = Context("GetData", func() {
 		fakeHttpClient := new(ihttp.FakeClient)
 		fakeHttpClient.DoReturns(
 			&http.Response{
-				Body:       ioutil.NopCloser(strings.NewReader("dummyBody")),
+				Body:       io.NopCloser(strings.NewReader("dummyBody")),
 				StatusCode: http.StatusOK,
 				Request:    expectedHTTPReq,
 			},
@@ -81,7 +81,7 @@ var _ = Context("GetData", func() {
 
 			/* arrange */
 			httpResp := &http.Response{
-				Body:       ioutil.NopCloser(strings.NewReader("dummyBody")),
+				Body:       io.NopCloser(strings.NewReader("dummyBody")),
 				StatusCode: http.StatusOK,
 				Request:    &http.Request{},
 			}
@@ -113,7 +113,7 @@ var _ = Context("GetData", func() {
 
 				/* arrange */
 				httpResp := &http.Response{
-					Body:       ioutil.NopCloser(strings.NewReader("response")),
+					Body:       io.NopCloser(strings.NewReader("response")),
 					StatusCode: http.StatusUnauthorized,
 				}
 
@@ -141,7 +141,7 @@ var _ = Context("GetData", func() {
 
 				/* arrange */
 				httpResp := &http.Response{
-					Body:       ioutil.NopCloser(strings.NewReader("response")),
+					Body:       io.NopCloser(strings.NewReader("response")),
 					StatusCode: http.StatusForbidden,
 				}
 
@@ -170,7 +170,7 @@ var _ = Context("GetData", func() {
 
 				/* arrange */
 				httpResp := &http.Response{
-					Body:       ioutil.NopCloser(strings.NewReader("response")),
+					Body:       io.NopCloser(strings.NewReader("response")),
 					StatusCode: http.StatusNotFound,
 				}
 
@@ -198,7 +198,7 @@ var _ = Context("GetData", func() {
 
 				/* arrange */
 				httpResp := &http.Response{
-					Body:       ioutil.NopCloser(strings.NewReader("dummyMsg")),
+					Body:       io.NopCloser(strings.NewReader("dummyMsg")),
 					StatusCode: http.StatusInternalServerError,
 				}
 

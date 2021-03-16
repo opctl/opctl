@@ -2,7 +2,7 @@ package git
 
 import (
 	"context"
-	"io/ioutil"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -51,16 +51,18 @@ func (gh handle) rListDescendants(
 	[]*model.DirEntry,
 	error,
 ) {
-	childFileInfos, err := ioutil.ReadDir(path)
+	childFiles, err := os.ReadDir(path)
 	if nil != err {
 		return nil, err
 	}
 
-	var contents []*model.DirEntry
-	for _, contentFileInfo := range childFileInfos {
-		absContentPath := filepath.Join(path, contentFileInfo.Name())
+	rootFS := os.DirFS(path)
 
-		if contentFileInfo.IsDir() {
+	var contents []*model.DirEntry
+	for _, childFile := range childFiles {
+		absContentPath := filepath.Join(path, childFile.Name())
+
+		if childFile.IsDir() {
 			// recurse into child dirs
 			childContents, err := gh.rListDescendants(absContentPath)
 			if nil != err {
@@ -74,15 +76,19 @@ func (gh handle) rListDescendants(
 			return nil, err
 		}
 
+		fileInfo, err := fs.Stat(rootFS, childFile.Name())
+		if err != nil {
+			return nil, err
+		}
+
 		contents = append(
 			contents,
 			&model.DirEntry{
-				Mode: contentFileInfo.Mode(),
+				Mode: fileInfo.Mode(),
 				Path: filepath.Join(string(os.PathSeparator), relContentPath),
-				Size: contentFileInfo.Size(),
+				Size: fileInfo.Size(),
 			},
 		)
-
 	}
 
 	return contents, err

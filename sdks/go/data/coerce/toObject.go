@@ -3,7 +3,7 @@ package coerce
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/pkg/errors"
@@ -21,7 +21,7 @@ func ToObject(
 	case nil != value.Dir:
 		return nil, errors.Wrap(errIncompatibleTypes, fmt.Sprintf("unable to coerce dir '%v' to object", *value.Dir))
 	case nil != value.File:
-		fileBytes, err := ioutil.ReadFile(*value.File)
+		fileBytes, err := os.ReadFile(*value.File)
 		if nil != err {
 			return nil, errors.Wrap(err, "unable to coerce file to object")
 		}

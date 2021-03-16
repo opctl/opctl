@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/opctl/opctl/sdks/go/node/api"
@@ -30,7 +30,7 @@ func (c apiClient) Liveness(
 	// don't leak resources
 	defer httpResp.Body.Close()
 
-	bodyBytes, err := ioutil.ReadAll(httpResp.Body)
+	bodyBytes, err := io.ReadAll(httpResp.Body)
 	if nil != err {
 		return err
 	}

@@ -2,7 +2,7 @@ package core
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"time"
 
 	"github.com/dgraph-io/badger/v2"
@@ -27,7 +27,7 @@ var _ = Context("_callKiller", func() {
 					"childCallID3",
 				}
 
-				dbDir, err := ioutil.TempDir("", "")
+				dbDir, err := os.MkdirTemp("", "")
 				if nil != err {
 					panic(err)
 				}

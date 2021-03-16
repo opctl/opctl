@@ -3,13 +3,13 @@ package docker
 import (
 	"bytes"
 	"errors"
+	"io"
+
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/internal/fakes"
 	"golang.org/x/net/context"
-	"io"
-	"io/ioutil"
 )
 
 var _ = Context("containerStdOutStreamer", func() {
@@ -36,7 +36,7 @@ var _ = Context("containerStdOutStreamer", func() {
 			objectUnderTest.Stream(
 				providedCtx,
 				providedContainerName,
-				nopWriteCloser{ioutil.Discard},
+				nopWriteCloser{io.Discard},
 			)
 
 			/* assert */
@@ -63,7 +63,7 @@ var _ = Context("containerStdOutStreamer", func() {
 				actualErr := objectUnderTest.Stream(
 					context.Background(),
 					"dummyContainerName",
-					nopWriteCloser{ioutil.Discard},
+					nopWriteCloser{io.Discard},
 				)
 
 				/* assert */
@@ -85,7 +85,7 @@ var _ = Context("containerStdOutStreamer", func() {
 					container string,
 					options types.ContainerLogsOptions,
 				) (io.ReadCloser, error) {
-					return ioutil.NopCloser(bytes.NewBufferString(expectedLogs)), nil
+					return io.NopCloser(bytes.NewBufferString(expectedLogs)), nil
 				}
 
 				objectUnderTest := _containerStdErrStreamer{
