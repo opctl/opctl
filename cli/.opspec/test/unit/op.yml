@@ -13,6 +13,7 @@ run:
     dirs:
       /src: $(../../../..)
       /go/pkg: $(HOME/pkg)
+      /src/cli/webapp: $(../../../../webapp)
     envVars:
       GOFLAGS: -tags=containers_image_openpgp
     image: { ref: 'golang:1.16' }

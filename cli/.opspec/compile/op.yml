@@ -27,6 +27,7 @@ run:
         dirs:
           /src: $(../../..)
           /go/pkg: $(HOME/go/pkg)
+          /src/cli/webapp: $(../../../webapp)
         envVars:
           GOOS:
           CGO_ENABLED: 0

@@ -1,0 +1,2 @@
+this directory exists to allow testing/building on a local toolchain where
+the webapp isn't available in the normal place

@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"embed"
 	"fmt"
+	"io/fs"
 	"net/http"
 	"strings"
 
@@ -14,10 +16,8 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/opctl/opctl/cli/internal/clicolorer"
-	_ "github.com/opctl/opctl/cli/internal/statik"
 	"github.com/opctl/opctl/sdks/go/node/api/handler"
 	"github.com/opctl/opctl/sdks/go/node/core"
-	"github.com/rakyll/statik/fs"
 )
 
 /**
@@ -47,6 +47,9 @@ type _httpListener struct {
 	cliColorer     clicolorer.CliColorer
 }
 
+//go:embed webapp/build
+var staticFS embed.FS
+
 func (hd _httpListener) listen(
 	ctx context.Context,
 	address string,
@@ -63,11 +66,12 @@ func (hd _httpListener) listen(
 		),
 	)
 
-	statikFS, err := fs.New()
-	if nil != err {
+	webappFS, err := fs.Sub(staticFS, "webapp/build")
+	if err != nil {
 		return err
 	}
-	router.PathPrefix("/").Handler(http.FileServer(statikFS))
+
+	router.PathPrefix("/").Handler(http.FileServer(http.FS(webappFS)))
 
 	httpServer := http.Server{
 		Addr:    address,
