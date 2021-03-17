@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -17,58 +18,85 @@ import (
 
 var _ = Context("StartOp", func() {
 
-	It("should call httpClient.Do() with expected args", func() {
+	Describe("URL is loopback", func() {
+		Describe("Args contain nonexistent file ref", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				providedCtx := context.TODO()
 
-		/* arrange */
-		providedCtx := context.TODO()
-		providedReq := model.StartOpReq{
-			Args: map[string]*model.Value{},
-			Op: model.StartOpReqOp{
-				Ref: "dummyOpRef",
-				PullCreds: &model.Creds{
-					Username: "dummyUsername",
-					Password: "dummyPassword",
+				pathDoesntExist := "path/doesnt/exist"
+				providedReq := model.StartOpReq{
+					Args: map[string]*model.Value{
+						"pathDoesntExist": &model.Value{
+							File: &pathDoesntExist,
+						},
+					},
+					Op: model.StartOpReqOp{},
+				}
+				objectUnderTest := apiClient{}
+
+				/* act */
+				_, actualErr := objectUnderTest.StartOp(providedCtx, providedReq)
+
+				/* assert */
+				Expect(actualErr).To(MatchError(fmt.Sprintf("stat %s: no such file or directory", pathDoesntExist)))
+			})
+		})
+
+		It("should call httpClient.Do() with expected args", func() {
+
+			/* arrange */
+			providedCtx := context.TODO()
+			providedReq := model.StartOpReq{
+				Args: map[string]*model.Value{},
+				Op: model.StartOpReqOp{
+					Ref: "dummyOpRef",
+					PullCreds: &model.Creds{
+						Username: "dummyUsername",
+						Password: "dummyPassword",
+					},
 				},
-			},
-		}
+			}
 
-		expectedReqURL := url.URL{}
-		expectedReqURL.Path = api.URLOps_Starts
+			expectedReqURL := url.URL{Host: "opctl"}
+			expectedReqURL.Path = api.URLOps_Starts
 
-		expectedReqBytes, _ := json.Marshal(providedReq)
-		expectedResult := "dummyOpID"
+			expectedReqBytes, _ := json.Marshal(providedReq)
+			expectedResult := "dummyOpID"
 
-		expectedHTTPReq, _ := http.NewRequest(
-			"POST",
-			expectedReqURL.String(),
-			bytes.NewBuffer(expectedReqBytes),
-		)
+			expectedHTTPReq, _ := http.NewRequest(
+				"POST",
+				expectedReqURL.String(),
+				bytes.NewBuffer(expectedReqBytes),
+			)
 
-		fakeHTTPClient := new(ihttp.FakeClient)
-		fakeHTTPClient.DoReturns(
-			&http.Response{
-				Body:       ioutil.NopCloser(bytes.NewReader([]byte(expectedResult))),
-				StatusCode: http.StatusCreated,
-			},
-			nil,
-		)
+			fakeHTTPClient := new(ihttp.FakeClient)
+			fakeHTTPClient.DoReturns(
+				&http.Response{
+					Body:       ioutil.NopCloser(bytes.NewReader([]byte(expectedResult))),
+					StatusCode: http.StatusCreated,
+				},
+				nil,
+			)
 
-		objectUnderTest := apiClient{
-			httpClient: fakeHTTPClient,
-		}
+			objectUnderTest := apiClient{
+				baseURL:    url.URL{Host: expectedReqURL.Host},
+				httpClient: fakeHTTPClient,
+			}
 
-		/* act */
-		actualResult, _ := objectUnderTest.StartOp(providedCtx, providedReq)
+			/* act */
+			actualResult, _ := objectUnderTest.StartOp(providedCtx, providedReq)
 
-		/* assert */
-		actualHTTPReq := fakeHTTPClient.DoArgsForCall(0)
+			/* assert */
+			actualHTTPReq := fakeHTTPClient.DoArgsForCall(0)
 
-		Expect(actualHTTPReq.URL).To(Equal(expectedHTTPReq.URL))
-		Expect(actualHTTPReq.Body).To(Equal(expectedHTTPReq.Body))
-		Expect(actualHTTPReq.Header).To(Equal(expectedHTTPReq.Header))
-		Expect(actualHTTPReq.Context()).To(Equal(providedCtx))
+			Expect(actualHTTPReq.URL).To(Equal(expectedHTTPReq.URL))
+			Expect(actualHTTPReq.Body).To(Equal(expectedHTTPReq.Body))
+			Expect(actualHTTPReq.Header).To(Equal(expectedHTTPReq.Header))
+			Expect(actualHTTPReq.Context()).To(Equal(providedCtx))
 
-		Expect(expectedResult).To(Equal(actualResult))
+			Expect(expectedResult).To(Equal(actualResult))
 
+		})
 	})
 })

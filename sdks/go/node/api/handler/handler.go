@@ -13,6 +13,9 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/core"
 )
 
+var oneMB int64 = 1024 * 1024
+var maxReqBytes int64 = 40 * oneMB
+
 // New returns an http server that wraps the given Core op runner with an http
 // API. APIClient provides an Node interface for interacting with it.
 func New(
@@ -41,6 +44,9 @@ func (hdlr _handler) ServeHTTP(
 	httpResp http.ResponseWriter,
 	httpReq *http.Request,
 ) {
+	// limit req size to maxReqBytes
+	httpReq.Body = http.MaxBytesReader(httpResp, httpReq.Body, maxReqBytes)
+
 	pathSegment, err := urlpath.NextSegment(httpReq.URL)
 	if nil != err {
 		http.Error(httpResp, err.Error(), http.StatusBadRequest)
