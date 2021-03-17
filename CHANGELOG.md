@@ -8,9 +8,14 @@ accordance with
 
 ## 0.1.48 - 2021-02-28
 
+### Added
+
+- API client now embeds local files/dirs as objects enabling starting ops w/ file/dir inputs on remote nodes.
+
 ### Changed
 
 - Self-update now uses github releases instead of equinox.io
+- API now limits request body to 40Mb
 
 ### Removed
 

@@ -19,6 +19,14 @@ func (c apiClient) StartOp(
 	req model.StartOpReq,
 ) (string, error) {
 
+	// if remote node; need to embed local file/dir args
+	if c.baseURL.Hostname() != "localhost" && c.baseURL.Hostname() != "127.0.0.1" {
+		err := embedLocalFilesAndDirs(req.Args)
+		if nil != err {
+			return "", err
+		}
+	}
+
 	reqBytes, err := json.Marshal(req)
 	if nil != err {
 		return "", err
