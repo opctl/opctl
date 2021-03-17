@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// ErrDataResolution aggregates multiple errors into one, in a tree format
+// ErrAggregate aggregates multiple errors into one, in a tree format
 // instead of a linked list like `.Wrap` does.
 //
 // They should always be wrapped with `errors.Wrap(err, "label")` to give them
