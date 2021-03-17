@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
-	aggregateError "github.com/opctl/opctl/sdks/go/aggregate_error"
+	aggregateError "github.com/opctl/opctl/sdks/go/internal/aggregate_error"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	aggregateError "github.com/opctl/opctl/sdks/go/aggregate_error"
+	aggregateError "github.com/opctl/opctl/sdks/go/internal/aggregate_error"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/pkg/errors"
 )
