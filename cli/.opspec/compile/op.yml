@@ -6,9 +6,14 @@ inputs:
       default: 0.0.1
       constraints:
         format: semver
-  HOME:
+  GOCACHE:
     dir:
-      description: Home directory of caller; used to access go modules
+      description: https://golang.org/cmd/go/#hdr-Build_and_test_caching
+      default: /../../../.go/cache
+  GOPATH:
+    dir:
+      description: https://golang.org/cmd/go/#hdr-GOPATH_environment_variable
+      default: /../../../.go/path
 run:
   parallelLoop:
     range:
@@ -26,13 +31,14 @@ run:
           - ./cli
         dirs:
           /src: $(../../..)
-          /go/pkg: $(HOME/go/pkg)
+          /go/pkg: $(GOPATH/pkg)
+          /root/.cache/go-build: $(GOCACHE)
         envVars:
-          GOOS:
           CGO_ENABLED: 0
           GOARCH: amd64
           GOFLAGS:
             -tags=containers_image_openpgp
             -ldflags=-X=main.version=$(version)
+          GOOS:
         image: { ref: 'golang:1.15' }
         workDir: /src

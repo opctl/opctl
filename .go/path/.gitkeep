@@ -1,0 +1,1 @@
+This directory is used for caching go dependencies in project ops when you don't set a GOPATH

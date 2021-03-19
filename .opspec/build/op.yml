@@ -11,9 +11,14 @@ inputs:
       default: 0.0.0
       constraints:
         format: semver
-  HOME:
+  GOCACHE:
     dir:
-      description: Home directory of caller; used to access go modules
+      description: https://golang.org/cmd/go/#hdr-Build_and_test_caching
+      default: /../../.go/cache
+  GOPATH:
+    dir:
+      description: https://golang.org/cmd/go/#hdr-GOPATH_environment_variable
+      default: /../../.go/path
 run:
   serial:
     - op:
@@ -28,18 +33,21 @@ run:
             go run github.com/rakyll/statik -src ../webapp/build -dest internal -f
         dirs:
           /src: $(../..)
-          /go/pkg: $(HOME/pkg)
+          /go/pkg: $(GOPATH/pkg)
+          /root/.cache/go-build: $(GOCACHE)
         image: { ref: 'golang:1.15' }
         workDir: /src/cli
     - op:
         ref: ../../cli/.opspec/compile
         inputs:
-          HOME:
+          GOCACHE:
+          GOPATH:
           version:
     - op:
         ref: ../test
         inputs:
           compile: false
           gitBranch:
-          HOME:
+          GOCACHE:
+          GOPATH:
           version:

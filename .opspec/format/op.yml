@@ -5,9 +5,14 @@ inputs:
     string:
       description: Go path spec to the file/files to generate from
       default: ./...
-  HOME:
+  GOCACHE:
     dir:
-      description: Home directory of caller; used to access go modules
+      description: https://golang.org/cmd/go/#hdr-Build_and_test_caching
+      default: /../../.go/cache
+  GOPATH:
+    dir:
+      description: https://golang.org/cmd/go/#hdr-GOPATH_environment_variable
+      default: /../../.go/path
 opspec: 0.1.6
 run:
   container:
@@ -17,6 +22,7 @@ run:
       - $(path)
     dirs:
       /src: $(../..)
-      /go/pkg: $(HOME/pkg)
+      /go/pkg: $(GOPATH/pkg)
+      /root/.cache/go-build: $(GOCACHE)
     image: { ref: 'golang:1.15' }
     workDir: /src

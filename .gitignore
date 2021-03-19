@@ -13,3 +13,9 @@ coverage/
 ### build
 /cli/opctl-*
 /opctl-*
+
+### go
+/.go/path/*
+!/.go/path/.gitkeep
+/.go/cache/*
+!/.go/cache/.gitkeep

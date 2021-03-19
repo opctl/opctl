@@ -1,9 +1,14 @@
 name: test
 description: runs all go SDK tests
 inputs:
-  HOME:
+  GOCACHE:
     dir:
-      description: Home directory of caller; used to access go modules
+      description: https://golang.org/cmd/go/#hdr-Build_and_test_caching
+      default: /../../../.go/cache
+  GOPATH:
+    dir:
+      description: https://golang.org/cmd/go/#hdr-GOPATH_environment_variable
+      default: /../../../../.go/path
 run:
   container:
     cmd:
@@ -12,7 +17,8 @@ run:
       - ./sdks/go/...
     dirs:
       /src: $(../../../..)
-      /go/pkg: $(HOME/pkg)
+      /go/pkg: $(GOPATH/pkg)
+      /root/.cache/go-build: $(GOCACHE)
     envVars:
       GOFLAGS: -tags=containers_image_openpgp
     image: { ref: "golang:1.15" }
