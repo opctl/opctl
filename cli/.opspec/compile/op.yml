@@ -15,7 +15,7 @@ run:
       - darwin
       - linux
     vars:
-      value: $(GOOS)
+      value: GOOS
     run:
       container:
         cmd:
