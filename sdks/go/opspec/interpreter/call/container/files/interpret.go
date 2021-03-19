@@ -25,7 +25,7 @@ func Interpret(
 fileLoop:
 	for callSpecContainerFilePath, fileExpression := range containerCallSpecFiles {
 
-		if nil == fileExpression {
+		if fileExpression == nil {
 			// bound implicitly
 			fileExpression = opspec.NameToRef(callSpecContainerFilePath)
 		}
@@ -36,7 +36,7 @@ fileLoop:
 			scratchDirPath,
 			true,
 		)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf(
 				"unable to bind file %v to %v",
 				callSpecContainerFilePath,
@@ -57,7 +57,7 @@ fileLoop:
 		if err := os.MkdirAll(
 			filepath.Dir(containerCallFiles[callSpecContainerFilePath]),
 			0777,
-		); nil != err {
+		); err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf(
 				"unable to bind %v to %v",
 				callSpecContainerFilePath,
@@ -71,7 +71,7 @@ fileLoop:
 			*fileValue.File,
 			containerCallFiles[callSpecContainerFilePath],
 		)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf(
 				"unable to bind %v to %v",
 				callSpecContainerFilePath,

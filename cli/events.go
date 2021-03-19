@@ -24,7 +24,7 @@ func events(
 		ctx,
 		&model.GetEventStreamReq{},
 	)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 

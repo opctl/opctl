@@ -30,28 +30,28 @@ paramLoop:
 
 		var err error
 		switch {
-		case nil != paramValue.Array:
+		case paramValue.Array != nil:
 			coercedValues[paramName], err = coerce.ToArray(value)
-		case nil != paramValue.Boolean:
+		case paramValue.Boolean != nil:
 			coercedValues[paramName], err = coerce.ToBoolean(value)
-		case nil != paramValue.Dir:
+		case paramValue.Dir != nil:
 			coercedValues[paramName] = value
-		case nil != paramValue.File:
+		case paramValue.File != nil:
 			coercedValues[paramName], err = coerce.ToFile(value, opScratchDir)
-		case nil != paramValue.String:
+		case paramValue.String != nil:
 			coercedValues[paramName], err = coerce.ToString(value)
-		case nil != paramValue.Number:
+		case paramValue.Number != nil:
 			coercedValues[paramName], err = coerce.ToNumber(value)
-		case nil != paramValue.Object:
+		case paramValue.Object != nil:
 			coercedValues[paramName], err = coerce.ToObject(value)
-		case nil != paramValue.Socket:
+		case paramValue.Socket != nil:
 			coercedValues[paramName] = value
 			continue paramLoop
 		default:
 			err = fmt.Errorf("unable to coerce arg: param was unexpected type %+v", paramValue)
 		}
 
-		if nil != err {
+		if err != nil {
 			paramErrMap[paramName] = err
 		}
 

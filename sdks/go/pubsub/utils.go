@@ -8,7 +8,7 @@ func isRootCallIDExcludedByFilter(
 	rootCallID string,
 	filter model.EventFilter,
 ) bool {
-	if nil == filter.Roots {
+	if filter.Roots == nil {
 		return false
 	}
 
@@ -25,15 +25,15 @@ func getEventRootCallID(
 	event model.Event,
 ) string {
 	switch {
-	case nil != event.CallEnded:
+	case event.CallEnded != nil:
 		return event.CallEnded.Call.RootID
-	case nil != event.ContainerStdErrWrittenTo:
+	case event.ContainerStdErrWrittenTo != nil:
 		return event.ContainerStdErrWrittenTo.RootCallID
-	case nil != event.ContainerStdOutWrittenTo:
+	case event.ContainerStdOutWrittenTo != nil:
 		return event.ContainerStdOutWrittenTo.RootCallID
-	case nil != event.CallKillRequested:
+	case event.CallKillRequested != nil:
 		return event.CallKillRequested.Request.RootCallID
-	case nil != event.CallStarted:
+	case event.CallStarted != nil:
 		return event.CallStarted.Call.RootID
 	default:
 		// use empty guid for unknown events

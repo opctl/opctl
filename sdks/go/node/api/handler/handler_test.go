@@ -31,7 +31,7 @@ var _ = Context("Handler", func() {
 				providedHTTPResp := httptest.NewRecorder()
 
 				providedHTTPReq, err := http.NewRequest("dummyMethod", "", nil)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 
@@ -53,7 +53,7 @@ var _ = Context("Handler", func() {
 
 				providedPath := "auths/adds"
 				providedHTTPReq, err := http.NewRequest("dummyMethod", providedPath, nil)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 
@@ -82,7 +82,7 @@ var _ = Context("Handler", func() {
 
 				providedPath := "data/dummy"
 				providedHTTPReq, err := http.NewRequest("dummyMethod", providedPath, nil)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 
@@ -111,7 +111,7 @@ var _ = Context("Handler", func() {
 
 				providedPath := "events/dummy"
 				providedHTTPReq, err := http.NewRequest("dummyMethod", providedPath, nil)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 
@@ -140,7 +140,7 @@ var _ = Context("Handler", func() {
 
 				providedPath := "liveness/dummy"
 				providedHTTPReq, err := http.NewRequest("dummyMethod", providedPath, nil)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 
@@ -169,7 +169,7 @@ var _ = Context("Handler", func() {
 
 				providedPath := "ops/dummy"
 				providedHTTPReq, err := http.NewRequest("dummyMethod", providedPath, nil)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 
@@ -198,7 +198,7 @@ var _ = Context("Handler", func() {
 
 				providedPath := "pkgs/dummy"
 				providedHTTPReq, err := http.NewRequest("dummyMethod", providedPath, nil)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 

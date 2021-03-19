@@ -43,7 +43,7 @@ func (hdlr _handler) Handle(
 	httpReq *http.Request,
 ) {
 	pathSegment, err := urlpath.NextSegment(httpReq.URL)
-	if nil != err {
+	if err != nil {
 		http.Error(httpResp, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -64,7 +64,7 @@ func (hdlr _handler) Handle(
 			dataRef,
 			pullCreds,
 		)
-		if nil != err {
+		if err != nil {
 			var status int
 			if errors.Is(err, model.ErrDataProviderAuthentication{}) {
 				hdlr.setWWWAuthenticateHeader(dataRef, httpResp.Header())

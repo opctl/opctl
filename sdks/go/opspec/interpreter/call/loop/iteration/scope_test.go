@@ -7,9 +7,9 @@ import (
 )
 
 var _ = Context("Scope", func() {
-	Context("nil != callSpec.Vars", func() {
-		Context("nil == callSpec.Range", func() {
-			Context("nil != callSpec.Vars.Index", func() {
+	Context("callSpec.Vars != nil", func() {
+		Context("callSpec.Range == nil", func() {
+			Context("callSpec.Vars.Index != nil", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					indexValue := 2
@@ -36,7 +36,7 @@ var _ = Context("Scope", func() {
 				})
 			})
 		})
-		Context("nil != callSpec.Range", func() {
+		Context("callSpec.Range != nil", func() {
 			Context("loopable errs", func() {
 
 				It("should return expected result", func() {

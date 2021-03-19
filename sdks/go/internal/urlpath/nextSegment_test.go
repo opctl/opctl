@@ -14,7 +14,7 @@ var _ = Context("NextSegment", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedURL, err := url.Parse("")
-				if nil != err {
+				if err != nil {
 					panic(err.Error)
 				}
 
@@ -33,7 +33,7 @@ var _ = Context("NextSegment", func() {
 				providedSegment := "1"
 
 				providedURL, err := url.Parse(providedSegment)
-				if nil != err {
+				if err != nil {
 					panic(err.Error)
 				}
 
@@ -78,7 +78,7 @@ var _ = Context("NextSegment", func() {
 				}
 
 				providedURL, err := url.Parse(strings.Join(providedSegments, "/"))
-				if nil != err {
+				if err != nil {
 					panic(err.Error)
 				}
 
@@ -104,7 +104,7 @@ var _ = Context("NextSegment", func() {
 				}
 
 				providedURL, err := url.Parse(strings.Join(providedSegments, "/"))
-				if nil != err {
+				if err != nil {
 					panic(err.Error)
 				}
 

@@ -28,14 +28,14 @@ var _ = Context("_callKiller", func() {
 				}
 
 				dbDir, err := ioutil.TempDir("", "")
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
 				db, err := badger.Open(
 					badger.DefaultOptions(dbDir).WithLogger(nil),
 				)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -44,7 +44,7 @@ var _ = Context("_callKiller", func() {
 					context.Background(),
 					model.EventFilter{},
 				)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -95,7 +95,7 @@ var _ = Context("_callKiller", func() {
 				actualChildCallIDs := []string{}
 				go func() {
 					for event := range eventChannel {
-						if nil != event.CallKillRequested {
+						if event.CallKillRequested != nil {
 							actualChildCallIDs = append(actualChildCallIDs, event.CallKillRequested.Request.OpID)
 						}
 					}

@@ -51,7 +51,7 @@ func Interpret(
 		ref,
 		scope,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -60,7 +60,7 @@ func Interpret(
 		scope,
 		opts,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -99,7 +99,7 @@ func interpolate(
 				scope,
 				nil,
 			)
-			if nil != err {
+			if err != nil {
 				return "", err
 			}
 
@@ -108,12 +108,12 @@ func interpolate(
 				nestedRefRootValue,
 				nil,
 			)
-			if nil != err {
+			if err != nil {
 				return "", err
 			}
 
 			nestedRefValueAsString, err := coerce.ToString(nestedRefValue)
-			if nil != err {
+			if err != nil {
 				return "", err
 			}
 			refBuffer = append(refBuffer, *nestedRefValueAsString.String...)
@@ -155,7 +155,7 @@ func getRootValue(
 		return value, refRemainder, nil
 	}
 
-	if nil != opts {
+	if opts != nil {
 
 		uuid, _ := uniquestring.Construct()
 		fsPath := filepath.Join(opts.ScratchDir, uuid)
@@ -187,32 +187,32 @@ func rInterpret(
 	opts *model.ReferenceOpts,
 ) (string, *model.Value, error) {
 
-	if "" == ref {
+	if ref == "" {
 		return "", data, nil
 	}
 
 	switch ref[0] {
 	case '[':
 		ref, data, err := bracketed.Interpret(ref, data)
-		if nil != err {
+		if err != nil {
 			return "", nil, err
 		}
 
 		return rInterpret(ref, data, opts)
 	case '.':
 		ref, data, err := unbracketed.Interpret(ref[1:], data)
-		if nil != err {
+		if err != nil {
 			return "", nil, err
 		}
 
 		return rInterpret(ref, data, opts)
 	case '/':
 		var createType *string
-		if nil != opts {
+		if opts != nil {
 			createType = &opts.Type
 		}
 		ref, data, err := direntry.Interpret(ref, data, createType)
-		if nil != err {
+		if err != nil {
 			return "", nil, err
 		}
 

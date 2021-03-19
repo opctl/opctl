@@ -17,7 +17,7 @@ func Get(
 	error,
 ) {
 	opFileBytes, err := ioutil.ReadFile(filepath.Join(opPath, FileName))
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 

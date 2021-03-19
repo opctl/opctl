@@ -20,7 +20,7 @@ func New(
 	opts NodeCreateOpts,
 ) nodeprovider.NodeProvider {
 	dataDir, newDataDirErr := datadir.New(opts.DataDir)
-	if nil != newDataDirErr {
+	if newDataDirErr != nil {
 		panic(newDataDirErr)
 	}
 

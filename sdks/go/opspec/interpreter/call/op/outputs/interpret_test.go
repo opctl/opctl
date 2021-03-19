@@ -24,7 +24,7 @@ var _ = Context("Interpret", func() {
 		providedOpCallOutputs := map[string]string{}
 
 		arrayValueAsString, err := coerce.ToString(providedArgs[stringParamName])
-		if nil != err {
+		if err != nil {
 			panic(err)
 		}
 

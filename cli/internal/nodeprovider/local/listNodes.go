@@ -15,7 +15,7 @@ func (np nodeProvider) ListNodes() ([]node.Node, error) {
 	)
 	if 0 != pIDOfLockOwner {
 		apiClientNode, err := newAPIClientNode(np.listenAddress)
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 

@@ -18,7 +18,7 @@ import (
 
 var _ = Context("parameterSatisfier", func() {
 	wd, err := os.Getwd()
-	if nil != err {
+	if err != nil {
 		panic(err)
 	}
 	Context("New", func() {
@@ -83,7 +83,7 @@ var _ = Context("parameterSatisfier", func() {
 					}
 
 					valueBytes, err := json.Marshal(expectedOutputs[input1Name].Array)
-					if nil != err {
+					if err != nil {
 						Fail(err.Error())
 					}
 
@@ -148,7 +148,7 @@ var _ = Context("parameterSatisfier", func() {
 
 					valueDir := wd
 					_, err := filepath.Abs(valueDir)
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 
@@ -184,7 +184,7 @@ var _ = Context("parameterSatisfier", func() {
 
 					valueFile := filepath.Join(wd, "inputSourcer.go")
 					_, err := filepath.Abs(valueFile)
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 
@@ -258,7 +258,7 @@ var _ = Context("parameterSatisfier", func() {
 					}
 
 					valueBytes, err := json.Marshal(expectedOutputs[input1Name].Object)
-					if nil != err {
+					if err != nil {
 						Fail(err.Error())
 					}
 

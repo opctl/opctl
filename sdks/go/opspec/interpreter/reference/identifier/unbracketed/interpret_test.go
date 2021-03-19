@@ -84,7 +84,7 @@ var _ = Context("Interpret", func() {
 					objectData := map[string]interface{}{identifier: "dummyValue"}
 
 					expectedValue, err := value.Construct(objectData[identifier])
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 

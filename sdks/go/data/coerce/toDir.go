@@ -18,34 +18,34 @@ func ToDir(
 	scratchDir string,
 ) (*model.Value, error) {
 	switch {
-	case nil == value:
+	case value == nil:
 		return nil, errors.New("unable to coerce null to dir")
-	case nil != value.Array:
+	case value.Array != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce array to dir")
-	case nil != value.Boolean:
+	case value.Boolean != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce boolean to dir")
-	case nil != value.Dir:
+	case value.Dir != nil:
 		return value, nil
-	case nil != value.File:
+	case value.File != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce file to dir")
-	case nil != value.Number:
+	case value.Number != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce number to dir")
-	case nil != value.Object:
+	case value.Object != nil:
 		uniqueStr, err := uniquestring.Construct()
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce object to dir")
 		}
 
 		rootDirPath := filepath.Join(scratchDir, uniqueStr)
 		err = rCreateFileItem(rootDirPath, "", *value.Object)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce object to dir")
 		}
 
 		return &model.Value{Dir: &rootDirPath}, nil
-	case nil != value.Socket:
+	case value.Socket != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce socket to dir")
-	case nil != value.String:
+	case value.String != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce string to dir")
 	default:
 		return nil, fmt.Errorf("unable to coerce '%+v' to dir", value)
@@ -72,12 +72,12 @@ func rCreateFileItem(
 			filepath.Dir(itemPath),
 			0777,
 		)
-		if nil != err {
+		if err != nil {
 			return errors.Wrap(err, "error creating "+itemPath)
 		}
 
 		err = ioutil.WriteFile(itemPath, []byte(dataString), 0777)
-		if nil != err {
+		if err != nil {
 			return errors.Wrap(err, "error creating "+itemPath)
 		}
 
@@ -89,7 +89,7 @@ func rCreateFileItem(
 		itemPath,
 		0777,
 	)
-	if nil != err {
+	if err != nil {
 		return errors.Wrap(err, "error creating "+itemPath)
 	}
 
@@ -102,7 +102,7 @@ func rCreateFileItem(
 
 		switch v := v.(type) {
 		case map[string]interface{}:
-			if err := rCreateFileItem(rootPath, relChildPath, v); nil != err {
+			if err := rCreateFileItem(rootPath, relChildPath, v); err != nil {
 				return err
 			}
 		default:

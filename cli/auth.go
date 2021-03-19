@@ -14,7 +14,7 @@ func auth(
 	addAuthReq model.AddAuthReq,
 ) error {
 	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 

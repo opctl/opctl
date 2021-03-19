@@ -14,7 +14,7 @@ func Interpret(
 	for _, expression := range expressions {
 		// interpret items as strings since everything is coercible to string
 		item, err := str.Interpret(scope, expression)
-		if nil != err {
+		if err != nil {
 			return false, err
 		}
 		currentItemAsString := *item.String

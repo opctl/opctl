@@ -39,7 +39,7 @@ func (ene _ensureNetworkExistser) EnsureNetworkExists(
 		networkID,
 		types.NetworkInspectOptions{},
 	)
-	if nil == networkInspectErr {
+	if networkInspectErr == nil {
 		// if network exists, we're done
 		return nil
 	}
@@ -62,7 +62,7 @@ func (ene _ensureNetworkExistser) EnsureNetworkExists(
 			)
 		},
 	)
-	if nil != err {
+	if err != nil {
 		return errors.Wrap(err, "unable to create network")
 	}
 

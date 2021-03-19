@@ -216,7 +216,7 @@ var _ = Context("caller", func() {
 				fakeOpCaller := new(FakeOpCaller)
 
 				wd, err := os.Getwd()
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 				providedOpPath := filepath.Join(wd, "testdata/caller")

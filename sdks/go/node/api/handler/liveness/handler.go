@@ -32,12 +32,12 @@ func (hdlr _handler) Handle(
 	httpReq *http.Request,
 ) {
 	pathSegment, err := urlpath.NextSegment(httpReq.URL)
-	if nil != err {
+	if err != nil {
 		http.Error(httpResp, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if "" != pathSegment {
+	if pathSegment != "" {
 		http.NotFoundHandler().ServeHTTP(httpResp, httpReq)
 		return
 	}

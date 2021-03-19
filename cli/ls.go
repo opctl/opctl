@@ -42,7 +42,7 @@ func ls(
 		dirRef,
 		nil,
 	)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 
@@ -50,12 +50,12 @@ func ls(
 		ctx,
 		dirHandle,
 	)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 
 	cwd, err := os.Getwd()
-	if nil != err {
+	if err != nil {
 		return err
 	}
 
@@ -64,7 +64,7 @@ func ls(
 		if filepath.IsAbs(opRef) {
 			// make absolute paths relative
 			relOpRef, err := filepath.Rel(cwd, opRef)
-			if nil != err {
+			if err != nil {
 				return err
 			}
 

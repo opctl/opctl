@@ -25,11 +25,11 @@ func Interpret(
 	opScratchDir string,
 ) (*model.Value, error) {
 
-	if nil == param {
+	if param == nil {
 		return nil, fmt.Errorf("unable to bind to '%v': '%v' not a defined input", name, name)
 	}
 
-	if nil == valueExpression || "" == valueExpression {
+	if valueExpression == nil || valueExpression == "" {
 		// implicitly bound
 		_, ok := scope[name]
 		if !ok {
@@ -39,59 +39,59 @@ func Interpret(
 	}
 
 	switch {
-	case nil != param.Array:
+	case param.Array != nil:
 		arrayValue, err := array.Interpret(scope, valueExpression)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
 		}
 		return arrayValue, nil
-	case nil != param.Boolean:
+	case param.Boolean != nil:
 		booleanValue, err := boolean.Interpret(scope, valueExpression)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
 		}
 		return booleanValue, nil
-	case nil != param.File:
+	case param.File != nil:
 		fileValue, err := file.Interpret(scope, valueExpression, opScratchDir, true)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
 		}
 		return fileValue, nil
-	case nil != param.Dir:
+	case param.Dir != nil:
 		dirValue, err := dir.Interpret(scope, valueExpression, opScratchDir, true)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
 		}
 		return dirValue, nil
-	case nil != param.Number:
+	case param.Number != nil:
 		numberValue, err := number.Interpret(scope, valueExpression)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
 		}
 		return numberValue, nil
-	case nil != param.Object:
+	case param.Object != nil:
 		objectValue, err := object.Interpret(scope, valueExpression)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
 		}
 		return objectValue, nil
-	case nil != param.String:
+	case param.String != nil:
 		stringValue, err := str.Interpret(scope, valueExpression)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
 		}
 		return stringValue, nil
-	case nil != param.Socket:
+	case param.Socket != nil:
 		stringValueExpression, isString := valueExpression.(string)
 		if !isString {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v': sockets must be passed by reference", name, valueExpression)
 		}
 
 		socketValue, err := reference.Interpret(stringValueExpression, scope, nil)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
 		}
-		if nil == socketValue.Socket {
+		if socketValue.Socket == nil {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v': '%+v' must reference a socket", name, valueExpression, valueExpression)
 		}
 

@@ -15,7 +15,7 @@ func New(
 ) (inputsrc.InputSrc, error) {
 
 	_, err := os.Stat(filePath)
-	if nil != err {
+	if err != nil {
 		if !os.IsNotExist(err) {
 			// return actual errors
 			return nil, err
@@ -25,20 +25,20 @@ func New(
 	}
 
 	ymlBytes, err := ioutil.ReadFile(filePath)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
 	// convert YAML to JSON before unmarshalling;
 	// otherwise nested objects cause : "json: unsupported type: map[interface {}]interface {}"
 	jsonBytes, err := yaml.YAMLToJSON(ymlBytes)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
 	argMap := map[string]interface{}{}
 
-	if err := json.Unmarshal(jsonBytes, &argMap); nil != err {
+	if err := json.Unmarshal(jsonBytes, &argMap); err != nil {
 		return nil, err
 	}
 
@@ -61,7 +61,7 @@ func (this ymlFileInputSrc) ReadString(
 			return &inputValue, true
 		default:
 			inputValueBytes, err := json.Marshal(inputValue)
-			if nil != err {
+			if err != nil {
 				return nil, false
 			}
 

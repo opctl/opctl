@@ -41,12 +41,12 @@ func Interpret(
 				scope,
 				opts,
 			)
-			if nil != err {
+			if err != nil {
 				return nil, errors.Wrap(err, fmt.Sprintf("unable to interpret %+v to dir", expression))
 			}
 
 			result, err := coerce.ToDir(value, scratchDir)
-			if nil != err {
+			if err != nil {
 				err = errors.Wrap(err, fmt.Sprintf("unable to interpret %+v to dir", expression))
 			}
 			return result, err
@@ -58,12 +58,12 @@ func Interpret(
 		expression,
 		scope,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, errors.Wrap(err, fmt.Sprintf("unable to interpret %+v to dir", expression))
 	}
 
 	result, err := coerce.ToDir(&value, scratchDir)
-	if nil != err {
+	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to interpret %+v to dir", expression))
 	}
 	return result, err

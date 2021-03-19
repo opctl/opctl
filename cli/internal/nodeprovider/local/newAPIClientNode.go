@@ -12,7 +12,7 @@ func newAPIClientNode(
 	listenAddress string,
 ) (node.Node, error) {
 	apiBaseURL, err := url.Parse(fmt.Sprintf("http://%s/api", listenAddress))
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 

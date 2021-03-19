@@ -54,7 +54,7 @@ func (hg _handleGetOrHeader) HandleGetOrHead(
 
 	dataPath := dataHandle.Path()
 	dataFileInfo, err := os.Stat(*dataPath)
-	if nil != err {
+	if err != nil {
 		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -63,14 +63,14 @@ func (hg _handleGetOrHeader) HandleGetOrHead(
 		dirEntriesList, err := dataHandle.ListDescendants(
 			httpReq.Context(),
 		)
-		if nil != err {
+		if err != nil {
 			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		httpResp.Header().Set("Content-Type", "application/vnd.opspec.0.1.6.dir+json; charset=UTF-8")
 
-		if err := json.NewEncoder(httpResp).Encode(dirEntriesList); nil != err {
+		if err := json.NewEncoder(httpResp).Encode(dirEntriesList); err != nil {
 			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -81,7 +81,7 @@ func (hg _handleGetOrHeader) HandleGetOrHead(
 		httpReq.Context(),
 		"",
 	)
-	if nil != err {
+	if err != nil {
 		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 		return
 	}

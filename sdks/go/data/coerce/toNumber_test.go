@@ -71,14 +71,14 @@ var _ = Context("ToNumber", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				tmpFile, err := ioutil.TempFile("", "")
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
 				number := 2.0
 				filePath := tmpFile.Name()
 				err = ioutil.WriteFile(filePath, []byte(fmt.Sprintf("%v", number)), 0777)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -133,7 +133,7 @@ var _ = Context("ToNumber", func() {
 			}
 
 			parsedNumber, err := strconv.ParseFloat(providedString, 64)
-			if nil != err {
+			if err != nil {
 				panic(err.Error)
 			}
 

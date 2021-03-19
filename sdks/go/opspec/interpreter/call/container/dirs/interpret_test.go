@@ -45,11 +45,11 @@ var _ = Context("Interpret", func() {
 				identifier := "identifier"
 
 				dataDir, err := ioutil.TempDir("", "")
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 				dirPath, err := ioutil.TempDir("", "")
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -83,12 +83,12 @@ var _ = Context("Interpret", func() {
 					identifier := "identifier"
 					containerPath := "/something"
 					dirValue, err := ioutil.TempDir("", "")
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 
 					scratchDirPath, err := ioutil.TempDir("", "")
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 

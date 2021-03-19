@@ -31,17 +31,17 @@ func Interpret(
 	scratchDirPath := filepath.Join(dataDirPath, "dcg", opID)
 
 	var pkgPullCreds *model.Creds
-	if pullCredsSpec := opCallSpec.PullCreds; nil != pullCredsSpec {
+	if pullCredsSpec := opCallSpec.PullCreds; pullCredsSpec != nil {
 		pkgPullCreds = &model.Creds{}
 		var err error
 		interpretdUsername, err := str.Interpret(scope, pullCredsSpec.Username)
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 		pkgPullCreds.Username = *interpretdUsername.String
 
 		interpretdPassword, err := str.Interpret(scope, pullCredsSpec.Password)
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 		pkgPullCreds.Password = *interpretdPassword.String
@@ -56,7 +56,7 @@ func Interpret(
 			scratchDirPath,
 			false,
 		)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "error encountered interpreting image src")
 		}
 		opPath = *dirValue.Dir
@@ -67,7 +67,7 @@ func Interpret(
 			fs.New(parentOpPath, filepath.Dir(parentOpPath)),
 			git.New(filepath.Join(dataDirPath, "ops"), pkgPullCreds),
 		)
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 		opPath = *opHandle.Path()
@@ -77,12 +77,12 @@ func Interpret(
 		ctx,
 		opPath,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
 	childCallID, err := uniquestring.Construct()
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -102,7 +102,7 @@ func Interpret(
 		scope,
 		scratchDirPath,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, errors.Wrap(err, fmt.Sprintf("unable to interpret call to %v", opCallSpec.Ref))
 	}
 

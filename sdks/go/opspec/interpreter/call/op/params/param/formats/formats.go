@@ -1,9 +1,10 @@
 package formats
 
 import (
+	"math/big"
+
 	"github.com/blang/semver"
 	"github.com/docker/distribution/reference"
-	"math/big"
 )
 
 // DockerImageRefFormatChecker is a gojsonschema.FormatChecker for docker image refs
@@ -17,7 +18,7 @@ func (f DockerImageRefFormatChecker) IsFormat(input interface{}) bool {
 	}
 
 	_, err := reference.Parse(asString)
-	return nil == err
+	return err == nil
 }
 
 // IntegerFormatChecker is a gojsonschema.FormatChecker for integers
@@ -45,5 +46,5 @@ func (f SemVerFormatChecker) IsFormat(input interface{}) bool {
 	}
 
 	_, err := semver.Parse(asString)
-	return nil == err
+	return err == nil
 }

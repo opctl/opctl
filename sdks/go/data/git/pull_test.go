@@ -50,7 +50,7 @@ var _ = Context("Pull", func() {
 						providedRef,
 						nil,
 					)
-					if nil != firstErr {
+					if firstErr != nil {
 						panic(firstErr)
 					}
 

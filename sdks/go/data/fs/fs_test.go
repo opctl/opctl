@@ -33,7 +33,7 @@ var _ = Context("_fs", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					file, err := ioutil.TempFile("", "")
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 
@@ -74,7 +74,7 @@ var _ = Context("_fs", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					basePath, err := os.Getwd()
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 

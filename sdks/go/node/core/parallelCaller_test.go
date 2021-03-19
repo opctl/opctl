@@ -34,14 +34,14 @@ var _ = Context("parallelCaller", func() {
 			It("should return expected results", func() {
 				/* arrange */
 				dbDir, err := ioutil.TempDir("", "")
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
 				db, err := badger.Open(
 					badger.DefaultOptions(dbDir).WithLogger(nil),
 				)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 				pubSub := pubsub.New(db)
@@ -87,20 +87,20 @@ var _ = Context("parallelCaller", func() {
 
 			/* arrange */
 			dbDir, err := ioutil.TempDir("", "")
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 
 			db, err := badger.Open(
 				badger.DefaultOptions(dbDir).WithLogger(nil),
 			)
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 			pubSub := pubsub.New(db)
 
 			wd, err := os.Getwd()
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 			providedOpRef := "providedOpRef"
@@ -133,7 +133,7 @@ var _ = Context("parallelCaller", func() {
 				ctx,
 				model.EventFilter{},
 			)
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 
@@ -192,7 +192,7 @@ var _ = Context("parallelCaller", func() {
 			actualChildCalls := []model.CallStarted{}
 			go func() {
 				for event := range eventChannel {
-					if nil != event.CallStarted && nil != event.CallStarted.Call.Op {
+					if event.CallStarted != nil && event.CallStarted.Call.Op != nil {
 						// ignore props we can't readily assert
 						event.CallStarted.Call.Op.ChildCallCallSpec = nil
 						event.CallStarted.Call.Op.ChildCallID = ""

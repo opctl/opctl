@@ -3,10 +3,11 @@ package dir
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"io/ioutil"
 )
 
 var _ = Context("Validate", func() {
@@ -59,7 +60,7 @@ var _ = Context("Validate", func() {
 						/* arrange */
 						// no good way to fake fileinfo
 						tmpDirPath, err := ioutil.TempDir("", "")
-						if nil != err {
+						if err != nil {
 							panic(err)
 						}
 
@@ -85,7 +86,7 @@ var _ = Context("Validate", func() {
 						/* arrange */
 						// no good way to fake fileinfo
 						tmpFile, err := ioutil.TempFile("", "")
-						if nil != err {
+						if err != nil {
 							panic(err)
 						}
 

@@ -46,7 +46,7 @@ func run(
 		opRef,
 		nil,
 	)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 
@@ -54,24 +54,24 @@ func run(
 		ctx,
 		opfile.FileName,
 	)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 
 	opFileBytes, err := ioutil.ReadAll(opFileReader)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 
 	opFile, err := opfile.Unmarshal(
 		opFileBytes,
 	)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 
 	ymlFileInputSrc, err := cliParamSatisfier.NewYMLFileInputSrc(argFile)
-	if nil != err {
+	if err != nil {
 		return errors.Wrap(err, fmt.Sprintf("unable to load arg file at '%v'", argFile))
 	}
 
@@ -85,7 +85,7 @@ func run(
 		),
 		opFile.Inputs,
 	)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 
@@ -115,7 +115,7 @@ func run(
 			},
 		},
 	)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 
@@ -129,7 +129,7 @@ func run(
 			},
 		},
 	)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 
@@ -172,7 +172,7 @@ func run(
 
 			cliOutput.Event(&event)
 
-			if nil != event.CallEnded {
+			if event.CallEnded != nil {
 				if event.CallEnded.Call.ID == rootCallID {
 					switch event.CallEnded.Outcome {
 					case model.OpOutcomeSucceeded:

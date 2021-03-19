@@ -38,7 +38,7 @@ func (hdlr _handler) Handle(
 	killOpReq := model.KillOpReq{}
 
 	err := json.NewDecoder(httpReq.Body).Decode(&killOpReq)
-	if nil != err {
+	if err != nil {
 		http.Error(httpResp, err.Error(), http.StatusBadRequest)
 		return
 	}

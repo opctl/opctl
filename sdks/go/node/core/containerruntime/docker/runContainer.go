@@ -74,7 +74,7 @@ func (cr _runContainer) RunContainer(
 	if err := cr.ensureNetworkExistser.EnsureNetworkExists(
 		ctx,
 		dockerNetworkName,
-	); nil != err {
+	); err != nil {
 		return nil, err
 	}
 
@@ -94,7 +94,7 @@ func (cr _runContainer) RunContainer(
 	}()
 
 	var imageErr error
-	if nil != req.Image.Src {
+	if req.Image.Src != nil {
 		imageRef := fmt.Sprintf("%s:latest", req.ContainerID)
 		req.Image.Ref = &imageRef
 
@@ -120,7 +120,7 @@ func (cr _runContainer) RunContainer(
 	portBindings, err := constructPortBindings(
 		req.Ports,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -137,7 +137,7 @@ func (cr _runContainer) RunContainer(
 			dockerNetworkName: {},
 		},
 	}
-	if nil != req.Name {
+	if req.Name != nil {
 		networkingConfig.EndpointsConfig[dockerNetworkName].Aliases = []string{
 			*req.Name,
 		}
@@ -157,13 +157,13 @@ func (cr _runContainer) RunContainer(
 		networkingConfig,
 		containerName,
 	)
-	if nil != createErr {
+	if createErr != nil {
 		select {
 		case <-ctx.Done():
 			// we got killed;
 			return nil, nil
 		default:
-			if nil == imageErr {
+			if imageErr == nil {
 				return nil, createErr
 			}
 			// if imageErr occurred prior; combine errors
@@ -176,7 +176,7 @@ func (cr _runContainer) RunContainer(
 		ctx,
 		containerCreatedResponse.ID,
 		types.ContainerStartOptions{},
-	); nil != err {
+	); err != nil {
 		return nil, err
 	}
 
@@ -189,7 +189,7 @@ func (cr _runContainer) RunContainer(
 			ctx,
 			containerName,
 			stderr,
-		); nil != err {
+		); err != nil {
 			errChan <- err
 		}
 		waitGroup.Done()
@@ -200,7 +200,7 @@ func (cr _runContainer) RunContainer(
 			ctx,
 			containerName,
 			stdout,
-		); nil != err {
+		); err != nil {
 			errChan <- err
 		}
 		waitGroup.Done()
@@ -222,7 +222,7 @@ func (cr _runContainer) RunContainer(
 	// ensure stdout, and stderr all read before returning
 	waitGroup.Wait()
 
-	if nil != err && len(errChan) > 0 {
+	if err != nil && len(errChan) > 0 {
 		// non-destructively set err
 		err = <-errChan
 	}

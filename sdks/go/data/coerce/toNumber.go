@@ -14,30 +14,30 @@ func ToNumber(
 	value *model.Value,
 ) (*model.Value, error) {
 	switch {
-	case nil == value:
+	case value == nil:
 		return &model.Value{Number: new(float64)}, nil
-	case nil != value.Array:
+	case value.Array != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce array to number")
-	case nil != value.Dir:
+	case value.Dir != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce dir to number")
-	case nil != value.File:
+	case value.File != nil:
 		fileBytes, err := ioutil.ReadFile(*value.File)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce file to number")
 		}
 
 		float64Value, err := strconv.ParseFloat(string(fileBytes), 64)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce file to number")
 		}
 		return &model.Value{Number: &float64Value}, nil
-	case nil != value.Number:
+	case value.Number != nil:
 		return value, nil
-	case nil != value.Object:
+	case value.Object != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce object to number")
-	case nil != value.String:
+	case value.String != nil:
 		float64Value, err := strconv.ParseFloat(*value.String, 64)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce string to number")
 		}
 		return &model.Value{Number: &float64Value}, nil

@@ -13,12 +13,12 @@ func Interpret(
 	parallelLoopCall := model.ParallelLoopCall{}
 
 	loopRangeSpec := parallelLoopCallSpec.Range
-	if nil != loopRangeSpec {
+	if loopRangeSpec != nil {
 		dcgLoopRange, err := loopable.Interpret(
 			loopRangeSpec,
 			scope,
 		)
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 

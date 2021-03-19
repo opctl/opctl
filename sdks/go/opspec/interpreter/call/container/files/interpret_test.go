@@ -74,12 +74,12 @@ var _ = Context("Interpret", func() {
 			containerFilePath := "/somewhere"
 
 			scratchDirPath, err := ioutil.TempDir("", "")
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 
 			referencedFile, err := ioutil.TempFile("", "")
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 

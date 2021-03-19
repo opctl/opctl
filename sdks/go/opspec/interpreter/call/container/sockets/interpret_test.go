@@ -30,7 +30,7 @@ var _ = Context("Interpret", func() {
 		}
 
 		providedScratchDirPath, err := ioutil.TempDir("", "")
-		if nil != err {
+		if err != nil {
 			panic(err)
 		}
 
@@ -45,7 +45,7 @@ var _ = Context("Interpret", func() {
 			providedContainerCallSpecSockets,
 			providedScratchDirPath,
 		)
-		if nil != err {
+		if err != nil {
 			panic(err)
 		}
 

@@ -16,22 +16,22 @@ func Interpret(
 	scope map[string]*model.Value,
 ) (bool, error) {
 	switch {
-	case nil != predicateSpec.Eq:
+	case predicateSpec.Eq != nil:
 		return eq.Interpret(
 			*predicateSpec.Eq,
 			scope,
 		)
-	case nil != predicateSpec.Exists:
+	case predicateSpec.Exists != nil:
 		return exists.Interpret(
 			*predicateSpec.Exists,
 			scope,
 		)
-	case nil != predicateSpec.Ne:
+	case predicateSpec.Ne != nil:
 		return ne.Interpret(
 			*predicateSpec.Ne,
 			scope,
 		)
-	case nil != predicateSpec.NotExists:
+	case predicateSpec.NotExists != nil:
 		return notexists.Interpret(
 			*predicateSpec.NotExists,
 			scope,

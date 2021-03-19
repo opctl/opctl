@@ -43,7 +43,7 @@ func Interpret(
 		containerID,
 		"fs",
 	)
-	if err := os.MkdirAll(scratchDirPath, 0700); nil != err {
+	if err := os.MkdirAll(scratchDirPath, 0700); err != nil {
 		return nil, err
 	}
 
@@ -53,7 +53,7 @@ func Interpret(
 		scope,
 		containerCallSpec.Cmd,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -66,7 +66,7 @@ func Interpret(
 		scratchDirPath,
 		dataCachePath,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -75,7 +75,7 @@ func Interpret(
 		scope,
 		containerCallSpec.EnvVars,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -86,7 +86,7 @@ func Interpret(
 		scratchDirPath,
 		dataCachePath,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -96,29 +96,29 @@ func Interpret(
 		containerCallSpec.Image,
 		scratchDirPath,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
 	// interpret name as string
-	if nil != containerCallSpec.Name {
+	if containerCallSpec.Name != nil {
 		containerCallName, err := str.Interpret(
 			scope,
 			*containerCallSpec.Name,
 		)
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 		containerCall.Name = containerCallName.String
 	}
 
 	// interpret workDir
-	if "" != containerCallSpec.WorkDir {
+	if containerCallSpec.WorkDir != "" {
 		containerCallWorkDir, err := str.Interpret(
 			scope,
 			containerCallSpec.WorkDir,
 		)
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 

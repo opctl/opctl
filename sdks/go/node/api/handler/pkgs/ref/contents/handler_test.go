@@ -35,7 +35,7 @@ var _ = Context("Handler", func() {
 				"",
 				nil,
 			)
-			if nil != err {
+			if err != nil {
 				panic(err.Error())
 			}
 
@@ -67,7 +67,7 @@ var _ = Context("Handler", func() {
 					"",
 					nil,
 				)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 
@@ -94,7 +94,7 @@ var _ = Context("Handler", func() {
 				fakeHandle.ListDescendantsReturns(contentsList, nil)
 
 				expectedBodyBytes, err := json.Marshal(contentsList)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -109,7 +109,7 @@ var _ = Context("Handler", func() {
 					"",
 					nil,
 				)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 

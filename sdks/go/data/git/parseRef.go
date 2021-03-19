@@ -13,7 +13,7 @@ func parseRef(
 	dataRef string,
 ) (*ref, error) {
 	refURI, err := url.Parse(filepath.ToSlash(dataRef))
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 

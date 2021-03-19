@@ -68,7 +68,7 @@ func (lpr _serialLoopCaller) Call(
 		callSpecSerialLoop.Range,
 		callSpecSerialLoop.Vars,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -77,7 +77,7 @@ func (lpr _serialLoopCaller) Call(
 		callSpecSerialLoop,
 		outboundScope,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -86,7 +86,7 @@ func (lpr _serialLoopCaller) Call(
 
 		var callID string
 		callID, err = uniquestring.Construct()
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 
@@ -114,8 +114,8 @@ func (lpr _serialLoopCaller) Call(
 		for event := range eventChannel {
 			// merge child outboundScope w/ outboundScope, child outboundScope having precedence
 			switch {
-			case nil != event.CallEnded && event.CallEnded.Call.ID == callID:
-				if nil != event.CallEnded.Error {
+			case event.CallEnded != nil && event.CallEnded.Call.ID == callID:
+				if event.CallEnded.Error != nil {
 					err = errors.New(event.CallEnded.Error.Message)
 					return nil, err
 				}
@@ -138,7 +138,7 @@ func (lpr _serialLoopCaller) Call(
 			callSpecSerialLoop.Range,
 			callSpecSerialLoop.Vars,
 		)
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 
@@ -147,7 +147,7 @@ func (lpr _serialLoopCaller) Call(
 			callSpecSerialLoop,
 			outboundScope,
 		)
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 	}

@@ -29,7 +29,7 @@ var _ = Context("Handler", func() {
 				providedHTTPResp := httptest.NewRecorder()
 
 				providedHTTPReq, err := http.NewRequest(http.MethodPost, api.URLOps_Kills, bytes.NewReader([]byte{}))
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 

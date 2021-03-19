@@ -1,16 +1,17 @@
 package ymlfile
 
 import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 	"os"
 	"path/filepath"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("ymlFileInputSrc", func() {
 	Context("ReadString()", func() {
 		wd, err := os.Getwd()
-		if nil != err {
+		if err != nil {
 			panic(err)
 		}
 		argsYmlTestDataPath := filepath.Join(wd, "testdata/args.yml")

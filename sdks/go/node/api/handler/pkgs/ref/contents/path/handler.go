@@ -48,7 +48,7 @@ func (hdlr _handler) Handle(
 		httpReq.Context(),
 		dataPath,
 	)
-	if nil != err {
+	if err != nil {
 		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 		return
 	}

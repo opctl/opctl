@@ -15,48 +15,48 @@ func ToString(
 	value *model.Value,
 ) (*model.Value, error) {
 	switch {
-	case nil == value:
+	case value == nil:
 		return &model.Value{String: new(string)}, nil
-	case nil != value.Array:
+	case value.Array != nil:
 		nativeArray, err := value.Unbox()
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce array to string")
 		}
 
 		arrayBytes, err := json.Marshal(nativeArray)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce array to string")
 		}
 		arrayString := string(arrayBytes)
 		return &model.Value{String: &arrayString}, nil
-	case nil != value.Boolean:
+	case value.Boolean != nil:
 		booleanString := strconv.FormatBool(*value.Boolean)
 		return &model.Value{String: &booleanString}, nil
-	case nil != value.Dir:
+	case value.Dir != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, fmt.Sprintf("unable to coerce dir '%v' to string", *value.Dir))
-	case nil != value.File:
+	case value.File != nil:
 		fileBytes, err := ioutil.ReadFile(*value.File)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce file to string")
 		}
 		fileString := string(fileBytes)
 		return &model.Value{String: &fileString}, nil
-	case nil != value.Number:
+	case value.Number != nil:
 		numberString := strconv.FormatFloat(*value.Number, 'f', -1, 64)
 		return &model.Value{String: &numberString}, nil
-	case nil != value.Object:
+	case value.Object != nil:
 		nativeObject, err := value.Unbox()
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce object to string")
 		}
 
 		objectBytes, err := json.Marshal(nativeObject)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce object to string")
 		}
 		objectString := string(objectBytes)
 		return &model.Value{String: &objectString}, nil
-	case nil != value.String:
+	case value.String != nil:
 		return value, nil
 	default:
 		return nil, fmt.Errorf("unable to coerce '%+v' to string", value)

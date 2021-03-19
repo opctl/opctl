@@ -12,7 +12,7 @@ import (
 var _ = Context("handle", func() {
 
 	wd, err := os.Getwd()
-	if nil != err {
+	if err != nil {
 		panic(err)
 	}
 
@@ -59,12 +59,12 @@ var _ = Context("handle", func() {
 				rootOpPath := filepath.Join(wd, "../testdata/listDescendants")
 
 				dirStat, err := os.Stat(filepath.Join(rootOpPath, "/dir1"))
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
 				fileStat, err := os.Stat(filepath.Join(rootOpPath, "/dir1/file2.txt"))
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -92,7 +92,7 @@ var _ = Context("handle", func() {
 
 				/* act */
 				actualContents, err := objectUnderTest.ListDescendants(nil)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 

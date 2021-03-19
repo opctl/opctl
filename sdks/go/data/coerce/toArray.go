@@ -14,33 +14,33 @@ func ToArray(
 	value *model.Value,
 ) (*model.Value, error) {
 	switch {
-	case nil == value:
+	case value == nil:
 		return nil, errors.New("unable to coerce null to array")
-	case nil != value.Array:
+	case value.Array != nil:
 		return value, nil
-	case nil != value.Boolean:
+	case value.Boolean != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce boolean to array")
-	case nil != value.Dir:
+	case value.Dir != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce dir to array")
-	case nil != value.File:
+	case value.File != nil:
 		fileBytes, err := ioutil.ReadFile(*value.File)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce file to array")
 		}
 		valueArray := new([]interface{})
 		err = json.Unmarshal([]byte(fileBytes), valueArray)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce file to array")
 		}
 		return &model.Value{Array: valueArray}, nil
-	case nil != value.Number:
+	case value.Number != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce number to array")
-	case nil != value.Socket:
+	case value.Socket != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce socket to array")
-	case nil != value.String:
+	case value.String != nil:
 		valueArray := new([]interface{})
 		err := json.Unmarshal([]byte(*value.String), valueArray)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce string to array")
 		}
 		return &model.Value{Array: valueArray}, nil

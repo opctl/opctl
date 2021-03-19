@@ -21,26 +21,26 @@ func Validate(
 	value *model.Value,
 	param *model.Param,
 ) []error {
-	if nil == value {
+	if value == nil {
 		return []error{errors.New("required")}
 	}
 
 	switch {
-	case nil != param.Array:
+	case param.Array != nil:
 		return array.Validate(value, param.Array.Constraints)
-	case nil != param.Boolean:
+	case param.Boolean != nil:
 		return boolean.Validate(value)
-	case nil != param.Dir:
+	case param.Dir != nil:
 		return dir.Validate(value)
-	case nil != param.File:
+	case param.File != nil:
 		return file.Validate(value)
-	case nil != param.Number:
+	case param.Number != nil:
 		return number.Validate(value, param.Number.Constraints)
-	case nil != param.String:
+	case param.String != nil:
 		return str.Validate(value, param.String.Constraints)
-	case nil != param.Object:
+	case param.Object != nil:
 		return object.Validate(value, param.Object.Constraints)
-	case nil != param.Socket:
+	case param.Socket != nil:
 		return socket.Validate(value)
 	default:
 		return []error{fmt.Errorf("unable to validate value: param was unexpected type %+v", param)}

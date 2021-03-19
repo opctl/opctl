@@ -70,7 +70,7 @@ var _ = Context("Interpret", func() {
 				providedOpPath,
 				providedDataDirPath,
 			)
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 
@@ -115,7 +115,7 @@ var _ = Context("Interpret", func() {
 			}
 
 			wd, err := os.Getwd()
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 			opRef := filepath.Join(wd, "testdata/testop")
@@ -132,7 +132,7 @@ var _ = Context("Interpret", func() {
 				providedOpPath,
 				providedDataDirPath,
 			)
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 

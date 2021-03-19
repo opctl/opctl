@@ -17,23 +17,23 @@ func ApplyDefaults(
 	// 1) default all params
 	for paramName, paramValue := range params {
 		// apply defaults
-		if nil != paramValue {
+		if paramValue != nil {
 			switch {
-			case nil != paramValue.Array && nil != paramValue.Array.Default:
+			case paramValue.Array != nil && paramValue.Array.Default != nil:
 				argsWithDefaults[paramName] = &model.Value{Array: paramValue.Array.Default}
-			case nil != paramValue.Boolean && nil != paramValue.Boolean.Default:
+			case paramValue.Boolean != nil && paramValue.Boolean.Default != nil:
 				argsWithDefaults[paramName] = &model.Value{Boolean: paramValue.Boolean.Default}
-			case nil != paramValue.Dir && nil != paramValue.Dir.Default && strings.HasPrefix(*paramValue.Dir.Default, "/"):
+			case paramValue.Dir != nil && paramValue.Dir.Default != nil && strings.HasPrefix(*paramValue.Dir.Default, "/"):
 				dirValue := filepath.Join(opPath, *paramValue.Dir.Default)
 				argsWithDefaults[paramName] = &model.Value{Dir: &dirValue}
-			case nil != paramValue.File && nil != paramValue.File.Default && strings.HasPrefix(*paramValue.File.Default, "/"):
+			case paramValue.File != nil && paramValue.File.Default != nil && strings.HasPrefix(*paramValue.File.Default, "/"):
 				fileValue := filepath.Join(opPath, *paramValue.File.Default)
 				argsWithDefaults[paramName] = &model.Value{File: &fileValue}
-			case nil != paramValue.Number && nil != paramValue.Number.Default:
+			case paramValue.Number != nil && paramValue.Number.Default != nil:
 				argsWithDefaults[paramName] = &model.Value{Number: paramValue.Number.Default}
-			case nil != paramValue.Object && nil != paramValue.Object.Default:
+			case paramValue.Object != nil && paramValue.Object.Default != nil:
 				argsWithDefaults[paramName] = &model.Value{Object: paramValue.Object.Default}
-			case nil != paramValue.String && nil != paramValue.String.Default:
+			case paramValue.String != nil && paramValue.String.Default != nil:
 				argsWithDefaults[paramName] = &model.Value{String: paramValue.String.Default}
 			}
 		}

@@ -37,7 +37,7 @@ var _ = Context("_git", func() {
 			Context("localFSProvider.TryResolve returns handle", func() {
 				It("should return handle", func() {
 					wd, err := os.Getwd()
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 					opRef := filepath.Join(wd, "../testdata/testop")

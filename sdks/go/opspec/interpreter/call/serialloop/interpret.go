@@ -14,12 +14,12 @@ func Interpret(
 	dcgSerialLoop := model.SerialLoopCall{}
 
 	loopRangeSpec := serialLoopCallSpec.Range
-	if nil != loopRangeSpec {
+	if loopRangeSpec != nil {
 		dcgLoopRange, err := loopable.Interpret(
 			loopRangeSpec,
 			scope,
 		)
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 
@@ -27,12 +27,12 @@ func Interpret(
 	}
 
 	callSpecLoopUntil := serialLoopCallSpec.Until
-	if nil != callSpecLoopUntil {
+	if callSpecLoopUntil != nil {
 		dcgLoopUntil, err := predicates.Interpret(
 			callSpecLoopUntil,
 			scope,
 		)
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 

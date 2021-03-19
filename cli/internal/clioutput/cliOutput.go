@@ -85,32 +85,32 @@ func (this _cliOutput) Error(s string) {
 
 func (this _cliOutput) Event(event *model.Event) {
 	switch {
-	case nil != event.CallEnded &&
-		nil == event.CallEnded.Call.Op &&
-		nil == event.CallEnded.Call.Container &&
-		nil != event.CallEnded.Error:
+	case event.CallEnded != nil &&
+		event.CallEnded.Call.Op == nil &&
+		event.CallEnded.Call.Container == nil &&
+		event.CallEnded.Error != nil:
 		this.error(event)
 
-	case nil != event.CallEnded &&
-		nil != event.CallEnded.Call.Container:
+	case event.CallEnded != nil &&
+		event.CallEnded.Call.Container != nil:
 		this.containerExited(event)
 
-	case nil != event.CallStarted &&
-		nil != event.CallStarted.Call.Container:
+	case event.CallStarted != nil &&
+		event.CallStarted.Call.Container != nil:
 		this.containerStarted(event)
 
-	case nil != event.ContainerStdErrWrittenTo:
+	case event.ContainerStdErrWrittenTo != nil:
 		this.containerStdErrWrittenTo(event)
 
-	case nil != event.ContainerStdOutWrittenTo:
+	case event.ContainerStdOutWrittenTo != nil:
 		this.containerStdOutWrittenTo(event)
 
-	case nil != event.CallEnded &&
-		nil != event.CallEnded.Call.Op:
+	case event.CallEnded != nil &&
+		event.CallEnded.Call.Op != nil:
 		this.opEnded(event)
 
-	case nil != event.CallStarted &&
-		nil != event.CallStarted.Call.Op:
+	case event.CallStarted != nil &&
+		event.CallStarted.Call.Op != nil:
 		this.opStarted(event)
 	}
 }
@@ -129,12 +129,12 @@ func (this _cliOutput) error(event *model.Event) {
 
 func (this _cliOutput) containerExited(event *model.Event) {
 	err := ""
-	if nil != event.CallEnded.Error {
+	if event.CallEnded.Error != nil {
 		err = fmt.Sprintf(" Error='%v'", event.CallEnded.Error.Message)
 	}
 
 	imageRef := ""
-	if nil != event.CallEnded.Call.Container.Image.Ref {
+	if event.CallEnded.Call.Container.Image.Ref != nil {
 		imageRef = fmt.Sprintf(" ImageRef='%v'", *event.CallEnded.Call.Container.Image.Ref)
 	}
 
@@ -158,7 +158,7 @@ func (this _cliOutput) containerExited(event *model.Event) {
 
 func (this _cliOutput) containerStarted(event *model.Event) {
 	imageRef := ""
-	if nil != event.CallStarted.Call.Container.Image.Ref {
+	if event.CallStarted.Call.Container.Image.Ref != nil {
 		imageRef = fmt.Sprintf(" ImageRef='%v'", *event.CallStarted.Call.Container.Image.Ref)
 	}
 
@@ -183,7 +183,7 @@ func (this _cliOutput) containerStdOutWrittenTo(event *model.Event) {
 
 func (this _cliOutput) opEnded(event *model.Event) {
 	err := ""
-	if nil != event.CallEnded.Error {
+	if event.CallEnded.Error != nil {
 		err = fmt.Sprintf(" Error='%v'", event.CallEnded.Error.Message)
 	}
 	message := fmt.Sprintf(

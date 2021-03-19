@@ -29,7 +29,7 @@ func New(
 	httpClient := pester.New()
 	httpClient.Backoff = pester.ExponentialBackoff
 
-	if nil != opts {
+	if opts != nil {
 		// handle options
 		httpClient.LogHook = func(errEntry pester.ErrEntry) {
 			// wire up retry log hook

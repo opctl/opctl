@@ -17,7 +17,7 @@ func Interpret(
 	scratchDir string,
 ) (*model.ContainerCallImage, error) {
 
-	if nil == containerCallImageSpec {
+	if containerCallImageSpec == nil {
 		return nil, errors.New("image required")
 	}
 
@@ -28,7 +28,7 @@ func Interpret(
 		scratchDir,
 		false,
 	)
-	if nil == err {
+	if err == nil {
 		return &model.ContainerCallImage{
 			Src: src,
 		}, nil
@@ -40,26 +40,26 @@ func Interpret(
 		scope,
 		containerCallImageSpec.Ref,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
 	parsedRef, err := reference.ParseAnyReference(strings.ToLower(*ref.String))
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 	parsedRefString := parsedRef.String()
 
 	containerCallImage.Ref = &parsedRefString
 
-	if nil != containerCallImageSpec.PullCreds {
+	if containerCallImageSpec.PullCreds != nil {
 		username, err := str.Interpret(scope, containerCallImageSpec.PullCreds.Username)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "error encountered interpreting image pullcreds username")
 		}
 
 		password, err := str.Interpret(scope, containerCallImageSpec.PullCreds.Password)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "error encountered interpreting image pullcreds password")
 		}
 

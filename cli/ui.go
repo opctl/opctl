@@ -30,7 +30,7 @@ func ui(
 	if strings.HasPrefix(mountRefArg, ".") {
 		// treat dot paths as regular rel paths
 		resolvedMount, err = filepath.Abs(mountRefArg)
-		if nil != err {
+		if err != nil {
 			return err
 		}
 	} else {
@@ -45,7 +45,7 @@ func ui(
 			mountRefArg,
 			nil,
 		)
-		if nil != err {
+		if err != nil {
 			return err
 		}
 

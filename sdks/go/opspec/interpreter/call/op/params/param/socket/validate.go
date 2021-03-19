@@ -10,7 +10,7 @@ func Validate(
 	value *model.Value,
 ) []error {
 	// handle no value passed
-	if nil == value || nil == value.Socket {
+	if value == nil || value.Socket == nil {
 		return []error{errors.New("socket required")}
 	}
 

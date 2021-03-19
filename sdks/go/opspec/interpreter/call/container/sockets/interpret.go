@@ -1,11 +1,12 @@
 package sockets
 
 import (
-	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 )
 
 // Interpret container sockets
@@ -29,13 +30,13 @@ func Interpret(
 			var outputSocket *os.File
 			outputSocket, err := os.Create(dcgHostSocketAddress)
 			outputSocket.Close()
-			if nil != err {
+			if err != nil {
 				return nil, err
 			}
 			if err := os.Chmod(
 				dcgHostSocketAddress,
 				os.ModeSocket,
-			); nil != err {
+			); err != nil {
 				return nil, err
 			}
 			containerCallSockets[callSpecContainerSocketAddress] = dcgHostSocketAddress

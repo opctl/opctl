@@ -100,18 +100,18 @@ var _ = Context("Install", func() {
 							fsDataSource := fs.New("")
 							ref := "testdata/testop"
 							handle, err := fsDataSource.TryResolve(providedCtx, ref)
-							if nil != err {
+							if err != nil {
 								panic(err)
 							}
 
 							expectedContent, err := ioutil.ReadFile(filepath.Join(ref, "op.yml"))
-							if nil != err {
+							if err != nil {
 								panic(err)
 							}
 
 							// create tmpfile to use as dst
 							tmpDir, err := ioutil.TempDir("", "")
-							if nil != err {
+							if err != nil {
 								panic(err)
 							}
 
@@ -120,7 +120,7 @@ var _ = Context("Install", func() {
 
 							/* assert */
 							actualContent, err := ioutil.ReadFile(filepath.Join(tmpDir, "op.yml"))
-							if nil != err {
+							if err != nil {
 								panic(err)
 							}
 

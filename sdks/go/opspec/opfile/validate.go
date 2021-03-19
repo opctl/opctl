@@ -15,7 +15,7 @@ func Validate(
 ) []error {
 
 	opFileSchemaBytes, err := _escFSByte(false, "/opspec/opfile/jsonschema.json")
-	if nil != err {
+	if err != nil {
 		return []error{err}
 	}
 
@@ -28,7 +28,7 @@ func Validate(
 
 	var unmarshalledYAML map[string]interface{}
 	err = yaml.Unmarshal(opFileBytes, &unmarshalledYAML)
-	if nil != err {
+	if err != nil {
 		// handle syntax errors specially
 		return []error{err}
 	}
@@ -37,7 +37,7 @@ func Validate(
 	result, err := opFileSchema.Validate(
 		gojsonschema.NewGoLoader(unmarshalledYAML),
 	)
-	if nil != err {
+	if err != nil {
 		// handle syntax errors specially
 		return append(errs, err)
 	}

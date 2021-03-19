@@ -20,12 +20,12 @@ func Validate(
 	gojsonschema.FormatCheckers.Add("integer", formats.IntegerFormatChecker{})
 
 	valueAsNumber, err := coerce.ToNumber(value)
-	if nil != err {
+	if err != nil {
 		return []error{err}
 	}
 
 	// guard no constraints
-	if nil != constraints {
+	if constraints != nil {
 		errs := []error{}
 
 		valueJSONBytes, err := json.Marshal(valueAsNumber.Number)

@@ -45,7 +45,7 @@ func (dtr _dataResolver) Resolve(
 	pullCreds *model.Creds,
 ) (model.DataHandle, error) {
 	cwd, err := os.Getwd()
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -107,7 +107,7 @@ func (dtr _dataResolver) Resolve(
 				cliparamsatisfier.NewInputSourcer(cliPromptInputSrc),
 				credsPromptInputs,
 			)
-			if nil != err {
+			if err != nil {
 				return nil, err
 			}
 

@@ -15,7 +15,7 @@ func New(ctx context.Context) (
 ) {
 
 	dockerClient, err := dockerClientPkg.NewClientWithOpts(dockerClientPkg.FromEnv)
-	if nil != err {
+	if err != nil {
 		return
 	}
 
@@ -23,7 +23,7 @@ func New(ctx context.Context) (
 	dockerClient.NegotiateAPIVersion(ctx)
 
 	rc, err := newRunContainer(ctx, dockerClient)
-	if nil != err {
+	if err != nil {
 		return
 	}
 

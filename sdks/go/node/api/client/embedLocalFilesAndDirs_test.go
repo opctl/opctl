@@ -15,7 +15,7 @@ import (
 var _ = Context("embedLocalFilesAndDirs", func() {
 	initialMaxEmbedBytes := maxEmbedBytes
 	wd, err := os.Getwd()
-	if nil != err {
+	if err != nil {
 		panic(err)
 	}
 

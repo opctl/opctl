@@ -69,7 +69,7 @@ var _ = Context("Interpret", func() {
 				providedExpression := fmt.Sprintf("$(%s)", name)
 
 				expectedResult, err := array.Interpret(providedScope, providedExpression)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -96,7 +96,7 @@ var _ = Context("Interpret", func() {
 				providedExpression := fmt.Sprintf("$(%s)", name)
 
 				expectedResult, err := boolean.Interpret(providedScope, providedExpression)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -124,7 +124,7 @@ var _ = Context("Interpret", func() {
 				providedScratchDirPath := "dummyScratchDir"
 
 				expectedResult, err := dir.Interpret(providedScope, providedExpression, providedScratchDirPath, true)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -152,7 +152,7 @@ var _ = Context("Interpret", func() {
 				providedScratchDirPath := "dummyScratchDir"
 
 				expectedResult, err := file.Interpret(providedScope, providedExpression, providedScratchDirPath, true)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -179,7 +179,7 @@ var _ = Context("Interpret", func() {
 				providedExpression := fmt.Sprintf("$(%s)", name)
 
 				expectedResult, err := number.Interpret(providedScope, providedExpression)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -206,7 +206,7 @@ var _ = Context("Interpret", func() {
 				providedExpression := fmt.Sprintf("$(%s)", name)
 
 				expectedResult, err := object.Interpret(providedScope, providedExpression)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -233,7 +233,7 @@ var _ = Context("Interpret", func() {
 				providedExpression := fmt.Sprintf("$(%s)", name)
 
 				expectedResult, err := str.Interpret(providedScope, providedExpression)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -277,7 +277,7 @@ var _ = Context("Interpret", func() {
 				providedExpression := fmt.Sprintf("$(%s)", name)
 
 				expectedResult, err := reference.Interpret(providedExpression, providedScope, nil)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 

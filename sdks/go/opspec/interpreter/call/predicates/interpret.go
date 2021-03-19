@@ -15,7 +15,7 @@ func Interpret(
 			predicateSpec,
 			scope,
 		)
-		if nil != err {
+		if err != nil {
 			return false, err
 		}
 

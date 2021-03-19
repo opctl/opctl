@@ -19,7 +19,7 @@ func (c apiClient) AddAuth(
 ) error {
 
 	reqBytes, err := json.Marshal(req)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 
@@ -32,19 +32,19 @@ func (c apiClient) AddAuth(
 		reqURL.String(),
 		bytes.NewBuffer(reqBytes),
 	)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 
 	httpResp, err := c.httpClient.Do(httpReq)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 	// don't leak resources
 	defer httpResp.Body.Close()
 
 	bodyBytes, err := ioutil.ReadAll(httpResp.Body)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 

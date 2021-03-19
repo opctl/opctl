@@ -14,13 +14,13 @@ func (np nodeProvider) KillNodeIfExists(
 			"pid.lock",
 		),
 	)
-	if 0 != pIDOfLockOwner {
+	if pIDOfLockOwner != 0 {
 		nodeProcess, err := os.FindProcess(pIDOfLockOwner)
-		if nil != err {
+		if err != nil {
 			return err
 		}
 
-		if nil != nodeProcess {
+		if nodeProcess != nil {
 			return nodeProcess.Kill()
 		}
 	}

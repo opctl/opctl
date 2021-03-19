@@ -19,7 +19,7 @@ var _ = Context("Handler", func() {
 				objectUnderTest := _handler{}
 
 				providedHTTPReq, err := http.NewRequest("dummyMethod", "", nil)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 
@@ -37,7 +37,7 @@ var _ = Context("Handler", func() {
 				providedHTTPResp := httptest.NewRecorder()
 
 				providedHTTPReq, err := http.NewRequest("dummyMethod", "blah", nil)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 

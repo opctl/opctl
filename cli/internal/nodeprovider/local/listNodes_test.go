@@ -13,12 +13,12 @@ import (
 
 var _ = Context("listNodes", func() {
 	tmpDir, err := ioutil.TempDir("", "")
-	if nil != err {
+	if err != nil {
 		panic(err)
 	}
 
 	dataDir, newDataDirErr := datadir.New(tmpDir)
-	if nil != newDataDirErr {
+	if newDataDirErr != nil {
 		panic(newDataDirErr)
 	}
 
@@ -58,7 +58,7 @@ var _ = Context("listNodes", func() {
 			/* arrange */
 			listenAddress := "127.0.0.1:42224"
 			expectedNode, err := newAPIClientNode(listenAddress)
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 

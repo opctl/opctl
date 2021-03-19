@@ -39,7 +39,7 @@ var _ = Context("Handler", func() {
 				providedHTTPResp := httptest.NewRecorder()
 
 				providedHTTPReq, err := http.NewRequest(http.MethodGet, api.URLEvents_Stream, bytes.NewReader([]byte{}))
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 
@@ -69,7 +69,7 @@ var _ = Context("Handler", func() {
 						fmt.Sprintf("%v?since=%v", api.URLEvents_Stream, invalidSince),
 						bytes.NewReader([]byte{}),
 					)
-					if nil != err {
+					if err != nil {
 						panic(err.Error())
 					}
 
@@ -111,7 +111,7 @@ var _ = Context("Handler", func() {
 						fmt.Sprintf("%v?since=%v", api.URLEvents_Stream, expectedSince.Format(time.RFC3339)),
 						bytes.NewReader([]byte{}),
 					)
-					if nil != err {
+					if err != nil {
 						panic(err.Error())
 					}
 
@@ -158,7 +158,7 @@ var _ = Context("Handler", func() {
 					fmt.Sprintf("%v?roots=%v,%v", api.URLEvents_Stream, expectedRoots[0], expectedRoots[1]),
 					bytes.NewReader([]byte{}),
 				)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 

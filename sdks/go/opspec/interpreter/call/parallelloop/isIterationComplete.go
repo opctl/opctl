@@ -10,11 +10,11 @@ func IsIterationComplete(
 	parallelLoopCall model.ParallelLoopCall,
 ) bool {
 	loopRange := parallelLoopCall.Range
-	if nil != loopRange {
-		if nil != loopRange.Array {
+	if loopRange != nil {
+		if loopRange.Array != nil {
 			return index >= len(*loopRange.Array)
 		}
-		if nil != loopRange.Object {
+		if loopRange.Object != nil {
 			return index >= len(*loopRange.Object)
 		}
 

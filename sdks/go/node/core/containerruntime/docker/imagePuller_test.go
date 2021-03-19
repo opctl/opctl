@@ -40,7 +40,7 @@ var _ = Context("imagePuller", func() {
 				"",
 				new(FakeEventPublisher),
 			)
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 

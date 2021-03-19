@@ -14,7 +14,7 @@ func selfUpdate(
 ) (string, error) {
 	v := semver.MustParse(version)
 	latest, err := selfupdate.UpdateSelf(v, "opctl/opctl")
-	if nil != err {
+	if err != nil {
 		return "", err
 	}
 
@@ -25,7 +25,7 @@ func selfUpdate(
 	// kill local node to ensure outdated version not left running
 	// @TODO start node maintaining previous user
 	err = nodeProvider.KillNodeIfExists("")
-	if nil != err {
+	if err != nil {
 		err = errors.Wrap(err, "unable to kill running node; run `node kill` to complete the update")
 	}
 	return fmt.Sprintf("Updated to new version: %s!", latest.Version), err

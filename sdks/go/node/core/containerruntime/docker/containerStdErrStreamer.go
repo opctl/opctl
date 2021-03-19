@@ -2,9 +2,10 @@ package docker
 
 import (
 	"context"
+	"io"
+
 	"github.com/docker/docker/api/types"
 	dockerClientPkg "github.com/docker/docker/client"
-	"io"
 )
 
 func newContainerStdErrStreamer(
@@ -32,7 +33,7 @@ func (cses _containerStdErrStreamer) Stream(
 			ShowStderr: true,
 		},
 	)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 

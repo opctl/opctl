@@ -23,12 +23,12 @@ func Validate(
 	gojsonschema.FormatCheckers.Add("semver", formats.SemVerFormatChecker{})
 
 	valueAsString, err := coerce.ToString(value)
-	if nil != err {
+	if err != nil {
 		return []error{err}
 	}
 
 	// guard no constraints
-	if nil != constraints {
+	if constraints != nil {
 		errs := []error{}
 
 		valueJSONBytes, err := json.Marshal(valueAsString.String)

@@ -9,17 +9,17 @@ func IsIterationComplete(
 	index int,
 	dcgSerialLoop *model.SerialLoopCall,
 ) bool {
-	if nil != dcgSerialLoop.Until && *dcgSerialLoop.Until {
+	if dcgSerialLoop.Until != nil && *dcgSerialLoop.Until {
 		// exit condition provided & met
 		return true
 	}
 
 	loopRange := dcgSerialLoop.Range
-	if nil != loopRange {
-		if nil != loopRange.Array {
+	if loopRange != nil {
+		if loopRange.Array != nil {
 			return index == len(*loopRange.Array)
 		}
-		if nil != loopRange.Object {
+		if loopRange.Object != nil {
 			return index == len(*loopRange.Object)
 		}
 

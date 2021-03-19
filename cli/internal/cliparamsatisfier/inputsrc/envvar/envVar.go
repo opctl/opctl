@@ -25,7 +25,7 @@ func (this envVarInputSrc) ReadString(
 		return nil, false
 	}
 
-	if inputValue := os.Getenv(inputName); "" != inputValue {
+	if inputValue := os.Getenv(inputName); inputValue != "" {
 		// track read history
 		this.readHistory[inputName] = struct{}{}
 

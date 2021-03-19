@@ -57,7 +57,7 @@ var _ = Context("Interpret", func() {
 			}
 
 			parsedImageRef, err := reference.ParseAnyReference(strings.ToLower(refValue))
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 

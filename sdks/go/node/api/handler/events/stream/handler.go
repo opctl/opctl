@@ -48,7 +48,7 @@ func (hdlr _handler) Handle(
 	httpReq *http.Request,
 ) {
 	conn, err := hdlr.upgrader.Upgrade(httpResp, httpReq, nil)
-	if nil != err {
+	if err != nil {
 		http.Error(httpResp, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -56,16 +56,16 @@ func (hdlr _handler) Handle(
 	defer conn.Close()
 
 	req := &model.GetEventStreamReq{Filter: model.EventFilter{}}
-	if sinceString := httpReq.URL.Query().Get("since"); "" != sinceString {
+	if sinceString := httpReq.URL.Query().Get("since"); sinceString != "" {
 		sinceTime, err := time.Parse(time.RFC3339, sinceString)
-		if nil != err {
+		if err != nil {
 			http.Error(httpResp, err.Error(), http.StatusBadRequest)
 			return
 		}
 		req.Filter.Since = &sinceTime
 	}
 
-	if rootsString := httpReq.URL.Query().Get("roots"); "" != rootsString {
+	if rootsString := httpReq.URL.Query().Get("roots"); rootsString != "" {
 		rootsArray := strings.Split(rootsString, ",")
 		req.Filter.Roots = rootsArray
 	}
@@ -90,14 +90,14 @@ func (hdlr _handler) Handle(
 		}
 
 		err := conn.WriteJSON(event)
-		if nil != err {
+		if err != nil {
 			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		if isAckRequested {
 			_, _, err := conn.ReadMessage()
-			if nil != err {
+			if err != nil {
 				http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 				return
 			}

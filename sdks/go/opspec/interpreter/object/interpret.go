@@ -20,7 +20,7 @@ func Interpret(
 		expression,
 		scope,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, errors.Wrap(err, fmt.Sprintf("unable to interpret %+v to object", expression))
 	}
 

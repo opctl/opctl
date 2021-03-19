@@ -16,7 +16,7 @@ func ParseIndex(
 		10,
 		64,
 	)
-	if nil != err {
+	if err != nil {
 		return -1, err
 	}
 

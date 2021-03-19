@@ -29,7 +29,7 @@ var _ = Context("Interpret", func() {
 			providedValue := model.Value{String: &providedExpression}
 
 			expectedValue, err := coerce.ToString(&providedValue)
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 
