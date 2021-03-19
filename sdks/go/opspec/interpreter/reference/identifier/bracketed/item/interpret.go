@@ -13,13 +13,13 @@ func Interpret(
 	data model.Value,
 ) (*model.Value, error) {
 	itemIndex, err := ParseIndex(indexString, *data.Array)
-	if nil != err {
+	if err != nil {
 		return nil, errors.Wrap(err, "unable to interpret item")
 	}
 
 	item := (*data.Array)[itemIndex]
 	itemValue, err := value.Construct(item)
-	if nil != err {
+	if err != nil {
 		return nil, errors.Wrap(err, "unable to interpret item")
 	}
 

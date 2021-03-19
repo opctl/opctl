@@ -34,27 +34,27 @@ func (this paramDefaultInputSrc) ReadString(
 		this.readHistory[inputName] = struct{}{}
 
 		switch {
-		case nil != inputValue.Array && nil != inputValue.Array.Default:
+		case inputValue.Array != nil && inputValue.Array.Default != nil:
 			return nil, true
-		case nil != inputValue.Boolean && nil != inputValue.Boolean.Default:
+		case inputValue.Boolean != nil && inputValue.Boolean.Default != nil:
 			return nil, true
-		case nil != inputValue.Dir && nil != inputValue.Dir.Default:
+		case inputValue.Dir != nil && inputValue.Dir.Default != nil:
 			if strings.HasPrefix(*inputValue.Dir.Default, "/") {
 				// defaulted to pkg dir
 				return nil, true
 			}
 			return inputValue.Dir.Default, true
-		case nil != inputValue.File && nil != inputValue.File.Default:
+		case inputValue.File != nil && inputValue.File.Default != nil:
 			if strings.HasPrefix(*inputValue.File.Default, "/") {
 				// defaulted to pkg file
 				return nil, true
 			}
 			return inputValue.File.Default, true
-		case nil != inputValue.Number && nil != inputValue.Number.Default:
+		case inputValue.Number != nil && inputValue.Number.Default != nil:
 			return nil, true
-		case nil != inputValue.Object && nil != inputValue.Object.Default:
+		case inputValue.Object != nil && inputValue.Object.Default != nil:
 			return nil, true
-		case nil != inputValue.String && nil != inputValue.String.Default:
+		case inputValue.String != nil && inputValue.String.Default != nil:
 			return nil, true
 		}
 	}

@@ -30,7 +30,7 @@ func Unmarshal(
 			`%v
 -`, messageBuffer.String())
 	}
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 

@@ -50,7 +50,7 @@ var _ = Context("core", func() {
 
 					// use local op
 					wd, err := os.Getwd()
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 					providedOpPath := filepath.Join(wd, "testdata/startOp")

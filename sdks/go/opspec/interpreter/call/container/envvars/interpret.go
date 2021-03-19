@@ -15,7 +15,7 @@ func Interpret(
 	scope map[string]*model.Value,
 	containerCallSpecEnvVars interface{},
 ) (map[string]string, error) {
-	if nil == containerCallSpecEnvVars {
+	if containerCallSpecEnvVars == nil {
 		return nil, nil
 	}
 
@@ -23,7 +23,7 @@ func Interpret(
 		scope,
 		containerCallSpecEnvVars,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, errors.Wrap(err, fmt.Sprintf(
 			"unable to interpret '%v' as envVars",
 			containerCallSpecEnvVars,
@@ -33,12 +33,12 @@ func Interpret(
 	envVarsStringMap := map[string]string{}
 	for envVarName, envVarValueInterface := range *envVarsMap.Object {
 		envVarValue, err := value.Construct(envVarValueInterface)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("unable to construct value for env var '%s'", envVarName))
 		}
 
 		envVarValueString, err := coerce.ToString(envVarValue)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf(
 				"unable to interpret '%+v' as value of env var '%v'",
 				envVarValue,

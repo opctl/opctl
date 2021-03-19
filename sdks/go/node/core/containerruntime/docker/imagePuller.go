@@ -3,12 +3,13 @@ package docker
 import (
 	"context"
 	"encoding/json"
+	"io"
+
 	"github.com/docker/docker/api/types"
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/pubsub"
-	"io"
 )
 
 //counterfeiter:generate -o internal/fakes/imagePuller.go . imagePuller
@@ -45,15 +46,15 @@ func (ip _imagePuller) Pull(
 ) error {
 
 	imagePullOptions := types.ImagePullOptions{}
-	if nil != imagePullCreds &&
-		"" != imagePullCreds.Username &&
-		"" != imagePullCreds.Password {
+	if imagePullCreds != nil &&
+		imagePullCreds.Username != "" &&
+		imagePullCreds.Password != "" {
 		var err error
 		imagePullOptions.RegistryAuth, err = constructRegistryAuth(
 			imagePullCreds.Username,
 			imagePullCreds.Password,
 		)
-		if nil != err {
+		if err != nil {
 			return err
 		}
 	}
@@ -63,7 +64,7 @@ func (ip _imagePuller) Pull(
 		imageRef,
 		imagePullOptions,
 	)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 	defer imagePullResp.Close()
@@ -74,7 +75,7 @@ func (ip _imagePuller) Pull(
 	dec := json.NewDecoder(imagePullResp)
 	for {
 		var jm jsonmessage.JSONMessage
-		if err = dec.Decode(&jm); nil != err {
+		if err = dec.Decode(&jm); err != nil {
 			if err == io.EOF {
 				err = nil
 			}

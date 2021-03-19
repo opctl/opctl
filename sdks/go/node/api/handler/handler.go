@@ -48,7 +48,7 @@ func (hdlr _handler) ServeHTTP(
 	httpReq.Body = http.MaxBytesReader(httpResp, httpReq.Body, maxReqBytes)
 
 	pathSegment, err := urlpath.NextSegment(httpReq.URL)
-	if nil != err {
+	if err != nil {
 		http.Error(httpResp, err.Error(), http.StatusBadRequest)
 		return
 	}

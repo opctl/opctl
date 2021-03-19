@@ -26,16 +26,16 @@ func embedLocalFilesAndDirs(
 	var totalSize int64
 	for key, val := range args {
 		var fileOrDirPath string
-		if nil != val.Dir {
+		if val.Dir != nil {
 			fileOrDirPath = *val.Dir
-		} else if nil != val.File {
+		} else if val.File != nil {
 			fileOrDirPath = *val.File
 		} else {
 			continue
 		}
 
 		fileObj, size, err := fileOrDirPathToObject(fileOrDirPath)
-		if nil != err {
+		if err != nil {
 			return err
 		}
 
@@ -54,7 +54,7 @@ func fileOrDirPathToObject(
 	path string,
 ) (map[string]interface{}, int64, error) {
 	info, err := os.Stat(path)
-	if nil != err {
+	if err != nil {
 		return nil, 0, err
 	}
 
@@ -64,7 +64,7 @@ func fileOrDirPathToObject(
 		}
 
 		body, err := ioutil.ReadFile(path)
-		if nil != err {
+		if err != nil {
 			return nil, 0, err
 		}
 
@@ -74,7 +74,7 @@ func fileOrDirPathToObject(
 	}
 
 	childFileInfos, err := ioutil.ReadDir(path)
-	if nil != err {
+	if err != nil {
 		return nil, 0, err
 	}
 
@@ -86,7 +86,7 @@ func fileOrDirPathToObject(
 		}
 
 		childFileObject, childSize, err := fileOrDirPathToObject(filepath.Join(path, childFileInfo.Name()))
-		if nil != err {
+		if err != nil {
 			return nil, 0, err
 		}
 		fileObject[fmt.Sprintf("/%s", childFileInfo.Name())] = childFileObject

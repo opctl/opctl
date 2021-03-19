@@ -43,7 +43,7 @@ func (hdlr _handler) Handle(
 	httpReq *http.Request,
 ) {
 	pathSegment, err := urlpath.NextSegment(httpReq.URL)
-	if nil != err {
+	if err != nil {
 		http.Error(httpResp, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -53,14 +53,14 @@ func (hdlr _handler) Handle(
 		dirEntriesList, err := dataHandle.ListDescendants(
 			httpReq.Context(),
 		)
-		if nil != err {
+		if err != nil {
 			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		httpResp.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-		if err := json.NewEncoder(httpResp).Encode(dirEntriesList); nil != err {
+		if err := json.NewEncoder(httpResp).Encode(dirEntriesList); err != nil {
 			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 			return
 		}

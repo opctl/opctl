@@ -18,7 +18,7 @@ func (ctp _containerRuntime) DeleteContainerIfExists(
 			Force:         true,
 		},
 	)
-	if nil != err {
+	if err != nil {
 		return errors.Wrap(err, "unable to delete container")
 	}
 

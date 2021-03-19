@@ -74,7 +74,7 @@ func (sc _serialCaller) Call(
 
 		var childCallID string
 		childCallID, err := uniquestring.Construct()
-		if nil != err {
+		if err != nil {
 			// end run immediately on any error
 			return nil, err
 		}
@@ -93,8 +93,8 @@ func (sc _serialCaller) Call(
 		for event := range eventChannel {
 			// merge child outboundScope w/ outboundScope, child outboundScope having precedence
 			switch {
-			case nil != event.CallEnded && event.CallEnded.Call.ID == childCallID:
-				if nil != event.CallEnded.Error {
+			case event.CallEnded != nil && event.CallEnded.Call.ID == childCallID:
+				if event.CallEnded.Error != nil {
 					// end on any error
 					return nil, errors.New(event.CallEnded.Error.Message)
 				}

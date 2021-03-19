@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/sdks/go/opspec"
 )
@@ -16,7 +17,7 @@ func opValidate(
 		opRef,
 		nil,
 	)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 

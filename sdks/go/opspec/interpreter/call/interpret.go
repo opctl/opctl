@@ -32,12 +32,12 @@ func Interpret(
 	}
 	var err error
 
-	if nil != callSpec.If {
+	if callSpec.If != nil {
 		callIf, err := predicates.Interpret(
 			*callSpec.If,
 			scope,
 		)
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 
@@ -50,7 +50,7 @@ func Interpret(
 	}
 
 	switch {
-	case nil != callSpec.Container:
+	case callSpec.Container != nil:
 		call.Container, err = container.Interpret(
 			scope,
 			callSpec.Container,
@@ -59,7 +59,7 @@ func Interpret(
 			dataDirPath,
 		)
 		return call, err
-	case nil != callSpec.Op:
+	case callSpec.Op != nil:
 		call.Op, err = op.Interpret(
 			ctx,
 			scope,
@@ -69,19 +69,19 @@ func Interpret(
 			dataDirPath,
 		)
 		return call, err
-	case nil != callSpec.Parallel:
+	case callSpec.Parallel != nil:
 		call.Parallel = *callSpec.Parallel
 		return call, nil
-	case nil != callSpec.ParallelLoop:
+	case callSpec.ParallelLoop != nil:
 		call.ParallelLoop, err = parallelloop.Interpret(
 			*callSpec.ParallelLoop,
 			scope,
 		)
 		return call, err
-	case nil != callSpec.Serial:
+	case callSpec.Serial != nil:
 		call.Serial = *callSpec.Serial
 		return call, nil
-	case nil != callSpec.SerialLoop:
+	case callSpec.SerialLoop != nil:
 		call.SerialLoop, err = serialloop.Interpret(
 			*callSpec.SerialLoop,
 			scope,

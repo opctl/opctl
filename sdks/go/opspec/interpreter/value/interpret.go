@@ -33,11 +33,11 @@ func Interpret(
 				propertyKeyExpression,
 				scope,
 			)
-			if nil != err {
+			if err != nil {
 				return model.Value{}, err
 			}
 
-			if nil == propertyValueExpression {
+			if propertyValueExpression == nil {
 				// implicit reference
 				propertyValueExpression = opspec.NameToRef(propertyKeyExpression)
 			}
@@ -45,26 +45,26 @@ func Interpret(
 				propertyValueExpression,
 				scope,
 			)
-			if nil != err {
+			if err != nil {
 				return model.Value{}, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v: %v' as object initializer property", propertyKeyExpression, propertyValueExpression))
 			}
 
-			if nil != propertyValue.File {
+			if propertyValue.File != nil {
 				fileBytes, err := ioutil.ReadFile(*propertyValue.File)
-				if nil != err {
+				if err != nil {
 					return model.Value{}, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v: %v' as object initializer property", propertyKeyExpression, propertyValueExpression))
 				}
 
 				value[propertyKey] = string(fileBytes)
 				continue
-			} else if nil != propertyValue.Dir {
+			} else if propertyValue.Dir != nil {
 				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property: directories aren't valid object properties", propertyKeyExpression, propertyValueExpression)
-			} else if nil != propertyValue.Socket {
+			} else if propertyValue.Socket != nil {
 				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property: sockets aren't valid object properties", propertyKeyExpression, propertyValueExpression)
 			}
 
 			unboxedPropertyValue, unboxErr := propertyValue.Unbox()
-			if nil != unboxErr {
+			if unboxErr != nil {
 				return model.Value{}, unboxErr
 			}
 
@@ -80,7 +80,7 @@ func Interpret(
 				itemExpression,
 				scope,
 			)
-			if nil != err {
+			if err != nil {
 				return model.Value{}, errors.Wrap(err, fmt.Sprintf("unable to interpret '%+v' as array initializer item", itemExpression))
 			}
 			value = append(value, itemValue)
@@ -95,7 +95,7 @@ func Interpret(
 				scope,
 				nil,
 			)
-			if nil == err {
+			if err == nil {
 				return *value, nil
 			}
 		}
@@ -106,7 +106,7 @@ func Interpret(
 			typedValueExpression,
 			scope,
 		)
-		if nil != err {
+		if err != nil {
 			return model.Value{}, err
 		}
 

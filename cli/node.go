@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+
 	"github.com/opctl/opctl/cli/internal/datadir"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 	"github.com/opctl/opctl/sdks/go/node/core"
@@ -16,23 +17,23 @@ func node(
 	nodeCreateOpts local.NodeCreateOpts,
 ) error {
 	dataDir, err := datadir.New(nodeCreateOpts.DataDir)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 
-	if err := dataDir.InitAndLock(); nil != err {
+	if err := dataDir.InitAndLock(); err != nil {
 		return err
 	}
 
 	var containerRuntime containerruntime.ContainerRuntime
 	if "k8s" == nodeCreateOpts.ContainerRuntime {
 		containerRuntime, err = k8s.New()
-		if nil != err {
+		if err != nil {
 			return err
 		}
 	} else {
 		containerRuntime, err = docker.New(ctx)
-		if nil != err {
+		if err != nil {
 			return err
 		}
 	}

@@ -33,7 +33,7 @@ func constructAPIClient(
 ) client.Client {
 	// get client
 	nodeURL, err := url.Parse("http://localhost:42224/api")
-	if nil != err {
+	if err != nil {
 		panic(err)
 	}
 
@@ -62,7 +62,7 @@ func main() {
 			},
 		},
 	)
-	if nil != err {
+	if err != nil {
 		panic(err)
 	}
 
@@ -76,7 +76,7 @@ func main() {
 			},
 		},
 	)
-	if nil != err {
+	if err != nil {
 		panic(err)
 	}
 
@@ -84,12 +84,12 @@ func main() {
 
 		// print events
 		eventAsJSON, err := json.MarshalIndent(event, "", "    ")
-		if nil != err {
+		if err != nil {
 			panic(err)
 		}
 		fmt.Println(string(eventAsJSON))
 
-		if nil != event.CallEnded &&
+		if event.CallEnded != nil &&
 			event.CallEnded.CallID == rootID {
 
 			// close event stream on root op ended

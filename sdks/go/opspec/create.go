@@ -21,7 +21,7 @@ func Create(
 		path,
 		0777,
 	)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 
@@ -31,7 +31,7 @@ func Create(
 	}
 
 	opFileBytes, err := yaml.Marshal(&opFile)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 

@@ -22,10 +22,10 @@ var _ = Context("Validate", func() {
 				func(path string, info os.FileInfo, err error) error {
 					if info.IsDir() {
 						scenariosOpFilePath := filepath.Join(path, "scenarios.yml")
-						if _, err := os.Stat(scenariosOpFilePath); nil == err {
+						if _, err := os.Stat(scenariosOpFilePath); err == nil {
 							/* arrange */
 							scenariosOpFileBytes, err := ioutil.ReadFile(scenariosOpFilePath)
-							if nil != err {
+							if err != nil {
 								panic(err)
 							}
 
@@ -36,12 +36,12 @@ var _ = Context("Validate", func() {
 							}{}
 
 							description := fmt.Sprintf("scenario '%v'", path)
-							if err := yaml.Unmarshal(scenariosOpFileBytes, &scenarioOpFile); nil != err {
+							if err := yaml.Unmarshal(scenariosOpFileBytes, &scenarioOpFile); err != nil {
 								panic(errors.Wrap(err, "error unmarshalling "+description))
 							}
 
 							for _, scenario := range scenarioOpFile {
-								if nil != scenario.Validate {
+								if scenario.Validate != nil {
 									/* act */
 									actualErr := Validate(
 										context.Background(),
@@ -79,7 +79,7 @@ var _ = Context("Validate", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			wd, err := os.Getwd()
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 			opRef := filepath.Join(wd, "testdata/testop")

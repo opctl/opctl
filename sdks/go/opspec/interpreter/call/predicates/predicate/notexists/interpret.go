@@ -17,5 +17,5 @@ func Interpret(
 		nil,
 	)
 
-	return nil != err, nil
+	return err != nil, nil
 }

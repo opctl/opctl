@@ -93,7 +93,7 @@ var _ = Context("ToArray", func() {
 					/* arrange */
 
 					tmpFile, err := ioutil.TempFile("", "")
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 
@@ -116,13 +116,13 @@ var _ = Context("ToArray", func() {
 					arrayJSON := fmt.Sprintf(`["%s"]`, arrayItem)
 
 					tmpFile, err := ioutil.TempFile("", "")
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 					filePath := tmpFile.Name()
 
 					err = ioutil.WriteFile(filePath, []byte(arrayJSON), 0777)
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 

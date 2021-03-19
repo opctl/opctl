@@ -29,30 +29,30 @@ type cliPromptInputSrc struct {
 func (this cliPromptInputSrc) ReadString(
 	inputName string,
 ) (*string, bool) {
-	if param := this.inputs[inputName]; nil != param {
+	if param := this.inputs[inputName]; param != nil {
 		var (
 			isSecret    bool
 			description string
 		)
 
 		switch {
-		case nil != param.Array:
+		case param.Array != nil:
 			isSecret = param.Array.IsSecret
 			description = param.Array.Description
-		case nil != param.Boolean:
+		case param.Boolean != nil:
 			description = param.Boolean.Description
-		case nil != param.Dir:
+		case param.Dir != nil:
 			description = param.Dir.Description
-		case nil != param.File:
+		case param.File != nil:
 			description = param.File.Description
-		case nil != param.Number:
+		case param.Number != nil:
 			isSecret = param.Number.IsSecret
 			description = param.Number.Description
-		case nil != param.Object:
+		case param.Object != nil:
 			description = param.Object.Description
-		case nil != param.Socket:
+		case param.Socket != nil:
 			description = param.Socket.Description
-		case nil != param.String:
+		case param.String != nil:
 			isSecret = param.String.IsSecret
 			description = param.String.Description
 		}
@@ -82,7 +82,7 @@ func (this cliPromptInputSrc) ReadString(
 		} else {
 			rawArg, err = line.Prompt("")
 		}
-		if nil == err {
+		if err == nil {
 			return &rawArg, true
 		}
 	}

@@ -2,9 +2,10 @@ package docker
 
 import (
 	"context"
+	"io"
+
 	"github.com/docker/docker/api/types"
 	dockerClientPkg "github.com/docker/docker/client"
-	"io"
 )
 
 func newContainerStdOutStreamer(
@@ -33,7 +34,7 @@ func (ctp _containerStdOutStreamer) Stream(
 			ShowStdout: true,
 		},
 	)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 

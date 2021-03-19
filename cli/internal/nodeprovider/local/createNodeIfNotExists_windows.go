@@ -15,12 +15,12 @@ import (
 
 func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, error) {
 	nodes, err := np.ListNodes()
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
 	apiClientNode, err := newAPIClientNode(np.listenAddress)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -29,12 +29,12 @@ func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, er
 	}
 
 	pathToOpctlBin, err := os.Executable()
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
 	pathToOpctlBin, err = filepath.EvalSymlinks(pathToOpctlBin)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -60,21 +60,21 @@ func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, er
 
 	nodeLogFilePath := filepath.Join(np.dataDir.Path(), "node.log")
 	nodeLogFile, err := os.Create(nodeLogFilePath)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
 	nodeCmd.Stderr = nodeLogFile
 	nodeCmd.Stdout = nodeLogFile
 
-	if err := nodeCmd.Start(); nil != err {
+	if err := nodeCmd.Start(); err != nil {
 		return nil, err
 	}
 
 	err = apiClientNode.Liveness(ctx)
 	nodeLogBytes, _ := ioutil.ReadFile(nodeLogFilePath)
 	fmt.Println(string(nodeLogBytes))
-	if nil != err {
+	if err != nil {
 		return nil, errors.Wrap(err, "failed to create daemonized opctl node")
 	}
 

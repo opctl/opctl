@@ -97,7 +97,7 @@ var _ = Context("Interpret", func() {
 				providedData := model.Value{Array: &arrayValue}
 
 				expectedValue, err := item.Interpret(providedRefIdentifier, providedData)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -147,7 +147,7 @@ var _ = Context("Interpret", func() {
 				providedData := model.Value{Object: object}
 
 				expectedData, err := value.Construct((*providedData.Object)[providedRefIdentifier])
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 

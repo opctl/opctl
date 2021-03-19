@@ -97,14 +97,14 @@ var _ = Context("serialLoopCaller", func() {
 				It("should return expected results", func() {
 					/* arrange */
 					dbDir, err := ioutil.TempDir("", "")
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 
 					db, err := badger.Open(
 						badger.DefaultOptions(dbDir).WithLogger(nil),
 					)
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 					pubSub := pubsub.New(db)
@@ -158,14 +158,14 @@ var _ = Context("serialLoopCaller", func() {
 			It("should start each child as expected", func() {
 				/* arrange */
 				dbDir, err := ioutil.TempDir("", "")
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
 				db, err := badger.Open(
 					badger.DefaultOptions(dbDir).WithLogger(nil),
 				)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 				pubSub := pubsub.New(db)
@@ -197,7 +197,7 @@ var _ = Context("serialLoopCaller", func() {
 					ctx,
 					model.EventFilter{},
 				)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -246,7 +246,7 @@ var _ = Context("serialLoopCaller", func() {
 				actualChildCalls := []model.CallStarted{}
 				go func() {
 					for event := range eventChannel {
-						if nil != event.CallStarted && nil != event.CallStarted.Call.Container {
+						if event.CallStarted != nil && event.CallStarted.Call.Container != nil {
 							// ignore props we can't readily assert
 							event.CallStarted.Call.Container.ContainerID = ""
 							event.CallStarted.Call.ID = ""

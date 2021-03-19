@@ -104,7 +104,7 @@ var _ = Context("dataResolver", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				wd, err := os.Getwd()
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 

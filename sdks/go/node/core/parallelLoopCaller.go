@@ -71,7 +71,7 @@ func (plpr _parallelLoopCaller) Call(
 	for {
 
 		childCallID, err := uniquestring.Construct()
-		if nil != err {
+		if err != nil {
 			// end run immediately on any error
 			return nil, err
 		}
@@ -82,7 +82,7 @@ func (plpr _parallelLoopCaller) Call(
 			callSpecParallelLoop.Range,
 			callSpecParallelLoop.Vars,
 		)
-		if nil != scopeErr {
+		if scopeErr != nil {
 			return nil, scopeErr
 		}
 
@@ -91,7 +91,7 @@ func (plpr _parallelLoopCaller) Call(
 			callSpecParallelLoop,
 			childCallScope,
 		)
-		if nil != interpretErr {
+		if interpretErr != nil {
 			return nil, interpretErr
 		}
 
@@ -148,10 +148,10 @@ func (plpr _parallelLoopCaller) Call(
 
 eventLoop:
 	for event := range eventChannel {
-		if nil != event.CallEnded {
+		if event.CallEnded != nil {
 			if childCallIndex, isChildCallEnded := childCallIndexByID[event.CallEnded.Call.ID]; isChildCallEnded {
 				childCallOutputsByIndex[childCallIndex] = event.CallEnded.Outputs
-				if nil != event.CallEnded.Error {
+				if event.CallEnded.Error != nil {
 					isChildErred = true
 
 					// cancel all children on any error

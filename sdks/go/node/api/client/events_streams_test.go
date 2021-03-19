@@ -36,10 +36,10 @@ var _ = Context("GetEventStream", func() {
 		expectedReqURL.Path = api.URLEvents_Stream
 
 		queryValues := expectedReqURL.Query()
-		if nil != providedReq.Filter.Since {
+		if providedReq.Filter.Since != nil {
 			queryValues.Add("since", providedReq.Filter.Since.Format(time.RFC3339))
 		}
-		if nil != providedReq.Filter.Roots {
+		if providedReq.Filter.Roots != nil {
 			queryValues.Add("roots", strings.Join(providedReq.Filter.Roots, ","))
 		}
 		expectedReqURL.RawQuery = queryValues.Encode()

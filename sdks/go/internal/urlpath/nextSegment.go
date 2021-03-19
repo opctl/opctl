@@ -29,7 +29,7 @@ func NextSegment(
 	}
 
 	unescapedNext, err := url.PathUnescape(escapedPathParts[1])
-	if nil != err {
+	if err != nil {
 		return "", err
 	}
 

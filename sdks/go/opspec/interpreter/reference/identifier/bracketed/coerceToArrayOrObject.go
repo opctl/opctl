@@ -10,7 +10,7 @@ func CoerceToArrayOrObject(
 	data *model.Value,
 ) (*model.Value, error) {
 
-	if dataAsArray, err := coerce.ToArray(data); nil == err {
+	if dataAsArray, err := coerce.ToArray(data); err == nil {
 		// array coercible type
 		return dataAsArray, nil
 	}

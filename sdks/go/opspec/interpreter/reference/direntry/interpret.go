@@ -26,17 +26,17 @@ func Interpret(
 	valuePath := filepath.Join(*data.Dir, ref)
 
 	fileInfo, err := os.Stat(valuePath)
-	if nil == err {
+	if err == nil {
 		if fileInfo.IsDir() {
 			return "", &model.Value{Dir: &valuePath}, nil
 		}
 
 		return "", &model.Value{File: &valuePath}, nil
-	} else if nil != opts && os.IsNotExist(err) {
+	} else if opts != nil && os.IsNotExist(err) {
 
 		if "Dir" == *opts {
 			err := os.MkdirAll(valuePath, 0700)
-			if nil != err {
+			if err != nil {
 				return "", nil, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v' as dir entry ref", ref))
 			}
 
@@ -45,13 +45,13 @@ func Interpret(
 
 		// handle file ref
 		err := os.MkdirAll(filepath.Dir(valuePath), 0700)
-		if nil != err {
+		if err != nil {
 			return "", nil, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v' as dir entry ref", ref))
 		}
 
 		file, err := os.Create(valuePath)
 		file.Close()
-		if nil != err {
+		if err != nil {
 			return "", nil, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v' as dir entry ref", ref))
 		}
 

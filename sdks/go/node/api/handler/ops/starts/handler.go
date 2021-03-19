@@ -40,7 +40,7 @@ func (hdlr _handler) Handle(
 	startOpReq := model.StartOpReq{}
 
 	err := json.NewDecoder(httpReq.Body).Decode(&startOpReq)
-	if nil != err {
+	if err != nil {
 		http.Error(httpResp, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -52,7 +52,7 @@ func (hdlr _handler) Handle(
 		ctx,
 		startOpReq,
 	)
-	if nil != err {
+	if err != nil {
 		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -61,7 +61,7 @@ func (hdlr _handler) Handle(
 	httpResp.Header().Set("Content-Type", "text/plain; charset=UTF-8")
 
 	httpResp.Write([]byte(callID))
-	if nil != err {
+	if err != nil {
 		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 		return
 	}

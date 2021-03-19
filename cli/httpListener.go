@@ -64,7 +64,7 @@ func (hd _httpListener) listen(
 	)
 
 	statikFS, err := fs.New()
-	if nil != err {
+	if err != nil {
 		return err
 	}
 	router.PathPrefix("/").Handler(http.FileServer(statikFS))

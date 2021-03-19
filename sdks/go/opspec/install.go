@@ -16,14 +16,14 @@ func Install(
 	handle model.DataHandle,
 ) error {
 	contentsList, err := handle.ListDescendants(ctx)
-	if nil != err {
+	if err != nil {
 		return err
 	}
 
 	for _, content := range contentsList {
 		dstPath := filepath.Join(path, content.Path)
 
-		if _, statErr := os.Stat(dstPath); nil == statErr {
+		if _, statErr := os.Stat(dstPath); statErr == nil {
 			// don't overwrite existing content
 			continue
 		} else if !os.IsNotExist(statErr) {
@@ -42,7 +42,7 @@ func Install(
 			}
 
 			dst, err := os.Create(dstPath)
-			if nil != err {
+			if err != nil {
 				return err
 			}
 			defer dst.Close()
@@ -52,7 +52,7 @@ func Install(
 			}
 
 			src, err := handle.GetContent(ctx, content.Path)
-			if nil != err {
+			if err != nil {
 				return err
 			}
 			defer src.Close()

@@ -1,16 +1,17 @@
 package cliparamsatisfier
 
 import (
+	"os"
+	"path/filepath"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"os"
-	"path/filepath"
 )
 
 var _ = Describe("inputSrcFactory", func() {
 	wd, err := os.Getwd()
-	if nil != err {
+	if err != nil {
 		panic(err)
 	}
 	argsYmlTestDataPath := filepath.Join(wd, "inputsrc/ymlfile/testdata/args.yml")

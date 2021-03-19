@@ -56,7 +56,7 @@ func newCli(
 	}
 
 	perUserAppDataPath, err := appdatapath.New().PerUser()
-	if nil != err {
+	if err != nil {
 		exitWith("", err)
 	}
 

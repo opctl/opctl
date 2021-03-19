@@ -23,7 +23,7 @@ func Interpret(
 dirLoop:
 	for callSpecContainerDirPath, dirExpression := range containerCallSpecDirs {
 
-		if nil == dirExpression {
+		if dirExpression == nil {
 			// bound implicitly
 			dirExpression = opspec.NameToRef(callSpecContainerDirPath)
 		}
@@ -34,7 +34,7 @@ dirLoop:
 			scratchDirPath,
 			true,
 		)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf(
 				"unable to bind directory %v to %v",
 				callSpecContainerDirPath,
@@ -55,7 +55,7 @@ dirLoop:
 		if err := dirCopier.OS(
 			*dirValue.Dir,
 			containerCallDirs[callSpecContainerDirPath],
-		); nil != err {
+		); err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf(
 				"unable to bind %v to %v",
 				callSpecContainerDirPath,

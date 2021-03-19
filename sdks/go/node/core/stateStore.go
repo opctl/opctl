@@ -62,11 +62,11 @@ func newStateStore(
 
 		for event := range eventChannel {
 			switch {
-			case nil != event.AuthAdded:
+			case event.AuthAdded != nil:
 				stateStore.applyAuthAdded(*event.AuthAdded)
-			case nil != event.CallEnded:
+			case event.CallEnded != nil:
 				stateStore.applyCallEnded(*event.CallEnded)
-			case nil != event.CallStarted:
+			case event.CallStarted != nil:
 				stateStore.applyCallStarted(*event.CallStarted)
 			}
 
@@ -91,13 +91,13 @@ func (ss *_stateStore) getLastAppliedEventTimestamp() (time.Time, error) {
 	var lastAppliedEventTimestamp time.Time
 	err := ss.db.View(func(txn *badger.Txn) error {
 		item, err := txn.Get([]byte(ss.lastAppliedEventTimestampKey))
-		if nil != err {
+		if err != nil {
 			return err
 		}
 
 		return item.Value(func(val []byte) error {
 			seconds, err := strconv.ParseInt(string(val), 10, 64)
-			if nil != err {
+			if err != nil {
 				return err
 			}
 			lastAppliedEventTimestamp = time.Unix(seconds-1, 0)
@@ -123,7 +123,7 @@ func (ss *_stateStore) applyAuthAdded(authAdded model.AuthAdded) error {
 	return ss.db.Update(func(txn *badger.Txn) error {
 		auth := authAdded.Auth
 		encodedAuth, err := json.Marshal(auth)
-		if nil != err {
+		if err != nil {
 			return err
 		}
 
@@ -164,7 +164,7 @@ func (ss *_stateStore) ListWithParentID(parentID string) []*model.Call {
 
 	results := []*model.Call{}
 	for _, call := range ss.callsByID {
-		if nil != call.ParentID && *call.ParentID == parentID {
+		if call.ParentID != nil && *call.ParentID == parentID {
 			results = append(results, call)
 		}
 	}

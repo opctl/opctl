@@ -17,7 +17,7 @@ func Interpret(
 
 	var err error
 	scope, err = Coerce(scope, params, opScratchDir)
-	if nil != err {
+	if err != nil {
 		return scope, err
 	}
 

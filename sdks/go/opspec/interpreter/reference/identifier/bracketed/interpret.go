@@ -30,17 +30,17 @@ func Interpret(
 	}
 
 	data, err := CoerceToArrayOrObject(data)
-	if nil != err {
+	if err != nil {
 		return "", nil, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v'", ref))
 	}
 
 	identifier := ref[1:indexOfNextCloseBracket]
 	refRemainder := ref[indexOfNextCloseBracket+1:]
 
-	if nil != data.Array {
+	if data.Array != nil {
 		// data is array
 		itemValue, err := item.Interpret(identifier, *data)
-		if nil != err {
+		if err != nil {
 			return "", nil, err
 		}
 
@@ -50,7 +50,7 @@ func Interpret(
 	// data is object
 	property := (*data.Object)[identifier]
 	propertyValue, err := value.Construct(property)
-	if nil != err {
+	if err != nil {
 		return "", nil, errors.Wrap(err, "unable to interpret property")
 	}
 	return refRemainder, propertyValue, nil

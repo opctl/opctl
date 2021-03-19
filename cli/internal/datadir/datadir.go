@@ -24,7 +24,7 @@ type DataDir interface {
 func ensureExists(
 	resolvedDataDirPath string,
 ) error {
-	if err := os.MkdirAll(resolvedDataDirPath, 0775|os.ModeSetgid); nil != err {
+	if err := os.MkdirAll(resolvedDataDirPath, 0775|os.ModeSetgid); err != nil {
 		return err
 	}
 	return nil
@@ -35,11 +35,11 @@ func New(
 	dataDirPath string,
 ) (DataDir, error) {
 	resolvedDataDirPath, err := filepath.Abs(dataDirPath)
-	if nil != err {
+	if err != nil {
 		return nil, errors.Wrap(err, "error initializing opctl data dir")
 	}
 
-	if err := ensureExists(resolvedDataDirPath); nil != err {
+	if err := ensureExists(resolvedDataDirPath); err != nil {
 		return nil, errors.Wrap(err, "error initializing opctl data dir")
 	}
 
@@ -48,7 +48,7 @@ func New(
 		filepath.Join(resolvedDataDirPath, "write-test"),
 		[]byte(""),
 		0775,
-	); nil != err {
+	); err != nil {
 		return nil, errors.Wrap(err, "error initializing opctl data dir")
 	}
 
@@ -66,7 +66,7 @@ func (dd _datadir) Path() string {
 }
 
 func (dd _datadir) InitAndLock() error {
-	if err := ensureExists(dd.resolvedPath); nil != err {
+	if err := ensureExists(dd.resolvedPath); err != nil {
 		return err
 	}
 
@@ -77,7 +77,7 @@ func (dd _datadir) InitAndLock() error {
 
 	// claim resolvedDataDirPath as ours
 	lockFile := lockfile.New()
-	if err := lockFile.Lock(lockFilePath); nil != err {
+	if err := lockFile.Lock(lockFilePath); err != nil {
 		pIDOfExistingNode := lockFile.PIdOfOwner(lockFilePath)
 		return fmt.Errorf("node already running with PID: %d", pIDOfExistingNode)
 	}

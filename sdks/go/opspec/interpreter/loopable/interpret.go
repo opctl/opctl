@@ -15,7 +15,7 @@ func Interpret(
 	if dcgForEach, err := array.Interpret(
 		scope,
 		expression,
-	); nil == err {
+	); err == nil {
 		return dcgForEach, err
 	}
 

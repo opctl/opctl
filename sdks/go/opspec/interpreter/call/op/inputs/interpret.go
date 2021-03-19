@@ -31,7 +31,7 @@ func Interpret(
 			scope,
 			opScratchDir,
 		)
-		if nil != err {
+		if err != nil {
 			paramErrMap[argName] = err
 		}
 	}

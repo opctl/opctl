@@ -38,7 +38,7 @@ var _ = Context("Resolve", func() {
 	Context("providers[0].TryResolve doesn't err", func() {
 		It("should return expected results", func() {
 			wd, err := os.Getwd()
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 			opRef := filepath.Join(wd, "testdata/testop")

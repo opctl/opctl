@@ -114,7 +114,7 @@ var _ = Context("ToDir", func() {
 				}
 
 				providedScratchDir, err := ioutil.TempDir("", "")
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 
@@ -140,7 +140,7 @@ var _ = Context("ToDir", func() {
 				}
 
 				providedScratchDir, err := ioutil.TempDir("", "")
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 

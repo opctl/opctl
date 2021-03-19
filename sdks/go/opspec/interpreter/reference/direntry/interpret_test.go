@@ -35,13 +35,13 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			providedRef := "/providedRef"
 			dirData, err := ioutil.TempDir("", "")
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 
 			expectedPath := filepath.Join(dirData, providedRef)
 			err = ioutil.WriteFile(expectedPath, []byte(""), 0777)
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 
@@ -65,13 +65,13 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			providedRef := "/providedRef"
 			dirData, err := ioutil.TempDir("", "")
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 
 			expectedPath := filepath.Join(dirData, providedRef)
 			err = os.Mkdir(expectedPath, 0777)
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 

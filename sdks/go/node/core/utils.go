@@ -22,7 +22,7 @@ func readChunks(
 			onChunk(b)
 		}
 
-		if nil != err {
+		if err != nil {
 			break
 		}
 	}

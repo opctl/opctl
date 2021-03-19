@@ -52,7 +52,7 @@ func (gh handle) rListDescendants(
 	error,
 ) {
 	childFileInfos, err := ioutil.ReadDir(path)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -63,14 +63,14 @@ func (gh handle) rListDescendants(
 		if contentFileInfo.IsDir() {
 			// recurse into child dirs
 			childContents, err := gh.rListDescendants(absContentPath)
-			if nil != err {
+			if err != nil {
 				return nil, err
 			}
 			contents = append(contents, childContents...)
 		}
 
 		relContentPath, err := filepath.Rel(gh.path, absContentPath)
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 

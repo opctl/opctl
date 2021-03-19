@@ -109,13 +109,13 @@ var _ = Context("ToBoolean", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					tmpFile, err := ioutil.TempFile("", "")
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 
 					filePath := tmpFile.Name()
 					err = ioutil.WriteFile(filePath, []byte("true"), 0777)
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 
@@ -135,13 +135,13 @@ var _ = Context("ToBoolean", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					tmpFile, err := ioutil.TempFile("", "")
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 
 					filePath := tmpFile.Name()
 					err = ioutil.WriteFile(filePath, []byte("false"), 0777)
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 

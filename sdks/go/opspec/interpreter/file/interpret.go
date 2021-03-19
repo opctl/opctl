@@ -43,7 +43,7 @@ func Interpret(
 			scope,
 			opts,
 		)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("unable to interpret %+v to file", expression))
 		}
 		return coerce.ToFile(value, scratchDir)
@@ -53,7 +53,7 @@ func Interpret(
 		expression,
 		scope,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, errors.Wrap(err, fmt.Sprintf("unable to interpret %+v to file", expression))
 	}
 

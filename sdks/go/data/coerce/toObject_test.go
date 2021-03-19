@@ -74,7 +74,7 @@ var _ = Context("ToObject", func() {
 					/* arrange */
 
 					tmpFile, err := ioutil.TempFile("", "")
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 
@@ -98,13 +98,13 @@ var _ = Context("ToObject", func() {
 					mapValueJSON := fmt.Sprintf(`{"%s": "%s"}`, mapEntryKey, mapEntryValue)
 
 					tmpFile, err := ioutil.TempFile("", "")
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 					filePath := tmpFile.Name()
 
 					err = ioutil.WriteFile(filePath, []byte(mapValueJSON), 0777)
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 

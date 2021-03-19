@@ -30,7 +30,7 @@ var _ = Context("HandleGetOrHeader", func() {
 			providedHTTPResp := httptest.NewRecorder()
 
 			providedHTTPReq, err := http.NewRequest("notGETorHEAD", "", nil)
-			if nil != err {
+			if err != nil {
 				panic(err.Error())
 			}
 
@@ -53,7 +53,7 @@ var _ = Context("HandleGetOrHeader", func() {
 				providedHTTPResp := httptest.NewRecorder()
 
 				providedHTTPReq, err := http.NewRequest(http.MethodGet, "dummyPath", nil)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 
@@ -70,7 +70,7 @@ var _ = Context("HandleGetOrHeader", func() {
 		})
 
 		wd, err := os.Getwd()
-		if nil != err {
+		if err != nil {
 			panic(err)
 		}
 		Describe("ref + path is dir", func() {
@@ -95,7 +95,7 @@ var _ = Context("HandleGetOrHeader", func() {
 					"",
 					nil,
 				)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 
@@ -128,7 +128,7 @@ var _ = Context("HandleGetOrHeader", func() {
 						"",
 						nil,
 					)
-					if nil != err {
+					if err != nil {
 						panic(err.Error())
 					}
 
@@ -156,7 +156,7 @@ var _ = Context("HandleGetOrHeader", func() {
 					fakeDataHandle.ListDescendantsReturns(contentsList, nil)
 
 					expectedBodyBytes, err := json.Marshal(contentsList)
-					if nil != err {
+					if err != nil {
 						panic(err)
 					}
 
@@ -171,7 +171,7 @@ var _ = Context("HandleGetOrHeader", func() {
 						"",
 						nil,
 					)
-					if nil != err {
+					if err != nil {
 						panic(err.Error())
 					}
 
@@ -205,7 +205,7 @@ var _ = Context("HandleGetOrHeader", func() {
 				providedHTTPResp := httptest.NewRecorder()
 
 				providedHTTPReq, err := http.NewRequest(http.MethodGet, "", nil)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 
@@ -244,7 +244,7 @@ var _ = Context("HandleGetOrHeader", func() {
 						"",
 						nil,
 					)
-					if nil != err {
+					if err != nil {
 						panic(err.Error())
 					}
 
@@ -290,7 +290,7 @@ var _ = Context("HandleGetOrHeader", func() {
 						"",
 						nil,
 					)
-					if nil != err {
+					if err != nil {
 						panic(err.Error())
 					}
 					providedRequest = providedRequest.WithContext(context.TODO())

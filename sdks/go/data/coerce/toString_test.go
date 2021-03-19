@@ -90,7 +90,7 @@ var _ = Context("ToString", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				tmpFile, err := ioutil.TempFile("", "")
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 				filePath := tmpFile.Name()
@@ -98,7 +98,7 @@ var _ = Context("ToString", func() {
 				expectedString := "expectedString"
 
 				err = ioutil.WriteFile(filePath, []byte(expectedString), 0777)
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 

@@ -66,72 +66,72 @@ func (cps _CLIParamSatisfier) Satisfy(
 			}
 
 			switch {
-			case nil == rawArg:
+			case rawArg == nil:
 				// handle nil (returned by inputSourcer.Source for static defaults)
 				break paramLoop
-			case nil != param.Array:
+			case param.Array != nil:
 				argValue := &[]interface{}{}
 				argJSONBytes, err := yaml.YAMLToJSON([]byte(*rawArg))
-				if nil != err {
+				if err != nil {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
 				err = json.Unmarshal(argJSONBytes, argValue)
-				if nil != err {
+				if err != nil {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
 				arg = &model.Value{Array: argValue}
-			case nil != param.Boolean:
+			case param.Boolean != nil:
 				var err error
-				if arg, err = coerce.ToBoolean(&model.Value{String: rawArg}); nil != err {
+				if arg, err = coerce.ToBoolean(&model.Value{String: rawArg}); err != nil {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-			case nil != param.Dir:
+			case param.Dir != nil:
 				absPath, err := filepath.Abs(*rawArg)
-				if nil != err {
+				if err != nil {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
 				arg = &model.Value{Dir: &absPath}
-			case nil != param.File:
+			case param.File != nil:
 				absPath, err := filepath.Abs(*rawArg)
-				if nil != err {
+				if err != nil {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
 				arg = &model.Value{File: &absPath}
-			case nil != param.Number:
+			case param.Number != nil:
 				var err error
-				if arg, err = coerce.ToNumber(&model.Value{String: rawArg}); nil != err {
+				if arg, err = coerce.ToNumber(&model.Value{String: rawArg}); err != nil {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-			case nil != param.Object:
+			case param.Object != nil:
 				argValue := &map[string]interface{}{}
 				argJSONBytes, err := yaml.YAMLToJSON([]byte(*rawArg))
-				if nil != err {
+				if err != nil {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
 				err = json.Unmarshal(argJSONBytes, argValue)
-				if nil != err {
+				if err != nil {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
 				arg = &model.Value{Object: argValue}
-			case nil != param.Socket:
+			case param.Socket != nil:
 				arg = &model.Value{Socket: rawArg}
-			case nil != param.String:
+			case param.String != nil:
 				arg = &model.Value{String: rawArg}
 			}
 
@@ -139,14 +139,14 @@ func (cps _CLIParamSatisfier) Satisfy(
 				map[string]*model.Value{paramName: arg},
 				map[string]*model.Param{paramName: param},
 			)
-			if nil != validateErr {
+			if validateErr != nil {
 				cps.notifyOfArgErrors([]error{validateErr}, paramName)
 
 				// param not satisfied; re-attempt it!
 				continue
 			}
 
-			if nil != arg {
+			if arg != nil {
 				// only store non-nil args
 				argMap[paramName] = arg
 			}

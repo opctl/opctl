@@ -2,6 +2,7 @@ package docker
 
 import (
 	"fmt"
+
 	"github.com/docker/go-connections/nat"
 )
 
@@ -14,7 +15,7 @@ func constructPortBindings(
 	portBindings := nat.PortMap{}
 	for containerPort, hostPort := range containerCallPorts {
 		portMappings, err := nat.ParsePortSpec(fmt.Sprintf("%v:%v", hostPort, containerPort))
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 		for _, portMapping := range portMappings {

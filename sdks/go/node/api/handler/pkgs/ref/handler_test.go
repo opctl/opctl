@@ -33,7 +33,7 @@ var _ = Context("Handler", func() {
 				providedHTTPResp := httptest.NewRecorder()
 
 				providedHTTPReq, err := http.NewRequest("dummyMethod", "", nil)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 
@@ -65,7 +65,7 @@ var _ = Context("Handler", func() {
 					}
 
 					providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
-					if nil != err {
+					if err != nil {
 						panic(err.Error())
 					}
 
@@ -108,7 +108,7 @@ var _ = Context("Handler", func() {
 				}
 
 				providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 
@@ -143,7 +143,7 @@ var _ = Context("Handler", func() {
 						providedHTTPResp := httptest.NewRecorder()
 
 						providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
-						if nil != err {
+						if err != nil {
 							panic(err.Error())
 						}
 
@@ -174,7 +174,7 @@ var _ = Context("Handler", func() {
 						providedHTTPResp := httptest.NewRecorder()
 
 						providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
-						if nil != err {
+						if err != nil {
 							panic(err.Error())
 						}
 
@@ -202,7 +202,7 @@ var _ = Context("Handler", func() {
 						providedHTTPResp := httptest.NewRecorder()
 
 						providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
-						if nil != err {
+						if err != nil {
 							panic(err.Error())
 						}
 
@@ -235,7 +235,7 @@ var _ = Context("Handler", func() {
 					}
 
 					providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
-					if nil != err {
+					if err != nil {
 						panic(err.Error())
 					}
 

@@ -26,10 +26,10 @@ var _ = Context("Interpolate", func() {
 				func(path string, info os.FileInfo, err error) error {
 					if info.IsDir() {
 						scenariosOpFilePath := filepath.Join(path, "scenarios.yml")
-						if _, err := os.Stat(scenariosOpFilePath); nil == err {
+						if _, err := os.Stat(scenariosOpFilePath); err == nil {
 							/* arrange */
 							scenariosOpFileBytes, err := ioutil.ReadFile(scenariosOpFilePath)
-							if nil != err {
+							if err != nil {
 								panic(err)
 							}
 
@@ -39,17 +39,17 @@ var _ = Context("Interpolate", func() {
 								Scope    map[string]*model.Value
 								Expected string
 							}{}
-							if err := yaml.Unmarshal(scenariosOpFileBytes, &scenarioOpFile); nil != err {
+							if err := yaml.Unmarshal(scenariosOpFileBytes, &scenarioOpFile); err != nil {
 								panic(errors.Wrap(err, "error unmarshalling scenario.yml for "+path))
 							}
 
 							absPath, err := filepath.Abs(path)
-							if nil != err {
+							if err != nil {
 								panic(errors.Wrap(err, "error getting absPath for "+path))
 							}
 
 							opHandle, err := data.Resolve(context.Background(), absPath, fsProvider)
-							if nil != err {
+							if err != nil {
 								panic(errors.Wrap(err, "error getting opHandle for "+path))
 							}
 
@@ -62,7 +62,7 @@ var _ = Context("Interpolate", func() {
 
 								for name, value := range scenario.Scope {
 									// make file refs absolute
-									if nil != value.File {
+									if value.File != nil {
 										absFilePath := filepath.Join(absPath, *value.File)
 										scenario.Scope[name] = &model.Value{File: &absFilePath}
 									}

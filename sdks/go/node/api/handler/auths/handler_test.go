@@ -27,7 +27,7 @@ var _ = Context("Handler", func() {
 				providedHTTPResp := httptest.NewRecorder()
 
 				providedHTTPReq, err := http.NewRequest("dummyMethod", "", nil)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 
@@ -49,7 +49,7 @@ var _ = Context("Handler", func() {
 
 				providedPath := "adds/dummy"
 				providedHTTPReq, err := http.NewRequest("dummyMethod", providedPath, nil)
-				if nil != err {
+				if err != nil {
 					panic(err.Error())
 				}
 

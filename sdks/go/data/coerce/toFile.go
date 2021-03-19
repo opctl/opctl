@@ -21,37 +21,37 @@ func ToFile(
 	var data []byte
 
 	switch {
-	case nil == value:
+	case value == nil:
 		data = []byte{}
-	case nil != value.Array:
+	case value.Array != nil:
 		nativeArray, err := value.Unbox()
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce array to file")
 		}
 
 		data, err = json.Marshal(nativeArray)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce array to file")
 		}
-	case nil != value.Boolean:
+	case value.Boolean != nil:
 		data = []byte(strconv.FormatBool(*value.Boolean))
-	case nil != value.Dir:
+	case value.Dir != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, fmt.Sprintf("unable to coerce dir '%v' to file", *value.Dir))
-	case nil != value.File:
+	case value.File != nil:
 		return value, nil
-	case nil != value.Number:
+	case value.Number != nil:
 		data = []byte(strconv.FormatFloat(*value.Number, 'f', -1, 64))
-	case nil != value.Object:
+	case value.Object != nil:
 		nativeObject, err := value.Unbox()
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce object to file")
 		}
 
 		data, err = json.Marshal(nativeObject)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce object to file")
 		}
-	case nil != value.String:
+	case value.String != nil:
 		data = []byte(*value.String)
 	default:
 		data, _ := json.Marshal(value)
@@ -59,7 +59,7 @@ func ToFile(
 	}
 
 	uniqueStr, err := uniquestring.Construct()
-	if nil != err {
+	if err != nil {
 		return nil, errors.Wrap(err, fmt.Sprintf("unable to coerce '%+v' to file", value))
 	}
 
@@ -72,7 +72,7 @@ func ToFile(
 	)
 	if os.IsNotExist(err) {
 		// ensure path exists & re-attempt
-		if err = os.MkdirAll(filepath.Dir(path), os.FileMode(0777)); nil == err {
+		if err = os.MkdirAll(filepath.Dir(path), os.FileMode(0777)); err == nil {
 			err = ioutil.WriteFile(
 				path,
 				data,
@@ -81,7 +81,7 @@ func ToFile(
 		}
 	}
 
-	if nil != err {
+	if err != nil {
 		return nil, errors.Wrap(err, fmt.Sprintf("unable to coerce '%+v' to file", value))
 	}
 

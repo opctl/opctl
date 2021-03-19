@@ -37,7 +37,7 @@ func NewStdOutWriteCloser(
 				)
 			}
 
-			if nil != err {
+			if err != nil {
 				return
 			}
 		}

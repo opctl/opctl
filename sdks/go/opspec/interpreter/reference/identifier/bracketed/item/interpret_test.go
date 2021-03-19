@@ -50,7 +50,7 @@ var _ = Context("Interpret", func() {
 				providedData := model.Value{Array: arrayData}
 
 				expectedValue, err := value.Construct((*providedData.Array)[0])
-				if nil != err {
+				if err != nil {
 					panic(err)
 				}
 

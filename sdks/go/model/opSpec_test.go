@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+
 	"github.com/ghodss/yaml"
 
 	. "github.com/onsi/ginkgo"
@@ -34,7 +35,7 @@ var _ = Context("OpCallSpec", func() {
 			/* act */
 			actualResult := OpCallSpec{}
 			err := yaml.Unmarshal([]byte(providedString), &actualResult)
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 

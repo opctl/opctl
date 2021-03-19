@@ -22,13 +22,13 @@ func (c apiClient) StartOp(
 	// if remote node; need to embed local file/dir args
 	if c.baseURL.Hostname() != "localhost" && c.baseURL.Hostname() != "127.0.0.1" {
 		err := embedLocalFilesAndDirs(req.Args)
-		if nil != err {
+		if err != nil {
 			return "", err
 		}
 	}
 
 	reqBytes, err := json.Marshal(req)
-	if nil != err {
+	if err != nil {
 		return "", err
 	}
 
@@ -41,19 +41,19 @@ func (c apiClient) StartOp(
 		reqURL.String(),
 		bytes.NewBuffer(reqBytes),
 	)
-	if nil != err {
+	if err != nil {
 		return "", err
 	}
 
 	httpResp, err := c.httpClient.Do(httpReq)
-	if nil != err {
+	if err != nil {
 		return "", err
 	}
 	// don't leak resources
 	defer httpResp.Body.Close()
 
 	bodyBytes, err := ioutil.ReadAll(httpResp.Body)
-	if nil != err {
+	if err != nil {
 		return "", err
 	}
 

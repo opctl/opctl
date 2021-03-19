@@ -38,7 +38,7 @@ func (hdlr _handler) Handle(
 	addAuthReq := model.AddAuthReq{}
 
 	err := json.NewDecoder(httpReq.Body).Decode(&addAuthReq)
-	if nil != err {
+	if err != nil {
 		http.Error(httpResp, err.Error(), http.StatusBadRequest)
 		return
 	}

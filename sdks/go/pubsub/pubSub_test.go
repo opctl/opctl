@@ -13,14 +13,14 @@ import (
 
 var _ = Context("pubSub", func() {
 	dbDir, err := ioutil.TempDir("", "")
-	if nil != err {
+	if err != nil {
 		panic(err)
 	}
 
 	db, err := badger.Open(
 		badger.DefaultOptions(dbDir).WithLogger(nil),
 	)
-	if nil != err {
+	if err != nil {
 		panic(err)
 	}
 

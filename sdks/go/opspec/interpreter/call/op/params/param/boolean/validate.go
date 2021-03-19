@@ -10,7 +10,7 @@ func Validate(
 	value *model.Value,
 ) []error {
 	// handle no value passed
-	if nil == value || nil == value.Boolean {
+	if value == nil || value.Boolean == nil {
 		return []error{errors.New("boolean required")}
 	}
 

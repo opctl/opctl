@@ -89,13 +89,13 @@ type Value struct {
 
 // Unbox unboxes a Value into a native go type
 func (value Value) Unbox() (interface{}, error) {
-	if nil != value.Array {
+	if value.Array != nil {
 		nativeArray := []interface{}{}
 		for itemKey, itemValue := range *value.Array {
 			switch typedItemValue := itemValue.(type) {
 			case Value:
 				nativeItem, err := typedItemValue.Unbox()
-				if nil != err {
+				if err != nil {
 					return nil, errors.Wrap(err, fmt.Sprintf("unable to unbox item '%v' from array", itemKey))
 				}
 
@@ -105,21 +105,21 @@ func (value Value) Unbox() (interface{}, error) {
 			}
 		}
 		return nativeArray, nil
-	} else if nil != value.Boolean {
+	} else if value.Boolean != nil {
 		return *value.Boolean, nil
-	} else if nil != value.Dir {
+	} else if value.Dir != nil {
 		return *value.Dir, nil
-	} else if nil != value.File {
+	} else if value.File != nil {
 		return *value.File, nil
-	} else if nil != value.Number {
+	} else if value.Number != nil {
 		return *value.Number, nil
-	} else if nil != value.Object {
+	} else if value.Object != nil {
 		nativeObject := map[string]interface{}{}
 		for propKey, propValue := range *value.Object {
 			switch typedPropValue := propValue.(type) {
 			case Value:
 				var err error
-				if nativeObject[propKey], err = typedPropValue.Unbox(); nil != err {
+				if nativeObject[propKey], err = typedPropValue.Unbox(); err != nil {
 					return nil, errors.Wrap(err, fmt.Sprintf("unable to unbox property '%v' from object", propKey))
 				}
 			default:
@@ -127,9 +127,9 @@ func (value Value) Unbox() (interface{}, error) {
 			}
 		}
 		return nativeObject, nil
-	} else if nil != value.Socket {
+	} else if value.Socket != nil {
 		return *value.Socket, nil
-	} else if nil != value.String {
+	} else if value.String != nil {
 		return *value.String, nil
 	}
 	return nil, fmt.Errorf("unable to unbox value '%+v'", value)

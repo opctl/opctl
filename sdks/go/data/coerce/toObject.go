@@ -14,31 +14,31 @@ func ToObject(
 	value *model.Value,
 ) (*model.Value, error) {
 	switch {
-	case nil == value:
+	case value == nil:
 		return nil, nil
-	case nil != value.Array:
+	case value.Array != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce array to object")
-	case nil != value.Dir:
+	case value.Dir != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, fmt.Sprintf("unable to coerce dir '%v' to object", *value.Dir))
-	case nil != value.File:
+	case value.File != nil:
 		fileBytes, err := ioutil.ReadFile(*value.File)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce file to object")
 		}
 		valueMap := &map[string]interface{}{}
 		err = json.Unmarshal([]byte(fileBytes), valueMap)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce file to object")
 		}
 		return &model.Value{Object: valueMap}, nil
-	case nil != value.Number:
+	case value.Number != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, fmt.Sprintf("unable to coerce number '%v' to object", *value.Number))
-	case nil != value.Object:
+	case value.Object != nil:
 		return value, nil
-	case nil != value.String:
+	case value.String != nil:
 		valueMap := &map[string]interface{}{}
 		err := json.Unmarshal([]byte(*value.String), valueMap)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce string to object")
 		}
 		return &model.Value{Object: valueMap}, nil

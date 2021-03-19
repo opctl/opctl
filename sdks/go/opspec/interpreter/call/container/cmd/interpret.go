@@ -15,7 +15,7 @@ func Interpret(
 	for _, cmdEntryExpression := range containerCallSpecCmd {
 		// interpret each entry as string
 		cmdEntry, err := str.Interpret(scope, cmdEntryExpression)
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 		containerCallCmd = append(containerCallCmd, *cmdEntry.String)

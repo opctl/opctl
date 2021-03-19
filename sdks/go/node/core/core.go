@@ -26,7 +26,7 @@ func New(
 ) Core {
 	eventDbPath := path.Join(dataDirPath, "dcg", "events")
 	err := os.MkdirAll(eventDbPath, 0700)
-	if nil != err {
+	if err != nil {
 		panic(err)
 	}
 
@@ -78,7 +78,7 @@ func New(
 
 		for event := range eventChannel {
 			switch {
-			case nil != event.CallKillRequested:
+			case event.CallKillRequested != nil:
 				req := event.CallKillRequested.Request
 				callKiller.Kill(
 					ctx,

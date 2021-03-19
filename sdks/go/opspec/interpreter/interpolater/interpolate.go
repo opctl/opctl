@@ -31,9 +31,9 @@ func Interpolate(
 		case escaper:
 			escapesCount++
 		case operator:
-			isEscaped := 0 != escapesCount%2
+			isEscaped := escapesCount%2 != 0
 			for escapesCount > 0 {
-				if 0 == escapesCount%2 {
+				if escapesCount%2 == 0 {
 					refBuffer = append(refBuffer, escaper)
 				}
 				escapesCount--
@@ -44,7 +44,7 @@ func Interpolate(
 			}
 
 			result, consumed, err := tryDeRef(expression[i+1:], scope)
-			if nil != err {
+			if err != nil {
 				return "", err
 			}
 			refBuffer = append(refBuffer, result...)
@@ -86,12 +86,12 @@ func tryDeRef(
 		case refCloser:
 			if len(refBuffer) > 0 && refOpener == refBuffer[0] {
 				value, err := reference.Interpret(opspec.NameToRef(string(refBuffer[1:])), scope, nil)
-				if nil != err {
+				if err != nil {
 					return "", 0, err
 				}
 
 				valueAsString, err := coerce.ToString(value)
-				if nil != err {
+				if err != nil {
 					return "", 0, err
 				}
 
@@ -100,7 +100,7 @@ func tryDeRef(
 			refBuffer = append(refBuffer, possibleRef[i])
 		case operator:
 			result, consumed, err := tryDeRef(possibleRef[i+1:], scope)
-			if nil != err {
+			if err != nil {
 				return "", 0, err
 			}
 			refBuffer = append(refBuffer, result...)

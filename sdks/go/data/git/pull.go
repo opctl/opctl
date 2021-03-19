@@ -28,7 +28,7 @@ func Pull(
 ) error {
 
 	parsedPkgRef, err := parseRef(dataRef)
-	if nil != err {
+	if err != nil {
 		return errors.Wrap(err, "invalid git ref")
 	}
 
@@ -41,7 +41,7 @@ func Pull(
 		Progress:      os.Stdout,
 	}
 
-	if nil != authOpts {
+	if authOpts != nil {
 		cloneOptions.Auth = &http.BasicAuth{
 			Username: authOpts.Username,
 			Password: authOpts.Password,
@@ -52,7 +52,7 @@ func Pull(
 		opPath,
 		false,
 		cloneOptions,
-	); nil != err {
+	); err != nil {
 		if _, ok := err.(git.NoMatchingRefSpecError); ok {
 			return fmt.Errorf("version \"%s\" not found", parsedPkgRef.Version)
 		}

@@ -11,7 +11,7 @@ func DeScope(
 	loopVarsSpec *model.LoopVarsSpec,
 	iterationScope map[string]*model.Value,
 ) map[string]*model.Value {
-	if nil == loopVarsSpec {
+	if loopVarsSpec == nil {
 		return parentScope
 	}
 
@@ -21,18 +21,18 @@ func DeScope(
 	}
 
 	// restore vars shadowed in the loop
-	if nil != loopVarsSpec.Index {
+	if loopVarsSpec.Index != nil {
 		outboundScope[*loopVarsSpec.Index] = parentScope[*loopVarsSpec.Index]
 	}
 
-	if nil != callSpecLoopRange {
+	if callSpecLoopRange != nil {
 		return outboundScope
 	}
 
-	if nil != loopVarsSpec.Key {
+	if loopVarsSpec.Key != nil {
 		outboundScope[*loopVarsSpec.Key] = parentScope[*loopVarsSpec.Key]
 	}
-	if nil != loopVarsSpec.Value {
+	if loopVarsSpec.Value != nil {
 		outboundScope[*loopVarsSpec.Value] = parentScope[*loopVarsSpec.Value]
 	}
 

@@ -41,7 +41,7 @@ func (np _node) TryResolve(
 			PkgRef:    dataRef,
 			PullCreds: np.pullCreds,
 		},
-	); nil != err {
+	); err != nil {
 		return nil, err
 	}
 

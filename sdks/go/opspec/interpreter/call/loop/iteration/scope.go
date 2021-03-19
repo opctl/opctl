@@ -31,7 +31,7 @@ func Scope(
 	map[string]*model.Value,
 	error,
 ) {
-	if nil == loopVarsSpec {
+	if loopVarsSpec == nil {
 		return scope, nil
 	}
 
@@ -40,7 +40,7 @@ func Scope(
 		outboundScope[varName] = varData
 	}
 
-	if nil != loopVarsSpec.Index {
+	if loopVarsSpec.Index != nil {
 		// assign iteration index to requested inboundScope variable
 		indexAsFloat64 := float64(index)
 		outboundScope[opspec.RefToName(*loopVarsSpec.Index)] = &model.Value{
@@ -48,7 +48,7 @@ func Scope(
 		}
 	}
 
-	if nil == callSpecLoopRange {
+	if callSpecLoopRange == nil {
 		// guard no loopable
 		return outboundScope, nil
 	}
@@ -59,13 +59,13 @@ func Scope(
 		callSpecLoopRange,
 		outboundScope,
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
 	var rawValue interface{}
 
-	if nil != v.Array {
+	if v.Array != nil {
 		// loopable is array
 		if index >= len(*v.Array) {
 			// beyond range
@@ -84,19 +84,19 @@ func Scope(
 		name := sortedNames[index]
 		rawValue = (*v.Object)[name]
 
-		if nil != loopVarsSpec.Key {
+		if loopVarsSpec.Key != nil {
 			// only add key to scope if declared
 			outboundScope[opspec.RefToName(*loopVarsSpec.Key)] = &model.Value{String: &name}
 		}
 	}
 
-	if nil != loopVarsSpec.Value {
+	if loopVarsSpec.Value != nil {
 		var v model.Value
 		v, err = value.Interpret(
 			rawValue,
 			outboundScope,
 		)
-		if nil != err {
+		if err != nil {
 			return nil, err
 		}
 

@@ -2,9 +2,10 @@ package core
 
 import (
 	"context"
-	"github.com/dgraph-io/badger/v2"
 	"io/ioutil"
 	"time"
+
+	"github.com/dgraph-io/badger/v2"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -26,14 +27,14 @@ var _ = Context("core", func() {
 			}
 
 			dbDir, err := ioutil.TempDir("", "")
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 
 			db, err := badger.Open(
 				badger.DefaultOptions(dbDir).WithLogger(nil),
 			)
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 
@@ -42,7 +43,7 @@ var _ = Context("core", func() {
 				context.Background(),
 				model.EventFilter{},
 			)
-			if nil != err {
+			if err != nil {
 				panic(err)
 			}
 
@@ -70,7 +71,7 @@ var _ = Context("core", func() {
 			var actualEvent model.Event
 			go func() {
 				for event := range eventChannel {
-					if nil != event.AuthAdded {
+					if event.AuthAdded != nil {
 						// ignore timestamp from assertion
 						event.Timestamp = expectedEvent.Timestamp
 						actualEvent = event

@@ -29,30 +29,30 @@ func ToBoolean(
 	value *model.Value,
 ) (*model.Value, error) {
 	switch {
-	case nil == value:
+	case value == nil:
 		return &model.Value{Boolean: new(bool)}, nil
-	case nil != value.Array:
-		booleanValue := nil != value.Array && len(*value.Array) != 0
+	case value.Array != nil:
+		booleanValue := value.Array != nil && len(*value.Array) != 0
 		return &model.Value{Boolean: &booleanValue}, nil
-	case nil != value.Boolean:
+	case value.Boolean != nil:
 		return value, nil
-	case nil != value.Dir:
+	case value.Dir != nil:
 		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce dir to boolean")
-	case nil != value.File:
+	case value.File != nil:
 		fileBytes, err := ioutil.ReadFile(*value.File)
-		if nil != err {
+		if err != nil {
 			return nil, errors.Wrap(err, "unable to coerce file to boolean")
 		}
 
 		booleanValue := isStringTruthy(string(fileBytes))
 		return &model.Value{Boolean: &booleanValue}, nil
-	case nil != value.Number:
+	case value.Number != nil:
 		booleanValue := *value.Number != 0
 		return &model.Value{Boolean: &booleanValue}, nil
-	case nil != value.Object:
-		booleanValue := nil != value.Object && len(*value.Object) != 0
+	case value.Object != nil:
+		booleanValue := value.Object != nil && len(*value.Object) != 0
 		return &model.Value{Boolean: &booleanValue}, nil
-	case nil != value.String:
+	case value.String != nil:
 		booleanValue := isStringTruthy(*value.String)
 		return &model.Value{Boolean: &booleanValue}, nil
 	default:

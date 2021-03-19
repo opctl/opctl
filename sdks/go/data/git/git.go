@@ -59,7 +59,7 @@ func (gp _git) TryResolve(
 			return newHandle(filepath.Join(gp.basePath, dataRef), dataRef), nil
 		},
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 	return handle.(model.DataHandle), nil

@@ -45,7 +45,7 @@ func (es *_eventStore) Add(
 	return es.db.Update(func(txn *badger.Txn) error {
 
 		encodedEvent, err := json.Marshal(event)
-		if nil != err {
+		if err != nil {
 			return err
 		}
 
@@ -70,7 +70,7 @@ func (es _eventStore) List(
 
 		if err := es.db.View(func(txn *badger.Txn) error {
 			sinceTime := new(time.Time)
-			if nil != filter.Since {
+			if filter.Since != nil {
 				sinceTime = filter.Since
 			}
 
@@ -81,7 +81,7 @@ func (es _eventStore) List(
 				item := it.Item()
 				item.Value(func(v []byte) error {
 					event := model.Event{}
-					if err := json.Unmarshal(v, &event); nil != err {
+					if err := json.Unmarshal(v, &event); err != nil {
 						return err
 					}
 
@@ -97,7 +97,7 @@ func (es _eventStore) List(
 			}
 
 			return nil
-		}); nil != err {
+		}); err != nil {
 			errChannel <- err
 		}
 	}()

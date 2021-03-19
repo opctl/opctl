@@ -17,7 +17,7 @@ func Interpret(
 ) (string, *model.Value, error) {
 
 	dataAsObject, err := coerce.ToObject(data)
-	if nil != err {
+	if err != nil {
 		return ref, nil, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v'", ref))
 	}
 
@@ -29,7 +29,7 @@ func Interpret(
 	}
 
 	identifierValue, err := value.Construct(scopeValue)
-	if nil != err {
+	if err != nil {
 		return ref, nil, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v'", ref))
 	}
 

@@ -34,7 +34,7 @@ var _ = Context("GetData", func() {
 		path = strings.Replace(path, "{path}", url.PathEscape(providedReq.ContentPath), 1)
 
 		expectedReqURL, err := url.Parse(path)
-		if nil != err {
+		if err != nil {
 			panic(err)
 		}
 

@@ -66,7 +66,7 @@ func (cr _containerRuntime) RunContainer(
 	defer stderr.Close()
 
 	pod, err := constructPod(req)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -75,7 +75,7 @@ func (cr _containerRuntime) RunContainer(
 		pod,
 		metaV1.CreateOptions{},
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 
@@ -85,7 +85,7 @@ func (cr _containerRuntime) RunContainer(
 			FieldSelector: fmt.Sprintf("metadata.name=%s", pod.ObjectMeta.Name),
 		},
 	)
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 	defer watcher.Stop()
@@ -113,7 +113,7 @@ func (cr _containerRuntime) RunContainer(
 			defer logSrc.Close()
 
 			_, err = io.Copy(stdout, logSrc)
-			if nil != err {
+			if err != nil {
 				return nil, err
 			}
 
@@ -135,7 +135,7 @@ func (cr _containerRuntime) RunContainer(
 			}
 			defer logSrc.Close()
 			_, err = io.Copy(stdout, logSrc)
-			if nil != err {
+			if err != nil {
 				return nil, err
 			}
 

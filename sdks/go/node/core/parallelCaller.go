@@ -78,14 +78,14 @@ func (pc _parallelCaller) Call(
 	for childCallIndex, childCall := range callSpecParallelCall {
 
 		childCallID, err := uniquestring.Construct()
-		if nil != err {
+		if err != nil {
 			// end run immediately on any error
 			return nil, err
 		}
 
 		childCallIndexByID[childCallID] = childCallIndex
 
-		if nil != childCall.Name {
+		if childCall.Name != nil {
 			childCallIDByName[*childCall.Name] = childCallID
 		}
 
@@ -129,10 +129,10 @@ func (pc _parallelCaller) Call(
 
 eventLoop:
 	for event := range eventChannel {
-		if nil != event.CallEnded {
+		if event.CallEnded != nil {
 			if childCallIndex, isChildCallEnded := childCallIndexByID[event.CallEnded.Call.ID]; isChildCallEnded {
 				childCallOutputsByIndex[childCallIndex] = event.CallEnded.Outputs
-				if nil != event.CallEnded.Error {
+				if event.CallEnded.Error != nil {
 					isChildErred = true
 
 					// cancel all children on any error
