@@ -6,20 +6,21 @@ accordance with
 
 ## [Unreleased]
 
-## 0.1.48 - 2021-02-28
-
 ### Added
 
-- API client now embeds local files/dirs as objects enabling starting ops w/ file/dir inputs on remote nodes.
+- Basic support for sending local files and directories to remote nodes when using the API client
 
 ### Changed
 
 - Self-update now uses github releases instead of equinox.io
 - API now limits request body to 40Mb
+- Improved error output when op resolution fails. You'll now see a list of resolutions tried and why each failed. (https://github.com/opctl/opctl/pull/883)
+- More consistent error messaging formats (https://github.com/opctl/opctl/pull/885)
+- Detect invalid op output names (https://github.com/opctl/opctl/issues/798)
 
 ### Removed
 
-- Windows build; use linux build via WSL 2 instead.
+- Windows build; use linux build via WSL 2 instead
 
 ## 0.1.47 - 2021-01-22
 

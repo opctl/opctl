@@ -6,6 +6,7 @@ import (
 	"regexp"
 
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 	"github.com/pkg/errors"
@@ -38,7 +39,7 @@ func Interpret(
 
 			if nil == propertyValueExpression {
 				// implicit reference
-				propertyValueExpression = fmt.Sprintf("$(%v)", propertyKeyExpression)
+				propertyValueExpression = opspec.NameToRef(propertyKeyExpression)
 			}
 			propertyValue, err := Interpret(
 				propertyValueExpression,

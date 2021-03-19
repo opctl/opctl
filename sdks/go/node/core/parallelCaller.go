@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"runtime/debug"
-	"strings"
 	"time"
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
@@ -41,10 +41,6 @@ func newParallelCaller(
 
 }
 
-func refToName(ref string) string {
-	return strings.TrimSuffix(strings.TrimPrefix(ref, "$("), ")")
-}
-
 type _parallelCaller struct {
 	caller caller
 	pubSub pubsub.PubSub
@@ -69,7 +65,7 @@ func (pc _parallelCaller) Call(
 	for _, callSpecChildCall := range callSpecParallelCall {
 		// increment needed by counts for any needs
 		for _, neededCallRef := range callSpecChildCall.Needs {
-			childCallNeededCountByName[refToName(neededCallRef)]++
+			childCallNeededCountByName[opspec.RefToName(neededCallRef)]++
 		}
 	}
 
@@ -145,7 +141,7 @@ eventLoop:
 
 				// decrement needed by counts for any needs
 				for _, neededCallRef := range callSpecParallelCall[childCallIndex].Needs {
-					childCallNeededCountByName[refToName(neededCallRef)]--
+					childCallNeededCountByName[opspec.RefToName(neededCallRef)]--
 				}
 
 				for neededCallName, neededCount := range childCallNeededCountByName {

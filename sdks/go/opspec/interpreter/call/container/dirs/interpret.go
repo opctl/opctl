@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang-utils/dircopier"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
 	"github.com/pkg/errors"
 )
@@ -24,7 +25,7 @@ dirLoop:
 
 		if nil == dirExpression {
 			// bound implicitly
-			dirExpression = fmt.Sprintf("$(%v)", callSpecContainerDirPath)
+			dirExpression = opspec.NameToRef(callSpecContainerDirPath)
 		}
 
 		dirValue, err := dir.Interpret(
@@ -35,7 +36,7 @@ dirLoop:
 		)
 		if nil != err {
 			return nil, errors.Wrap(err, fmt.Sprintf(
-				"unable to bind %v to %v",
+				"unable to bind directory %v to %v",
 				callSpecContainerDirPath,
 				dirExpression,
 			))

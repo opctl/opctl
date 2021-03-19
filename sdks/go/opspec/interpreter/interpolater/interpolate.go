@@ -1,9 +1,9 @@
 package interpolater
 
 import (
-	"fmt"
 	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 )
 
@@ -85,7 +85,7 @@ func tryDeRef(
 		switch possibleRef[i] {
 		case refCloser:
 			if len(refBuffer) > 0 && refOpener == refBuffer[0] {
-				value, err := reference.Interpret(fmt.Sprintf("$(%v)", string(refBuffer[1:])), scope, nil)
+				value, err := reference.Interpret(opspec.NameToRef(string(refBuffer[1:])), scope, nil)
 				if nil != err {
 					return "", 0, err
 				}
