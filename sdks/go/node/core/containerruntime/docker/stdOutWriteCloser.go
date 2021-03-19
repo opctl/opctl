@@ -2,10 +2,11 @@ package docker
 
 import (
 	"bufio"
-	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/pubsub"
 	"io"
 	"time"
+
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 func NewStdOutWriteCloser(
@@ -43,5 +44,4 @@ func NewStdOutWriteCloser(
 	}()
 
 	return pw
-
 }
