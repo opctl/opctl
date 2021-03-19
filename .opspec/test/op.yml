@@ -91,7 +91,7 @@ run:
           - sh
           - -ce
           - |
-            test -z "\$(gofmt -l . | tee /tmp/output)" || (echo "Fix formatting issues with 'opctl run format'" && cat /tmp/output && exit 1)
+            test -z "\$(gofmt -l ./cli ./sdks/go | tee /tmp/output)" || (echo "Fix formatting issues with 'opctl run format'" && cat /tmp/output && exit 1)
         dirs:
           /src: $(../..)
           /go/pkg: $(GOPATH/pkg)
