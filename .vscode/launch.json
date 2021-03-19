@@ -24,7 +24,7 @@
             "host": "127.0.0.1"
         },
         {
-            "name": "Run and debug a test file",
+            "name": "Run and debug this test suite",
             "type": "go",
             "request": "launch",
             "mode": "test",
