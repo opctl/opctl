@@ -23,7 +23,7 @@ var _ = Context("Interpret", func() {
 			/* act */
 			_, actualErr := Interpret(
 				map[string]*model.Value{
-					identifier: &model.Value{Socket: new(string)},
+					identifier: {Socket: new(string)},
 				},
 				providedContainerCallSpecFiles,
 				"dummyScratchDirPath",
@@ -31,7 +31,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(MatchError("unable to bind /somewhere to $(identifier): unable to coerce '{\"socket\":\"\"}' to file"))
+			Expect(actualErr).To(MatchError("unable to bind file /somewhere to $(identifier): unable to coerce '{\"socket\":\"\"}' to file"))
 		})
 	})
 	Context("value.File not prefixed by dataDirPath", func() {
@@ -39,7 +39,7 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			identifier := "identifier"
 			providedScope := map[string]*model.Value{
-				identifier: &model.Value{File: new(string)},
+				identifier: {File: new(string)},
 			}
 
 			containerPath := "/somewhere"
@@ -92,7 +92,7 @@ var _ = Context("Interpret", func() {
 			/* act */
 			actualResult, actualErr := Interpret(
 				map[string]*model.Value{
-					identifier: &model.Value{
+					identifier: {
 						File: &referencedFilePath,
 					},
 				},

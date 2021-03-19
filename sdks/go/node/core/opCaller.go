@@ -4,9 +4,9 @@ import (
 	"context"
 	"path/filepath"
 	"regexp"
-	"strings"
 
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
@@ -100,6 +100,7 @@ func (oc _opCaller) Call(
 	opOutputs, err = outputs.Interpret(
 		opOutputs,
 		opFile.Outputs,
+		opCallSpec.Outputs,
 		opCall.OpPath,
 		filepath.Join(oc.callScratchDir, opCall.OpID),
 	)
@@ -116,7 +117,7 @@ func (oc _opCaller) Call(
 			boundName = boundValue
 			boundValue = prevBoundName
 		} else {
-			boundValue = strings.TrimSuffix(strings.TrimPrefix(boundValue, "$("), ")")
+			boundValue = opspec.RefToName(boundValue)
 		}
 		for opOutputName, opOutputValue := range opOutputs {
 			if boundName == opOutputName {

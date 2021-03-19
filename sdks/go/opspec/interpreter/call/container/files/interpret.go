@@ -9,6 +9,7 @@ import (
 
 	"github.com/golang-utils/filecopier"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/file"
 	"github.com/pkg/errors"
 )
@@ -26,7 +27,7 @@ fileLoop:
 
 		if nil == fileExpression {
 			// bound implicitly
-			fileExpression = fmt.Sprintf("$(%v)", callSpecContainerFilePath)
+			fileExpression = opspec.NameToRef(callSpecContainerFilePath)
 		}
 
 		fileValue, err := file.Interpret(
@@ -37,7 +38,7 @@ fileLoop:
 		)
 		if nil != err {
 			return nil, errors.Wrap(err, fmt.Sprintf(
-				"unable to bind %v to %v",
+				"unable to bind file %v to %v",
 				callSpecContainerFilePath,
 				fileExpression,
 			))

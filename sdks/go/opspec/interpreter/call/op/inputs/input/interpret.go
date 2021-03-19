@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/array"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/boolean"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
@@ -34,7 +35,7 @@ func Interpret(
 		if !ok {
 			return nil, fmt.Errorf("unable to bind to '%v' via implicit ref: '%v' not in scope", name, name)
 		}
-		valueExpression = fmt.Sprintf("$(%v)", name)
+		valueExpression = opspec.NameToRef(name)
 	}
 
 	switch {

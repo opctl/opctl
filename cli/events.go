@@ -36,5 +36,4 @@ func events(
 
 		cliOutput.Event(&event)
 	}
-	return nil
 }

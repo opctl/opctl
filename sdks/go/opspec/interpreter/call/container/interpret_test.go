@@ -51,7 +51,7 @@ var _ = Context("Interpret", func() {
 			/* act */
 			_, actualErr := Interpret(
 				map[string]*model.Value{
-					identifier: &model.Value{
+					identifier: {
 						Socket: new(string),
 					},
 				},
@@ -69,7 +69,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(MatchError("unable to bind /something to $(identifier): unable to interpret $(identifier) to dir: unable to coerce socket to dir: incompatible types"))
+			Expect(actualErr).To(MatchError("unable to bind directory /something to $(identifier): unable to interpret $(identifier) to dir: unable to coerce socket to dir: incompatible types"))
 		})
 	})
 
@@ -111,7 +111,7 @@ var _ = Context("Interpret", func() {
 			/* act */
 			_, actualErr := Interpret(
 				map[string]*model.Value{
-					"not": &model.Value{
+					"not": {
 						Socket: new(string),
 					},
 				},
@@ -129,7 +129,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(MatchError("unable to bind /something to $(not): unable to coerce '{\"socket\":\"\"}' to file"))
+			Expect(actualErr).To(MatchError("unable to bind file /something to $(not): unable to coerce '{\"socket\":\"\"}' to file"))
 		})
 	})
 

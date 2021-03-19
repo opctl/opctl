@@ -2,16 +2,12 @@ package iteration
 
 import (
 	"sort"
-	"strings"
 
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
 )
-
-func refToVariable(ref *string) string {
-	return strings.TrimSuffix(strings.TrimPrefix(*ref, "$("), ")")
-}
 
 func sortMap(
 	m map[string]interface{},
@@ -47,7 +43,7 @@ func Scope(
 	if nil != loopVarsSpec.Index {
 		// assign iteration index to requested inboundScope variable
 		indexAsFloat64 := float64(index)
-		outboundScope[refToVariable(loopVarsSpec.Index)] = &model.Value{
+		outboundScope[opspec.RefToName(*loopVarsSpec.Index)] = &model.Value{
 			Number: &indexAsFloat64,
 		}
 	}
@@ -90,7 +86,7 @@ func Scope(
 
 		if nil != loopVarsSpec.Key {
 			// only add key to scope if declared
-			outboundScope[refToVariable(loopVarsSpec.Key)] = &model.Value{String: &name}
+			outboundScope[opspec.RefToName(*loopVarsSpec.Key)] = &model.Value{String: &name}
 		}
 	}
 
@@ -104,7 +100,7 @@ func Scope(
 			return nil, err
 		}
 
-		outboundScope[refToVariable(loopVarsSpec.Value)] = &v
+		outboundScope[opspec.RefToName(*loopVarsSpec.Value)] = &v
 	}
 
 	return outboundScope, nil
