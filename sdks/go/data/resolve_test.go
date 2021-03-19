@@ -8,8 +8,8 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	aggregateError "github.com/opctl/opctl/sdks/go/aggregate_error"
 	"github.com/opctl/opctl/sdks/go/data/fs"
+	aggregateError "github.com/opctl/opctl/sdks/go/internal/aggregate_error"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/pkg/errors"
 )
