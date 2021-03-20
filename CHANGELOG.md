@@ -18,6 +18,10 @@ accordance with
 - [More consistent error messaging formats](https://github.com/opctl/opctl/pull/885)
 - [Detect invalid op output names](https://github.com/opctl/opctl/issues/798)
 
+### Fixed
+
+- [vscode intellisense error](https://github.com/opctl/opctl/issues/615)
+
 ### Removed
 
 - Windows build; use linux build via WSL 2 instead

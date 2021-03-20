@@ -1,7 +1,0 @@
-{
-  "title": "serialCall",
-  "type": "array",
-  "items": {
-    "$ref": "index.json"
-  }
-}

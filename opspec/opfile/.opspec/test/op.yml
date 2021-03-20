@@ -4,4 +4,4 @@ run:
   op:
     ref: github.com/opspec-pkgs/jsonschema.draft7.validate-schema#1.0.0
     inputs:
-      schema: $(../../jsonschemaDotJson)
+      schema: $(../../jsonschema.json)

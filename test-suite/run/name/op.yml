@@ -1,0 +1,8 @@
+name: run/name
+run:
+  name: string
+  container:
+    image:
+      ref: alpine
+    cmd:
+      - echo
