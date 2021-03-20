@@ -1,8 +1,0 @@
-{
-    "description": "Expression which evaluates to a loopable type (array or object)",
-    "type": [
-      "array",
-      "object",
-      "string"
-    ]
-  }

@@ -6,16 +6,20 @@ accordance with
 
 ## [Unreleased]
 
-## 0.1.48 - 2021-02-28
-
 ### Added
 
 - API client now embeds local files/dirs as objects enabling starting ops w/ file/dir inputs on remote nodes.
+- [Allow defining description on call graph nodes](https://github.com/opctl/opctl/issues/900)
 
 ### Changed
 
 - Self-update now uses github releases instead of equinox.io
 - API now limits request body to 40Mb
+- [Deprecated param.<datatype>.description; use param.description](https://github.com/opctl/opctl/issues/898)
+
+### Fixed
+
+- [vscode intellisense error](https://github.com/opctl/opctl/issues/615)
 
 ### Removed
 

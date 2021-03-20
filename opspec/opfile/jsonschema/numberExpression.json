@@ -1,7 +1,0 @@
-{
-  "description": "Expression which evaluates to a number",
-  "type": [
-    "number",
-    "string"
-  ]
-}

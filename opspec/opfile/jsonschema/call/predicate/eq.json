@@ -1,8 +1,0 @@
-{
-  "description": "True if all items are equal",
-  "type": "array",
-  "items": {
-    "description": "Expression coercible to string value",
-    "$ref": "../../expression.json"
-  }
-}
