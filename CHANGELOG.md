@@ -9,6 +9,7 @@ accordance with
 ### Added
 
 - Basic support for sending local files and directories to remote nodes when using the API client
+- [Allow defining description on call graph nodes](https://github.com/opctl/opctl/issues/900)
 
 ### Changed
 
@@ -17,6 +18,7 @@ accordance with
 - [Improved error output when op resolution fails. You'll now see a list of resolutions tried and why each failed.](https://github.com/opctl/opctl/pull/883)
 - [More consistent error messaging formats](https://github.com/opctl/opctl/pull/885)
 - [Detect invalid op output names](https://github.com/opctl/opctl/issues/798)
+- [Deprecated param.<datatype>.description; use param.description](https://github.com/opctl/opctl/issues/898)
 
 ### Fixed
 

@@ -14,12 +14,16 @@ An object defining a call in an operations call graph.
   - [serial](#serial)
   - [serialLoop](#serialloop)
 - may have
+  - [description](#description)
   - [if](#if)
   - [name](#name)
   - [needs](#needs)
 
 ### container
 A [container-call [object]](container/index.md) defining a container to run.
+
+### description
+A [markdown [string]](../markdown.md) defining a human friendly description of the call.
 
 ### op
 An [op-call [object]](op.md) defining an op to run.

@@ -9,5 +9,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "opctl/cli/cliparamsatisfier/inputsrc/ymlfile")
+	RunSpecs(t, "opctl/cli/internal/cliparamsatisfier/inputsrc/ymlfile")
 }
