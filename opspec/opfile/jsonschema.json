@@ -333,6 +333,7 @@
                             "description": "Array parameter of an op",
                             "properties": {
                                 "description": {
+                                    "deprecated": true,
                                     "$ref": "#/definitions/markdown"
                                 },
                                 "default": {
@@ -353,6 +354,7 @@
                             "description": "Boolean parameter of an op",
                             "properties": {
                                 "description": {
+                                    "deprecated": true,
                                     "$ref": "#/definitions/markdown"
                                 },
                                 "default": {
@@ -362,11 +364,15 @@
                             },
                             "type": "object"
                         },
+                        "description": {
+                            "$ref": "#/definitions/markdown"
+                        },
                         "dir": {
                             "additionalProperties": false,
                             "description": "Directory parameter of an op",
                             "properties": {
                                 "description": {
+                                    "deprecated": true,
                                     "$ref": "#/definitions/markdown"
                                 },
                                 "default": {
@@ -385,6 +391,7 @@
                             "description": "File parameter of an op",
                             "properties": {
                                 "description": {
+                                    "deprecated": true,
                                     "$ref": "#/definitions/markdown"
                                 },
                                 "default": {
@@ -403,6 +410,7 @@
                             "description": "Number parameter of an op",
                             "properties": {
                                 "description": {
+                                    "deprecated": true,
                                     "$ref": "#/definitions/markdown"
                                 },
                                 "default": {
@@ -423,6 +431,7 @@
                             "description": "Object parameter of an op",
                             "properties": {
                                 "description": {
+                                    "deprecated": true,
                                     "$ref": "#/definitions/markdown"
                                 },
                                 "default": {
@@ -443,6 +452,7 @@
                             "description": "Socket parameter of an op",
                             "properties": {
                                 "description": {
+                                    "deprecated": true,
                                     "$ref": "#/definitions/markdown"
                                 },
                                 "isSecret": {
@@ -457,6 +467,7 @@
                             "description": "String parameter of an op",
                             "properties": {
                                 "description": {
+                                    "deprecated": true,
                                     "$ref": "#/definitions/markdown"
                                 },
                                 "default": {
@@ -919,6 +930,9 @@
                         "image"
                     ],
                     "additionalProperties": false
+                },
+                "description": {
+                    "$ref": "#/definitions/markdown"
                 },
                 "if": {
                     "description": "If any predicate evaluates to false, the call will be skipped.",

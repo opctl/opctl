@@ -17,17 +17,17 @@ name: mysql
 description: runs a mysql container, seeding it with sample data
 inputs:
   MYSQL_USER:
+    description: username for MySQL user to create
     string:
       default: testuser
-      description: username for MySQL user to create
   MYSQL_PASSWORD:
+    description: password for MySQL user to create
     string:
       default: testpassword
-      description: password for MySQL user to create
   MYSQL_DATABASE:
+    description: name of mysql database to create
     string:
       default: testapp
-      description: name of mysql database to create
   MYSQL_HOST:
     string:
       default: run-a-go-service-mysql
@@ -65,17 +65,17 @@ name: dev
 description: runs go-svc for development
 inputs:
   MYSQL_USER:
+    description: username for MySQL user to create
     string:
       default: testuser
-      description: username for MySQL user to create
   MYSQL_PASSWORD:
+    description: password for MySQL user to create
     string:
       default: testpassword
-      description: password for MySQL user to create
   MYSQL_DATABASE:
+    description: Database to create
     string:
       default: testapp
-      description: Database to create
   MYSQL_HOST:
     string:
       default: mysql # the host for mysql is the container name in the mysql op

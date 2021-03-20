@@ -13,9 +13,9 @@ description: echoes hello followed by a name you provide
 # we add the inputs section
 inputs:
   person: # the name of this input is "person"
+    description: who to greet # the description is "who to greet"
     string: # the type of this input is string
-      constraints: { minLength: 1 } # we can place constraints
-      description: who to greet # and describe what the input is
+      constraints: { minLength: 1 } # it can have a minLength of 1
 
 run:
 
@@ -67,15 +67,15 @@ description: echoes hello followed by a name you provide
 
 inputs:
   person:
+    description: whom to greet
     string:
       constraints: { minLength: 1 }
-      description: whom to greet
 
 # we add the outputs section
 outputs:
   helloperson:
-    string:
-      description: a string of hello $(person)
+    description: a string of hello $(person)
+    string: {}
 
 run:
   container:
@@ -102,9 +102,9 @@ description: runs a simple caddy web server that serves a welcome text at http:/
 inputs:
 # we need an input of person to pass to the hello-world op when we run it as part of the caddy op
   person:
+    description: name to greet with welcome text at root of web site
     string:
       constraints: { minLength: 1 }
-      description: name to greet with welcome text at root of web site
 run:
   serial:
     - op:
