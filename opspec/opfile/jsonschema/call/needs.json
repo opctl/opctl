@@ -1,7 +1,0 @@
-{
-  "description": "An array of sibling call names which the current call needs. Sibling calls will be killed once no longer needed.",
-  "type": "array",
-  "items": {
-    "$ref": "../identifier.json"
-  }
-}
