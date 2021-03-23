@@ -14,23 +14,17 @@ import (
 	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/pubsub"
-	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("parallelCaller", func() {
 	Context("newParallelCaller", func() {
 		It("should return parallelCaller", func() {
 			/* arrange/act/assert */
-			Expect(newParallelCaller(
-				new(FakeCaller),
-				new(FakePubSub),
-			)).To(Not(BeNil()))
+			Expect(newParallelCaller(new(FakeCaller))).To(Not(BeNil()))
 		})
 	})
 	Context("Call", func() {
-
 		Context("caller errors", func() {
-
 			It("should return expected results", func() {
 				/* arrange */
 				dbDir, err := ioutil.TempDir("", "")
@@ -60,7 +54,6 @@ var _ = Context("parallelCaller", func() {
 						dbDir,
 						pubSub,
 					),
-					pubSub: pubSub,
 				}
 
 				/* act */
@@ -72,19 +65,18 @@ var _ = Context("parallelCaller", func() {
 					"opPath",
 					[]*model.CallSpec{
 						{
-							// intentionally invalid
+							// intentionally invalid, will produce validation error
 							Container: &model.ContainerCallSpec{},
 						},
 					},
 				)
 
 				/* assert */
-				Expect(actualErr.Error()).To(Equal("child call failed"))
+				Expect(actualErr).To(MatchError("image required"))
 			})
 		})
 
 		It("should start each child as expected", func() {
-
 			/* arrange */
 			dbDir, err := ioutil.TempDir("", "")
 			if err != nil {
@@ -156,7 +148,6 @@ var _ = Context("parallelCaller", func() {
 					dbDir,
 					pubSub,
 				),
-				pubSub: pubSub,
 			}
 
 			/* act */

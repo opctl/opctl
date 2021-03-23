@@ -2,29 +2,23 @@ package core
 
 import (
 	"context"
+	"io"
 	"io/ioutil"
 
-	"io"
-
 	"github.com/dgraph-io/badger/v2"
-	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
-	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
-	"github.com/opctl/opctl/sdks/go/pubsub"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
+	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 var _ = Context("serialLoopCaller", func() {
 	Context("newSerialLoopCaller", func() {
 		It("should return serialLoopCaller", func() {
 			/* arrange/act/assert */
-			Expect(newSerialLoopCaller(
-				new(FakeCaller),
-				new(FakePubSub),
-			)).To(Not(BeNil()))
+			Expect(newSerialLoopCaller(new(FakeCaller))).To(Not(BeNil()))
 		})
 	})
 
@@ -36,7 +30,6 @@ var _ = Context("serialLoopCaller", func() {
 
 				objectUnderTest := _serialLoopCaller{
 					caller: fakeCaller,
-					pubSub: new(FakePubSub),
 				}
 
 				/* act */
@@ -70,7 +63,6 @@ var _ = Context("serialLoopCaller", func() {
 
 				objectUnderTest := _serialLoopCaller{
 					caller: fakeCaller,
-					pubSub: new(FakePubSub),
 				}
 
 				/* act */
@@ -128,7 +120,6 @@ var _ = Context("serialLoopCaller", func() {
 
 					objectUnderTest := _serialLoopCaller{
 						caller: caller,
-						pubSub: pubSub,
 					}
 
 					/* act */
@@ -215,7 +206,6 @@ var _ = Context("serialLoopCaller", func() {
 						dbDir,
 						pubSub,
 					),
-					pubSub: pubSub,
 				}
 
 				/* act */

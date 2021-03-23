@@ -3,11 +3,12 @@ package core
 import (
 	"context"
 
+	"path/filepath"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
-	"path/filepath"
 )
 
 var _ = Context("opCaller", func() {
@@ -49,13 +50,13 @@ var _ = Context("opCaller", func() {
 
 			expectedChildCallScope := map[string]*model.Value{
 				"dummyScopeName": providedOpCall.Inputs["dummyScopeName"],
-				"./": &model.Value{
+				"./": {
 					Dir: &providedOpPath,
 				},
-				"../": &model.Value{
+				"../": {
 					Dir: &parentProvidedOpPath,
 				},
-				"/": &model.Value{
+				"/": {
 					Dir: &providedOpPath,
 				},
 			}
@@ -113,7 +114,7 @@ var _ = Context("opCaller", func() {
 			}
 
 			callOutputs := map[string]*model.Value{
-				expectedOutputName: &model.Value{
+				expectedOutputName: {
 					String: new(string),
 				},
 				// include unbound output to ensure it's not added to scope

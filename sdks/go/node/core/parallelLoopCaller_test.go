@@ -12,17 +12,13 @@ import (
 	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/pubsub"
-	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("parallelLoopCaller", func() {
 	Context("newParallelLoopCaller", func() {
 		It("should return parallelLoopCaller", func() {
 			/* arrange/act/assert */
-			Expect(newParallelLoopCaller(
-				new(FakeCaller),
-				new(FakePubSub),
-			)).To(Not(BeNil()))
+			Expect(newParallelLoopCaller(new(FakeCaller))).To(Not(BeNil()))
 		})
 	})
 
@@ -34,7 +30,6 @@ var _ = Context("parallelLoopCaller", func() {
 
 				objectUnderTest := _parallelLoopCaller{
 					caller: fakeCaller,
-					pubSub: new(FakePubSub),
 				}
 
 				/* act */
@@ -56,7 +51,6 @@ var _ = Context("parallelLoopCaller", func() {
 		})
 
 		Context("iteration spec invalid", func() {
-
 			It("should return expected results", func() {
 				/* arrange */
 				dbDir, err := ioutil.TempDir("", "")
@@ -91,7 +85,6 @@ var _ = Context("parallelLoopCaller", func() {
 
 				objectUnderTest := _parallelLoopCaller{
 					caller: caller,
-					pubSub: pubSub,
 				}
 
 				/* act */
@@ -113,7 +106,7 @@ var _ = Context("parallelLoopCaller", func() {
 				)
 
 				/* assert */
-				Expect(actualErr.Error()).To(Equal("child call failed"))
+				Expect(actualErr).To(MatchError("image required"))
 				Expect(actualOutputs).To(BeNil())
 			})
 		})
@@ -178,7 +171,6 @@ var _ = Context("parallelLoopCaller", func() {
 					dbDir,
 					pubSub,
 				),
-				pubSub: pubSub,
 			}
 
 			/* act */
