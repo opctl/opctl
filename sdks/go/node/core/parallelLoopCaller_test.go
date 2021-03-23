@@ -265,6 +265,10 @@ var _ = Context("parallelLoopCaller", func() {
 			providedOpRef := "providedOpRef"
 			providedParentID := "providedParentID"
 			providedRootID := "providedRootID"
+			input1Value := "input1Value"
+			providedInboundScope := map[string]*model.Value{
+				"input": {String: &input1Value},
+			}
 
 			fakeCaller := new(FakeCaller)
 
@@ -287,7 +291,7 @@ var _ = Context("parallelLoopCaller", func() {
 			actualOutputs, actualErr := objectUnderTest.Call(
 				context.Background(),
 				"",
-				map[string]*model.Value{},
+				providedInboundScope,
 				model.ParallelLoopCallSpec{
 					Range: model.Value{
 						Array: &[]interface{}{0, 1},
@@ -302,6 +306,7 @@ var _ = Context("parallelLoopCaller", func() {
 			/* assert */
 			Expect(actualErr).To(BeNil())
 			Expect(actualOutputs).To(Equal(map[string]*model.Value{
+				"input":   {String: &input1Value},
 				"output0": {String: &expectedOutput0},
 				"output1": {String: &expectedOutput1},
 			}))
