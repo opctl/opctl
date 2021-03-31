@@ -2,96 +2,29 @@
 sidebar_label: Overview
 title: Opspec
 ---
-Opspec (portmanteau of operation specification) is a language designed to portably and fully define operations (ops).
 
-## Structure
-Each op is defined as a directory.
+Opspec (a portmanteau of operation specification) is a language designed to portably and fully define ops (operations).
 
-Reference:
-- [{OP_DIRECTORY}](op-directory/index.md)
-    - [op.yml](op-directory/index.md#opyml)
-        - [name](op-directory/op/index.md#name)
-        - [description](op-directory/op/index.md#description)
-        - [inputs](op-directory/op/index.md#inputs)/[outputs](op-directory/op/index.md#outputs)
-            - [{PARAMETER_NAME}](op-directory/op/parameter/index.md)
-                > one of...
+An op is any directory containing a [valid opspec file with the name `op.yml`](op.yml/index). By default, the opctl cli will look for ops in the `.opspec/` directory in your current working directory, but ops can be defined in any directory.
 
-                - [array](op-directory/op/parameter/array.md)
-                    - [constraints](op-directory/op/parameter/array.md#constraints)
-                    - [default](op-directory/op/parameter/array.md#default)
-                    - [description](op-directory/op/parameter/array.md#description)
-                    - [isSecret](op-directory/op/parameter/array.md#issecret)
-                - [boolean](op-directory/op/parameter/boolean.md)
-                    - [default](op-directory/op/parameter/boolean.md#default)
-                    - [description](op-directory/op/parameter/boolean.md#description)
-                - [dir](op-directory/op/parameter/dir.md)
-                    - [default](op-directory/op/parameter/dir.md#default)
-                    - [description](op-directory/op/parameter/dir.md#description)
-                    - [isSecret](op-directory/op/parameter/dir.md#issecret)
-                - [file](op-directory/op/parameter/file.md)
-                    - [default](op-directory/op/parameter/file.md#default)
-                    - [description](op-directory/op/parameter/file.md#description)
-                    - [isSecret](op-directory/op/parameter/file.md#issecret)
-                - [number](op-directory/op/parameter/number.md)
-                    - [constraints](op-directory/op/parameter/number.md#constraints)
-                    - [default](op-directory/op/parameter/number.md#default)
-                    - [description](op-directory/op/parameter/number.md#description)
-                    - [isSecret](op-directory/op/parameter/number.md#issecret)
-                - [object](op-directory/op/parameter/object.md)
-                    - [constraints](op-directory/op/parameter/object.md#constraints)
-                    - [default](op-directory/op/parameter/object.md#default)
-                    - [description](op-directory/op/parameter/object.md#description)
-                    - [isSecret](op-directory/op/parameter/object.md#issecret)
-                - [socket](op-directory/op/parameter/socket.md)
-                    - [description](op-directory/op/parameter/socket.md#description)
-                    - [isSecret](op-directory/op/parameter/socket.md#issecret)
-                - [string](op-directory/op/parameter/string.md)
-                    - [constraints](op-directory/op/parameter/string.md#constraints)
-                    - [default](op-directory/op/parameter/string.md#default)
-                    - [description](op-directory/op/parameter/string.md#description)
-                    - [isSecret](op-directory/op/parameter/string.md#issecret)
-        - [opspec](op-directory/op/index.md#opspec)
-        - [run](op-directory/op/index.md#run)
-            - [if](op-directory/op/call/index.md#if)
-            - [name](op-directory/op/call/index.md#name)
-            - [needs](op-directory/op/call/index.md#needs)
-            > one of...
+An op directory may contain other files and directories. These files are considered "embedded" within the op and can be referenced during execution as executable code, as data, or for whatever purpose you have.
 
-            - [container](op-directory/op/call/container/index.md)
-                - [cmd](op-directory/op/call/container/index.md#cmd)
-                - [dirs](op-directory/op/call/container/index.md#dirs)
-                - [envVars](op-directory/op/call/container/index.md#envvars)
-                - [files](op-directory/op/call/container/index.md#files)
-                - [image](op-directory/op/call/container/image/index.md)
-                    - [ref](op-directory/op/call/container/image.md#ref)
-                    - [pullCreds](op-directory/op/call/container/image.md#pullcreds)
-                - [name](op-directory/op/call/container/index.md#name)
-                - [ports](op-directory/op/call/container/index.md#ports)
-                - [sockets](op-directory/op/call/container/index.md#sockets)
-                - [workDir](op-directory/op/call/container/index.md#workdir)
-            - [op](op-directory/op/call/op.md)
-                - [inputs](op-directory/op/call/op.md#inputs)
-                - [outputs](op-directory/op/call/op.md#outputs)
-                - [pullCreds](op-directory/op/call/op.md#pullcreds)
-                - [ref](op-directory/op/call/op.md#ref)
-            - [parallel](op-directory/op/call/index.md#parallel)
-            - [parallelLoop](op-directory/op/call/parallel-loop.md)
-                - [range](op-directory/op/call/parallel-loop.md#range)
-                - [run](op-directory/op/call/parallel-loop.md#run)
-                - [vars](op-directory/op/call/parallel-loop.md#vars)
-            - [serial](op-directory/op/call/index.md#serial)
-            - [serialLoop](op-directory/op/call/serial-loop.md)
-                - [range](op-directory/op/call/serial-loop.md#range)
-                - [run](op-directory/op/call/serial-loop.md#run)
-                - [until](op-directory/op/call/serial-loop.md#until)
-                - [vars](op-directory/op/call/serial-loop.md#vars)
-        - [version](op-directory/op/index.md#version)
-    - [icon.svg](op-directory/index.md#iconsvg)
+If the root of an op directory contains a `icon.svg` file (must be [SVG 1.1](https://www.w3.org/TR/SVG11) with a 1:1 aspect ratio), it will be used when displaying the op within a UI.
 
-## Types
-Values in opspec are typed.
+## Call graph
 
-Reference:
+As an op runs, opctl parses [`op.yml`](op.yml/index) files to create a dynamic call graph tracking the different running containers as the are started and exit. The call graph is defined declaritively using [call objects](op.yml/call/index), which include sequencing and conditional support.
+
+## Data flow
+
+Opctl has first class support for data flow into, between, and out of ops and their containers. Opspecs receive data from [`inputs`](op.yml#inputs) and return data through [`outputs`](op.yml#outputs). Within an opspec, data is referenced with a named variable that contains a typed value.
+
+### Types
+
+Opspecs support a limited set of type coercion. This is important, as it bridges the gap between container data and opspec typed values. A container doesn't know how to produce a key/value object, but can write to a file which can then be coerced into an object.
+
+The supported types are:
+
 - [array](types/array.md)
 - [boolean](types/boolean.md)
 - [dir](types/dir.md)
@@ -101,5 +34,55 @@ Reference:
 - [socket](types/socket.md)
 - [string](types/string.md)
 
-## Scoping
-Variables in opspec are scoped to each operation. [Parameters](../op/parameter/index.md) allow passing values into or out of this scope.
+### Scoping
+
+A variable is created when defined as an [`input`](op.yml#inputs) or [`output`](op.yml#inputs), bound implicitly to an `output` when making an [op call](op.yml/call/op), or declared with [loop variables](./op.yml/loop-variable). A variable name is in scope from creation through the lifetime of it's `op.yml` file. Variable scope does not extend into [op calls](./op.yml/call/op).
+
+Variables can be referenced using the syntax `$(name)`.
+
+#### Scoping example
+
+```yml
+name: foobar
+inputs:
+  variable1:
+    string: {}
+  variable2:
+    string:
+      default: "hello world"
+outputs:
+  variable3:
+    string:
+      default: "goodbye!"
+```
+
+Two variables, `variable1` and `variable2` are created from inputs. The CLI will prompt the user to provide a value for `variable1`, since it doesn't have a default, and `variable2` will contain the string value `"hello world"` if the user didn't override the value with a command line argument.
+
+One variable, `variable3` is created from the single output, which contains the string value `"goodbye!"`.
+
+```yml
+run:
+  serial:
+    - op:
+        ref: ../other-op
+        inputs:
+          input1: $(variable1)
+        outputs:
+          output1: $(variable2)
+          output2: $(variable4)
+```
+
+The variable `variable1`'s value is passed into `../other-op` where it will be stored in the variable `input1`. `../other-op` will not have access to the `variable1` or `variable2` names. After the op call completes the variable `variable2` will contain the value from `output1` that was produced by `../other-op`. Additionally, the variable `variable3` will be implicitly created from the output binding and will have the value from `output2` stored in it.
+
+```yml
+    - op:
+        ref: ../third-op
+        inputs:
+          input1: $(variable2)
+        outputs:
+          output1: $(variable3)
+```
+
+`variable2` now contains the value from `../other-op`, not the original value of `"hello world"`.
+
+The value of `output1` from `../third-op` will be stored in `variable3`, which was defined as this op's output. It will be returned to the caller through the `variable3` output.

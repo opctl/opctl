@@ -2,37 +2,33 @@
 title: String
 ---
 
-String typed values are a string i.e. an array of unicode characters
+String values are a string (an array of unicode characters)
 
-Strings...
-- are immutable, i.e. assigning to an string results in a copy of the original string
-- can be passed in/out of ops via [string parameters](../op-directory/op/parameter/string.md)
-- can be initialized via [string initialization](#initialization)
-- are coerced according to [string coercion](#coercion)
+## Initialization
 
-### Initialization
-String typed values can be constructed from a literal or templated string.
- 
-A templated string is a string which includes one or more [variable-reference [string]](../op-directory/op/variable-reference.md).
-At runtime, each reference gets evaluated and replaced with it's corresponding value.
-
-#### Initialization Example (literal)
+Strings can be created with a yaml string literal. They can contain [variable references](../op.yml/variable-reference.md) that will be evaluated, coerced to a string, and replaced during initialization.
 
 ```yaml
-i'm a string
+inputs:
+  myInput:
+    number:
+      default: 3 # 3!
+run:
+  op:
+    ref: ../op
+    inputs:
+      input1: A simple string
+      input2: "Another simple string"
+      input3: |
+        A more complex string with multiple lines
+        and a variable reference: $(myInput)
 ```
 
-#### Initialization Example (templated)
-```yaml
-# JSON representation of in scope object "someObject", replaces $(someObject) in the string
-# contents of in scope file "someDir/file.txt" replaces $(someDir/file.txt) in the string
-pre $(someObject) $(someDir/file.txt)
-```
+## Coercion
 
-### Coercion
-String typed values are coercible to:
+String values are coercible to:
 
-- [boolean](boolean.md) (strings which are empty, all `"0"`, or (case insensitive) `"f"` or `"false"` coerce to false; all else coerce to true)
+- [boolean](boolean.md): Empty, all `"0"`, or (case insensitive) `"f"` or `"false"` strings coerce to `false`, all else coerce to `true`
 - [file](file.md)
-- [number](number.md) (if value of string is numeric)
-- [object](object.md) (if value of string is an object in JSON format)
+- [number](number.md): if the value is numeric
+- [object](object.md): if the value is a valid JSON object, will be parsed as JSON

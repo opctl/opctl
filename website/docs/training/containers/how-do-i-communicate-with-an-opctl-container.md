@@ -3,7 +3,7 @@ title: How do I communicate with an opctl container?
 ---
 
 ## TLDR;
-Adding a [ports](../../reference/opspec/op-directory/op/call/container/index#ports) attribute to a container binds container ports to the opctl host.
+Adding a [ports](../../reference/opspec/op.yml/call/container/index#ports) attribute to a container binds container ports to the opctl host.
 
 ## Example
 1. Start this op: 

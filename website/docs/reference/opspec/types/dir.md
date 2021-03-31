@@ -2,59 +2,30 @@
 title: Dir
 ---
 
-Dir typed values are a filesystem directory entry.
+Dir typed values are a filesystem directory entry. Dirs are passed by reference, not copied, which means changing the contents or value of a directory will cause it to change in each variable that holds it.
 
-Dirs...
-- are mutable, i.e. making changes to a directory results in the directory being changed everywhere it's referenced.
-- can be passed in/out of ops via [dir parameters](../op-directory/op/parameter/dir.md).
-- can be initialized via [dir initialization](#initialization)
-- are not coercible to any other type.
+## Initialization
 
-### Initialization
-Dir typed values can be constructed from a literal or templated object.
+Dir values can be constructed literally or through a [variable reference](../op.yml/variable-reference.md).
  
-A templated object is an object which includes one or more [variable-reference [string]](../op-directory/op/variable-reference.md).
-At runtime, each reference gets evaluated and replaced with it's corresponding value.
+### Literal initialization
 
-#### Initialization Example (literal)
+A literal dir initialization is a yaml key-value object. Keys are a single-component, absolute path name. Values are either an object with the key `data` and value a value or [variable reference](../op.yml/variable-reference.md) that can be coerced to a file, or another literal dir initialization.
 
 ```yaml
 myLiteralDir:
-    /singleLineFile:
-      data: contents of /childFile1
-    /subDir:
-      /multilineFile:
-        data: |
-          multiline
-          contents of /childFile2
-    /emptySubDir: {}
+  /singleLineFile:
+    data: contents of /childFile1
+  /childFile
+    data: $(someVariable) # will contain the value of `someVariable`
+  /subDir:
+    /multilineFile:
+      data: |
+        multiline
+        contents of /childFile2
+  /emptySubDir: {}
 ```
 
-#### Initialization Example (templated)
+## Coercion
 
-```yaml
-myTemplatedDir:
-    /childFile:
-      data: $(someVariable)
-```
-
-### Entry Referencing
-Dir entries (child files/directories) can be referenced via `$(ROOT/ENTRY)` syntax.
-
-#### Entry Referencing Example (embedded)
-given:
-- `file1.json` exists in op
-
-```yaml
-$(./file1.json)
-```
-
-#### Entry Referencing Example (scope)
-given:
-- `someDir`
-  - is in scope dir
-  - contains `file2.txt`
-
-```yaml
-$(someDir/file2.txt)
-```
+Dir values cannot be coerced to other types.

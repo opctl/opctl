@@ -3,7 +3,7 @@ title: How do I run a container?
 ---
 
 ## TLDR;
-Opctl supports running an [OCI](https://opencontainers.org/) image based container by defining a [container call](../../reference/opspec/op-directory/op/call/container/index).
+Opctl supports running an [OCI](https://opencontainers.org/) image based container by defining a [container call](../../reference/opspec/op.yml/call/container/index).
 
 > Note: a common place to obtain [OCI](https://opencontainers.org/) images is [Docker Hub](https://hub.docker.com/).
 

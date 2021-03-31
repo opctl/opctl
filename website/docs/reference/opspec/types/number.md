@@ -2,53 +2,44 @@
 title: Number
 ---
 
-Number typed values are a number.
+Numbers are numerical values. Opspecs do not define floating or integer semantics, but stores numbers internally as `float64` values. Numbers are immutable: assigning a number variable to another variable copies the value.
 
-Numbers...
-- are immutable, i.e. assigning to an number results in a copy of the original number
-- can be passed in/out of ops via [number parameters](../op-directory/op/parameter/number.md)
-- can be initialized via [number initialization](#initialization)
-- are coerced according to [number coercion](#coercion)
+## Initialization
 
-### Initialization
-Number typed values can be constructed from a literal or templated number.
- 
-A templated number is a number which includes one or more [variable-reference [string]](../op-directory/op/variable-reference.md).
-At runtime, each reference gets evaluated and replaced with it's corresponding value.
+Numbers are initalized with normal yaml number syntax.
 
-#### Initialization Example (literal)
-```yaml
-2
-```
-
-#### Initialization Example (templated)
-given:
-- `someNumber`
-  - is in scope
-   - is type coercible to number
+Because strings can be coerced to numbers, strings that include [variable references](../op.yml/variable-reference.md) will be interpreted and coerced to a number.
 
 ```yaml
-# $(someNumber) replaced w/ someNumber
-222$(someNumber)3e10
+inputs:
+  myInput:
+    number:
+      default: 3 # 3!
+run:
+  op:
+    ref: ../op
+    inputs:
+      input1: 12$(myInput)4e10 # will be interpreted as 12340000000000
 ```
 
-### Coercion
-Number typed values are coercible to:
+## Coercion
 
-- [boolean](boolean.md) (numbers which are 0 coerce to false; all else coerce to true)
+Number values are coercible to:
+
+- [boolean](boolean.md): `0` is `false`, all else is `true`
 - [file](file.md)
 - [string](string.md)
 
-#### Coercion Example (number to file)
+<!-- TODO: This example doesn't work -->
+
 ```yaml
 name: numAsFile
 run:
   container:
     image: { ref: alpine }
     cmd:
-    - sh
-    - -ce
-    - cat /numCoercedToFile
+      - cat
+      - /numCoercedToFile
     files:
       /numCoercedToFile: 2.2
 ```

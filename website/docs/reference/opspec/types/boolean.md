@@ -2,19 +2,23 @@
 title: Boolean
 ---
 
-Boolean typed values are a boolean i.e. `true` or `false`.
+Boolean values are `true` or `false`. Booleans are immutable: assigning a boolean variable to another variable copies the value.
 
-Booleans...
-- are immutable, i.e. assigning to a boolean results in a copy of the original boolean
-- can be passed in/out of ops via [boolean parameters](../op-directory/op/parameter/boolean.md)
-- can be initialized via [boolean initialization](#initialization)
-- are coerced according to [boolean coercion](#coercion)
+## Initialization
 
-### Initialization
-Boolean typed values can be constructed from a literal boolean.
+Booleans are created with [yaml boolean literal syntax](https://yaml.org/type/bool.html).
 
-### Coercion
-Boolean typed values are coercible to:
+```yaml
+run:
+  op:
+    ref: ../op
+    inputs:
+      input1: true
+```
 
-- [file](file.md) (will be serialized to JSON)
-- [string](string.md) (will be serialized to JSON)
+## Coercion
+
+Boolean values are coercible to:
+
+- [file](file.md): The value will be serialized to JSON
+- [string](string.md) The value will be serialized to JSON

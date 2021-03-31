@@ -1,6 +1,6 @@
 module.exports = {
   title: 'Opctl',
-  tagline: 'Automate operating your project; use containers as building blocks.',
+  tagline: 'Automate operating your project using containers as building blocks.',
   url: 'https://opctl.io',
   baseUrl: '/',
   favicon: 'img/favicon.ico',
@@ -11,7 +11,7 @@ module.exports = {
       apiKey: '247689f43002ed0c3902fbd034630a7a',
       indexName: 'opctl'
     },
-    disableDarkMode: true,    
+    disableDarkMode: true,
     googleAnalytics: {
       trackingID: 'UA-94109316-1',
     },

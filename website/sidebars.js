@@ -57,57 +57,50 @@ module.exports = {
             "reference/opspec/index",
             {
               type: "category",
-              label: "Op [directory]",
+              label: "op.yml",
               items: [
-                "reference/opspec/op-directory/index",
+                "reference/opspec/op.yml/index",
                 {
                   type: "category",
-                  label: "Op [object]",
+                  label: "Call",
                   items: [
-                    "reference/opspec/op-directory/op/index",
+                    "reference/opspec/op.yml/call/index",
                     {
                       type: "category",
-                      label: "Call [object]",
+                      label: "Container call",
                       items: [
-                        "reference/opspec/op-directory/op/call/index",
-                        {
-                          type: "category",
-                          label: "Container Call [object]",
-                          items: [
-                            "reference/opspec/op-directory/op/call/container/index",
-                            "reference/opspec/op-directory/op/call/container/image",
-                          ]
-                        },
-                        "reference/opspec/op-directory/op/call/loop-vars",
-                        "reference/opspec/op-directory/op/call/op",
-                        "reference/opspec/op-directory/op/call/parallel-loop",
-                        "reference/opspec/op-directory/op/call/predicate",
-                        "reference/opspec/op-directory/op/call/pull-creds",
-                        "reference/opspec/op-directory/op/call/rangeable-value",
-                        "reference/opspec/op-directory/op/call/serial-loop"
+                        "reference/opspec/op.yml/call/container/index",
+                        "reference/opspec/op.yml/call/container/image",
                       ]
                     },
-                    {
-                      type: "category",
-                      label: "Parameter [object]",
-                      items: [
-                        "reference/opspec/op-directory/op/parameter/index",
-                        "reference/opspec/op-directory/op/parameter/array",
-                        "reference/opspec/op-directory/op/parameter/boolean",
-                        "reference/opspec/op-directory/op/parameter/dir",
-                        "reference/opspec/op-directory/op/parameter/file",
-                        "reference/opspec/op-directory/op/parameter/number",
-                        "reference/opspec/op-directory/op/parameter/object",
-                        "reference/opspec/op-directory/op/parameter/socket",
-                        "reference/opspec/op-directory/op/parameter/string",
-                      ]
-                    },
-                    "reference/opspec/op-directory/op/identifier",
-                    "reference/opspec/op-directory/op/initializer",
-                    "reference/opspec/op-directory/op/markdown",
-                    "reference/opspec/op-directory/op/variable-reference"
+                    "reference/opspec/op.yml/call/op",
+                    "reference/opspec/op.yml/call/parallel-loop",
+                    "reference/opspec/op.yml/call/serial-loop",
                   ]
-                }
+                },
+                {
+                  type: "category",
+                  label: "Parameter",
+                  items: [
+                    "reference/opspec/op.yml/parameter/index",
+                    "reference/opspec/op.yml/parameter/array",
+                    "reference/opspec/op.yml/parameter/boolean",
+                    "reference/opspec/op.yml/parameter/dir",
+                    "reference/opspec/op.yml/parameter/file",
+                    "reference/opspec/op.yml/parameter/number",
+                    "reference/opspec/op.yml/parameter/object",
+                    "reference/opspec/op.yml/parameter/socket",
+                    "reference/opspec/op.yml/parameter/string",
+                  ]
+                },
+                "reference/opspec/op.yml/identifier",
+                "reference/opspec/op.yml/initializer",
+                "reference/opspec/op.yml/loop-vars",
+                "reference/opspec/op.yml/markdown",
+                "reference/opspec/op.yml/predicate",
+                "reference/opspec/op.yml/pull-creds",
+                "reference/opspec/op.yml/rangeable-value",
+                "reference/opspec/op.yml/variable-reference"
               ]
             },
             {
@@ -126,11 +119,11 @@ module.exports = {
             }
           ]
         },
-        'reference/ui',
         {
           type: "category",
           label: "CLI",
           items: [
+            "reference/cli/index",
             "reference/cli/global-options",
             {
               type: "category",
@@ -167,6 +160,7 @@ module.exports = {
             "reference/cli/ui",
           ]
         },
+        "reference/ui",
         {
           type: "link",
           label: "ReST API",
