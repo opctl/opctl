@@ -18,12 +18,20 @@ run:
 
 ## `exists`
 
-A [variable reference](variable-reference.md). The predicate is true when the referenced value exists.
+A [variable reference](variable-reference.md). The predicate is true when the referenced value exists. One use case is to verify a directory or file has been generated.
 
 ```yml
 run:
   if: 
     - exists: $(variable)
+  op:
+    ref: ../op
+```
+
+```yml
+run:
+  if: 
+    - exists: $(./myFile.txt)
   op:
     ref: ../op
 ```
@@ -42,12 +50,23 @@ run:
 
 ## `notExists`
 
-A [variable reference](variable-reference.md). The predicate is true when the referenced value does not exist.
+A [variable reference](variable-reference.md). The predicate is true when the referenced value does not exist. One use case is to check if a directory or file has been generated.
 
 ```yml
 run:
   if: 
     - notExists: $(variable)
+  op:
+    ref: ../op
+```
+
+```yml
+inputs:
+  src:
+    dir: {}
+run:
+  if: 
+    - exists: $(src/build)
   op:
     ref: ../op
 ```
