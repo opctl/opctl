@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
@@ -64,9 +65,9 @@ func (pc _parallelCaller) Call(
 	childCallOutputsByIndex := map[int]map[string]*model.Value{}
 
 	type childResult struct {
-		callID  string
-		err     error
-		outputs map[string]*model.Value
+		CallID  string
+		Err     error
+		Outputs map[string]*model.Value
 	}
 	childResults := make(chan childResult, len(callSpecParallelCall))
 
@@ -96,6 +97,16 @@ func (pc _parallelCaller) Call(
 
 		wg.Add(1)
 		go func(childCall *model.CallSpec) {
+			defer func() {
+				if r := recover(); r != nil {
+					childResults <- childResult{
+						CallID:  childCallID,
+						Err:     fmt.Errorf("panic: %v", r),
+						Outputs: nil,
+					}
+				}
+			}()
+
 			defer wg.Done()
 
 			outputs, err := pc.caller.Call(
@@ -112,9 +123,9 @@ func (pc _parallelCaller) Call(
 				return
 			}
 			childResults <- childResult{
-				callID:  childCallID,
-				err:     err,
-				outputs: outputs,
+				CallID:  childCallID,
+				Err:     err,
+				Outputs: outputs,
 			}
 		}(childCall)
 	}
@@ -127,14 +138,14 @@ func (pc _parallelCaller) Call(
 			return nil, parallelCtx.Err()
 
 		case result := <-childResults:
-			if result.err != nil {
+			if result.Err != nil {
 				// cancel all children on any error
 				cancelParallel()
 				close(childResults)
-				return nil, result.err
+				return nil, result.Err
 			}
-			if childCallIndex, isChildCallEnded := childCallIndexByID[result.callID]; isChildCallEnded {
-				childCallOutputsByIndex[childCallIndex] = result.outputs
+			if childCallIndex, isChildCallEnded := childCallIndexByID[result.CallID]; isChildCallEnded {
+				childCallOutputsByIndex[childCallIndex] = result.Outputs
 
 				// decrement needed by counts for any needs
 				for _, neededCallRef := range callSpecParallelCall[childCallIndex].Needs {

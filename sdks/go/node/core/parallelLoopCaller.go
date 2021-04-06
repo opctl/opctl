@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop"
@@ -103,6 +104,16 @@ func (plpr _parallelLoopCaller) Call(
 
 		wg.Add(1)
 		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					childResults <- childResult{
+						CallID:  childCallID,
+						Err:     fmt.Errorf("panic: %v", r),
+						Outputs: nil,
+					}
+				}
+			}()
+
 			defer wg.Done()
 
 			outputs, err := plpr.caller.Call(
