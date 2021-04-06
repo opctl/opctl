@@ -30,6 +30,7 @@ An object defining output values produced by the op. The key of each property is
 ## Example
 
 ```yaml
+name: example
 description: |
   This is an example op.yml file that returns the input as the output
 inputs:

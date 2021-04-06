@@ -10,7 +10,7 @@ An image object defines the image to start a container with.
 
 _required_
 
-A string referencing a local or remote image.
+A string referencing a local or remote image. Two types of image refs are supported:
 
 #### OCI images
 

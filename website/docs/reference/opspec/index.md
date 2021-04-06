@@ -13,11 +13,11 @@ If the root of an op directory contains a `icon.svg` file (must be [SVG 1.1](htt
 
 ## Call graph
 
-As an op runs, opctl parses [`op.yml`](op.yml/index) files to create a dynamic call graph tracking the different running containers as the are started and exit. The call graph is defined declaritively using [call objects](op.yml/call/index), which include sequencing and conditional support.
+As an op runs, opctl parses [`op.yml`](op.yml/index) files to create a dynamic call graph tracking the different running containers as they are started and exit. The call graph is defined declaritively using [call objects](op.yml/call/index), which include sequencing and conditional support.
 
 ## Data flow
 
-Opctl has first class support for data flow into, between, and out of ops and their containers. Opspecs receive data from [`inputs`](op.yml#inputs) and return data through [`outputs`](op.yml#outputs). Within an opspec, data is referenced with a named variable that contains a typed value.
+Opctl has first class support for data flow into, between, and out of ops and their containers. Opspecs receive data from [`inputs`](op.yml#inputs) and return data through [`outputs`](op.yml#outputs). Within an opspec, data is referenced via named variables that containing typed values.
 
 ### Types
 
@@ -36,7 +36,7 @@ The supported types are:
 
 ### Scoping
 
-A variable is created when defined as an [`input`](op.yml#inputs) or [`output`](op.yml#inputs), bound implicitly to an `output` when making an [op call](op.yml/call/op), or declared with [loop variables](./op.yml/loop-variable). A variable name is in scope from creation through the lifetime of it's `op.yml` file. Variable scope does not extend into [op calls](./op.yml/call/op).
+A variable is created when defined as an [`input`](op.yml#inputs) or [`output`](op.yml#inputs), bound implicitly to an `output` when making an [op call](op.yml/call/op), or declared with [loop variables](./op.yml/loop-variable). A variable name is in scope from creation through the lifetime of it's `op.yml` file. Variable scope does not extend into [child op calls](./op.yml/call/op) within the call graph.
 
 Variables can be referenced using the syntax `$(name)`.
 
