@@ -45,36 +45,26 @@ func (ip _imagePuller) Pull(
 	eventPublisher pubsub.EventPublisher,
 ) error {
 	imageRef := *containerCall.Image.Ref
+
+	needsPull, err := ip.doesImageNeedPull(ctx, imageRef, eventPublisher)
+	if err != nil {
+		return err
+	}
+	if !needsPull {
+		eventPublisher.Publish(model.Event{
+			Timestamp: time.Now().UTC(),
+			ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenTo{
+				Data:        []byte(fmt.Sprintf("Skipping image pull: %s\n", imageRef)),
+				OpRef:       containerCall.OpPath,
+				ContainerID: containerCall.ContainerID,
+				RootCallID:  rootCallID,
+			},
+		})
+		return nil
+	}
+
 	imagePullCreds := containerCall.Image.PullCreds
 	containerID := containerCall.ContainerID
-
-	// Skip pulling for non-tagged images that already are present
-	// This reduces the chance of hitting docker rate limiting errors
-	// and speeds up execution.
-	ref, err := reference.ParseAnyReference(strings.ToLower(imageRef))
-	if err != nil {
-		return err
-	}
-	named, err := reference.ParseNormalizedNamed(ref.String())
-	if err != nil {
-		return err
-	}
-	if tagged, ok := named.(reference.Tagged); ok && tagged.Tag() != "latest" {
-		_, _, err := ip.dockerClient.ImageInspectWithRaw(ctx, imageRef)
-		if err == nil {
-			eventPublisher.Publish(model.Event{
-				Timestamp: time.Now().UTC(),
-				ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenTo{
-					Data:        []byte(fmt.Sprintf("Skipping image pull: %s\n", imageRef)),
-					OpRef:       containerCall.OpPath,
-					ContainerID: containerCall.ContainerID,
-					RootCallID:  rootCallID,
-				},
-			})
-
-			return nil
-		}
-	}
 
 	imagePullOptions := types.ImagePullOptions{}
 	if imagePullCreds != nil &&
@@ -114,4 +104,31 @@ func (ip _imagePuller) Pull(
 		}
 		jm.Display(stdOutWriter, false)
 	}
+}
+
+func (ip _imagePuller) doesImageNeedPull(
+	ctx context.Context,
+	imageRef string,
+	eventPublisher pubsub.EventPublisher,
+) (bool, error) {
+	// Skip pulling for non-tagged images that already are present
+	// This reduces the chance of hitting docker rate limiting errors
+	// and speeds up execution.
+	ref, err := reference.ParseAnyReference(strings.ToLower(imageRef))
+	if err != nil {
+		return true, err
+	}
+	named, err := reference.ParseNormalizedNamed(ref.String())
+	if err != nil {
+		return true, err
+	}
+	if tagged, ok := named.(reference.Tagged); ok && tagged.Tag() != "latest" {
+		_, _, err := ip.dockerClient.ImageInspectWithRaw(ctx, imageRef)
+		if err == nil {
+			return false, nil
+		}
+		// this err can be ignored, since it's expected to be "image not found"
+	}
+
+	return true, nil
 }
