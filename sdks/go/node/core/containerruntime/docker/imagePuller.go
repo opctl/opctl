@@ -3,8 +3,12 @@ package docker
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
+	"strings"
+	"time"
 
+	"github.com/docker/distribution/reference"
 	"github.com/docker/docker/api/types"
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/jsonmessage"
@@ -16,9 +20,7 @@ import (
 type imagePuller interface {
 	Pull(
 		ctx context.Context,
-		containerID string,
-		imagePullCreds *model.Creds,
-		imageRef string,
+		containerCall *model.ContainerCall,
 		rootCallID string,
 		eventPublisher pubsub.EventPublisher,
 	) error
@@ -38,12 +40,41 @@ type _imagePuller struct {
 
 func (ip _imagePuller) Pull(
 	ctx context.Context,
-	containerID string,
-	imagePullCreds *model.Creds,
-	imageRef string,
+	containerCall *model.ContainerCall,
 	rootCallID string,
 	eventPublisher pubsub.EventPublisher,
 ) error {
+	imageRef := *containerCall.Image.Ref
+	imagePullCreds := containerCall.Image.PullCreds
+	containerID := containerCall.ContainerID
+
+	// Skip pulling for non-tagged images that already are present
+	// This reduces the chance of hitting docker rate limiting errors
+	// and speeds up execution.
+	ref, err := reference.ParseAnyReference(strings.ToLower(imageRef))
+	if err != nil {
+		return err
+	}
+	named, err := reference.ParseNormalizedNamed(ref.String())
+	if err != nil {
+		return err
+	}
+	if tagged, ok := named.(reference.Tagged); ok && tagged.Tag() != "latest" {
+		_, _, err := ip.dockerClient.ImageInspectWithRaw(ctx, imageRef)
+		if err == nil {
+			eventPublisher.Publish(model.Event{
+				Timestamp: time.Now().UTC(),
+				ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenTo{
+					Data:        []byte(fmt.Sprintf("Skipping image pull: %s\n", imageRef)),
+					OpRef:       containerCall.OpPath,
+					ContainerID: containerCall.ContainerID,
+					RootCallID:  rootCallID,
+				},
+			})
+
+			return nil
+		}
+	}
 
 	imagePullOptions := types.ImagePullOptions{}
 	if imagePullCreds != nil &&
