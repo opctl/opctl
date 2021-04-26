@@ -15,3 +15,8 @@ An object defining a parameter of an operation; i.e. a value that is passed into
   - [object](object.md)
   - [socket](socket.md)
   - [string](string.md)
+- may have:
+  - [description](#description)
+
+### description
+A [markdown [string]](../markdown.md) defining a human friendly description of the parameter.

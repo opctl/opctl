@@ -13,6 +13,7 @@ type OpSpec struct {
 //CallSpec is a spec for a node of a call graph; see https://en.wikipedia.org/wiki/Call_graph
 type CallSpec struct {
 	Container    *ContainerCallSpec    `json:"container,omitempty"`
+	Description  string                `json:"description,omitempty"`
 	If           *[]*PredicateSpec     `json:"if,omitempty"`
 	Name         *string               `json:"name,omitempty"`
 	Needs        []string              `json:"needs,omitempty"`

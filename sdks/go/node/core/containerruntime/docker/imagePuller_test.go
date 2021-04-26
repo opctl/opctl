@@ -34,9 +34,13 @@ var _ = Context("imagePuller", func() {
 			/* act */
 			err := objectUnderTest.Pull(
 				providedCtx,
-				"",
-				&model.Creds{},
-				providedImageRef,
+				&model.ContainerCall{
+					ContainerID: "",
+					Image: &model.ContainerCallImage{
+						PullCreds: &model.Creds{},
+						Ref:       &providedImageRef,
+					},
+				},
 				"",
 				new(FakeEventPublisher),
 			)
@@ -45,6 +49,85 @@ var _ = Context("imagePuller", func() {
 			}
 
 			/* assert */
+			actualCtx, actualImageRef, actualImagePullOptions := _fakeDockerClient.ImagePullArgsForCall(0)
+			Expect(actualCtx).To(Equal(providedCtx))
+			Expect(actualImageRef).To(Equal(providedImageRef))
+			Expect(actualImagePullOptions).To(Equal(expectedImagePullOptions))
+		})
+		It("should skip pulling when image is present and ref is tagged non-latest", func() {
+			/* arrange */
+			providedImageRef := "imageRef:myversion"
+			providedCtx := context.Background()
+			dockerClient := new(FakeCommonAPIClient)
+
+			objectUnderTest := _imagePuller{
+				dockerClient: dockerClient,
+			}
+
+			/* act */
+			err := objectUnderTest.Pull(
+				providedCtx,
+				&model.ContainerCall{
+					ContainerID: "",
+					Image: &model.ContainerCallImage{
+						PullCreds: &model.Creds{},
+						Ref:       &providedImageRef,
+					},
+				},
+				"",
+				new(FakeEventPublisher),
+			)
+			if err != nil {
+				panic(err)
+			}
+
+			/* assert */
+			// Checked if image exists
+			ctx, inspectedImageRef := dockerClient.ImageInspectWithRawArgsForCall(0)
+			Expect(ctx).To(Equal(providedCtx))
+			Expect(inspectedImageRef).To(Equal(providedImageRef))
+			// Didn't pull
+			Expect(dockerClient.ImagePullCallCount()).To(Equal(0))
+		})
+		It("should pul when image is not present and ref is tagged non-latest", func() {
+			/* arrange */
+			providedImageRef := "imageRef:myversion"
+			expectedImagePullOptions := types.ImagePullOptions{}
+			providedCtx := context.Background()
+
+			imagePullResponse := ioutil.NopCloser(bytes.NewBufferString(""))
+
+			_fakeDockerClient := new(FakeCommonAPIClient)
+			_fakeDockerClient.ImagePullReturns(imagePullResponse, nil)
+			_fakeDockerClient.ImageInspectWithRawReturns(types.ImageInspect{}, nil, errors.New("not found"))
+
+			objectUnderTest := _imagePuller{
+				dockerClient: _fakeDockerClient,
+			}
+
+			/* act */
+			err := objectUnderTest.Pull(
+				providedCtx,
+				&model.ContainerCall{
+					ContainerID: "",
+					Image: &model.ContainerCallImage{
+						PullCreds: &model.Creds{},
+						Ref:       &providedImageRef,
+					},
+				},
+				"",
+				new(FakeEventPublisher),
+			)
+			if err != nil {
+				panic(err)
+			}
+
+			/* assert */
+			// Checked if image exists
+			ctx, inspectedImageRef := _fakeDockerClient.ImageInspectWithRawArgsForCall(0)
+			Expect(ctx).To(Equal(providedCtx))
+			Expect(inspectedImageRef).To(Equal(providedImageRef))
+			// Pulled
 			actualCtx, actualImageRef, actualImagePullOptions := _fakeDockerClient.ImagePullArgsForCall(0)
 			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualImageRef).To(Equal(providedImageRef))
@@ -64,12 +147,18 @@ var _ = Context("imagePuller", func() {
 					dockerClient: _fakeDockerClient,
 				}
 
+				imageRef := "dummyImageRef"
+
 				/* act */
 				actualError := objectUnderTest.Pull(
 					context.Background(),
-					"",
-					nil,
-					"dummyImageRef",
+					&model.ContainerCall{
+						ContainerID: "",
+						Image: &model.ContainerCallImage{
+							PullCreds: &model.Creds{},
+							Ref:       &imageRef,
+						},
+					},
 					"",
 					new(FakeEventPublisher),
 				)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"os"
@@ -71,7 +72,15 @@ func ls(
 			opRef = strings.TrimPrefix(relOpRef, ".opspec/")
 		}
 
-		fmt.Fprintf(_tabWriter, "%v\t%v", opRef, op.Description)
+		scanner := bufio.NewScanner(strings.NewReader(op.Description))
+		if scanner.Scan() {
+			// first line of description, add the op ref
+			fmt.Fprintf(_tabWriter, "%v\t%v", opRef, scanner.Text())
+		}
+		for scanner.Scan() {
+			// subsequent lines, don't add the op ref but let the description span multiple lines
+			fmt.Fprintf(_tabWriter, "\n\t%v", scanner.Text())
+		}
 		fmt.Fprintln(_tabWriter)
 	}
 

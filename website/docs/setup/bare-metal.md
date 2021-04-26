@@ -16,7 +16,7 @@ The default container runtime interface implementation relies on API access to a
 ### OSX
 
 ```bash
-curl -L https://github.com/opctl/opctl/releases/download/latest/opctl-darwin-amd64.tgz | tar -xzv -C /usr/local/bin
+curl -L https://github.com/opctl/opctl/releases/download/latest/opctl-darwin-amd64.tgz | sudo tar -xzv -C /usr/local/bin
 ```
 
 ### Linux
@@ -27,7 +27,7 @@ curl -L https://github.com/opctl/opctl/releases/download/latest/opctl-linux-amd6
 
 ### Windows
 
-Use the [linux install](#linux) via [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/).
+Use [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/) and the [linux install](#linux).
 
 ## Updating
 to get the newest release of opctl
