@@ -19,6 +19,7 @@ accordance with
 - [More consistent error messaging formats](https://github.com/opctl/opctl/pull/885)
 - [Detect invalid op output names](https://github.com/opctl/opctl/issues/798)
 - [Deprecated param.<datatype>.description; use param.description](https://github.com/opctl/opctl/issues/898)
+- [Docker images will only be pulled if using the `latest` tag (or untagged) or have not been pulled previously](https://github.com/opctl/opctl/issues/920)
 
 ### Fixed
 

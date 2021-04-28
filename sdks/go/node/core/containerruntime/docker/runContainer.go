@@ -104,13 +104,9 @@ func (cr _runContainer) RunContainer(
 			req.Image.Src,
 		)
 	} else {
-		// always pull latest version of image
-		// note: this trades local reproducibility for distributed reproducibility
 		imageErr = cr.imagePuller.Pull(
 			ctx,
-			req.ContainerID,
-			req.Image.PullCreds,
-			*req.Image.Ref,
+			req,
 			rootCallID,
 			eventPublisher,
 		)
