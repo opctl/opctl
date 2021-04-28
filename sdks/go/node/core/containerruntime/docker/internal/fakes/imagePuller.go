@@ -10,15 +10,13 @@ import (
 )
 
 type FakeImagePuller struct {
-	PullStub        func(context.Context, string, *model.Creds, string, string, pubsub.EventPublisher) error
+	PullStub        func(context.Context, *model.ContainerCall, string, pubsub.EventPublisher) error
 	pullMutex       sync.RWMutex
 	pullArgsForCall []struct {
 		arg1 context.Context
-		arg2 string
-		arg3 *model.Creds
-		arg4 string
-		arg5 string
-		arg6 pubsub.EventPublisher
+		arg2 *model.ContainerCall
+		arg3 string
+		arg4 pubsub.EventPublisher
 	}
 	pullReturns struct {
 		result1 error
@@ -30,21 +28,19 @@ type FakeImagePuller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeImagePuller) Pull(arg1 context.Context, arg2 string, arg3 *model.Creds, arg4 string, arg5 string, arg6 pubsub.EventPublisher) error {
+func (fake *FakeImagePuller) Pull(arg1 context.Context, arg2 *model.ContainerCall, arg3 string, arg4 pubsub.EventPublisher) error {
 	fake.pullMutex.Lock()
 	ret, specificReturn := fake.pullReturnsOnCall[len(fake.pullArgsForCall)]
 	fake.pullArgsForCall = append(fake.pullArgsForCall, struct {
 		arg1 context.Context
-		arg2 string
-		arg3 *model.Creds
-		arg4 string
-		arg5 string
-		arg6 pubsub.EventPublisher
-	}{arg1, arg2, arg3, arg4, arg5, arg6})
-	fake.recordInvocation("Pull", []interface{}{arg1, arg2, arg3, arg4, arg5, arg6})
+		arg2 *model.ContainerCall
+		arg3 string
+		arg4 pubsub.EventPublisher
+	}{arg1, arg2, arg3, arg4})
+	fake.recordInvocation("Pull", []interface{}{arg1, arg2, arg3, arg4})
 	fake.pullMutex.Unlock()
 	if fake.PullStub != nil {
-		return fake.PullStub(arg1, arg2, arg3, arg4, arg5, arg6)
+		return fake.PullStub(arg1, arg2, arg3, arg4)
 	}
 	if specificReturn {
 		return ret.result1
@@ -59,17 +55,17 @@ func (fake *FakeImagePuller) PullCallCount() int {
 	return len(fake.pullArgsForCall)
 }
 
-func (fake *FakeImagePuller) PullCalls(stub func(context.Context, string, *model.Creds, string, string, pubsub.EventPublisher) error) {
+func (fake *FakeImagePuller) PullCalls(stub func(context.Context, *model.ContainerCall, string, pubsub.EventPublisher) error) {
 	fake.pullMutex.Lock()
 	defer fake.pullMutex.Unlock()
 	fake.PullStub = stub
 }
 
-func (fake *FakeImagePuller) PullArgsForCall(i int) (context.Context, string, *model.Creds, string, string, pubsub.EventPublisher) {
+func (fake *FakeImagePuller) PullArgsForCall(i int) (context.Context, *model.ContainerCall, string, pubsub.EventPublisher) {
 	fake.pullMutex.RLock()
 	defer fake.pullMutex.RUnlock()
 	argsForCall := fake.pullArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5, argsForCall.arg6
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
 }
 
 func (fake *FakeImagePuller) PullReturns(result1 error) {
