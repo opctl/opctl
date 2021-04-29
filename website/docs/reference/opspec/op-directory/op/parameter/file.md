@@ -19,3 +19,27 @@ If the value is...
 
 ### isSecret
 A boolean indicating if the value of the parameter is secret. This will cause it to be hidden in UI's for example. 
+
+## Example
+This is an example op that echos the contents of a file input
+
+```yaml
+name: example
+description: an example op
+inputs:
+    example-input:
+        file:
+            default: ./optest
+run:
+    container:
+        image: { ref: 'alpine' }
+        cmd: ['echo', $(example-input)]
+```
+
+To use this example, create a file called `optest` in the same directory the op is called from.  Whatever content is in the `optest` file will be echoed.
+
+For example, the following commands will result in "hello world" being echoed by the example op.
+```sh
+echo hello world > optest
+opctl run example
+```
