@@ -19,3 +19,23 @@ If the value is...
 
 ### isSecret
 A boolean indicating if the value of the parameter is secret. This will cause it to be hidden in UI's for example. 
+
+## Example
+This is an example op that lists the contents of a dir input.  Note that the dir input is mounted in the container as `/mounted-example-input`
+
+```yaml
+name: example
+description: an example op
+inputs:
+    example-input:
+        dir:
+            default: .
+run:
+    container:
+        image: { ref: 'alpine' }
+        cmd: ["ls", "-la", /mounted-example-input]
+        dirs:
+            /mounted-example-input: $(example-input)
+```
+
+The expected output is the same as running `ls -la` from the directory the op is called from
