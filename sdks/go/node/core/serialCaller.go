@@ -2,12 +2,9 @@ package core
 
 import (
 	"context"
-	"errors"
-	"time"
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 //counterfeiter:generate -o internal/fakes/serialCaller.go . serialCaller
@@ -26,21 +23,14 @@ type serialCaller interface {
 	)
 }
 
-func newSerialCaller(
-	caller caller,
-	pubSub pubsub.PubSub,
-) serialCaller {
-
+func newSerialCaller(caller caller) serialCaller {
 	return _serialCaller{
 		caller: caller,
-		pubSub: pubSub,
 	}
-
 }
 
 type _serialCaller struct {
 	caller caller
-	pubSub pubsub.PubSub
 }
 
 func (sc _serialCaller) Call(
@@ -54,58 +44,41 @@ func (sc _serialCaller) Call(
 	map[string]*model.Value,
 	error,
 ) {
-	outputs := map[string]*model.Value{}
-	for varName, varData := range inboundScope {
-		outputs[varName] = varData
+	// copy inbound scope to ensure it's not modified
+	scope := make(map[string]*model.Value, len(inboundScope))
+	for key, val := range inboundScope {
+		scope[key] = val
 	}
 
-	// subscribe to events
-	// @TODO: handle err channel
-	eventFilterSince := time.Now().UTC()
-	eventChannel, _ := sc.pubSub.Subscribe(
-		ctx,
-		model.EventFilter{
-			Roots: []string{rootCallID},
-			Since: &eventFilterSince,
-		},
-	)
-
 	for _, callSpecCall := range callSpecSerialCall {
-
-		var childCallID string
 		childCallID, err := uniquestring.Construct()
 		if err != nil {
 			// end run immediately on any error
 			return nil, err
 		}
 
-		sc.caller.Call(
+		outputs, err := sc.caller.Call(
 			ctx,
 			childCallID,
-			outputs,
+			scope,
 			callSpecCall,
 			opPath,
 			&callID,
 			rootCallID,
 		)
-
-	eventLoop:
-		for event := range eventChannel {
-			// merge child outboundScope w/ outboundScope, child outboundScope having precedence
-			switch {
-			case event.CallEnded != nil && event.CallEnded.Call.ID == childCallID:
-				if event.CallEnded.Error != nil {
-					// end on any error
-					return nil, errors.New(event.CallEnded.Error.Message)
-				}
-				for name, value := range event.CallEnded.Outputs {
-					outputs[name] = value
-				}
-				break eventLoop
-			}
+		if err != nil {
+			return nil, err
 		}
 
+		// check to see if this has been cancelled
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+
+		for name, value := range outputs {
+			scope[name] = value
+		}
 	}
 
-	return outputs, nil
+	return scope, nil
 }

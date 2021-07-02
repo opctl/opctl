@@ -27,6 +27,7 @@ var _ = Context("caller", func() {
 			).To(Not(BeNil()))
 		})
 	})
+
 	Context("Call", func() {
 		closedEventChan := make(chan model.Event, 1000)
 		close(closedEventChan)
@@ -60,79 +61,124 @@ var _ = Context("caller", func() {
 			})
 		})
 
-		Context("callInterpreter.Interpret result.If falsy", func() {
-			It("should call pubSub.Publish w/ expected args", func() {
-				/* arrange */
-				providedCallID := "dummyCallID"
-				providedOpPath := "testdata/startOp"
-				providedRootCallID := "dummyRootCallID"
+		It("should pass inputs, return output, and emit start and end call events", func() {
+			/* arrange */
+			fakeOpCaller := new(FakeOpCaller)
 
-				predicateSpec := []interface{}{
-					true,
-					true,
-				}
+			expectedOutput := "outputVal"
+			expectedOutputs := map[string]*model.Value{"output1": {String: &expectedOutput}}
+			fakeOpCaller.CallReturns(expectedOutputs, nil)
 
-				ifSpec := []*model.PredicateSpec{
-					{
-						Eq: &predicateSpec,
-					},
-				}
+			wd, err := os.Getwd()
+			if err != nil {
+				panic(err)
+			}
+			providedOpPath := filepath.Join(wd, "testdata/callerWithInput")
 
-				expectedIf := true
-				expectedEvent := model.Event{
-					CallStarted: &model.CallStarted{
-						Call: model.Call{
-							ID:     providedCallID,
-							If:     &expectedIf,
-							RootID: providedRootCallID,
-							Serial: []*model.CallSpec{},
+			providedInput := "inputVal"
+			providedScope := map[string]interface{}{
+				"input": providedInput,
+			}
+			providedCallID := "dummyCallID"
+			providedCallSpec := &model.CallSpec{
+				Op: &model.OpCallSpec{
+					Ref:    providedOpPath,
+					Inputs: providedScope,
+				},
+			}
+			providedParentID := "providedParentID"
+			providedRootCallID := "dummyRootCallID"
+
+			providedInputs := map[string]*model.Value{
+				"input": {String: &providedInput},
+			}
+			expectedStartEvent := model.Event{
+				CallStarted: &model.CallStarted{
+					Call: model.Call{
+						ID: "dummyCallID",
+						Op: &model.OpCall{
+							BaseCall: model.BaseCall{
+								OpPath: providedOpPath,
+							},
+							OpID:   providedCallID,
+							Inputs: providedInputs,
 						},
-						Ref: providedOpPath,
+						ParentID: &providedParentID,
+						RootID:   providedRootCallID,
 					},
-				}
+					Ref: providedOpPath,
+				},
+			}
 
-				fakePubSub := new(FakePubSub)
-				// ensure eventChan closed so call exits
-				fakePubSub.SubscribeReturns(closedEventChan, nil)
-
-				fakeSerialCaller := new(FakeSerialCaller)
-
-				dataDir, err := ioutil.TempDir("", "")
-				if err != nil {
-					panic(err)
-				}
-
-				objectUnderTest := _caller{
-					containerCaller: new(FakeContainerCaller),
-					dataDirPath:     dataDir,
-					pubSub:          fakePubSub,
-					serialCaller:    fakeSerialCaller,
-				}
-
-				/* act */
-				objectUnderTest.Call(
-					context.Background(),
-					providedCallID,
-					map[string]*model.Value{},
-					&model.CallSpec{
-						If:     &ifSpec,
-						Serial: &[]*model.CallSpec{},
+			expectedEndEvent := model.Event{
+				CallEnded: &model.CallEnded{
+					Call: model.Call{
+						ID: "dummyCallID",
+						Op: &model.OpCall{
+							BaseCall: model.BaseCall{
+								OpPath: providedOpPath,
+							},
+							OpID:   providedCallID,
+							Inputs: providedInputs,
+						},
+						ParentID: &providedParentID,
+						RootID:   providedRootCallID,
 					},
-					providedOpPath,
-					nil,
-					providedRootCallID,
-				)
+					Ref:     providedOpPath,
+					Outputs: expectedOutputs,
+					Outcome: "SUCCEEDED",
+				},
+			}
 
-				/* assert */
-				actualEvent := fakePubSub.PublishArgsForCall(0)
+			fakePubSub := new(FakePubSub)
+			// ensure eventChan closed so call exits
+			fakePubSub.SubscribeReturns(closedEventChan, nil)
 
-				// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
-				Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
-				// set temporal fields to expected vals since they're already asserted
-				actualEvent.Timestamp = expectedEvent.Timestamp
+			dataDir, err := ioutil.TempDir("", "")
+			if err != nil {
+				panic(err)
+			}
 
-				Expect(actualEvent).To(Equal(expectedEvent))
-			})
+			objectUnderTest := _caller{
+				dataDirPath: dataDir,
+				opCaller:    fakeOpCaller,
+				pubSub:      fakePubSub,
+			}
+
+			expectedStartTime := time.Now().UTC()
+
+			/* act */
+			actualOutputs, actualErr := objectUnderTest.Call(
+				context.Background(),
+				providedCallID,
+				providedInputs,
+				providedCallSpec,
+				providedOpPath,
+				&providedParentID,
+				providedRootCallID,
+			)
+
+			/* assert */
+			Expect(actualErr).To(BeNil())
+			Expect(actualOutputs).To(Equal(expectedOutputs))
+
+			actualStartEvent := fakePubSub.PublishArgsForCall(0)
+			actualEndEvent := fakePubSub.PublishArgsForCall(1)
+			Expect(fakePubSub.PublishCallCount()).To(Equal(2))
+
+			Expect(actualEndEvent.Timestamp).To(BeTemporally(">=", actualStartEvent.Timestamp))
+			Expect(actualStartEvent.Timestamp).To(BeTemporally("~", expectedStartTime, time.Second))
+			actualStartEvent.Timestamp = expectedStartEvent.Timestamp
+			actualEndEvent.Timestamp = expectedEndEvent.Timestamp
+
+			Expect(actualStartEvent.CallStarted.Call.Op.ChildCallID).NotTo(BeEmpty())
+			Expect(actualStartEvent.CallStarted.Call.Op.ChildCallID).To(Equal(actualEndEvent.CallEnded.Call.Op.ChildCallID))
+			actualStartEvent.CallStarted.Call.Op.ChildCallID = ""
+			actualEndEvent.CallEnded.Call.Op.ChildCallID = ""
+
+			Expect(actualStartEvent).To(Equal(expectedStartEvent))
+
+			Expect(actualEndEvent).To(Equal(expectedEndEvent))
 		})
 
 		Context("Container CallSpec", func() {
@@ -391,7 +437,6 @@ var _ = Context("caller", func() {
 		})
 
 		Context("Serial CallSpec", func() {
-
 			It("should call serialCaller.Call w/ expected args", func() {
 				/* arrange */
 				fakeSerialCaller := new(FakeSerialCaller)

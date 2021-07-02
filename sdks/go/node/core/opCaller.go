@@ -53,9 +53,6 @@ func (oc _opCaller) Call(
 	map[string]*model.Value,
 	error,
 ) {
-	var err error
-	outboundScope := map[string]*model.Value{}
-
 	// form scope for op call by combining defined inputs & op dir
 	opCallScope := map[string]*model.Value{}
 	for varName, varData := range opCall.Inputs {
@@ -69,7 +66,6 @@ func (oc _opCaller) Call(
 	opCallScope["./"] = &model.Value{
 		Dir: &opCall.OpPath,
 	}
-
 	// add parent directory to scope
 	parentDirPath := filepath.Dir(opCall.OpPath)
 	opCallScope["../"] = &model.Value{
@@ -86,17 +82,14 @@ func (oc _opCaller) Call(
 		rootCallID,
 	)
 	if err != nil {
-		return outboundScope, err
+		return nil, err
 	}
 
-	var opFile *model.OpSpec
-	opFile, err = opfile.Get(
-		ctx,
-		opCall.OpPath,
-	)
+	opFile, err := opfile.Get(ctx, opCall.OpPath)
 	if err != nil {
-		return outboundScope, err
+		return nil, err
 	}
+
 	opOutputs, err = outputs.Interpret(
 		opOutputs,
 		opFile.Outputs,
@@ -104,6 +97,11 @@ func (oc _opCaller) Call(
 		opCall.OpPath,
 		filepath.Join(oc.callScratchDir, opCall.OpID),
 	)
+	if nil != err {
+		return nil, err
+	}
+
+	outboundScope := map[string]*model.Value{}
 
 	// filter op outboundScope to bound call outboundScope
 	for boundName, boundValue := range opCallSpec.Outputs {
@@ -111,7 +109,7 @@ func (oc _opCaller) Call(
 		if boundValue == "" {
 			// implicit value
 			boundValue = boundName
-		} else if !regexp.MustCompile("^\\$\\(.+\\)$").MatchString(boundValue) {
+		} else if !regexp.MustCompile(`^\$\(.+\)$`).MatchString(boundValue) {
 			// handle obsolete syntax by swapping order
 			prevBoundName := boundName
 			boundName = boundValue
@@ -126,5 +124,5 @@ func (oc _opCaller) Call(
 		}
 	}
 
-	return outboundScope, err
+	return outboundScope, nil
 }

@@ -16,21 +16,16 @@ import (
 	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/pubsub"
-	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("serialCaller", func() {
 	Context("newSerialCaller", func() {
 		It("should return serialCaller", func() {
 			/* arrange/act/assert */
-			Expect(newSerialCaller(
-				new(FakeCaller),
-				new(FakePubSub),
-			)).To(Not(BeNil()))
+			Expect(newSerialCaller(new(FakeCaller))).To(Not(BeNil()))
 		})
 	})
 	Context("Call", func() {
-
 		Context("caller errors", func() {
 			It("should return expected results", func() {
 				/* arrange */
@@ -61,7 +56,6 @@ var _ = Context("serialCaller", func() {
 						dbDir,
 						pubSub,
 					),
-					pubSub: pubSub,
 				}
 
 				/* act */
@@ -83,6 +77,7 @@ var _ = Context("serialCaller", func() {
 				Expect(actualErr).To(MatchError("image required"))
 			})
 		})
+
 		It("should start each child as expected", func() {
 			/* arrange */
 			dbDir, err := ioutil.TempDir("", "")
@@ -123,7 +118,6 @@ var _ = Context("serialCaller", func() {
 				stdOut io.WriteCloser,
 				stdErr io.WriteCloser,
 			) (*int64, error) {
-
 				stdErr.Close()
 				stdOut.Close()
 
@@ -159,11 +153,10 @@ var _ = Context("serialCaller", func() {
 					dbDir,
 					pubSub,
 				),
-				pubSub: pubSub,
 			}
 
 			/* act */
-			_, actualErr := objectUnderTest.Call(
+			outputs, actualErr := objectUnderTest.Call(
 				ctx,
 				providedParentID,
 				providedInboundScope,
@@ -194,6 +187,10 @@ var _ = Context("serialCaller", func() {
 
 			/* assert */
 			Expect(actualErr).To(BeNil())
+			Expect(outputs).To(Equal(map[string]*model.Value{
+				"input1": {String: &input1Value},
+				"input2": {String: &input2Value},
+			}))
 
 			actualChildCalls := []model.CallStarted{}
 			go func() {

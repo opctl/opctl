@@ -1,0 +1,4 @@
+name: testop
+inputs:
+  input:
+    string: {}

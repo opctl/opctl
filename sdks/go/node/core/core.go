@@ -23,11 +23,10 @@ func New(
 	ctx context.Context,
 	containerRuntime containerruntime.ContainerRuntime,
 	dataDirPath string,
-) Core {
+) (Core, error) {
 	eventDbPath := path.Join(dataDirPath, "dcg", "events")
-	err := os.MkdirAll(eventDbPath, 0700)
-	if err != nil {
-		panic(err)
+	if err := os.MkdirAll(eventDbPath, 0700); err != nil {
+		return nil, err
 	}
 
 	// per badger README.MD#FAQ "maximizes throughput"
@@ -39,7 +38,7 @@ func New(
 		).WithLogger(nil),
 	)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	pubSub := pubsub.New(db)
@@ -99,7 +98,7 @@ func New(
 		),
 		pubSub:     pubSub,
 		stateStore: stateStore,
-	}
+	}, nil
 }
 
 // core is an Node that supports running ops directly on the host

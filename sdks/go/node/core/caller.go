@@ -39,30 +39,11 @@ func newCaller(
 		pubSub:          pubSub,
 	}
 
-	instance.opCaller = newOpCaller(
-		instance,
-		dataDirPath,
-	)
-
-	instance.parallelCaller = newParallelCaller(
-		instance,
-		pubSub,
-	)
-
-	instance.parallelLoopCaller = newParallelLoopCaller(
-		instance,
-		pubSub,
-	)
-
-	instance.serialCaller = newSerialCaller(
-		instance,
-		pubSub,
-	)
-
-	instance.serialLoopCaller = newSerialLoopCaller(
-		instance,
-		pubSub,
-	)
+	instance.opCaller = newOpCaller(instance, dataDirPath)
+	instance.parallelCaller = newParallelCaller(instance)
+	instance.parallelLoopCaller = newParallelLoopCaller(instance)
+	instance.serialCaller = newSerialCaller(instance)
+	instance.serialLoopCaller = newSerialLoopCaller(instance)
 
 	return instance
 }
@@ -92,24 +73,31 @@ func (clr _caller) Call(
 ) {
 	callCtx, cancelCall := context.WithCancel(ctx)
 	defer cancelCall()
-	var err error
-	var isKilled bool
-	var outputs map[string]*model.Value
-	var call *model.Call
-	callStartTime := time.Now().UTC()
 
 	if callCtx.Err() != nil {
 		// if context done NOOP
 		return nil, nil
 	}
 
+	callStartTime := time.Now().UTC()
+
+	// These variables are set by callers at the end of this function, but used
+	// inside deferred func that emits call end events so they must be declared
+	// early
+	var err error
+	var outputs map[string]*model.Value
+	var call *model.Call
+	var isKilled bool
+
+	// emit a call ended event after this call is complete
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 
 		if call == nil {
 			call = &model.Call{
-				ID:     id,
-				RootID: rootCallID,
+				ID:       id,
+				RootID:   rootCallID,
+				ParentID: parentCallID,
 			}
 		}
 
@@ -160,6 +148,8 @@ func (clr _caller) Call(
 		return outputs, err
 	}
 
+	// Ensure this is emitted just after the deferred operation to emit the end
+	// event is set up, so we always have a matching start and end event
 	clr.pubSub.Publish(
 		model.Event{
 			Timestamp: callStartTime,

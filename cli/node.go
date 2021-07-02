@@ -38,16 +38,13 @@ func node(
 		}
 	}
 
-	return newHTTPListener(
-		core.New(
-			ctx,
-			containerRuntime,
-			dataDir.Path(),
-		),
-	).
+	node, err := core.New(ctx, containerRuntime, dataDir.Path())
+	if err != nil {
+		return err
+	}
+	return newHTTPListener(node).
 		listen(
 			ctx,
 			nodeCreateOpts.ListenAddress,
 		)
-
 }

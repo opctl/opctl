@@ -32,18 +32,16 @@ func newContainerCaller(
 	pubSub pubsub.PubSub,
 	stateStore stateStore,
 ) containerCaller {
-
 	return _containerCaller{
 		containerRuntime: containerRuntime,
 		pubSub:           pubSub,
 		stateStore:       stateStore,
 	}
-
 }
 
 type _containerCaller struct {
 	containerRuntime containerruntime.ContainerRuntime
-	pubSub           pubsub.PubSub
+	pubSub           pubsub.EventPublisher
 	stateStore       stateStore
 }
 
