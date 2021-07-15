@@ -18,3 +18,23 @@ An array to use as the value of the parameter when no argument is provided.
 
 ### isSecret
 An boolean indicating if the value of the parameter is secret. This will cause it to be hidden in UI's for example. 
+
+## Example
+
+This is an example op that takes in an array parameter and prints the values in the array
+
+```yaml
+name: example
+description: an example op
+inputs:
+    example-input:
+        array:
+            default:
+                - "hello"
+                - "world"
+                - "!"
+run:
+    container:
+        image: { ref: 'alpine' }
+        cmd: ["echo", $(example-input)]
+```

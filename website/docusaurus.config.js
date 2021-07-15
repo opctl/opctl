@@ -74,7 +74,7 @@ module.exports = {
       '@docusaurus/preset-classic',
       {
         docs: {
-          editUrl: "https://github.com/opctl/opctl/edit/master/website/",
+          editUrl: "https://github.com/opctl/opctl/edit/main/website/",
           sidebarPath: require.resolve('./sidebars.js'),
           // Equivalent to `enableUpdateBy`.
           showLastUpdateAuthor: true,
