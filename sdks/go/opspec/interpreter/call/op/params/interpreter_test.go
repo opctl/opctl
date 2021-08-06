@@ -14,24 +14,24 @@ var _ = Context("Interpret", func() {
 		numberParamName := "numberParamName"
 		numberParamValue := 2.2
 
-		providedParams := map[string]*model.Param{
-			defaultStrParamName: &model.Param{
-				String: &model.StringParam{
-					Default: &defaultStrParamValue,
+		providedParams := map[string]*model.ParamSpec{
+			defaultStrParamName: {
+				String: &model.StringParamSpec{
+					Default: defaultStrParamValue,
 				},
 			},
-			numberParamName: &model.Param{
-				Number: &model.NumberParam{},
+			numberParamName: {
+				Number: &model.NumberParamSpec{},
 			},
 		}
 
 		providedOpPath := "dummyOpPath"
 
 		expectedOutputs := map[string]*model.Value{
-			defaultStrParamName: &model.Value{
+			defaultStrParamName: {
 				String: &defaultStrParamValue,
 			},
-			numberParamName: &model.Value{
+			numberParamName: {
 				Number: &numberParamValue,
 			},
 		}
@@ -39,10 +39,10 @@ var _ = Context("Interpret", func() {
 		/* act */
 		actualOutputs, actualErr := Interpret(
 			map[string]*model.Value{
-				defaultStrParamName: &model.Value{
+				defaultStrParamName: {
 					String: &defaultStrParamValue,
 				},
-				numberParamName: &model.Value{
+				numberParamName: {
 					Number: &numberParamValue,
 				},
 			},
@@ -56,5 +56,29 @@ var _ = Context("Interpret", func() {
 		Expect(actualErr).To(BeNil())
 		Expect(actualOutputs).To(Equal(expectedOutputs))
 
+	})
+	Describe("params.ApplyDefaults errors", func() {
+		It("should return expected result", func() {
+			/* arrange */
+			providedParams := map[string]*model.ParamSpec{
+				"param0": {
+					String: &model.StringParamSpec{
+						Default: "$(nonExistent)",
+					},
+				},
+			}
+
+			/* act */
+			actualResult, actualErr := Interpret(
+				map[string]*model.Value{},
+				providedParams,
+				"opPath",
+				"opScratchDir",
+			)
+
+			/* assert */
+			Expect(actualErr).To(MatchError("unable to interpret $(nonExistent) to string: unable to interpret 'nonExistent' as reference: 'nonExistent' not in scope"))
+			Expect(actualResult).To(BeNil())
+		})
 	})
 })

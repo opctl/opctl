@@ -67,9 +67,9 @@ var _ = Context("core", func() {
 					}
 
 					opFile := &model.OpSpec{
-						Outputs: map[string]*model.Param{
-							"dummyOutput1": {String: &model.StringParam{}},
-							"dummyOutput2": {String: &model.StringParam{}},
+						Outputs: map[string]*model.ParamSpec{
+							"dummyOutput1": {String: &model.StringParamSpec{}},
+							"dummyOutput2": {String: &model.StringParamSpec{}},
 						},
 					}
 

@@ -19,7 +19,7 @@ import (
 // note: param defaults aren't considered
 func Validate(
 	value *model.Value,
-	param *model.Param,
+	param *model.ParamSpec,
 ) []error {
 	if value == nil {
 		return []error{errors.New("required")}

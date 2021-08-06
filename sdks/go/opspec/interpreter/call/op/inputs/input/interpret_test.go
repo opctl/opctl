@@ -49,7 +49,7 @@ var _ = Context("Interpret", func() {
 				_, actualError := Interpret(
 					providedName,
 					"",
-					&model.Param{},
+					&model.ParamSpec{},
 					map[string]*model.Value{},
 					"dummyScratchDir",
 				)
@@ -77,7 +77,7 @@ var _ = Context("Interpret", func() {
 				actualResult, actualError := Interpret(
 					name,
 					providedExpression,
-					&model.Param{Array: &model.ArrayParam{}},
+					&model.ParamSpec{Array: &model.ArrayParamSpec{}},
 					providedScope,
 					"dummyScratchDir",
 				)
@@ -104,7 +104,7 @@ var _ = Context("Interpret", func() {
 				actualResult, actualError := Interpret(
 					name,
 					providedExpression,
-					&model.Param{Boolean: &model.BooleanParam{}},
+					&model.ParamSpec{Boolean: &model.BooleanParamSpec{}},
 					providedScope,
 					"dummyScratchDir",
 				)
@@ -132,7 +132,7 @@ var _ = Context("Interpret", func() {
 				actualResult, actualError := Interpret(
 					name,
 					providedExpression,
-					&model.Param{Dir: &model.DirParam{}},
+					&model.ParamSpec{Dir: &model.DirParamSpec{}},
 					providedScope,
 					providedScratchDirPath,
 				)
@@ -160,7 +160,7 @@ var _ = Context("Interpret", func() {
 				actualResult, actualError := Interpret(
 					name,
 					providedExpression,
-					&model.Param{File: &model.FileParam{}},
+					&model.ParamSpec{File: &model.FileParamSpec{}},
 					providedScope,
 					providedScratchDirPath,
 				)
@@ -187,7 +187,7 @@ var _ = Context("Interpret", func() {
 				actualResult, actualError := Interpret(
 					name,
 					providedExpression,
-					&model.Param{Number: &model.NumberParam{}},
+					&model.ParamSpec{Number: &model.NumberParamSpec{}},
 					providedScope,
 					"dummyScratchDir",
 				)
@@ -214,7 +214,7 @@ var _ = Context("Interpret", func() {
 				actualResult, actualError := Interpret(
 					name,
 					providedExpression,
-					&model.Param{Object: &model.ObjectParam{}},
+					&model.ParamSpec{Object: &model.ObjectParamSpec{}},
 					providedScope,
 					"dummyScratchDir",
 				)
@@ -241,7 +241,7 @@ var _ = Context("Interpret", func() {
 				actualResult, actualError := Interpret(
 					name,
 					providedExpression,
-					&model.Param{String: &model.StringParam{}},
+					&model.ParamSpec{String: &model.StringParamSpec{}},
 					providedScope,
 					"dummyScratchDir",
 				)
@@ -260,7 +260,7 @@ var _ = Context("Interpret", func() {
 					_, actualError := Interpret(
 						name,
 						fmt.Sprintf("$(%s)", name),
-						&model.Param{Array: &model.ArrayParam{}},
+						&model.ParamSpec{Array: &model.ArrayParamSpec{}},
 						map[string]*model.Value{},
 						"dummyScratchDir",
 					)
@@ -285,7 +285,7 @@ var _ = Context("Interpret", func() {
 				actualResult, actualError := Interpret(
 					name,
 					providedExpression,
-					&model.Param{Socket: &model.SocketParam{}},
+					&model.ParamSpec{Socket: &model.SocketParamSpec{}},
 					providedScope,
 					"dummyScratchDir",
 				)

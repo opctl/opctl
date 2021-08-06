@@ -10,12 +10,9 @@ An object defining a parameter which accepts a [dir typed value](../../../types/
   - [isSecret](#issecret)
 
 ### default
-A relative or absolute path to use as the default value of the parameter when no argument is provided.
+A [dir initializer](../../../types/dir.md#initialization) to use as the value of the parameter when no argument is provided.
 
-If the value is...
-- an absolute path, the value is interpreted from the root of the op.
-- a relative path, the value is interpreted from the current working directory at the time the op is called.
-  > relative path defaults are ignored when an op is called from an op as there is no current working directory.
+If the value is a relative path it will be resolved from the current working directory of the caller. If no current working directory exists, such as when the caller is an op or web UI, the default will be ignored.
 
 ### isSecret
 A boolean indicating if the value of the parameter is secret. This will cause it to be hidden in UI's for example. 

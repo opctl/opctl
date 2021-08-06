@@ -11,7 +11,7 @@ import (
 //Coerce args to satisfy params
 func Coerce(
 	values map[string]*model.Value,
-	params map[string]*model.Param,
+	params map[string]*model.ParamSpec,
 	opScratchDir string,
 ) (
 	map[string]*model.Value,

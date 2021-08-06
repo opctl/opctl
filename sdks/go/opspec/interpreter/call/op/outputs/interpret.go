@@ -13,7 +13,7 @@ import (
 // Interpret applies defaults to & validates output args
 func Interpret(
 	outputArgs map[string]*model.Value,
-	outputParams map[string]*model.Param,
+	outputParams map[string]*model.ParamSpec,
 	callOutputs map[string]string,
 	opPath string,
 	opScratchDir string,
@@ -26,7 +26,10 @@ func Interpret(
 		return outputArgs, err
 	}
 
-	argsWithDefaults := params.ApplyDefaults(outputArgs, outputParams, opPath)
+	argsWithDefaults, err := params.ApplyDefaults(outputArgs, outputParams, opPath, opScratchDir)
+	if err != nil {
+		return nil, err
+	}
 
 	// ensure the called op supplies each output the callee is expecting
 	for callOutputParamName, callOutputParamBoundName := range callOutputs {
