@@ -1,11 +1,13 @@
 package params
 
 import (
+	"os"
 	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec"
 )
 
 var _ = Context("ApplyDefaults", func() {
@@ -14,25 +16,50 @@ var _ = Context("ApplyDefaults", func() {
 			It("should set output to default", func() {
 				/* arrange */
 				providedOutputName := "outputName"
-				providedOutputDefault := new([]interface{})
+				providedOutputDefault := []interface{}{}
 
-				providedOutputParams := map[string]*model.Param{
-					providedOutputName: {Array: &model.ArrayParam{Default: providedOutputDefault}},
+				providedOutputParams := map[string]*model.ParamSpec{
+					providedOutputName: {Array: &model.ArrayParamSpec{Default: providedOutputDefault}},
 				}
 
 				expectedOutputs := map[string]*model.Value{
-					providedOutputName: {Array: providedOutputDefault},
+					providedOutputName: {Array: &providedOutputDefault},
 				}
 
 				/* act */
-				actualOutputs := ApplyDefaults(
+				actualOutputs, actualErr := ApplyDefaults(
 					map[string]*model.Value{},
 					providedOutputParams,
 					"dummyOpPath",
+					"dummyOpScratchDir",
 				)
 
 				/* assert */
+				Expect(actualErr).To(BeNil())
 				Expect(actualOutputs).To(Equal(expectedOutputs))
+			})
+			Context("array.Interpret errors", func() {
+				It("should set output to default", func() {
+					/* arrange */
+					providedOutputParams := map[string]*model.ParamSpec{
+						"param0": {
+							Array: &model.ArrayParamSpec{
+								Default: "$(nonExistent)"},
+						},
+					}
+
+					/* act */
+					actualOutputs, actualErr := ApplyDefaults(
+						map[string]*model.Value{},
+						providedOutputParams,
+						"dummyOpPath",
+						"dummyOpScratchDir",
+					)
+
+					/* assert */
+					Expect(actualErr).To(MatchError("unable to interpret $(nonExistent) to array: unable to interpret 'nonExistent' as reference: 'nonExistent' not in scope"))
+					Expect(actualOutputs).To(BeNil())
+				})
 			})
 		})
 	})
@@ -43,8 +70,8 @@ var _ = Context("ApplyDefaults", func() {
 				providedOutputName := "outputName"
 				providedOutputDefault := true
 
-				providedOutputParams := map[string]*model.Param{
-					providedOutputName: {Boolean: &model.BooleanParam{Default: &providedOutputDefault}},
+				providedOutputParams := map[string]*model.ParamSpec{
+					providedOutputName: {Boolean: &model.BooleanParamSpec{Default: providedOutputDefault}},
 				}
 
 				expectedOutputs := map[string]*model.Value{
@@ -52,14 +79,39 @@ var _ = Context("ApplyDefaults", func() {
 				}
 
 				/* act */
-				actualOutputs := ApplyDefaults(
+				actualOutputs, actualErr := ApplyDefaults(
 					map[string]*model.Value{},
 					providedOutputParams,
 					"dummyOpPath",
+					"dummyOpScratchDir",
 				)
 
 				/* assert */
+				Expect(actualErr).To(BeNil())
 				Expect(actualOutputs).To(Equal(expectedOutputs))
+			})
+			Context("boolean.Interpret errors", func() {
+				It("should set output to default", func() {
+					/* arrange */
+					providedOutputParams := map[string]*model.ParamSpec{
+						"param0": {
+							Boolean: &model.BooleanParamSpec{
+								Default: "$(nonExistent)"},
+						},
+					}
+
+					/* act */
+					actualOutputs, actualErr := ApplyDefaults(
+						map[string]*model.Value{},
+						providedOutputParams,
+						"dummyOpPath",
+						"dummyOpScratchDir",
+					)
+
+					/* assert */
+					Expect(actualErr).To(MatchError("unable to interpret $(nonExistent) to boolean: unable to interpret 'nonExistent' as reference: 'nonExistent' not in scope"))
+					Expect(actualOutputs).To(BeNil())
+				})
 			})
 		})
 	})
@@ -67,28 +119,59 @@ var _ = Context("ApplyDefaults", func() {
 		Context("default exists", func() {
 			It("should set output to default", func() {
 				/* arrange */
-				providedOutputName := "outputName"
-				providedOutputDefault := "/pkgDirDefault"
-
-				providedOutputParams := map[string]*model.Param{
-					providedOutputName: {Dir: &model.DirParam{Default: &providedOutputDefault}},
+				wd, err := os.Getwd()
+				if err != nil {
+					panic(err)
 				}
-				providedOpPath := "dummyOpPath"
+				providedOpPath := filepath.Join(wd, "testdata")
 
-				expectedOutputValue := filepath.Join(providedOpPath, providedOutputDefault)
+				providedOutputName := "outputName"
+				defaultRelPath := "./"
+				providedOutputDefault := opspec.NameToRef(defaultRelPath)
+
+				providedOutputParams := map[string]*model.ParamSpec{
+					providedOutputName: {Dir: &model.DirParamSpec{Default: providedOutputDefault}},
+				}
+
+				expectedOutputValue := filepath.Join(providedOpPath, defaultRelPath)
 				expectedOutputs := map[string]*model.Value{
 					providedOutputName: {Dir: &expectedOutputValue},
 				}
 
 				/* act */
-				actualOutputs := ApplyDefaults(
+				actualOutputs, actualErr := ApplyDefaults(
 					map[string]*model.Value{},
 					providedOutputParams,
 					providedOpPath,
+					"dummyOpScratchDir",
 				)
 
 				/* assert */
+				Expect(actualErr).To(BeNil())
 				Expect(actualOutputs).To(Equal(expectedOutputs))
+			})
+			Context("dir.Interpret errors", func() {
+				It("should set output to default", func() {
+					/* arrange */
+					providedOutputParams := map[string]*model.ParamSpec{
+						"param0": {
+							Dir: &model.DirParamSpec{
+								Default: "$(nonExistent)"},
+						},
+					}
+
+					/* act */
+					actualOutputs, actualErr := ApplyDefaults(
+						map[string]*model.Value{},
+						providedOutputParams,
+						"dummyOpPath",
+						"dummyOpScratchDir",
+					)
+
+					/* assert */
+					Expect(actualErr).To(MatchError("unable to interpret $(nonExistent) to dir: unable to interpret 'nonExistent' as reference: 'nonExistent' not in scope"))
+					Expect(actualOutputs).To(BeNil())
+				})
 			})
 		})
 	})
@@ -96,28 +179,59 @@ var _ = Context("ApplyDefaults", func() {
 		Context("default exists", func() {
 			It("should set output to default", func() {
 				/* arrange */
-				providedOutputName := "outputName"
-				providedOutputDefault := "/pkgFileDefault"
-				providedOpPath := "dummyOpPath"
+				wd, err := os.Getwd()
+				if err != nil {
+					panic(err)
+				}
+				providedOpPath := filepath.Join(wd, "testdata")
 
-				providedOutputParams := map[string]*model.Param{
-					providedOutputName: {File: &model.FileParam{Default: &providedOutputDefault}},
+				providedOutputName := "outputName"
+				defaultRelPath := "./empty.txt"
+				providedOutputDefault := opspec.NameToRef(defaultRelPath)
+
+				providedOutputParams := map[string]*model.ParamSpec{
+					providedOutputName: {File: &model.FileParamSpec{Default: providedOutputDefault}},
 				}
 
-				expectedOutputValue := filepath.Join(providedOpPath, providedOutputDefault)
+				expectedOutputValue := filepath.Join(providedOpPath, defaultRelPath)
 				expectedOutputs := map[string]*model.Value{
 					providedOutputName: {File: &expectedOutputValue},
 				}
 
 				/* act */
-				actualOutputs := ApplyDefaults(
+				actualOutputs, actualErr := ApplyDefaults(
 					map[string]*model.Value{},
 					providedOutputParams,
 					providedOpPath,
+					"dummyOpScratchDir",
 				)
 
 				/* assert */
+				Expect(actualErr).To(BeNil())
 				Expect(actualOutputs).To(Equal(expectedOutputs))
+			})
+			Context("file.Interpret errors", func() {
+				It("should set output to default", func() {
+					/* arrange */
+					providedOutputParams := map[string]*model.ParamSpec{
+						"param0": {
+							File: &model.FileParamSpec{
+								Default: "$(nonExistent)"},
+						},
+					}
+
+					/* act */
+					actualOutputs, actualErr := ApplyDefaults(
+						map[string]*model.Value{},
+						providedOutputParams,
+						"dummyOpPath",
+						"dummyOpScratchDir",
+					)
+
+					/* assert */
+					Expect(actualErr).To(MatchError("unable to interpret $(nonExistent) to file: unable to interpret 'nonExistent' as reference: 'nonExistent' not in scope"))
+					Expect(actualOutputs).To(BeNil())
+				})
 			})
 		})
 	})
@@ -128,8 +242,8 @@ var _ = Context("ApplyDefaults", func() {
 				providedOutputName := "outputName"
 				providedOutputDefault := 2.2
 
-				providedOutputParams := map[string]*model.Param{
-					providedOutputName: {Number: &model.NumberParam{Default: &providedOutputDefault}},
+				providedOutputParams := map[string]*model.ParamSpec{
+					providedOutputName: {Number: &model.NumberParamSpec{Default: providedOutputDefault}},
 				}
 
 				expectedOutputs := map[string]*model.Value{
@@ -137,14 +251,39 @@ var _ = Context("ApplyDefaults", func() {
 				}
 
 				/* act */
-				actualOutputs := ApplyDefaults(
+				actualOutputs, actualErr := ApplyDefaults(
 					map[string]*model.Value{},
 					providedOutputParams,
 					"dummyOpPath",
+					"dummyOpScratchDir",
 				)
 
 				/* assert */
+				Expect(actualErr).To(BeNil())
 				Expect(actualOutputs).To(Equal(expectedOutputs))
+			})
+			Context("number.Interpret errors", func() {
+				It("should set output to default", func() {
+					/* arrange */
+					providedOutputParams := map[string]*model.ParamSpec{
+						"param0": {
+							Number: &model.NumberParamSpec{
+								Default: "$(nonExistent)"},
+						},
+					}
+
+					/* act */
+					actualOutputs, actualErr := ApplyDefaults(
+						map[string]*model.Value{},
+						providedOutputParams,
+						"dummyOpPath",
+						"dummyOpScratchDir",
+					)
+
+					/* assert */
+					Expect(actualErr).To(MatchError("unable to interpret $(nonExistent) to number: unable to interpret 'nonExistent' as reference: 'nonExistent' not in scope"))
+					Expect(actualOutputs).To(BeNil())
+				})
 			})
 		})
 	})
@@ -153,25 +292,50 @@ var _ = Context("ApplyDefaults", func() {
 			It("should set output to default", func() {
 				/* arrange */
 				providedOutputName := "outputName"
-				providedOutputDefault := new(map[string]interface{})
+				providedOutputDefault := map[string]interface{}{}
 
-				providedOutputParams := map[string]*model.Param{
-					providedOutputName: {Object: &model.ObjectParam{Default: providedOutputDefault}},
+				providedOutputParams := map[string]*model.ParamSpec{
+					providedOutputName: {Object: &model.ObjectParamSpec{Default: providedOutputDefault}},
 				}
 
 				expectedOutputs := map[string]*model.Value{
-					providedOutputName: {Object: providedOutputDefault},
+					providedOutputName: {Object: &providedOutputDefault},
 				}
 
 				/* act */
-				actualOutputs := ApplyDefaults(
+				actualOutputs, actualErr := ApplyDefaults(
 					map[string]*model.Value{},
 					providedOutputParams,
 					"dummyOpPath",
+					"dummyOpScratchDir",
 				)
 
 				/* assert */
+				Expect(actualErr).To(BeNil())
 				Expect(actualOutputs).To(Equal(expectedOutputs))
+			})
+			Context("object.Interpret errors", func() {
+				It("should set output to default", func() {
+					/* arrange */
+					providedOutputParams := map[string]*model.ParamSpec{
+						"param0": {
+							Object: &model.ObjectParamSpec{
+								Default: "$(nonExistent)"},
+						},
+					}
+
+					/* act */
+					actualOutputs, actualErr := ApplyDefaults(
+						map[string]*model.Value{},
+						providedOutputParams,
+						"dummyOpPath",
+						"dummyOpScratchDir",
+					)
+
+					/* assert */
+					Expect(actualErr).To(MatchError("unable to interpret $(nonExistent) to object: unable to interpret 'nonExistent' as reference: 'nonExistent' not in scope"))
+					Expect(actualOutputs).To(BeNil())
+				})
 			})
 		})
 	})
@@ -182,8 +346,8 @@ var _ = Context("ApplyDefaults", func() {
 				providedOutputName := "outputName"
 				providedOutputDefault := "outputDefault"
 
-				providedOutputParams := map[string]*model.Param{
-					providedOutputName: {String: &model.StringParam{Default: &providedOutputDefault}},
+				providedOutputParams := map[string]*model.ParamSpec{
+					providedOutputName: {String: &model.StringParamSpec{Default: providedOutputDefault}},
 				}
 
 				expectedOutputs := map[string]*model.Value{
@@ -191,14 +355,39 @@ var _ = Context("ApplyDefaults", func() {
 				}
 
 				/* act */
-				actualOutputs := ApplyDefaults(
+				actualOutputs, actualErr := ApplyDefaults(
 					map[string]*model.Value{},
 					providedOutputParams,
 					"dummyOpPath",
+					"dummyOpScratchDir",
 				)
 
 				/* assert */
+				Expect(actualErr).To(BeNil())
 				Expect(actualOutputs).To(Equal(expectedOutputs))
+			})
+			Context("string.Interpret errors", func() {
+				It("should set output to default", func() {
+					/* arrange */
+					providedOutputParams := map[string]*model.ParamSpec{
+						"param0": {
+							String: &model.StringParamSpec{
+								Default: "$(nonExistent)"},
+						},
+					}
+
+					/* act */
+					actualOutputs, actualErr := ApplyDefaults(
+						map[string]*model.Value{},
+						providedOutputParams,
+						"dummyOpPath",
+						"dummyOpScratchDir",
+					)
+
+					/* assert */
+					Expect(actualErr).To(MatchError("unable to interpret $(nonExistent) to string: unable to interpret 'nonExistent' as reference: 'nonExistent' not in scope"))
+					Expect(actualOutputs).To(BeNil())
+				})
 			})
 		})
 	})

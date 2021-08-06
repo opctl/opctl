@@ -25,7 +25,7 @@ type CLIParamSatisfier interface {
 
 	Satisfy(
 		inputSourcer InputSourcer,
-		inputs map[string]*model.Param,
+		inputs map[string]*model.ParamSpec,
 	) (map[string]*model.Value, error)
 }
 
@@ -46,7 +46,7 @@ type _CLIParamSatisfier struct {
 
 func (cps _CLIParamSatisfier) Satisfy(
 	inputSourcer InputSourcer,
-	inputs map[string]*model.Param,
+	inputs map[string]*model.ParamSpec,
 ) (map[string]*model.Value, error) {
 
 	argMap := map[string]*model.Value{}
@@ -137,7 +137,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 
 			validateErr := params.Validate(
 				map[string]*model.Value{paramName: arg},
-				map[string]*model.Param{paramName: param},
+				map[string]*model.ParamSpec{paramName: param},
 			)
 			if validateErr != nil {
 				cps.notifyOfArgErrors([]error{validateErr}, paramName)
@@ -160,7 +160,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 }
 
 func getSortedParamNames(
-	params map[string]*model.Param,
+	params map[string]*model.ParamSpec,
 ) []string {
 	paramNames := []string{}
 

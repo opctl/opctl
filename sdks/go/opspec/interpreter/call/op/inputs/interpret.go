@@ -13,7 +13,7 @@ import (
 // opScratchDir will be used to store any run data such as type coercions to files
 func Interpret(
 	inputArgs map[string]interface{},
-	inputParams map[string]*model.Param,
+	inputParams map[string]*model.ParamSpec,
 	opPath string,
 	scope map[string]*model.Value,
 	opScratchDir string,
@@ -53,7 +53,10 @@ func Interpret(
 	}
 
 	// 2) apply defaults
-	argsWithDefaults := params.ApplyDefaults(interpretedArgs, inputParams, opPath)
+	argsWithDefaults, err := params.ApplyDefaults(interpretedArgs, inputParams, opPath, opScratchDir)
+	if err != nil {
+		return nil, err
+	}
 
 	// 3) validate
 	return argsWithDefaults, params.Validate(argsWithDefaults, inputParams)

@@ -7,7 +7,7 @@ import (
 //Interpret params
 func Interpret(
 	scope map[string]*model.Value,
-	params map[string]*model.Param,
+	params map[string]*model.ParamSpec,
 	opPath string,
 	opScratchDir string,
 ) (
@@ -21,7 +21,10 @@ func Interpret(
 		return scope, err
 	}
 
-	argsWithDefaults := ApplyDefaults(scope, params, opPath)
+	argsWithDefaults, err := ApplyDefaults(scope, params, opPath, opScratchDir)
+	if err != nil {
+		return nil, err
+	}
 
 	return argsWithDefaults, Validate(argsWithDefaults, params)
 

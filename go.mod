@@ -40,8 +40,8 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.1 // indirect
 	github.com/mjibson/esc v0.2.0
 	github.com/morikuni/aec v0.0.0-20170113033406-39771216ff4c // indirect
-	github.com/onsi/ginkgo v1.11.0
-	github.com/onsi/gomega v1.9.0
+	github.com/onsi/ginkgo v1.16.4
+	github.com/onsi/gomega v1.15.0
 	github.com/peterh/liner v1.1.0
 	github.com/rakyll/statik v0.1.7-0.20191104211043-6b2f3ee522b6
 	github.com/rhysd/go-github-selfupdate v1.2.3
@@ -50,10 +50,9 @@ require (
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0
-	golang.org/x/mod v0.3.0 // indirect
-	golang.org/x/net v0.0.0-20200707034311-ab3426394381
-	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20200528171350-af9456bb6365 // indirect
+	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d
+	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9
+	golang.org/x/sys v0.0.0-20210806184541-e5e7981a1069 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
 	k8s.io/api v0.19.1
 	k8s.io/apimachinery v0.19.1

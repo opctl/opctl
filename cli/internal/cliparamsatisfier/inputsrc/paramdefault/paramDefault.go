@@ -7,7 +7,7 @@ import (
 )
 
 func New(
-	inputs map[string]*model.Param,
+	inputs map[string]*model.ParamSpec,
 ) inputsrc.InputSrc {
 	return paramDefaultInputSrc{
 		inputs:      inputs,
@@ -17,7 +17,7 @@ func New(
 
 // paramDefaultInputSrc implements InputSrc interface by sourcing inputs from input defaults
 type paramDefaultInputSrc struct {
-	inputs      map[string]*model.Param
+	inputs      map[string]*model.ParamSpec
 	readHistory map[string]struct{} // tracks reads
 }
 
@@ -39,17 +39,17 @@ func (this paramDefaultInputSrc) ReadString(
 		case inputValue.Boolean != nil && inputValue.Boolean.Default != nil:
 			return nil, true
 		case inputValue.Dir != nil && inputValue.Dir.Default != nil:
-			if strings.HasPrefix(*inputValue.Dir.Default, "/") {
-				// defaulted to pkg dir
-				return nil, true
+			if defaultExpressionAsString, ok := inputValue.Dir.Default.(string); ok && strings.HasPrefix(defaultExpressionAsString, ".") {
+				// relative path defaults resolve from caller working directory
+				return &defaultExpressionAsString, true
 			}
-			return inputValue.Dir.Default, true
+			return nil, true
 		case inputValue.File != nil && inputValue.File.Default != nil:
-			if strings.HasPrefix(*inputValue.File.Default, "/") {
-				// defaulted to pkg file
-				return nil, true
+			if defaultExpressionAsString, ok := inputValue.File.Default.(string); ok && strings.HasPrefix(defaultExpressionAsString, ".") {
+				// relative path defaults resolve from caller working directory
+				return &defaultExpressionAsString, true
 			}
-			return inputValue.File.Default, true
+			return nil, true
 		case inputValue.Number != nil && inputValue.Number.Default != nil:
 			return nil, true
 		case inputValue.Object != nil && inputValue.Object.Default != nil:

@@ -12,13 +12,13 @@ import (
 
 type InputSrcFactory interface {
 	NewCliPromptInputSrc(
-		inputs map[string]*model.Param,
+		inputs map[string]*model.ParamSpec,
 	) inputsrc.InputSrc
 
 	NewEnvVarInputSrc() inputsrc.InputSrc
 
 	NewParamDefaultInputSrc(
-		inputs map[string]*model.Param,
+		inputs map[string]*model.ParamSpec,
 	) inputsrc.InputSrc
 
 	NewSliceInputSrc(
@@ -38,7 +38,7 @@ func newInputSrcFactory() InputSrcFactory {
 type _inputSrcFactory struct{}
 
 func (is _inputSrcFactory) NewCliPromptInputSrc(
-	inputs map[string]*model.Param,
+	inputs map[string]*model.ParamSpec,
 ) inputsrc.InputSrc {
 	return cliprompt.New(inputs)
 }
@@ -48,7 +48,7 @@ func (is _inputSrcFactory) NewEnvVarInputSrc() inputsrc.InputSrc {
 }
 
 func (is _inputSrcFactory) NewParamDefaultInputSrc(
-	inputs map[string]*model.Param,
+	inputs map[string]*model.ParamSpec,
 ) inputsrc.InputSrc {
 	return paramdefault.New(inputs)
 }

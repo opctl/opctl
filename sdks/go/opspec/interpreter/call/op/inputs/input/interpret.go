@@ -19,7 +19,7 @@ import (
 func Interpret(
 	name string,
 	valueExpression interface{},
-	param *model.Param,
+	param *model.ParamSpec,
 	scope map[string]*model.Value,
 	opScratchDir string,
 ) (*model.Value, error) {

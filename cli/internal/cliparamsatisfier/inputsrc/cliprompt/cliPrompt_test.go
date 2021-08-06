@@ -14,16 +14,16 @@ var _ = Describe("cliPromptInputSrc", func() {
 					/* arrange */
 					inputName := "dummyInputName"
 					paramDefault := "dummyParamDefault"
-					param := &model.Param{
+					param := &model.ParamSpec{
 						Description: "description",
-						String: &model.StringParam{
+						String: &model.StringParamSpec{
 							Default:     &paramDefault,
 							Description: "deprecated description",
 						},
 					}
 
 					objectUnderTest := New(
-						map[string]*model.Param{inputName: param},
+						map[string]*model.ParamSpec{inputName: param},
 					)
 
 					/* act */
@@ -44,12 +44,12 @@ var _ = Describe("cliPromptInputSrc", func() {
 						/* arrange */
 						inputName := "dummyInputName"
 						paramDefault := new([]interface{})
-						param := &model.Param{
-							Array: &model.ArrayParam{Default: paramDefault},
+						param := &model.ParamSpec{
+							Array: &model.ArrayParamSpec{Default: paramDefault},
 						}
 
 						objectUnderTest := New(
-							map[string]*model.Param{inputName: param},
+							map[string]*model.ParamSpec{inputName: param},
 						)
 
 						/* act */
@@ -65,12 +65,12 @@ var _ = Describe("cliPromptInputSrc", func() {
 						/* arrange */
 						inputName := "dummyInputName"
 						paramDefault := true
-						param := &model.Param{
-							Boolean: &model.BooleanParam{Default: &paramDefault},
+						param := &model.ParamSpec{
+							Boolean: &model.BooleanParamSpec{Default: &paramDefault},
 						}
 
 						objectUnderTest := New(
-							map[string]*model.Param{inputName: param},
+							map[string]*model.ParamSpec{inputName: param},
 						)
 
 						/* act */
@@ -87,12 +87,12 @@ var _ = Describe("cliPromptInputSrc", func() {
 							/* arrange */
 							inputName := "dummyInputName"
 							paramDefault := "/dummyParamDefault"
-							param := &model.Param{
-								Dir: &model.DirParam{Default: &paramDefault},
+							param := &model.ParamSpec{
+								Dir: &model.DirParamSpec{Default: &paramDefault},
 							}
 
 							objectUnderTest := New(
-								map[string]*model.Param{inputName: param},
+								map[string]*model.ParamSpec{inputName: param},
 							)
 
 							/* act */
@@ -110,12 +110,12 @@ var _ = Describe("cliPromptInputSrc", func() {
 							/* arrange */
 							inputName := "dummyInputName"
 							paramDefault := "/dummyParamDefault"
-							param := &model.Param{
-								File: &model.FileParam{Default: &paramDefault},
+							param := &model.ParamSpec{
+								File: &model.FileParamSpec{Default: &paramDefault},
 							}
 
 							objectUnderTest := New(
-								map[string]*model.Param{inputName: param},
+								map[string]*model.ParamSpec{inputName: param},
 							)
 
 							/* act */
@@ -132,12 +132,12 @@ var _ = Describe("cliPromptInputSrc", func() {
 						/* arrange */
 						inputName := "dummyInputName"
 						paramDefault := 2.1
-						param := &model.Param{
-							Number: &model.NumberParam{Default: &paramDefault},
+						param := &model.ParamSpec{
+							Number: &model.NumberParamSpec{Default: &paramDefault},
 						}
 
 						objectUnderTest := New(
-							map[string]*model.Param{inputName: param},
+							map[string]*model.ParamSpec{inputName: param},
 						)
 
 						/* act */
@@ -153,12 +153,12 @@ var _ = Describe("cliPromptInputSrc", func() {
 						/* arrange */
 						inputName := "dummyInputName"
 						paramDefault := new(map[string]interface{})
-						param := &model.Param{
-							Object: &model.ObjectParam{Default: paramDefault},
+						param := &model.ParamSpec{
+							Object: &model.ObjectParamSpec{Default: paramDefault},
 						}
 
 						objectUnderTest := New(
-							map[string]*model.Param{inputName: param},
+							map[string]*model.ParamSpec{inputName: param},
 						)
 
 						/* act */
@@ -174,12 +174,12 @@ var _ = Describe("cliPromptInputSrc", func() {
 						/* arrange */
 						inputName := "dummyInputName"
 						paramDefault := "dummyParamDefault"
-						param := &model.Param{
-							String: &model.StringParam{Default: &paramDefault},
+						param := &model.ParamSpec{
+							String: &model.StringParamSpec{Default: &paramDefault},
 						}
 
 						objectUnderTest := New(
-							map[string]*model.Param{inputName: param},
+							map[string]*model.ParamSpec{inputName: param},
 						)
 
 						/* act */
@@ -197,7 +197,7 @@ var _ = Describe("cliPromptInputSrc", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			objectUnderTest := New(
-				map[string]*model.Param{},
+				map[string]*model.ParamSpec{},
 			)
 
 			/* act */
