@@ -2,12 +2,11 @@ package docker
 
 import (
 	"context"
-
+	"errors"
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/internal/fakes"
-	"github.com/pkg/errors"
 )
 
 var _ = Context("DeleteContainerIfExists", func() {

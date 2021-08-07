@@ -6,7 +6,6 @@ import (
 	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
-	"github.com/pkg/errors"
 )
 
 // Interpret an expression to a boolean value.
@@ -20,7 +19,7 @@ func Interpret(
 		scope,
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf("unable to interpret %+v to boolean", expression))
+		return nil, fmt.Errorf("unable to interpret %+v to boolean: %w", expression, err)
 	}
 
 	return coerce.ToBoolean(&v)

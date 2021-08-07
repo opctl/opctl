@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/pkg/errors"
 )
 
 // ToString coerces a value to a string value
@@ -20,12 +19,12 @@ func ToString(
 	case value.Array != nil:
 		nativeArray, err := value.Unbox()
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to coerce array to string")
+			return nil, fmt.Errorf("unable to coerce array to string: %w", err)
 		}
 
 		arrayBytes, err := json.Marshal(nativeArray)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to coerce array to string")
+			return nil, fmt.Errorf("unable to coerce array to string: %w", err)
 		}
 		arrayString := string(arrayBytes)
 		return &model.Value{String: &arrayString}, nil
@@ -33,11 +32,11 @@ func ToString(
 		booleanString := strconv.FormatBool(*value.Boolean)
 		return &model.Value{String: &booleanString}, nil
 	case value.Dir != nil:
-		return nil, errors.Wrap(errIncompatibleTypes, fmt.Sprintf("unable to coerce dir '%v' to string", *value.Dir))
+		return nil, fmt.Errorf("unable to coerce dir '%v' to string: %w", *value.Dir, errIncompatibleTypes)
 	case value.File != nil:
 		fileBytes, err := ioutil.ReadFile(*value.File)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to coerce file to string")
+			return nil, fmt.Errorf("unable to coerce file to string: %w", err)
 		}
 		fileString := string(fileBytes)
 		return &model.Value{String: &fileString}, nil
@@ -47,12 +46,12 @@ func ToString(
 	case value.Object != nil:
 		nativeObject, err := value.Unbox()
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to coerce object to string")
+			return nil, fmt.Errorf("unable to coerce object to string: %w", err)
 		}
 
 		objectBytes, err := json.Marshal(nativeObject)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to coerce object to string")
+			return nil, fmt.Errorf("unable to coerce object to string: %w", err)
 		}
 		objectString := string(objectBytes)
 		return &model.Value{String: &objectString}, nil

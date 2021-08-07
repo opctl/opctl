@@ -1,7 +1,7 @@
 package coerce
 
 import (
-	"github.com/pkg/errors"
+	"errors"
 )
 
 var errIncompatibleTypes = errors.New("incompatible types")

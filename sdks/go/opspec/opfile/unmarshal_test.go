@@ -66,7 +66,7 @@ var _ = Context("Unmarshal", func() {
 			/* assert */
 			Expect(actualErr).To(BeNil())
 
-			// compare contents via JSON; otherwise we encounter pointer inequalities
+			// compare as JSON; otherwise we encounter pointer inequalities
 			actualBytes, err := json.Marshal(actualOpFile)
 			if err != nil {
 				panic(err)
