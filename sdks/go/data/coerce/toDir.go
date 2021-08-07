@@ -1,6 +1,7 @@
 package coerce
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -9,7 +10,6 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/pkg/errors"
 )
 
 // ToDir attempts to coerce value to a dir
@@ -21,32 +21,32 @@ func ToDir(
 	case value == nil:
 		return nil, errors.New("unable to coerce null to dir")
 	case value.Array != nil:
-		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce array to dir")
+		return nil, fmt.Errorf("unable to coerce array to dir: %w", errIncompatibleTypes)
 	case value.Boolean != nil:
-		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce boolean to dir")
+		return nil, fmt.Errorf("unable to coerce boolean to dir: %w", errIncompatibleTypes)
 	case value.Dir != nil:
 		return value, nil
 	case value.File != nil:
-		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce file to dir")
+		return nil, fmt.Errorf("unable to coerce file to dir: %w", errIncompatibleTypes)
 	case value.Number != nil:
-		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce number to dir")
+		return nil, fmt.Errorf("unable to coerce number to dir: %w", errIncompatibleTypes)
 	case value.Object != nil:
 		uniqueStr, err := uniquestring.Construct()
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to coerce object to dir")
+			return nil, fmt.Errorf("unable to coerce object to dir: %w", err)
 		}
 
 		rootDirPath := filepath.Join(scratchDir, uniqueStr)
 		err = rCreateFileItem(rootDirPath, "", *value.Object)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to coerce object to dir")
+			return nil, fmt.Errorf("unable to coerce object to dir: %w", err)
 		}
 
 		return &model.Value{Dir: &rootDirPath}, nil
 	case value.Socket != nil:
-		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce socket to dir")
+		return nil, fmt.Errorf("unable to coerce socket to dir: %w", errIncompatibleTypes)
 	case value.String != nil:
-		return nil, errors.Wrap(errIncompatibleTypes, "unable to coerce string to dir")
+		return nil, fmt.Errorf("unable to coerce string to dir: %w", errIncompatibleTypes)
 	default:
 		return nil, fmt.Errorf("unable to coerce '%+v' to dir", value)
 	}
@@ -73,12 +73,12 @@ func rCreateFileItem(
 			0777,
 		)
 		if err != nil {
-			return errors.Wrap(err, "error creating "+itemPath)
+			return fmt.Errorf("error creating %s: %w", itemPath, err)
 		}
 
 		err = ioutil.WriteFile(itemPath, []byte(dataString), 0777)
 		if err != nil {
-			return errors.Wrap(err, "error creating "+itemPath)
+			return fmt.Errorf("error creating %s: %w", itemPath, err)
 		}
 
 		return nil
@@ -90,7 +90,7 @@ func rCreateFileItem(
 		0777,
 	)
 	if err != nil {
-		return errors.Wrap(err, "error creating "+itemPath)
+		return fmt.Errorf("error creating %s: %w", itemPath, err)
 	}
 
 	for k, v := range children {

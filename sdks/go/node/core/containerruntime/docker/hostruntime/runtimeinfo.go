@@ -2,11 +2,11 @@ package hostruntime
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
-	"github.com/pkg/errors"
 )
 
 // RuntimeInfo provides relation between opctl and docker engine host
@@ -32,14 +32,14 @@ func newContainerRuntimeInfo(ctx context.Context, cli containerInspector, cu con
 	if cu.inAContainer() {
 		dockerID, err := cu.getDockerID()
 		if err != nil {
-			return cri, errors.Wrap(err, "can't get container's docker id")
+			return cri, fmt.Errorf("can't get container's docker id: %w", err)
 		}
 
 		cri.DockerID = dockerID
 
 		info, exists, err := inspect(ctx, cli, dockerID)
 		if err != nil {
-			return cri, errors.Wrap(err, "can't get inspect current container")
+			return cri, fmt.Errorf("can't get inspect current container: %w", err)
 		}
 
 		if exists {

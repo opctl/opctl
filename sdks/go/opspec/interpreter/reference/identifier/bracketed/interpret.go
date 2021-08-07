@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/bracketed/item"
-	"github.com/pkg/errors"
 
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/value"
 
@@ -31,7 +30,7 @@ func Interpret(
 
 	data, err := CoerceToArrayOrObject(data)
 	if err != nil {
-		return "", nil, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v'", ref))
+		return "", nil, fmt.Errorf("unable to interpret '%v': %w", ref, err)
 	}
 
 	identifier := ref[1:indexOfNextCloseBracket]
@@ -51,7 +50,7 @@ func Interpret(
 	property := (*data.Object)[identifier]
 	propertyValue, err := value.Construct(property)
 	if err != nil {
-		return "", nil, errors.Wrap(err, "unable to interpret property")
+		return "", nil, fmt.Errorf("unable to interpret property: %w", err)
 	}
 	return refRemainder, propertyValue, nil
 }

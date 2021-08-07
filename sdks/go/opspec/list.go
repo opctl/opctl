@@ -8,7 +8,6 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
-	"github.com/pkg/errors"
 )
 
 // List ops recursively within a directory, returning discovered op files by path.
@@ -28,20 +27,20 @@ func List(
 
 			opFileReader, err := dirHandle.GetContent(ctx, content.Path)
 			if err != nil {
-				return nil, errors.Wrap(err, fmt.Sprintf("error opening %s%s", dirHandle.Ref(), content.Path))
+				return nil, fmt.Errorf("error opening %s%s: %w", dirHandle.Ref(), content.Path, err)
 			}
 
 			opFileBytes, err := ioutil.ReadAll(opFileReader)
 			opFileReader.Close()
 			if err != nil {
-				return nil, errors.Wrap(err, fmt.Sprintf("error reading %s%s", dirHandle.Ref(), content.Path))
+				return nil, fmt.Errorf("error reading %s%s: %w", dirHandle.Ref(), content.Path, err)
 			}
 
 			opFile, err := opfile.Unmarshal(
 				opFileBytes,
 			)
 			if err != nil {
-				return nil, errors.Wrap(err, fmt.Sprintf("error unmarshalling %s%s", dirHandle.Ref(), content.Path))
+				return nil, fmt.Errorf("error unmarshalling %s%s: %w", dirHandle.Ref(), content.Path, err)
 			}
 
 			opsByPath[filepath.Dir(content.Path)] = opFile

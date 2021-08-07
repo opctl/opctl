@@ -43,7 +43,6 @@ require (
 	github.com/onsi/ginkgo v1.11.0
 	github.com/onsi/gomega v1.9.0
 	github.com/peterh/liner v1.1.0
-	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7-0.20191104211043-6b2f3ee522b6
 	github.com/rhysd/go-github-selfupdate v1.2.3
 	github.com/satori/go.uuid v0.0.0-20181028125025-b2ce2384e17b
