@@ -1,12 +1,18 @@
 package cliprompt
 
 import (
+	"io/ioutil"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opctl/opctl/cli/internal/clicolorer"
+	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
 var _ = Describe("cliPromptInputSrc", func() {
+	cliOutput := clioutput.New(clicolorer.New(), ioutil.Discard, ioutil.Discard)
+
 	Context("ReadString()", func() {
 		Context("inputs contains entry for inputName", func() {
 			Context("input already read", func() {
@@ -23,6 +29,7 @@ var _ = Describe("cliPromptInputSrc", func() {
 					}
 
 					objectUnderTest := New(
+						cliOutput,
 						map[string]*model.ParamSpec{inputName: param},
 					)
 
@@ -49,6 +56,7 @@ var _ = Describe("cliPromptInputSrc", func() {
 						}
 
 						objectUnderTest := New(
+							cliOutput,
 							map[string]*model.ParamSpec{inputName: param},
 						)
 
@@ -70,6 +78,7 @@ var _ = Describe("cliPromptInputSrc", func() {
 						}
 
 						objectUnderTest := New(
+							cliOutput,
 							map[string]*model.ParamSpec{inputName: param},
 						)
 
@@ -92,6 +101,7 @@ var _ = Describe("cliPromptInputSrc", func() {
 							}
 
 							objectUnderTest := New(
+								cliOutput,
 								map[string]*model.ParamSpec{inputName: param},
 							)
 
@@ -115,6 +125,7 @@ var _ = Describe("cliPromptInputSrc", func() {
 							}
 
 							objectUnderTest := New(
+								cliOutput,
 								map[string]*model.ParamSpec{inputName: param},
 							)
 
@@ -137,6 +148,7 @@ var _ = Describe("cliPromptInputSrc", func() {
 						}
 
 						objectUnderTest := New(
+							cliOutput,
 							map[string]*model.ParamSpec{inputName: param},
 						)
 
@@ -158,6 +170,7 @@ var _ = Describe("cliPromptInputSrc", func() {
 						}
 
 						objectUnderTest := New(
+							cliOutput,
 							map[string]*model.ParamSpec{inputName: param},
 						)
 
@@ -179,6 +192,7 @@ var _ = Describe("cliPromptInputSrc", func() {
 						}
 
 						objectUnderTest := New(
+							cliOutput,
 							map[string]*model.ParamSpec{inputName: param},
 						)
 
@@ -197,6 +211,7 @@ var _ = Describe("cliPromptInputSrc", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			objectUnderTest := New(
+				cliOutput,
 				map[string]*model.ParamSpec{},
 			)
 

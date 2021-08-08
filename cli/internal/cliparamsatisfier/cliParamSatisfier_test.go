@@ -3,6 +3,7 @@ package cliparamsatisfier
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strconv"
 
@@ -21,11 +22,14 @@ var _ = Context("parameterSatisfier", func() {
 	if err != nil {
 		panic(err)
 	}
+
+	cliOutput := clioutput.New(clicolorer.New(), ioutil.Discard, ioutil.Discard)
+
 	Context("New", func() {
 		It("should return truthy result", func() {
 			/* arrange/act */
 			actual := New(
-				clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
+				cliOutput,
 			)
 
 			/* assert */
@@ -48,7 +52,7 @@ var _ = Context("parameterSatisfier", func() {
 			}
 
 			objectUnderTest := _CLIParamSatisfier{
-				cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
+				cliOutput: cliOutput,
 			}
 
 			/* act */
@@ -91,7 +95,7 @@ var _ = Context("parameterSatisfier", func() {
 					providedInputSourcer.SourceReturns(&valueString, true)
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
+						cliOutput: cliOutput,
 					}
 
 					/* act */
@@ -123,7 +127,7 @@ var _ = Context("parameterSatisfier", func() {
 					}
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
+						cliOutput: cliOutput,
 					}
 
 					/* act */
@@ -159,7 +163,7 @@ var _ = Context("parameterSatisfier", func() {
 					}
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
+						cliOutput: cliOutput,
 					}
 
 					/* act */
@@ -195,7 +199,7 @@ var _ = Context("parameterSatisfier", func() {
 					}
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
+						cliOutput: cliOutput,
 					}
 
 					/* act */
@@ -227,7 +231,7 @@ var _ = Context("parameterSatisfier", func() {
 					}
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
+						cliOutput: cliOutput,
 					}
 
 					/* act */
@@ -266,7 +270,7 @@ var _ = Context("parameterSatisfier", func() {
 					providedInputSourcer.SourceReturns(&valueString, true)
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
+						cliOutput: cliOutput,
 					}
 
 					/* act */

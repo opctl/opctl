@@ -2,9 +2,7 @@ package cliprompt
 
 import (
 	"fmt"
-	"os"
 
-	"github.com/opctl/opctl/cli/internal/clicolorer"
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier/inputsrc"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -12,11 +10,12 @@ import (
 )
 
 func New(
+	cliOutput clioutput.CliOutput,
 	inputs map[string]*model.ParamSpec,
 ) inputsrc.InputSrc {
 	return cliPromptInputSrc{
 		inputs:    inputs,
-		cliOutput: clioutput.New(clicolorer.New(), os.Stderr, os.Stdout),
+		cliOutput: cliOutput,
 	}
 }
 

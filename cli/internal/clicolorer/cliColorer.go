@@ -26,6 +26,8 @@ type CliColorer interface {
 		s string,
 	) string
 
+	Muted(s string) string
+
 	// success colors
 	Success(s string) string
 }
@@ -43,11 +45,15 @@ func New() CliColorer {
 	successCliColorer := color.New(color.FgHiGreen, color.Bold)
 	successCliColorer.EnableColor()
 
+	mutedCliColorer := color.New(color.Faint)
+	mutedCliColorer.EnableColor()
+
 	return &cliColorer{
 		attentionCliColorer: attentionCliColorer,
 		errorCliColorer:     errorCliColorer,
 		infoCliColorer:      infoCliColorer,
 		successCliColorer:   successCliColorer,
+		mutedCliColorer:     mutedCliColorer,
 	}
 }
 
@@ -56,6 +62,7 @@ type cliColorer struct {
 	errorCliColorer     *color.Color
 	infoCliColorer      *color.Color
 	successCliColorer   *color.Color
+	mutedCliColorer     *color.Color
 }
 
 func (this *cliColorer) DisableColor() {
@@ -87,4 +94,8 @@ func (this cliColorer) Success(
 	s string,
 ) string {
 	return this.successCliColorer.SprintFunc()(s)
+}
+
+func (this cliColorer) Muted(s string) string {
+	return this.mutedCliColorer.SprintFunc()(s)
 }

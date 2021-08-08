@@ -8,6 +8,8 @@ accordance with
 
 ### Added
 
+- When running an op via opctl run, display progress via a live call graph
+- When running an op via opctl run, prefix log lines emitted by workloads with their op id & ref
 - Basic support for sending local files and directories to remote nodes when using the API client
 - [Allow defining description on call graph nodes](https://github.com/opctl/opctl/issues/900)
 

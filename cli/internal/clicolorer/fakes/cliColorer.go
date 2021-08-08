@@ -45,6 +45,17 @@ type FakeCliColorer struct {
 	infoReturnsOnCall map[int]struct {
 		result1 string
 	}
+	MutedStub        func(string) string
+	mutedMutex       sync.RWMutex
+	mutedArgsForCall []struct {
+		arg1 string
+	}
+	mutedReturns struct {
+		result1 string
+	}
+	mutedReturnsOnCall map[int]struct {
+		result1 string
+	}
 	SuccessStub        func(string) string
 	successMutex       sync.RWMutex
 	successArgsForCall []struct {
@@ -263,6 +274,66 @@ func (fake *FakeCliColorer) InfoReturnsOnCall(i int, result1 string) {
 	}{result1}
 }
 
+func (fake *FakeCliColorer) Muted(arg1 string) string {
+	fake.mutedMutex.Lock()
+	ret, specificReturn := fake.mutedReturnsOnCall[len(fake.mutedArgsForCall)]
+	fake.mutedArgsForCall = append(fake.mutedArgsForCall, struct {
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("Muted", []interface{}{arg1})
+	fake.mutedMutex.Unlock()
+	if fake.MutedStub != nil {
+		return fake.MutedStub(arg1)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.mutedReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeCliColorer) MutedCallCount() int {
+	fake.mutedMutex.RLock()
+	defer fake.mutedMutex.RUnlock()
+	return len(fake.mutedArgsForCall)
+}
+
+func (fake *FakeCliColorer) MutedCalls(stub func(string) string) {
+	fake.mutedMutex.Lock()
+	defer fake.mutedMutex.Unlock()
+	fake.MutedStub = stub
+}
+
+func (fake *FakeCliColorer) MutedArgsForCall(i int) string {
+	fake.mutedMutex.RLock()
+	defer fake.mutedMutex.RUnlock()
+	argsForCall := fake.mutedArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *FakeCliColorer) MutedReturns(result1 string) {
+	fake.mutedMutex.Lock()
+	defer fake.mutedMutex.Unlock()
+	fake.MutedStub = nil
+	fake.mutedReturns = struct {
+		result1 string
+	}{result1}
+}
+
+func (fake *FakeCliColorer) MutedReturnsOnCall(i int, result1 string) {
+	fake.mutedMutex.Lock()
+	defer fake.mutedMutex.Unlock()
+	fake.MutedStub = nil
+	if fake.mutedReturnsOnCall == nil {
+		fake.mutedReturnsOnCall = make(map[int]struct {
+			result1 string
+		})
+	}
+	fake.mutedReturnsOnCall[i] = struct {
+		result1 string
+	}{result1}
+}
+
 func (fake *FakeCliColorer) Success(arg1 string) string {
 	fake.successMutex.Lock()
 	ret, specificReturn := fake.successReturnsOnCall[len(fake.successArgsForCall)]
@@ -334,6 +405,8 @@ func (fake *FakeCliColorer) Invocations() map[string][][]interface{} {
 	defer fake.errorMutex.RUnlock()
 	fake.infoMutex.RLock()
 	defer fake.infoMutex.RUnlock()
+	fake.mutedMutex.RLock()
+	defer fake.mutedMutex.RUnlock()
 	fake.successMutex.RLock()
 	defer fake.successMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

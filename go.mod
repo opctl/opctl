@@ -53,6 +53,7 @@ require (
 	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d
 	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9
 	golang.org/x/sys v0.0.0-20210806184541-e5e7981a1069 // indirect
+	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1
 	gotest.tools v2.2.0+incompatible // indirect
 	k8s.io/api v0.19.1
 	k8s.io/apimachinery v0.19.1
