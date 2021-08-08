@@ -29,7 +29,7 @@ require (
 	github.com/golang-utils/pscanary v0.0.0-20170803195345-167b86ee2e7e // indirect
 	github.com/gorilla/handlers v1.4.1
 	github.com/gorilla/mux v1.7.3
-	github.com/gorilla/websocket v1.4.0
+	github.com/gorilla/websocket v1.4.1
 	github.com/jawher/mow.cli v1.1.0
 	github.com/jfbus/httprs v0.0.0-20180614100821-7861a1150846
 	github.com/klauspost/compress v1.8.6 // indirect
