@@ -13,7 +13,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
-// New returns a data provider which sources pkgs from the filesystem
+// New returns a data provider which sources data from the filesystem
 func New(
 	basePaths ...string,
 ) model.DataProvider {

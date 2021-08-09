@@ -27,6 +27,7 @@ accordance with
 - [Deprecated op output binding syntax; use same syntax as binding inputs](https://github.com/opctl/opctl/issues/721)
 - [Deprecated param.<datatype>.description; use param.description](https://github.com/opctl/opctl/issues/898)
 - [Docker images will only be pulled if using the `latest` tag (or untagged) or have not been pulled previously](https://github.com/opctl/opctl/issues/920)
+- Go SDK models now use DataRef rather than PkgRef
 
 ### Fixed
 
@@ -34,6 +35,7 @@ accordance with
 
 ### Removed
 
+- pkgs API endpoint; use data API endpoint
 - Windows build; use linux build via WSL 2 instead
 
 ## 0.1.47 - 2021-01-22

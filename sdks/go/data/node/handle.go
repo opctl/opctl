@@ -2,6 +2,7 @@ package node
 
 import (
 	"context"
+	"path"
 
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node"
@@ -19,7 +20,7 @@ func newHandle(
 	}
 }
 
-// handle allows interacting w/ data sourced from an opspec node
+// handle allows interacting w/ data sourced from an opctl node
 type handle struct {
 	node      node.Node
 	dataRef   string
@@ -36,9 +37,8 @@ func (nh handle) GetContent(
 	return nh.node.GetData(
 		ctx,
 		model.GetDataReq{
-			ContentPath: contentPath,
-			PkgRef:      nh.dataRef,
-			PullCreds:   nh.pullCreds,
+			DataRef:   path.Join(nh.dataRef, contentPath),
+			PullCreds: nh.pullCreds,
 		},
 	)
 }
@@ -52,7 +52,7 @@ func (nh handle) ListDescendants(
 	return nh.node.ListDescendants(
 		ctx,
 		model.ListDescendantsReq{
-			PkgRef:    nh.dataRef,
+			DataRef:   nh.dataRef,
 			PullCreds: nh.pullCreds,
 		},
 	)

@@ -21,18 +21,18 @@ func opInstall(
 ) error {
 	// install the whole pkg in case relative (intra pkg) refs exist
 	opRefParts := strings.SplitN(opRef, "#", 2)
-	var pkgRef string
+	var dataRef string
 	if len(opRefParts) == 1 {
-		pkgRef = opRefParts[0]
+		dataRef = opRefParts[0]
 	} else {
 		if verAndPathParts := strings.SplitN(opRefParts[1], "/", 2); len(verAndPathParts) != 1 {
-			pkgRef = fmt.Sprintf("%s#%s", opRefParts[0], verAndPathParts[0])
+			dataRef = fmt.Sprintf("%s#%s", opRefParts[0], verAndPathParts[0])
 		}
 	}
 
 	opDirHandle, err := dataResolver.Resolve(
 		ctx,
-		pkgRef,
+		dataRef,
 		creds,
 	)
 	if err != nil {
@@ -41,7 +41,7 @@ func opInstall(
 
 	return opspec.Install(
 		ctx,
-		filepath.Join(path, pkgRef),
+		filepath.Join(path, dataRef),
 		opDirHandle,
 	)
 }

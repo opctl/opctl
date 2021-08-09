@@ -2,6 +2,7 @@ package node
 
 import (
 	"context"
+	"path"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -38,9 +39,8 @@ var _ = Context("handle", func() {
 
 			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualReq).To(Equal(model.GetDataReq{
-				ContentPath: providedContentPath,
-				PkgRef:      dataRef,
-				PullCreds:   pullCreds,
+				DataRef:   path.Join(objectUnderTest.dataRef, providedContentPath),
+				PullCreds: pullCreds,
 			}))
 		})
 	})
@@ -70,7 +70,7 @@ var _ = Context("handle", func() {
 
 			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualReq).To(Equal(model.ListDescendantsReq{
-				PkgRef:    dataRef,
+				DataRef:   dataRef,
 				PullCreds: pullCreds,
 			}))
 		})

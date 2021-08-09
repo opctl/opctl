@@ -14,7 +14,7 @@ import (
 // singleFlightGroup is used to ensure resolves don't race across provider intances
 var resolveSingleFlightGroup singleflight.Group
 
-// New returns a data provider which sources pkgs from git repos
+// New returns a data provider which sources data from git repos
 func New(
 	basePath string,
 	pullCreds *model.Creds,

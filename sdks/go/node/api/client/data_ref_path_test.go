@@ -8,29 +8,33 @@ import (
 	"strings"
 
 	"github.com/golang-interfaces/ihttp"
+	"github.com/jfbus/httprs"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
-var _ = Context("ListDescendants", func() {
+var _ = Context("GetData", func() {
 
-	It("should call httpClient.Do() w/ expected args & return result", func() {
+	It("should call httpClient.Do() with expected args & return result", func() {
 
 		/* arrange */
 		providedCtx := context.TODO()
-		providedReq := model.ListDescendantsReq{
-			PkgRef: "dummyOpRef",
+		providedReq := model.GetDataReq{
+			DataRef: "dummyOpRef",
 			PullCreds: &model.Creds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",
 			},
 		}
 
-		expectedReqURL := url.URL{}
-		path := strings.Replace(api.URLPkgs_Ref_Contents, "{ref}", url.PathEscape(providedReq.PkgRef), 1)
-		expectedReqURL.Path = path
+		path := strings.Replace(api.URLData_Ref, "{ref}", url.PathEscape(providedReq.DataRef), 1)
+
+		expectedReqURL, err := url.Parse(path)
+		if err != nil {
+			panic(err)
+		}
 
 		expectedHTTPReq, _ := http.NewRequest(
 			"GET",
@@ -46,8 +50,9 @@ var _ = Context("ListDescendants", func() {
 		fakeHttpClient := new(ihttp.FakeClient)
 		fakeHttpClient.DoReturns(
 			&http.Response{
-				Body:       ioutil.NopCloser(strings.NewReader("[]")),
+				Body:       ioutil.NopCloser(strings.NewReader("dummyBody")),
 				StatusCode: http.StatusOK,
+				Request:    expectedHTTPReq,
 			},
 			nil,
 		)
@@ -57,7 +62,7 @@ var _ = Context("ListDescendants", func() {
 		}
 
 		/* act */
-		objectUnderTest.ListDescendants(providedCtx, providedReq)
+		objectUnderTest.GetData(providedCtx, providedReq)
 
 		/* assert */
 		actualHTTPReq := fakeHttpClient.DoArgsForCall(0)
@@ -74,9 +79,12 @@ var _ = Context("ListDescendants", func() {
 
 			/* arrange */
 			httpResp := &http.Response{
-				Body:       ioutil.NopCloser(strings.NewReader("[]")),
+				Body:       ioutil.NopCloser(strings.NewReader("dummyBody")),
 				StatusCode: http.StatusOK,
+				Request:    &http.Request{},
 			}
+
+			expectedReadSeekCloser := httprs.NewHttpReadSeeker(httpResp)
 
 			fakeHttpClient := new(ihttp.FakeClient)
 			fakeHttpClient.DoReturns(httpResp, nil)
@@ -86,13 +94,13 @@ var _ = Context("ListDescendants", func() {
 			}
 
 			/* act */
-			actualContentsList, actualErr := objectUnderTest.ListDescendants(
+			actualReadSeekCloser, actualErr := objectUnderTest.GetData(
 				context.TODO(),
-				model.ListDescendantsReq{},
+				model.GetDataReq{},
 			)
 
 			/* assert */
-			Expect(actualContentsList).To(Equal([]*model.DirEntry{}))
+			Expect(actualReadSeekCloser).To(Equal(expectedReadSeekCloser))
 			Expect(actualErr).To(BeNil())
 
 		})
@@ -115,9 +123,9 @@ var _ = Context("ListDescendants", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.ListDescendants(
+				_, actualErr := objectUnderTest.GetData(
 					context.TODO(),
-					model.ListDescendantsReq{},
+					model.GetDataReq{},
 				)
 
 				/* assert */
@@ -143,9 +151,9 @@ var _ = Context("ListDescendants", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.ListDescendants(
+				_, actualErr := objectUnderTest.GetData(
 					context.TODO(),
-					model.ListDescendantsReq{},
+					model.GetDataReq{},
 				)
 
 				/* assert */
@@ -172,13 +180,13 @@ var _ = Context("ListDescendants", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.ListDescendants(
+				_, actualErr := objectUnderTest.GetData(
 					context.TODO(),
-					model.ListDescendantsReq{},
+					model.GetDataReq{},
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(model.ErrDataRefResolution{}))
+				Expect(actualErr).To(MatchError(model.ErrDataRefResolution{}))
 
 			})
 
@@ -200,9 +208,9 @@ var _ = Context("ListDescendants", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.ListDescendants(
+				_, actualErr := objectUnderTest.GetData(
 					context.TODO(),
-					model.ListDescendantsReq{},
+					model.GetDataReq{},
 				)
 
 				/* assert */

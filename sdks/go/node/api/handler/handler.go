@@ -9,7 +9,6 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/api/handler/events"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/liveness"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/ops"
-	"github.com/opctl/opctl/sdks/go/node/api/handler/pkgs"
 	"github.com/opctl/opctl/sdks/go/node/core"
 )
 
@@ -27,7 +26,6 @@ func New(
 		eventsHandler:   events.NewHandler(core),
 		livenessHandler: liveness.NewHandler(core),
 		opsHandler:      ops.NewHandler(core),
-		pkgsHandler:     pkgs.NewHandler(core),
 	}
 }
 
@@ -37,7 +35,6 @@ type _handler struct {
 	eventsHandler   events.Handler
 	livenessHandler liveness.Handler
 	opsHandler      ops.Handler
-	pkgsHandler     pkgs.Handler
 }
 
 func (hdlr _handler) ServeHTTP(
@@ -64,9 +61,6 @@ func (hdlr _handler) ServeHTTP(
 		hdlr.livenessHandler.Handle(httpResp, httpReq)
 	case "ops":
 		hdlr.opsHandler.Handle(httpResp, httpReq)
-	case "pkgs":
-		// deprecated resource
-		hdlr.pkgsHandler.Handle(httpResp, httpReq)
 	default:
 		http.NotFoundHandler().ServeHTTP(httpResp, httpReq)
 	}

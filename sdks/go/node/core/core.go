@@ -1,4 +1,4 @@
-// Package core defines the core interface for an opspec node
+// Package core defines the core interface for an opctl node
 package core
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
