@@ -23,6 +23,7 @@ A boolean indicating if the value of the parameter is secret. This will cause it
 The op uses an object input, and echos the values of the object's keys.
 
 ```yaml
+name: object-example-op
 inputs:
     example-input:
         object:
@@ -34,7 +35,7 @@ inputs:
                     subKeyC2: "subKeyC2"
 run:
     container:
-        image: { ref: 'apteno/alpine-jq' }
+        image: { ref: 'alpine' }
         cmd:
             - sh
             - -ce
