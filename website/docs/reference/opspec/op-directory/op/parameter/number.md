@@ -25,7 +25,7 @@ This op echos a number parameter, defaulting to 9001, when run.
 
 ```yaml
 name: example
-description: an example op
+description: This op echos a number parameter, defaulting to 9001, when run.
 inputs:
     example-input:
         number:
