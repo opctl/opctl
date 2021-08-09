@@ -16,13 +16,13 @@ The default container runtime interface implementation relies on API access to a
 ### OSX
 
 ```bash
-curl -L https://github.com/opctl/opctl/releases/download/latest/opctl-darwin-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-darwin-amd64.tgz | sudo tar -xzv -C /usr/local/bin
 ```
 
 ### Linux
 
 ```bash
-curl -L https://github.com/opctl/opctl/releases/download/latest/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
 ```
 
 ### Windows

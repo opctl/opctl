@@ -13,7 +13,6 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
-	"github.com/pkg/errors"
 )
 
 //Interpret interprets an op input
@@ -42,43 +41,43 @@ func Interpret(
 	case param.Array != nil:
 		arrayValue, err := array.Interpret(scope, valueExpression)
 		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
+			return nil, fmt.Errorf("unable to bind '%v' to '%+v': %w", name, valueExpression, err)
 		}
 		return arrayValue, nil
 	case param.Boolean != nil:
 		booleanValue, err := boolean.Interpret(scope, valueExpression)
 		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
+			return nil, fmt.Errorf("unable to bind '%v' to '%+v': %w", name, valueExpression, err)
 		}
 		return booleanValue, nil
 	case param.File != nil:
 		fileValue, err := file.Interpret(scope, valueExpression, opScratchDir, true)
 		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
+			return nil, fmt.Errorf("unable to bind '%v' to '%+v': %w", name, valueExpression, err)
 		}
 		return fileValue, nil
 	case param.Dir != nil:
 		dirValue, err := dir.Interpret(scope, valueExpression, opScratchDir, true)
 		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
+			return nil, fmt.Errorf("unable to bind '%v' to '%+v': %w", name, valueExpression, err)
 		}
 		return dirValue, nil
 	case param.Number != nil:
 		numberValue, err := number.Interpret(scope, valueExpression)
 		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
+			return nil, fmt.Errorf("unable to bind '%v' to '%+v': %w", name, valueExpression, err)
 		}
 		return numberValue, nil
 	case param.Object != nil:
 		objectValue, err := object.Interpret(scope, valueExpression)
 		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
+			return nil, fmt.Errorf("unable to bind '%v' to '%+v': %w", name, valueExpression, err)
 		}
 		return objectValue, nil
 	case param.String != nil:
 		stringValue, err := str.Interpret(scope, valueExpression)
 		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
+			return nil, fmt.Errorf("unable to bind '%v' to '%+v': %w", name, valueExpression, err)
 		}
 		return stringValue, nil
 	case param.Socket != nil:
@@ -89,7 +88,7 @@ func Interpret(
 
 		socketValue, err := reference.Interpret(stringValueExpression, scope, nil)
 		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("unable to bind '%v' to '%+v'", name, valueExpression))
+			return nil, fmt.Errorf("unable to bind '%v' to '%+v': %w", name, valueExpression, err)
 		}
 		if socketValue.Socket == nil {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v': '%+v' must reference a socket", name, valueExpression, valueExpression)

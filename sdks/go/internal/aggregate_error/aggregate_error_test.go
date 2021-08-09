@@ -1,11 +1,12 @@
 package errors
 
 import (
+	"errors"
+	"fmt"
 	"testing"
 
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/pkg/errors"
 )
 
 func TestAggregateError(t *testing.T) {
@@ -15,12 +16,12 @@ func TestAggregateError(t *testing.T) {
 	internalErr := errors.New("testing")
 	err := ErrAggregate{
 		errs: []error{
-			errors.Wrap(ErrAggregate{
+			fmt.Errorf("container: %w", ErrAggregate{
 				errs: []error{
 					errors.New("nested"),
 					model.ErrDataProviderAuthorization{},
 				},
-			}, "container"),
+			}),
 			internalErr,
 		},
 	}

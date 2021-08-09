@@ -24,6 +24,11 @@ module.exports = {
       links: [
         { to: 'docs/introduction', label: 'Docs', position: 'left' },
         {
+          href: 'https://github.com/orgs/opspec-pkgs/repositories',
+          label: 'Packages',
+          position: 'left',
+        },
+        {
           href: 'https://join.slack.com/t/opctl/shared_invite/zt-51zodvjn-Ul_UXfkhqYLWZPQTvNPp5w',
           label: 'Slack',
           position: 'right',

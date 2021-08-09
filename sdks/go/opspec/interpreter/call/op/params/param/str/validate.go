@@ -2,12 +2,13 @@ package str
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/formats"
-	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -36,7 +37,7 @@ func Validate(
 			// handle syntax errors specially
 			return append(
 				errs,
-				errors.Wrap(err, "error validating parameter"),
+				fmt.Errorf("error validating parameter: %w", err),
 			)
 		}
 
@@ -48,13 +49,16 @@ func Validate(
 			// handle syntax errors specially
 			return append(
 				errs,
-				errors.Wrap(err, "error validating parameter"),
+				fmt.Errorf("error validating parameter: %w", err),
 			)
 		}
 
 		for _, errString := range result.Errors() {
 			// enum validation errors include `(root) ` prefix we don't want
-			errs = append(errs, errors.New(strings.TrimPrefix(errString.Description(), "(root) ")))
+			errs = append(
+				errs,
+				errors.New(strings.TrimPrefix(errString.Description(), "(root) ")),
+			)
 		}
 
 		return errs
