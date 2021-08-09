@@ -6,7 +6,6 @@ import (
 	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/value"
-	"github.com/pkg/errors"
 )
 
 // Interpret an unbracketed identifier from ref as determined by unbracketed/parse.go
@@ -18,7 +17,7 @@ func Interpret(
 
 	dataAsObject, err := coerce.ToObject(data)
 	if err != nil {
-		return ref, nil, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v'", ref))
+		return ref, nil, fmt.Errorf("unable to interpret '%v': %w", ref, err)
 	}
 
 	identifier, refRemainder := Parse(ref)
@@ -30,7 +29,7 @@ func Interpret(
 
 	identifierValue, err := value.Construct(scopeValue)
 	if err != nil {
-		return ref, nil, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v'", ref))
+		return ref, nil, fmt.Errorf("unable to interpret '%v': %w", ref, err)
 	}
 
 	return refRemainder, identifierValue, nil

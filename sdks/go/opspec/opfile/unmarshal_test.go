@@ -1,6 +1,7 @@
 package opfile
 
 import (
+	"encoding/json"
 	"github.com/ghodss/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -20,19 +21,20 @@ var _ = Context("Unmarshal", func() {
 	})
 	Context("Validator.Validate doesn't return errors", func() {
 
-		XIt("should return expected opFile", func() {
+		It("should return expected opFile", func() {
 
 			/* arrange */
 			paramDefault := "dummyDefault"
+			paramName := "paramName"
 			dummyParams := map[string]*model.Param{
-				"dummyName": {
+				paramName: {
 					String: &model.StringParam{
 						Constraints: map[string]interface{}{
-							"MinLength": 0,
-							"MaxLength": 1000,
-							"Pattern":   "dummyPattern",
-							"Format":    "dummyFormat",
-							"Enum":      []interface{}{"dummyEnumItem1"},
+							"minLength": 0,
+							"maxLength": 1000,
+							"pattern":   "dummyPattern",
+							"format":    "date-time",
+							"enum":      []interface{}{"dummyEnumItem1"},
 						},
 						Default:     &paramDefault,
 						Description: "dummyDescription",
@@ -41,7 +43,7 @@ var _ = Context("Unmarshal", func() {
 				},
 			}
 
-			expectedOpFile := &model.OpSpec{
+			expectedOpFile := model.OpSpec{
 				Description: "dummyDescription",
 				Inputs:      dummyParams,
 				Name:        "dummyName",
@@ -51,19 +53,30 @@ var _ = Context("Unmarshal", func() {
 						Ref: "dummyOpRef",
 					},
 				},
-				Version: "dummyVersion",
+				Version: "0.0.0",
 			}
-			providedBytes, err := yaml.Marshal(expectedOpFile)
+			providedBytes, err := yaml.Marshal(&expectedOpFile)
 			if err != nil {
 				panic(err.Error())
 			}
 
 			/* act */
-			actualOpFile, _ := Unmarshal(providedBytes)
+			actualOpFile, actualErr := Unmarshal(providedBytes)
 
 			/* assert */
-			Expect(*actualOpFile).To(Equal(*expectedOpFile))
+			Expect(actualErr).To(BeNil())
 
+			// compare as JSON; otherwise we encounter pointer inequalities
+			actualBytes, err := json.Marshal(actualOpFile)
+			if err != nil {
+				panic(err)
+			}
+
+			expectedBytes, err := json.Marshal(expectedOpFile)
+			if err != nil {
+				panic(err)
+			}
+			Expect(string(actualBytes)).To(Equal(string(expectedBytes)))
 		})
 	})
 })

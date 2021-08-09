@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/pkg/errors"
 )
 
 // Interpret a dir entry ref i.e. refs of the form name/sub/file.ext
@@ -34,10 +33,10 @@ func Interpret(
 		return "", &model.Value{File: &valuePath}, nil
 	} else if opts != nil && os.IsNotExist(err) {
 
-		if "Dir" == *opts {
+		if *opts == "Dir" {
 			err := os.MkdirAll(valuePath, 0700)
 			if err != nil {
-				return "", nil, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v' as dir entry ref", ref))
+				return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref: %w", ref, err)
 			}
 
 			return "", &model.Value{Dir: &valuePath}, nil
@@ -46,19 +45,19 @@ func Interpret(
 		// handle file ref
 		err := os.MkdirAll(filepath.Dir(valuePath), 0700)
 		if err != nil {
-			return "", nil, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v' as dir entry ref", ref))
+			return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref: %w", ref, err)
 		}
 
 		file, err := os.Create(valuePath)
 		file.Close()
 		if err != nil {
-			return "", nil, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v' as dir entry ref", ref))
+			return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref: %w", ref, err)
 		}
 
 		return "", &model.Value{File: &valuePath}, nil
 
 	}
 
-	return "", nil, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v' as dir entry ref", ref))
+	return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref: %w", ref, err)
 
 }
