@@ -22,17 +22,14 @@ type GetEventStreamReq struct {
 	Filter EventFilter
 }
 
-// GetDataReq deprecated
 type GetDataReq struct {
-	ContentPath string
-	PullCreds   *Creds `json:"pullCreds,omitempty"`
-	PkgRef      string
+	PullCreds *Creds `json:"pullCreds,omitempty"`
+	DataRef   string
 }
 
-// ListDescendantsReq deprecated
 type ListDescendantsReq struct {
 	PullCreds *Creds `json:"pullCreds,omitempty"`
-	PkgRef    string `json:"pkgRef"`
+	DataRef   string `json:"dataRef"`
 }
 
 type KillOpReq struct {

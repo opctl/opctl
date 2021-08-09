@@ -170,7 +170,7 @@ func run(
 		},
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("error getting event stream: %w", err)
 	}
 
 	for {

@@ -14,14 +14,14 @@ func (c core) GetData(
 	model.ReadSeekCloser,
 	error,
 ) {
-	if req.PkgRef == "" || req.ContentPath == "" {
-		return nil, fmt.Errorf("invalid ref: %s%s", req.PkgRef, req.ContentPath)
+	if req.DataRef == "" {
+		return nil, fmt.Errorf(`"" not a valid data ref`)
 	}
 
-	dataHandle, err := c.ResolveData(ctx, req.PkgRef, req.PullCreds)
+	dataHandle, err := c.ResolveData(ctx, req.DataRef, req.PullCreds)
 	if err != nil {
 		return nil, err
 	}
 
-	return dataHandle.GetContent(ctx, req.ContentPath)
+	return dataHandle.GetContent(ctx, "")
 }

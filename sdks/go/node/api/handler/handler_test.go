@@ -12,7 +12,6 @@ import (
 	eventsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/events/fakes"
 	livenessFakes "github.com/opctl/opctl/sdks/go/node/api/handler/liveness/fakes"
 	opsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/ops/fakes"
-	pkgsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/pkgs/fakes"
 	coreFakes "github.com/opctl/opctl/sdks/go/node/core/fakes"
 )
 
@@ -180,35 +179,6 @@ var _ = Context("Handler", func() {
 
 				/* assert */
 				_, actualHTTPReq := fakeOpsHandler.HandleArgsForCall(0)
-
-				Expect(actualHTTPReq.URL.Path).To(Equal(expectedURLPath))
-
-				// this works because our URL path set mutates the httpRequest
-				Expect(actualHTTPReq).To(Equal(providedHTTPReq))
-			})
-		})
-		Context("next URL path segment is pkgs", func() {
-			It("should call livenessHandler.Handle w/ expected args", func() {
-				/* arrange */
-				fakePkgsHandler := new(pkgsFakes.FakeHandler)
-
-				objectUnderTest := _handler{
-					pkgsHandler: fakePkgsHandler,
-				}
-
-				providedPath := "pkgs/dummy"
-				providedHTTPReq, err := http.NewRequest("dummyMethod", providedPath, nil)
-				if err != nil {
-					panic(err.Error())
-				}
-
-				expectedURLPath := strings.SplitN(providedPath, "/", 2)[1]
-
-				/* act */
-				objectUnderTest.ServeHTTP(httptest.NewRecorder(), providedHTTPReq)
-
-				/* assert */
-				_, actualHTTPReq := fakePkgsHandler.HandleArgsForCall(0)
 
 				Expect(actualHTTPReq.URL.Path).To(Equal(expectedURLPath))
 

@@ -8,35 +8,29 @@ import (
 	"strings"
 
 	"github.com/golang-interfaces/ihttp"
-	"github.com/jfbus/httprs"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
-var _ = Context("GetData", func() {
+var _ = Context("ListDescendants", func() {
 
-	It("should call httpClient.Do() with expected args & return result", func() {
+	It("should call httpClient.Do() w/ expected args & return result", func() {
 
 		/* arrange */
 		providedCtx := context.TODO()
-		providedReq := model.GetDataReq{
-			ContentPath: "dummy/content/path",
-			PkgRef:      "dummyOpRef",
+		providedReq := model.ListDescendantsReq{
+			DataRef: "dummyOpRef",
 			PullCreds: &model.Creds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",
 			},
 		}
 
-		path := strings.Replace(api.URLPkgs_Ref_Contents_Path, "{ref}", url.PathEscape(providedReq.PkgRef), 1)
-		path = strings.Replace(path, "{path}", url.PathEscape(providedReq.ContentPath), 1)
-
-		expectedReqURL, err := url.Parse(path)
-		if err != nil {
-			panic(err)
-		}
+		expectedReqURL := url.URL{}
+		path := strings.Replace(api.URLData_Ref, "{ref}", url.PathEscape(providedReq.DataRef), 1)
+		expectedReqURL.Path = path
 
 		expectedHTTPReq, _ := http.NewRequest(
 			"GET",
@@ -52,9 +46,8 @@ var _ = Context("GetData", func() {
 		fakeHttpClient := new(ihttp.FakeClient)
 		fakeHttpClient.DoReturns(
 			&http.Response{
-				Body:       ioutil.NopCloser(strings.NewReader("dummyBody")),
+				Body:       ioutil.NopCloser(strings.NewReader("[]")),
 				StatusCode: http.StatusOK,
-				Request:    expectedHTTPReq,
 			},
 			nil,
 		)
@@ -64,7 +57,7 @@ var _ = Context("GetData", func() {
 		}
 
 		/* act */
-		objectUnderTest.GetData(providedCtx, providedReq)
+		objectUnderTest.ListDescendants(providedCtx, providedReq)
 
 		/* assert */
 		actualHTTPReq := fakeHttpClient.DoArgsForCall(0)
@@ -81,12 +74,9 @@ var _ = Context("GetData", func() {
 
 			/* arrange */
 			httpResp := &http.Response{
-				Body:       ioutil.NopCloser(strings.NewReader("dummyBody")),
+				Body:       ioutil.NopCloser(strings.NewReader("[]")),
 				StatusCode: http.StatusOK,
-				Request:    &http.Request{},
 			}
-
-			expectedReadSeekCloser := httprs.NewHttpReadSeeker(httpResp)
 
 			fakeHttpClient := new(ihttp.FakeClient)
 			fakeHttpClient.DoReturns(httpResp, nil)
@@ -96,13 +86,13 @@ var _ = Context("GetData", func() {
 			}
 
 			/* act */
-			actualReadSeekCloser, actualErr := objectUnderTest.GetData(
+			actualContentsList, actualErr := objectUnderTest.ListDescendants(
 				context.TODO(),
-				model.GetDataReq{},
+				model.ListDescendantsReq{},
 			)
 
 			/* assert */
-			Expect(actualReadSeekCloser).To(Equal(expectedReadSeekCloser))
+			Expect(actualContentsList).To(Equal([]*model.DirEntry{}))
 			Expect(actualErr).To(BeNil())
 
 		})
@@ -125,9 +115,9 @@ var _ = Context("GetData", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.GetData(
+				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.GetDataReq{},
+					model.ListDescendantsReq{},
 				)
 
 				/* assert */
@@ -153,9 +143,9 @@ var _ = Context("GetData", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.GetData(
+				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.GetDataReq{},
+					model.ListDescendantsReq{},
 				)
 
 				/* assert */
@@ -182,13 +172,13 @@ var _ = Context("GetData", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.GetData(
+				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.GetDataReq{},
+					model.ListDescendantsReq{},
 				)
 
 				/* assert */
-				Expect(actualErr).To(MatchError(model.ErrDataRefResolution{}))
+				Expect(actualErr).To(Equal(model.ErrDataRefResolution{}))
 
 			})
 
@@ -210,9 +200,9 @@ var _ = Context("GetData", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.GetData(
+				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.GetDataReq{},
+					model.ListDescendantsReq{},
 				)
 
 				/* assert */

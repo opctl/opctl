@@ -17,8 +17,7 @@ func (c apiClient) GetData(
 	model.ReadSeekCloser,
 	error,
 ) {
-	path := strings.Replace(api.URLPkgs_Ref_Contents_Path, "{ref}", url.PathEscape(req.PkgRef), 1)
-	path = strings.Replace(path, "{path}", url.PathEscape(req.ContentPath), 1)
+	path := strings.Replace(api.URLData_Ref, "{ref}", url.PathEscape(req.DataRef), 1)
 
 	httpResp, err := c.getWithAuth(ctx, path, req.PullCreds)
 	if err != nil {

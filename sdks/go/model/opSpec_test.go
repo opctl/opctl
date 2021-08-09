@@ -13,7 +13,7 @@ var _ = Context("OpCallSpec", func() {
 	Context("yaml.Unmarshal", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedPkgRef := "pkgRef"
+			providedPkgRef := "dataRef"
 			providedPullUsername := "pullUsername"
 			providedPullPassword := "pullPassword"
 

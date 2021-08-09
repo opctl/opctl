@@ -1,4 +1,4 @@
-// Package client implements a client for the opspec node api
+// Package client implements a client for the opctl node api
 package client
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate

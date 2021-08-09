@@ -9,7 +9,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/node"
 )
 
-// New returns a data provider which sources pkgs from a node
+// New returns a data provider which sources data from a node
 func New(
 	node node.Node,
 	pullCreds *model.Creds,
@@ -38,7 +38,7 @@ func (np _node) TryResolve(
 	if _, err := np.node.ListDescendants(
 		ctx,
 		model.ListDescendantsReq{
-			PkgRef:    dataRef,
+			DataRef:   dataRef,
 			PullCreds: np.pullCreds,
 		},
 	); err != nil {
