@@ -2,16 +2,15 @@ package errors
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 // ErrAggregate aggregates multiple errors into one, in a tree format
-// instead of a linked list like `.Wrap` does.
+// instead of a linked list like `fmt.Errorf` does.
 //
-// They should always be wrapped with `errors.Wrap(err, "label")` to give them
+// They should always be wrapped with `fmt.Errorf("%s: %w", "label", err)` to give them
 // context.
 type ErrAggregate struct {
 	errs []error

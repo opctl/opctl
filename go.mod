@@ -29,7 +29,7 @@ require (
 	github.com/golang-utils/pscanary v0.0.0-20170803195345-167b86ee2e7e // indirect
 	github.com/gorilla/handlers v1.4.1
 	github.com/gorilla/mux v1.7.3
-	github.com/gorilla/websocket v1.4.0
+	github.com/gorilla/websocket v1.4.1
 	github.com/jawher/mow.cli v1.1.0
 	github.com/jfbus/httprs v0.0.0-20180614100821-7861a1150846
 	github.com/klauspost/compress v1.8.6 // indirect
@@ -43,7 +43,6 @@ require (
 	github.com/onsi/ginkgo v1.11.0
 	github.com/onsi/gomega v1.9.0
 	github.com/peterh/liner v1.1.0
-	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7-0.20191104211043-6b2f3ee522b6
 	github.com/rhysd/go-github-selfupdate v1.2.3
 	github.com/satori/go.uuid v0.0.0-20181028125025-b2ce2384e17b

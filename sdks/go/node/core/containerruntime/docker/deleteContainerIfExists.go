@@ -1,8 +1,9 @@
 package docker
 
 import (
+	"fmt"
+
 	"github.com/docker/docker/api/types"
-	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 )
 
@@ -19,7 +20,7 @@ func (ctp _containerRuntime) DeleteContainerIfExists(
 		},
 	)
 	if err != nil {
-		return errors.Wrap(err, "unable to delete container")
+		return fmt.Errorf("unable to delete container: %w", err)
 	}
 
 	return nil

@@ -33,12 +33,7 @@ func Interpret(
 		if _, ok := outputParams[callOutputParamName]; !ok {
 			// maybe the user has flipped the key and value?
 			if _, ok := outputParams[opspec.RefToName(callOutputParamBoundName)]; ok {
-				return nil, fmt.Errorf(
-					"unknown output '%s', did you mean to use `%s: %s`?",
-					callOutputParamName,
-					opspec.RefToName(callOutputParamBoundName),
-					opspec.NameToRef(callOutputParamName),
-				)
+				continue
 			}
 
 			// try to figure out what the user should have provided

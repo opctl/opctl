@@ -10,7 +10,6 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/pkg/errors"
 )
 
 // ToFile attempts to coerce value to a file
@@ -26,17 +25,17 @@ func ToFile(
 	case value.Array != nil:
 		nativeArray, err := value.Unbox()
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to coerce array to file")
+			return nil, fmt.Errorf("unable to coerce array to file: %w", err)
 		}
 
 		data, err = json.Marshal(nativeArray)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to coerce array to file")
+			return nil, fmt.Errorf("unable to coerce array to file: %w", err)
 		}
 	case value.Boolean != nil:
 		data = []byte(strconv.FormatBool(*value.Boolean))
 	case value.Dir != nil:
-		return nil, errors.Wrap(errIncompatibleTypes, fmt.Sprintf("unable to coerce dir '%v' to file", *value.Dir))
+		return nil, fmt.Errorf("unable to coerce dir '%v' to file: %w", *value.Dir, errIncompatibleTypes)
 	case value.File != nil:
 		return value, nil
 	case value.Number != nil:
@@ -44,12 +43,12 @@ func ToFile(
 	case value.Object != nil:
 		nativeObject, err := value.Unbox()
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to coerce object to file")
+			return nil, fmt.Errorf("unable to coerce object to file: %w", err)
 		}
 
 		data, err = json.Marshal(nativeObject)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to coerce object to file")
+			return nil, fmt.Errorf("unable to coerce object to file: %w", err)
 		}
 	case value.String != nil:
 		data = []byte(*value.String)
@@ -60,7 +59,7 @@ func ToFile(
 
 	uniqueStr, err := uniquestring.Construct()
 	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf("unable to coerce '%+v' to file", value))
+		return nil, fmt.Errorf("unable to coerce '%+v' to file: %w", value, err)
 	}
 
 	path := filepath.Join(scratchDir, uniqueStr)
@@ -82,7 +81,7 @@ func ToFile(
 	}
 
 	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf("unable to coerce '%+v' to file", value))
+		return nil, fmt.Errorf("unable to coerce '%+v' to file: %w", value, err)
 	}
 
 	return &model.Value{File: &path}, nil
