@@ -10,7 +10,6 @@ import (
 	"github.com/ghodss/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pkg/errors"
 )
 
 var _ = Context("Validate", func() {
@@ -37,7 +36,7 @@ var _ = Context("Validate", func() {
 
 							description := fmt.Sprintf("scenario '%v'", path)
 							if err := yaml.Unmarshal(scenariosOpFileBytes, &scenarioOpFile); err != nil {
-								panic(errors.Wrap(err, "error unmarshalling "+description))
+								panic(fmt.Errorf("error unmarshalling %s: %w", description, err))
 							}
 
 							for _, scenario := range scenarioOpFile {

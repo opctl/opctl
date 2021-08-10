@@ -13,7 +13,6 @@ import (
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/data/fs"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/pkg/errors"
 )
 
 var _ = Context("Interpolate", func() {
@@ -40,22 +39,22 @@ var _ = Context("Interpolate", func() {
 								Expected string
 							}{}
 							if err := yaml.Unmarshal(scenariosOpFileBytes, &scenarioOpFile); err != nil {
-								panic(errors.Wrap(err, "error unmarshalling scenario.yml for "+path))
+								panic(fmt.Errorf("error unmarshalling scenario.yml for %s: %w", path, err))
 							}
 
 							absPath, err := filepath.Abs(path)
 							if err != nil {
-								panic(errors.Wrap(err, "error getting absPath for "+path))
+								panic(fmt.Errorf("error getting absPath for %s: %w", path, err))
 							}
 
 							opHandle, err := data.Resolve(context.Background(), absPath, fsProvider)
 							if err != nil {
-								panic(errors.Wrap(err, "error getting opHandle for "+path))
+								panic(fmt.Errorf("error getting opHandle for %s: %w", path, err))
 							}
 
 							for _, scenario := range scenarioOpFile {
 								// add op dir to scope
-								if 0 == len(scenario.Scope) {
+								if len(scenario.Scope) == 0 {
 									scenario.Scope = map[string]*model.Value{}
 								}
 								scenario.Scope["/"] = &model.Value{Dir: opHandle.Path()}

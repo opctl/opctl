@@ -45,25 +45,48 @@ var _ = Context("Interpret", func() {
 		Expect(actualOutputs).To(Equal(expectedOutputs))
 		Expect(actualErr).To(BeNil())
 	})
-	Describe("ensures expected outputs match actual outputs", func() {
-		It("detects inverted naming", func() {
+	Describe("deprecated output binding syntax", func() {
+		It("should return expected result", func() {
+			/* arrange */
+			arrayValue := []interface{}{"item"}
+			stringParamName := "stringParamName"
+
+			providedArgs := map[string]*model.Value{
+				stringParamName: {Array: &arrayValue},
+			}
+
+			providedParams := map[string]*model.Param{
+				stringParamName: {String: &model.StringParam{}},
+			}
+
+			providedOpCallOutputs := map[string]string{
+				"myVar": stringParamName,
+			}
+
+			arrayValueAsString, err := coerce.ToString(providedArgs[stringParamName])
+			if err != nil {
+				panic(err)
+			}
+
+			expectedOutputs := map[string]*model.Value{
+				stringParamName: arrayValueAsString,
+			}
+
 			/* act */
 			actualOutputs, actualErr := Interpret(
-				map[string]*model.Value{},
-				map[string]*model.Param{
-					"bar": {String: &model.StringParam{}},
-				},
-				map[string]string{
-					"foo": "$(bar)",
-				},
+				providedArgs,
+				providedParams,
+				providedOpCallOutputs,
 				"opPath",
 				"opScratchDir",
 			)
 
 			/* assert */
-			Expect(actualOutputs).To(BeNil())
-			Expect(actualErr).To(MatchError("unknown output 'foo', did you mean to use `bar: $(foo)`?"))
+			Expect(actualOutputs).To(Equal(expectedOutputs))
+			Expect(actualErr).To(BeNil())
 		})
+	})
+	Describe("ensures expected outputs match actual outputs", func() {
 		It("indicates what was expected when one output exists", func() {
 			/* act */
 			actualOutputs, actualErr := Interpret(

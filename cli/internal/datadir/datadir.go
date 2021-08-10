@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 
 	"github.com/golang-utils/lockfile"
-	"github.com/pkg/errors"
 )
 
 // DataDir is an interface exposing the functionality we require in conjunction with our "data dir".
@@ -36,11 +35,11 @@ func New(
 ) (DataDir, error) {
 	resolvedDataDirPath, err := filepath.Abs(dataDirPath)
 	if err != nil {
-		return nil, errors.Wrap(err, "error initializing opctl data dir")
+		return nil, fmt.Errorf("error initializing opctl data dir: %w", err)
 	}
 
 	if err := ensureExists(resolvedDataDirPath); err != nil {
-		return nil, errors.Wrap(err, "error initializing opctl data dir")
+		return nil, fmt.Errorf("error initializing opctl data dir: %w", err)
 	}
 
 	// ensure we can write
@@ -49,7 +48,7 @@ func New(
 		[]byte(""),
 		0775,
 	); err != nil {
-		return nil, errors.Wrap(err, "error initializing opctl data dir")
+		return nil, fmt.Errorf("error initializing opctl data dir: %w", err)
 	}
 
 	return _datadir{

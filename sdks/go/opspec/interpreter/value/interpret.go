@@ -9,7 +9,6 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
-	"github.com/pkg/errors"
 )
 
 // Interpret an expression to a value
@@ -46,13 +45,13 @@ func Interpret(
 				scope,
 			)
 			if err != nil {
-				return model.Value{}, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v: %v' as object initializer property", propertyKeyExpression, propertyValueExpression))
+				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property: %w", propertyKeyExpression, propertyValueExpression, err)
 			}
 
 			if propertyValue.File != nil {
 				fileBytes, err := ioutil.ReadFile(*propertyValue.File)
 				if err != nil {
-					return model.Value{}, errors.Wrap(err, fmt.Sprintf("unable to interpret '%v: %v' as object initializer property", propertyKeyExpression, propertyValueExpression))
+					return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property: %w", propertyKeyExpression, propertyValueExpression, err)
 				}
 
 				value[propertyKey] = string(fileBytes)
@@ -81,7 +80,7 @@ func Interpret(
 				scope,
 			)
 			if err != nil {
-				return model.Value{}, errors.Wrap(err, fmt.Sprintf("unable to interpret '%+v' as array initializer item", itemExpression))
+				return model.Value{}, fmt.Errorf("unable to interpret '%+v' as array initializer item: %w", itemExpression, err)
 			}
 			value = append(value, itemValue)
 		}

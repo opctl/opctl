@@ -2,6 +2,7 @@ package docker
 
 import (
 	"context"
+	"fmt"
 	"path"
 	"regexp"
 	"strings"
@@ -9,7 +10,6 @@ import (
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/opctl/opctl/sdks/go/internal/iruntime"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/hostruntime"
-	"github.com/pkg/errors"
 )
 
 //counterfeiter:generate -o internal/fakes/fsPathConverter.go . fsPathConverter
@@ -23,7 +23,7 @@ func newFSPathConverter(
 ) (fsPathConverter, error) {
 	hr, err := hostruntime.New(ctx, dockerClient)
 	if err != nil {
-		return _fsPathConverter{}, errors.Wrap(err, "error detecting docker host runtime")
+		return _fsPathConverter{}, fmt.Errorf("error detecting docker host runtime: %w", err)
 	}
 	pc := _fsPathConverter{
 		runtime:     iruntime.New(),

@@ -2,13 +2,13 @@ package docker
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/containers/image/v5/copy"
 	"github.com/containers/image/v5/docker/daemon"
 	"github.com/containers/image/v5/oci/layout"
 	"github.com/containers/image/v5/signature"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/pkg/errors"
 )
 
 //counterfeiter:generate -o internal/fakes/imagePusher.go . imagePusher
@@ -39,21 +39,21 @@ func (ip _imagePusher) Push(
 		},
 	)
 	if err != nil {
-		return errors.Wrap(err, "error loading image")
+		return fmt.Errorf("error loading image: %w", err)
 	}
 
 	srcImageRef, err := layout.NewReference(*imageSrc.Dir, "")
 	if err != nil {
-		return errors.Wrap(err, "error loading image")
+		return fmt.Errorf("error loading image: %w", err)
 	}
 
 	dstImageRef, err := daemon.ParseReference(imageRef)
 	if err != nil {
-		return errors.Wrap(err, "error loading image")
+		return fmt.Errorf("error loading image: %w", err)
 	}
 
 	if _, err := copy.Image(ctx, policyCtx, dstImageRef, srcImageRef, nil); err != nil {
-		return errors.Wrap(err, "error loading image")
+		return fmt.Errorf("error loading image: %w", err)
 	}
 
 	return nil

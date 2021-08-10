@@ -11,7 +11,6 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/file"
-	"github.com/pkg/errors"
 )
 
 // Interpret container files
@@ -37,11 +36,7 @@ fileLoop:
 			true,
 		)
 		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf(
-				"unable to bind file %v to %v",
-				callSpecContainerFilePath,
-				fileExpression,
-			))
+			return nil, fmt.Errorf("unable to bind file %v to %v: %w", callSpecContainerFilePath, fileExpression, err)
 		}
 
 		if !strings.HasPrefix(*fileValue.File, dataCachePath) {
@@ -58,11 +53,7 @@ fileLoop:
 			filepath.Dir(containerCallFiles[callSpecContainerFilePath]),
 			0777,
 		); err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf(
-				"unable to bind %v to %v",
-				callSpecContainerFilePath,
-				fileExpression,
-			))
+			return nil, fmt.Errorf("unable to bind %v to %v: %w", callSpecContainerFilePath, fileExpression, err)
 		}
 
 		// copy file
@@ -72,11 +63,7 @@ fileLoop:
 			containerCallFiles[callSpecContainerFilePath],
 		)
 		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf(
-				"unable to bind %v to %v",
-				callSpecContainerFilePath,
-				fileExpression,
-			))
+			return nil, fmt.Errorf("unable to bind %v to %v: %w", callSpecContainerFilePath, fileExpression, err)
 		}
 
 	}
