@@ -23,7 +23,12 @@ func ApplyDefaults(
 	opPath,
 	opScratchDir string,
 ) (map[string]*model.Value, error) {
+
 	argsWithDefaults := map[string]*model.Value{}
+	// don't mutate provided args map
+	for argName, argValue := range args {
+		argsWithDefaults[argName] = argValue
+	}
 
 	parentDirPath := filepath.Dir(opPath)
 	defaultsScope := map[string]*model.Value{
@@ -41,10 +46,9 @@ func ApplyDefaults(
 		},
 	}
 
-	// 1) default all params
 	for paramName, paramValue := range params {
-		// apply defaults
-		if paramValue != nil {
+		// default params which have no corresponding arg
+		if _, ok := argsWithDefaults[paramName]; !ok && paramValue != nil {
 			switch {
 			case paramValue.Array != nil && paramValue.Array.Default != nil:
 				defaultValue, err := array.Interpret(
@@ -136,11 +140,6 @@ func ApplyDefaults(
 				argsWithDefaults[paramName] = defaultValue
 			}
 		}
-	}
-
-	// 2) override defaults w/ values (if provided)
-	for argName, argValue := range args {
-		argsWithDefaults[argName] = argValue
 	}
 
 	return argsWithDefaults, nil
