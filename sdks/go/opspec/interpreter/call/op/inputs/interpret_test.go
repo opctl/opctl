@@ -65,7 +65,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(MatchError("unable to interpret $(nonExistent) to string: unable to interpret 'nonExistent' as reference: 'nonExistent' not in scope"))
+			Expect(actualErr).To(MatchError("unable to interpret input defaults: unable to interpret $(nonExistent) to string: unable to interpret 'nonExistent' as reference: 'nonExistent' not in scope"))
 			Expect(actualResult).To(BeNil())
 		})
 	})

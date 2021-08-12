@@ -55,7 +55,7 @@ func Interpret(
 	// 2) apply defaults
 	argsWithDefaults, err := params.ApplyDefaults(interpretedArgs, inputParams, opPath, opScratchDir)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to interpret input defaults: %w", err)
 	}
 
 	// 3) validate
