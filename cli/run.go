@@ -10,11 +10,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/opctl/opctl/cli/internal/callprogress"
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
+	"github.com/opctl/opctl/cli/internal/clitext"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
-	"github.com/opctl/opctl/cli/internal/opgraph"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
@@ -28,7 +29,7 @@ func run(
 	args []string,
 	argFile string,
 	opRef string,
-	disableGraph bool,
+	noProgress bool,
 ) error {
 	startTime := time.Now().UTC()
 
@@ -129,7 +130,7 @@ func run(
 
 	// "request animation frame" like loop to force refresh of display loading spinners
 	animationFrame := make(chan bool)
-	if !disableGraph {
+	if !noProgress {
 		go func() {
 			for {
 				time.Sleep(time.Second / 10)
@@ -138,23 +139,23 @@ func run(
 		}()
 	}
 
-	var state opgraph.CallGraph
-	var loadingSpinner opgraph.DotLoadingSpinner
-	output := opgraph.NewOutputManager()
+	var state callprogress.CallGraph
+	var loadingSpinner callprogress.DotLoadingSpinner
+	output := callprogress.NewOutputManager()
 
 	defer func() {
 		output.Print(state.String(loadingSpinner, time.Now(), false))
 		fmt.Println()
 	}()
 
-	clearGraph := func() {
-		if !disableGraph {
+	clearProgress := func() {
+		if !noProgress {
 			output.Clear()
 		}
 	}
 
-	displayGraph := func() {
-		if !disableGraph {
+	displayProgress := func() {
+		if !noProgress {
 			output.Print(state.String(loadingSpinner, time.Now(), true))
 		}
 	}
@@ -176,7 +177,7 @@ func run(
 	for {
 		select {
 		case <-sigIntChannel:
-			clearGraph()
+			clearProgress()
 			if !aSigIntWasReceivedAlready {
 				cliOutput.Warning("Gracefully stopping... (signal Control-C again to force)")
 				aSigIntWasReceivedAlready = true
@@ -190,7 +191,7 @@ func run(
 				)
 
 				// events will continue to stream in, make sure we continue to display the graph while this happens
-				displayGraph()
+				displayProgress()
 			} else {
 				return &RunError{
 					ExitCode: 130,
@@ -199,14 +200,14 @@ func run(
 			}
 
 		case <-sigInfoChannel:
-			clearGraph()
+			clearProgress()
 			// clear two more lines
 			fmt.Print("\033[1A\033[K\033[1A\033[K")
-			fmt.Println(state.String(opgraph.StaticLoadingSpinner{}, time.Now(), false))
-			displayGraph()
+			fmt.Println(state.String(callprogress.StaticLoadingSpinner{}, time.Now(), false))
+			displayProgress()
 
 		case <-sigTermChannel:
-			clearGraph()
+			clearProgress()
 			cliOutput.Error("Gracefully stopping...")
 			node.KillOp(
 				ctx,
@@ -215,10 +216,10 @@ func run(
 					RootCallID: rootCallID,
 				},
 			)
-			displayGraph()
+			displayProgress()
 
 		case event, isEventChannelOpen := <-eventChannel:
-			clearGraph()
+			clearProgress()
 			if !isEventChannelOpen {
 				return errors.New("Event channel closed unexpectedly")
 			}
@@ -232,6 +233,12 @@ func run(
 				if event.CallEnded.Call.ID == rootCallID {
 					switch event.CallEnded.Outcome {
 					case model.OpOutcomeSucceeded:
+						outputsText, err := clitext.FromOpOutputs(event.CallEnded.Outputs)
+						if err != nil {
+							return fmt.Errorf("unable to log outputs: %w", err)
+						}
+						cliOutput.Raw("\n" + outputsText + "\n")
+
 						return nil
 					case model.OpOutcomeKilled:
 						return &RunError{ExitCode: 137}
@@ -240,10 +247,10 @@ func run(
 					}
 				}
 			}
-			displayGraph()
+			displayProgress()
 		case <-animationFrame:
-			clearGraph()
-			displayGraph()
+			clearProgress()
+			displayProgress()
 		}
 	}
 }

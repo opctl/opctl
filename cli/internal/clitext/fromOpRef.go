@@ -1,4 +1,4 @@
-package clioutput
+package clitext
 
 import (
 	"os"
@@ -6,10 +6,10 @@ import (
 	"strings"
 )
 
-// FormatOpRef gives a more appropriate description of an op's reference
+// FromOpRef formats an op ref to context aware CLI text
 // Local ops will be formatted as paths relative to the working directory or
 // home directory
-func FormatOpRef(opRef string) string {
+func FromOpRef(opRef string) string {
 	if path.IsAbs(opRef) {
 		cwd, err := os.Getwd()
 		if err != nil {

@@ -6,29 +6,32 @@ import (
 	"strings"
 
 	"github.com/opctl/opctl/cli/internal/clicolorer"
+	"github.com/opctl/opctl/cli/internal/clitext"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
 //CliOutput allows mocking/faking output
 type CliOutput interface {
-	// silently disables coloring
-	DisableColor()
-
-	// outputs a msg requiring attention
+	//Attention outputs a msg requiring attention
 	Attention(s string)
 
-	// outputs a warning message (looks like an error but on stdout)
-	Warning(s string)
+	//DisableColor silently disables coloring
+	DisableColor()
 
-	// outputs an error msg
+	//Error outputs an error msg
 	Error(s string)
 
-	// outputs an event
-	// @TODO: not generic
+	//Event outputs an event
 	Event(event *model.Event)
 
-	// outputs a success msg
+	//Raw outputs a raw string
+	Raw(s string)
+
+	//Success outputs a success msg
 	Success(s string)
+
+	//Warning outputs a warning message (looks like an error but on stdout)
+	Warning(s string)
 }
 
 func New(
@@ -58,15 +61,6 @@ func (this _cliOutput) Attention(s string) {
 		this.stdWriter,
 		fmt.Sprintln(
 			this.cliColorer.Attention(s),
-		),
-	)
-}
-
-func (this _cliOutput) Warning(s string) {
-	io.WriteString(
-		this.stdWriter,
-		fmt.Sprintln(
-			this.cliColorer.Error(s),
 		),
 	)
 }
@@ -163,7 +157,7 @@ func (this _cliOutput) outputPrefix(id, opRef string) string {
 	parts := []string{
 		fmt.Sprintf("%.8s", fmt.Sprintf("%-8s", id)),
 	}
-	opRef = FormatOpRef(opRef)
+	opRef = clitext.FromOpRef(opRef)
 	if opRef != "" {
 		parts = append(parts, opRef)
 	}
@@ -246,11 +240,27 @@ func (this _cliOutput) info(s string) {
 	)
 }
 
+func (this _cliOutput) Raw(s string) {
+	io.WriteString(
+		this.stdWriter,
+		s,
+	)
+}
+
 func (this _cliOutput) Success(s string) {
 	io.WriteString(
 		this.stdWriter,
 		fmt.Sprintln(
 			this.cliColorer.Success(s),
+		),
+	)
+}
+
+func (this _cliOutput) Warning(s string) {
+	io.WriteString(
+		this.stdWriter,
+		fmt.Sprintln(
+			this.cliColorer.Error(s),
 		),
 	)
 }

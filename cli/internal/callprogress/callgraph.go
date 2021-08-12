@@ -1,4 +1,4 @@
-package opgraph
+package callprogress
 
 import (
 	"errors"
@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/opctl/opctl/cli/internal/clioutput"
+	"github.com/opctl/opctl/cli/internal/clitext"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -129,7 +129,7 @@ func (n callGraphNode) String(loader LoadingSpinner, now time.Time, collapseComp
 			desc += *call.Container.Image.Ref
 		}
 	} else if call.Op != nil {
-		desc = highlighted.Sprint(clioutput.FormatOpRef(call.Op.OpPath))
+		desc = highlighted.Sprint(clitext.FromOpRef(call.Op.OpPath))
 	} else if call.Parallel != nil {
 		desc = "parallel"
 	} else if call.ParallelLoop != nil {
