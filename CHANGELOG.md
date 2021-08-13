@@ -6,6 +6,8 @@ accordance with
 
 ## [Unreleased]
 
+## 0.1.48 - 2021-08-13
+
 ### Added
 
 - When running an op via opctl run, display progress via a live call graph

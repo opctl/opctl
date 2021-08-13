@@ -24,6 +24,9 @@ Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`
 ### `--arg-file` *default: `.opspec/args.yml`*
 Read in a file of args in yml format
 
+### `--no-progress` *default: `false`*
+Disable live call graph for the op
+
 ## Global Options
 see [global options](global-options.md)
 
