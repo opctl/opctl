@@ -62,9 +62,9 @@ func (dtr _dataResolver) Resolve(
 		passwordDescription = "Personal access token for github.com with 'Repo' permissions."
 	}
 
-	credsPromptInputs := map[string]*model.Param{
+	credsPromptInputs := map[string]*model.ParamSpec{
 		usernameInputName: {
-			String: &model.StringParam{
+			String: &model.StringParamSpec{
 				Description: fmt.Sprintf("Username for %s.", domain),
 				Constraints: map[string]interface{}{
 					"MinLength": 1,
@@ -72,7 +72,7 @@ func (dtr _dataResolver) Resolve(
 			},
 		},
 		passwordInputName: {
-			String: &model.StringParam{
+			String: &model.StringParamSpec{
 				Description: passwordDescription,
 				Constraints: map[string]interface{}{
 					"MinLength": 1,

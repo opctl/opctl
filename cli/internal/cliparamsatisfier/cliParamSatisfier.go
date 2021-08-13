@@ -25,7 +25,7 @@ type CLIParamSatisfier interface {
 
 	Satisfy(
 		inputSourcer InputSourcer,
-		inputs map[string]*model.Param,
+		inputs map[string]*model.ParamSpec,
 	) (map[string]*model.Value, error)
 }
 
@@ -35,7 +35,7 @@ func New(
 
 	return &_CLIParamSatisfier{
 		cliOutput:       cliOutput,
-		InputSrcFactory: newInputSrcFactory(),
+		InputSrcFactory: newInputSrcFactory(cliOutput),
 	}
 }
 
@@ -46,7 +46,7 @@ type _CLIParamSatisfier struct {
 
 func (cps _CLIParamSatisfier) Satisfy(
 	inputSourcer InputSourcer,
-	inputs map[string]*model.Param,
+	inputs map[string]*model.ParamSpec,
 ) (map[string]*model.Value, error) {
 
 	argMap := map[string]*model.Value{}
@@ -59,10 +59,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 
 			rawArg, ok := inputSourcer.Source(paramName)
 			if !ok {
-				return nil, fmt.Errorf(`
--
-  Prompt for '%v' failed; running in non-interactive terminal
--`, paramName)
+				return nil, fmt.Errorf("failed to get input '%s'", paramName)
 			}
 
 			switch {
@@ -137,7 +134,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 
 			validateErr := params.Validate(
 				map[string]*model.Value{paramName: arg},
-				map[string]*model.Param{paramName: param},
+				map[string]*model.ParamSpec{paramName: param},
 			)
 			if validateErr != nil {
 				cps.notifyOfArgErrors([]error{validateErr}, paramName)
@@ -160,7 +157,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 }
 
 func getSortedParamNames(
-	params map[string]*model.Param,
+	params map[string]*model.ParamSpec,
 ) []string {
 	paramNames := []string{}
 
@@ -190,15 +187,14 @@ func (this _CLIParamSatisfier) notifyOfArgErrors(
 ) {
 	messageBuffer := bytes.NewBufferString(
 		fmt.Sprintf(`
--
-  %v invalid; provide valid value to proceed.
-  Error(s):`, paramName),
+%v is invalid, provide valid value to proceed
+error:`, paramName),
 	)
 
 	for _, validationError := range errors {
 		messageBuffer.WriteString(
 			fmt.Sprintf(`
-	- %v`,
+- %v`,
 				validationError.Error(),
 			),
 		)
@@ -206,8 +202,7 @@ func (this _CLIParamSatisfier) notifyOfArgErrors(
 
 	messageBuffer.WriteString(
 		fmt.Sprintf(`
-%v
--`,
+%v`,
 			messageBuffer.String(),
 		),
 	)

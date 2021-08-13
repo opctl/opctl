@@ -1,6 +1,7 @@
 package cliparamsatisfier
 
 import (
+	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier/inputsrc"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier/inputsrc/cliprompt"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier/inputsrc/envvar"
@@ -12,13 +13,13 @@ import (
 
 type InputSrcFactory interface {
 	NewCliPromptInputSrc(
-		inputs map[string]*model.Param,
+		inputs map[string]*model.ParamSpec,
 	) inputsrc.InputSrc
 
 	NewEnvVarInputSrc() inputsrc.InputSrc
 
 	NewParamDefaultInputSrc(
-		inputs map[string]*model.Param,
+		inputs map[string]*model.ParamSpec,
 	) inputsrc.InputSrc
 
 	NewSliceInputSrc(
@@ -31,16 +32,18 @@ type InputSrcFactory interface {
 	) (inputsrc.InputSrc, error)
 }
 
-func newInputSrcFactory() InputSrcFactory {
-	return _inputSrcFactory{}
+func newInputSrcFactory(cliOutput clioutput.CliOutput) InputSrcFactory {
+	return _inputSrcFactory{cliOutput: cliOutput}
 }
 
-type _inputSrcFactory struct{}
+type _inputSrcFactory struct {
+	cliOutput clioutput.CliOutput
+}
 
 func (is _inputSrcFactory) NewCliPromptInputSrc(
-	inputs map[string]*model.Param,
+	inputs map[string]*model.ParamSpec,
 ) inputsrc.InputSrc {
-	return cliprompt.New(inputs)
+	return cliprompt.New(is.cliOutput, inputs)
 }
 
 func (is _inputSrcFactory) NewEnvVarInputSrc() inputsrc.InputSrc {
@@ -48,7 +51,7 @@ func (is _inputSrcFactory) NewEnvVarInputSrc() inputsrc.InputSrc {
 }
 
 func (is _inputSrcFactory) NewParamDefaultInputSrc(
-	inputs map[string]*model.Param,
+	inputs map[string]*model.ParamSpec,
 ) inputsrc.InputSrc {
 	return paramdefault.New(inputs)
 }

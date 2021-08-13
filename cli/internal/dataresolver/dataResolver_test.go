@@ -42,9 +42,9 @@ var _ = Context("dataResolver", func() {
 						nil,
 					)
 
-					expectedInputs := map[string]*model.Param{
+					expectedInputs := map[string]*model.ParamSpec{
 						usernameInputName: {
-							String: &model.StringParam{
+							String: &model.StringParamSpec{
 								Description: "Username for github.com.",
 								Constraints: map[string]interface{}{
 									"MinLength": 1,
@@ -52,7 +52,7 @@ var _ = Context("dataResolver", func() {
 							},
 						},
 						passwordInputName: {
-							String: &model.StringParam{
+							String: &model.StringParamSpec{
 								Description: "Personal access token for github.com with 'Repo' permissions.",
 								Constraints: map[string]interface{}{
 									"MinLength": 1,

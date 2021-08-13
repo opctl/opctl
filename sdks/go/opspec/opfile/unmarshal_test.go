@@ -25,10 +25,9 @@ var _ = Context("Unmarshal", func() {
 
 			/* arrange */
 			paramDefault := "dummyDefault"
-			paramName := "paramName"
-			dummyParams := map[string]*model.Param{
-				paramName: {
-					String: &model.StringParam{
+			dummyParams := map[string]*model.ParamSpec{
+				"dummyName": {
+					String: &model.StringParamSpec{
 						Constraints: map[string]interface{}{
 							"minLength": 0,
 							"maxLength": 1000,

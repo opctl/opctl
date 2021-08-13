@@ -31,7 +31,7 @@ var _ = Describe("inputSrcFactory", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
 			Expect(_inputSrcFactory{}.NewParamDefaultInputSrc(
-				map[string]*model.Param{},
+				map[string]*model.ParamSpec{},
 			)).To(Not(BeNil()))
 		})
 	})

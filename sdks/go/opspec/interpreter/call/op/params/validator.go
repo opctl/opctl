@@ -11,7 +11,7 @@ import (
 // Validate validates values for/against params
 func Validate(
 	values map[string]*model.Value,
-	params map[string]*model.Param,
+	params map[string]*model.ParamSpec,
 ) error {
 
 	paramErrMap := map[string][]error{}

@@ -7,43 +7,66 @@ import (
 )
 
 var _ = Context("Interpret", func() {
-	Context("inputs.Interpret doesn't error", func() {
+	It("should return expected result", func() {
+		/* arrange */
+		providedArgName := "argName"
+
+		providedInputArgs := map[string]interface{}{
+			providedArgName: "",
+		}
+
+		providedParams := map[string]*model.ParamSpec{
+			providedArgName: {
+				String: &model.StringParamSpec{},
+			},
+		}
+
+		expectedInputs := map[string]*model.Value{
+			providedArgName: {
+				String: new(string),
+			},
+		}
+
+		/* act */
+		actualResult, actualErr := Interpret(
+			providedInputArgs,
+			providedParams,
+			"dummyOpPath",
+			map[string]*model.Value{
+				providedArgName: {
+					String: new(string),
+				},
+			},
+			"dummyOpScratchDir",
+		)
+
+		/* assert */
+		Expect(actualErr).To(BeNil())
+		Expect(actualResult).To(Equal(expectedInputs))
+	})
+	Context("params.ApplyDefaults errors", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedArgName := "argName"
-
-			providedInputArgs := map[string]interface{}{
-				providedArgName: "",
-			}
-
-			providedParams := map[string]*model.Param{
-				providedArgName: &model.Param{
-					String: &model.StringParam{},
-				},
-			}
-
-			expectedInputs := map[string]*model.Value{
-				providedArgName: &model.Value{
-					String: new(string),
+			providedParams := map[string]*model.ParamSpec{
+				"param0": {
+					String: &model.StringParamSpec{
+						Default: "$(nonExistent)",
+					},
 				},
 			}
 
 			/* act */
 			actualResult, actualErr := Interpret(
-				providedInputArgs,
+				map[string]interface{}{},
 				providedParams,
 				"dummyOpPath",
-				map[string]*model.Value{
-					providedArgName: &model.Value{
-						String: new(string),
-					},
-				},
+				map[string]*model.Value{},
 				"dummyOpScratchDir",
 			)
 
 			/* assert */
-			Expect(actualErr).To(BeNil())
-			Expect(actualResult).To(Equal(expectedInputs))
+			Expect(actualErr).To(MatchError("unable to interpret input defaults: unable to interpret $(nonExistent) to string: unable to interpret 'nonExistent' as reference: 'nonExistent' not in scope"))
+			Expect(actualResult).To(BeNil())
 		})
 	})
 })

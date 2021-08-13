@@ -20,6 +20,9 @@ inputs:
         format: semver
 run:
   parallel:
+    # api tests
+    - op:
+        ref: ../../api/.opspec/test
     # cli system opspec tests
     - serial:
         - if:
@@ -30,7 +33,10 @@ run:
               HOME:
               version:
         - op:
-            ref: ../../cli/.opspec/test/system/opspec
+            ref: ../../cli/.opspec/test/system
+    # opspec tests
+    - op:
+        ref: ../../opspec/opfile/.opspec/test
     # webapp tests
     - op:
         ref: ../../webapp/.opspec/test

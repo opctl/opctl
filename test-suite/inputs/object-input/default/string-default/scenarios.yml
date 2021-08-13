@@ -3,4 +3,4 @@
 - interpret:
     expect: failure
 - validate:
-    expect: failure
+    expect: success

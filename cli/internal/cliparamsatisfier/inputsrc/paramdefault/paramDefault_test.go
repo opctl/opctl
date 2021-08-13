@@ -14,12 +14,12 @@ var _ = Describe("paramDefaultInputSrc", func() {
 					/* arrange */
 					inputName := "dummyInputName"
 					paramDefault := "dummyParamDefault"
-					param := &model.Param{
-						String: &model.StringParam{Default: &paramDefault},
+					param := &model.ParamSpec{
+						String: &model.StringParamSpec{Default: &paramDefault},
 					}
 
 					objectUnderTest := New(
-						map[string]*model.Param{inputName: param},
+						map[string]*model.ParamSpec{inputName: param},
 					)
 
 					/* act */
@@ -40,12 +40,12 @@ var _ = Describe("paramDefaultInputSrc", func() {
 						/* arrange */
 						inputName := "dummyInputName"
 						paramDefault := new([]interface{})
-						param := &model.Param{
-							Array: &model.ArrayParam{Default: paramDefault},
+						param := &model.ParamSpec{
+							Array: &model.ArrayParamSpec{Default: paramDefault},
 						}
 
 						objectUnderTest := New(
-							map[string]*model.Param{inputName: param},
+							map[string]*model.ParamSpec{inputName: param},
 						)
 
 						/* act */
@@ -61,12 +61,12 @@ var _ = Describe("paramDefaultInputSrc", func() {
 						/* arrange */
 						inputName := "dummyInputName"
 						paramDefault := true
-						param := &model.Param{
-							Boolean: &model.BooleanParam{Default: &paramDefault},
+						param := &model.ParamSpec{
+							Boolean: &model.BooleanParamSpec{Default: &paramDefault},
 						}
 
 						objectUnderTest := New(
-							map[string]*model.Param{inputName: param},
+							map[string]*model.ParamSpec{inputName: param},
 						)
 
 						/* act */
@@ -83,12 +83,12 @@ var _ = Describe("paramDefaultInputSrc", func() {
 							/* arrange */
 							inputName := "dummyInputName"
 							paramDefault := "/dummyParamDefault"
-							param := &model.Param{
-								Dir: &model.DirParam{Default: &paramDefault},
+							param := &model.ParamSpec{
+								Dir: &model.DirParamSpec{Default: &paramDefault},
 							}
 
 							objectUnderTest := New(
-								map[string]*model.Param{inputName: param},
+								map[string]*model.ParamSpec{inputName: param},
 							)
 
 							/* act */
@@ -103,22 +103,21 @@ var _ = Describe("paramDefaultInputSrc", func() {
 						It("should return expected result", func() {
 							/* arrange */
 							inputName := "dummyInputName"
-							paramDefault := "dummyParamDefault"
-							param := &model.Param{
-								Dir: &model.DirParam{Default: &paramDefault},
+							param := &model.ParamSpec{
+								Dir: &model.DirParamSpec{Default: "./dummyParamDefault"},
 							}
 
 							expectedValue := param.Dir.Default
 
 							objectUnderTest := New(
-								map[string]*model.Param{inputName: param},
+								map[string]*model.ParamSpec{inputName: param},
 							)
 
 							/* act */
 							actualValue, actualOk := objectUnderTest.ReadString(inputName)
 
 							/* assert */
-							Expect(actualValue).To(Equal(expectedValue))
+							Expect(*actualValue).To(Equal(expectedValue))
 							Expect(actualOk).To(BeTrue())
 						})
 					})
@@ -129,12 +128,12 @@ var _ = Describe("paramDefaultInputSrc", func() {
 							/* arrange */
 							inputName := "dummyInputName"
 							paramDefault := "/dummyParamDefault"
-							param := &model.Param{
-								File: &model.FileParam{Default: &paramDefault},
+							param := &model.ParamSpec{
+								File: &model.FileParamSpec{Default: &paramDefault},
 							}
 
 							objectUnderTest := New(
-								map[string]*model.Param{inputName: param},
+								map[string]*model.ParamSpec{inputName: param},
 							)
 
 							/* act */
@@ -149,22 +148,21 @@ var _ = Describe("paramDefaultInputSrc", func() {
 						It("should return expected result", func() {
 							/* arrange */
 							inputName := "dummyInputName"
-							paramDefault := "dummyParamDefault"
-							param := &model.Param{
-								File: &model.FileParam{Default: &paramDefault},
+							param := &model.ParamSpec{
+								File: &model.FileParamSpec{Default: "./dummyParamDefault"},
 							}
 
 							expectedValue := param.File.Default
 
 							objectUnderTest := New(
-								map[string]*model.Param{inputName: param},
+								map[string]*model.ParamSpec{inputName: param},
 							)
 
 							/* act */
 							actualValue, actualOk := objectUnderTest.ReadString(inputName)
 
 							/* assert */
-							Expect(actualValue).To(Equal(expectedValue))
+							Expect(*actualValue).To(Equal(expectedValue))
 							Expect(actualOk).To(BeTrue())
 						})
 					})
@@ -174,12 +172,12 @@ var _ = Describe("paramDefaultInputSrc", func() {
 						/* arrange */
 						inputName := "dummyInputName"
 						paramDefault := 2.1
-						param := &model.Param{
-							Number: &model.NumberParam{Default: &paramDefault},
+						param := &model.ParamSpec{
+							Number: &model.NumberParamSpec{Default: &paramDefault},
 						}
 
 						objectUnderTest := New(
-							map[string]*model.Param{inputName: param},
+							map[string]*model.ParamSpec{inputName: param},
 						)
 
 						/* act */
@@ -195,12 +193,12 @@ var _ = Describe("paramDefaultInputSrc", func() {
 						/* arrange */
 						inputName := "dummyInputName"
 						paramDefault := new(map[string]interface{})
-						param := &model.Param{
-							Object: &model.ObjectParam{Default: paramDefault},
+						param := &model.ParamSpec{
+							Object: &model.ObjectParamSpec{Default: paramDefault},
 						}
 
 						objectUnderTest := New(
-							map[string]*model.Param{inputName: param},
+							map[string]*model.ParamSpec{inputName: param},
 						)
 
 						/* act */
@@ -216,12 +214,12 @@ var _ = Describe("paramDefaultInputSrc", func() {
 						/* arrange */
 						inputName := "dummyInputName"
 						paramDefault := "dummyParamDefault"
-						param := &model.Param{
-							String: &model.StringParam{Default: &paramDefault},
+						param := &model.ParamSpec{
+							String: &model.StringParamSpec{Default: &paramDefault},
 						}
 
 						objectUnderTest := New(
-							map[string]*model.Param{inputName: param},
+							map[string]*model.ParamSpec{inputName: param},
 						)
 
 						/* act */
@@ -239,7 +237,7 @@ var _ = Describe("paramDefaultInputSrc", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			objectUnderTest := New(
-				map[string]*model.Param{},
+				map[string]*model.ParamSpec{},
 			)
 
 			/* act */

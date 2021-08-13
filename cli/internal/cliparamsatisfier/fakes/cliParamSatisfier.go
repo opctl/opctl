@@ -10,10 +10,10 @@ import (
 )
 
 type FakeCLIParamSatisfier struct {
-	NewCliPromptInputSrcStub        func(map[string]*model.Param) inputsrc.InputSrc
+	NewCliPromptInputSrcStub        func(map[string]*model.ParamSpec) inputsrc.InputSrc
 	newCliPromptInputSrcMutex       sync.RWMutex
 	newCliPromptInputSrcArgsForCall []struct {
-		arg1 map[string]*model.Param
+		arg1 map[string]*model.ParamSpec
 	}
 	newCliPromptInputSrcReturns struct {
 		result1 inputsrc.InputSrc
@@ -31,10 +31,10 @@ type FakeCLIParamSatisfier struct {
 	newEnvVarInputSrcReturnsOnCall map[int]struct {
 		result1 inputsrc.InputSrc
 	}
-	NewParamDefaultInputSrcStub        func(map[string]*model.Param) inputsrc.InputSrc
+	NewParamDefaultInputSrcStub        func(map[string]*model.ParamSpec) inputsrc.InputSrc
 	newParamDefaultInputSrcMutex       sync.RWMutex
 	newParamDefaultInputSrcArgsForCall []struct {
-		arg1 map[string]*model.Param
+		arg1 map[string]*model.ParamSpec
 	}
 	newParamDefaultInputSrcReturns struct {
 		result1 inputsrc.InputSrc
@@ -67,11 +67,11 @@ type FakeCLIParamSatisfier struct {
 		result1 inputsrc.InputSrc
 		result2 error
 	}
-	SatisfyStub        func(cliparamsatisfier.InputSourcer, map[string]*model.Param) (map[string]*model.Value, error)
+	SatisfyStub        func(cliparamsatisfier.InputSourcer, map[string]*model.ParamSpec) (map[string]*model.Value, error)
 	satisfyMutex       sync.RWMutex
 	satisfyArgsForCall []struct {
 		arg1 cliparamsatisfier.InputSourcer
-		arg2 map[string]*model.Param
+		arg2 map[string]*model.ParamSpec
 	}
 	satisfyReturns struct {
 		result1 map[string]*model.Value
@@ -85,11 +85,11 @@ type FakeCLIParamSatisfier struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeCLIParamSatisfier) NewCliPromptInputSrc(arg1 map[string]*model.Param) inputsrc.InputSrc {
+func (fake *FakeCLIParamSatisfier) NewCliPromptInputSrc(arg1 map[string]*model.ParamSpec) inputsrc.InputSrc {
 	fake.newCliPromptInputSrcMutex.Lock()
 	ret, specificReturn := fake.newCliPromptInputSrcReturnsOnCall[len(fake.newCliPromptInputSrcArgsForCall)]
 	fake.newCliPromptInputSrcArgsForCall = append(fake.newCliPromptInputSrcArgsForCall, struct {
-		arg1 map[string]*model.Param
+		arg1 map[string]*model.ParamSpec
 	}{arg1})
 	fake.recordInvocation("NewCliPromptInputSrc", []interface{}{arg1})
 	fake.newCliPromptInputSrcMutex.Unlock()
@@ -109,13 +109,13 @@ func (fake *FakeCLIParamSatisfier) NewCliPromptInputSrcCallCount() int {
 	return len(fake.newCliPromptInputSrcArgsForCall)
 }
 
-func (fake *FakeCLIParamSatisfier) NewCliPromptInputSrcCalls(stub func(map[string]*model.Param) inputsrc.InputSrc) {
+func (fake *FakeCLIParamSatisfier) NewCliPromptInputSrcCalls(stub func(map[string]*model.ParamSpec) inputsrc.InputSrc) {
 	fake.newCliPromptInputSrcMutex.Lock()
 	defer fake.newCliPromptInputSrcMutex.Unlock()
 	fake.NewCliPromptInputSrcStub = stub
 }
 
-func (fake *FakeCLIParamSatisfier) NewCliPromptInputSrcArgsForCall(i int) map[string]*model.Param {
+func (fake *FakeCLIParamSatisfier) NewCliPromptInputSrcArgsForCall(i int) map[string]*model.ParamSpec {
 	fake.newCliPromptInputSrcMutex.RLock()
 	defer fake.newCliPromptInputSrcMutex.RUnlock()
 	argsForCall := fake.newCliPromptInputSrcArgsForCall[i]
@@ -197,11 +197,11 @@ func (fake *FakeCLIParamSatisfier) NewEnvVarInputSrcReturnsOnCall(i int, result1
 	}{result1}
 }
 
-func (fake *FakeCLIParamSatisfier) NewParamDefaultInputSrc(arg1 map[string]*model.Param) inputsrc.InputSrc {
+func (fake *FakeCLIParamSatisfier) NewParamDefaultInputSrc(arg1 map[string]*model.ParamSpec) inputsrc.InputSrc {
 	fake.newParamDefaultInputSrcMutex.Lock()
 	ret, specificReturn := fake.newParamDefaultInputSrcReturnsOnCall[len(fake.newParamDefaultInputSrcArgsForCall)]
 	fake.newParamDefaultInputSrcArgsForCall = append(fake.newParamDefaultInputSrcArgsForCall, struct {
-		arg1 map[string]*model.Param
+		arg1 map[string]*model.ParamSpec
 	}{arg1})
 	fake.recordInvocation("NewParamDefaultInputSrc", []interface{}{arg1})
 	fake.newParamDefaultInputSrcMutex.Unlock()
@@ -221,13 +221,13 @@ func (fake *FakeCLIParamSatisfier) NewParamDefaultInputSrcCallCount() int {
 	return len(fake.newParamDefaultInputSrcArgsForCall)
 }
 
-func (fake *FakeCLIParamSatisfier) NewParamDefaultInputSrcCalls(stub func(map[string]*model.Param) inputsrc.InputSrc) {
+func (fake *FakeCLIParamSatisfier) NewParamDefaultInputSrcCalls(stub func(map[string]*model.ParamSpec) inputsrc.InputSrc) {
 	fake.newParamDefaultInputSrcMutex.Lock()
 	defer fake.newParamDefaultInputSrcMutex.Unlock()
 	fake.NewParamDefaultInputSrcStub = stub
 }
 
-func (fake *FakeCLIParamSatisfier) NewParamDefaultInputSrcArgsForCall(i int) map[string]*model.Param {
+func (fake *FakeCLIParamSatisfier) NewParamDefaultInputSrcArgsForCall(i int) map[string]*model.ParamSpec {
 	fake.newParamDefaultInputSrcMutex.RLock()
 	defer fake.newParamDefaultInputSrcMutex.RUnlock()
 	argsForCall := fake.newParamDefaultInputSrcArgsForCall[i]
@@ -386,12 +386,12 @@ func (fake *FakeCLIParamSatisfier) NewYMLFileInputSrcReturnsOnCall(i int, result
 	}{result1, result2}
 }
 
-func (fake *FakeCLIParamSatisfier) Satisfy(arg1 cliparamsatisfier.InputSourcer, arg2 map[string]*model.Param) (map[string]*model.Value, error) {
+func (fake *FakeCLIParamSatisfier) Satisfy(arg1 cliparamsatisfier.InputSourcer, arg2 map[string]*model.ParamSpec) (map[string]*model.Value, error) {
 	fake.satisfyMutex.Lock()
 	ret, specificReturn := fake.satisfyReturnsOnCall[len(fake.satisfyArgsForCall)]
 	fake.satisfyArgsForCall = append(fake.satisfyArgsForCall, struct {
 		arg1 cliparamsatisfier.InputSourcer
-		arg2 map[string]*model.Param
+		arg2 map[string]*model.ParamSpec
 	}{arg1, arg2})
 	fake.recordInvocation("Satisfy", []interface{}{arg1, arg2})
 	fake.satisfyMutex.Unlock()
@@ -411,13 +411,13 @@ func (fake *FakeCLIParamSatisfier) SatisfyCallCount() int {
 	return len(fake.satisfyArgsForCall)
 }
 
-func (fake *FakeCLIParamSatisfier) SatisfyCalls(stub func(cliparamsatisfier.InputSourcer, map[string]*model.Param) (map[string]*model.Value, error)) {
+func (fake *FakeCLIParamSatisfier) SatisfyCalls(stub func(cliparamsatisfier.InputSourcer, map[string]*model.ParamSpec) (map[string]*model.Value, error)) {
 	fake.satisfyMutex.Lock()
 	defer fake.satisfyMutex.Unlock()
 	fake.SatisfyStub = stub
 }
 
-func (fake *FakeCLIParamSatisfier) SatisfyArgsForCall(i int) (cliparamsatisfier.InputSourcer, map[string]*model.Param) {
+func (fake *FakeCLIParamSatisfier) SatisfyArgsForCall(i int) (cliparamsatisfier.InputSourcer, map[string]*model.ParamSpec) {
 	fake.satisfyMutex.RLock()
 	defer fake.satisfyMutex.RUnlock()
 	argsForCall := fake.satisfyArgsForCall[i]
