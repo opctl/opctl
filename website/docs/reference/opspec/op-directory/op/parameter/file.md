@@ -24,13 +24,13 @@ This is an example op that echos the contents of a file input
 name: example
 description: an example op
 inputs:
-    example-input:
-        file:
-            default: ./optest
+  example-input:
+    file:
+      default: $(./optest)
 run:
-    container:
-        image: { ref: 'alpine' }
-        cmd: ['echo', $(example-input)]
+  container:
+    image: { ref: 'alpine' }
+    cmd: ['echo', $(example-input)]
 ```
 
 To use this example, create a file called `optest` in the same directory the op is called from.  Whatever content is in the `optest` file will be echoed.

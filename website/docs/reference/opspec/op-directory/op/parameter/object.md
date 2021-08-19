@@ -25,21 +25,21 @@ The op uses an object input, and echos the values of the object's keys.
 ```yaml
 name: object-example-op
 inputs:
-    example-input:
-        object:
-            default:
-                keyA: "valueA"
-                keyB: ["subValueB1", "subValueB2", "subValueB3"]
-                keyC:
-                    subKeyC1: "subValueC1"
-                    subKeyC2: "subKeyC2"
+  example-input:
+    object:
+      default:
+        keyA: "valueA"
+        keyB: ["subValueB1", "subValueB2", "subValueB3"]
+        keyC:
+          subKeyC1: "subValueC1"
+          subKeyC2: "subKeyC2"
 run:
-    container:
-        image: { ref: 'alpine' }
-        cmd:
-            - sh
-            - -ce
-            - echo $(example-input.keyA) && echo $(example-input.keyB[0]) && echo $(example-input.keyC.subKeyC1)
+  container:
+    image: { ref: 'alpine' }
+    cmd:
+      - sh
+      - -ce
+      - echo $(example-input.keyA) && echo $(example-input.keyB[0]) && echo $(example-input.keyC.subKeyC1)
 ```
 
 The expected output is:
