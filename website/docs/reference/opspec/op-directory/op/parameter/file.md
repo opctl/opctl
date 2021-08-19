@@ -26,7 +26,7 @@ description: an example op
 inputs:
     example-input:
         file:
-            default: ./optest
+            default: $(./optest)
 run:
     container:
         image: { ref: 'alpine' }
