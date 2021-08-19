@@ -28,15 +28,7 @@ jobs:
       id: branch_name_pr
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF})"
 
-    - name: Download opctl
-      uses: dsaltares/fetch-gh-release-asset@0.0.5
-      with:
-        repo: opctl/opctl
-        version: tags/0.1.46
-        file: opctl0.1.46.linux.tgz
-        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Install Opctl
+      run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
 
-    - name: Extract opctl
-      run: tar -xvzf opctl0.1.46.linux.tgz
-
-    - run: ./opctl run -a gitBranch=${{ steps.branch_name_push.outputs.branch }}${{ steps.branch_name_pr.outputs.branch }} build
+    - run: opctl run -a gitBranch=${{ steps.branch_name_push.outputs.branch }}${{ steps.branch_name_pr.outputs.branch }} build

@@ -19,7 +19,7 @@ a matter of defining your `travis.yml` as follows:
 language: generic
 sudo: required
 before_script:
-- curl -L https://github.com/opctl/opctl/releases/download/latest/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+- curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
 services:
 - docker
 script:
