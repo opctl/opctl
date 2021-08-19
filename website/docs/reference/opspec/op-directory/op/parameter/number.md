@@ -27,11 +27,11 @@ This op echos a number parameter, defaulting to 9001, when run.
 name: example
 description: This op echos a number parameter, defaulting to 9001, when run.
 inputs:
-    example-input:
-        number:
-            default: 9001
+  example-input:
+    number:
+      default: 9001
 run:
-    container:
-        image: { ref: 'alpine' }
-        cmd: ['echo', $(example-input)]
+  container:
+    image: { ref: 'alpine' }
+    cmd: ['echo', $(example-input)]
 ```

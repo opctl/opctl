@@ -27,14 +27,14 @@ This is an example op that takes in an array parameter and prints the values in 
 name: example
 description: an example op
 inputs:
-    example-input:
-        array:
-            default:
-                - "hello"
-                - "world"
-                - "!"
+  example-input:
+    array:
+      default:
+        - "hello"
+        - "world"
+        - "!"
 run:
-    container:
-        image: { ref: 'alpine' }
-        cmd: ["echo", $(example-input)]
+  container:
+    image: { ref: 'alpine' }
+    cmd: ["echo", $(example-input)]
 ```
