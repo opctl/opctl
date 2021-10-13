@@ -29,11 +29,33 @@ curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd6
 
 Use [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/) and the [linux install](#linux).
 
-## Updating
-to get the newest release of opctl
+## Upgrading from version 0.1.48 or newer
+If you're updating from version 0.1.48 or newer:
 ```bash
+# update to latest release from https://github.com/opctl/opctl/releases
 opctl self-update
 ```
+
+## Upgrading from version 0.1.47 or older
+In 2021 our [previous artifact hosting provider](https://equinox.io/) shut down. If using version 0.1.47 or older, this results in `self-update` finding no updates and mistakenly thinking you're up to date. 
+
+To update you must uninstall and reinstall:
+
+1.  Kill any running node:
+    ```bash
+    opctl node kill
+    ```
+1.  Locate your data dir:
+    ```bash
+    # result should include default data dir such as:
+    # --data-dir            Path of dir used to store opctl data (env $OPCTL_DATA_DIR) (default "/Users/myusername/Library/Application Support/opctl")
+    opctl
+    ```
+1.  Delete your data dir:
+    ```bash
+    sudo rm -rf /path/to/opctl/data/dir
+    ```
+1. Follow [Installation](#installation) instructions
 
 ## IDE Plugins
 
