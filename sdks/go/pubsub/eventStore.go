@@ -7,7 +7,7 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/model"
 
-	"github.com/dgraph-io/badger/v2"
+	"github.com/dgraph-io/badger/v3"
 )
 
 type EventStore interface {

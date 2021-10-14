@@ -9,8 +9,7 @@ require (
 	github.com/containerd/containerd v1.2.7 // indirect
 	github.com/containers/image/v5 v5.0.0
 	github.com/containers/storage v1.13.5 // indirect
-	github.com/dgraph-io/badger/v2 v2.0.3
-	github.com/dgraph-io/ristretto v0.0.2 // indirect
+	github.com/dgraph-io/badger/v3 v3.2103.2
 	github.com/docker/distribution v2.7.1+incompatible
 	github.com/docker/docker v17.12.0-ce-rc1.0.20200916142827-bd33bbf0497b+incompatible
 	github.com/docker/go-connections v0.4.0
@@ -32,7 +31,6 @@ require (
 	github.com/gorilla/websocket v1.4.1
 	github.com/jawher/mow.cli v1.1.0
 	github.com/jfbus/httprs v0.0.0-20180614100821-7861a1150846
-	github.com/klauspost/compress v1.8.6 // indirect
 	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.3
