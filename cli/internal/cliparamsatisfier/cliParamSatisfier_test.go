@@ -3,7 +3,7 @@ package cliparamsatisfier
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"strconv"
 
@@ -23,7 +23,7 @@ var _ = Context("parameterSatisfier", func() {
 		panic(err)
 	}
 
-	cliOutput := clioutput.New(clicolorer.New(), ioutil.Discard, ioutil.Discard)
+	cliOutput := clioutput.New(clicolorer.New(), io.Discard, io.Discard)
 
 	Context("New", func() {
 		It("should return truthy result", func() {

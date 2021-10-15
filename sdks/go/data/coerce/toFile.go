@@ -3,7 +3,6 @@ package coerce
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -64,7 +63,7 @@ func ToFile(
 
 	path := filepath.Join(scratchDir, uniqueStr)
 
-	err = ioutil.WriteFile(
+	err = os.WriteFile(
 		path,
 		data,
 		0666,
@@ -72,7 +71,7 @@ func ToFile(
 	if os.IsNotExist(err) {
 		// ensure path exists & re-attempt
 		if err = os.MkdirAll(filepath.Dir(path), os.FileMode(0777)); err == nil {
-			err = ioutil.WriteFile(
+			err = os.WriteFile(
 				path,
 				data,
 				0666,

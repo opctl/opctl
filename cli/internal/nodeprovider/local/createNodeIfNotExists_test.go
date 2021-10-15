@@ -2,7 +2,7 @@ package local
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 )
@@ -10,7 +10,7 @@ import (
 var _ = Context("CreateNodeIfNotExists", func() {
 	It("shouldn't panic", func() {
 		/* arrange */
-		dataDir, err := ioutil.TempDir("", "")
+		dataDir, err := os.MkdirTemp("", "")
 		if err != nil {
 			panic(err)
 		}

@@ -3,7 +3,7 @@ package opgraph
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"strings"
 	"testing"
 
@@ -91,7 +91,7 @@ func TestOutputManagerClearing(t *testing.T) {
 	objectUnderTest.Print(`testing
 the drinks should just be like a glass of water
 inspired by space jam and who knows`)
-	ioutil.ReadAll(&buff)
+	io.ReadAll(&buff)
 	objectUnderTest.Clear()
 
 	// assert

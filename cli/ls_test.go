@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -34,14 +33,14 @@ func TestLS(t *testing.T) {
 	/* arrange */
 	cliParamSatisfier := new(cliparamsatisfierFakes.FakeCLIParamSatisfier)
 	nodeProvider := new(nodeproviderFakes.FakeNodeProvider)
-	testDir, err := ioutil.TempDir("", "")
+	testDir, err := os.MkdirTemp("", "")
 	if err != nil {
 		panic(err)
 	}
 	os.Mkdir(filepath.Join(testDir, "op1"), 0700)
-	ioutil.WriteFile(filepath.Join(testDir, "op1", "op.yml"), []byte(op1), 0600)
+	os.WriteFile(filepath.Join(testDir, "op1", "op.yml"), []byte(op1), 0600)
 	os.Mkdir(filepath.Join(testDir, "op2"), 0700)
-	ioutil.WriteFile(filepath.Join(testDir, "op2", "op.yml"), []byte(op2), 0600)
+	os.WriteFile(filepath.Join(testDir, "op2", "op.yml"), []byte(op2), 0600)
 
 	outputFileName := filepath.Join(testDir, "output")
 	outputFile, err := os.OpenFile(outputFileName, os.O_WRONLY|os.O_CREATE, 0600)
@@ -64,7 +63,7 @@ func TestLS(t *testing.T) {
 	outputFile.Close()
 
 	/* assert */
-	output, err := ioutil.ReadFile(outputFileName)
+	output, err := os.ReadFile(outputFileName)
 	g.Expect(err).To(BeNil())
 
 	// because we don't know where this is running and there's some randomness in

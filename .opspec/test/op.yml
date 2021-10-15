@@ -1,10 +1,9 @@
 name: test
 description: runs all tests
 inputs:
-  compile:
-    boolean:
-      description: build the cli binary before running tests that use it
-      default: true
+  dockerSocket:
+    socket:
+      description: docker socket to use as container runtime
   gitBranch:
     string:
       constraints: { minLength: 1 }
@@ -25,9 +24,7 @@ run:
         ref: ../../api/.opspec/test
     # cli system opspec tests
     - serial:
-        - if:
-          - eq: [$(compile), true]
-          op:
+        - op:
             ref: ../../cli/.opspec/compile
             inputs:
               HOME:
@@ -46,9 +43,6 @@ run:
     # react SDK tests
     - op:
         ref: ../../sdks/react/.opspec/test
-    # api validation
-    - op:
-        ref: ../../api/.opspec/test
     # go unit tests with coverage reporting (includes CLI and Go SDK)
     - serial:
         - container:
@@ -71,7 +65,9 @@ run:
               /go/pkg: $(HOME/pkg)
             envVars:
               GOFLAGS: -tags=containers_image_openpgp
-            image: { ref: "golang:1.15" }
+            image: { ref: "golang:1.17" }
+            sockets:
+              /var/run/docker.sock: $(dockerSocket)
             workDir: /src
         - op:
             ref: github.com/opspec-pkgs/git.resolve-commit#1.0.2
@@ -90,10 +86,10 @@ run:
           - sh
           - -ce
           - |
-            test -z "\$(gofmt -l . | tee /tmp/output)" || (echo "Fix formatting issues with 'opctl run format'" && cat /tmp/output && exit 1)
+            test -z "\$(gofmt -d -l . | tee /tmp/output)" || (echo "Fix formatting issues with 'opctl run format'" && cat /tmp/output && exit 1)
         dirs:
           /src: $(../..)
         envVars:
           GOFLAGS: -tags=containers_image_openpgp
-        image: { ref: "golang:1.15" }
+        image: { ref: "golang:1.17" }
         workDir: /src

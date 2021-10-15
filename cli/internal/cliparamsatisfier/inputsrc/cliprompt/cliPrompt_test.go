@@ -1,7 +1,7 @@
 package cliprompt
 
 import (
-	"io/ioutil"
+	"io"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -11,7 +11,7 @@ import (
 )
 
 var _ = Describe("cliPromptInputSrc", func() {
-	cliOutput := clioutput.New(clicolorer.New(), ioutil.Discard, ioutil.Discard)
+	cliOutput := clioutput.New(clicolorer.New(), io.Discard, io.Discard)
 
 	Context("ReadString()", func() {
 		Context("inputs contains entry for inputName", func() {

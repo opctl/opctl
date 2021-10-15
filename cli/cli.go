@@ -42,12 +42,6 @@ func newCli(
 		} else {
 			cliOutput.Error(err.Error())
 
-			// @TODO find a better way to support tests & remove this
-			// currently mow.Exit(non-zero) blows up test harness
-			if _, isTestMode := os.LookupEnv(testModeEnvVar); isTestMode {
-				os.Exit(0)
-			}
-
 			if re, ok := err.(*RunError); ok {
 				mow.Exit(re.ExitCode)
 			} else {

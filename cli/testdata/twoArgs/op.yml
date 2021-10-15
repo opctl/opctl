@@ -1,0 +1,13 @@
+name: twoArgs
+inputs:
+  arg1:
+    string: {}
+  arg2:
+    boolean: {}
+run:
+  container:
+    image: 
+      ref: alpine
+    cmd:
+      - echo
+      - hi

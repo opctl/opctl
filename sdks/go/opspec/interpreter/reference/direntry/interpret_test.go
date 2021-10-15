@@ -2,7 +2,6 @@ package direntry
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -34,13 +33,13 @@ var _ = Context("Interpret", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedRef := "/providedRef"
-			dirData, err := ioutil.TempDir("", "")
+			dirData, err := os.MkdirTemp("", "")
 			if err != nil {
 				panic(err)
 			}
 
 			expectedPath := filepath.Join(dirData, providedRef)
-			err = ioutil.WriteFile(expectedPath, []byte(""), 0777)
+			err = os.WriteFile(expectedPath, []byte(""), 0777)
 			if err != nil {
 				panic(err)
 			}
@@ -64,7 +63,7 @@ var _ = Context("Interpret", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedRef := "/providedRef"
-			dirData, err := ioutil.TempDir("", "")
+			dirData, err := os.MkdirTemp("", "")
 			if err != nil {
 				panic(err)
 			}

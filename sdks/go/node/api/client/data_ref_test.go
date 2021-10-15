@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -46,7 +46,7 @@ var _ = Context("ListDescendants", func() {
 		fakeHttpClient := new(ihttp.FakeClient)
 		fakeHttpClient.DoReturns(
 			&http.Response{
-				Body:       ioutil.NopCloser(strings.NewReader("[]")),
+				Body:       io.NopCloser(strings.NewReader("[]")),
 				StatusCode: http.StatusOK,
 			},
 			nil,
@@ -74,7 +74,7 @@ var _ = Context("ListDescendants", func() {
 
 			/* arrange */
 			httpResp := &http.Response{
-				Body:       ioutil.NopCloser(strings.NewReader("[]")),
+				Body:       io.NopCloser(strings.NewReader("[]")),
 				StatusCode: http.StatusOK,
 			}
 
@@ -103,7 +103,7 @@ var _ = Context("ListDescendants", func() {
 
 				/* arrange */
 				httpResp := &http.Response{
-					Body:       ioutil.NopCloser(strings.NewReader("response")),
+					Body:       io.NopCloser(strings.NewReader("response")),
 					StatusCode: http.StatusUnauthorized,
 				}
 
@@ -131,7 +131,7 @@ var _ = Context("ListDescendants", func() {
 
 				/* arrange */
 				httpResp := &http.Response{
-					Body:       ioutil.NopCloser(strings.NewReader("response")),
+					Body:       io.NopCloser(strings.NewReader("response")),
 					StatusCode: http.StatusForbidden,
 				}
 
@@ -160,7 +160,7 @@ var _ = Context("ListDescendants", func() {
 
 				/* arrange */
 				httpResp := &http.Response{
-					Body:       ioutil.NopCloser(strings.NewReader("response")),
+					Body:       io.NopCloser(strings.NewReader("response")),
 					StatusCode: http.StatusNotFound,
 				}
 
@@ -188,7 +188,7 @@ var _ = Context("ListDescendants", func() {
 
 				/* arrange */
 				httpResp := &http.Response{
-					Body:       ioutil.NopCloser(strings.NewReader("dummyMsg")),
+					Body:       io.NopCloser(strings.NewReader("dummyMsg")),
 					StatusCode: http.StatusInternalServerError,
 				}
 

@@ -2,9 +2,8 @@ package coerce
 
 import (
 	"fmt"
+	"os"
 	"strings"
-
-	"io/ioutil"
 
 	"github.com/opctl/opctl/sdks/go/model"
 )
@@ -38,7 +37,7 @@ func ToBoolean(
 	case value.Dir != nil:
 		return nil, fmt.Errorf("unable to coerce dir to boolean: %w", errIncompatibleTypes)
 	case value.File != nil:
-		fileBytes, err := ioutil.ReadFile(*value.File)
+		fileBytes, err := os.ReadFile(*value.File)
 		if err != nil {
 			return nil, fmt.Errorf("unable to coerce file to boolean: %w", err)
 		}

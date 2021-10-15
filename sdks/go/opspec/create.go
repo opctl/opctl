@@ -1,7 +1,6 @@
 package opspec
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -35,7 +34,7 @@ func Create(
 		return err
 	}
 
-	return ioutil.WriteFile(
+	return os.WriteFile(
 		filepath.Join(path, opfile.FileName),
 		opFileBytes,
 		0777,

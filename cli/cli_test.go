@@ -1,34 +1,42 @@
 package main
 
 import (
+	"os/exec"
+	"path/filepath"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/clicolorer"
-	"github.com/opctl/opctl/cli/internal/clioutput"
-	"os"
+	"github.com/onsi/gomega/gexec"
 )
+
+var pathToOpctl string
+
+var _ = BeforeSuite(func() {
+	compiledPath, err := gexec.Build("./")
+	if err != nil {
+		panic(err)
+	}
+	pathToOpctl = filepath.Join(compiledPath, "cli")
+})
 
 var _ = Context("cli", func() {
 	Context("Run", func() {
 		// @TODO: the below is not really testing anything but the test scenarios are good.
 		// We need to move to remove testModeEnvVar and implement something like gexec (http://onsi.github.io/gomega/#gexec-testing-external-processes)
 		// to properly test the CLI otherwise CLI exit codes and stdin/stderr/stdout reads/writes interfere w/ the test harness
-		os.Setenv(testModeEnvVar, "")
-
-		cliOutput := clioutput.New(clicolorer.New(), os.Stderr, os.Stdout)
+		//os.Setenv(testModeEnvVar, "")
 
 		Context("--no-color", func() {
 			It("should not err", func() {
 				/* arrange */
-				objectUnderTest := newCli(
-					cliOutput,
-				)
+				command := exec.Command(pathToOpctl, "--no-color", "ls")
 
 				/* act */
-				actualErr := objectUnderTest.Run([]string{"opctl", "--no-color", "ls"})
+				session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 				/* assert */
-				Expect(actualErr).To(BeNil())
+				Expect(actualErr).NotTo(HaveOccurred())
+				Eventually(session, 10).Should(gexec.Exit(0))
 			})
 		})
 
@@ -41,16 +49,14 @@ var _ = Context("cli", func() {
 					providedResources := "resources"
 					providedUsername := "username"
 					providedPassword := "password"
-
-					objectUnderTest := newCli(
-						cliOutput,
-					)
+					command := exec.Command(pathToOpctl, "auth", "add", providedResources, "-u", providedUsername, "-p", providedPassword)
 
 					/* act */
-					actualErr := objectUnderTest.Run([]string{"opctl", "auth", "add", providedResources, "-u", providedUsername, "-p", providedPassword})
+					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 					/* assert */
-					Expect(actualErr).To(BeNil())
+					Expect(actualErr).NotTo(HaveOccurred())
+					Eventually(session, 10).Should(gexec.Exit(0))
 				})
 
 			})
@@ -60,48 +66,44 @@ var _ = Context("cli", func() {
 		Context("events", func() {
 			It("should not err", func() {
 				/* arrange */
-				objectUnderTest := newCli(
-					cliOutput,
-				)
+				command := exec.Command(pathToOpctl, "events")
 
 				/* act */
-				actualErr := objectUnderTest.Run([]string{"opctl", "events"})
+				session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+				session.Interrupt()
 
 				/* assert */
-				Expect(actualErr).To(BeNil())
+				Expect(actualErr).NotTo(HaveOccurred())
+				Eventually(session, 10).Should(gexec.Exit(130))
 			})
 		})
 
 		Context("ls", func() {
 			Context("w/ dirRef", func() {
-
 				It("should not err", func() {
 					/* arrange */
-					expectedDirRef := "dummyPath"
-					objectUnderTest := newCli(
-						cliOutput,
-					)
+					command := exec.Command(pathToOpctl, "ls", "./.opspec")
 
 					/* act */
-					actualErr := objectUnderTest.Run([]string{"opctl", "ls", expectedDirRef})
+					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 					/* assert */
-					Expect(actualErr).To(BeNil())
+					Expect(actualErr).NotTo(HaveOccurred())
+					Eventually(session, 10).Should(gexec.Exit(0))
 				})
 			})
 			Context("w/out dirRef", func() {
 
 				It("should not err", func() {
 					/* arrange */
-					objectUnderTest := newCli(
-						cliOutput,
-					)
+					command := exec.Command(pathToOpctl, "ls")
 
 					/* act */
-					actualErr := objectUnderTest.Run([]string{"opctl", "ls"})
+					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 					/* assert */
-					Expect(actualErr).To(BeNil())
+					Expect(actualErr).NotTo(HaveOccurred())
+					Eventually(session, 10).Should(gexec.Exit(0))
 				})
 			})
 		})
@@ -110,17 +112,24 @@ var _ = Context("cli", func() {
 
 			Context("create", func() {
 
-				It("should not err", func() {
+				It("should not err", Label("Serial"), func() {
 					/* arrange */
-					objectUnderTest := newCli(
-						cliOutput,
-					)
+					// ensure no node running
+					killCommand := exec.Command(pathToOpctl, "node", "kill")
+					err := killCommand.Run()
+					if err != nil {
+						panic(err)
+					}
+
+					command := exec.Command(pathToOpctl, "node", "create")
 
 					/* act */
-					actualErr := objectUnderTest.Run([]string{"opctl", "node", "create"})
+					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+					session.Interrupt()
 
 					/* assert */
-					Expect(actualErr).To(BeNil())
+					Expect(actualErr).NotTo(HaveOccurred())
+					Eventually(session, 10).Should(gexec.Exit(130))
 				})
 
 			})
@@ -129,15 +138,14 @@ var _ = Context("cli", func() {
 
 				It("should not err", func() {
 					/* arrange */
-					objectUnderTest := newCli(
-						cliOutput,
-					)
+					command := exec.Command(pathToOpctl, "node", "kill")
 
 					/* act */
-					actualErr := objectUnderTest.Run([]string{"opctl", "node", "kill"})
+					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 					/* assert */
-					Expect(actualErr).To(BeNil())
+					Expect(actualErr).NotTo(HaveOccurred())
+					Eventually(session, 10).Should(gexec.Exit(0))
 				})
 
 			})
@@ -149,69 +157,55 @@ var _ = Context("cli", func() {
 				Context("w/ path", func() {
 					It("should not err", func() {
 						/* arrange */
-						expectedOpName := "dummyOpName"
-						expectedPath := "dummyPath"
-
-						objectUnderTest := newCli(
-							cliOutput,
-						)
+						command := exec.Command(pathToOpctl, "op", "create", "--path", ".", "withPath")
 
 						/* act */
-						actualErr := objectUnderTest.Run([]string{"opctl", "op", "create", "--path", expectedPath, expectedOpName})
+						session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 						/* assert */
-						Expect(actualErr).To(BeNil())
+						Expect(actualErr).NotTo(HaveOccurred())
+						Eventually(session, 10).Should(gexec.Exit(0))
 					})
 				})
 
 				Context("w/out path", func() {
 					It("should not err", func() {
 						/* arrange */
-						expectedOpName := "dummyOpName"
-
-						objectUnderTest := newCli(
-							cliOutput,
-						)
+						command := exec.Command(pathToOpctl, "op", "create", "withoutPath")
 
 						/* act */
-						actualErr := objectUnderTest.Run([]string{"opctl", "op", "create", expectedOpName})
+						session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 						/* assert */
-						Expect(actualErr).To(BeNil())
+						Expect(actualErr).NotTo(HaveOccurred())
+						Eventually(session, 10).Should(gexec.Exit(0))
 					})
 				})
 				Context("w/ description", func() {
 					It("should not err", func() {
 						/* arrange */
-						expectedOpName := "dummyOpName"
-						expectedOpDescription := "dummyOpDescription"
-
-						objectUnderTest := newCli(
-							cliOutput,
-						)
+						command := exec.Command(pathToOpctl, "op", "create", "--path", "/tmp", "-d", "dummyOpDescription", "withDescription")
 
 						/* act */
-						actualErr := objectUnderTest.Run([]string{"opctl", "op", "create", "-d", expectedOpDescription, expectedOpName})
+						session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 						/* assert */
-						Expect(actualErr).To(BeNil())
+						Expect(actualErr).NotTo(HaveOccurred())
+						Eventually(session, 10).Should(gexec.Exit(0))
 					})
 				})
 
 				Context("w/out description", func() {
 					It("should not err", func() {
 						/* arrange */
-						expectedName := "dummyOpName"
-
-						objectUnderTest := newCli(
-							cliOutput,
-						)
+						command := exec.Command(pathToOpctl, "op", "create", "--path", "/tmp", "withoutDescription")
 
 						/* act */
-						actualErr := objectUnderTest.Run([]string{"opctl", "op", "create", expectedName})
+						session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 						/* assert */
-						Expect(actualErr).To(BeNil())
+						Expect(actualErr).NotTo(HaveOccurred())
+						Eventually(session, 10).Should(gexec.Exit(0))
 					})
 				})
 			})
@@ -219,48 +213,35 @@ var _ = Context("cli", func() {
 			Context("install", func() {
 				It("should not err", func() {
 					/* arrange */
-					expectedPath := "dummyPath"
-					expectedOpRef := "dummyOpRef"
-					expectedUsername := "dummyUsername"
-					expectedPassword := "dummyPassword"
-
-					objectUnderTest := newCli(
-						cliOutput,
-					)
-
-					/* act */
-					actualErr := objectUnderTest.Run([]string{
-						"opctl",
+					command := exec.Command(
+						pathToOpctl,
 						"op",
 						"install",
 						"--path",
-						expectedPath,
-						"-u",
-						expectedUsername,
-						"-p",
-						expectedPassword,
-						expectedOpRef,
-					})
+						"/tmp/twoArgsCopy",
+						"./testdata/twoArgs",
+					)
+
+					/* act */
+					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 					/* assert */
-					Expect(actualErr).To(BeNil())
+					Expect(actualErr).NotTo(HaveOccurred())
+					Eventually(session, 10).Should(gexec.Exit(0))
 				})
 			})
 
 			Context("kill", func() {
 				It("should not err", func() {
 					/* arrange */
-					expectedOpID := "dummyOpID"
-
-					objectUnderTest := newCli(
-						cliOutput,
-					)
+					command := exec.Command(pathToOpctl, "op", "kill", "xxx")
 
 					/* act */
-					actualErr := objectUnderTest.Run([]string{"opctl", "op", "kill", expectedOpID})
+					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 					/* assert */
-					Expect(actualErr).To(BeNil())
+					Expect(actualErr).NotTo(HaveOccurred())
+					Eventually(session, 10).Should(gexec.Exit(0))
 				})
 			})
 
@@ -268,17 +249,14 @@ var _ = Context("cli", func() {
 
 				It("should not err", func() {
 					/* arrange */
-					opRef := ".opspec/dummyOpName"
-
-					objectUnderTest := newCli(
-						cliOutput,
-					)
+					command := exec.Command(pathToOpctl, "op", "validate", "./testdata/zeroArgs")
 
 					/* act */
-					actualErr := objectUnderTest.Run([]string{"opctl", "op", "validate", opRef})
+					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 					/* assert */
-					Expect(actualErr).To(BeNil())
+					Expect(actualErr).NotTo(HaveOccurred())
+					Eventually(session, 10).Should(gexec.Exit(0))
 				})
 
 			})
@@ -286,49 +264,31 @@ var _ = Context("cli", func() {
 		})
 
 		Context("run", func() {
-			Context("with two op run args & an arg-file", func() {
+			Context("with two args", func() {
 				It("should not err", func() {
 					/* arrange */
-					providedArgs := []string{"arg1Name=arg1Value", "arg2Name=arg2Value"}
-					providedArgFile := "dummyArgFile"
-					expectedOpRef := ".opspec/dummyOpName"
-
-					objectUnderTest := newCli(
-						cliOutput,
-					)
+					command := exec.Command(pathToOpctl, "run", "-a", "arg1=value1", "-a", "arg2=value2", "./testdata/twoArgs")
 
 					/* act */
-					actualErr := objectUnderTest.Run([]string{
-						"opctl",
-						"run",
-						"-a",
-						providedArgs[0],
-						"-a",
-						providedArgs[1],
-						"--arg-file",
-						providedArgFile,
-						expectedOpRef,
-					})
+					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 					/* assert */
-					Expect(actualErr).To(BeNil())
+					Expect(actualErr).NotTo(HaveOccurred())
+					Eventually(session, 10).Should(gexec.Exit(0))
 				})
 			})
 
-			Context("with zero op run args", func() {
+			Context("with zero args", func() {
 				It("should not err", func() {
 					/* arrange */
-					expectedOpRef := ".opspec/dummyOpName"
-
-					objectUnderTest := newCli(
-						cliOutput,
-					)
+					command := exec.Command(pathToOpctl, "run", "./testdata/zeroArgs")
 
 					/* act */
-					actualErr := objectUnderTest.Run([]string{"opctl", "run", expectedOpRef})
+					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 					/* assert */
-					Expect(actualErr).To(BeNil())
+					Expect(actualErr).NotTo(HaveOccurred())
+					Eventually(session, 10).Should(gexec.Exit(0))
 				})
 			})
 		})
@@ -337,49 +297,43 @@ var _ = Context("cli", func() {
 
 			It("should not err", func() {
 				/* arrange */
-				objectUnderTest := newCli(
-					cliOutput,
-				)
+				command := exec.Command(pathToOpctl, "self-update")
 
 				/* act */
-				actualErr := objectUnderTest.Run([]string{"opctl", "self-update"})
+				session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 				/* assert */
-				Expect(actualErr).To(BeNil())
+				Expect(actualErr).NotTo(HaveOccurred())
+				Eventually(session, 10).Should(gexec.Exit(1))
 			})
 
 		})
 
 		Context("ui", func() {
 			Context("w/ mountRef", func() {
-
 				It("should not err", func() {
 					/* arrange */
-					expectedDirRef := "./dummyPath"
-					objectUnderTest := newCli(
-						cliOutput,
-					)
+					command := exec.Command(pathToOpctl, "ui", "../.opspec/build")
 
 					/* act */
-					actualErr := objectUnderTest.Run([]string{"opctl", "ui", expectedDirRef})
+					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 					/* assert */
-					Expect(actualErr).To(BeNil())
+					Expect(actualErr).NotTo(HaveOccurred())
+					Eventually(session, 10).Should(gexec.Exit(1))
 				})
 			})
 			Context("w/out mountRef", func() {
-
 				It("should not err", func() {
 					/* arrange */
-					objectUnderTest := newCli(
-						cliOutput,
-					)
+					command := exec.Command(pathToOpctl, "ui")
 
 					/* act */
-					actualErr := objectUnderTest.Run([]string{"opctl", "ui"})
+					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 					/* assert */
-					Expect(actualErr).To(BeNil())
+					Expect(actualErr).NotTo(HaveOccurred())
+					Eventually(session, 10).Should(gexec.Exit(1))
 				})
 			})
 		})

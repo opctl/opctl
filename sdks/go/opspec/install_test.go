@@ -3,7 +3,7 @@ package opspec
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
@@ -56,7 +56,7 @@ var _ = Context("Install", func() {
 				nil,
 			)
 
-			dataDir, err := ioutil.TempDir("", "")
+			dataDir, err := os.MkdirTemp("", "")
 			if err != nil {
 				panic(err)
 			}
@@ -104,13 +104,13 @@ var _ = Context("Install", func() {
 								panic(err)
 							}
 
-							expectedContent, err := ioutil.ReadFile(filepath.Join(ref, "op.yml"))
+							expectedContent, err := os.ReadFile(filepath.Join(ref, "op.yml"))
 							if err != nil {
 								panic(err)
 							}
 
 							// create tmpfile to use as dst
-							tmpDir, err := ioutil.TempDir("", "")
+							tmpDir, err := os.MkdirTemp("", "")
 							if err != nil {
 								panic(err)
 							}
@@ -119,7 +119,7 @@ var _ = Context("Install", func() {
 							Install(providedCtx, tmpDir, handle)
 
 							/* assert */
-							actualContent, err := ioutil.ReadFile(filepath.Join(tmpDir, "op.yml"))
+							actualContent, err := os.ReadFile(filepath.Join(tmpDir, "op.yml"))
 							if err != nil {
 								panic(err)
 							}

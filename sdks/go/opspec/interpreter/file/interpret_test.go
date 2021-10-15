@@ -2,7 +2,7 @@ package file
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -32,7 +32,7 @@ var _ = Context("Interpret", func() {
 				/* arrange */
 				identifier := "identifier"
 				expectedValue := model.Value{File: new(string)}
-				scratchDir, err := ioutil.TempDir("", "")
+				scratchDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}
@@ -56,7 +56,7 @@ var _ = Context("Interpret", func() {
 	Context("value.Interpret errs", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			scratchDir, err := ioutil.TempDir("", "")
+			scratchDir, err := os.MkdirTemp("", "")
 			if err != nil {
 				panic(err)
 			}
@@ -77,7 +77,7 @@ var _ = Context("Interpret", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedExpression := model.Value{File: new(string)}
-			scratchDir, err := ioutil.TempDir("", "")
+			scratchDir, err := os.MkdirTemp("", "")
 			if err != nil {
 				panic(err)
 			}

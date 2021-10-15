@@ -2,7 +2,7 @@ package opfile
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/opctl/opctl/sdks/go/model"
@@ -16,7 +16,7 @@ func Get(
 	*model.OpSpec,
 	error,
 ) {
-	opFileBytes, err := ioutil.ReadFile(filepath.Join(opPath, FileName))
+	opFileBytes, err := os.ReadFile(filepath.Join(opPath, FileName))
 	if err != nil {
 		return nil, err
 	}

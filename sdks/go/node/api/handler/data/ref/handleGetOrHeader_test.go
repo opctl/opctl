@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -266,7 +265,7 @@ var _ = Context("HandleGetOrHeader", func() {
 				It("should call http.ServeContent w/ expected args", func() {
 					/* arrange */
 
-					expectedReadSeeker, err := ioutil.TempFile("", "")
+					expectedReadSeeker, err := os.CreateTemp("", "")
 					defer expectedReadSeeker.Close()
 
 					fakeDataHandle := new(modelFakes.FakeDataHandle)

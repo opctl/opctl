@@ -5,8 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"io/ioutil"
-
 	"github.com/golang-utils/lockfile"
 )
 
@@ -43,7 +41,7 @@ func New(
 	}
 
 	// ensure we can write
-	if err := ioutil.WriteFile(
+	if err := os.WriteFile(
 		filepath.Join(resolvedDataDirPath, "write-test"),
 		[]byte(""),
 		0775,

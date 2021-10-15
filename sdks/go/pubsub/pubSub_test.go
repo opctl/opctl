@@ -2,7 +2,7 @@ package pubsub
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"time"
 
 	"github.com/dgraph-io/badger/v3"
@@ -12,7 +12,7 @@ import (
 )
 
 var _ = Context("pubSub", func() {
-	dbDir, err := ioutil.TempDir("", "")
+	dbDir, err := os.MkdirTemp("", "")
 	if err != nil {
 		panic(err)
 	}

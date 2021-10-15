@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 
@@ -37,7 +37,7 @@ var _ = Context("AddAuth", func() {
 		)
 
 		fakeHttpClient := new(ihttp.FakeClient)
-		fakeHttpClient.DoReturns(&http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte{}))}, nil)
+		fakeHttpClient.DoReturns(&http.Response{Body: io.NopCloser(bytes.NewReader([]byte{}))}, nil)
 
 		objectUnderTest := apiClient{
 			httpClient: fakeHttpClient,

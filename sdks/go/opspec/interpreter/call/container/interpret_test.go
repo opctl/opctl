@@ -2,7 +2,7 @@ package container
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -13,7 +13,7 @@ var _ = Context("Interpret", func() {
 	Context("cmd.Interpret errors", func() {
 		It("should return expected error", func() {
 			/* arrange */
-			dataDir, err := ioutil.TempDir("", "")
+			dataDir, err := os.MkdirTemp("", "")
 			if err != nil {
 				panic(err)
 			}
@@ -43,7 +43,7 @@ var _ = Context("Interpret", func() {
 		It("should return expected error", func() {
 			/* arrange */
 			identifier := "identifier"
-			dataDir, err := ioutil.TempDir("", "")
+			dataDir, err := os.MkdirTemp("", "")
 			if err != nil {
 				panic(err)
 			}
@@ -76,7 +76,7 @@ var _ = Context("Interpret", func() {
 	Context("envVars.Interpret errors", func() {
 		It("should return expected error", func() {
 			/* arrange */
-			dataDir, err := ioutil.TempDir("", "")
+			dataDir, err := os.MkdirTemp("", "")
 			if err != nil {
 				panic(err)
 			}
@@ -103,7 +103,7 @@ var _ = Context("Interpret", func() {
 	Context("files.Interpret errors", func() {
 		It("should return expected error", func() {
 			/* arrange */
-			dataDir, err := ioutil.TempDir("", "")
+			dataDir, err := os.MkdirTemp("", "")
 			if err != nil {
 				panic(err)
 			}
@@ -136,7 +136,7 @@ var _ = Context("Interpret", func() {
 	Context("image.Interpret errors", func() {
 		It("should return expected error", func() {
 			/* arrange */
-			dataDir, err := ioutil.TempDir("", "")
+			dataDir, err := os.MkdirTemp("", "")
 			if err != nil {
 				panic(err)
 			}
@@ -181,7 +181,7 @@ var _ = Context("Interpret", func() {
 			WorkDir: "",
 		}
 
-		dataDir, err := ioutil.TempDir("", "")
+		dataDir, err := os.MkdirTemp("", "")
 		if err != nil {
 			panic(err)
 		}

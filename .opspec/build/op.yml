@@ -1,6 +1,9 @@
 name: build
 description: runs ops necessary to go from src to vetted artifact(s) and tests everything
 inputs:
+  dockerSocket:
+    socket:
+      description: docker socket to use as container runtime
   gitBranch:
     string:
       constraints: { minLength: 1 }
@@ -18,28 +21,10 @@ run:
   serial:
     - op:
         ref: ../../webapp/.opspec/build
-    # embed webapp in node
-    - container:
-        cmd:
-          - sh
-          - -ce
-          - |
-            echo "embedding webapp in node"
-            go run github.com/rakyll/statik -src ../webapp/build -dest internal -f
-        dirs:
-          /src: $(../..)
-          /go/pkg: $(HOME/pkg)
-        image: { ref: 'golang:1.15' }
-        workDir: /src/cli
-    - op:
-        ref: ../../cli/.opspec/compile
-        inputs:
-          HOME:
-          version:
     - op:
         ref: ../test
         inputs:
-          compile: false
+          dockerSocket:
           gitBranch:
           HOME:
           version:

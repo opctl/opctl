@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -35,7 +34,7 @@ var _ = Context("caller", func() {
 			It("should not throw", func() {
 				/* arrange */
 				fakeContainerCaller := new(FakeContainerCaller)
-				dataDir, err := ioutil.TempDir("", "")
+				dataDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}
@@ -97,7 +96,7 @@ var _ = Context("caller", func() {
 
 				fakeSerialCaller := new(FakeSerialCaller)
 
-				dataDir, err := ioutil.TempDir("", "")
+				dataDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}
@@ -173,7 +172,7 @@ var _ = Context("caller", func() {
 				// ensure eventChan closed so call exits
 				fakePubSub.SubscribeReturns(closedEventChan, nil)
 
-				dataDir, err := ioutil.TempDir("", "")
+				dataDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}
@@ -245,7 +244,7 @@ var _ = Context("caller", func() {
 				// ensure eventChan closed so call exits
 				fakePubSub.SubscribeReturns(closedEventChan, nil)
 
-				dataDir, err := ioutil.TempDir("", "")
+				dataDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}

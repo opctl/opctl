@@ -2,7 +2,7 @@ package dir
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -15,7 +15,7 @@ var _ = Context("Interpret", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				identifier := "identifier"
-				scratchDir, err := ioutil.TempDir("", "")
+				scratchDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}
@@ -46,7 +46,7 @@ var _ = Context("Interpret", func() {
 						identifier: {Dir: nil},
 					}
 					providedExpression := fmt.Sprintf("$(%s)", identifier)
-					scratchDir, err := ioutil.TempDir("", "")
+					scratchDir, err := os.MkdirTemp("", "")
 					if err != nil {
 						panic(err)
 					}
@@ -70,7 +70,7 @@ var _ = Context("Interpret", func() {
 					providedScope := map[string]*model.Value{
 						identifier: {Dir: new(string)},
 					}
-					scratchDir, err := ioutil.TempDir("", "")
+					scratchDir, err := os.MkdirTemp("", "")
 					if err != nil {
 						panic(err)
 					}

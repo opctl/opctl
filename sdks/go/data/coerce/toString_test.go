@@ -1,7 +1,7 @@
 package coerce
 
 import (
-	"io/ioutil"
+	"os"
 	"strconv"
 
 	. "github.com/onsi/ginkgo"
@@ -73,7 +73,7 @@ var _ = Context("ToString", func() {
 		})
 	})
 	Context("Value.File isn't nil", func() {
-		Context("ioutil.ReadFile errs", func() {
+		Context("os.ReadFile errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				/* act */
@@ -86,10 +86,10 @@ var _ = Context("ToString", func() {
 				Expect(actualErr).To(MatchError("unable to coerce file to string: open : no such file or directory"))
 			})
 		})
-		Context("ioutil.ReadFile doesn't err", func() {
+		Context("os.ReadFile doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				tmpFile, err := ioutil.TempFile("", "")
+				tmpFile, err := os.CreateTemp("", "")
 				if err != nil {
 					panic(err)
 				}
@@ -97,7 +97,7 @@ var _ = Context("ToString", func() {
 
 				expectedString := "expectedString"
 
-				err = ioutil.WriteFile(filePath, []byte(expectedString), 0777)
+				err = os.WriteFile(filePath, []byte(expectedString), 0777)
 				if err != nil {
 					panic(err)
 				}

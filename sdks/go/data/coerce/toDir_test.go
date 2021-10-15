@@ -1,7 +1,7 @@
 package coerce
 
 import (
-	"io/ioutil"
+	"os"
 	"strings"
 
 	. "github.com/onsi/ginkgo"
@@ -113,7 +113,7 @@ var _ = Context("ToDir", func() {
 					},
 				}
 
-				providedScratchDir, err := ioutil.TempDir("", "")
+				providedScratchDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}
@@ -139,7 +139,7 @@ var _ = Context("ToDir", func() {
 					providedChildDirPath: map[string]interface{}{},
 				}
 
-				providedScratchDir, err := ioutil.TempDir("", "")
+				providedScratchDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}

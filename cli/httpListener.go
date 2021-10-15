@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/fs"
 	"net/http"
 	"strings"
 
@@ -14,10 +15,9 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/opctl/opctl/cli/internal/clicolorer"
-	_ "github.com/opctl/opctl/cli/internal/statik"
 	"github.com/opctl/opctl/sdks/go/node/api/handler"
 	"github.com/opctl/opctl/sdks/go/node/core"
-	"github.com/rakyll/statik/fs"
+	"github.com/opctl/opctl/webapp"
 )
 
 /**
@@ -63,11 +63,12 @@ func (hd _httpListener) listen(
 		),
 	)
 
-	statikFS, err := fs.New()
+	buildFS, err := fs.Sub(webapp.Build, "build")
 	if err != nil {
 		return err
 	}
-	router.PathPrefix("/").Handler(http.FileServer(statikFS))
+
+	router.PathPrefix("/").Handler(http.FileServer(http.FS(buildFS)))
 
 	httpServer := http.Server{
 		Addr:    address,

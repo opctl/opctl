@@ -2,7 +2,6 @@ package fs
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -32,7 +31,7 @@ var _ = Context("_fs", func() {
 			Context("exists", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					file, err := ioutil.TempFile("", "")
+					file, err := os.CreateTemp("", "")
 					if err != nil {
 						panic(err)
 					}

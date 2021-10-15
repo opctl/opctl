@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/ghodss/yaml"
+	"github.com/opctl/opctl/opspec/opfile"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -13,14 +14,8 @@ import (
 func Validate(
 	opFileBytes []byte,
 ) []error {
-
-	opFileSchemaBytes, err := _escFSByte(false, "/opspec/opfile/jsonschema.json")
-	if err != nil {
-		return []error{err}
-	}
-
 	opFileSchema, err := gojsonschema.NewSchema(
-		gojsonschema.NewBytesLoader(opFileSchemaBytes),
+		gojsonschema.NewBytesLoader(opfile.JsonSchemaBytes),
 	)
 	if err != nil {
 		return []error{err}
