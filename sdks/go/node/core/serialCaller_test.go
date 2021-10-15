@@ -4,9 +4,8 @@ import (
 	"context"
 	"os"
 
-	"io/ioutil"
-
 	"io"
+
 	"path/filepath"
 
 	"github.com/dgraph-io/badger/v3"
@@ -34,7 +33,7 @@ var _ = Context("serialCaller", func() {
 		Context("caller errors", func() {
 			It("should return expected results", func() {
 				/* arrange */
-				dbDir, err := ioutil.TempDir("", "")
+				dbDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}
@@ -85,7 +84,7 @@ var _ = Context("serialCaller", func() {
 		})
 		It("should start each child as expected", func() {
 			/* arrange */
-			dbDir, err := ioutil.TempDir("", "")
+			dbDir, err := os.MkdirTemp("", "")
 			if err != nil {
 				panic(err)
 			}

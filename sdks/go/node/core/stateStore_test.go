@@ -2,7 +2,7 @@ package core
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"time"
 
 	"github.com/dgraph-io/badger/v3"
@@ -27,7 +27,7 @@ var _ = Context("stateStore", func() {
 					Resources: "resources",
 				}
 
-				dbDir, err := ioutil.TempDir("", "")
+				dbDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}

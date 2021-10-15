@@ -12,7 +12,7 @@ run:
     - op:
         ref: ../compile
     - container:
-        image: { ref: 'golang:1.15' }
+        image: { ref: 'golang:1.17' }
         cmd:
           - go
           - run

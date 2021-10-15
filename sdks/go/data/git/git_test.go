@@ -2,7 +2,6 @@ package git
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
@@ -17,7 +16,7 @@ var _ = Context("_git", func() {
 		Context("localFSProvider.TryResolve errors", func() {
 			It("should return err", func() {
 				/* arrange */
-				dataDir, err := ioutil.TempDir("", "")
+				dataDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}
@@ -58,7 +57,7 @@ var _ = Context("_git", func() {
 			Context("FSProvider.TryResolve doesn't return a handle", func() {
 				Context("puller.Pull errors", func() {
 					It("should return err", func() {
-						dataDir, err := ioutil.TempDir("", "")
+						dataDir, err := os.MkdirTemp("", "")
 						if err != nil {
 							panic(err)
 						}
@@ -79,7 +78,7 @@ var _ = Context("_git", func() {
 						/* arrange */
 						// some public repo that's relatively small
 						providedRef := "github.com/opspec-pkgs/_.op.create#3.3.1"
-						basePath, err := ioutil.TempDir("", "")
+						basePath, err := os.MkdirTemp("", "")
 						if err != nil {
 							panic(err)
 						}
@@ -105,7 +104,7 @@ var _ = Context("_git", func() {
 				// some public repo that's relatively small
 				providedRef := "github.com/opspec-pkgs/_.op.create#3.3.1"
 
-				basePath, err := ioutil.TempDir("", "")
+				basePath, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}
@@ -159,7 +158,7 @@ var _ = Context("_git", func() {
 				providedRef1 := "github.com/opspec-pkgs/_.op.create#3.3.1"
 				providedRef2 := "github.com/opspec-pkgs/_.op.create#3.0.0"
 
-				basePath, err := ioutil.TempDir("", "")
+				basePath, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}

@@ -2,7 +2,7 @@ package dirs
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
@@ -15,7 +15,7 @@ var _ = Context("Interpret", func() {
 		It("should return expected error", func() {
 			/* arrange */
 			identifier := "identifier"
-			dataDir, err := ioutil.TempDir("", "")
+			dataDir, err := os.MkdirTemp("", "")
 			if err != nil {
 				panic(err)
 			}
@@ -44,11 +44,11 @@ var _ = Context("Interpret", func() {
 				/* arrange */
 				identifier := "identifier"
 
-				dataDir, err := ioutil.TempDir("", "")
+				dataDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}
-				dirPath, err := ioutil.TempDir("", "")
+				dirPath, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}
@@ -82,12 +82,12 @@ var _ = Context("Interpret", func() {
 					/* arrange */
 					identifier := "identifier"
 					containerPath := "/something"
-					dirValue, err := ioutil.TempDir("", "")
+					dirValue, err := os.MkdirTemp("", "")
 					if err != nil {
 						panic(err)
 					}
 
-					scratchDirPath, err := ioutil.TempDir("", "")
+					scratchDirPath, err := os.MkdirTemp("", "")
 					if err != nil {
 						panic(err)
 					}

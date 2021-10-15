@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/opctl/opctl/sdks/go/model"
@@ -32,7 +32,7 @@ func (c apiClient) getWithAuth(ctx context.Context, path string, pullCreds *mode
 
 	readBody := func() (string, error) {
 		defer httpResp.Body.Close()
-		body, err := ioutil.ReadAll(httpResp.Body)
+		body, err := io.ReadAll(httpResp.Body)
 		if err != nil {
 			return "", fmt.Errorf(
 				"error encountered parsing response (status code %v): %w",

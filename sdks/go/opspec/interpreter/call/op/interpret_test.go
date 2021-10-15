@@ -3,7 +3,6 @@ package op
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path"
 
@@ -16,7 +15,7 @@ var _ = Context("Interpret", func() {
 	It("should return expected result", func() {
 		/* arrange */
 		providedOpId := "opID"
-		dataDir, err := ioutil.TempDir("", "")
+		dataDir, err := os.MkdirTemp("", "")
 		if err != nil {
 			panic(err)
 		}

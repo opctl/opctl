@@ -2,7 +2,7 @@ package coerce
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strconv"
 
 	. "github.com/onsi/ginkgo"
@@ -54,7 +54,7 @@ var _ = Context("ToNumber", func() {
 		})
 	})
 	Context("Value.File isn't nil", func() {
-		Context("ioutil.ReadFile errs", func() {
+		Context("os.ReadFile errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				/* act */
@@ -67,17 +67,17 @@ var _ = Context("ToNumber", func() {
 				Expect(actualErr).To(MatchError("unable to coerce file to number: open : no such file or directory"))
 			})
 		})
-		Context("ioutil.ReadFile doesn't err", func() {
+		Context("os.ReadFile doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				tmpFile, err := ioutil.TempFile("", "")
+				tmpFile, err := os.CreateTemp("", "")
 				if err != nil {
 					panic(err)
 				}
 
 				number := 2.0
 				filePath := tmpFile.Name()
-				err = ioutil.WriteFile(filePath, []byte(fmt.Sprintf("%v", number)), 0777)
+				err = os.WriteFile(filePath, []byte(fmt.Sprintf("%v", number)), 0777)
 				if err != nil {
 					panic(err)
 				}

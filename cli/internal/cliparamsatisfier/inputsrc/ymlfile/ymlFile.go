@@ -2,7 +2,6 @@ package ymlfile
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 
 	"github.com/ghodss/yaml"
@@ -24,7 +23,7 @@ func New(
 		return ymlFileInputSrc{map[string]interface{}{}}, nil
 	}
 
-	ymlBytes, err := ioutil.ReadFile(filePath)
+	ymlBytes, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}

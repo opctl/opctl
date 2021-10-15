@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -33,7 +33,7 @@ var _ = Context("Liveness", func() {
 		fakeHttpClient := new(ihttp.FakeClient)
 		fakeHttpClient.DoReturns(
 			&http.Response{
-				Body:       ioutil.NopCloser(strings.NewReader("[]")),
+				Body:       io.NopCloser(strings.NewReader("[]")),
 				StatusCode: http.StatusOK,
 			},
 			nil,
@@ -61,7 +61,7 @@ var _ = Context("Liveness", func() {
 
 			/* arrange */
 			httpResp := &http.Response{
-				Body:       ioutil.NopCloser(strings.NewReader("[]")),
+				Body:       io.NopCloser(strings.NewReader("[]")),
 				StatusCode: http.StatusOK,
 			}
 
@@ -86,7 +86,7 @@ var _ = Context("Liveness", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			httpResp := &http.Response{
-				Body:       ioutil.NopCloser(strings.NewReader("dummyMsg")),
+				Body:       io.NopCloser(strings.NewReader("dummyMsg")),
 				StatusCode: http.StatusInternalServerError,
 			}
 

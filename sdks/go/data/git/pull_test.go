@@ -4,9 +4,9 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -36,7 +36,7 @@ var _ = Context("Pull", func() {
 			Context("err.Error() returns git.ErrRepositoryAlreadyExists", func() {
 				It("shouldn't error", func() {
 					/* arrange */
-					providedPath, err := ioutil.TempDir("", "")
+					providedPath, err := os.MkdirTemp("", "")
 					if err != nil {
 						panic(err)
 					}
@@ -81,7 +81,7 @@ var _ = Context("Pull", func() {
 
 					providedRef := fmt.Sprintf("%s#version", testServer.URL)
 
-					providedPath, err := ioutil.TempDir("", "")
+					providedPath, err := os.MkdirTemp("", "")
 					if err != nil {
 						panic(err)
 					}
@@ -116,7 +116,7 @@ var _ = Context("Pull", func() {
 
 					providedRef := fmt.Sprintf("%s#version", testServer.URL)
 
-					providedPath, err := ioutil.TempDir("", "")
+					providedPath, err := os.MkdirTemp("", "")
 					if err != nil {
 						panic(err)
 					}
@@ -154,7 +154,7 @@ var _ = Context("Pull", func() {
 
 					providedRef := fmt.Sprintf("%s#version", testServer.URL)
 
-					providedPath, err := ioutil.TempDir("", "")
+					providedPath, err := os.MkdirTemp("", "")
 					if err != nil {
 						panic(err)
 					}

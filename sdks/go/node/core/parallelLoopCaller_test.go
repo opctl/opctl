@@ -3,7 +3,7 @@ package core
 import (
 	"context"
 	"io"
-	"io/ioutil"
+	"os"
 
 	"github.com/dgraph-io/badger/v3"
 	. "github.com/onsi/ginkgo"
@@ -59,7 +59,7 @@ var _ = Context("parallelLoopCaller", func() {
 
 			It("should return expected results", func() {
 				/* arrange */
-				dbDir, err := ioutil.TempDir("", "")
+				dbDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}
@@ -120,7 +120,7 @@ var _ = Context("parallelLoopCaller", func() {
 
 		It("should start each child as expected", func() {
 			/* arrange */
-			dbDir, err := ioutil.TempDir("", "")
+			dbDir, err := os.MkdirTemp("", "")
 			if err != nil {
 				panic(err)
 			}

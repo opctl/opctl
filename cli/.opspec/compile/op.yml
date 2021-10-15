@@ -34,5 +34,5 @@ run:
           GOFLAGS:
             -tags=containers_image_openpgp
             -ldflags=-X=main.version=$(version)
-        image: { ref: 'golang:1.15' }
+        image: { ref: 'golang:1.17' }
         workDir: /src

@@ -3,7 +3,6 @@ package interpolater
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -27,7 +26,7 @@ var _ = Context("Interpolate", func() {
 						scenariosOpFilePath := filepath.Join(path, "scenarios.yml")
 						if _, err := os.Stat(scenariosOpFilePath); err == nil {
 							/* arrange */
-							scenariosOpFileBytes, err := ioutil.ReadFile(scenariosOpFilePath)
+							scenariosOpFileBytes, err := os.ReadFile(scenariosOpFilePath)
 							if err != nil {
 								panic(err)
 							}

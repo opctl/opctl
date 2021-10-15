@@ -18,5 +18,5 @@ run:
     dirs:
       /src: $(../..)
       /go/pkg: $(HOME/pkg)
-    image: { ref: 'golang:1.15' }
+    image: { ref: 'golang:1.17' }
     workDir: /src

@@ -1,7 +1,7 @@
 package coerce
 
 import (
-	"io/ioutil"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -9,13 +9,13 @@ import (
 )
 
 var _ = Context("ToFile", func() {
-	tmpDir, err := ioutil.TempDir("", "")
+	tmpDir, err := os.MkdirTemp("", "")
 	if err != nil {
 		panic(err)
 	}
 
 	Context("Value is nil", func() {
-		Context("ioutil.WriteFile doesn't err", func() {
+		Context("os.WriteFile doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedScratchDir := tmpDir
@@ -34,7 +34,7 @@ var _ = Context("ToFile", func() {
 	})
 	Context("Value.Array isn't nil", func() {
 		Context("json.Marshal doesn't err", func() {
-			Context("ioutil.WriteFile doesn't err", func() {
+			Context("os.WriteFile doesn't err", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					providedScratchDir := tmpDir
@@ -55,7 +55,7 @@ var _ = Context("ToFile", func() {
 		})
 	})
 	Context("Value.Boolean isn't nil", func() {
-		Context("ioutil.WriteFile doesn't err", func() {
+		Context("os.WriteFile doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedScratchDir := tmpDir
@@ -111,7 +111,7 @@ var _ = Context("ToFile", func() {
 		})
 	})
 	Context("Value.Number isn't nil", func() {
-		Context("ioutil.WriteFile doesn't err", func() {
+		Context("os.WriteFile doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedScratchDir := tmpDir
@@ -132,7 +132,7 @@ var _ = Context("ToFile", func() {
 	})
 	Context("Value.Object isn't nil", func() {
 		Context("json.Marshal doesn't err", func() {
-			Context("ioutil.WriteFile doesn't err", func() {
+			Context("os.WriteFile doesn't err", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					providedScratchDir := tmpDir
@@ -153,7 +153,7 @@ var _ = Context("ToFile", func() {
 		})
 	})
 	Context("Value.String isn't nil", func() {
-		Context("ioutil.WriteFile doesn't err", func() {
+		Context("os.WriteFile doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedScratchDir := tmpDir
@@ -189,7 +189,7 @@ var _ = Context("ToFile", func() {
 	})
 	Context("scratchDir doesn't exist", func() {
 		Context("os.MkdirAll doesn't err", func() {
-			Context("ioutil.WriteFile doesn't err", func() {
+			Context("os.WriteFile doesn't err", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					providedScratchDir := tmpDir

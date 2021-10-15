@@ -2,9 +2,8 @@ package core
 
 import (
 	"context"
-	"io/ioutil"
-
 	"io"
+	"os"
 
 	"github.com/dgraph-io/badger/v3"
 	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
@@ -96,7 +95,7 @@ var _ = Context("serialLoopCaller", func() {
 
 				It("should return expected results", func() {
 					/* arrange */
-					dbDir, err := ioutil.TempDir("", "")
+					dbDir, err := os.MkdirTemp("", "")
 					if err != nil {
 						panic(err)
 					}
@@ -157,7 +156,7 @@ var _ = Context("serialLoopCaller", func() {
 
 			It("should start each child as expected", func() {
 				/* arrange */
-				dbDir, err := ioutil.TempDir("", "")
+				dbDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}

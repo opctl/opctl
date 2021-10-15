@@ -1,10 +1,13 @@
 name: test
 description: runs all CLI go tests
 inputs:
+  dockerSocket:
+    socket:
+      description: docker socket to use as container runtime
   HOME:
     dir:
       description: Home directory of caller; used to access go modules
-run:  
+run:
   container:
     cmd:
       - go
@@ -14,6 +17,9 @@ run:
       /src: $(../../../..)
       /go/pkg: $(HOME/pkg)
     envVars:
+      OPCTL_DATA_DIR: /tmp/opctl
       GOFLAGS: -tags=containers_image_openpgp
-    image: { ref: 'golang:1.15' }
+    image: { ref: 'golang:1.17' }
+    sockets:
+      /var/run/docker.sock: $(dockerSocket)
     workDir: /src

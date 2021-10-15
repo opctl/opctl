@@ -6,6 +6,9 @@ inputs:
       constraints: { minLength: 1 }
       description: password for docker registry
       isSecret: true
+  dockerSocket:
+    socket:
+      description: docker socket to use as container runtime
   dockerUsername:
     string:
       constraints: { minLength: 1 }
@@ -36,7 +39,8 @@ run:
   serial:
     - op:
         ref: ../build
-        inputs: 
+        inputs:
+          dockerSocket:
           gitBranch:
           version:
     - parallel:

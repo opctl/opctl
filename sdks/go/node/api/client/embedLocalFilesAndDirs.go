@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -63,7 +62,7 @@ func fileOrDirPathToObject(
 			return nil, 0, fmt.Errorf("%s is %gMb but cannot be bigger than %gMb", path, float64(info.Size())/float64(oneMB), getMaxEmbedMB())
 		}
 
-		body, err := ioutil.ReadFile(path)
+		body, err := os.ReadFile(path)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -73,23 +72,27 @@ func fileOrDirPathToObject(
 		}, info.Size(), nil
 	}
 
-	childFileInfos, err := ioutil.ReadDir(path)
+	childDirEntrys, err := os.ReadDir(path)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	fileObject := map[string]interface{}{}
 	var totalSize int64
-	for _, childFileInfo := range childFileInfos {
+	for _, childDirEntry := range childDirEntrys {
+		childFileInfo, err := childDirEntry.Info()
+		if err != nil {
+			return nil, 0, fmt.Errorf("embedding failed: %w", err)
+		}
 		if childFileInfo.Size()+totalSize > maxEmbedBytes {
 			return nil, 0, fmt.Errorf("embedding failed: %s cannot exceed %gMb", path, getMaxEmbedMB())
 		}
 
-		childFileObject, childSize, err := fileOrDirPathToObject(filepath.Join(path, childFileInfo.Name()))
+		childFileObject, childSize, err := fileOrDirPathToObject(filepath.Join(path, childDirEntry.Name()))
 		if err != nil {
 			return nil, 0, err
 		}
-		fileObject[fmt.Sprintf("/%s", childFileInfo.Name())] = childFileObject
+		fileObject[fmt.Sprintf("/%s", childDirEntry.Name())] = childFileObject
 		totalSize += childSize
 	}
 	return fileObject, totalSize, nil

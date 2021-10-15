@@ -28,6 +28,7 @@ func New(
 
 	httpClient := pester.New()
 	httpClient.Backoff = pester.ExponentialBackoff
+	httpClient.MaxRetries = 4
 
 	if opts != nil {
 		// handle options

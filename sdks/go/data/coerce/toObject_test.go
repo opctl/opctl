@@ -2,7 +2,7 @@ package coerce
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -53,7 +53,7 @@ var _ = Context("ToObject", func() {
 		})
 	})
 	Context("Value.File isn't nil", func() {
-		Context("ioutil.ReadFile errs", func() {
+		Context("os.ReadFile errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				nonExistentPath := "nonExistent"
@@ -68,12 +68,12 @@ var _ = Context("ToObject", func() {
 				Expect(actualErr).To(MatchError("unable to coerce file to object: open nonExistent: no such file or directory"))
 			})
 		})
-		Context("ioutil.ReadFile doesn't err", func() {
+		Context("os.ReadFile doesn't err", func() {
 			Context("json.Unmarshal errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
 
-					tmpFile, err := ioutil.TempFile("", "")
+					tmpFile, err := os.CreateTemp("", "")
 					if err != nil {
 						panic(err)
 					}
@@ -97,13 +97,13 @@ var _ = Context("ToObject", func() {
 					mapEntryKey := "mapKey"
 					mapValueJSON := fmt.Sprintf(`{"%s": "%s"}`, mapEntryKey, mapEntryValue)
 
-					tmpFile, err := ioutil.TempFile("", "")
+					tmpFile, err := os.CreateTemp("", "")
 					if err != nil {
 						panic(err)
 					}
 					filePath := tmpFile.Name()
 
-					err = ioutil.WriteFile(filePath, []byte(mapValueJSON), 0777)
+					err = os.WriteFile(filePath, []byte(mapValueJSON), 0777)
 					if err != nil {
 						panic(err)
 					}
