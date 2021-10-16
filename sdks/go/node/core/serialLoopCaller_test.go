@@ -2,29 +2,23 @@ package core
 
 import (
 	"context"
+	"io"
 	"io/ioutil"
 
-	"io"
-
 	"github.com/dgraph-io/badger/v2"
-	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
-	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
-	"github.com/opctl/opctl/sdks/go/pubsub"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
+	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
+	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 var _ = Context("serialLoopCaller", func() {
 	Context("newSerialLoopCaller", func() {
 		It("should return serialLoopCaller", func() {
 			/* arrange/act/assert */
-			Expect(newSerialLoopCaller(
-				new(FakeCaller),
-				new(FakePubSub),
-			)).To(Not(BeNil()))
+			Expect(newSerialLoopCaller(new(FakeCaller))).To(Not(BeNil()))
 		})
 	})
 
@@ -36,7 +30,6 @@ var _ = Context("serialLoopCaller", func() {
 
 				objectUnderTest := _serialLoopCaller{
 					caller: fakeCaller,
-					pubSub: new(FakePubSub),
 				}
 
 				/* act */
@@ -63,6 +56,7 @@ var _ = Context("serialLoopCaller", func() {
 				Expect(fakeCaller.CallCallCount()).To(Equal(0))
 			})
 		})
+
 		Context("initial callSerialLoop.On empty", func() {
 			It("should not call caller.Call", func() {
 				/* arrange */
@@ -70,7 +64,6 @@ var _ = Context("serialLoopCaller", func() {
 
 				objectUnderTest := _serialLoopCaller{
 					caller: fakeCaller,
-					pubSub: new(FakePubSub),
 				}
 
 				/* act */
@@ -90,10 +83,9 @@ var _ = Context("serialLoopCaller", func() {
 				Expect(fakeCaller.CallCallCount()).To(Equal(0))
 			})
 		})
+
 		Context("initial callSerialLoop.Until false", func() {
-
 			Context("iteration spec invalid", func() {
-
 				It("should return expected results", func() {
 					/* arrange */
 					dbDir, err := ioutil.TempDir("", "")
@@ -128,7 +120,6 @@ var _ = Context("serialLoopCaller", func() {
 
 					objectUnderTest := _serialLoopCaller{
 						caller: caller,
-						pubSub: pubSub,
 					}
 
 					/* act */
@@ -186,7 +177,6 @@ var _ = Context("serialLoopCaller", func() {
 					stdOut io.WriteCloser,
 					stdErr io.WriteCloser,
 				) (*int64, error) {
-
 					stdErr.Close()
 					stdOut.Close()
 
@@ -215,7 +205,6 @@ var _ = Context("serialLoopCaller", func() {
 						dbDir,
 						pubSub,
 					),
-					pubSub: pubSub,
 				}
 
 				/* act */
@@ -302,6 +291,56 @@ var _ = Context("serialLoopCaller", func() {
 						},
 					),
 				)
+			})
+
+			It("adds outputs to scope", func() {
+				/* arrange */
+				providedOpRef := "providedOpRef"
+				providedParentID := "providedParentID"
+				providedRootID := "providedRootID"
+
+				fakeCaller := new(FakeCaller)
+
+				expectedOutput0 := "outputVal0"
+				expectedOutputs0 := map[string]*model.Value{
+					"output0":          {String: &expectedOutput0},
+					"outputOverridden": {String: &expectedOutput0},
+				}
+				fakeCaller.CallReturnsOnCall(0, expectedOutputs0, nil)
+				expectedOutput1 := "outputVal1"
+				expectedOutputs1 := map[string]*model.Value{
+					"output1":          {String: &expectedOutput1},
+					"outputOverridden": {String: &expectedOutput1},
+				}
+				fakeCaller.CallReturnsOnCall(1, expectedOutputs1, nil)
+
+				objectUnderTest := _serialLoopCaller{
+					caller: fakeCaller,
+				}
+
+				/* act */
+				actualOutputs, actualErr := objectUnderTest.Call(
+					context.Background(),
+					"",
+					map[string]*model.Value{},
+					model.SerialLoopCallSpec{
+						Range: model.Value{
+							Array: &[]interface{}{0, 1},
+						},
+						Run: model.CallSpec{},
+					},
+					providedOpRef,
+					&providedParentID,
+					providedRootID,
+				)
+
+				/* assert */
+				Expect(actualErr).To(BeNil())
+				Expect(actualOutputs).To(Equal(map[string]*model.Value{
+					"output0":          {String: &expectedOutput0},
+					"output1":          {String: &expectedOutput1},
+					"outputOverridden": {String: &expectedOutput1},
+				}))
 			})
 		})
 	})

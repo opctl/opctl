@@ -2,15 +2,12 @@ package core
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"runtime/debug"
-	"time"
+	"sync"
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
-	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 //counterfeiter:generate -o internal/fakes/parallelCaller.go . parallelCaller
@@ -29,21 +26,14 @@ type parallelCaller interface {
 	)
 }
 
-func newParallelCaller(
-	caller caller,
-	pubSub pubsub.PubSub,
-) parallelCaller {
-
+func newParallelCaller(caller caller) parallelCaller {
 	return _parallelCaller{
 		caller: caller,
-		pubSub: pubSub,
 	}
-
 }
 
 type _parallelCaller struct {
 	caller caller
-	pubSub pubsub.PubSub
 }
 
 func (pc _parallelCaller) Call(
@@ -62,21 +52,31 @@ func (pc _parallelCaller) Call(
 	defer cancelParallel()
 
 	childCallNeededCountByName := map[string]int{}
-	for _, callSpecChildCall := range callSpecParallelCall {
+	for _, childCall := range callSpecParallelCall {
 		// increment needed by counts for any needs
-		for _, neededCallRef := range callSpecChildCall.Needs {
+		for _, neededCallRef := range childCall.Needs {
 			childCallNeededCountByName[opspec.RefToName(neededCallRef)]++
 		}
 	}
 
-	startTime := time.Now().UTC()
 	childCallIndexByID := map[string]int{}
-	childCallIDByName := map[string]string{}
+	childCallIndexByName := map[string]int{}
+	childCallCancellationByIndex := map[int]context.CancelFunc{}
 	childCallOutputsByIndex := map[int]map[string]*model.Value{}
+
+	type childResult struct {
+		CallID  string
+		Err     error
+		Outputs map[string]*model.Value
+	}
+	childResults := make(chan childResult, len(callSpecParallelCall))
+
+	// This waitgroup ensures all child goroutines are allowed to clean up
+	var wg sync.WaitGroup
+	defer wg.Wait()
 
 	// perform calls in parallel w/ cancellation
 	for childCallIndex, childCall := range callSpecParallelCall {
-
 		childCallID, err := uniquestring.Construct()
 		if err != nil {
 			// end run immediately on any error
@@ -85,22 +85,31 @@ func (pc _parallelCaller) Call(
 
 		childCallIndexByID[childCallID] = childCallIndex
 
+		// for "needs" children, track a specific context so we can kill that child
+		// use the normal parallel context for other children
+		var childCtx context.Context
 		if childCall.Name != nil {
-			childCallIDByName[*childCall.Name] = childCallID
+			childCallIndexByName[*childCall.Name] = childCallIndex
+			childCtx, childCallCancellationByIndex[childCallIndex] = context.WithCancel(parallelCtx)
+		} else {
+			childCtx = parallelCtx
 		}
 
+		wg.Add(1)
 		go func(childCall *model.CallSpec) {
 			defer func() {
-				if panicArg := recover(); panicArg != nil {
-					// recover from panics; treat as errors
-					fmt.Printf("%v\n%v", panicArg, debug.Stack())
-
-					// cancel all children on any error
-					cancelParallel()
+				if r := recover(); r != nil {
+					childResults <- childResult{
+						CallID:  childCallID,
+						Err:     fmt.Errorf("panic: %v", r),
+						Outputs: nil,
+					}
 				}
 			}()
 
-			pc.caller.Call(
+			defer wg.Done()
+
+			outputs, err := pc.caller.Call(
 				parallelCtx,
 				childCallID,
 				inboundScope,
@@ -109,35 +118,34 @@ func (pc _parallelCaller) Call(
 				&callID,
 				rootCallID,
 			)
-
+			if childCtx.Err() != nil {
+				// context has been cancelled, so skip reporting results
+				return
+			}
+			childResults <- childResult{
+				CallID:  childCallID,
+				Err:     err,
+				Outputs: outputs,
+			}
 		}(childCall)
 	}
 
-	// subscribe to events
-	// @TODO: handle err channel
-	eventChannel, _ := pc.pubSub.Subscribe(
-		// don't cancel w/ children; we need to read err msgs
-		parentCtx,
-		model.EventFilter{
-			Roots: []string{rootCallID},
-			Since: &startTime,
-		},
-	)
+	outboundScope := inboundScope
 
-	var isChildErred = false
-	outputs := map[string]*model.Value{}
+	for {
+		select {
+		case <-parallelCtx.Done():
+			return nil, parallelCtx.Err()
 
-eventLoop:
-	for event := range eventChannel {
-		if event.CallEnded != nil {
-			if childCallIndex, isChildCallEnded := childCallIndexByID[event.CallEnded.Call.ID]; isChildCallEnded {
-				childCallOutputsByIndex[childCallIndex] = event.CallEnded.Outputs
-				if event.CallEnded.Error != nil {
-					isChildErred = true
-
-					// cancel all children on any error
-					cancelParallel()
-				}
+		case result := <-childResults:
+			if result.Err != nil {
+				// cancel all children on any error
+				cancelParallel()
+				close(childResults)
+				return nil, result.Err
+			}
+			if childCallIndex, isChildCallEnded := childCallIndexByID[result.CallID]; isChildCallEnded {
+				childCallOutputsByIndex[childCallIndex] = result.Outputs
 
 				// decrement needed by counts for any needs
 				for _, neededCallRef := range callSpecParallelCall[childCallIndex].Needs {
@@ -146,18 +154,12 @@ eventLoop:
 
 				for neededCallName, neededCount := range childCallNeededCountByName {
 					if 1 > neededCount {
-						if neededCallID, ok := childCallIDByName[neededCallName]; ok {
-							pc.pubSub.Publish(
-								model.Event{
-									CallKillRequested: &model.CallKillRequested{
-										Request: model.KillOpReq{
-											OpID:       neededCallID,
-											RootCallID: rootCallID,
-										},
-									},
-									Timestamp: time.Now().UTC(),
-								},
-							)
+						neededCallIndex := childCallIndexByName[neededCallName]
+						if cancel, ok := childCallCancellationByIndex[neededCallIndex]; ok {
+							cancel()
+							// cancelled "needed" calls do not produce outputs, but need need to
+							// record outputs to allow final call ended count to pass
+							childCallOutputsByIndex[neededCallIndex] = map[string]*model.Value{}
 						}
 					}
 				}
@@ -170,19 +172,12 @@ eventLoop:
 				for i := 0; i < len(callSpecParallelCall); i++ {
 					callOutputs := childCallOutputsByIndex[i]
 					for varName, varData := range callOutputs {
-						outputs[varName] = varData
+						outboundScope[varName] = varData
 					}
 				}
 
-				if isChildErred {
-					return nil, errors.New("child call failed")
-				}
-
-				break eventLoop
+				return outboundScope, nil
 			}
-
 		}
 	}
-
-	return outputs, nil
 }

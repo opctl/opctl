@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"errors"
 	"io"
 	"io/ioutil"
 
@@ -12,17 +13,13 @@ import (
 	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/core/containerruntime/fakes"
 	. "github.com/opctl/opctl/sdks/go/node/core/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/pubsub"
-	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
 )
 
 var _ = Context("parallelLoopCaller", func() {
 	Context("newParallelLoopCaller", func() {
 		It("should return parallelLoopCaller", func() {
 			/* arrange/act/assert */
-			Expect(newParallelLoopCaller(
-				new(FakeCaller),
-				new(FakePubSub),
-			)).To(Not(BeNil()))
+			Expect(newParallelLoopCaller(new(FakeCaller))).To(Not(BeNil()))
 		})
 	})
 
@@ -34,7 +31,6 @@ var _ = Context("parallelLoopCaller", func() {
 
 				objectUnderTest := _parallelLoopCaller{
 					caller: fakeCaller,
-					pubSub: new(FakePubSub),
 				}
 
 				/* act */
@@ -56,7 +52,6 @@ var _ = Context("parallelLoopCaller", func() {
 		})
 
 		Context("iteration spec invalid", func() {
-
 			It("should return expected results", func() {
 				/* arrange */
 				dbDir, err := ioutil.TempDir("", "")
@@ -91,7 +86,6 @@ var _ = Context("parallelLoopCaller", func() {
 
 				objectUnderTest := _parallelLoopCaller{
 					caller: caller,
-					pubSub: pubSub,
 				}
 
 				/* act */
@@ -113,7 +107,7 @@ var _ = Context("parallelLoopCaller", func() {
 				)
 
 				/* assert */
-				Expect(actualErr.Error()).To(Equal("child call failed"))
+				Expect(actualErr).To(MatchError("image required"))
 				Expect(actualOutputs).To(BeNil())
 			})
 		})
@@ -178,7 +172,6 @@ var _ = Context("parallelLoopCaller", func() {
 					dbDir,
 					pubSub,
 				),
-				pubSub: pubSub,
 			}
 
 			/* act */
@@ -265,6 +258,128 @@ var _ = Context("parallelLoopCaller", func() {
 					},
 				),
 			)
+		})
+
+		It("adds outputs to scope", func() {
+			/* arrange */
+			providedOpRef := "providedOpRef"
+			providedParentID := "providedParentID"
+			providedRootID := "providedRootID"
+			input1Value := "input1Value"
+			providedInboundScope := map[string]*model.Value{
+				"input": {String: &input1Value},
+			}
+
+			fakeCaller := new(FakeCaller)
+
+			expectedOutput0 := "outputVal0"
+			expectedOutputs0 := map[string]*model.Value{
+				"output0": {String: &expectedOutput0},
+			}
+			fakeCaller.CallReturnsOnCall(0, expectedOutputs0, nil)
+			expectedOutput1 := "outputVal1"
+			expectedOutputs1 := map[string]*model.Value{
+				"output1": {String: &expectedOutput1},
+			}
+			fakeCaller.CallReturnsOnCall(1, expectedOutputs1, nil)
+
+			objectUnderTest := _parallelLoopCaller{
+				caller: fakeCaller,
+			}
+
+			/* act */
+			actualOutputs, actualErr := objectUnderTest.Call(
+				context.Background(),
+				"",
+				providedInboundScope,
+				model.ParallelLoopCallSpec{
+					Range: model.Value{
+						Array: &[]interface{}{0, 1},
+					},
+					Run: model.CallSpec{},
+				},
+				providedOpRef,
+				&providedParentID,
+				providedRootID,
+			)
+
+			/* assert */
+			Expect(actualErr).To(BeNil())
+			Expect(actualOutputs).To(Equal(map[string]*model.Value{
+				"input":   {String: &input1Value},
+				"output0": {String: &expectedOutput0},
+				"output1": {String: &expectedOutput1},
+			}))
+		})
+
+		It("cancels other children when one fails", func() {
+			/* arrange */
+			providedOpRef := "providedOpRef"
+			providedParentID := "providedParentID"
+			providedRootID := "providedRootID"
+
+			fakeCaller := new(FakeCaller)
+
+			expectedError := errors.New("fail")
+			fakeCaller.CallReturnsOnCall(0, nil, expectedError)
+
+			objectUnderTest := _parallelLoopCaller{
+				caller: fakeCaller,
+			}
+
+			/* act */
+			actualOutputs, actualErr := objectUnderTest.Call(
+				context.Background(),
+				"",
+				map[string]*model.Value{},
+				model.ParallelLoopCallSpec{
+					Range: model.Value{
+						Array: &[]interface{}{0, 1},
+					},
+					Run: model.CallSpec{},
+				},
+				providedOpRef,
+				&providedParentID,
+				providedRootID,
+			)
+
+			/* assert */
+			Expect(actualErr).To(MatchError(expectedError))
+			Expect(actualOutputs).To(BeNil())
+		})
+
+		It("cancels early when context is cancelled", func() {
+			/* arrange */
+			providedOpRef := "providedOpRef"
+			providedParentID := "providedParentID"
+			providedRootID := "providedRootID"
+
+			objectUnderTest := _parallelLoopCaller{
+				caller: new(FakeCaller),
+			}
+
+			ctx, cancel := context.WithCancel(context.Background())
+			cancel()
+
+			/* act */
+			actualOutputs, actualErr := objectUnderTest.Call(
+				ctx,
+				"",
+				map[string]*model.Value{},
+				model.ParallelLoopCallSpec{
+					Range: model.Value{
+						Array: &[]interface{}{0, 1},
+					},
+					Run: model.CallSpec{},
+				},
+				providedOpRef,
+				&providedParentID,
+				providedRootID,
+			)
+
+			/* assert */
+			Expect(actualErr).To(MatchError(context.Canceled))
+			Expect(actualOutputs).To(BeNil())
 		})
 	})
 })

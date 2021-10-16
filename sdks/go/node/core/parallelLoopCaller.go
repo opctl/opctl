@@ -2,10 +2,8 @@ package core
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"runtime/debug"
-	"time"
+	"sync"
 
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop/iteration"
@@ -13,7 +11,6 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 //counterfeiter:generate -o internal/fakes/parallelLoopCaller.go . parallelLoopCaller
@@ -33,19 +30,14 @@ type parallelLoopCaller interface {
 	)
 }
 
-func newParallelLoopCaller(
-	caller caller,
-	pubSub pubsub.PubSub,
-) parallelLoopCaller {
+func newParallelLoopCaller(caller caller) parallelLoopCaller {
 	return _parallelLoopCaller{
 		caller: caller,
-		pubSub: pubSub,
 	}
 }
 
 type _parallelLoopCaller struct {
 	caller caller
-	pubSub pubsub.PubSub
 }
 
 func (plpr _parallelLoopCaller) Call(
@@ -65,34 +57,43 @@ func (plpr _parallelLoopCaller) Call(
 	defer cancelParallelLoop()
 
 	childCallIndex := 0
-	startTime := time.Now().UTC()
 	childCallIndexByID := map[string]int{}
 
-	for {
+	type childResult struct {
+		CallID  string
+		Err     error
+		Outputs map[string]*model.Value
+	}
+	childResults := make(chan childResult)
 
+	// This waitgroup ensures all child goroutines are allowed to clean up
+	var wg sync.WaitGroup
+	defer wg.Wait()
+
+	for {
 		childCallID, err := uniquestring.Construct()
 		if err != nil {
 			// end run immediately on any error
 			return nil, err
 		}
 
-		childCallScope, scopeErr := iteration.Scope(
+		childCallScope, err := iteration.Scope(
 			childCallIndex,
 			inboundScope,
 			callSpecParallelLoop.Range,
 			callSpecParallelLoop.Vars,
 		)
-		if scopeErr != nil {
-			return nil, scopeErr
+		if err != nil {
+			return nil, err
 		}
 
 		// interpret iteration of the loop
-		callParallelLoop, interpretErr := parallelloop.Interpret(
+		callParallelLoop, err := parallelloop.Interpret(
 			callSpecParallelLoop,
 			childCallScope,
 		)
-		if interpretErr != nil {
-			return nil, interpretErr
+		if err != nil {
+			return nil, err
 		}
 
 		if parallelloop.IsIterationComplete(childCallIndex, *callParallelLoop) {
@@ -101,18 +102,21 @@ func (plpr _parallelLoopCaller) Call(
 
 		childCallIndexByID[childCallID] = childCallIndex
 
+		wg.Add(1)
 		go func() {
 			defer func() {
-				if panicArg := recover(); panicArg != nil {
-					// recover from panics; treat as errors
-					fmt.Printf("%v\n%v", panicArg, debug.Stack())
-
-					// cancel all children on any error
-					cancelParallelLoop()
+				if r := recover(); r != nil {
+					childResults <- childResult{
+						CallID:  childCallID,
+						Err:     fmt.Errorf("panic: %v", r),
+						Outputs: nil,
+					}
 				}
 			}()
 
-			plpr.caller.Call(
+			defer wg.Done()
+
+			outputs, err := plpr.caller.Call(
 				parallelLoopCtx,
 				childCallID,
 				childCallScope,
@@ -121,42 +125,41 @@ func (plpr _parallelLoopCaller) Call(
 				parentCallID,
 				rootCallID,
 			)
+			if parallelLoopCtx.Err() != nil {
+				// context has been cancelled, so skip reporting results
+				return
+			}
+			childResults <- childResult{
+				CallID:  childCallID,
+				Err:     err,
+				Outputs: outputs,
+			}
 		}()
 
 		childCallIndex++
-
 	}
 
 	if len(childCallIndexByID) == 0 {
 		return nil, nil
 	}
 
-	// subscribe to events
-	// @TODO: handle err channel
-	eventChannel, _ := plpr.pubSub.Subscribe(
-		// don't cancel w/ children; we need to read err msgs
-		parentCtx,
-		model.EventFilter{
-			Roots: []string{rootCallID},
-			Since: &startTime,
-		},
-	)
-
-	var isChildErred = false
 	childCallOutputsByIndex := map[int]map[string]*model.Value{}
-	outputs := inboundScope
+	outboundScope := inboundScope
 
-eventLoop:
-	for event := range eventChannel {
-		if event.CallEnded != nil {
-			if childCallIndex, isChildCallEnded := childCallIndexByID[event.CallEnded.Call.ID]; isChildCallEnded {
-				childCallOutputsByIndex[childCallIndex] = event.CallEnded.Outputs
-				if event.CallEnded.Error != nil {
-					isChildErred = true
+	for {
+		select {
+		case <-parallelLoopCtx.Done():
+			return nil, parallelLoopCtx.Err()
 
-					// cancel all children on any error
-					cancelParallelLoop()
-				}
+		case result := <-childResults:
+			if result.Err != nil {
+				cancelParallelLoop()
+				close(childResults)
+				return nil, result.Err
+			}
+
+			if childCallIndex, isChildCallEnded := childCallIndexByID[result.CallID]; isChildCallEnded {
+				childCallOutputsByIndex[childCallIndex] = result.Outputs
 			}
 
 			if len(childCallOutputsByIndex) == len(childCallIndexByID) {
@@ -166,24 +169,17 @@ eventLoop:
 				for i := 0; i < len(childCallIndexByID); i++ {
 					callOutputs := childCallOutputsByIndex[i]
 					for varName, varData := range callOutputs {
-						outputs[varName] = varData
+						outboundScope[varName] = varData
 					}
 				}
 
-				if isChildErred {
-					return nil, errors.New("child call failed")
-				}
-
-				break eventLoop
+				return loop.DeScope(
+					inboundScope,
+					callSpecParallelLoop.Range,
+					callSpecParallelLoop.Vars,
+					outboundScope,
+				), nil
 			}
-
 		}
 	}
-
-	return loop.DeScope(
-		inboundScope,
-		callSpecParallelLoop.Range,
-		callSpecParallelLoop.Vars,
-		outputs,
-	), nil
 }
