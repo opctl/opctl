@@ -33,6 +33,10 @@ var _ = Context("DeleteContainerIfExists", func() {
 		)
 
 		/* assert */
+		actualCtx, actualContainerName, _ := fakeDockerClient.ContainerStopArgsForCall(0)
+		Expect(actualCtx).To(Equal(providedCtx))
+		Expect(actualContainerName).To(Equal(expectedContainerName))
+
 		actualCtx,
 			actualContainerName,
 			actualContainerRemoveOptions := fakeDockerClient.ContainerRemoveArgsForCall(0)

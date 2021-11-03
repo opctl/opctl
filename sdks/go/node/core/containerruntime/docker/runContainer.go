@@ -2,12 +2,13 @@ package docker
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
 	"sync"
+	"time"
 
-	"errors"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
@@ -82,9 +83,16 @@ func (cr _runContainer) RunContainer(
 	// do not change this prefix as it might break external consumers
 	containerName := getContainerName(req.ContainerID)
 	defer func() {
-		// ensure container always cleaned up
+		// ensure container always cleaned up: gracefully stop then delete it
+		newCtx := context.Background() // always use a fresh context, to clean up after cancellation
+		stopTimeout := 3 * time.Second
+		cr.dockerClient.ContainerStop(
+			newCtx,
+			containerName,
+			&stopTimeout,
+		)
 		cr.dockerClient.ContainerRemove(
-			context.Background(), // always use a fresh context, to clean up after cancellation
+			newCtx,
 			containerName,
 			types.ContainerRemoveOptions{
 				RemoveVolumes: true,
