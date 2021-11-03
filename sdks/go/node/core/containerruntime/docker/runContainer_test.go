@@ -56,6 +56,9 @@ var _ = Context("RunContainer", func() {
 		)
 
 		/* assert */
+		_, actualContainerName, _ := fakeDockerClient.ContainerStopArgsForCall(0)
+		Expect(actualContainerName).To(Equal(fmt.Sprintf("opctl_%s", providedReq.ContainerID)))
+
 		_, actualContainerName, actualContainerRemoveOptions := fakeDockerClient.ContainerRemoveArgsForCall(0)
 		Expect(actualContainerName).To(Equal(fmt.Sprintf("opctl_%s", providedReq.ContainerID)))
 		Expect(actualContainerRemoveOptions).To(Equal(expectedContainerRemoveOptions))
