@@ -84,6 +84,7 @@ func (cr _runContainer) RunContainer(
 	containerName := getContainerName(req.ContainerID)
 	defer func() {
 		// ensure container always cleaned up: gracefully stop then delete it
+		// @TODO: consolidate logic with DeleteContainerIfExists
 		newCtx := context.Background() // always use a fresh context, to clean up after cancellation
 		stopTimeout := 3 * time.Second
 		cr.dockerClient.ContainerStop(
