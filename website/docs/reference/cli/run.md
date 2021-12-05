@@ -9,7 +9,7 @@ opctl run [OPTIONS] OP_REF
 
 Start and wait on an op.
 
-> if a node isn't running, one will be automatically created
+> if a node isn't running, one will be started automatically
 
 ## Arguments
 

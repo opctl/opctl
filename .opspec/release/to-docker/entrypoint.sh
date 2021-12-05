@@ -23,8 +23,8 @@ if [ "$n" -eq "$max_retries" ]; then
 fi
 
 if [ $# -eq 0 ]; then
-    echo 'no cmd provided, running "opctl node create"'
-    opctl node create
+    echo 'no cmd provided, running "opctl node start"'
+    opctl node start
 else
   echo 'running provided cmd'
   exec "$@"

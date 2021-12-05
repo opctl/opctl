@@ -11,6 +11,8 @@ run:
   serial:
     - op:
         ref: ../compile
+        inputs:
+          HOME:
     - container:
         image: { ref: 'golang:1.17' }
         cmd:
@@ -26,7 +28,7 @@ run:
           - github.com/opspec-pkgs/uuid.v4.generate#1.1.0
         dirs:
           /src: $(../../..)
-          /go/pkg: $(HOME/pkg)
+          /go/pkg: $(HOME/go/pkg)
         ports:
           # debug port for delve
           40000: 40000

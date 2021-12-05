@@ -10,14 +10,12 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
-//counterfeiter:generate -o fakes/eventPublisher.go . EventPublisher
 type EventPublisher interface {
 	Publish(
 		event model.Event,
 	)
 }
 
-//counterfeiter:generate -o fakes/eventSubscriber.go . EventSubscriber
 type EventSubscriber interface {
 	// Subscribe returns a filtered event stream
 	// events will be sent to the subscription until ctx is canceled.
@@ -47,7 +45,7 @@ func New(
 }
 
 type pubSub struct {
-	eventStore EventStore
+	eventStore eventStore
 	// subscriptions is a map where key is a channel for the subscription & value is info about the subscription
 	subscriptions      map[chan model.Event]subscriptionInfo
 	subscriptionsMutex sync.RWMutex
@@ -60,13 +58,13 @@ func (ps *pubSub) Subscribe(
 	<-chan model.Event,
 	error,
 ) {
-	dstEventChannel := make(chan model.Event, 1000)
+	dstEventChannel := make(chan model.Event)
 
 	go func() {
 		defer close(dstEventChannel)
 
-		publishEventChannel := make(chan model.Event, 1000)
-		defer ps.gcSubscription(publishEventChannel)
+		publishEventChannel := make(chan model.Event)
+		defer ps.closeSubscription(publishEventChannel)
 
 		subscriptionInfo := subscriptionInfo{
 			Filter: filter,
@@ -79,21 +77,17 @@ func (ps *pubSub) Subscribe(
 		ps.subscriptionsMutex.Unlock()
 
 		// old events
-		eventStoreEventChannel, _ := ps.eventStore.List(ctx, filter)
-		for event := range eventStoreEventChannel {
-			select {
-			case dstEventChannel <- event:
-			case <-ctx.Done():
-				return
-			}
+		err := ps.eventStore.List(ctx, filter, dstEventChannel)
+		if err != nil {
+			return
 		}
 
 		// new events
 		for event := range publishEventChannel {
 			select {
-			case dstEventChannel <- event:
 			case <-ctx.Done():
 				return
+			case dstEventChannel <- event:
 			}
 		}
 	}()
@@ -101,7 +95,7 @@ func (ps *pubSub) Subscribe(
 	return dstEventChannel, nil
 }
 
-func (ps *pubSub) gcSubscription(
+func (ps *pubSub) closeSubscription(
 	channel chan model.Event,
 ) {
 	ps.subscriptionsMutex.RLock()
@@ -124,8 +118,8 @@ func (ps *pubSub) Publish(
 
 	for publishEventChannel, subscriptionInfo := range ps.subscriptions {
 
-		RootCallID := getEventRootCallID(event)
-		if !isRootCallIDExcludedByFilter(RootCallID, subscriptionInfo.Filter) {
+		rootCallID := getEventRootCallID(event)
+		if !isRootCallIDExcludedByFilter(rootCallID, subscriptionInfo.Filter) {
 
 			// use go routine because this publishEventChannel could be blocked
 			// for valid reasons such as replaying events from event store.

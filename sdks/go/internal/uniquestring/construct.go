@@ -7,10 +7,7 @@ import (
 
 // Construct returns a globally unique string
 func Construct() (string, error) {
-	uuid, err := uuid.NewV4()
-	if err != nil {
-		return "", err
-	}
+	uuid := uuid.NewV4()
 
 	return strings.Replace(
 		uuid.String(),

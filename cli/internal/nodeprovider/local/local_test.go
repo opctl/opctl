@@ -15,7 +15,7 @@ var _ = Context("New", func() {
 		}
 
 		/* act */
-		New(NodeCreateOpts{
+		New(NodeConfig{
 			DataDir: dataDir,
 		})
 	})

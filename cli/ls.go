@@ -22,7 +22,7 @@ func ls(
 	nodeProvider nodeprovider.NodeProvider,
 	dirRef string,
 ) error {
-	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
+	node, err := nodeProvider.StartNode(ctx)
 	if err != nil {
 		return err
 	}

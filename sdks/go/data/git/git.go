@@ -4,9 +4,11 @@ package git
 
 import (
 	"context"
+	"crypto/sha1"
+	"fmt"
+	"os"
 	"path/filepath"
 
-	"github.com/opctl/opctl/sdks/go/data/fs"
 	"github.com/opctl/opctl/sdks/go/model"
 	"golang.org/x/sync/singleflight"
 )
@@ -20,17 +22,14 @@ func New(
 	pullCreds *model.Creds,
 ) model.DataProvider {
 	return _git{
-		localFSProvider: fs.New(basePath),
-		basePath:        basePath,
-		pullCreds:       pullCreds,
+		basePath:  basePath,
+		pullCreds: pullCreds,
 	}
 }
 
 type _git struct {
-	// composed of fsProvider
-	localFSProvider model.DataProvider
-	basePath        string
-	pullCreds       *model.Creds
+	basePath  string
+	pullCreds *model.Creds
 }
 
 func (gp _git) Label() string {
@@ -45,18 +44,33 @@ func (gp _git) TryResolve(
 	handle, err, _ := resolveSingleFlightGroup.Do(
 		dataRef,
 		func() (interface{}, error) {
-			// attempt to resolve from cache
-			handle, _ := gp.localFSProvider.TryResolve(ctx, dataRef)
-			// ignore errors from local resolution, since we'll try to pull from a remote
-			if handle != nil {
+			repoPath := filepath.Join(gp.basePath, dataRef)
+			handle := newHandle(repoPath, dataRef)
+
+			// we'll mark complete clones in case we get interrupted
+			completeMarkerPath := filepath.Join(gp.basePath, fmt.Sprintf(".%x", sha1.Sum([]byte(dataRef))))
+
+			_, err := os.Stat(completeMarkerPath)
+			if err == nil {
+				// complete clone found
 				return handle, nil
+			} else if !os.IsNotExist(err) {
+				// incomplete clone; blow it away
+				if err := os.RemoveAll(repoPath); err != nil {
+					return nil, err
+				}
 			}
 
-			// attempt pull if cache miss
-			if err := Pull(ctx, gp.basePath, dataRef, gp.pullCreds); err != nil {
+			// attempt clone
+			if err := Clone(ctx, gp.basePath, dataRef, gp.pullCreds); err != nil {
 				return nil, err
 			}
-			return newHandle(filepath.Join(gp.basePath, dataRef), dataRef), nil
+
+			// mark complete
+			f, err := os.Create(completeMarkerPath)
+			f.Close()
+
+			return handle, err
 		},
 	)
 	if err != nil {

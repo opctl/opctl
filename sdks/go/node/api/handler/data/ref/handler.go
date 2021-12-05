@@ -10,7 +10,7 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/internal/urlpath"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/node"
 )
 
 //counterfeiter:generate -o fakes/handler.go . Handler
@@ -24,17 +24,17 @@ type Handler interface {
 
 // NewHandler returns an initialized Handler instance
 func NewHandler(
-	core core.Core,
+	node node.Core,
 ) Handler {
 	return _handler{
-		handleGetOrHeader: newHandleGetOrHeader(core),
-		core:              core,
+		handleGetOrHeader: newHandleGetOrHeader(node),
+		node:              node,
 	}
 }
 
 type _handler struct {
 	handleGetOrHeader handleGetOrHeader
-	core              core.Core
+	node              node.Core
 }
 
 func (hdlr _handler) Handle(
@@ -59,7 +59,7 @@ func (hdlr _handler) Handle(
 			}
 		}
 
-		dataHandle, err := hdlr.core.ResolveData(
+		dataHandle, err := hdlr.node.ResolveData(
 			httpReq.Context(),
 			dataRef,
 			pullCreds,

@@ -10,12 +10,15 @@ inputs:
 run:
   container:
     cmd:
+      # - sh
+      # - -ce
+      # - sleep 100000
       - go
       - test
       - ./cli/...
     dirs:
       /src: $(../../../..)
-      /go/pkg: $(HOME/pkg)
+      /go/pkg: $(HOME/go/pkg)
     envVars:
       OPCTL_DATA_DIR: /tmp/opctl
       GOFLAGS: -tags=containers_image_openpgp

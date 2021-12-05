@@ -27,8 +27,8 @@ func New(
 ) node.Node {
 
 	httpClient := pester.New()
-	httpClient.Backoff = pester.ExponentialBackoff
-	httpClient.MaxRetries = 4
+	// 90 second timeout
+	httpClient.MaxRetries = 90
 
 	if opts != nil {
 		// handle options

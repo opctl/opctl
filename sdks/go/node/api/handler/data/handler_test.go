@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	refFakes "github.com/opctl/opctl/sdks/go/node/api/handler/data/ref/fakes"
-	coreFakes "github.com/opctl/opctl/sdks/go/node/core/fakes"
+	coreFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

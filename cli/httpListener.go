@@ -15,8 +15,8 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/opctl/opctl/cli/internal/clicolorer"
+	core "github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/node/api/handler"
-	"github.com/opctl/opctl/sdks/go/node/core"
 	"github.com/opctl/opctl/webapp"
 )
 
@@ -91,7 +91,7 @@ func (hd _httpListener) listen(
 	}()
 
 	fmt.Println(
-		hd.cliColorer.Info(fmt.Sprintf("Binding opctl API to %s", address)),
+		hd.cliColorer.Info(fmt.Sprintf("opctl listening on %s", address)),
 	)
 
 	if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {

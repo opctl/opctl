@@ -30,7 +30,7 @@ var _ = Context("embedLocalFilesAndDirs", func() {
 			testDataFilePath := filepath.Join(wd, "testdata/embedLocalFilesAndDirs/rootfile1.txt")
 
 			args := map[string]*model.Value{
-				"dummyFile": &model.Value{
+				"dummyFile": {
 					File: &testDataFilePath,
 				},
 			}
@@ -53,7 +53,7 @@ var _ = Context("embedLocalFilesAndDirs", func() {
 			testDataFilePath := filepath.Join(wd, "testdata/embedLocalFilesAndDirs")
 
 			args := map[string]*model.Value{
-				"dummyDir": &model.Value{
+				"dummyDir": {
 					Dir: &testDataFilePath,
 				},
 			}
@@ -77,10 +77,10 @@ var _ = Context("embedLocalFilesAndDirs", func() {
 			testDataFile2Path := filepath.Join(wd, "testdata/embedLocalFilesAndDirs/rootfile2.txt")
 
 			args := map[string]*model.Value{
-				"testDataFile1": &model.Value{
+				"testDataFile1": {
 					File: &testDataFile1Path,
 				},
-				"testDataFile2": &model.Value{
+				"testDataFile2": {
 					File: &testDataFile2Path,
 				},
 			}
@@ -102,7 +102,7 @@ var _ = Context("embedLocalFilesAndDirs", func() {
 			pathDoesntExist := "path/doesnt/exist"
 
 			args := map[string]*model.Value{
-				"pathDoesntExist": &model.Value{
+				"pathDoesntExist": {
 					Dir: &pathDoesntExist,
 				},
 			}
@@ -122,7 +122,7 @@ var _ = Context("embedLocalFilesAndDirs", func() {
 			pathDoesntExist := "path/doesnt/exist"
 
 			args := map[string]*model.Value{
-				"pathDoesntExist": &model.Value{
+				"pathDoesntExist": {
 					File: &pathDoesntExist,
 				},
 			}
@@ -142,7 +142,7 @@ var _ = Context("embedLocalFilesAndDirs", func() {
 			pathDoesntExist := filepath.Join(wd, "testdata/embedLocalFilesAndDirs", "path/doesnt/exist")
 
 			args := map[string]*model.Value{
-				"pathDoesntExist": &model.Value{
+				"pathDoesntExist": {
 					File: &pathDoesntExist,
 				},
 			}

@@ -17,8 +17,6 @@ import (
 	"golang.org/x/term"
 )
 
-var testModeEnvVar = "OPCTL_TEST_MODE"
-
 type cli interface {
 	Run(args []string) error
 }
@@ -57,7 +55,7 @@ func newCli(
 
 	containerRuntime := cli.String(
 		mow.StringOpt{
-			Desc:   "Runtime for opctl containers",
+			Desc:   "Runtime for opctl containers. Can be 'docker', 'k8s', or 'qemu' (experimental Mac OS only)",
 			EnvVar: "OPCTL_CONTAINER_RUNTIME",
 			Name:   "container-runtime",
 			Value:  "docker",
@@ -80,16 +78,6 @@ func newCli(
 			Name:   "listen-address",
 			Value:  "127.0.0.1:42224",
 		},
-	)
-
-	nodeCreateOpts := local.NodeCreateOpts{
-		ContainerRuntime: *containerRuntime,
-		DataDir:          *dataDir,
-		ListenAddress:    *listenAddress,
-	}
-
-	nodeProvider := local.New(
-		nodeCreateOpts,
 	)
 
 	cliParamSatisfier := cliparamsatisfier.New(cliOutput)
@@ -121,7 +109,13 @@ func newCli(
 					"",
 					auth(
 						ctx,
-						nodeProvider,
+						local.New(
+							local.NodeConfig{
+								ContainerRuntime: *containerRuntime,
+								DataDir:          *dataDir,
+								ListenAddress:    *listenAddress,
+							},
+						),
 						model.AddAuthReq{
 							Resources: *resources,
 							Creds: model.Creds{
@@ -142,7 +136,13 @@ func newCli(
 				events(
 					ctx,
 					cliOutput,
-					nodeProvider,
+					local.New(
+						local.NodeConfig{
+							ContainerRuntime: *containerRuntime,
+							DataDir:          *dataDir,
+							ListenAddress:    *listenAddress,
+						},
+					),
 				),
 			)
 		}
@@ -159,7 +159,13 @@ func newCli(
 				ls(
 					ctx,
 					cliParamSatisfier,
-					nodeProvider,
+					local.New(
+						local.NodeConfig{
+							ContainerRuntime: *containerRuntime,
+							DataDir:          *dataDir,
+							ListenAddress:    *listenAddress,
+						},
+					),
 					*dirRef,
 				),
 			)
@@ -167,27 +173,59 @@ func newCli(
 	})
 
 	cli.Command("node", "Manage nodes", func(nodeCmd *mow.Cmd) {
-		nodeCmd.Command("create", "Creates a node", func(createCmd *mow.Cmd) {
+		nodeCmd.Command("start", "Starts a node", func(createCmd *mow.Cmd) {
 			createCmd.Action = func() {
 				exitWith(
 					"",
-					node(
+					nodeCreate(
 						ctx,
-						nodeCreateOpts,
+						local.NodeConfig{
+							ContainerRuntime: *containerRuntime,
+							DataDir:          *dataDir,
+							ListenAddress:    *listenAddress,
+						},
 					),
 				)
 			}
 		})
 
-		nodeCmd.Command("kill", "Kills a node", func(killCmd *mow.Cmd) {
-			killCmd.Action = func() {
-				exitWith("", nodeProvider.KillNodeIfExists(""))
+		nodeCmd.Command("delete", "Deletes a node. Warning: this is destructive! all data including auth, caches, and state will be permanently removed.", func(stopCmd *mow.Cmd) {
+			stopCmd.Action = func() {
+				exitWith(
+					"",
+					nodeDelete(
+						ctx,
+						local.NodeConfig{
+							ContainerRuntime: *containerRuntime,
+							DataDir:          *dataDir,
+							ListenAddress:    *listenAddress,
+						},
+					),
+				)
+			}
+		})
+
+		nodeCmd.Command("stop", "Stops a node", func(stopCmd *mow.Cmd) {
+			stopCmd.Action = func() {
+				exitWith("", local.New(
+					local.NodeConfig{
+						ContainerRuntime: *containerRuntime,
+						DataDir:          *dataDir,
+						ListenAddress:    *listenAddress,
+					},
+				).StopNodeIfExists(""))
 			}
 		})
 	})
 
 	cli.Command("op", "Manage ops", func(opCmd *mow.Cmd) {
-		node, err := nodeProvider.CreateNodeIfNotExists(ctx)
+		node, err := local.New(
+			local.NodeConfig{
+				ContainerRuntime: *containerRuntime,
+				DataDir:          *dataDir,
+				ListenAddress:    *listenAddress,
+			},
+		).StartNode(ctx)
 		if err != nil {
 			exitWith("", err)
 		}
@@ -237,10 +275,10 @@ func newCli(
 			}
 		})
 
-		opCmd.Command("kill", "Kill an op", func(killCmd *mow.Cmd) {
-			opID := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
+		opCmd.Command("kill", "Kill an op", func(stopCmd *mow.Cmd) {
+			opID := stopCmd.StringArg("OP_ID", "", "Id of the op to kill")
 
-			killCmd.Action = func() {
+			stopCmd.Action = func() {
 				exitWith(
 					"",
 					node.KillOp(
@@ -283,7 +321,13 @@ func newCli(
 					ctx,
 					cliOutput,
 					cliParamSatisfier,
-					nodeProvider,
+					local.New(
+						local.NodeConfig{
+							ContainerRuntime: *containerRuntime,
+							DataDir:          *dataDir,
+							ListenAddress:    *listenAddress,
+						},
+					),
 					*args,
 					*argFile,
 					*opRef,
@@ -297,7 +341,13 @@ func newCli(
 		selfUpdateCmd.Action = func() {
 			exitWith(
 				selfUpdate(
-					nodeProvider,
+					local.New(
+						local.NodeConfig{
+							ContainerRuntime: *containerRuntime,
+							DataDir:          *dataDir,
+							ListenAddress:    *listenAddress,
+						},
+					),
 				),
 			)
 		}
@@ -314,7 +364,13 @@ func newCli(
 				ui(
 					ctx,
 					cliParamSatisfier,
-					nodeProvider,
+					local.New(
+						local.NodeConfig{
+							ContainerRuntime: *containerRuntime,
+							DataDir:          *dataDir,
+							ListenAddress:    *listenAddress,
+						},
+					),
 					*listenAddress,
 					*mountRefArg,
 				),
