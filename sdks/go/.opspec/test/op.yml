@@ -12,7 +12,7 @@ run:
       - ./sdks/go/...
     dirs:
       /src: $(../../../..)
-      /go/pkg: $(HOME/pkg)
+      /go/pkg: $(HOME/go/pkg)
     envVars:
       GOFLAGS: -tags=containers_image_openpgp
     image: { ref: "golang:1.17" }

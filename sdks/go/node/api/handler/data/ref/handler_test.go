@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
-	coreFakes "github.com/opctl/opctl/sdks/go/node/core/fakes"
+	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/api/handler/data/ref/internal/fakes"
@@ -21,7 +21,7 @@ var _ = Context("Handler", func() {
 	Context("NewHandler", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewHandler(new(coreFakes.FakeCore))).Should(Not(BeNil()))
+			Expect(NewHandler(new(nodeFakes.FakeCore))).Should(Not(BeNil()))
 		})
 	})
 	Context("Handle", func() {
@@ -49,18 +49,18 @@ var _ = Context("Handler", func() {
 		})
 		Context("next URL path segment isn't empty", func() {
 			Context("req has BasicAuth", func() {
-				It("should call core.ResolveData w/ expected args", func() {
+				It("should call node.ResolveData w/ expected args", func() {
 					/* arrange */
 					providedDataRef := "dummyDataRef"
 					providedUsername := "dummyUsername"
 					providedPassword := "dummyPassword"
 
-					fakeCore := new(coreFakes.FakeCore)
+					fakeCore := new(nodeFakes.FakeCore)
 					// err to trigger immediate return
 					fakeCore.ResolveDataReturns(nil, errors.New("dummyErr"))
 
 					objectUnderTest := _handler{
-						core: fakeCore,
+						node: fakeCore,
 					}
 
 					providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "", nil)
@@ -94,16 +94,16 @@ var _ = Context("Handler", func() {
 					Expect(*actualPullCreds).To(Equal(expectedPullCreds))
 				})
 			})
-			It("should call core.ResolveData w/ expected args", func() {
+			It("should call node.ResolveData w/ expected args", func() {
 				/* arrange */
 				providedDataRef := "dummyDataRef"
 
-				fakeCore := new(coreFakes.FakeCore)
+				fakeCore := new(nodeFakes.FakeCore)
 				// err to trigger immediate return
 				fakeCore.ResolveDataReturns(nil, errors.New("dummyErr"))
 
 				objectUnderTest := _handler{
-					core: fakeCore,
+					node: fakeCore,
 				}
 
 				providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "", nil)
@@ -126,18 +126,18 @@ var _ = Context("Handler", func() {
 				Expect(actualRef).To(Equal(providedDataRef))
 				Expect(actualPullCreds).To(BeNil())
 			})
-			Context("core.ResolveData errs", func() {
+			Context("node.ResolveData errs", func() {
 				Context("err is ErrDataProviderAuthentication", func() {
 					It("should return expected result", func() {
 						/* arrange */
 						dataRefSegment1 := "dataRefSegment1"
 						providedDataRef := strings.Join([]string{dataRefSegment1, "dataRefSegment2"}, "/")
 
-						fakeCore := new(coreFakes.FakeCore)
+						fakeCore := new(nodeFakes.FakeCore)
 						fakeCore.ResolveDataReturns(nil, model.ErrDataProviderAuthentication{})
 
 						objectUnderTest := _handler{
-							core: fakeCore,
+							node: fakeCore,
 						}
 						providedHTTPResp := httptest.NewRecorder()
 
@@ -164,11 +164,11 @@ var _ = Context("Handler", func() {
 						dataRefSegment1 := "dataRefSegment1"
 						providedDataRef := strings.Join([]string{dataRefSegment1, "dataRefSegment2"}, "/")
 
-						fakeCore := new(coreFakes.FakeCore)
+						fakeCore := new(nodeFakes.FakeCore)
 						fakeCore.ResolveDataReturns(nil, model.ErrDataProviderAuthorization{})
 
 						objectUnderTest := _handler{
-							core: fakeCore,
+							node: fakeCore,
 						}
 						providedHTTPResp := httptest.NewRecorder()
 
@@ -192,11 +192,11 @@ var _ = Context("Handler", func() {
 				Context("err is ErrDataRefResolution", func() {
 					It("should return expected result", func() {
 						/* arrange */
-						fakeCore := new(coreFakes.FakeCore)
+						fakeCore := new(nodeFakes.FakeCore)
 						fakeCore.ResolveDataReturns(nil, model.ErrDataRefResolution{})
 
 						objectUnderTest := _handler{
-							core: fakeCore,
+							node: fakeCore,
 						}
 						providedHTTPResp := httptest.NewRecorder()
 
@@ -217,19 +217,19 @@ var _ = Context("Handler", func() {
 					})
 				})
 			})
-			Context("core.ResolveData doesn't err", func() {
+			Context("node.ResolveData doesn't err", func() {
 				It("should call handleGetOrHeader.HandleGetOrHead w/ expected args", func() {
 					/* arrange */
 					providedDataRef := "dummyDataRef"
 
-					fakeCore := new(coreFakes.FakeCore)
+					fakeCore := new(nodeFakes.FakeCore)
 					fakeDataHandle := new(modelFakes.FakeDataHandle)
 					fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 					fakeHandleGetOrHeader := new(FakeHandleGetOrHeader)
 
 					objectUnderTest := _handler{
-						core:              fakeCore,
+						node:              fakeCore,
 						handleGetOrHeader: fakeHandleGetOrHeader,
 					}
 

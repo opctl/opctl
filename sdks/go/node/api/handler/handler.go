@@ -4,12 +4,12 @@ import (
 	"net/http"
 
 	"github.com/opctl/opctl/sdks/go/internal/urlpath"
+	"github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/auths"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/data"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/events"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/liveness"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/ops"
-	"github.com/opctl/opctl/sdks/go/node/core"
 )
 
 var oneMB int64 = 1024 * 1024
@@ -18,14 +18,14 @@ var maxReqBytes int64 = 40 * oneMB
 // New returns an http server that wraps the given Core op runner with an http
 // API. APIClient provides an Node interface for interacting with it.
 func New(
-	core core.Core,
+	node node.Core,
 ) http.Handler {
 	return _handler{
-		authsHandler:    auths.NewHandler(core),
-		dataHandler:     data.NewHandler(core),
-		eventsHandler:   events.NewHandler(core),
-		livenessHandler: liveness.NewHandler(core),
-		opsHandler:      ops.NewHandler(core),
+		authsHandler:    auths.NewHandler(node),
+		dataHandler:     data.NewHandler(node),
+		eventsHandler:   events.NewHandler(node),
+		livenessHandler: liveness.NewHandler(node),
+		opsHandler:      ops.NewHandler(node),
 	}
 }
 

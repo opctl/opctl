@@ -11,6 +11,6 @@ import (
 //counterfeiter:generate -o fakes/nodeProvider.go . NodeProvider
 type NodeProvider interface {
 	ListNodes() ([]node.Node, error)
-	CreateNodeIfNotExists(ctx context.Context) (node.Node, error)
-	KillNodeIfExists(nodeID string) error
+	StartNode(ctx context.Context) (node.Node, error)
+	StopNodeIfExists(nodeID string) error
 }

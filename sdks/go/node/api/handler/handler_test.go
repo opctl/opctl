@@ -12,7 +12,7 @@ import (
 	eventsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/events/fakes"
 	livenessFakes "github.com/opctl/opctl/sdks/go/node/api/handler/liveness/fakes"
 	opsFakes "github.com/opctl/opctl/sdks/go/node/api/handler/ops/fakes"
-	coreFakes "github.com/opctl/opctl/sdks/go/node/core/fakes"
+	coreFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 )
 
 var _ = Context("Handler", func() {

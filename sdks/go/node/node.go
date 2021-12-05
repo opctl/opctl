@@ -8,7 +8,7 @@ import (
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
-//counterfeiter:generate -o fakes/core.go . Node
+//counterfeiter:generate -o fakes/node.go . Node
 
 // Node is the main structure to run and interact with ops
 type Node interface {

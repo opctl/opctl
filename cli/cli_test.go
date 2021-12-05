@@ -108,20 +108,19 @@ var _ = Context("cli", func() {
 			})
 		})
 
-		Context("node", func() {
+		Context("node", Label("Ordered"), func() {
 
-			Context("create", func() {
+			Context("start", func() {
 
-				It("should not err", Label("Serial"), func() {
+				It("should not err", func() {
 					/* arrange */
 					// ensure no node running
-					killCommand := exec.Command(pathToOpctl, "node", "kill")
-					err := killCommand.Run()
+					err := exec.Command(pathToOpctl, "node", "delete").Run()
 					if err != nil {
 						panic(err)
 					}
 
-					command := exec.Command(pathToOpctl, "node", "create")
+					command := exec.Command(pathToOpctl, "node", "start")
 
 					/* act */
 					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
@@ -134,11 +133,27 @@ var _ = Context("cli", func() {
 
 			})
 
-			Context("kill", func() {
+			Context("delete", func() {
 
 				It("should not err", func() {
 					/* arrange */
-					command := exec.Command(pathToOpctl, "node", "kill")
+					command := exec.Command(pathToOpctl, "node", "delete")
+
+					/* act */
+					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+
+					/* assert */
+					Expect(actualErr).NotTo(HaveOccurred())
+					Eventually(session, 10).Should(gexec.Exit(0))
+				})
+
+			})
+
+			Context("stop", Label("Serial"), func() {
+
+				It("should not err", func() {
+					/* arrange */
+					command := exec.Command(pathToOpctl, "node", "stop")
 
 					/* act */
 					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
@@ -157,7 +172,7 @@ var _ = Context("cli", func() {
 				Context("w/ path", func() {
 					It("should not err", func() {
 						/* arrange */
-						command := exec.Command(pathToOpctl, "op", "create", "--path", ".", "withPath")
+						command := exec.Command(pathToOpctl, "op", "create", "--path", "/tmp", "withPath")
 
 						/* act */
 						session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)

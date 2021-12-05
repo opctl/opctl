@@ -9,7 +9,7 @@ import (
 
 	"github.com/golang-interfaces/ihttp"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/node"
 )
 
 // handleGetOrHeader handles GET or HEAD's
@@ -24,16 +24,16 @@ type handleGetOrHeader interface {
 
 // newHandleGetOrHeader returns an initialized handleGetOrHeader instance
 func newHandleGetOrHeader(
-	core core.Core,
+	node node.Core,
 ) handleGetOrHeader {
 	return _handleGetOrHeader{
-		core: core,
+		node: node,
 		http: ihttp.New(),
 	}
 }
 
 type _handleGetOrHeader struct {
-	core core.Core
+	node node.Core
 	http ihttp.IHTTP
 }
 

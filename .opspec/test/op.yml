@@ -68,7 +68,7 @@ run:
               /src/sdks/go: $(../../sdks/go)
               /src/test-suite: $(../../test-suite)
               /src/webapp: $(../../webapp)
-              /go/pkg: $(HOME/pkg)
+              /go/pkg: $(HOME/go/pkg)
             envVars:
               GOFLAGS: -tags=containers_image_openpgp
             image: { ref: "golang:1.17" }

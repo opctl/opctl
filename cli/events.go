@@ -15,7 +15,7 @@ func events(
 	cliOutput clioutput.CliOutput,
 	nodeProvider nodeprovider.NodeProvider,
 ) error {
-	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
+	node, err := nodeProvider.StartNode(ctx)
 	if err != nil {
 		return err
 	}
@@ -31,7 +31,7 @@ func events(
 	for {
 		event, isEventChannelOpen := <-eventChannel
 		if !isEventChannelOpen {
-			return errors.New("Connection to event stream lost")
+			return errors.New("connection to event stream lost")
 		}
 
 		cliOutput.Event(&event)

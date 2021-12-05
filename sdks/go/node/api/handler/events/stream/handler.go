@@ -59,7 +59,7 @@ func (hdlr _handler) Handle(
 	if sinceString := httpReq.URL.Query().Get("since"); sinceString != "" {
 		sinceTime, err := time.Parse(time.RFC3339, sinceString)
 		if err != nil {
-			http.Error(httpResp, err.Error(), http.StatusBadRequest)
+			// return on any error
 			return
 		}
 		req.Filter.Since = &sinceTime
@@ -91,14 +91,14 @@ func (hdlr _handler) Handle(
 
 		err := conn.WriteJSON(event)
 		if err != nil {
-			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
+			// return on any error
 			return
 		}
 
 		if isAckRequested {
 			_, _, err := conn.ReadMessage()
 			if err != nil {
-				http.Error(httpResp, err.Error(), http.StatusInternalServerError)
+				// return on any error
 				return
 			}
 		}

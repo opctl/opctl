@@ -28,11 +28,11 @@ func run(
 	args []string,
 	argFile string,
 	opRef string,
-	disableGraph bool,
+	noProgress bool,
 ) error {
 	startTime := time.Now().UTC()
 
-	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
+	node, err := nodeProvider.StartNode(ctx)
 	if err != nil {
 		return err
 	}
@@ -129,7 +129,7 @@ func run(
 
 	// "request animation frame" like loop to force refresh of display loading spinners
 	animationFrame := make(chan bool)
-	if !disableGraph {
+	if !noProgress {
 		go func() {
 			for {
 				time.Sleep(time.Second / 10)
@@ -148,13 +148,13 @@ func run(
 	}()
 
 	clearGraph := func() {
-		if !disableGraph {
+		if !noProgress {
 			output.Clear()
 		}
 	}
 
 	displayGraph := func() {
-		if !disableGraph {
+		if !noProgress {
 			output.Print(state.String(loadingSpinner, time.Now(), true))
 		}
 	}
@@ -220,7 +220,7 @@ func run(
 		case event, isEventChannelOpen := <-eventChannel:
 			clearGraph()
 			if !isEventChannelOpen {
-				return errors.New("Event channel closed unexpectedly")
+				return errors.New("event channel closed unexpectedly")
 			}
 
 			if err := state.HandleEvent(&event); err != nil {

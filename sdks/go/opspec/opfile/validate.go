@@ -1,7 +1,5 @@
 package opfile
 
-//go:generate go run github.com/mjibson/esc -pkg=opfile -o validate_schema.go -private ../../../../opspec/opfile/jsonschema.json
-
 import (
 	"fmt"
 

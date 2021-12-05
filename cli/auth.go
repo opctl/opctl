@@ -13,7 +13,7 @@ func auth(
 	nodeProvider nodeprovider.NodeProvider,
 	addAuthReq model.AddAuthReq,
 ) error {
-	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
+	node, err := nodeProvider.StartNode(ctx)
 	if err != nil {
 		return err
 	}

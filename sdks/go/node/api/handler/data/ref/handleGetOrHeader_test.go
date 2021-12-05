@@ -14,7 +14,7 @@ import (
 	"github.com/golang-interfaces/ihttp"
 	"github.com/opctl/opctl/sdks/go/model"
 	modelFakes "github.com/opctl/opctl/sdks/go/model/fakes"
-	coreFakes "github.com/opctl/opctl/sdks/go/node/core/fakes"
+	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -81,11 +81,11 @@ var _ = Context("HandleGetOrHeader", func() {
 				// error to trigger immediate return
 				fakeDataHandle.ListDescendantsReturns(nil, errors.New("dummyError"))
 
-				fakeCore := new(coreFakes.FakeCore)
+				fakeCore := new(nodeFakes.FakeCore)
 				fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 				objectUnderTest := _handleGetOrHeader{
-					core: fakeCore,
+					node: fakeCore,
 				}
 				providedHTTPResp := httptest.NewRecorder()
 
@@ -114,11 +114,11 @@ var _ = Context("HandleGetOrHeader", func() {
 					// error to trigger immediate return
 					fakeDataHandle.ListDescendantsReturns(nil, errors.New(expectedBody))
 
-					fakeCore := new(coreFakes.FakeCore)
+					fakeCore := new(nodeFakes.FakeCore)
 					fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 					objectUnderTest := _handleGetOrHeader{
-						core: fakeCore,
+						node: fakeCore,
 					}
 					providedHTTPResp := httptest.NewRecorder()
 
@@ -145,7 +145,7 @@ var _ = Context("HandleGetOrHeader", func() {
 				It("should return expected result", func() {
 					/* arrange */
 
-					fakeCore := new(coreFakes.FakeCore)
+					fakeCore := new(nodeFakes.FakeCore)
 
 					fakeDataHandle := new(modelFakes.FakeDataHandle)
 					fakeDataHandle.PathReturns(&wd)
@@ -160,7 +160,7 @@ var _ = Context("HandleGetOrHeader", func() {
 					}
 
 					objectUnderTest := _handleGetOrHeader{
-						core: fakeCore,
+						node: fakeCore,
 					}
 
 					providedHTTPResp := httptest.NewRecorder()
@@ -195,11 +195,11 @@ var _ = Context("HandleGetOrHeader", func() {
 				// error to trigger immediate return
 				fakeDataHandle.GetContentReturns(nil, errors.New("dummyError"))
 
-				fakeCore := new(coreFakes.FakeCore)
+				fakeCore := new(nodeFakes.FakeCore)
 				fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 				objectUnderTest := _handleGetOrHeader{
-					core: fakeCore,
+					node: fakeCore,
 				}
 				providedHTTPResp := httptest.NewRecorder()
 
@@ -230,11 +230,11 @@ var _ = Context("HandleGetOrHeader", func() {
 					fakeDataHandle.PathReturns(&currentFilePath)
 					fakeDataHandle.GetContentReturns(nil, errors.New(expectedBody))
 
-					fakeCore := new(coreFakes.FakeCore)
+					fakeCore := new(nodeFakes.FakeCore)
 					fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 					objectUnderTest := _handleGetOrHeader{
-						core: fakeCore,
+						node: fakeCore,
 					}
 					providedHTTPResp := httptest.NewRecorder()
 
@@ -272,13 +272,13 @@ var _ = Context("HandleGetOrHeader", func() {
 					fakeDataHandle.PathReturns(&currentFilePath)
 					fakeDataHandle.GetContentReturns(expectedReadSeeker, nil)
 
-					fakeCore := new(coreFakes.FakeCore)
+					fakeCore := new(nodeFakes.FakeCore)
 					fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 					fakeHTTP := new(ihttp.Fake)
 
 					objectUnderTest := _handleGetOrHeader{
-						core: fakeCore,
+						node: fakeCore,
 						http: fakeHTTP,
 					}
 
