@@ -36,7 +36,7 @@ func nodeDelete(
 		}
 	}
 
-	if err := local.New(nodeConfig).StopNodeIfExists(""); err != nil {
+	if err := local.New(nodeConfig).KillNodeIfExists(""); err != nil {
 		return err
 	}
 

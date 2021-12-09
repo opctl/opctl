@@ -55,7 +55,7 @@ func newCli(
 
 	containerRuntime := cli.String(
 		mow.StringOpt{
-			Desc:   "Runtime for opctl containers. Can be 'docker', 'k8s', or 'qemu' (experimental Mac OS only)",
+			Desc:   "Runtime for opctl containers. Can be 'docker', 'k8s', or 'qemu' (experimental)",
 			EnvVar: "OPCTL_CONTAINER_RUNTIME",
 			Name:   "container-runtime",
 			Value:  "docker",
@@ -173,7 +173,7 @@ func newCli(
 	})
 
 	cli.Command("node", "Manage nodes", func(nodeCmd *mow.Cmd) {
-		nodeCmd.Command("start", "Starts a node", func(createCmd *mow.Cmd) {
+		nodeCmd.Command("create", "Creates a node", func(createCmd *mow.Cmd) {
 			createCmd.Action = func() {
 				exitWith(
 					"",
@@ -189,8 +189,8 @@ func newCli(
 			}
 		})
 
-		nodeCmd.Command("delete", "Deletes a node. Warning: this is destructive! all data including auth, caches, and state will be permanently removed.", func(stopCmd *mow.Cmd) {
-			stopCmd.Action = func() {
+		nodeCmd.Command("delete", "Deletes a node. Warning: this is destructive! all data including auth, caches, and state will be permanently removed.", func(deleteCmd *mow.Cmd) {
+			deleteCmd.Action = func() {
 				exitWith(
 					"",
 					nodeDelete(
@@ -205,15 +205,15 @@ func newCli(
 			}
 		})
 
-		nodeCmd.Command("stop", "Stops a node", func(stopCmd *mow.Cmd) {
-			stopCmd.Action = func() {
+		nodeCmd.Command("kill", "Kills a node", func(killCmd *mow.Cmd) {
+			killCmd.Action = func() {
 				exitWith("", local.New(
 					local.NodeConfig{
 						ContainerRuntime: *containerRuntime,
 						DataDir:          *dataDir,
 						ListenAddress:    *listenAddress,
 					},
-				).StopNodeIfExists(""))
+				).KillNodeIfExists(""))
 			}
 		})
 	})
@@ -225,7 +225,7 @@ func newCli(
 				DataDir:          *dataDir,
 				ListenAddress:    *listenAddress,
 			},
-		).StartNode(ctx)
+		).CreateNodeIfNotExists(ctx)
 		if err != nil {
 			exitWith("", err)
 		}
@@ -275,10 +275,10 @@ func newCli(
 			}
 		})
 
-		opCmd.Command("kill", "Kill an op", func(stopCmd *mow.Cmd) {
-			opID := stopCmd.StringArg("OP_ID", "", "Id of the op to kill")
+		opCmd.Command("kill", "Kill an op", func(killCmd *mow.Cmd) {
+			opID := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
 
-			stopCmd.Action = func() {
+			killCmd.Action = func() {
 				exitWith(
 					"",
 					node.KillOp(

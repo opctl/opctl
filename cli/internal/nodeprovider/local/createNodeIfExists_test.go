@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 )
 
-var _ = Context("StartNode", func() {
+var _ = Context("CreateNodeIfNotExists", func() {
 	It("shouldn't panic", func() {
 		/* arrange */
 		dataDir, err := os.MkdirTemp("", "")
@@ -19,7 +19,7 @@ var _ = Context("StartNode", func() {
 		})
 
 		/* act */
-		nodeProvider.StartNode(
+		nodeProvider.CreateNodeIfNotExists(
 			context.Background(),
 		)
 	})

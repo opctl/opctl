@@ -9,14 +9,22 @@ opctl is distributed as a self-contained executable, so installation generally c
 1. Downloading the OS specific binary
 2. Adding it to your path
 
+### Dependencies
+
+Opctl currently supports multiple container runtimes. Dependencies vary based on whichever you choose:
+|container runtime|dependencies|
+|--|--|
+|docker|[docker](https://docs.docker.com/get-docker/)|
+|k8s|opctl must be running inside k8s (uses the downward API) |
+|qemu (experimental)|[lima](https://github.com/lima-vm/lima/releases/latest)|
+
 ### OSX
 
-1. `brew install lima`
-2. `curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-darwin-amd64.tgz | sudo tar -xzv -C /usr/local/bin`
+1. `curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-darwin-amd64.tgz | sudo tar -xzv -C /usr/local/bin`
 
 ### Linux
-1. [install docker](https://docs.docker.com/engine/install/#server)
-2. `curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin`
+
+1. `curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin`
 
 ### Windows
 

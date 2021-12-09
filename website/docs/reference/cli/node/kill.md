@@ -1,13 +1,13 @@
 ---
-sidebar_label: stop
-title: opctl node stop
+sidebar_label: kill
+title: opctl node kill
 ---
 
 ```sh
-opctl node stop
+opctl node kill
 ```
 
-Stop a node.
+Kills a node.
 
 ## Global Options
 see [global options](../global-options.md)

@@ -22,7 +22,7 @@ func ui(
 	mountRefArg string,
 ) error {
 	var resolvedMount string
-	node, err := nodeProvider.StartNode(ctx)
+	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
 	if err != nil {
 		return err
 	}

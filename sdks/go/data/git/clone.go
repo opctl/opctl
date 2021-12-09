@@ -14,7 +14,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
-// Clone clones 'dataRef' to 'path'
+// Clone 'dataRef' to 'path'
 // nil pullCreds will be ignored
 //
 // expected errs:
