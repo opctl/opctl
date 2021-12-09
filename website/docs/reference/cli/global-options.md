@@ -4,7 +4,7 @@ To specify the container runtime opctl uses to run containers, include a `--cont
 Allowed values are:
 - `k8s` (connects to k8s via downward API)
 - `docker` (connects to docker via same config as docker client)
-- `qemu` (experimental Mac OS only)
+- `qemu` (experimental)
 
 ### Examples
 ```sh

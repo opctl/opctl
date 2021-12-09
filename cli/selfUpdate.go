@@ -21,9 +21,9 @@ func selfUpdate(
 		return "No update available, already at the latest version!", nil
 	}
 
-	// stop local node to ensure outdated version not left running
+	// kill local node to ensure outdated version not left running
 	// @TODO start node maintaining previous user
-	err = nodeProvider.StopNodeIfExists("")
+	err = nodeProvider.KillNodeIfExists("")
 	if err != nil {
 		err = fmt.Errorf("unable to kill running node; run `node kill` to complete the update: %w", err)
 	}

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 )
 
-func (np nodeProvider) StopNodeIfExists(
+func (np nodeProvider) KillNodeIfExists(
 	nodeID string,
 ) error {
 	pIDOfLockOwner := np.lockfile.PIdOfOwner(

@@ -15,7 +15,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/node"
 )
 
-func (np nodeProvider) StartNode(ctx context.Context) (node.Node, error) {
+func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, error) {
 	nodes, err := np.ListNodes()
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func (np nodeProvider) StartNode(ctx context.Context) (node.Node, error) {
 		"--container-runtime",
 		np.containerRuntime,
 		"node",
-		"start",
+		"create",
 	)
 
 	// don't inherit env; some things like jenkins track and kill processes via injecting env vars

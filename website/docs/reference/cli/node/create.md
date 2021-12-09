@@ -1,10 +1,10 @@
 ---
-sidebar_label: start
-title: opctl node start
+sidebar_label: create
+title: opctl node create
 ---
 
 ```sh
-opctl node start
+opctl node create
 ```
 
 Start an in-process node which inherits current

@@ -82,7 +82,7 @@ var _ = Context("cli", func() {
 			Context("w/ dirRef", func() {
 				It("should not err", func() {
 					/* arrange */
-					command := exec.Command(pathToOpctl, "ls", "./.opspec")
+					command := exec.Command(pathToOpctl, "ls", "testdata/ls")
 
 					/* act */
 					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
@@ -90,6 +90,15 @@ var _ = Context("cli", func() {
 					/* assert */
 					Expect(actualErr).NotTo(HaveOccurred())
 					Eventually(session, 10).Should(gexec.Exit(0))
+					Expect(string(session.Out.Contents())).Should(Equal(
+						`REF		DESCRIPTION
+testdata/ls/op1	A single line description
+testdata/ls/op2	A multiline description
+		
+		* one
+		* two
+		* three
+`))
 				})
 			})
 			Context("w/out dirRef", func() {
@@ -110,7 +119,7 @@ var _ = Context("cli", func() {
 
 		Context("node", Label("Ordered"), func() {
 
-			Context("start", func() {
+			Context("create", func() {
 
 				It("should not err", func() {
 					/* arrange */
@@ -120,7 +129,7 @@ var _ = Context("cli", func() {
 						panic(err)
 					}
 
-					command := exec.Command(pathToOpctl, "node", "start")
+					command := exec.Command(pathToOpctl, "node", "create")
 
 					/* act */
 					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)
@@ -149,11 +158,11 @@ var _ = Context("cli", func() {
 
 			})
 
-			Context("stop", Label("Serial"), func() {
+			Context("kill", Label("Serial"), func() {
 
 				It("should not err", func() {
 					/* arrange */
-					command := exec.Command(pathToOpctl, "node", "stop")
+					command := exec.Command(pathToOpctl, "node", "kill")
 
 					/* act */
 					session, actualErr := gexec.Start(command, GinkgoWriter, GinkgoWriter)

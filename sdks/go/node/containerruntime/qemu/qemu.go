@@ -28,6 +28,11 @@ func New(
 		vm: lima.New(host.New()),
 	}
 
+	if err := host.IsInstalled(cr.vm); err != nil {
+		// ensure lima present
+		return nil, fmt.Errorf("dependency check failed for VM: %w", err)
+	}
+
 	if waitUntilReady {
 		if _, err := cr.getDockerContainerRuntime(ctx); err != nil {
 			return nil, err
@@ -86,9 +91,8 @@ func (cr _containerRuntime) getDockerContainerRuntime(
 	ctx context.Context,
 ) (containerruntime.ContainerRuntime, error) {
 	if !cr.vm.Running() {
-		rt := "docker"
 		err := cr.vm.Start(config.Config{
-			Runtime: rt,
+			Runtime: "docker",
 			VM: config.VM{
 				Arch: string(environment.Arch(runtime.GOARCH).Value()),
 				// allocate 2/3 available CPU's
@@ -103,26 +107,10 @@ func (cr _containerRuntime) getDockerContainerRuntime(
 			return nil, err
 		}
 
-		if err := host.IsInstalled(cr.vm); err != nil {
-			return nil, fmt.Errorf("dependency check failed for VM: %w", err)
+		// start docker, sleep while it creates the socket, and grant access to socket
+		if err := cr.vm.Run("sudo", "sh", "-ce", "service docker start && sleep 2 && chmod 0666 /var/run/docker.sock"); err != nil {
+			return nil, fmt.Errorf("error adding VM user to docker group: %w", err)
 		}
-
-		docker, err := environment.NewContainer(rt, cr.vm.Host(), cr.vm)
-		if err != nil {
-			return nil, fmt.Errorf("error initiating container runtime: %w", err)
-		}
-
-		if err := host.IsInstalled(docker); err != nil {
-			return nil, fmt.Errorf("dependency check failed for %s: %w", rt, err)
-		}
-
-		if err := docker.Provision(); err != nil {
-			return nil, fmt.Errorf("error provisioning docker: %w", err)
-		}
-		if err := docker.Start(); err != nil {
-			return nil, fmt.Errorf("error starting docker: %w", err)
-		}
-
 	}
 	return docker.New(ctx, fmt.Sprintf("unix://%s", colimadocker.HostSocketFile()))
 }

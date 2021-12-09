@@ -6,6 +6,6 @@ Manage nodes
 
 ## Commands
 
+- [create](create.md)
 - [delete](delete.md)
-- [start](start.md)
-- [stop](stop.md)
+- [kill](kill.md)

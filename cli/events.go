@@ -15,7 +15,7 @@ func events(
 	cliOutput clioutput.CliOutput,
 	nodeProvider nodeprovider.NodeProvider,
 ) error {
-	node, err := nodeProvider.StartNode(ctx)
+	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
 	if err != nil {
 		return err
 	}

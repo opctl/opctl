@@ -32,7 +32,7 @@ func run(
 ) error {
 	startTime := time.Now().UTC()
 
-	node, err := nodeProvider.StartNode(ctx)
+	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
 	if err != nil {
 		return err
 	}

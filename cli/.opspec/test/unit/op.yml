@@ -10,9 +10,6 @@ inputs:
 run:
   container:
     cmd:
-      # - sh
-      # - -ce
-      # - sleep 100000
       - go
       - test
       - ./cli/...

@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/ginkgo"
 )
 
-var _ = Context("StopNodeIfExists", func() {
+var _ = Context("KillNodeIfExists", func() {
 	It("shouldn't panic", func() {
 		/* arrange */
 		dataDir, err := os.MkdirTemp("", "")
@@ -18,6 +18,6 @@ var _ = Context("StopNodeIfExists", func() {
 		})
 
 		/* act */
-		nodeProvider.StopNodeIfExists("")
+		nodeProvider.KillNodeIfExists("")
 	})
 })
