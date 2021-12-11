@@ -28,7 +28,7 @@ export default async function toArray(
       return parseJsonToObjectValue(await fileStream.text())
     } catch (err) {
       // don't include value in msg; might be secret
-      throw new Error(`unable to coerce file to array; error was ${err.message}`)
+      throw new Error(`unable to coerce file to array; error was ${(err as Error).message}`)
     }
   }
 
@@ -50,7 +50,7 @@ export default async function toArray(
       return parseJsonToObjectValue(value.string)
     } catch (err) {
       // don't include value in msg; might be secret
-      throw new Error(`unable to coerce string to object; error was ${err.message}`)
+      throw new Error(`unable to coerce string to object; error was ${(err as Error).message}`)
     }
   }
 

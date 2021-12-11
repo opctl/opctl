@@ -59,9 +59,15 @@ run:
 
                 cat coverprofile > /coverprofile
             files:
+              /src/go.mod: $(../../go.mod)
+              /src/go.sum: $(../../go.sum)
               /coverprofile: $(coverprofile)
             dirs:
-              /src: $(../..)
+              /src/cli: $(../../cli)
+              /src/opspec: $(../../opspec)
+              /src/sdks/go: $(../../sdks/go)
+              /src/test-suite: $(../../test-suite)
+              /src/webapp: $(../../webapp)
               /go/pkg: $(HOME/pkg)
             envVars:
               GOFLAGS: -tags=containers_image_openpgp
@@ -88,8 +94,15 @@ run:
           - |
             test -z "\$(gofmt -d -l . | tee /tmp/output)" || (echo "Fix formatting issues with 'opctl run format'" && cat /tmp/output && exit 1)
         dirs:
-          /src: $(../..)
+          /src/cli: $(../../cli)
+          /src/opspec: $(../../opspec)
+          /src/sdks/go: $(../../sdks/go)
+          /src/test-suite: $(../../test-suite)
+          /src/webapp: $(../../webapp)
         envVars:
           GOFLAGS: -tags=containers_image_openpgp
+        files:
+          /src/go.mod: $(../../go.mod)
+          /src/go.sum: $(../../go.sum)
         image: { ref: "golang:1.17" }
         workDir: /src

@@ -41,18 +41,18 @@ describe('dataGet', () => {
                 .reply('300', expectedErrMsg)
 
             /* act */
-            let actualErr
+            let actualErr: null|Error = null
             try {
                 await objectUnderTest(
                     providedNetRef,
                     providedDataRef
                 )
             } catch (err) {
-                actualErr = err
+                actualErr = err as Error
             }
 
             /* assert */
-            expect(actualErr.message).toEqual(expectedErrMsg)
+            expect(actualErr?.message).toEqual(expectedErrMsg)
         })
     })
     describe('response is 200', () => {

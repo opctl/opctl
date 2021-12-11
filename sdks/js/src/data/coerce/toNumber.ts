@@ -28,7 +28,7 @@ export default async function toNumber(
       return parseJsonToNumberValue(await fileStream.text())
     } catch (err) {
       // don't include value in msg; might contain secrets
-      throw new Error(`unable to coerce file to number; error was ${err.message}`)
+      throw new Error(`unable to coerce file to number; error was ${(err as Error).message}`)
     }
   }
 
@@ -50,7 +50,7 @@ export default async function toNumber(
       return parseJsonToNumberValue(value.string)
     } catch (err) {
       // don't include value in msg; might be secret
-      throw new Error(`unable to coerce string to number; error was ${err.message}`)
+      throw new Error(`unable to coerce string to number; error was ${(err as Error).message}`)
     }
   }
 

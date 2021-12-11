@@ -34,10 +34,10 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "^26.0.19",
+    "@types/jest": "26.0.19",
     "jest": "26.6.0",
     "nock": "^9.0.22",
     "standard": "^11.0.1",
-    "ts-jest": "^26.4.4"
+    "ts-jest": "26.4.4"
   }
 }

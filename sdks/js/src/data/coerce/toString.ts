@@ -29,7 +29,7 @@ export default async function toString(
       }
     } catch (err) {
       // don't include value in msg; might be secret
-      throw new Error(`unable to coerce file to string; error was ${err.message}`)
+      throw new Error(`unable to coerce file to string; error was ${(err as Error).message}`)
     }
   }
 

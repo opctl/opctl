@@ -26,7 +26,7 @@ export default async function toBoolean(
       const dir = await dirStream.json()
       return { boolean: dir.length > 0 }
     } catch (err) {
-      throw new Error(`unable to coerce dir to boolean; error was ${err.message}`)
+      throw new Error(`unable to coerce dir to boolean; error was ${(err as Error).message}`)
     }
   }
 
@@ -36,7 +36,7 @@ export default async function toBoolean(
       const file = await fileStream.text()
       return { boolean: isStringTruthy(file) }
     } catch (err) {
-      throw new Error(`unable to coerce file to boolean; error was ${err.message}`)
+      throw new Error(`unable to coerce file to boolean; error was ${(err as Error).message}`)
     }
   }
 

@@ -6,7 +6,7 @@ run:
         ref: ../test
     - container:
         cmd: [ yarn, run, build ]
-        image: { ref: 'node:12.8.1-alpine' }
+        image: { ref: 'node:16-alpine' }
         dirs:
           /src: $(../../..)
         workDir: /src/webapp

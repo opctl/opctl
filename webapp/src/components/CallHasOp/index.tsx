@@ -35,12 +35,13 @@ export default function CallHasOp(
             )
           )
         } catch (err) {
-          if (err.message.includes('authentication')) {
+          const errAsError = err as Error
+          if (errAsError.message.includes('authentication')) {
             toast.warn(`Loading ${opRef} skipped; because it requires authentication.`)
-          } else if (err.message.includes('service=git-upload-pack')) {
+          } else if (errAsError.message.includes('service=git-upload-pack')) {
             toast.warn(`Loading 'ref: ${opRef}' skipped because you're using deprecated syntax! To fix, use 'ref: ../${opRef}'.`)
           } else {
-            toast.error(err.toString())
+            toast.error(errAsError.toString())
           }
         }
       }

@@ -26,7 +26,7 @@ run:
         ref: ../../../run-a-go-service/.opspec/dev
     - container:
         image:
-          ref: 'node:15-alpine'
+          ref: 'node:16-alpine'
         cmd:
           - sh
           - -ce

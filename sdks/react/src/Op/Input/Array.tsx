@@ -1,6 +1,7 @@
 import React from 'react'
 import jsYaml from 'js-yaml'
 import TextArea from './AceEditor'
+import { ErrorObject } from 'ajv'
 import ModelParamArray from '@opctl/sdk/src/model/param/array'
 import paramArrayValidate from '@opctl/sdk/src/opspec/interpreter/opcall/params/param/array/validate'
 
@@ -33,7 +34,7 @@ export default (
       try {
         return paramArrayValidate(jsYaml.safeLoad(value), array.constraints)
       } catch (err) {
-        return [err]
+        return [err as ErrorObject]
       }
     }}
     value={value || jsYaml.safeDump(array.default ? array.default : '')}
