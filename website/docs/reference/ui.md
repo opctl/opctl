@@ -1,4 +1,5 @@
 ---
+sidebar_label: UI
 title: UI
 ---
 

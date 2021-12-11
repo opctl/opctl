@@ -26,7 +26,7 @@ export default async function toArray(
       const fileStream = await dataGet(apiBaseUrl, value.file)
       return parseJsonToArrayValue(await fileStream.text())
     } catch (err) {
-      throw new Error(`unable to coerce file to array; error was ${err.message}`)
+      throw new Error(`unable to coerce file to array; error was ${(err as Error).message}`)
     }
   }
 
@@ -49,7 +49,7 @@ export default async function toArray(
       return parseJsonToArrayValue(value.string)
     } catch (err) {
       // don't include value in msg; might be secret
-      throw new Error(`unable to coerce string to array; error was ${err.message}`)
+      throw new Error(`unable to coerce string to array; error was ${(err as Error).message}`)
     }
   }
 

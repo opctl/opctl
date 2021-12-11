@@ -1,5 +1,5 @@
 ---
-sidebar_label: Overview
+sidebar_label: OpSpec
 title: Opspec
 ---
 Opspec (portmanteau of operation specification) is a language designed to portably and fully define operations (ops).
@@ -62,7 +62,7 @@ Reference:
                 - [dirs](op-directory/op/call/container/index.md#dirs)
                 - [envVars](op-directory/op/call/container/index.md#envvars)
                 - [files](op-directory/op/call/container/index.md#files)
-                - [image](op-directory/op/call/container/image/index.md)
+                - [image](op-directory/op/call/container/image.md)
                     - [ref](op-directory/op/call/container/image.md#ref)
                     - [pullCreds](op-directory/op/call/container/image.md#pullcreds)
                 - [name](op-directory/op/call/container/index.md#name)
@@ -102,4 +102,4 @@ Reference:
 - [string](types/string.md)
 
 ## Scoping
-Variables in opspec are scoped to each operation. [Parameters](../op/parameter/index.md) allow passing values into or out of this scope.
+Variables in opspec are scoped to each operation. [Parameters](op-directory/op/parameter/index.md) allow passing values into or out of this scope.

@@ -6,7 +6,7 @@
     "@types/reactstrap": "^8.7.2",
     "ansi-to-react": "^5.0.0",
     "brace": "^0.11.1",
-    "highlightjs": "^9.12.0",
+    "highlightjs": "^9.16.2",
     "js-yaml": "^3.13.1",
     "react": "^17.0.1",
     "react-ace": "^9.2.1",
@@ -47,7 +47,7 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "^26.0.19",
+    "@types/jest": "26.0.19",
     "@types/js-yaml": "^3.12.1",
     "@types/react-dom": "^17.0.0",
     "@types/react-modal": "^3.10.6",
@@ -58,6 +58,6 @@
     "jest-css-modules": "^2.0.0",
     "react-dom": "^17.0.1",
     "standard": "^12.0.1",
-    "ts-jest": "^26.4.4"
+    "ts-jest": "26.4.4"
   }
 }

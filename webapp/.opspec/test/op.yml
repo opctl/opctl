@@ -6,7 +6,7 @@ run:
         ref: ../init
     - container:
         cmd: [yarn, test]
-        image: { ref: 'node:12.8.1-alpine' }
+        image: { ref: 'node:16-alpine' }
         envVars:
           CI: true
         dirs:

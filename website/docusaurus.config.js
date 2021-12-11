@@ -11,7 +11,9 @@ module.exports = {
       apiKey: '247689f43002ed0c3902fbd034630a7a',
       indexName: 'opctl'
     },
-    disableDarkMode: true,    
+    colorMode: {
+      disableSwitch: true
+    }, 
     googleAnalytics: {
       trackingID: 'UA-94109316-1',
     },
@@ -21,7 +23,7 @@ module.exports = {
         alt: 'opctl Logo',
         src: 'img/logo.svg',
       },
-      links: [
+      items: [
         { to: 'docs/introduction', label: 'Docs', position: 'left' },
         {
           href: 'https://github.com/orgs/opspec-pkgs/repositories',
