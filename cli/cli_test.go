@@ -117,7 +117,8 @@ testdata/ls/op2	A multiline description
 			})
 		})
 
-		Context("node", Label("Ordered"), func() {
+		// disable for now since it will kill the running test container
+		XContext("node", Label("Ordered"), func() {
 
 			Context("create", func() {
 

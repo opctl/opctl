@@ -3,7 +3,7 @@ description: runs ops necessary to go from src to vetted artifact(s) and tests e
 inputs:
   dockerSocket:
     socket:
-      description: docker socket to use as container runtime
+      description: docker socket to use as container runtime  
   gitBranch:
     string:
       constraints: { minLength: 1 }
@@ -20,11 +20,41 @@ inputs:
 run:
   serial:
     - op:
-        ref: ../../webapp/.opspec/build
+        ref: ../../webapp/.opspec/compile
+    - op:
+        ref: ../../cli/.opspec/compile
+        inputs:
+          HOME:
+          version:
     - op:
         ref: ../test
         inputs:
           dockerSocket:
-          gitBranch:
           HOME:
           version:
+    # report codecoverage
+    - serial:        
+        - op:
+            ref: github.com/opspec-pkgs/git.resolve-commit#1.0.2
+            inputs:
+              dotGitDir: $(../../.git)
+            outputs:
+              commit: $(gitCommit)
+        - container:
+            image:
+              ref: alpine
+            cmd:
+              - sh
+              - -ce
+              - |
+                apk add -U curl
+                curl -Os https://uploader.codecov.io/latest/alpine/codecov
+
+                chmod +x codecov
+                ./codecov
+            dirs:
+              /src: $(../../)
+            envVars:
+              GIT_BRANCH: $(gitBranch)
+              GIT_COMMIT: $(gitCommit)
+            workDir: /src

@@ -10,6 +10,8 @@ run:
       - go
       - test
       - ./sdks/go/...
+      - -covermode=atomic
+      - -coverprofile=coverage.out
     dirs:
       /src: $(../../../..)
       /go/pkg: $(HOME/go/pkg)

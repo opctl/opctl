@@ -14,7 +14,8 @@ run:
     cmd:
       - go
       - fmt
-      - $(path)
+      - "./sdks/go/..."
+      - "./cli/..."
     dirs:
       /src: $(../..)
       /go/pkg: $(HOME/go/pkg)

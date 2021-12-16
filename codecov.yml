@@ -1,0 +1,9 @@
+codecov:
+  token: b432a3b8-8220-4c1d-bcee-db76e68d0128
+flag_management:
+  # this section will govern all default rules of Flags
+  default_rules:
+    paths:
+      - sdks/go
+      - sdks/js
+      - cli

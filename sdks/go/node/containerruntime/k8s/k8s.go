@@ -60,6 +60,13 @@ func (cr _containerRuntime) DeleteContainerIfExists(
 	return nil
 }
 
+func (cr _containerRuntime) Kill(
+	ctx context.Context,
+) error {
+	// for now this is a no-op
+	return nil
+}
+
 func (cr _containerRuntime) RunContainer(
 	ctx context.Context,
 	req *model.ContainerCall,

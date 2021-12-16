@@ -13,6 +13,8 @@ run:
       - go
       - test
       - ./cli/...
+      - -covermode=atomic
+      - -coverprofile=coverage.out
     dirs:
       /src: $(../../../..)
       /go/pkg: $(HOME/go/pkg)

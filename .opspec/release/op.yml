@@ -12,7 +12,12 @@ inputs:
   dockerUsername:
     string:
       constraints: { minLength: 1 }
-      description: username for docker registry
+      description: username for docker registry  
+  gitBranch:
+    string:
+      constraints: { minLength: 1 }
+      description: git branch the coverage should be associated with
+      default: main
   github:
     object:
       constraints:
@@ -26,11 +31,6 @@ inputs:
             type: string
         required: [accessToken, username]
       description: configuration required to interact w/ github
-  gitBranch:
-    string:
-      constraints: { minLength: 1 }
-      description: git branch the coverage should be associated with
-      default: master
   version:
     string:
       constraints: { format: semver }

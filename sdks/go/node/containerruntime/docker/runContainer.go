@@ -67,7 +67,7 @@ func (cr _runContainer) RunContainer(
 	// @TODO: remove when socket outputs supported
 	if err := cr.ensureNetworkExistser.EnsureNetworkExists(
 		ctx,
-		dockerNetworkName,
+		networkName,
 	); err != nil {
 		return nil, err
 	}
@@ -125,11 +125,11 @@ func (cr _runContainer) RunContainer(
 	// construct networking config
 	networkingConfig := &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{
-			dockerNetworkName: {},
+			networkName: {},
 		},
 	}
 	if req.Name != nil {
-		networkingConfig.EndpointsConfig[dockerNetworkName].Aliases = []string{
+		networkingConfig.EndpointsConfig[networkName].Aliases = []string{
 			*req.Name,
 		}
 	}

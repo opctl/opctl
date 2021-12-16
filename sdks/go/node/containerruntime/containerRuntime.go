@@ -11,9 +11,10 @@ import (
 	"io"
 )
 
-// ContainerRuntime defines the interface container runtimes must implement to be supported by
+// ContainerRuntime defines the interface container runtimes must implement to be supported by opctl
 //counterfeiter:generate -o fakes/containerRuntime.go . ContainerRuntime
 type ContainerRuntime interface {
+	// Delete deletes opctl managed resources from the container runtime
 	Delete(
 		ctx context.Context,
 	) error
@@ -21,6 +22,11 @@ type ContainerRuntime interface {
 	DeleteContainerIfExists(
 		ctx context.Context,
 		containerID string,
+	) error
+
+	// Kill stops/kills opctl managed resources within the container runtime
+	Kill(
+		ctx context.Context,
 	) error
 
 	// RunContainer creates, starts, and waits on a container. ExitCode &/Or an error will be returned
