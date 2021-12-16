@@ -42,7 +42,7 @@ var _ = Context("Interpret", func() {
 					Exists: &existsPredicate,
 				},
 				map[string]*model.Value{
-					identifier: &model.Value{String: new(string)},
+					identifier: {String: new(string)},
 				},
 			)
 
@@ -51,7 +51,7 @@ var _ = Context("Interpret", func() {
 			Expect(actualError).To(BeNil())
 		})
 	})
-	Context("Ne predicate", func() {
+	Context("NE predicate", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			nePredicate := []interface{}{
@@ -62,7 +62,7 @@ var _ = Context("Interpret", func() {
 			/* act */
 			actualResult, actualError := Interpret(
 				&model.PredicateSpec{
-					Ne: &nePredicate,
+					NE: &nePredicate,
 				},
 				map[string]*model.Value{},
 			)

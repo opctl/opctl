@@ -78,7 +78,11 @@ type ParallelLoopCallSpec struct {
 type PredicateSpec struct {
 	Eq        *[]interface{} `json:"eq,omitempty"`
 	Exists    *string        `json:"exists,omitempty"`
-	Ne        *[]interface{} `json:"ne,omitempty"`
+	LT        *[]interface{} `json:"lt,omitempty"`
+	LTE       *[]interface{} `json:"lte,omitempty"`
+	GT        *[]interface{} `json:"gt,omitempty"`
+	GTE       *[]interface{} `json:"gte,omitempty"`
+	NE        *[]interface{} `json:"ne,omitempty"`
 	NotExists *string        `json:"notExists,omitempty"`
 }
 

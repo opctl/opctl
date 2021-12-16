@@ -53,6 +53,16 @@ Reference:
         - [opspec](op-directory/op/index.md#opspec)
         - [run](op-directory/op/index.md#run)
             - [if](op-directory/op/call/index.md#if)
+                > one of...
+
+                - [eq](op-directory/op/call/predicate.md#eq)
+                - [exists](op-directory/op/call/predicate.md#exists)
+                - [gt](op-directory/op/call/predicate.md#gt)
+                - [gte](op-directory/op/call/predicate.md#gte)
+                - [lt](op-directory/op/call/predicate.md#lt)
+                - [lte](op-directory/op/call/predicate.md#lte)
+                - [ne](op-directory/op/call/predicate.md#ne)
+                - [notExists](op-directory/op/call/predicate.md#notExists)
             - [name](op-directory/op/call/index.md#name)
             - [needs](op-directory/op/call/index.md#needs)
             > one of...

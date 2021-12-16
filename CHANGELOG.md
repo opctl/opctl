@@ -6,6 +6,10 @@ accordance with
 
 ## [Unreleased]
 
+### Added
+
+- opspec now supports gt, gte, lt, lte predicates
+
 ## 0.1.48 - 2021-08-13
 
 ### Added
