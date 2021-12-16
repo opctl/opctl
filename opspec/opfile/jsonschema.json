@@ -503,6 +503,26 @@
         },
         {
           "required": [
+            "gt"
+          ]
+        },
+        {
+          "required": [
+            "gte"
+          ]
+        },
+        {
+          "required": [
+            "lt"
+          ]
+        },
+        {
+          "required": [
+            "lte"
+          ]
+        },
+        {
+          "required": [
             "ne"
           ]
         },
@@ -524,6 +544,38 @@
         "exists": {
           "description": "True if value exists w/ reference",
           "$ref": "#/definitions/variableReference"
+        },
+        "gt": {
+          "description": "True if each item is greater than the next",
+          "type": "array",
+          "items": {
+            "description": "Expression coercible to number value",
+            "$ref": "#/definitions/expression"
+          }
+        },
+        "gte": {
+          "description": "True if each item is greater than or equal to the next",
+          "type": "array",
+          "items": {
+            "description": "Expression coercible to number value",
+            "$ref": "#/definitions/expression"
+          }
+        },
+        "lt": {
+          "description": "True if each item is less than the next",
+          "type": "array",
+          "items": {
+            "description": "Expression coercible to number value",
+            "$ref": "#/definitions/expression"
+          }
+        },
+        "lte": {
+          "description": "True if each item is less than or equal to the next",
+          "type": "array",
+          "items": {
+            "description": "Expression coercible to number value",
+            "$ref": "#/definitions/expression"
+          }
         },
         "ne": {
           "description": "True if any items aren't equal",

@@ -38,7 +38,7 @@ var _ = Context("Interpret", func() {
 				)
 
 				/* assert */
-				Expect(actualError).To(MatchError("unable to interpret predicate: predicate was unexpected type &{Eq:<nil> Exists:<nil> Ne:<nil> NotExists:<nil>}"))
+				Expect(actualError).To(MatchError("unable to interpret predicate: predicate was unexpected type &{Eq:<nil> Exists:<nil> LT:<nil> LTE:<nil> GT:<nil> GTE:<nil> NE:<nil> NotExists:<nil>}"))
 			})
 		})
 	})

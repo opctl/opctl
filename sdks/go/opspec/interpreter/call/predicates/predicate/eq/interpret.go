@@ -10,7 +10,7 @@ func Interpret(
 	expressions []interface{},
 	scope map[string]*model.Value,
 ) (bool, error) {
-	var firstItemAsString string
+	var previousItemAsString string
 	for i, expression := range expressions {
 		// interpret items as strings since everything is coercible to string
 		item, err := str.Interpret(scope, expression)
@@ -20,12 +20,12 @@ func Interpret(
 		currentItemAsString := *item.String
 
 		if i == 0 {
-			firstItemAsString = currentItemAsString
+			previousItemAsString = currentItemAsString
 			continue
 		}
 
-		if firstItemAsString != currentItemAsString {
-			// if first seen item not equal to current item predicate is false.
+		if previousItemAsString != currentItemAsString {
+			// if previous item not equal to current item, predicate is false.
 			return false, nil
 		}
 	}
