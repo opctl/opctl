@@ -6,13 +6,9 @@ import (
 	"github.com/opctl/opctl/cli/internal/datadir"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 	core "github.com/opctl/opctl/sdks/go/node"
-	"github.com/opctl/opctl/sdks/go/node/containerruntime"
-	"github.com/opctl/opctl/sdks/go/node/containerruntime/docker"
-	"github.com/opctl/opctl/sdks/go/node/containerruntime/k8s"
-	"github.com/opctl/opctl/sdks/go/node/containerruntime/qemu"
 )
 
-// node command
+// nodeCreate implements the node create command
 func nodeCreate(
 	ctx context.Context,
 	nodeConfig local.NodeConfig,
@@ -26,28 +22,15 @@ func nodeCreate(
 		return err
 	}
 
-	var containerRuntime containerruntime.ContainerRuntime
-	if nodeConfig.ContainerRuntime == "k8s" {
-		containerRuntime, err = k8s.New()
-		if err != nil {
-			return err
-		}
-	} else if nodeConfig.ContainerRuntime == "qemu" {
-		containerRuntime, err = qemu.New(ctx, true)
-		if err != nil {
-			return err
-		}
-	} else {
-		containerRuntime, err = docker.New(ctx, "unix:///var/run/docker.sock")
-		if err != nil {
-			return err
-		}
+	containerRT, err := getContainerRuntime(ctx, nodeConfig)
+	if err != nil {
+		return err
 	}
 
 	return newHTTPListener(
 		core.New(
 			ctx,
-			containerRuntime,
+			containerRT,
 			dataDir.Path(),
 		),
 	).

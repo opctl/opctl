@@ -1,5 +1,5 @@
 description: uses the cli to run all test-suite scenarios. 
-name: test/system
+name: system
 run:
   container:
     image: { ref: 'docker:19.03-dind' }

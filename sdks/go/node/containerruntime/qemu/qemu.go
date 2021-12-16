@@ -68,6 +68,25 @@ func (cr _containerRuntime) DeleteContainerIfExists(
 	return dockerCR.DeleteContainerIfExists(ctx, containerID)
 }
 
+func (cr _containerRuntime) Kill(
+	ctx context.Context,
+) error {
+	if !cr.vm.Running() {
+		return nil
+	}
+
+	dockerCR, err := cr.getDockerContainerRuntime(ctx)
+	if err != nil {
+		return err
+	}
+
+	if err := dockerCR.Kill(ctx); err != nil {
+		return err
+	}
+
+	return cr.vm.Stop()
+}
+
 // RunContainer creates, starts, and waits on a container. ExitCode &/Or an error will be returned
 func (cr _containerRuntime) RunContainer(
 	ctx context.Context,

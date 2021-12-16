@@ -241,7 +241,7 @@ var _ = Context("RunContainer", func() {
 
 			expectedNetworkingConfig := &network.NetworkingConfig{
 				EndpointsConfig: map[string]*network.EndpointSettings{
-					dockerNetworkName: {
+					networkName: {
 						Aliases: []string{
 							*providedReq.Name,
 						},

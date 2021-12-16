@@ -3,5 +3,5 @@ package docker
 import "fmt"
 
 func getContainerName(opctlContainerID string) string {
-	return fmt.Sprintf("opctl_%s", opctlContainerID)
+	return fmt.Sprintf("%s%s", containerNamePrefix, opctlContainerID)
 }

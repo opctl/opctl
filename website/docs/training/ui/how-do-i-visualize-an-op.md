@@ -9,7 +9,7 @@ If the op is defined remotely in a git repo and the git repo requires authentica
 
 ## Local Op Example
 1. Open a terminal and `cd` to any directory that contains ops somewhere in it's subtree.
-1. Use the [opctl ui subcommand](../../reference/cli.md#ui-mount_ref) to open the web UI to the current directory.
+1. Use the [opctl ui subcommand](../../reference/ui.md#mount) to open the web UI to the current directory.
    ```sh
    opctl ui
    ```
@@ -18,7 +18,7 @@ If the op is defined remotely in a git repo and the git repo requires authentica
 
 ## Remote Op Example
 1. Open a terminal.
-1. Use the [opctl ui subcommand](../../reference/cli.md#ui-mount_ref) to open the web UI to the remote git tag [github.com/opspec-pkgs/_.op.create#3.3.1](https://github.com/opspec-pkgs/_.op.create/tree/3.3.1).
+1. Use the [opctl ui subcommand](../../reference/ui.md#mount) to open the web UI to the remote git tag [github.com/opspec-pkgs/_.op.create#3.3.1](https://github.com/opspec-pkgs/_.op.create/tree/3.3.1).
    ```sh
    opctl ui github.com/opspec-pkgs/_.op.create#3.3.1
    ```

@@ -207,13 +207,17 @@ func newCli(
 
 		nodeCmd.Command("kill", "Kills a node", func(killCmd *mow.Cmd) {
 			killCmd.Action = func() {
-				exitWith("", local.New(
-					local.NodeConfig{
-						ContainerRuntime: *containerRuntime,
-						DataDir:          *dataDir,
-						ListenAddress:    *listenAddress,
-					},
-				).KillNodeIfExists(""))
+				exitWith(
+					"",
+					nodeKill(
+						ctx,
+						local.NodeConfig{
+							ContainerRuntime: *containerRuntime,
+							DataDir:          *dataDir,
+							ListenAddress:    *listenAddress,
+						},
+					),
+				)
 			}
 		})
 	})

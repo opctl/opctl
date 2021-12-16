@@ -2,13 +2,12 @@ package main
 
 import (
 	"context"
-	"os"
 
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 )
 
-// nodeDelete implements the node delete command
-func nodeDelete(
+// nodeKill implements the node kill command
+func nodeKill(
 	ctx context.Context,
 	nodeConfig local.NodeConfig,
 ) error {
@@ -21,10 +20,6 @@ func nodeDelete(
 		return err
 	}
 
-	if err := os.RemoveAll(nodeConfig.DataDir); err != nil {
-		return err
-	}
-
-	return containerRT.Delete(ctx)
+	return containerRT.Kill(ctx)
 
 }

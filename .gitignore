@@ -1,5 +1,6 @@
 ### codecov.io
-coverprofile
+coverage.out
+codecov
 
 ### build
 /build/

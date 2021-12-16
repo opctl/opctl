@@ -1,0 +1,12 @@
+description: compiles the webapp
+name: compile
+run:
+  serial:
+    - op:
+        ref: ../init
+    - container:
+        cmd: [yarn, run, build]
+        image: { ref: "node:16-alpine" }
+        dirs:
+          /src: $(../../..)
+        workDir: /src/webapp

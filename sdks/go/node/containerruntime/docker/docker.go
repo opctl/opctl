@@ -4,9 +4,15 @@ package docker
 //counterfeiter:generate -o internal/fakes/commonAPIClient.go github.com/docker/docker/client.CommonAPIClient
 
 import (
+	"fmt"
+	"strings"
+
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/filters"
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 	"golang.org/x/net/context"
+	"golang.org/x/sync/errgroup"
 )
 
 func New(
@@ -41,8 +47,52 @@ type _containerRuntime struct {
 func (cr _containerRuntime) Delete(
 	ctx context.Context,
 ) error {
-	// for now this is a no-op
-	return nil
+	containers, err := cr.dockerClient.ContainerList(
+		ctx,
+		types.ContainerListOptions{
+			Filters: filters.NewArgs(
+				filters.KeyValuePair{
+					Key:   "name",
+					Value: containerNamePrefix,
+				},
+				filters.KeyValuePair{
+					Key:   "network",
+					Value: networkName,
+				},
+			),
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	errGroup, ctx := errgroup.WithContext(ctx)
+	for _, container := range containers {
+		for _, containerName := range container.Names {
+			containerName := containerName
+			errGroup.Go(func() error {
+				slashPrefix := fmt.Sprintf("/%s", containerNamePrefix)
+				// check if containerName is a conventional opctl container name
+				if strings.HasPrefix(containerName, slashPrefix) {
+					return cr.DeleteContainerIfExists(
+						ctx,
+						// convert containerName to opctl container id as required by cr.DeleteContainerIfExists
+						strings.Replace(containerName, slashPrefix, "", 1),
+					)
+				}
+				return nil
+			})
+		}
+	}
+
+	return errGroup.Wait()
 }
 
-const dockerNetworkName = "opctl"
+func (cr _containerRuntime) Kill(
+	ctx context.Context,
+) error {
+	return cr.Delete(ctx)
+}
+
+const containerNamePrefix = "opctl_"
+const networkName = "opctl"

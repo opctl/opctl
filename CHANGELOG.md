@@ -9,6 +9,7 @@ accordance with
 ### Added
 
 - opspec now supports gt, gte, lt, lte predicates
+- `opctl node kill` will now stop and remove any opctl managed containers (note: qemu & docker container runtimes only)
 
 ## 0.1.48 - 2021-08-13
 
