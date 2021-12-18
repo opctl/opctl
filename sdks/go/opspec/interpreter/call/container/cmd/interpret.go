@@ -5,7 +5,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
 )
 
-//Interpret a container cmd
+// Interpret a container cmd
 func Interpret(
 	scope map[string]*model.Value,
 	containerCallSpecCmd []interface{},

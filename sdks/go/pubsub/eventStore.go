@@ -12,7 +12,7 @@ import (
 
 const sortableRFC3339Nano = "2006-01-02T15:04:05.000000000Z07:00"
 
-//newEventStore returns an EventStore implementation leveraging [Badger DB](https://github.com/dgraph-io/badger)
+// newEventStore returns an EventStore implementation leveraging [Badger DB](https://github.com/dgraph-io/badger)
 func newEventStore(
 	db *badger.DB,
 ) eventStore {

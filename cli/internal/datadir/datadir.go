@@ -5,13 +5,13 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/golang-utils/lockfile"
+	"github.com/rogpeppe/go-internal/lockedfile"
 )
 
 // DataDir is an interface exposing the functionality we require in conjunction with our "data dir".
 type DataDir interface {
 	// InitAndLock initializes and locks an opctl data dir
-	InitAndLock() error
+	InitAndLock() (unlock func(), err error)
 
 	// Path resolves the data dir path
 	Path() string
@@ -31,18 +31,18 @@ func ensureExists(
 func New(
 	dataDirPath string,
 ) (DataDir, error) {
-	resolvedDataDirPath, err := filepath.Abs(dataDirPath)
+	resolvedPath, err := filepath.Abs(dataDirPath)
 	if err != nil {
 		return nil, fmt.Errorf("error initializing opctl data dir: %w", err)
 	}
 
-	if err := ensureExists(resolvedDataDirPath); err != nil {
+	if err := ensureExists(resolvedPath); err != nil {
 		return nil, fmt.Errorf("error initializing opctl data dir: %w", err)
 	}
 
 	// ensure we can write
 	if err := os.WriteFile(
-		filepath.Join(resolvedDataDirPath, "write-test"),
+		filepath.Join(resolvedPath, "write-test"),
 		[]byte(""),
 		0775,
 	); err != nil {
@@ -50,7 +50,7 @@ func New(
 	}
 
 	return _datadir{
-		resolvedPath: resolvedDataDirPath,
+		resolvedPath: resolvedPath,
 	}, err
 }
 
@@ -62,22 +62,26 @@ func (dd _datadir) Path() string {
 	return filepath.Join(dd.resolvedPath)
 }
 
-func (dd _datadir) InitAndLock() error {
+func (dd _datadir) InitAndLock() (unlock func(), err error) {
 	if err := ensureExists(dd.resolvedPath); err != nil {
-		return err
+		return nil, err
 	}
 
-	lockFilePath := filepath.Join(
-		dd.resolvedPath,
-		"pid.lock",
+	lockedFile, err := lockedfile.Create(
+		filepath.Join(
+			dd.resolvedPath,
+			"pid.lock",
+		),
+	)
+	if err != nil {
+		return func() {}, nil
+	}
+
+	_, err = lockedFile.Write(
+		[]byte(
+			fmt.Sprintf("%d", os.Getpid()),
+		),
 	)
 
-	// claim resolvedDataDirPath as ours
-	lockFile := lockfile.New()
-	if err := lockFile.Lock(lockFilePath); err != nil {
-		pIDOfExistingNode := lockFile.PIdOfOwner(lockFilePath)
-		return fmt.Errorf("node already running with PID: %d", pIDOfExistingNode)
-	}
-
-	return nil
+	return func() { lockedFile.Close() }, err
 }

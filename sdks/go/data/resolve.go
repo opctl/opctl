@@ -11,9 +11,9 @@ import (
 // Resolve "dataRef" from "providers" in order
 //
 // expected errs:
-//  - ErrDataProviderAuthentication on authentication failure
-//  - ErrDataProviderAuthorization on authorization failure
-//  - ErrDataRefResolution on resolution failure
+//   - ErrDataProviderAuthentication on authentication failure
+//   - ErrDataProviderAuthorization on authorization failure
+//   - ErrDataRefResolution on resolution failure
 func Resolve(
 	ctx context.Context,
 	dataRef string,

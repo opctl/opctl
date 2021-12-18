@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/opctl/opctl/cli/internal/clioutput"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -13,9 +13,14 @@ import (
 func events(
 	ctx context.Context,
 	cliOutput clioutput.CliOutput,
-	nodeProvider nodeprovider.NodeProvider,
+	nodeConfig local.NodeConfig,
 ) error {
-	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
+	np, err := local.New(nodeConfig)
+	if err != nil {
+		return err
+	}
+
+	node, err := np.CreateNodeIfNotExists(ctx)
 	if err != nil {
 		return err
 	}

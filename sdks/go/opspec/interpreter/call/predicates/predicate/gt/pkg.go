@@ -1,2 +1,2 @@
-// Packagt gt exposes functionality for interpreting a gt predicate.
+// Package gt exposes functionality for interpreting a gt predicate.
 package gt

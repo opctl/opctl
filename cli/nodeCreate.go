@@ -18,9 +18,12 @@ func nodeCreate(
 		return err
 	}
 
-	if err := dataDir.InitAndLock(); err != nil {
+	unlock, err := dataDir.InitAndLock()
+	if err != nil {
 		return err
 	}
+
+	defer unlock()
 
 	containerRT, err := getContainerRuntime(ctx, nodeConfig)
 	if err != nil {

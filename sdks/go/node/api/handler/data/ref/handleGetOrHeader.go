@@ -13,6 +13,7 @@ import (
 )
 
 // handleGetOrHeader handles GET or HEAD's
+//
 //counterfeiter:generate -o internal/fakes/handleGetOrHeader.go . handleGetOrHeader
 type handleGetOrHeader interface {
 	HandleGetOrHead(

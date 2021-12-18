@@ -54,5 +54,5 @@ run:
           /src: $(../..)
         envVars:
           GOFLAGS: -tags=containers_image_openpgp
-        image: { ref: "golang:1.17" }
+        image: { ref: "golang:1.18" }
         workDir: /src

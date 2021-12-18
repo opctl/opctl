@@ -16,7 +16,12 @@ func nodeKill(
 		return err
 	}
 
-	if err := local.New(nodeConfig).KillNodeIfExists(""); err != nil {
+	np, err := local.New(nodeConfig)
+	if err != nil {
+		return err
+	}
+
+	if err := np.KillNodeIfExists(); err != nil {
 		return err
 	}
 

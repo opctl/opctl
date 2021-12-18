@@ -4,6 +4,7 @@ import (
 	"os"
 
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Context("KillNodeIfExists", func() {
@@ -13,11 +14,14 @@ var _ = Context("KillNodeIfExists", func() {
 		if err != nil {
 			panic(err)
 		}
-		nodeProvider := New(NodeConfig{
+		nodeProvider, actualErr := New(NodeConfig{
 			DataDir: dataDir,
 		})
 
 		/* act */
-		nodeProvider.KillNodeIfExists("")
+		nodeProvider.KillNodeIfExists()
+
+		/* assert */
+		Expect(actualErr).To(BeNil())
 	})
 })

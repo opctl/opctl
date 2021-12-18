@@ -5,7 +5,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 )
 
-//Interpret a notExists expression
+// Interpret a notExists expression
 func Interpret(
 	expression string,
 	scope map[string]*model.Value,

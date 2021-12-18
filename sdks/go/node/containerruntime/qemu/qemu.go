@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"net"
 	"runtime"
 
 	"github.com/abiosoft/colima/environment"
@@ -120,7 +119,6 @@ func (cr _containerRuntime) getDockerContainerRuntime(
 				// allocate 2/3 available memory
 				Memory: int(memory.TotalMemory()) * 2 / 3e9,
 			},
-			PortInterface: net.ParseIP("127.0.0.1"),
 		})
 		if err != nil {
 			return nil, err

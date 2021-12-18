@@ -14,6 +14,7 @@ type ReadSeekCloser interface {
 
 // DataHandle is a provider agnostic interface for interacting w/ data
 // @TODO: merge Value and DataHandle
+//
 //counterfeiter:generate -o fakes/dataHandle.go . DataHandle
 type DataHandle interface {
 	// ListDescendants lists descendant of the data node pointed to by the current handle

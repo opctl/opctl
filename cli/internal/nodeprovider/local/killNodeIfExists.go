@@ -3,26 +3,38 @@ package local
 import (
 	"os"
 	"path/filepath"
+	"strings"
 )
 
-func (np nodeProvider) KillNodeIfExists(
-	nodeID string,
-) error {
-	pIDOfLockOwner := np.lockfile.PIdOfOwner(
+func (np nodeProvider) KillNodeIfExists() error {
+	pID, err := getPIDFromFile(
 		filepath.Join(
 			np.dataDir.Path(),
 			"pid.lock",
 		),
 	)
-	if pIDOfLockOwner != 0 {
-		nodeProcess, err := os.FindProcess(pIDOfLockOwner)
-		if err != nil {
+	if err != nil {
+		if os.IsNotExist(err) {
+			// already killed or our mutex was manually removed
+			return nil
+		}
+
+		return err
+	}
+
+	nodeProcess, err := os.FindProcess(pID)
+	if err != nil {
+		return err
+	}
+
+	if nodeProcess != nil {
+		err = nodeProcess.Kill()
+		if nil != err && !strings.Contains(err.Error(), "os: process already finished") {
 			return err
 		}
 
-		if nodeProcess != nil {
-			return nodeProcess.Kill()
-		}
+		// ignore errors because we don't care; we just need it to have exited
+		nodeProcess.Wait()
 	}
 
 	return nil

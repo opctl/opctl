@@ -5,7 +5,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
 )
 
-//Interpret a parallel Loop
+// Interpret a parallel Loop
 func Interpret(
 	parallelLoopCallSpec model.ParallelLoopCallSpec,
 	scope map[string]*model.Value,

@@ -15,7 +15,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
 )
 
-//Interpret interprets an op input
+// Interpret interprets an op input
 func Interpret(
 	name string,
 	valueExpression interface{},

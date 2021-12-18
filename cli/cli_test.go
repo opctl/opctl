@@ -93,11 +93,6 @@ var _ = Context("cli", func() {
 					Expect(string(session.Out.Contents())).Should(Equal(
 						`REF		DESCRIPTION
 testdata/ls/op1	A single line description
-testdata/ls/op2	A multiline description
-		
-		* one
-		* two
-		* three
 `))
 				})
 			})

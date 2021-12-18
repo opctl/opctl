@@ -10,6 +10,7 @@ type InputSourcer interface {
 }
 
 // inputSourcer is an internal version of Parser so fakes don't cause cyclic deps
+//
 //counterfeiter:generate -o internal/fakes/InputSourcer.go . inputSourcer
 type inputSourcer interface {
 	// Source obtains values for inputs in order of precedence.

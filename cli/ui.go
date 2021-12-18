@@ -9,7 +9,7 @@ import (
 
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 	"github.com/skratchdot/open-golang/open"
 )
 
@@ -17,12 +17,18 @@ import (
 func ui(
 	ctx context.Context,
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier,
-	nodeProvider nodeprovider.NodeProvider,
+	nodeConfig local.NodeConfig,
 	listenAddress string,
 	mountRefArg string,
 ) error {
 	var resolvedMount string
-	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
+
+	np, err := local.New(nodeConfig)
+	if err != nil {
+		return err
+	}
+
+	node, err := np.CreateNodeIfNotExists(ctx)
 	if err != nil {
 		return err
 	}

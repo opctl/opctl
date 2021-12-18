@@ -14,17 +14,15 @@ func (ctp _containerRuntime) DeleteContainerIfExists(
 ) error {
 	// try to stop the container gracefully prior to deletion
 	stopTimeout := 3 * time.Second
-	err := ctp.dockerClient.ContainerStop(
+	// ignore error; we want to remove regardless
+	ctp.dockerClient.ContainerStop(
 		ctx,
 		getContainerName(containerID),
 		&stopTimeout,
 	)
-	if err != nil {
-		return fmt.Errorf("unable to stop container: %w", err)
-	}
 
 	// now delete the container post-termination
-	err = ctp.dockerClient.ContainerRemove(
+	err := ctp.dockerClient.ContainerRemove(
 		ctx,
 		getContainerName(containerID),
 		types.ContainerRemoveOptions{

@@ -11,23 +11,15 @@ import (
 	"os/exec"
 	"path/filepath"
 	"syscall"
+	"time"
 
 	"github.com/opctl/opctl/sdks/go/node"
 )
 
 func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, error) {
-	nodes, err := np.ListNodes()
+	apiClientNode, err := newAPIClientNode(np.config.ListenAddress)
 	if err != nil {
 		return nil, err
-	}
-
-	apiClientNode, err := newAPIClientNode(np.listenAddress)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(nodes) > 0 {
-		return apiClientNode, nil
 	}
 
 	pathToOpctlBin, err := os.Executable()
@@ -45,9 +37,9 @@ func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, er
 		"--data-dir",
 		np.dataDir.Path(),
 		"--listen-address",
-		np.listenAddress,
+		np.config.ListenAddress,
 		"--container-runtime",
-		np.containerRuntime,
+		np.config.ContainerRuntime,
 		"node",
 		"create",
 	)
@@ -64,7 +56,7 @@ func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, er
 	}
 
 	nodeLogFilePath := filepath.Join(np.dataDir.Path(), "node.log")
-	nodeLogFile, err := os.Create(nodeLogFilePath)
+	nodeLogFile, err := os.OpenFile(nodeLogFilePath, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		return nil, err
 	}
@@ -76,9 +68,24 @@ func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, er
 		return nil, err
 	}
 
-	err = apiClientNode.Liveness(ctx)
-	nodeLogBytes, _ := os.ReadFile(nodeLogFilePath)
-	fmt.Println(string(nodeLogBytes))
+	ctx, cancel := context.WithCancel(ctx)
+
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				if err := apiClientNode.Liveness(ctx); err == nil {
+					cancel()
+				}
+				time.Sleep(time.Second)
+			}
+		}
+	}()
+
+	<-ctx.Done()
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to create daemonized opctl node: %w", err)
 	}
