@@ -13,7 +13,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 	"github.com/opctl/opctl/cli/internal/opgraph"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
@@ -24,7 +24,7 @@ func run(
 	ctx context.Context,
 	cliOutput clioutput.CliOutput,
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier,
-	nodeProvider nodeprovider.NodeProvider,
+	nodeConfig local.NodeConfig,
 	args []string,
 	argFile string,
 	opRef string,
@@ -32,7 +32,12 @@ func run(
 ) error {
 	startTime := time.Now().UTC()
 
-	node, err := nodeProvider.CreateNodeIfNotExists(ctx)
+	np, err := local.New(nodeConfig)
+	if err != nil {
+		return err
+	}
+
+	node, err := np.CreateNodeIfNotExists(ctx)
 	if err != nil {
 		return err
 	}

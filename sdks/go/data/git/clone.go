@@ -18,8 +18,8 @@ import (
 // nil pullCreds will be ignored
 //
 // expected errs:
-//  - ErrDataProviderAuthentication on authentication failure
-//  - ErrDataProviderAuthorization on authorization failure
+//   - ErrDataProviderAuthentication on authentication failure
+//   - ErrDataProviderAuthorization on authorization failure
 func Clone(
 	ctx context.Context,
 	path string,
@@ -38,7 +38,6 @@ func Clone(
 		URL:           fmt.Sprintf("https://%v", parsedPkgRef.Name),
 		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", parsedPkgRef.Version)),
 		Depth:         1,
-		Progress:      os.Stdout,
 	}
 
 	if authOpts != nil {

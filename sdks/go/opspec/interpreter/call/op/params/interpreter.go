@@ -4,7 +4,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
-//Interpret params
+// Interpret params
 func Interpret(
 	scope map[string]*model.Value,
 	params map[string]*model.ParamSpec,

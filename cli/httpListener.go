@@ -20,7 +20,8 @@ import (
 	"github.com/opctl/opctl/webapp"
 )
 
-/**
+/*
+*
 listener is a generic interface for things which expose opctl via some protocol
 */
 type listener interface {
@@ -30,7 +31,8 @@ type listener interface {
 	) error
 }
 
-/**
+/*
+*
 newHTTPListener returns a listener which exposes opctl over http (& websockets via connection upgrades)
 */
 func newHTTPListener(

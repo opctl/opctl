@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/blang/semver"
-	"github.com/opctl/opctl/cli/internal/nodeprovider"
+	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 	"github.com/rhysd/go-github-selfupdate/selfupdate"
 )
 
 func selfUpdate(
-	nodeProvider nodeprovider.NodeProvider,
+	nodeConfig local.NodeConfig,
 ) (string, error) {
 	v := semver.MustParse(version)
 	latest, err := selfupdate.UpdateSelf(v, "opctl/opctl")
@@ -23,7 +23,12 @@ func selfUpdate(
 
 	// kill local node to ensure outdated version not left running
 	// @TODO start node maintaining previous user
-	err = nodeProvider.KillNodeIfExists("")
+	np, err := local.New(nodeConfig)
+	if err != nil {
+		return "", err
+	}
+
+	err = np.KillNodeIfExists()
 	if err != nil {
 		err = fmt.Errorf("unable to kill running node; run `node kill` to complete the update: %w", err)
 	}

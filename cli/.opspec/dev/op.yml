@@ -14,7 +14,7 @@ run:
         inputs:
           HOME:
     - container:
-        image: { ref: 'golang:1.17' }
+        image: { ref: 'golang:1.18' }
         cmd:
           - go
           - run
@@ -23,7 +23,7 @@ run:
           - --headless=true
           - --api-version=2
           - exec
-          - ./opctl-linux-amd64
+          - ./cli/opctl-linux-amd64
           - run
           - github.com/opspec-pkgs/uuid.v4.generate#1.1.0
         dirs:

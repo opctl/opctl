@@ -15,7 +15,7 @@ func getMaxEmbedMB() float64 {
 	return float64(maxEmbedBytes) / float64(oneMB)
 }
 
-//embedLocalFilesAndDirs mutates args by embedding any referenced file &/or dirs as objects.
+// embedLocalFilesAndDirs mutates args by embedding any referenced file &/or dirs as objects.
 // This makes the args location independent and therefore runnable on a remote node.
 // note1: this loads referenced files/dirs into memory so we limit max combined embed to maxEmbedBytes to reduce the chances of memory exhaustion.
 // note2: this approach is primitive; we will need to support de-dupe and chunking in the future.

@@ -1,2 +1,2 @@
-// Packalte lte exposes functionality for interpreting a lte predicate.
+// Package lte exposes functionality for interpreting a lte predicate.
 package lte

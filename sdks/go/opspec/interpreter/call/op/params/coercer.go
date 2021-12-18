@@ -8,7 +8,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
-//Coerce args to satisfy params
+// Coerce args to satisfy params
 func Coerce(
 	values map[string]*model.Value,
 	params map[string]*model.ParamSpec,

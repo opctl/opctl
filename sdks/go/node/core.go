@@ -9,6 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/dgraph-io/badger/v3"
@@ -32,13 +33,27 @@ func New(
 	// per badger README.MD#FAQ "maximizes throughput"
 	runtime.GOMAXPROCS(128)
 
+	badgerOpts := badger.DefaultOptions(
+		eventDbPath,
+	).WithLogger(nil)
+
 	db, err := badger.Open(
-		badger.DefaultOptions(
-			eventDbPath,
-		).WithLogger(nil),
+		badgerOpts,
 	)
 	if err != nil {
-		panic(err)
+		if strings.Contains(err.Error(), "manifest has unsupported version:") {
+			// if event db is incompatible; clear it.
+			// @TODO consider backup & restore on update
+			err = os.RemoveAll(eventDbPath)
+			if err == nil {
+				db, err = badger.Open(
+					badgerOpts,
+				)
+			}
+		}
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	pubSub := pubsub.New(db)

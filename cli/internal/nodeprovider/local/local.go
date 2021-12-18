@@ -1,7 +1,6 @@
 package local
 
 import (
-	"github.com/golang-utils/lockfile"
 	"github.com/opctl/opctl/cli/internal/datadir"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 )
@@ -18,23 +17,19 @@ type NodeConfig struct {
 // New returns an initialized "local" node provider
 func New(
 	config NodeConfig,
-) nodeprovider.NodeProvider {
-	dataDir, newDataDirErr := datadir.New(config.DataDir)
-	if newDataDirErr != nil {
-		panic(newDataDirErr)
+) (nodeprovider.NodeProvider, error) {
+	dataDir, err := datadir.New(config.DataDir)
+	if err != nil {
+		return nil, err
 	}
 
 	return nodeProvider{
-		containerRuntime: config.ContainerRuntime,
-		dataDir:          dataDir,
-		listenAddress:    config.ListenAddress,
-		lockfile:         lockfile.New(),
-	}
+		config:  config,
+		dataDir: dataDir,
+	}, nil
 }
 
 type nodeProvider struct {
-	containerRuntime string
-	dataDir          datadir.DataDir
-	listenAddress    string
-	lockfile         lockfile.LockFile
+	config  NodeConfig
+	dataDir datadir.DataDir
 }

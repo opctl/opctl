@@ -10,6 +10,15 @@ accordance with
 
 - opspec now supports gt, gte, lt, lte predicates
 - `opctl node kill` will now stop and remove any opctl managed containers (note: qemu & docker container runtimes only)
+- introduced `opctl node delete` command which "Deletes a node. This is destructive! all node data including auth, caches, and operation state will be permanently removed."
+
+### Changed
+
+- upgrading to this version from prior versions is destructive! all node data including auth, caches, and operation state will be permanently removed.
+
+### Fixed
+
+- [Node locking mechanism doesn't ensure process is opctl](https://github.com/opctl/opctl/issues/913)
 
 ## 0.1.48 - 2021-08-13
 

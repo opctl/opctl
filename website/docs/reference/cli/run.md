@@ -7,7 +7,7 @@ title: opctl run
 opctl run [OPTIONS] OP_REF
 ```
 
-Start and wait on an op.
+Start and wait for an op to exit.
 
 > if a node isn't running, one will be started automatically
 

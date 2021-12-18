@@ -109,13 +109,11 @@ func newCli(
 					"",
 					auth(
 						ctx,
-						local.New(
-							local.NodeConfig{
-								ContainerRuntime: *containerRuntime,
-								DataDir:          *dataDir,
-								ListenAddress:    *listenAddress,
-							},
-						),
+						local.NodeConfig{
+							ContainerRuntime: *containerRuntime,
+							DataDir:          *dataDir,
+							ListenAddress:    *listenAddress,
+						},
 						model.AddAuthReq{
 							Resources: *resources,
 							Creds: model.Creds{
@@ -136,13 +134,11 @@ func newCli(
 				events(
 					ctx,
 					cliOutput,
-					local.New(
-						local.NodeConfig{
-							ContainerRuntime: *containerRuntime,
-							DataDir:          *dataDir,
-							ListenAddress:    *listenAddress,
-						},
-					),
+					local.NodeConfig{
+						ContainerRuntime: *containerRuntime,
+						DataDir:          *dataDir,
+						ListenAddress:    *listenAddress,
+					},
 				),
 			)
 		}
@@ -159,13 +155,11 @@ func newCli(
 				ls(
 					ctx,
 					cliParamSatisfier,
-					local.New(
-						local.NodeConfig{
-							ContainerRuntime: *containerRuntime,
-							DataDir:          *dataDir,
-							ListenAddress:    *listenAddress,
-						},
-					),
+					local.NodeConfig{
+						ContainerRuntime: *containerRuntime,
+						DataDir:          *dataDir,
+						ListenAddress:    *listenAddress,
+					},
 					*dirRef,
 				),
 			)
@@ -189,7 +183,7 @@ func newCli(
 			}
 		})
 
-		nodeCmd.Command("delete", "Deletes a node. Warning: this is destructive! all data including auth, caches, and state will be permanently removed.", func(deleteCmd *mow.Cmd) {
+		nodeCmd.Command("delete", "Deletes a node. This is destructive! all node data including auth, caches, and operation state will be permanently removed.", func(deleteCmd *mow.Cmd) {
 			deleteCmd.Action = func() {
 				exitWith(
 					"",
@@ -205,7 +199,7 @@ func newCli(
 			}
 		})
 
-		nodeCmd.Command("kill", "Kills a node", func(killCmd *mow.Cmd) {
+		nodeCmd.Command("kill", "Kills a node and any running operations. This is non destructive. All node data including auth, caches, and operation state will be retained.", func(killCmd *mow.Cmd) {
 			killCmd.Action = func() {
 				exitWith(
 					"",
@@ -223,13 +217,18 @@ func newCli(
 	})
 
 	cli.Command("op", "Manage ops", func(opCmd *mow.Cmd) {
-		node, err := local.New(
+		np, err := local.New(
 			local.NodeConfig{
 				ContainerRuntime: *containerRuntime,
 				DataDir:          *dataDir,
 				ListenAddress:    *listenAddress,
 			},
-		).CreateNodeIfNotExists(ctx)
+		)
+		if err != nil {
+			exitWith("", err)
+		}
+
+		node, err := np.CreateNodeIfNotExists(ctx)
 		if err != nil {
 			exitWith("", err)
 		}
@@ -325,13 +324,11 @@ func newCli(
 					ctx,
 					cliOutput,
 					cliParamSatisfier,
-					local.New(
-						local.NodeConfig{
-							ContainerRuntime: *containerRuntime,
-							DataDir:          *dataDir,
-							ListenAddress:    *listenAddress,
-						},
-					),
+					local.NodeConfig{
+						ContainerRuntime: *containerRuntime,
+						DataDir:          *dataDir,
+						ListenAddress:    *listenAddress,
+					},
 					*args,
 					*argFile,
 					*opRef,
@@ -345,13 +342,11 @@ func newCli(
 		selfUpdateCmd.Action = func() {
 			exitWith(
 				selfUpdate(
-					local.New(
-						local.NodeConfig{
-							ContainerRuntime: *containerRuntime,
-							DataDir:          *dataDir,
-							ListenAddress:    *listenAddress,
-						},
-					),
+					local.NodeConfig{
+						ContainerRuntime: *containerRuntime,
+						DataDir:          *dataDir,
+						ListenAddress:    *listenAddress,
+					},
 				),
 			)
 		}
@@ -368,13 +363,11 @@ func newCli(
 				ui(
 					ctx,
 					cliParamSatisfier,
-					local.New(
-						local.NodeConfig{
-							ContainerRuntime: *containerRuntime,
-							DataDir:          *dataDir,
-							ListenAddress:    *listenAddress,
-						},
-					),
+					local.NodeConfig{
+						ContainerRuntime: *containerRuntime,
+						DataDir:          *dataDir,
+						ListenAddress:    *listenAddress,
+					},
 					*listenAddress,
 					*mountRefArg,
 				),

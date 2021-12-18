@@ -12,7 +12,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/serialloop"
 )
 
-//Interpret a spec into a call
+// Interpret a spec into a call
 func Interpret(
 	ctx context.Context,
 	scope map[string]*model.Value,

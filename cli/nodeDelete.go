@@ -17,14 +17,20 @@ func nodeDelete(
 		return err
 	}
 
-	if err := local.New(nodeConfig).KillNodeIfExists(""); err != nil {
+	np, err := local.New(nodeConfig)
+	if err != nil {
 		return err
 	}
 
-	if err := os.RemoveAll(nodeConfig.DataDir); err != nil {
+	err = containerRT.Delete(ctx)
+	if err != nil {
 		return err
 	}
 
-	return containerRT.Delete(ctx)
+	if err := np.KillNodeIfExists(); err != nil {
+		return err
+	}
+
+	return os.RemoveAll(nodeConfig.DataDir)
 
 }

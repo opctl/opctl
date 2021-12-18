@@ -133,7 +133,8 @@ func (ps *pubSub) Publish(
 	}
 }
 
-/**
+/*
+*
 publishToSubscription publishes event to subscription
 */
 func (ps *pubSub) publishToSubscription(

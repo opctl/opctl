@@ -6,7 +6,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
 )
 
-//Interpret a serial loop
+// Interpret a serial loop
 func Interpret(
 	serialLoopCallSpec model.SerialLoopCallSpec,
 	scope map[string]*model.Value,

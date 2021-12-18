@@ -1,13 +1,13 @@
 package model
 
-//Auth holds auth data
+// Auth holds auth data
 type Auth struct {
 	// Resources designates which resources this auth applies to in the form of a reference (or prefix thereof)
 	Resources string
 	Creds
 }
 
-//Call is a node of a call graph; see https://en.wikipedia.org/wiki/Call_graph
+// Call is a node of a call graph; see https://en.wikipedia.org/wiki/Call_graph
 type Call struct {
 	Container *ContainerCall `json:"container,omitempty"`
 	// id of call
@@ -31,7 +31,7 @@ type BaseCall struct {
 	OpPath string `json:"opPath"`
 }
 
-//ContainerCall is a call of a container
+// ContainerCall is a call of a container
 type ContainerCall struct {
 	BaseCall
 	ContainerID string   `json:"containerId"`
@@ -50,7 +50,7 @@ type ContainerCall struct {
 	Ports   map[string]string `json:"ports,omitempty"`
 }
 
-//ContainerCallImage is the image used when calling a container
+// ContainerCallImage is the image used when calling a container
 type ContainerCallImage struct {
 	Src       *Value  `json:"src,omitempty"`
 	Ref       *string `json:"ref"`
@@ -63,14 +63,14 @@ type Creds struct {
 	Password string
 }
 
-//LoopVars is a loops vars
+// LoopVars is a loops vars
 type LoopVars struct {
 	Index *string `json:"index,omitempty"`
 	Key   *string `json:"key,omitempty"`
 	Value *string `json:"value,omitempty"`
 }
 
-//OpCall is a call of an op
+// OpCall is a call of an op
 type OpCall struct {
 	BaseCall
 	OpID              string            `json:"opId"`
@@ -79,7 +79,7 @@ type OpCall struct {
 	ChildCallID       string            `json:"childCallId"`
 }
 
-//ParallelLoopCall is a call of a parallel loop
+// ParallelLoopCall is a call of a parallel loop
 type ParallelLoopCall struct {
 	// an array or object
 	Range *Value    `json:"range,omitempty"`
@@ -87,13 +87,13 @@ type ParallelLoopCall struct {
 	Vars  *LoopVars `json:"vars,omitempty"`
 }
 
-//Predicate is a predicate i.e. something that evaluates to true or false
+// Predicate is a predicate i.e. something that evaluates to true or false
 type Predicate struct {
 	Eq []*Value `json:"eq"`
 	Ne []*Value `json:"ne"`
 }
 
-//SerialLoopCall is a call of a serial loop
+// SerialLoopCall is a call of a serial loop
 type SerialLoopCall struct {
 	// an array or object
 	Range *Value    `json:"range,omitempty"`

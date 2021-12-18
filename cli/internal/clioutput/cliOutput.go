@@ -9,7 +9,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
-//CliOutput allows mocking/faking output
+// CliOutput allows mocking/faking output
 type CliOutput interface {
 	// silently disables coloring
 	DisableColor()

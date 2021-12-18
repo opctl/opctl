@@ -10,7 +10,7 @@ type OpSpec struct {
 	Version     string                `json:"version,omitempty"`
 }
 
-//CallSpec is a spec for a node of a call graph; see https://en.wikipedia.org/wiki/Call_graph
+// CallSpec is a spec for a node of a call graph; see https://en.wikipedia.org/wiki/Call_graph
 type CallSpec struct {
 	Container    *ContainerCallSpec    `json:"container,omitempty"`
 	Description  string                `json:"description,omitempty"`
@@ -24,7 +24,7 @@ type CallSpec struct {
 	SerialLoop   *SerialLoopCallSpec   `json:"serialLoop,omitempty"`
 }
 
-//ContainerCallSpec is a spec for calling a container
+// ContainerCallSpec is a spec for calling a container
 type ContainerCallSpec struct {
 	// Cmd entries will be interpreted to strings
 	Cmd []interface{} `json:"cmd,omitempty"`
@@ -42,20 +42,20 @@ type ContainerCallSpec struct {
 	Ports   map[string]string       `json:"ports,omitempty"`
 }
 
-//ContainerCallImageSpec is a spec for the image when calling a container
+// ContainerCallImageSpec is a spec for the image when calling a container
 type ContainerCallImageSpec struct {
 	Ref       string     `json:"ref"`
 	PullCreds *CredsSpec `json:"pullCreds,omitempty"`
 }
 
-//LoopVarsSpec is a spec for a loops vars
+// LoopVarsSpec is a spec for a loops vars
 type LoopVarsSpec struct {
 	Index *string `json:"index,omitempty"`
 	Key   *string `json:"key,omitempty"`
 	Value *string `json:"value,omitempty"`
 }
 
-//OpCallSpec is a spec for calling an op
+// OpCallSpec is a spec for calling an op
 type OpCallSpec struct {
 	// Ref represents a references to an op; will be interpolated
 	Ref string `json:"ref"`
@@ -67,14 +67,14 @@ type OpCallSpec struct {
 	Outputs map[string]string `json:"outputs,omitempty"`
 }
 
-//ParallelLoopCallSpec is a spec for calling a parallel loop
+// ParallelLoopCallSpec is a spec for calling a parallel loop
 type ParallelLoopCallSpec struct {
 	Range interface{}   `json:"range,omitempty"`
 	Run   CallSpec      `json:"run,omitempty"`
 	Vars  *LoopVarsSpec `json:"vars,omitempty"`
 }
 
-//PredicateSpec is a spec for a predicate
+// PredicateSpec is a spec for a predicate
 type PredicateSpec struct {
 	Eq        *[]interface{} `json:"eq,omitempty"`
 	Exists    *string        `json:"exists,omitempty"`
@@ -86,7 +86,7 @@ type PredicateSpec struct {
 	NotExists *string        `json:"notExists,omitempty"`
 }
 
-//CredsSpec is a spec for authentication credentials
+// CredsSpec is a spec for authentication credentials
 type CredsSpec struct {
 	// will be interpolated
 	Username string `json:"username"`
@@ -94,7 +94,7 @@ type CredsSpec struct {
 	Password string `json:"password"`
 }
 
-//SerialLoopCallSpec is a spec for calling a serial loop
+// SerialLoopCallSpec is a spec for calling a serial loop
 type SerialLoopCallSpec struct {
 	Range interface{}      `json:"range,omitempty"`
 	Run   CallSpec         `json:"run,omitempty"`
