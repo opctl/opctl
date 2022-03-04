@@ -1,3 +1,11 @@
+# Support Ukraine
+The opctl project deeply opposes Vladimir Putins evil, unprovoked killing and war on the brave and courageous people of Ukraine.  
+
+We encourage you to support Ukraine any way you can. 
+
+🇺🇦 We stand with Ukraine 🇺🇦
+
+# Badges
 [![Build](https://github.com/opctl/opctl/workflows/Build/badge.svg?branch=main)](https://github.com/opctl/opctl/actions?query=workflow%3ABuild+branch%3Amain)
 [![Go Report Card](https://goreportcard.com/badge/github.com/opctl/opctl)](https://goreportcard.com/report/github.com/opctl/opctl)
 [![Coverage](https://codecov.io/gh/opctl/opctl/branch/master/graph/badge.svg)](https://codecov.io/gh/opctl/opctl)
