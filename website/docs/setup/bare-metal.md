@@ -12,19 +12,21 @@ opctl is distributed as a self-contained executable, so installation generally c
 ### Dependencies
 
 Opctl currently supports multiple container runtimes. Dependencies vary based on whichever you choose:
+
 |container runtime|dependencies|
 |--|--|
 |docker|[docker](https://docs.docker.com/get-docker/)|
 |k8s|opctl must be running inside k8s (uses the downward API) |
 |qemu (experimental)|[lima](https://github.com/lima-vm/lima/releases/latest)|
 
-### OSX
+### OSX - M1
+`curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-darwin-arm64.tgz | sudo tar -xzv -C /usr/local/bin`
 
-1. `curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-darwin-amd64.tgz | sudo tar -xzv -C /usr/local/bin`
+### OSX - Intel
+`curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-darwin-amd64.tgz | sudo tar -xzv -C /usr/local/bin`
 
 ### Linux
-
-1. `curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin`
+`curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin`
 
 ### Windows
 
@@ -64,9 +66,11 @@ To update you must uninstall and reinstall:
 
 1. install [vscode-yaml plugin](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml)
 2. add to your user or workspace settings
+   
    ```json
    "yaml.schemas": {
     "https://raw.githubusercontent.com/opctl/opctl/main/opspec/opfile/jsonschema.json": "/op.yml"
     }
-    ```
+   ```
+
 3. edit or create an op.yml w/ your fancy intellisense.
