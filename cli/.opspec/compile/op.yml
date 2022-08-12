@@ -12,25 +12,29 @@ inputs:
 run:
   parallelLoop:
     range:
-      - darwin
-      - linux
+      - os: darwin
+        arch: amd64
+      - os: darwin
+        arch: arm64
+      - os: linux
+        arch: amd64
     vars:
-      value: $(GOOS)
+      value: $(target)
     run:
       container:
         cmd:
           - go
           - build
           - -o
-          - cli/opctl-$(GOOS)-amd64
+          - cli/opctl-$(target.os)-$(target.arch)
           - ./cli
         dirs:
           /src: $(../../..)
           /go/pkg: $(HOME/go/pkg)
         envVars:
-          GOOS:
+          GOOS: $(target.os)
           CGO_ENABLED: 0
-          GOARCH: amd64
+          GOARCH: $(target.arch)
           GOFLAGS:
             -tags=containers_image_openpgp
             -ldflags=-X=main.version=$(version)
