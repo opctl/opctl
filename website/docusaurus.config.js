@@ -6,6 +6,7 @@ module.exports = {
   favicon: 'img/favicon.ico',
   organizationName: 'opctl', // Usually your GitHub org/user name.
   projectName: 'opctl', // Usually your repo name.
+  trailingSlash: false,
   themeConfig: {
     algolia: {
       appId: 'E19H3NL09D',

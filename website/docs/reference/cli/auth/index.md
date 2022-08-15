@@ -1,5 +1,5 @@
 ---
-sidebar_label: Overview
+sidebar_label: auth
 title: opctl auth
 ---
 Manage auth for OCI image registries.
