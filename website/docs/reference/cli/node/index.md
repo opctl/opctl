@@ -1,5 +1,5 @@
 ---
-sidebar_label: Overview
+sidebar_label: node
 title: opctl node
 ---
 Manage nodes
