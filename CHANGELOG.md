@@ -9,12 +9,13 @@ accordance with
 ### Added
 
 - opspec now supports gt, gte, lt, lte predicates
-- `opctl node kill` will now stop and remove any opctl managed containers (note: qemu & docker container runtimes only)
+- `opctl node kill` will now stop and remove any opctl managed containers
 - introduced `opctl node delete` command which "Deletes a node. This is destructive! all node data including auth, caches, and operation state will be permanently removed."
 
 ### Changed
 
 - upgrading to this version from prior versions is destructive! all node data including auth, caches, and operation state will be permanently removed.
+- K8s container runtime now explicitly deletes terminated pods
 
 ### Fixed
 
