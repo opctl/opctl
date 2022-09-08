@@ -42,7 +42,7 @@ describe('validate', () => {
           expect(actualErrors).toEqual([{
             'dataPath': '',
             'keyword': 'minItems',
-            'message': 'should NOT have less than 1 items',
+            'message': 'should NOT have fewer than 1 items',
             'params': {'limit': 1},
             'schemaPath': '#/minItems'
           }])

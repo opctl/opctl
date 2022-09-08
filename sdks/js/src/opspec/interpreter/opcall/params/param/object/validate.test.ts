@@ -42,7 +42,7 @@ describe('validate', () => {
           expect(actualErrors).toEqual([{
             'dataPath': '',
             'keyword': 'minProperties',
-            'message': 'should NOT have less than 1 properties',
+            'message': 'should NOT have fewer than 1 properties',
             'params': {'limit': 1},
             'schemaPath': '#/minProperties'
           }])
