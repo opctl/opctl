@@ -130,6 +130,9 @@ func (clio _cliOutput) containerExited(event *model.Event) {
 		message += "unknown container " + message
 	}
 	message = color(message)
+	if event.CallEnded.Error != nil {
+		message += color(":") + " " + event.CallEnded.Error.Message
+	}
 
 	io.WriteString(
 		writer,
