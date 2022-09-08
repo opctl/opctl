@@ -19,6 +19,7 @@ accordance with
 ### Fixed
 
 - [Node locking mechanism doesn't ensure process is opctl](https://github.com/opctl/opctl/issues/913)
+- [CLI no longer logs errors occurring in parallel calls](https://github.com/opctl/opctl/issues/1032)
 
 ## 0.1.48 - 2021-08-13
 
