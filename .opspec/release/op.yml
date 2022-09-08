@@ -31,6 +31,9 @@ inputs:
             type: string
         required: [accessToken, username]
       description: configuration required to interact w/ github
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
   version:
     string:
       constraints: { format: semver }
@@ -42,6 +45,7 @@ run:
         inputs:
           dockerSocket:
           gitBranch:
+          HOME:
           version:
     - parallel:
         - op:
