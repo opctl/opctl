@@ -41,8 +41,11 @@ type _containerRuntime struct {
 func (cr _containerRuntime) Delete(
 	ctx context.Context,
 ) error {
-	// for now this is a no-op
-	return nil
+	return cr.k8sClient.CoreV1().Pods("opctl").DeleteCollection(
+		ctx,
+		*metaV1.NewDeleteOptions(0),
+		metaV1.ListOptions{},
+	)
 }
 
 func (cr _containerRuntime) DeleteContainerIfExists(
@@ -52,7 +55,7 @@ func (cr _containerRuntime) DeleteContainerIfExists(
 	if err := cr.k8sClient.CoreV1().Pods("opctl").Delete(
 		ctx,
 		constructPodName(containerID),
-		metaV1.DeleteOptions{},
+		*metaV1.NewDeleteOptions(0),
 	); err != nil {
 		return fmt.Errorf("unable to delete k8s container: %w", err)
 	}
@@ -63,8 +66,7 @@ func (cr _containerRuntime) DeleteContainerIfExists(
 func (cr _containerRuntime) Kill(
 	ctx context.Context,
 ) error {
-	// for now this is a no-op
-	return nil
+	return cr.Delete(ctx)
 }
 
 func (cr _containerRuntime) RunContainer(
@@ -79,6 +81,18 @@ func (cr _containerRuntime) RunContainer(
 	defer stderr.Close()
 
 	pod, err := constructPod(req)
+	if err != nil {
+		return nil, err
+	}
+
+	// don't leak terminated pods
+	err = cr.k8sClient.CoreV1().Pods("opctl").DeleteCollection(
+		ctx,
+		*metaV1.NewDeleteOptions(0),
+		metaV1.ListOptions{
+			FieldSelector: "status.phase!=Pending,status.phase!=Running,status.phase!=Unknown",
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
