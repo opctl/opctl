@@ -14,6 +14,9 @@ func New(
 		// get parts
 		parts := strings.SplitN(arg, sep, 2)
 		inputName := parts[0]
+		if len(parts) < 2 {
+			continue
+		}
 		inputValue := parts[1]
 
 		argMap[inputName] = inputValue
