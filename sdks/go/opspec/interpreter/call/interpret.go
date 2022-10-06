@@ -3,13 +3,14 @@ package call
 import (
 	"context"
 	"fmt"
-
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/parallelloop"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/serialloop"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
+	"github.com/pkg/errors"
 )
 
 // Interpret a spec into a call
@@ -23,9 +24,20 @@ func Interpret(
 	rootCallID string,
 	dataDirPath string,
 ) (*model.Call, error) {
+	var name *string
+	if callSpec.Name != nil {
+		value, err := str.Interpret(scope, *callSpec.Name)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to interpret call name")
+		}
+		if value.String == nil {
+			return nil, errors.New("call name not interpretable to string")
+		}
+		name = value.String
+	}
 	call := &model.Call{
 		ID:       id,
-		Name:     callSpec.Name,
+		Name:     name,
 		Needs:    callSpec.Needs,
 		ParentID: parentID,
 		RootID:   rootCallID,
