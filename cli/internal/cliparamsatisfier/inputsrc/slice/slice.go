@@ -13,10 +13,10 @@ func New(
 	for _, arg := range args {
 		// get parts
 		parts := strings.SplitN(arg, sep, 2)
-		inputName := parts[0]
 		if len(parts) < 2 {
 			continue
 		}
+		inputName := parts[0]
 		inputValue := parts[1]
 
 		argMap[inputName] = inputValue
