@@ -250,4 +250,68 @@ var _ = Context("Interpret", func() {
 
 		})
 	})
+	Context("callSpec.Name not nil", func() {
+		It("should return expected result", func() {
+			/* arrange */
+			providedName := "test-$(value)"
+			stringValue := "hello-world"
+			providedScope := map[string]*model.Value{
+				"value": {String: &stringValue},
+			}
+			providedID := "providedID"
+			providedOpPath := "providedOpPath"
+			providedParentIDValue := "providedParentID"
+			providedParentID := &providedParentIDValue
+			providedRootCallID := "providedRootCallID"
+			providedDataDirPath, err := os.MkdirTemp("", "")
+			if err != nil {
+				panic(err)
+			}
+
+			containerSpec := model.ContainerCallSpec{
+				Image: &model.ContainerCallImageSpec{
+					Ref: "ref",
+				},
+			}
+
+			expectedContainer, err := container.Interpret(
+				providedScope,
+				&containerSpec,
+				providedID,
+				providedOpPath,
+				providedDataDirPath,
+			)
+			if err != nil {
+				panic(err)
+			}
+
+			expectedName := "test-hello-world"
+			expectedCall := &model.Call{
+				Name:      &expectedName,
+				Container: expectedContainer,
+				ID:        providedID,
+				ParentID:  providedParentID,
+				RootID:    providedRootCallID,
+			}
+
+			/* act */
+			actualCall, actualError := Interpret(
+				context.Background(),
+				providedScope,
+				&model.CallSpec{
+					Container: &containerSpec,
+					Name:      &providedName,
+				},
+				providedID,
+				providedOpPath,
+				providedParentID,
+				providedRootCallID,
+				providedDataDirPath,
+			)
+
+			/* assert */
+			Expect(actualError).To(BeNil())
+			Expect(actualCall).To(Equal(expectedCall))
+		})
+	})
 })
