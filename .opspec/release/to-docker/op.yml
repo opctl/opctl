@@ -15,33 +15,47 @@ inputs:
       constraints: { format: semver }
       description: version of opctl being released
 run:
-  parallelLoop:
-    range:
-      - dind
-      - dood
-    vars:
-      value: $(imageRefVariant)
-    run:
-      serial:
-        - op:
-            ref: github.com/opspec-pkgs/docker.image.build#2.1.0
-            inputs:
-              imageName: opctl/opctl:$(version)-$(imageRefVariant)
-              dockerfile: $(./$(imageRefVariant).Dockerfile)
-              context:
-                /opctl:
-                  data: $(../../../cli/opctl-linux-amd64)
-                /entrypoint.sh: 
-                  data: $(./entrypoint.sh)
-              username: $(dockerUsername)
-              password: $(dockerPassword)
-              registry: https://docker.io
-            outputs:
-              imageTar:
-        - op:
-            ref: github.com/opspec-pkgs/docker.image.push#2.1.0
-            inputs:
-              imageTar:
-              imageName: opctl/opctl:$(version)-$(imageRefVariant)
-              username: $(dockerUsername)
-              password: $(dockerPassword)
+  serial:
+    - op:
+        ref: github.com/opspec-pkgs/base64.encode#1.1.0
+        inputs:
+          rawValue: $(dockerUsername):$(dockerPassword)
+        outputs:
+          encodedValue: $(b64DockerAuth)
+    - parallelLoop:
+        range:
+          - dind
+          - dood
+        vars:
+          value: $(imageVariant)
+        run:
+          serial:
+            - container:
+                image: 
+                  ref: moby/buildkit:latest
+                cmd:
+                  - sh
+                  - -ce
+                  - >
+                    buildctl-daemonless.sh
+                    build
+                    --frontend dockerfile.v0
+                    --local context=/buildCtx
+                    --local dockerfile=/
+                    --progress plain
+                    --opt platform=linux/amd64,linux/arm64
+                    --output type=image,name=docker.io/opctl/opctl:$(version)-$(imageVariant),push=true
+                dirs:
+                  /buildCtx:
+                    /entrypoint.sh:
+                      data: $(./entrypoint.sh)
+                    /opctl-linux-amd64: 
+                      data: $(../../../cli/opctl-linux-amd64)
+                    /opctl-linux-arm64: 
+                      data: $(../../../cli/opctl-linux-arm64)
+                files:
+                  /Dockerfile: $(./$(imageVariant).Dockerfile)
+                  /root/.docker/config.json:
+                    auths:
+                      https://index.docker.io/v1/:
+                        auth: $(b64DockerAuth)
