@@ -9,7 +9,7 @@ require (
 	github.com/containers/image/v5 v5.17.0
 	github.com/dgraph-io/badger/v3 v3.2103.2
 	github.com/docker/distribution v2.8.0+incompatible
-	github.com/docker/docker v20.10.11+incompatible
+	github.com/docker/docker v20.10.24+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.12.0
 	github.com/ghodss/yaml v1.0.0
@@ -53,7 +53,6 @@ require (
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/cilium/ebpf v0.7.0 // indirect
-	github.com/containerd/containerd v1.5.7 // indirect
 	github.com/containers/libtrust v0.0.0-20190913040956-14b96171aa3b // indirect
 	github.com/containers/ocicrypt v1.1.2 // indirect
 	github.com/containers/storage v1.37.0 // indirect
