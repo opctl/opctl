@@ -10,6 +10,7 @@ run:
       - go
       - test
       - ./sdks/go/...
+      - -buildvcs=false
       - -covermode=atomic
       - -coverprofile=coverage.out
     dirs:
@@ -17,5 +18,5 @@ run:
       /go/pkg: $(HOME/go/pkg)
     envVars:
       GOFLAGS: -tags=containers_image_openpgp
-    image: { ref: "golang:1.18" }
+    image: { ref: "golang:1.20" }
     workDir: /src

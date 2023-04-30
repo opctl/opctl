@@ -37,6 +37,9 @@ var errNotFoundInGraph = errors.New("not found in graph")
 const skippedState = "skipped"
 
 func (n *callGraphNode) insert(call *model.Call, startTime time.Time, initialState string) error {
+	if n == nil || n.call == nil || call == nil {
+		return nil
+	}
 	if call.ParentID == nil {
 		return fmt.Errorf("missing parent ID for %s", call.ID)
 	}

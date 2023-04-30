@@ -1,0 +1,5 @@
+name: run/if/array/lte/mixed
+run:
+  if:
+    - lte: [true, 2, { p1: v1 }, "string"]
+  serial: []

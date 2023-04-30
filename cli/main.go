@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime/debug"
 
 	"github.com/opctl/opctl/cli/internal/clicolorer"
 	"github.com/opctl/opctl/cli/internal/clioutput"
@@ -11,8 +12,10 @@ import (
 func main() {
 	cliOutput := clioutput.New(clicolorer.New(), os.Stderr, os.Stdout)
 	defer func() {
-		if panicArg := recover(); panicArg != nil {
-			cliOutput.Error(fmt.Sprint(panicArg))
+		if panic := recover(); panic != nil {
+			cliOutput.Error(
+				fmt.Sprintf("recovered from panic: %s\n%s", panic, string(debug.Stack())),
+			)
 			os.Exit(1)
 		}
 	}()

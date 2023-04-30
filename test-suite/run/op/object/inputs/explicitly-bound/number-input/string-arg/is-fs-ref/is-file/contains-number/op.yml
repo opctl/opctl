@@ -1,5 +1,5 @@
 name: run/op/object/inputs/explicitly-bound/number-input/string-arg/is-fs-ref/is-file/contains-number
 run:
   op:
-    ref: contains-number/_
+    ref: $(./_)
     inputs: { number: $(/file.txt) }

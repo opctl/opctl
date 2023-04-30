@@ -68,9 +68,9 @@ func (this core) StartOp(
 	opCtx, cancelOp := context.WithCancel(ctx)
 	go func() {
 		defer func() {
-			if panicArg := recover(); panicArg != nil {
+			if panic := recover(); panic != nil {
 				// recover from panics; treat as errors
-				fmt.Println(panicArg, debug.Stack())
+				fmt.Printf("recovered from panic: %s\n%s\n", panic, string(debug.Stack()))
 			}
 
 			cancelOp()

@@ -12,7 +12,7 @@ import (
 var pathToOpctl string
 
 var _ = BeforeSuite(func() {
-	compiledPath, err := gexec.Build("./")
+	compiledPath, err := gexec.Build("./", "-buildvcs=false")
 	if err != nil {
 		panic(err)
 	}

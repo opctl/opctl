@@ -197,7 +197,7 @@ func run(
 				// events will continue to stream in, make sure we continue to display the graph while this happens
 				displayGraph()
 			} else {
-				return &RunError{
+				return RunError{
 					ExitCode: 130,
 					message:  "Terminated by Control-C",
 				}
@@ -239,9 +239,9 @@ func run(
 					case model.OpOutcomeSucceeded:
 						return nil
 					case model.OpOutcomeKilled:
-						return &RunError{ExitCode: 137}
+						return RunError{ExitCode: 137}
 					default:
-						return &RunError{ExitCode: 1}
+						return RunError{ExitCode: 1}
 					}
 				}
 			}

@@ -5,5 +5,5 @@ inputs:
       default: 7
 run:
   op:
-    ref: is-number/_
+    ref: $(./_)
     inputs: { file: $(number)suffix }

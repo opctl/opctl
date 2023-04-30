@@ -4,5 +4,5 @@ inputs:
     string: {}
 run:
   op:
-    ref: input-undefined/_
+    ref: $(./_)
     inputs: { undefined }

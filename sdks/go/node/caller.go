@@ -172,10 +172,10 @@ func (clr _caller) Call(
 
 	go func() {
 		defer func() {
-			if panicArg := recover(); panicArg != nil {
+			if panic := recover(); panic != nil {
 				// recover from panics; treat as errors
 				err = fmt.Errorf(
-					fmt.Sprint(panicArg, debug.Stack()),
+					fmt.Sprintf("recovered from panic: %s\n%s", panic, string(debug.Stack())),
 				)
 			}
 		}()

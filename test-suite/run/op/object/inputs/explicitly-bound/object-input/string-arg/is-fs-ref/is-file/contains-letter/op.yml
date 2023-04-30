@@ -1,5 +1,5 @@
 name: run/op/object/inputs/explicitly-bound/object-input/string-arg/is-fs-ref/is-file/contains-letter
 run:
   op:
-    ref: contains-letter/_
+    ref: $(./_)
     inputs: { object: $(/file.txt) }

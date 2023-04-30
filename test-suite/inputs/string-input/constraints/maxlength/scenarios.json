@@ -1,0 +1,34 @@
+[
+  {
+    "name": "longer than maxLength",
+    "call": {
+      "expect": "failure",
+      "scope": {
+        "string": "aaaa"
+      }
+    }
+  },
+  {
+    "name": "equal to maxLength",
+    "interpret": {
+      "expect": "success",
+      "scope": {
+        "string": "aa"
+      }
+    }
+  },
+  {
+    "name": "shorter than maxLength",
+    "interpret": {
+      "expect": "success",
+      "scope": {
+        "string": "a"
+      }
+    }
+  },
+  {
+    "validate": {
+      "expect": "success"
+    }
+  }
+]

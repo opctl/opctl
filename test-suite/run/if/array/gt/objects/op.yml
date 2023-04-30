@@ -1,0 +1,5 @@
+name: run/if/array/gt/objects
+run:
+  if:
+    - gt: [{p1: v1},{p2: v2}]
+  serial: []

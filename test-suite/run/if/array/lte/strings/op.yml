@@ -1,0 +1,5 @@
+name: run/if/array/lte/strings
+run:
+  if:
+    - lte: [string2,string1]
+  serial: []

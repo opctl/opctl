@@ -1,0 +1,5 @@
+name: run/if/array/gte/mixed
+run:
+  if:
+    - gte: [true, 2, { p1: v1 }, "string"]
+  serial: []

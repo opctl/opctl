@@ -1,7 +1,0 @@
-- call:
-    # @TODO: success
-    expect: failure
-- interpret:
-    expect: success
-- validate:
-    expect: success

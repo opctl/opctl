@@ -5,5 +5,5 @@ inputs:
       default: "7"
 run:
   op:
-    ref: contains-number/_
+    ref: $(./_)
     inputs: { number: $(string) }

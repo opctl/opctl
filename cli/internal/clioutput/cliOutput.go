@@ -96,12 +96,14 @@ func (clio _cliOutput) Event(event *model.Event) {
 	case event.ContainerStdOutWrittenTo != nil:
 		clio.containerStdOutWrittenTo(event.ContainerStdOutWrittenTo)
 
-	case event.CallEnded != nil &&
-		event.CallEnded.Call.Op != nil:
+	case event.CallEnded != nil && event.CallEnded.Call.Op != nil:
 		clio.opEnded(event)
 
 	case event.CallStarted != nil && event.CallStarted.Call.Op != nil:
 		clio.opStarted(event.CallStarted)
+
+	case event.CallEnded != nil && event.CallEnded.Error != nil:
+		clio.callEnded(event)
 	}
 }
 
@@ -171,6 +173,32 @@ func (clio _cliOutput) outputPrefix(id, opRef string) string {
 		parts = append(parts, opRef)
 	}
 	return clio.cliColorer.Muted("["+strings.Join(parts, " ")+"]") + " "
+}
+
+func (clio _cliOutput) callEnded(event *model.Event) {
+	var color func(s string) string
+	var writer io.Writer
+	var message string
+	switch event.CallEnded.Outcome {
+	default:
+		message = "failed"
+		color = clio.cliColorer.Error
+		writer = clio.errWriter
+	}
+
+	message = color(fmt.Sprintf("op %s", message))
+	if event.CallEnded.Error != nil {
+		message += color(":") + " " + event.CallEnded.Error.Message
+	}
+
+	io.WriteString(
+		writer,
+		fmt.Sprintf(
+			"%s%s\n",
+			clio.outputPrefix(event.CallEnded.Call.ID, event.CallEnded.Ref),
+			message,
+		),
+	)
 }
 
 func (clio _cliOutput) containerStdErrWrittenTo(event *model.ContainerStdErrWrittenTo) {

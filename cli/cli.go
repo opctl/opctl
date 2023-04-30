@@ -40,7 +40,7 @@ func newCli(
 		} else {
 			cliOutput.Error(err.Error())
 
-			if re, ok := err.(*RunError); ok {
+			if re, ok := err.(RunError); ok {
 				mow.Exit(re.ExitCode)
 			} else {
 				mow.Exit(1)

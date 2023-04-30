@@ -1,0 +1,6 @@
+name: run/if/array/lte/numbers
+run:
+  if:
+    - lte: [3,2]
+    - lte: [3.1,2.1]
+  serial: []

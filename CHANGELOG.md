@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## 0.1.50 - 2023-05-01
+
+### Added
+
+- Automatic GPU detection/passthrough for docker runtime 
+
+### Fixed
+
+- `opctl ls` renders ops with no description as blank line
+- `lte` predicate
+- In some cases, stacktraces logged as bytes rather than strings
+- Containers aren't automatically removed after exit for docker runtime
+- In some cases, `Runtime error: invalid memory address or nil pointer dereference` error occurs
+- CLI not logging errors from the root op
+
 ## 0.1.49 - 2022-09-21
 
 ### Added

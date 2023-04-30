@@ -1,0 +1,71 @@
+[
+  {
+    "name": "meets no allOf constraints",
+    "call": {
+      "expect": "failure",
+      "scope": {
+        "object": {}
+      }
+    }
+  },
+  {
+    "name": "meets some allOf constraints",
+    "call": {
+      "expect": "failure",
+      "scope": {
+        "object": {
+          "a": "a"
+        }
+      }
+    }
+  },
+  {
+    "name": "meets all allOf constraints",
+    "call": {
+      "expect": "success",
+      "scope": {
+        "object": {
+          "a": "a",
+          "b": "b"
+        }
+      }
+    }
+  },
+  {
+    "name": "meets no allOf constraints",
+    "interpret": {
+      "expect": "failure",
+      "scope": {
+        "object": {}
+      }
+    }
+  },
+  {
+    "name": "meets some allOf constraints",
+    "interpret": {
+      "expect": "failure",
+      "scope": {
+        "object": {
+          "a": "a"
+        }
+      }
+    }
+  },
+  {
+    "name": "meets all allOf constraints",
+    "interpret": {
+      "expect": "success",
+      "scope": {
+        "object": {
+          "a": "a",
+          "b": "b"
+        }
+      }
+    }
+  },
+  {
+    "validate": {
+      "expect": "success"
+    }
+  }
+]

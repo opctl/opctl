@@ -27,6 +27,7 @@ run:
         cmd:
           - go
           - build
+          - -buildvcs=false
           - -o
           - cli/opctl-$(target.os)-$(target.arch)
           - ./cli
@@ -40,5 +41,5 @@ run:
           GOFLAGS:
             -tags=containers_image_openpgp
             -ldflags=-X=main.version=$(version)
-        image: { ref: 'golang:1.18' }
+        image: { ref: 'golang:1.20' }
         workDir: /src

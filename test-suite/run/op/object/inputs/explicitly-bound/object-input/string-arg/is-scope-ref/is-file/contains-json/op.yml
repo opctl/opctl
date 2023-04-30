@@ -5,5 +5,5 @@ inputs:
       default: /file.json
 run:
   op:
-    ref: contains-json/_
+    ref: $(./_)
     inputs: { object: $(file) }

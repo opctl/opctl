@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/dgraph-io/badger/v3"
+	"github.com/dgraph-io/badger/v4"
 	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/containerruntime/fakes"
 	. "github.com/opctl/opctl/sdks/go/node/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/pubsub"

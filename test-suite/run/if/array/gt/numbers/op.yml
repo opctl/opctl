@@ -1,0 +1,6 @@
+name: run/if/array/gt/numbers
+run:
+  if:
+    - gt: [3,2]
+    - gt: [3.1,2.1]
+  serial: []

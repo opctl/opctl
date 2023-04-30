@@ -1,0 +1,43 @@
+[
+  {
+    "name": "greater than maximum",
+    "call": {
+      "expect": "failure",
+      "scope": {
+        "number": 3
+      }
+    }
+  },
+  {
+    "name": "less than maximum",
+    "call": {
+      "expect": "success",
+      "scope": {
+        "number": 1
+      }
+    }
+  },
+  {
+    "name": "greater than maximum",
+    "interpret": {
+      "expect": "failure",
+      "scope": {
+        "number": 3
+      }
+    }
+  },
+  {
+    "name": "less than maximum",
+    "interpret": {
+      "expect": "success",
+      "scope": {
+        "number": 1
+      }
+    }
+  },
+  {
+    "validate": {
+      "expect": "success"
+    }
+  }
+]

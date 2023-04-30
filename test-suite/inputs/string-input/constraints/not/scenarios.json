@@ -1,0 +1,25 @@
+[
+  {
+    "name": "meets not constraint",
+    "call": {
+      "expect": "failure",
+      "scope": {
+        "string": "a"
+      }
+    }
+  },
+  {
+    "name": "meets not constraint",
+    "interpret": {
+      "expect": "failure",
+      "scope": {
+        "string": "a"
+      }
+    }
+  },
+  {
+    "validate": {
+      "expect": "success"
+    }
+  }
+]

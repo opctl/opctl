@@ -17,7 +17,7 @@ inputs:
 run:
   serial:
     - op:
-        ref: ../init
+        ref: $(../init)
     - container:
         cmd: [/cmd.sh]
         dirs:

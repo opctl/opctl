@@ -10,11 +10,11 @@ inputs:
 run:
   serial:
     - op:
-        ref: ../compile
+        ref: $(../compile)
         inputs:
           HOME:
     - container:
-        image: { ref: 'golang:1.18' }
+        image: { ref: 'golang:1.20' }
         cmd:
           - go
           - run

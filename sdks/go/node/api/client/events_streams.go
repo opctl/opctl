@@ -2,7 +2,9 @@ package client
 
 import (
 	"context"
+	"fmt"
 	"path"
+	"runtime/debug"
 	"strings"
 	"time"
 
@@ -39,6 +41,13 @@ func (c apiClient) GetEventStream(
 
 	eventStream := make(chan model.Event, 1000)
 	go func() {
+		defer func() {
+			// don't let panics from any operation kill the server.
+			if panic := recover(); panic != nil {
+				fmt.Printf("recovered from panic: %s\n%s", panic, string(debug.Stack()))
+			}
+		}()
+
 		// ensure web socket closed on exit
 		defer wsConn.Close()
 

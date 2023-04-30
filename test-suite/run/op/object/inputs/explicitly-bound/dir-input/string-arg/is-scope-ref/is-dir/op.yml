@@ -5,5 +5,5 @@ inputs:
       default: /dir
 run:
   op:
-    ref: is-dir/_
+    ref: $(./_)
     inputs: { dir: $(dir) }

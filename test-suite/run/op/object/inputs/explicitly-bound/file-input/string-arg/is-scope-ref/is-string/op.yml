@@ -5,5 +5,5 @@ inputs:
       default: " "
 run:
   op:
-    ref: is-string/_
+    ref: $(./_)
     inputs: { file: $(string) }

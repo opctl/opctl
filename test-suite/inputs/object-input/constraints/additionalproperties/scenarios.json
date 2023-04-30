@@ -1,0 +1,51 @@
+[
+  {
+    "name": "meets additionalProperties constraint",
+    "call": {
+      "expect": "success",
+      "scope": {
+        "object": {
+          "a": "aa"
+        }
+      }
+    }
+  },
+  {
+    "name": "doesn't meet additionalProperties constraint",
+    "call": {
+      "expect": "failure",
+      "scope": {
+        "object": {
+          "a": "a"
+        }
+      }
+    }
+  },
+  {
+    "name": "meets additionalProperties constraint",
+    "interpret": {
+      "expect": "success",
+      "scope": {
+        "object": {
+          "a": "aa"
+        }
+      }
+    }
+  },
+  {
+    "name": "doesn't meet additionalProperties constraint",
+    "interpret": {
+      "expect": "failure",
+      "scope": {
+        "object": {
+          "a": "a"
+        }
+      }
+    }
+  },
+  {
+    "validate": {
+      "expect": "success"
+    }
+  }
+]

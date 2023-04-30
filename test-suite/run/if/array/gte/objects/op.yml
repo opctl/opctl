@@ -1,0 +1,5 @@
+name: run/if/array/gte/objects
+run:
+  if:
+    - gte: [{p1: v1},{p2: v2}]
+  serial: []

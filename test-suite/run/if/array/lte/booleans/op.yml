@@ -1,0 +1,5 @@
+name: run/if/array/lte/booleans
+run:
+  if:
+    - lte: [true,false]
+  serial: []

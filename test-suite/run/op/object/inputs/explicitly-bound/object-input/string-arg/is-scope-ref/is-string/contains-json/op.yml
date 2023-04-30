@@ -5,5 +5,5 @@ inputs:
       default: "{}"
 run:
   op:
-    ref: contains-json/_
+    ref: $(./_)
     inputs: { object: $(string) }

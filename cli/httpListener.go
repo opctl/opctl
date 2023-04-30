@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"runtime/debug"
 	"strings"
 
 	"os"
@@ -112,7 +113,7 @@ func (hd _httpListener) StripPrefixAndRecover(prefix string, h http.Handler) htt
 	defer func() {
 		// don't let panics from any operation kill the server.
 		if panic := recover(); panic != nil {
-			fmt.Printf("recovered from panic: %s\n", panic)
+			fmt.Printf("recovered from panic: %s\n%s", panic, string(debug.Stack()))
 		}
 	}()
 

@@ -1,0 +1,5 @@
+name: run/if/array/gte/strings
+run:
+  if:
+    - gte: [string2,string1]
+  serial: []

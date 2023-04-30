@@ -5,5 +5,5 @@ inputs:
       default: /file.txt
 run:
   op:
-    ref: is-file/_
+    ref: $(./_)
     inputs: { file: $(file) }

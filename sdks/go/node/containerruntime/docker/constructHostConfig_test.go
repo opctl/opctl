@@ -33,6 +33,7 @@ var _ = Context("constructHostConfig", func() {
 		}
 
 		expectedHostConfig := &container.HostConfig{
+			AutoRemove: true,
 			Mounts: []mount.Mount{
 				{
 					Type:        mount.TypeBind,
@@ -71,6 +72,14 @@ var _ = Context("constructHostConfig", func() {
 			},
 			PortBindings: providedPortBindings,
 			Privileged:   true,
+			Resources: container.Resources{
+				DeviceRequests: []container.DeviceRequest{
+					{
+						Capabilities: [][]string{{"gpu"}},
+						Count:        -1,
+					},
+				},
+			},
 		}
 
 		/* act */
@@ -79,6 +88,7 @@ var _ = Context("constructHostConfig", func() {
 			providedContainerFiles,
 			providedContainerSockets,
 			providedPortBindings,
+			true,
 		)
 
 		/* assert */

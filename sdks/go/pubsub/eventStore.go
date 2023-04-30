@@ -7,7 +7,7 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/model"
 
-	"github.com/dgraph-io/badger/v3"
+	"github.com/dgraph-io/badger/v4"
 )
 
 const sortableRFC3339Nano = "2006-01-02T15:04:05.000000000Z07:00"

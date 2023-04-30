@@ -1,5 +1,5 @@
 name: run/op/object/outputs/not-object
 run:
   op:
-    ref: not-object/_
+    ref: $(./_)
     outputs: []
