@@ -5,5 +5,5 @@ inputs:
       default: {}
 run:
   op:
-    ref: is-object/_
+    ref: $(./_)
     inputs: { dir: $(object) }

@@ -1,0 +1,79 @@
+[
+  {
+    "name": "equal to minProperties",
+    "call": {
+      "expect": "success",
+      "scope": {
+        "object": {
+          "a": "a",
+          "b": "b"
+        }
+      }
+    }
+  },
+  {
+    "name": "greater than minProperties",
+    "call": {
+      "expect": "success",
+      "scope": {
+        "object": {
+          "a": "a",
+          "b": "b",
+          "c": "c"
+        }
+      }
+    }
+  },
+  {
+    "name": "less than minProperties",
+    "call": {
+      "expect": "failure",
+      "scope": {
+        "object": {
+          "a": "a"
+        }
+      }
+    }
+  },
+  {
+    "name": "equal to minProperties",
+    "interpret": {
+      "expect": "success",
+      "scope": {
+        "object": {
+          "a": "a",
+          "b": "b"
+        }
+      }
+    }
+  },
+  {
+    "name": "greater than minProperties",
+    "interpret": {
+      "expect": "success",
+      "scope": {
+        "object": {
+          "a": "a",
+          "b": "b",
+          "c": "c"
+        }
+      }
+    }
+  },
+  {
+    "name": "less than minProperties",
+    "interpret": {
+      "expect": "failure",
+      "scope": {
+        "object": {
+          "a": "a"
+        }
+      }
+    }
+  },
+  {
+    "validate": {
+      "expect": "success"
+    }
+  }
+]

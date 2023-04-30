@@ -2,9 +2,9 @@ package docker
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"golang.org/x/net/context"
 )
 
@@ -13,12 +13,14 @@ func (ctp _containerRuntime) DeleteContainerIfExists(
 	containerID string,
 ) error {
 	// try to stop the container gracefully prior to deletion
-	stopTimeout := 3 * time.Second
+	stopTimeout := 3
 	// ignore error; we want to remove regardless
 	ctp.dockerClient.ContainerStop(
 		ctx,
 		getContainerName(containerID),
-		&stopTimeout,
+		container.StopOptions{
+			Timeout: &stopTimeout,
+		},
 	)
 
 	// now delete the container post-termination

@@ -29,33 +29,32 @@ run:
         vars:
           value: $(imageVariant)
         run:
-          serial:
-            - container:
-                image: 
-                  ref: moby/buildkit:latest
-                cmd:
-                  - sh
-                  - -ce
-                  - >
-                    buildctl-daemonless.sh
-                    build
-                    --frontend dockerfile.v0
-                    --local context=/buildCtx
-                    --local dockerfile=/
-                    --progress plain
-                    --opt platform=linux/amd64,linux/arm64
-                    --output type=image,name=docker.io/opctl/opctl:$(version)-$(imageVariant),push=true
-                dirs:
-                  /buildCtx:
-                    /entrypoint.sh:
-                      data: $(./entrypoint.sh)
-                    /opctl-linux-amd64: 
-                      data: $(../../../cli/opctl-linux-amd64)
-                    /opctl-linux-arm64: 
-                      data: $(../../../cli/opctl-linux-arm64)
-                files:
-                  /Dockerfile: $(./$(imageVariant).Dockerfile)
-                  /root/.docker/config.json:
-                    auths:
-                      https://index.docker.io/v1/:
-                        auth: $(b64DockerAuth)
+          container:
+            image: 
+              ref: moby/buildkit:latest
+            cmd:
+              - sh
+              - -ce
+              - >
+                buildctl-daemonless.sh
+                build
+                --frontend dockerfile.v0
+                --local context=/buildCtx
+                --local dockerfile=/
+                --progress plain
+                --opt platform=linux/amd64,linux/arm64
+                --output type=image,name=docker.io/opctl/opctl:$(version)-$(imageVariant),push=true
+            dirs:
+              /buildCtx:
+                /entrypoint.sh:
+                  data: $(./entrypoint.sh)
+                /opctl-linux-amd64: 
+                  data: $(../../../cli/opctl-linux-amd64)
+                /opctl-linux-arm64: 
+                  data: $(../../../cli/opctl-linux-arm64)
+            files:
+              /Dockerfile: $(./$(imageVariant).Dockerfile)
+              /root/.docker/config.json:
+                auths:
+                  https://index.docker.io/v1/:
+                    auth: $(b64DockerAuth)

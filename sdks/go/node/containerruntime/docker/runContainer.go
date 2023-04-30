@@ -7,7 +7,6 @@ import (
 	"io"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -36,9 +35,6 @@ func newRunContainer(
 		containerStdErrStreamer: newContainerStdErrStreamer(dockerClient),
 		containerStdOutStreamer: newContainerStdOutStreamer(dockerClient),
 		dockerClient:            dockerClient,
-		ensureNetworkExistser:   newEnsureNetworkExistser(dockerClient),
-		imagePuller:             newImagePuller(dockerClient),
-		imagePusher:             newImagePusher(),
 	}
 	return rc, nil
 }
@@ -47,9 +43,6 @@ type _runContainer struct {
 	containerStdErrStreamer containerLogStreamer
 	containerStdOutStreamer containerLogStreamer
 	dockerClient            dockerClientPkg.CommonAPIClient
-	ensureNetworkExistser   ensureNetworkExistser
-	imagePuller             imagePuller
-	imagePusher             imagePusher
 }
 
 func (cr _runContainer) RunContainer(
@@ -65,8 +58,9 @@ func (cr _runContainer) RunContainer(
 
 	// ensure user defined network exists to allow inter container resolution via name
 	// @TODO: remove when socket outputs supported
-	if err := cr.ensureNetworkExistser.EnsureNetworkExists(
+	if err := ensureNetworkExists(
 		ctx,
+		cr.dockerClient,
 		networkName,
 	); err != nil {
 		return nil, err
@@ -79,11 +73,13 @@ func (cr _runContainer) RunContainer(
 		// ensure container always cleaned up: gracefully stop then delete it
 		// @TODO: consolidate logic with DeleteContainerIfExists
 		newCtx := context.Background() // always use a fresh context, to clean up after cancellation
-		stopTimeout := 3 * time.Second
+		stopTimeout := 3
 		cr.dockerClient.ContainerStop(
 			newCtx,
 			containerName,
-			&stopTimeout,
+			container.StopOptions{
+				Timeout: &stopTimeout,
+			},
 		)
 		cr.dockerClient.ContainerRemove(
 			newCtx,
@@ -100,15 +96,16 @@ func (cr _runContainer) RunContainer(
 		imageRef := fmt.Sprintf("%s:latest", req.ContainerID)
 		req.Image.Ref = &imageRef
 
-		imageErr = cr.imagePusher.Push(
+		imageErr = pushImage(
 			ctx,
 			imageRef,
 			req.Image.Src,
 		)
 	} else {
-		imageErr = cr.imagePuller.Pull(
+		imageErr = pullImage(
 			ctx,
 			req,
+			cr.dockerClient,
 			rootCallID,
 			eventPublisher,
 		)
@@ -134,6 +131,11 @@ func (cr _runContainer) RunContainer(
 		}
 	}
 
+	isGpuSupported, err := isGpuSupported(ctx, cr.dockerClient, req.Image.PullCreds)
+	if nil != err {
+		return nil, err
+	}
+
 	// create container
 	containerCreatedResponse, createErr := cr.dockerClient.ContainerCreate(
 		ctx,
@@ -149,6 +151,7 @@ func (cr _runContainer) RunContainer(
 			req.Files,
 			req.Sockets,
 			portBindings,
+			isGpuSupported,
 		),
 		networkingConfig,
 		// platform requires API v1.41 so set to nil to avoid version errors

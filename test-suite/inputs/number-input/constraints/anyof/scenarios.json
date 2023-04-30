@@ -1,0 +1,61 @@
+[
+  {
+    "name": "doesn't meet any anyOf constraints",
+    "call": {
+      "expect": "failure",
+      "scope": {
+        "number": 3
+      }
+    }
+  },
+  {
+    "name": "meets an any anyOf constraints",
+    "call": {
+      "expect": "success",
+      "scope": {
+        "number": 1.5
+      }
+    }
+  },
+  {
+    "name": "meets all anyOf constraints",
+    "call": {
+      "expect": "success",
+      "scope": {
+        "number": 1
+      }
+    }
+  },
+  {
+    "name": "doesn't meet any anyOf constraints",
+    "interpret": {
+      "expect": "failure",
+      "scope": {
+        "number": 3
+      }
+    }
+  },
+  {
+    "name": "meets an any anyOf constraints",
+    "interpret": {
+      "expect": "success",
+      "scope": {
+        "number": 1.5
+      }
+    }
+  },
+  {
+    "name": "meets all anyOf constraints",
+    "interpret": {
+      "expect": "success",
+      "scope": {
+        "number": 1
+      }
+    }
+  },
+  {
+    "validate": {
+      "expect": "success"
+    }
+  }
+]

@@ -1,0 +1,41 @@
+name: e2e
+description: runs all CLI end to end (e2e) tests
+run:
+  serial:
+    - op:
+        ref: github.com/opspec-pkgs/dir.list-contents#1.1.0
+        inputs:
+          dir: $(../../../../test-suite)
+          recursive: true
+        outputs:
+          contentList: $(tests)
+    - serialLoop:
+        range: $(tests)
+        vars:
+          value: $(entry)
+        run:
+          if:
+            - exists: $(../../../../test-suite/$(entry.path)/scenarios.json)
+          parallelLoop:
+            range: $(../../../../test-suite/$(entry.path)/scenarios.json)
+            vars:
+              value: $(scenario)
+            run:
+              if:
+                - exists: $(scenario.call)
+              container:
+                cmd:
+                  - sh
+                  - -ce
+                  - /cmd.sh
+                dirs:
+                  /test: $(../../../../test-suite/$(entry.path))
+                envVars:
+                  op: $(entry.path)
+                  expect: $(scenario.call.expect)
+                files:
+                  /args.yml: $(scenario.call.scope)
+                  /cmd.sh:
+                  /usr/local/bin/opctl: $(../../../opctl-linux-amd64)
+                image:
+                  ref: docker:20.10.17-dind

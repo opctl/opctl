@@ -1,5 +1,5 @@
 name: run/op/object/inputs/explicitly-bound/file-input/string-arg/starts-with-scope-ref/isnt-resolvable
 run:
   op:
-    ref: isnt-resolvable/_
+    ref: $(./_)
     inputs: { file: $(file)suffix }

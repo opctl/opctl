@@ -1,5 +1,5 @@
-name: test
-description: runs all CLI go tests
+name: unit
+description: runs all CLI unit tests
 inputs:
   dockerSocket:
     socket:
@@ -13,6 +13,7 @@ run:
       - go
       - test
       - ./cli/...
+      - -buildvcs=false
       - -covermode=atomic
       - -coverprofile=coverage.out
     dirs:
@@ -21,7 +22,7 @@ run:
     envVars:
       OPCTL_DATA_DIR: /tmp/opctl
       GOFLAGS: -tags=containers_image_openpgp
-    image: { ref: 'golang:1.18' }
+    image: { ref: 'golang:1.20' }
     sockets:
       /var/run/docker.sock: $(dockerSocket)
     workDir: /src

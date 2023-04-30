@@ -7,6 +7,6 @@ type RunError struct {
 	message  string
 }
 
-func (e *RunError) Error() string {
+func (e RunError) Error() string {
 	return e.message
 }

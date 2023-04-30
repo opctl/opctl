@@ -3,7 +3,7 @@ name: test
 run:
   serial:
     - op:
-        ref: ../init
+        ref: $(../init)
     - container:
         cmd: [yarn, test]
         image: { ref: 'node:16-alpine' }

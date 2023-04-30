@@ -19,7 +19,7 @@ var _ = Context("Validate", func() {
 			filepath.Walk(rootPath,
 				func(path string, info os.FileInfo, err error) error {
 					if info.IsDir() {
-						scenariosOpFilePath := filepath.Join(path, "scenarios.yml")
+						scenariosOpFilePath := filepath.Join(path, "scenarios.json")
 						if _, err := os.Stat(scenariosOpFilePath); err == nil {
 							/* arrange */
 							scenariosOpFileBytes, err := os.ReadFile(scenariosOpFilePath)

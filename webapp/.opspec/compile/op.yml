@@ -3,7 +3,7 @@ name: compile
 run:
   serial:
     - op:
-        ref: ../init
+        ref: $(../init)
     - container:
         cmd: [yarn, run, build]
         image: { ref: "node:16-alpine" }

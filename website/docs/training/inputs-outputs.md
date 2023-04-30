@@ -108,7 +108,7 @@ inputs:
 run:
   serial:
     - op:
-        ref: ../hello-world # here we reference the other op we wrote, hello-world
+        ref: $(../hello-world) # here we reference the other op we wrote, hello-world
         inputs: { person } # we pass our input, person, as input to hello-world
         outputs: { helloperson } # we add hello-world's output (helloperson) to the scope of this op
     - container:

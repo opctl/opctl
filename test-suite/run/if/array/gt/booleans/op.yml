@@ -1,0 +1,5 @@
+name: run/if/array/gt/booleans
+run:
+  if:
+    - gt: [true,false]
+  serial: []

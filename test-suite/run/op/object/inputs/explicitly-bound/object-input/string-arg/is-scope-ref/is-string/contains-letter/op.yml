@@ -5,5 +5,5 @@ inputs:
       default: a
 run:
   op:
-    ref: contains-letter/_
+    ref: $(./_)
     inputs: { object: $(string) }

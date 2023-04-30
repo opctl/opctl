@@ -77,7 +77,12 @@ func ls(
 			opRef = strings.TrimPrefix(relOpRef, ".opspec/")
 		}
 
-		scanner := bufio.NewScanner(strings.NewReader(op.Description))
+		description := op.Description
+		if strings.TrimSpace(description) == "" {
+			description = "-"
+		}
+
+		scanner := bufio.NewScanner(strings.NewReader(description))
 		if scanner.Scan() {
 			// first line of description, add the op ref
 			fmt.Fprintf(_tabWriter, "%v\t%v", opRef, scanner.Text())

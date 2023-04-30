@@ -91,9 +91,9 @@ func (pc _parallelCaller) Call(
 
 		go func(childCall *model.CallSpec) {
 			defer func() {
-				if panicArg := recover(); panicArg != nil {
+				if panic := recover(); panic != nil {
 					// recover from panics; treat as errors
-					fmt.Printf("%v\n%v", panicArg, debug.Stack())
+					fmt.Printf("recovered from panic: %s\n%s\n", panic, string(debug.Stack()))
 
 					// cancel all children on any error
 					cancelParallel()

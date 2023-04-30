@@ -1,0 +1,5 @@
+name: run/if/array/lt/strings
+run:
+  if:
+    - lt: [string2,string1]
+  serial: []

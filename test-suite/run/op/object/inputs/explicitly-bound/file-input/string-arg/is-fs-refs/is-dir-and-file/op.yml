@@ -1,5 +1,5 @@
 name: run/op/object/inputs/explicitly-bound/file-input/string-arg/is-fs-refs/is-dir-and-file
 run:
   op:
-    ref: is-dir-and-file/_
+    ref: $(./_)
     inputs: { file: $(/dir)$(/file.txt) }

@@ -4,9 +4,11 @@ package pubsub
 
 import (
 	"context"
+	"fmt"
+	"runtime/debug"
 	"sync"
 
-	"github.com/dgraph-io/badger/v3"
+	"github.com/dgraph-io/badger/v4"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -61,6 +63,13 @@ func (ps *pubSub) Subscribe(
 	dstEventChannel := make(chan model.Event)
 
 	go func() {
+		defer func() {
+			// don't let panics from any operation kill the server.
+			if panic := recover(); panic != nil {
+				fmt.Printf("recovered from panic: %s\n%s", panic, string(debug.Stack()))
+			}
+		}()
+
 		defer close(dstEventChannel)
 
 		publishEventChannel := make(chan model.Event)

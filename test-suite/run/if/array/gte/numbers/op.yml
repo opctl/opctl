@@ -1,0 +1,6 @@
+name: run/if/array/gte/numbers
+run:
+  if:
+    - gte: [3,2]
+    - gte: [3.1,2.1]
+  serial: []

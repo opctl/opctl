@@ -1,5 +1,5 @@
 name: run/op/object/inputs/explicitly-bound/object-input/number-arg
 run:
   op:
-    ref: number-arg/_
+    ref: $(./_)
     inputs: { object: 7 }

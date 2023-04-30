@@ -1,5 +1,5 @@
 name: run/op/object/inputs/explicitly-bound/dir-input/string-arg/isnt-ref
 run:
   op:
-    ref: isnt-ref/_
+    ref: $(./_)
     inputs: { dir: a}

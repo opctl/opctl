@@ -5,5 +5,5 @@ inputs:
       default: /file.txt
 run:
   op:
-    ref: contains-letter/_
+    ref: $(./_)
     inputs: { number: $(file) }

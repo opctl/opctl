@@ -19,7 +19,7 @@ inputs:
 run:
   parallel:
     - op:
-        ref: ../mysql # we reference the mysql op using its relative path to this op
+        ref: $(../mysql) # we reference the mysql op using its relative path to this op
         inputs:
           # we pass the relevant inputs through to the mysql op
           MYSQL_USER:
@@ -28,7 +28,7 @@ run:
           MYSQL_DATABASE:
     - container:
         image:
-          ref: 'golang:1.18'
+          ref: 'golang:1.20'
         name: go-svc
         dirs:
           # mount the source code of our app to the container

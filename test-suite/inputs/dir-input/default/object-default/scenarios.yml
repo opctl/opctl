@@ -1,6 +1,0 @@
-- call:
-    expect: failure
-- interpret:
-    expect: failure
-- validate:
-    expect: success

@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"sync"
-	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -169,7 +168,7 @@ type FakeCommonAPIClient struct {
 		result1 types.IDResponse
 		result2 error
 	}
-	ContainerCreateStub        func(context.Context, *container.Config, *container.HostConfig, *network.NetworkingConfig, *v1.Platform, string) (container.ContainerCreateCreatedBody, error)
+	ContainerCreateStub        func(context.Context, *container.Config, *container.HostConfig, *network.NetworkingConfig, *v1.Platform, string) (container.CreateResponse, error)
 	containerCreateMutex       sync.RWMutex
 	containerCreateArgsForCall []struct {
 		arg1 context.Context
@@ -180,11 +179,11 @@ type FakeCommonAPIClient struct {
 		arg6 string
 	}
 	containerCreateReturns struct {
-		result1 container.ContainerCreateCreatedBody
+		result1 container.CreateResponse
 		result2 error
 	}
 	containerCreateReturnsOnCall map[int]struct {
-		result1 container.ContainerCreateCreatedBody
+		result1 container.CreateResponse
 		result2 error
 	}
 	ContainerDiffStub        func(context.Context, string) ([]container.ContainerChangeResponseItem, error)
@@ -409,12 +408,12 @@ type FakeCommonAPIClient struct {
 	containerResizeReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ContainerRestartStub        func(context.Context, string, *time.Duration) error
+	ContainerRestartStub        func(context.Context, string, container.StopOptions) error
 	containerRestartMutex       sync.RWMutex
 	containerRestartArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 *time.Duration
+		arg3 container.StopOptions
 	}
 	containerRestartReturns struct {
 		result1 error
@@ -479,12 +478,12 @@ type FakeCommonAPIClient struct {
 		result1 types.ContainerStats
 		result2 error
 	}
-	ContainerStopStub        func(context.Context, string, *time.Duration) error
+	ContainerStopStub        func(context.Context, string, container.StopOptions) error
 	containerStopMutex       sync.RWMutex
 	containerStopArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 *time.Duration
+		arg3 container.StopOptions
 	}
 	containerStopReturns struct {
 		result1 error
@@ -534,7 +533,7 @@ type FakeCommonAPIClient struct {
 		result1 container.ContainerUpdateOKBody
 		result2 error
 	}
-	ContainerWaitStub        func(context.Context, string, container.WaitCondition) (<-chan container.ContainerWaitOKBody, <-chan error)
+	ContainerWaitStub        func(context.Context, string, container.WaitCondition) (<-chan container.WaitResponse, <-chan error)
 	containerWaitMutex       sync.RWMutex
 	containerWaitArgsForCall []struct {
 		arg1 context.Context
@@ -542,11 +541,11 @@ type FakeCommonAPIClient struct {
 		arg3 container.WaitCondition
 	}
 	containerWaitReturns struct {
-		result1 <-chan container.ContainerWaitOKBody
+		result1 <-chan container.WaitResponse
 		result2 <-chan error
 	}
 	containerWaitReturnsOnCall map[int]struct {
-		result1 <-chan container.ContainerWaitOKBody
+		result1 <-chan container.WaitResponse
 		result2 <-chan error
 	}
 	ContainersPruneStub        func(context.Context, filters.Args) (types.ContainersPruneReport, error)
@@ -631,10 +630,11 @@ type FakeCommonAPIClient struct {
 	dialerReturnsOnCall map[int]struct {
 		result1 func(context.Context) (net.Conn, error)
 	}
-	DiskUsageStub        func(context.Context) (types.DiskUsage, error)
+	DiskUsageStub        func(context.Context, types.DiskUsageOptions) (types.DiskUsage, error)
 	diskUsageMutex       sync.RWMutex
 	diskUsageArgsForCall []struct {
 		arg1 context.Context
+		arg2 types.DiskUsageOptions
 	}
 	diskUsageReturns struct {
 		result1 types.DiskUsage
@@ -1559,62 +1559,62 @@ type FakeCommonAPIClient struct {
 		result1 io.ReadCloser
 		result2 error
 	}
-	VolumeCreateStub        func(context.Context, volume.VolumeCreateBody) (types.Volume, error)
+	VolumeCreateStub        func(context.Context, volume.CreateOptions) (volume.Volume, error)
 	volumeCreateMutex       sync.RWMutex
 	volumeCreateArgsForCall []struct {
 		arg1 context.Context
-		arg2 volume.VolumeCreateBody
+		arg2 volume.CreateOptions
 	}
 	volumeCreateReturns struct {
-		result1 types.Volume
+		result1 volume.Volume
 		result2 error
 	}
 	volumeCreateReturnsOnCall map[int]struct {
-		result1 types.Volume
+		result1 volume.Volume
 		result2 error
 	}
-	VolumeInspectStub        func(context.Context, string) (types.Volume, error)
+	VolumeInspectStub        func(context.Context, string) (volume.Volume, error)
 	volumeInspectMutex       sync.RWMutex
 	volumeInspectArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
 	}
 	volumeInspectReturns struct {
-		result1 types.Volume
+		result1 volume.Volume
 		result2 error
 	}
 	volumeInspectReturnsOnCall map[int]struct {
-		result1 types.Volume
+		result1 volume.Volume
 		result2 error
 	}
-	VolumeInspectWithRawStub        func(context.Context, string) (types.Volume, []byte, error)
+	VolumeInspectWithRawStub        func(context.Context, string) (volume.Volume, []byte, error)
 	volumeInspectWithRawMutex       sync.RWMutex
 	volumeInspectWithRawArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
 	}
 	volumeInspectWithRawReturns struct {
-		result1 types.Volume
+		result1 volume.Volume
 		result2 []byte
 		result3 error
 	}
 	volumeInspectWithRawReturnsOnCall map[int]struct {
-		result1 types.Volume
+		result1 volume.Volume
 		result2 []byte
 		result3 error
 	}
-	VolumeListStub        func(context.Context, filters.Args) (volume.VolumeListOKBody, error)
+	VolumeListStub        func(context.Context, filters.Args) (volume.ListResponse, error)
 	volumeListMutex       sync.RWMutex
 	volumeListArgsForCall []struct {
 		arg1 context.Context
 		arg2 filters.Args
 	}
 	volumeListReturns struct {
-		result1 volume.VolumeListOKBody
+		result1 volume.ListResponse
 		result2 error
 	}
 	volumeListReturnsOnCall map[int]struct {
-		result1 volume.VolumeListOKBody
+		result1 volume.ListResponse
 		result2 error
 	}
 	VolumeRemoveStub        func(context.Context, string, bool) error
@@ -1628,6 +1628,20 @@ type FakeCommonAPIClient struct {
 		result1 error
 	}
 	volumeRemoveReturnsOnCall map[int]struct {
+		result1 error
+	}
+	VolumeUpdateStub        func(context.Context, string, swarm.Version, volume.UpdateOptions) error
+	volumeUpdateMutex       sync.RWMutex
+	volumeUpdateArgsForCall []struct {
+		arg1 context.Context
+		arg2 string
+		arg3 swarm.Version
+		arg4 volume.UpdateOptions
+	}
+	volumeUpdateReturns struct {
+		result1 error
+	}
+	volumeUpdateReturnsOnCall map[int]struct {
 		result1 error
 	}
 	VolumesPruneStub        func(context.Context, filters.Args) (types.VolumesPruneReport, error)
@@ -2326,7 +2340,7 @@ func (fake *FakeCommonAPIClient) ContainerCommitReturnsOnCall(i int, result1 typ
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerCreate(arg1 context.Context, arg2 *container.Config, arg3 *container.HostConfig, arg4 *network.NetworkingConfig, arg5 *v1.Platform, arg6 string) (container.ContainerCreateCreatedBody, error) {
+func (fake *FakeCommonAPIClient) ContainerCreate(arg1 context.Context, arg2 *container.Config, arg3 *container.HostConfig, arg4 *network.NetworkingConfig, arg5 *v1.Platform, arg6 string) (container.CreateResponse, error) {
 	fake.containerCreateMutex.Lock()
 	ret, specificReturn := fake.containerCreateReturnsOnCall[len(fake.containerCreateArgsForCall)]
 	fake.containerCreateArgsForCall = append(fake.containerCreateArgsForCall, struct {
@@ -2355,7 +2369,7 @@ func (fake *FakeCommonAPIClient) ContainerCreateCallCount() int {
 	return len(fake.containerCreateArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerCreateCalls(stub func(context.Context, *container.Config, *container.HostConfig, *network.NetworkingConfig, *v1.Platform, string) (container.ContainerCreateCreatedBody, error)) {
+func (fake *FakeCommonAPIClient) ContainerCreateCalls(stub func(context.Context, *container.Config, *container.HostConfig, *network.NetworkingConfig, *v1.Platform, string) (container.CreateResponse, error)) {
 	fake.containerCreateMutex.Lock()
 	defer fake.containerCreateMutex.Unlock()
 	fake.ContainerCreateStub = stub
@@ -2368,28 +2382,28 @@ func (fake *FakeCommonAPIClient) ContainerCreateArgsForCall(i int) (context.Cont
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5, argsForCall.arg6
 }
 
-func (fake *FakeCommonAPIClient) ContainerCreateReturns(result1 container.ContainerCreateCreatedBody, result2 error) {
+func (fake *FakeCommonAPIClient) ContainerCreateReturns(result1 container.CreateResponse, result2 error) {
 	fake.containerCreateMutex.Lock()
 	defer fake.containerCreateMutex.Unlock()
 	fake.ContainerCreateStub = nil
 	fake.containerCreateReturns = struct {
-		result1 container.ContainerCreateCreatedBody
+		result1 container.CreateResponse
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerCreateReturnsOnCall(i int, result1 container.ContainerCreateCreatedBody, result2 error) {
+func (fake *FakeCommonAPIClient) ContainerCreateReturnsOnCall(i int, result1 container.CreateResponse, result2 error) {
 	fake.containerCreateMutex.Lock()
 	defer fake.containerCreateMutex.Unlock()
 	fake.ContainerCreateStub = nil
 	if fake.containerCreateReturnsOnCall == nil {
 		fake.containerCreateReturnsOnCall = make(map[int]struct {
-			result1 container.ContainerCreateCreatedBody
+			result1 container.CreateResponse
 			result2 error
 		})
 	}
 	fake.containerCreateReturnsOnCall[i] = struct {
-		result1 container.ContainerCreateCreatedBody
+		result1 container.CreateResponse
 		result2 error
 	}{result1, result2}
 }
@@ -3410,13 +3424,13 @@ func (fake *FakeCommonAPIClient) ContainerResizeReturnsOnCall(i int, result1 err
 	}{result1}
 }
 
-func (fake *FakeCommonAPIClient) ContainerRestart(arg1 context.Context, arg2 string, arg3 *time.Duration) error {
+func (fake *FakeCommonAPIClient) ContainerRestart(arg1 context.Context, arg2 string, arg3 container.StopOptions) error {
 	fake.containerRestartMutex.Lock()
 	ret, specificReturn := fake.containerRestartReturnsOnCall[len(fake.containerRestartArgsForCall)]
 	fake.containerRestartArgsForCall = append(fake.containerRestartArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 *time.Duration
+		arg3 container.StopOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ContainerRestart", []interface{}{arg1, arg2, arg3})
 	fake.containerRestartMutex.Unlock()
@@ -3436,13 +3450,13 @@ func (fake *FakeCommonAPIClient) ContainerRestartCallCount() int {
 	return len(fake.containerRestartArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerRestartCalls(stub func(context.Context, string, *time.Duration) error) {
+func (fake *FakeCommonAPIClient) ContainerRestartCalls(stub func(context.Context, string, container.StopOptions) error) {
 	fake.containerRestartMutex.Lock()
 	defer fake.containerRestartMutex.Unlock()
 	fake.ContainerRestartStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ContainerRestartArgsForCall(i int) (context.Context, string, *time.Duration) {
+func (fake *FakeCommonAPIClient) ContainerRestartArgsForCall(i int) (context.Context, string, container.StopOptions) {
 	fake.containerRestartMutex.RLock()
 	defer fake.containerRestartMutex.RUnlock()
 	argsForCall := fake.containerRestartArgsForCall[i]
@@ -3728,13 +3742,13 @@ func (fake *FakeCommonAPIClient) ContainerStatsOneShotReturnsOnCall(i int, resul
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerStop(arg1 context.Context, arg2 string, arg3 *time.Duration) error {
+func (fake *FakeCommonAPIClient) ContainerStop(arg1 context.Context, arg2 string, arg3 container.StopOptions) error {
 	fake.containerStopMutex.Lock()
 	ret, specificReturn := fake.containerStopReturnsOnCall[len(fake.containerStopArgsForCall)]
 	fake.containerStopArgsForCall = append(fake.containerStopArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 *time.Duration
+		arg3 container.StopOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ContainerStop", []interface{}{arg1, arg2, arg3})
 	fake.containerStopMutex.Unlock()
@@ -3754,13 +3768,13 @@ func (fake *FakeCommonAPIClient) ContainerStopCallCount() int {
 	return len(fake.containerStopArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerStopCalls(stub func(context.Context, string, *time.Duration) error) {
+func (fake *FakeCommonAPIClient) ContainerStopCalls(stub func(context.Context, string, container.StopOptions) error) {
 	fake.containerStopMutex.Lock()
 	defer fake.containerStopMutex.Unlock()
 	fake.ContainerStopStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ContainerStopArgsForCall(i int) (context.Context, string, *time.Duration) {
+func (fake *FakeCommonAPIClient) ContainerStopArgsForCall(i int) (context.Context, string, container.StopOptions) {
 	fake.containerStopMutex.RLock()
 	defer fake.containerStopMutex.RUnlock()
 	argsForCall := fake.containerStopArgsForCall[i]
@@ -3986,7 +4000,7 @@ func (fake *FakeCommonAPIClient) ContainerUpdateReturnsOnCall(i int, result1 con
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerWait(arg1 context.Context, arg2 string, arg3 container.WaitCondition) (<-chan container.ContainerWaitOKBody, <-chan error) {
+func (fake *FakeCommonAPIClient) ContainerWait(arg1 context.Context, arg2 string, arg3 container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
 	fake.containerWaitMutex.Lock()
 	ret, specificReturn := fake.containerWaitReturnsOnCall[len(fake.containerWaitArgsForCall)]
 	fake.containerWaitArgsForCall = append(fake.containerWaitArgsForCall, struct {
@@ -4012,7 +4026,7 @@ func (fake *FakeCommonAPIClient) ContainerWaitCallCount() int {
 	return len(fake.containerWaitArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerWaitCalls(stub func(context.Context, string, container.WaitCondition) (<-chan container.ContainerWaitOKBody, <-chan error)) {
+func (fake *FakeCommonAPIClient) ContainerWaitCalls(stub func(context.Context, string, container.WaitCondition) (<-chan container.WaitResponse, <-chan error)) {
 	fake.containerWaitMutex.Lock()
 	defer fake.containerWaitMutex.Unlock()
 	fake.ContainerWaitStub = stub
@@ -4025,28 +4039,28 @@ func (fake *FakeCommonAPIClient) ContainerWaitArgsForCall(i int) (context.Contex
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeCommonAPIClient) ContainerWaitReturns(result1 <-chan container.ContainerWaitOKBody, result2 <-chan error) {
+func (fake *FakeCommonAPIClient) ContainerWaitReturns(result1 <-chan container.WaitResponse, result2 <-chan error) {
 	fake.containerWaitMutex.Lock()
 	defer fake.containerWaitMutex.Unlock()
 	fake.ContainerWaitStub = nil
 	fake.containerWaitReturns = struct {
-		result1 <-chan container.ContainerWaitOKBody
+		result1 <-chan container.WaitResponse
 		result2 <-chan error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerWaitReturnsOnCall(i int, result1 <-chan container.ContainerWaitOKBody, result2 <-chan error) {
+func (fake *FakeCommonAPIClient) ContainerWaitReturnsOnCall(i int, result1 <-chan container.WaitResponse, result2 <-chan error) {
 	fake.containerWaitMutex.Lock()
 	defer fake.containerWaitMutex.Unlock()
 	fake.ContainerWaitStub = nil
 	if fake.containerWaitReturnsOnCall == nil {
 		fake.containerWaitReturnsOnCall = make(map[int]struct {
-			result1 <-chan container.ContainerWaitOKBody
+			result1 <-chan container.WaitResponse
 			result2 <-chan error
 		})
 	}
 	fake.containerWaitReturnsOnCall[i] = struct {
-		result1 <-chan container.ContainerWaitOKBody
+		result1 <-chan container.WaitResponse
 		result2 <-chan error
 	}{result1, result2}
 }
@@ -4417,16 +4431,17 @@ func (fake *FakeCommonAPIClient) DialerReturnsOnCall(i int, result1 func(context
 	}{result1}
 }
 
-func (fake *FakeCommonAPIClient) DiskUsage(arg1 context.Context) (types.DiskUsage, error) {
+func (fake *FakeCommonAPIClient) DiskUsage(arg1 context.Context, arg2 types.DiskUsageOptions) (types.DiskUsage, error) {
 	fake.diskUsageMutex.Lock()
 	ret, specificReturn := fake.diskUsageReturnsOnCall[len(fake.diskUsageArgsForCall)]
 	fake.diskUsageArgsForCall = append(fake.diskUsageArgsForCall, struct {
 		arg1 context.Context
-	}{arg1})
-	fake.recordInvocation("DiskUsage", []interface{}{arg1})
+		arg2 types.DiskUsageOptions
+	}{arg1, arg2})
+	fake.recordInvocation("DiskUsage", []interface{}{arg1, arg2})
 	fake.diskUsageMutex.Unlock()
 	if fake.DiskUsageStub != nil {
-		return fake.DiskUsageStub(arg1)
+		return fake.DiskUsageStub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -4441,17 +4456,17 @@ func (fake *FakeCommonAPIClient) DiskUsageCallCount() int {
 	return len(fake.diskUsageArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) DiskUsageCalls(stub func(context.Context) (types.DiskUsage, error)) {
+func (fake *FakeCommonAPIClient) DiskUsageCalls(stub func(context.Context, types.DiskUsageOptions) (types.DiskUsage, error)) {
 	fake.diskUsageMutex.Lock()
 	defer fake.diskUsageMutex.Unlock()
 	fake.DiskUsageStub = stub
 }
 
-func (fake *FakeCommonAPIClient) DiskUsageArgsForCall(i int) context.Context {
+func (fake *FakeCommonAPIClient) DiskUsageArgsForCall(i int) (context.Context, types.DiskUsageOptions) {
 	fake.diskUsageMutex.RLock()
 	defer fake.diskUsageMutex.RUnlock()
 	argsForCall := fake.diskUsageArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeCommonAPIClient) DiskUsageReturns(result1 types.DiskUsage, result2 error) {
@@ -8638,12 +8653,12 @@ func (fake *FakeCommonAPIClient) TaskLogsReturnsOnCall(i int, result1 io.ReadClo
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) VolumeCreate(arg1 context.Context, arg2 volume.VolumeCreateBody) (types.Volume, error) {
+func (fake *FakeCommonAPIClient) VolumeCreate(arg1 context.Context, arg2 volume.CreateOptions) (volume.Volume, error) {
 	fake.volumeCreateMutex.Lock()
 	ret, specificReturn := fake.volumeCreateReturnsOnCall[len(fake.volumeCreateArgsForCall)]
 	fake.volumeCreateArgsForCall = append(fake.volumeCreateArgsForCall, struct {
 		arg1 context.Context
-		arg2 volume.VolumeCreateBody
+		arg2 volume.CreateOptions
 	}{arg1, arg2})
 	fake.recordInvocation("VolumeCreate", []interface{}{arg1, arg2})
 	fake.volumeCreateMutex.Unlock()
@@ -8663,46 +8678,46 @@ func (fake *FakeCommonAPIClient) VolumeCreateCallCount() int {
 	return len(fake.volumeCreateArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) VolumeCreateCalls(stub func(context.Context, volume.VolumeCreateBody) (types.Volume, error)) {
+func (fake *FakeCommonAPIClient) VolumeCreateCalls(stub func(context.Context, volume.CreateOptions) (volume.Volume, error)) {
 	fake.volumeCreateMutex.Lock()
 	defer fake.volumeCreateMutex.Unlock()
 	fake.VolumeCreateStub = stub
 }
 
-func (fake *FakeCommonAPIClient) VolumeCreateArgsForCall(i int) (context.Context, volume.VolumeCreateBody) {
+func (fake *FakeCommonAPIClient) VolumeCreateArgsForCall(i int) (context.Context, volume.CreateOptions) {
 	fake.volumeCreateMutex.RLock()
 	defer fake.volumeCreateMutex.RUnlock()
 	argsForCall := fake.volumeCreateArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCommonAPIClient) VolumeCreateReturns(result1 types.Volume, result2 error) {
+func (fake *FakeCommonAPIClient) VolumeCreateReturns(result1 volume.Volume, result2 error) {
 	fake.volumeCreateMutex.Lock()
 	defer fake.volumeCreateMutex.Unlock()
 	fake.VolumeCreateStub = nil
 	fake.volumeCreateReturns = struct {
-		result1 types.Volume
+		result1 volume.Volume
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) VolumeCreateReturnsOnCall(i int, result1 types.Volume, result2 error) {
+func (fake *FakeCommonAPIClient) VolumeCreateReturnsOnCall(i int, result1 volume.Volume, result2 error) {
 	fake.volumeCreateMutex.Lock()
 	defer fake.volumeCreateMutex.Unlock()
 	fake.VolumeCreateStub = nil
 	if fake.volumeCreateReturnsOnCall == nil {
 		fake.volumeCreateReturnsOnCall = make(map[int]struct {
-			result1 types.Volume
+			result1 volume.Volume
 			result2 error
 		})
 	}
 	fake.volumeCreateReturnsOnCall[i] = struct {
-		result1 types.Volume
+		result1 volume.Volume
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) VolumeInspect(arg1 context.Context, arg2 string) (types.Volume, error) {
+func (fake *FakeCommonAPIClient) VolumeInspect(arg1 context.Context, arg2 string) (volume.Volume, error) {
 	fake.volumeInspectMutex.Lock()
 	ret, specificReturn := fake.volumeInspectReturnsOnCall[len(fake.volumeInspectArgsForCall)]
 	fake.volumeInspectArgsForCall = append(fake.volumeInspectArgsForCall, struct {
@@ -8727,7 +8742,7 @@ func (fake *FakeCommonAPIClient) VolumeInspectCallCount() int {
 	return len(fake.volumeInspectArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) VolumeInspectCalls(stub func(context.Context, string) (types.Volume, error)) {
+func (fake *FakeCommonAPIClient) VolumeInspectCalls(stub func(context.Context, string) (volume.Volume, error)) {
 	fake.volumeInspectMutex.Lock()
 	defer fake.volumeInspectMutex.Unlock()
 	fake.VolumeInspectStub = stub
@@ -8740,33 +8755,33 @@ func (fake *FakeCommonAPIClient) VolumeInspectArgsForCall(i int) (context.Contex
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCommonAPIClient) VolumeInspectReturns(result1 types.Volume, result2 error) {
+func (fake *FakeCommonAPIClient) VolumeInspectReturns(result1 volume.Volume, result2 error) {
 	fake.volumeInspectMutex.Lock()
 	defer fake.volumeInspectMutex.Unlock()
 	fake.VolumeInspectStub = nil
 	fake.volumeInspectReturns = struct {
-		result1 types.Volume
+		result1 volume.Volume
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) VolumeInspectReturnsOnCall(i int, result1 types.Volume, result2 error) {
+func (fake *FakeCommonAPIClient) VolumeInspectReturnsOnCall(i int, result1 volume.Volume, result2 error) {
 	fake.volumeInspectMutex.Lock()
 	defer fake.volumeInspectMutex.Unlock()
 	fake.VolumeInspectStub = nil
 	if fake.volumeInspectReturnsOnCall == nil {
 		fake.volumeInspectReturnsOnCall = make(map[int]struct {
-			result1 types.Volume
+			result1 volume.Volume
 			result2 error
 		})
 	}
 	fake.volumeInspectReturnsOnCall[i] = struct {
-		result1 types.Volume
+		result1 volume.Volume
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) VolumeInspectWithRaw(arg1 context.Context, arg2 string) (types.Volume, []byte, error) {
+func (fake *FakeCommonAPIClient) VolumeInspectWithRaw(arg1 context.Context, arg2 string) (volume.Volume, []byte, error) {
 	fake.volumeInspectWithRawMutex.Lock()
 	ret, specificReturn := fake.volumeInspectWithRawReturnsOnCall[len(fake.volumeInspectWithRawArgsForCall)]
 	fake.volumeInspectWithRawArgsForCall = append(fake.volumeInspectWithRawArgsForCall, struct {
@@ -8791,7 +8806,7 @@ func (fake *FakeCommonAPIClient) VolumeInspectWithRawCallCount() int {
 	return len(fake.volumeInspectWithRawArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) VolumeInspectWithRawCalls(stub func(context.Context, string) (types.Volume, []byte, error)) {
+func (fake *FakeCommonAPIClient) VolumeInspectWithRawCalls(stub func(context.Context, string) (volume.Volume, []byte, error)) {
 	fake.volumeInspectWithRawMutex.Lock()
 	defer fake.volumeInspectWithRawMutex.Unlock()
 	fake.VolumeInspectWithRawStub = stub
@@ -8804,36 +8819,36 @@ func (fake *FakeCommonAPIClient) VolumeInspectWithRawArgsForCall(i int) (context
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCommonAPIClient) VolumeInspectWithRawReturns(result1 types.Volume, result2 []byte, result3 error) {
+func (fake *FakeCommonAPIClient) VolumeInspectWithRawReturns(result1 volume.Volume, result2 []byte, result3 error) {
 	fake.volumeInspectWithRawMutex.Lock()
 	defer fake.volumeInspectWithRawMutex.Unlock()
 	fake.VolumeInspectWithRawStub = nil
 	fake.volumeInspectWithRawReturns = struct {
-		result1 types.Volume
+		result1 volume.Volume
 		result2 []byte
 		result3 error
 	}{result1, result2, result3}
 }
 
-func (fake *FakeCommonAPIClient) VolumeInspectWithRawReturnsOnCall(i int, result1 types.Volume, result2 []byte, result3 error) {
+func (fake *FakeCommonAPIClient) VolumeInspectWithRawReturnsOnCall(i int, result1 volume.Volume, result2 []byte, result3 error) {
 	fake.volumeInspectWithRawMutex.Lock()
 	defer fake.volumeInspectWithRawMutex.Unlock()
 	fake.VolumeInspectWithRawStub = nil
 	if fake.volumeInspectWithRawReturnsOnCall == nil {
 		fake.volumeInspectWithRawReturnsOnCall = make(map[int]struct {
-			result1 types.Volume
+			result1 volume.Volume
 			result2 []byte
 			result3 error
 		})
 	}
 	fake.volumeInspectWithRawReturnsOnCall[i] = struct {
-		result1 types.Volume
+		result1 volume.Volume
 		result2 []byte
 		result3 error
 	}{result1, result2, result3}
 }
 
-func (fake *FakeCommonAPIClient) VolumeList(arg1 context.Context, arg2 filters.Args) (volume.VolumeListOKBody, error) {
+func (fake *FakeCommonAPIClient) VolumeList(arg1 context.Context, arg2 filters.Args) (volume.ListResponse, error) {
 	fake.volumeListMutex.Lock()
 	ret, specificReturn := fake.volumeListReturnsOnCall[len(fake.volumeListArgsForCall)]
 	fake.volumeListArgsForCall = append(fake.volumeListArgsForCall, struct {
@@ -8858,7 +8873,7 @@ func (fake *FakeCommonAPIClient) VolumeListCallCount() int {
 	return len(fake.volumeListArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) VolumeListCalls(stub func(context.Context, filters.Args) (volume.VolumeListOKBody, error)) {
+func (fake *FakeCommonAPIClient) VolumeListCalls(stub func(context.Context, filters.Args) (volume.ListResponse, error)) {
 	fake.volumeListMutex.Lock()
 	defer fake.volumeListMutex.Unlock()
 	fake.VolumeListStub = stub
@@ -8871,28 +8886,28 @@ func (fake *FakeCommonAPIClient) VolumeListArgsForCall(i int) (context.Context, 
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCommonAPIClient) VolumeListReturns(result1 volume.VolumeListOKBody, result2 error) {
+func (fake *FakeCommonAPIClient) VolumeListReturns(result1 volume.ListResponse, result2 error) {
 	fake.volumeListMutex.Lock()
 	defer fake.volumeListMutex.Unlock()
 	fake.VolumeListStub = nil
 	fake.volumeListReturns = struct {
-		result1 volume.VolumeListOKBody
+		result1 volume.ListResponse
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) VolumeListReturnsOnCall(i int, result1 volume.VolumeListOKBody, result2 error) {
+func (fake *FakeCommonAPIClient) VolumeListReturnsOnCall(i int, result1 volume.ListResponse, result2 error) {
 	fake.volumeListMutex.Lock()
 	defer fake.volumeListMutex.Unlock()
 	fake.VolumeListStub = nil
 	if fake.volumeListReturnsOnCall == nil {
 		fake.volumeListReturnsOnCall = make(map[int]struct {
-			result1 volume.VolumeListOKBody
+			result1 volume.ListResponse
 			result2 error
 		})
 	}
 	fake.volumeListReturnsOnCall[i] = struct {
-		result1 volume.VolumeListOKBody
+		result1 volume.ListResponse
 		result2 error
 	}{result1, result2}
 }
@@ -8955,6 +8970,69 @@ func (fake *FakeCommonAPIClient) VolumeRemoveReturnsOnCall(i int, result1 error)
 		})
 	}
 	fake.volumeRemoveReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeCommonAPIClient) VolumeUpdate(arg1 context.Context, arg2 string, arg3 swarm.Version, arg4 volume.UpdateOptions) error {
+	fake.volumeUpdateMutex.Lock()
+	ret, specificReturn := fake.volumeUpdateReturnsOnCall[len(fake.volumeUpdateArgsForCall)]
+	fake.volumeUpdateArgsForCall = append(fake.volumeUpdateArgsForCall, struct {
+		arg1 context.Context
+		arg2 string
+		arg3 swarm.Version
+		arg4 volume.UpdateOptions
+	}{arg1, arg2, arg3, arg4})
+	fake.recordInvocation("VolumeUpdate", []interface{}{arg1, arg2, arg3, arg4})
+	fake.volumeUpdateMutex.Unlock()
+	if fake.VolumeUpdateStub != nil {
+		return fake.VolumeUpdateStub(arg1, arg2, arg3, arg4)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.volumeUpdateReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeCommonAPIClient) VolumeUpdateCallCount() int {
+	fake.volumeUpdateMutex.RLock()
+	defer fake.volumeUpdateMutex.RUnlock()
+	return len(fake.volumeUpdateArgsForCall)
+}
+
+func (fake *FakeCommonAPIClient) VolumeUpdateCalls(stub func(context.Context, string, swarm.Version, volume.UpdateOptions) error) {
+	fake.volumeUpdateMutex.Lock()
+	defer fake.volumeUpdateMutex.Unlock()
+	fake.VolumeUpdateStub = stub
+}
+
+func (fake *FakeCommonAPIClient) VolumeUpdateArgsForCall(i int) (context.Context, string, swarm.Version, volume.UpdateOptions) {
+	fake.volumeUpdateMutex.RLock()
+	defer fake.volumeUpdateMutex.RUnlock()
+	argsForCall := fake.volumeUpdateArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
+}
+
+func (fake *FakeCommonAPIClient) VolumeUpdateReturns(result1 error) {
+	fake.volumeUpdateMutex.Lock()
+	defer fake.volumeUpdateMutex.Unlock()
+	fake.VolumeUpdateStub = nil
+	fake.volumeUpdateReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeCommonAPIClient) VolumeUpdateReturnsOnCall(i int, result1 error) {
+	fake.volumeUpdateMutex.Lock()
+	defer fake.volumeUpdateMutex.Unlock()
+	fake.VolumeUpdateStub = nil
+	if fake.volumeUpdateReturnsOnCall == nil {
+		fake.volumeUpdateReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.volumeUpdateReturnsOnCall[i] = struct {
 		result1 error
 	}{result1}
 }
@@ -9258,6 +9336,8 @@ func (fake *FakeCommonAPIClient) Invocations() map[string][][]interface{} {
 	defer fake.volumeListMutex.RUnlock()
 	fake.volumeRemoveMutex.RLock()
 	defer fake.volumeRemoveMutex.RUnlock()
+	fake.volumeUpdateMutex.RLock()
+	defer fake.volumeUpdateMutex.RUnlock()
 	fake.volumesPruneMutex.RLock()
 	defer fake.volumesPruneMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

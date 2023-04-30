@@ -1,5 +1,5 @@
 name: run/op/object/inputs/explicitly-bound/object-input/string-arg/is-fs-ref/is-file/contains-json
 run:
   op:
-    ref: contains-json/_
+    ref: $(./_)
     inputs: { object: $(/file.json) }

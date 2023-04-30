@@ -1,0 +1,43 @@
+[
+  {
+    "name": "doesn't match format",
+    "call": {
+      "expect": "failure",
+      "scope": {
+        "number": 1.1
+      }
+    }
+  },
+  {
+    "name": "matches format",
+    "call": {
+      "expect": "success",
+      "scope": {
+        "number": 1
+      }
+    }
+  },
+  {
+    "name": "doesn't match format",
+    "interpret": {
+      "expect": "failure",
+      "scope": {
+        "number": 1.1
+      }
+    }
+  },
+  {
+    "name": "matches format",
+    "interpret": {
+      "expect": "success",
+      "scope": {
+        "number": 1
+      }
+    }
+  },
+  {
+    "validate": {
+      "expect": "success"
+    }
+  }
+]

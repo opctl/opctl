@@ -1,5 +1,5 @@
 name: run/op/object/inputs/explicitly-bound/file-input/array-arg
 run:
   op:
-    ref: array-arg/_
+    ref: $(./_)
     inputs: { file: [] }

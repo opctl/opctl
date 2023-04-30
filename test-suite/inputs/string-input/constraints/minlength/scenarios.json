@@ -1,0 +1,34 @@
+[
+  {
+    "name": "shorter than minLength",
+    "call": {
+      "expect": "failure",
+      "scope": {
+        "string": "a"
+      }
+    }
+  },
+  {
+    "name": "equal to minLength",
+    "interpret": {
+      "expect": "success",
+      "scope": {
+        "string": "ab"
+      }
+    }
+  },
+  {
+    "name": "greater than minLength",
+    "interpret": {
+      "expect": "success",
+      "scope": {
+        "string": "abc"
+      }
+    }
+  },
+  {
+    "validate": {
+      "expect": "success"
+    }
+  }
+]

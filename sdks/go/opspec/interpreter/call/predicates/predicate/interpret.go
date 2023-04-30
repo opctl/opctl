@@ -37,7 +37,7 @@ func Interpret(
 		)
 	case predicateSpec.LTE != nil:
 		return lte.Interpret(
-			*predicateSpec.Eq,
+			*predicateSpec.LTE,
 			scope,
 		)
 	case predicateSpec.GT != nil:

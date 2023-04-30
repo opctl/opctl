@@ -41,7 +41,7 @@ inputs:
 run:
   serial:
     - op:
-        ref: ../build
+        ref: $(../build)
         inputs:
           dockerSocket:
           gitBranch:
@@ -49,13 +49,13 @@ run:
           version:
     - parallel:
         - op:
-            ref: ./to-docker
+            ref: $(./to-docker)
             inputs:
               dockerPassword:
               dockerUsername:
               version:
         - op:
-            ref: ./to-github
+            ref: $(./to-github)
             inputs:
               github:
               version:

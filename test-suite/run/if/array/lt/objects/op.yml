@@ -1,0 +1,5 @@
+name: run/if/array/lt/objects
+run:
+  if:
+    - lt: [{p1: v1},{p2: v2}]
+  serial: []

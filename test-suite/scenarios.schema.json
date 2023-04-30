@@ -17,9 +17,16 @@
                 "$ref": "#/definitions/scope"
               },
               "expect": {
-                "enum": ["failure", "success"]
+                "enum": [
+                  "failure",
+                  "success"
+                ]
               }
-            }
+            },
+            "required": [
+              "expect",
+              "scope"
+            ]
           }
         },
         "required": [
@@ -36,7 +43,10 @@
                 "$ref": "#/definitions/scope"
               },
               "expect": {
-                "enum": ["failure", "success"]
+                "enum": [
+                  "failure",
+                  "success"
+                ]
               }
             }
           }
@@ -52,7 +62,10 @@
             "additionalProperties": false,
             "properties": {
               "expect": {
-                "enum": ["failure", "success"]
+                "enum": [
+                  "failure",
+                  "success"
+                ]
               }
             }
           }
@@ -69,58 +82,7 @@
       "items": {
         "additionalProperties": false,
         "patternProperties": {
-          "[a-zA-Z]+": {
-            "oneOf": [
-              {
-                "properties": {
-                  "string": {}
-                },
-                "required": [
-                  "string"
-                ]
-              },
-              {
-                "properties": {
-                  "number": {}
-                },
-                "required": [
-                  "number"
-                ]
-              },
-              {
-                "properties": {
-                  "object": {}
-                },
-                "required": [
-                  "object"
-                ]
-              },
-              {
-                "properties": {
-                  "file": {}
-                },
-                "required": [
-                  "file"
-                ]
-              },
-              {
-                "properties": {
-                  "dir": {}
-                },
-                "required": [
-                  "dir"
-                ]
-              },
-              {
-                "properties": {
-                  "socket": {}
-                },
-                "required": [
-                  "socket"
-                ]
-              }
-            ]
-          }
+          "[a-zA-Z]+": {}
         }
       }
     }

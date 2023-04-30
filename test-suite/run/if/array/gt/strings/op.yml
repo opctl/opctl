@@ -1,0 +1,5 @@
+name: run/if/array/gt/strings
+run:
+  if:
+    - gt: [string2,string1]
+  serial: []

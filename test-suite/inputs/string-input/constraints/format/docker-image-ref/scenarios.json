@@ -1,0 +1,25 @@
+[
+  {
+    "name": "doesn't match format",
+    "call": {
+      "expect": "failure",
+      "scope": {
+        "string": "*"
+      }
+    }
+  },
+  {
+    "name": "doesn't match format",
+    "interpret": {
+      "expect": "failure",
+      "scope": {
+        "string": "*"
+      }
+    }
+  },
+  {
+    "validate": {
+      "expect": "success"
+    }
+  }
+]
