@@ -19,9 +19,15 @@ export default function CallHasOp(
     parentOpRef
   }: Props
 ) {
-  const opRef = opCall.ref.startsWith('.') && parentOpRef
-    ? path.join(parentOpRef, opCall.ref)
-    : opCall.ref
+  let opRef: string
+  if (opCall.ref.startsWith('$(') && parentOpRef) {
+    // interpolate by trimming "$(" prefix and ")"" suffix
+    opRef = path.join(parentOpRef, opCall.ref.slice(2, -1))
+  } else if (opCall.ref.startsWith('.') && parentOpRef) {
+    opRef = path.join(parentOpRef, opCall.ref)
+  } else {
+    opRef = opCall.ref
+  }
 
   const [op, setOp] = useState(null as any)
 
