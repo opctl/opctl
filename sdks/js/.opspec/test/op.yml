@@ -10,7 +10,7 @@ run:
     - op:
         ref: $(../init)
     - container:
-        image: { ref: 'node:16-alpine' }
+        image: { ref: 'node:20-alpine' }
         cmd: [npm, test]
         envVars:
           CI: true

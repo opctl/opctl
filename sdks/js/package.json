@@ -14,7 +14,7 @@
   "version": "0.0.0-alpha.5",
   "description": "Javascript SDK for opctl",
   "scripts": {
-    "test": "standard --fix *.ts && jest"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -37,7 +37,6 @@
     "@types/jest": "26.0.19",
     "jest": "26.6.0",
     "nock": "^9.0.22",
-    "standard": "^11.0.1",
     "ts-jest": "26.4.4"
   }
 }

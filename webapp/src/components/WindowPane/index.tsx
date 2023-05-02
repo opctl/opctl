@@ -3,7 +3,7 @@ import brandColors from '../../brandColors'
 import Window from '../Window'
 import { WindowContext } from '../WindowContext'
 import { ReactComponent as CloseIcon } from '../../icons/Close.svg'
-import path from 'path'
+import path from 'path-browserify'
 
 export default function WindowPane() {
   const {

@@ -6,7 +6,7 @@ import brandColors from '../../brandColors'
 import AddCallPopper from '../AddCallPopper'
 import { ReactComponent as PlusIcon } from '../../icons/Plus.svg'
 import { toast } from 'react-toastify'
-import path from 'path'
+import path from 'path-browserify'
 
 interface Props {
   opCall: OpCall

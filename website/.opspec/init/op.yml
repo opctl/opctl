@@ -3,7 +3,7 @@ description: inits the working copy for development
 opspec: 0.1.6
 run:
   container:
-    image: { ref: 'node:16-alpine' }
+    image: { ref: 'node:20-alpine' }
     cmd: [yarn]
     dirs:
       /src: $(../../..)
