@@ -3,6 +3,7 @@ package docker
 import (
 	"context"
 	"fmt"
+	"runtime"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -24,6 +25,11 @@ func isGpuSupported(
 	dockerClient client.CommonAPIClient,
 	imagePullCreds *model.Creds,
 ) (bool, error) {
+	if runtime.GOOS != "linux" {
+		// GPU passthrough only available when host is linux
+		return false, nil
+	}
+
 	containerName := getContainerName(fmt.Sprintf("gpu-check-%s", uuid.NewV4().String()))
 
 	defer dockerClient.ContainerRemove(
