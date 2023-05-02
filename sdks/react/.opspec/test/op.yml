@@ -8,9 +8,9 @@ opspec: 0.1.6
 run:
   serial:
     - op:
-        ref: ../init
+        ref: $(../init)
     - container:
-        image: { ref: 'node:16-alpine' }
+        image: { ref: 'node:20-alpine' }
         cmd: [npm, test]
         envVars:
           CI: true

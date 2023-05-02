@@ -3,7 +3,7 @@ import { Window } from '../WindowContext'
 import ReactEasyPanzoom from 'react-easy-panzoom'
 import CallHasOp from '../CallHasOp'
 import CallHasSummary from '../CallHasSummary'
-import path from 'path'
+import path from 'path-browserify'
 import brandColors from '../../brandColors'
 
 interface Props {

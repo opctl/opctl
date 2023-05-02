@@ -31,5 +31,5 @@ run:
             machine github.com
             login $(github.username)
             password $(github.accessToken)
-        image: { ref: 'node:16' }
+        image: { ref: 'node:20' }
         workDir: /src/website
