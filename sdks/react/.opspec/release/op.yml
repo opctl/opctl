@@ -16,7 +16,7 @@ opspec: 0.1.6
 run:
   serial:
     - op:
-        ref: ../build
+        ref: $(../build)
     - op:
         ref: github.com/opspec-pkgs/npm.pkg.set-version#1.1.0
         inputs:

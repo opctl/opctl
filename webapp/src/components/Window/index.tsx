@@ -2,7 +2,7 @@ import React from 'react'
 import { Window as WindowContext } from '../WindowContext'
 import OpWindow from '../OpWindow'
 import CodeWindow from '../CodeWindow'
-import path from 'path'
+import path from 'path-browserify'
 
 interface Props {
   window: WindowContext

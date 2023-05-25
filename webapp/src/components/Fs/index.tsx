@@ -2,7 +2,7 @@ import React, { CSSProperties, Fragment, useState, useEffect } from 'react'
 import FsHasEntry, { FsEntry } from '../FsHasEntry'
 import listFsEntries from '../../queries/listFsEntries'
 import LoadingSpinner from '../LoadingSpinner'
-import path from 'path'
+import path from 'path-browserify'
 
 interface Props {
   style?: CSSProperties

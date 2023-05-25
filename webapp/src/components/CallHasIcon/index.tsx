@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import getFsEntryData from '../../queries/getFsEntryData'
 import { Call } from '../HasCall'
 import constructDataUrl from '../../constructDataUrl'
-import path from 'path'
+import path from 'path-browserify'
 
 interface Props {
   call: Call
