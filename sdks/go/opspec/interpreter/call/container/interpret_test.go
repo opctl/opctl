@@ -35,7 +35,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(MatchError("unable to interpret $() to string: unable to interpret '' as reference: '' not in scope"))
+			Expect(actualErr).To(MatchError("unable to interpret [$()] to array: unable to interpret '$()' as array initializer item: unable to interpret '' as reference: '' not in scope"))
 		})
 	})
 

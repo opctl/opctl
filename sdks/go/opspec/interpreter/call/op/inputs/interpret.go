@@ -32,6 +32,7 @@ func Interpret(
 			opScratchDir,
 		)
 		if err != nil {
+			fmt.Println(argName, err.Error())
 			paramErrMap[argName] = err
 		}
 	}

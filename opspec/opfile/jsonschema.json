@@ -852,12 +852,8 @@
           "type": "object",
           "properties": {
             "cmd": {
-              "description": "Command run by a container; overrides any set at the image level",
-              "type": "array",
-              "items": {
-                "description": "Expression coercible to string value",
-                "$ref": "#/definitions/expression"
-              }
+              "description": "Expression coercible to array of strings used as the command run by a container; overrides any set at the image level",
+              "$ref": "#/definitions/arrayExpression"
             },
             "dirs": {
               "type": "object",

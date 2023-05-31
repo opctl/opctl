@@ -1,0 +1,13 @@
+name: run/container/object/cmd/variable/array/exit-zero
+inputs:
+  cmd:
+    array:
+      default:
+        - sh
+        - -ce
+        - exit 0
+run:
+  container:
+    image:
+      ref: alpine
+    cmd: $(cmd)

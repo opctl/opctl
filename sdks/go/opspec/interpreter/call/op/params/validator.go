@@ -18,6 +18,7 @@ func Validate(
 	for paramName, paramValue := range params {
 		errs := param.Validate(values[paramName], paramValue)
 		if len(errs) > 0 {
+			fmt.Println("params.validator", paramName, paramValue, errs)
 			paramErrMap[paramName] = errs
 		}
 	}

@@ -27,7 +27,7 @@ type CallSpec struct {
 // ContainerCallSpec is a spec for calling a container
 type ContainerCallSpec struct {
 	// Cmd entries will be interpreted to strings
-	Cmd []interface{} `json:"cmd,omitempty"`
+	Cmd interface{} `json:"cmd,omitempty"`
 	// Dirs entries will be interpreted to dirs
 	Dirs map[string]interface{} `json:"dirs,omitempty"`
 

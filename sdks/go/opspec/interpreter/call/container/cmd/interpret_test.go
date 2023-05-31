@@ -15,7 +15,7 @@ var _ = Context("Interpret", func() {
 				/* arrange */
 				identifier := "identifier"
 				providedScope := map[string]*model.Value{
-					identifier: &model.Value{String: new(string)},
+					identifier: {String: new(string)},
 				}
 
 				cmd2 := "cmd2"
