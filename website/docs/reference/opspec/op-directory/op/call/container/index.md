@@ -22,7 +22,7 @@ An object defining a container call.
 An [image [object]](image.md) defining the container image run by the call.
 
 ### cmd
-An array of [string initializers](../../../../types/string.md#initialization) defining the path (from [workDir](#workdir)) of the binary to call and it's arguments.
+An [array](../../../../types/array.md) [initializer](../../../../types/array.md#initialization) or [variable-reference [string]](../../variable-reference.md) defining the path (from [workDir](#workdir)) of the binary to call and it's arguments.
 
 > defining cmd overrides any entrypoint and/or cmd defined by the image
 

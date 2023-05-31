@@ -28,11 +28,18 @@ func Validate(
 		return []error{err}
 	}
 
+	unboxedValueAsObject, err := valueAsObject.Unbox()
+	if err != nil {
+		return []error{
+			err,
+		}
+	}
+
 	// guard no constraints
 	if constraints != nil {
 		errs := []error{}
 
-		valueJSONBytes, err := json.Marshal(valueAsObject.Object)
+		valueJSONBytes, err := json.Marshal(unboxedValueAsObject)
 		if err != nil {
 			// handle syntax errors specially
 			return append(

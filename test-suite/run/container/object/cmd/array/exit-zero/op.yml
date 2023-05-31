@@ -1,0 +1,9 @@
+name: run/container/object/cmd/array/exit-zero
+run:
+  container:
+    image:
+      ref: alpine
+    cmd:
+      - sh
+      - -ce
+      - exit 0

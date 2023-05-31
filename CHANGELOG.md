@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## 0.1.51 - 2023-06-01
+
+### Added
+
+- [Variable reference as `container.cmd`](https://github.com/opctl/opctl/issues/1064)
+
+### Fixed
+
+- Simultaneously defining a default plus constraints on an object or array input results in a validation error
+
 ## 0.1.50 - 2023-05-01
 
 ### Added
