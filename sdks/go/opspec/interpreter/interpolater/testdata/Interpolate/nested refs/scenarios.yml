@@ -1,0 +1,130 @@
+# number
+- name: nested standalone number variable
+  template: $($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      number:
+        1000000
+  expected: '1000000'
+
+- name: nested number variable at start
+  template: $($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      number:
+        99999999
+  expected: 99999999suffix
+
+- name: nested number variable at end
+  template: prefix$($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      number:
+        2.3
+  expected: prefix2.3
+
+- name: nested number variable within
+  template: prefix$($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      number:
+        2.3
+  expected: prefix2.3suffix
+
+# object
+- name: nested standalone object variable
+  template: $($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      object: { name: value }
+  expected: '{"name":"value"}'
+
+- name: nested object variable at start
+  template: $($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      object: { name: value }
+  expected: '{"name":"value"}suffix'
+
+- name: nested object at end
+  template: prefix$($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      object: { name: value }
+  expected: 'prefix{"name":"value"}'
+
+- name: nested object within
+  template: prefix$($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      object: { name: value }
+  expected: 'prefix{"name":"value"}suffix'
+
+# string
+- name: nested standalone string variable
+  template: $($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      string:
+        value1
+  expected: value1
+
+- name: nested string variable at start
+  template: $($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      string:
+        value1
+  expected: value1suffix
+
+- name: nested string variable at end
+  template: prefix$($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      string:
+        value1
+  expected: prefixvalue1
+
+- name: nested string variable within
+  template: prefix$($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      string:
+        value1
+  expected: prefixvalue1suffix

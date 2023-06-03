@@ -17,7 +17,7 @@ import (
 var _ = Context("Interpolate", func() {
 	Describe("called for every scenario", func() {
 		It("should return result fulfilling scenario", func() {
-			rootPath := "testdata/interpolater/Interpolate"
+			rootPath := "testdata/Interpolate"
 			fsProvider := fs.New()
 
 			filepath.Walk(rootPath,
