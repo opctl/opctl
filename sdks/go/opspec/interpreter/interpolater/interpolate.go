@@ -82,6 +82,10 @@ func tryDeRef(
 	i := 0
 
 	for i < len(possibleRef) {
+		if i == 0 && possibleRef[i] != refOpener {
+			return string(operator), 0, nil
+		}
+
 		switch possibleRef[i] {
 		case refCloser:
 			if len(refBuffer) > 0 && refOpener == refBuffer[0] {

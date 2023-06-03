@@ -1,0 +1,144 @@
+# escape
+- name: standalone escaped variable
+  template: \$(escapedVariable1)
+  expected: $(escapedVariable1)
+
+- name: escaped variable at start
+  template: \$(escapedVariable1)suffix
+  expected: $(escapedVariable1)suffix
+
+- name: escaped variable at end
+  template: prefix\$(escapedVariable1)
+  expected: prefix$(escapedVariable1)
+
+- name: escaped variable within
+  template: prefix\$(escapedVariable1)suffix
+  expected: prefix$(escapedVariable1)suffix
+
+# file
+- name: standalone file variable
+  template: $(file1)
+  scope:
+    file1:
+      file:
+        file1.txt
+  expected: value1
+
+- name: file variable at start
+  template: $(file1)suffix
+  scope:
+    file1:
+      file:
+        file1.txt
+  expected: value1suffix
+
+- name: file variable at end
+  template: prefix$(file1)
+  scope:
+    file1:
+      file:
+        file1.txt
+  expected: prefixvalue1
+
+- name: file variable within
+  template: prefix$(file1)suffix
+  scope:
+    file1:
+      file:
+        file1.txt
+  expected: prefixvalue1suffix
+
+# number
+- name: standalone number variable
+  template: $(number1)
+  scope:
+    number1:
+      number:
+        1000000
+  expected: '1000000'
+
+- name: number variable at start
+  template: $(number1)suffix
+  scope:
+    number1:
+      number:
+        99999999
+  expected: 99999999suffix
+
+- name: number variable at end
+  template: prefix$(number1)
+  scope:
+    number1:
+      number:
+        2.3
+  expected: prefix2.3
+
+- name: number variable within
+  template: prefix$(number1)suffix
+  scope:
+    number1:
+      number:
+        2.3
+  expected: prefix2.3suffix
+
+# object
+- name: standalone object variable
+  template: $(object1)
+  scope:
+    object1:
+      object: { name: value }
+  expected: '{"name":"value"}'
+
+- name: object variable at start
+  template: $(object1)suffix
+  scope:
+    object1:
+      object: { name: value }
+  expected: '{"name":"value"}suffix'
+
+- name: object variable at end
+  template: prefix$(object1)
+  scope:
+    object1:
+      object: { name: value }
+  expected: 'prefix{"name":"value"}'
+
+- name: object variable within
+  template: prefix$(object1)suffix
+  scope:
+    object1:
+      object: { name: value }
+  expected: 'prefix{"name":"value"}suffix'
+
+# string
+- name: standalone string variable
+  template: $(string1)
+  scope:
+    string1:
+      string:
+        value1
+  expected: value1
+
+- name: string variable at start
+  template: $(string1)suffix
+  scope:
+    string1:
+      string:
+        value1
+  expected: value1suffix
+
+- name: string variable at end
+  template: prefix$(string1)
+  scope:
+    string1:
+      string:
+        value1
+  expected: prefixvalue1
+
+- name: string variable within
+  template: prefix$(string1)suffix
+  scope:
+    string1:
+      string:
+        value1
+  expected: prefixvalue1suffix
