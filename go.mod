@@ -9,7 +9,7 @@ require (
 	github.com/containers/image/v5 v5.17.0
 	github.com/dgraph-io/badger/v4 v4.1.0
 	github.com/docker/distribution v2.8.2+incompatible
-	github.com/docker/docker v23.0.5+incompatible
+	github.com/docker/docker v24.0.9+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.12.0
 	github.com/ghodss/yaml v1.0.0
