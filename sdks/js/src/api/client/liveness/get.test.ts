@@ -11,10 +11,10 @@ describe('livenessGet', () => {
     it('makes expected http request', async () => {
         /* arrange */
         const scope = nock(providedNetRef)
-            .log(console.log)
+            
             .get(
                 `/liveness`)
-            .reply('200')
+            .reply(200)
 
         /* act */
         await objectUnderTest(
@@ -30,10 +30,10 @@ describe('livenessGet', () => {
             const expectedErrMsg = 'dummyErrorMsg'
 
             nock(providedNetRef)
-                .log(console.log)
+                
                 .get(
                     `/liveness`)
-                .reply('300', expectedErrMsg)
+                .reply(300, expectedErrMsg)
 
             /* act */
             let actualErr: null | Error = null
@@ -53,10 +53,10 @@ describe('livenessGet', () => {
         it('returns expected result', async () => {
             /* arrange */
             nock(providedNetRef)
-                .log(console.log)
+                
                 .get(
                     `/liveness`)
-                .reply('200')
+                .reply(200)
 
             /* act */
             const actualResponse = await objectUnderTest(

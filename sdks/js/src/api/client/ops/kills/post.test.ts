@@ -14,11 +14,11 @@ describe('opKill', () => {
     const providedOpId = 'providedOpId'
 
     const scope = nock(providedNetRef)
-      .log(console.log)
+      
       .post('/ops/kills', JSON.stringify({
         opId: providedOpId
       }))
-      .reply('200', {})
+      .reply(200, {})
 
     /* act */
     await objectUnderTest(
@@ -35,10 +35,10 @@ describe('opKill', () => {
       const expectedErrMsg = 'dummyErrorMsg'
 
       nock(providedNetRef)
-        .log(console.log)
+        
         .post(
           `/ops/kills`)
-        .reply('300', expectedErrMsg)
+        .reply(300, expectedErrMsg)
 
       /* act */
       let actualErr: null| Error = null
@@ -63,9 +63,9 @@ describe('opKill', () => {
       }
 
       nock(providedNetRef)
-        .log(console.log)
+        
         .post('/ops/kills')
-        .reply('204')
+        .reply(204)
 
       /* act */
       const actualResult = await objectUnderTest(
