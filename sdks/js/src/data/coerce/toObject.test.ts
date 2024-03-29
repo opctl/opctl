@@ -224,7 +224,7 @@ describe('toObject', () => {
           providedValue
         ))
           .rejects
-          .toThrow(`unable to coerce string to object; error was Unexpected token o in JSON at position 1`)
+          .toThrow(`unable to coerce string to object; error was Unexpected token 'o', \"notValidJsonObject\" is not valid JSON`)
       })
     })
   })
