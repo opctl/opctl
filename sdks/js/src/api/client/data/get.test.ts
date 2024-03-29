@@ -14,10 +14,10 @@ describe('dataGet', () => {
         const providedDataRef = '//dummyDataRef'
 
         const scope = nock(providedNetRef)
-            .log(console.log)
+            
             .get(
                 `/data/${encodeURIComponent(providedDataRef)}`)
-            .reply('200')
+            .reply(200)
 
         /* act */
         await objectUnderTest(
@@ -35,10 +35,10 @@ describe('dataGet', () => {
             const expectedErrMsg = 'dummyErrorMsg'
 
             nock(providedNetRef)
-                .log(console.log)
+                
                 .get(
                     `/data/${encodeURIComponent(providedDataRef)}`)
-                .reply('300', expectedErrMsg)
+                .reply(300, expectedErrMsg)
 
             /* act */
             let actualErr: null|Error = null
@@ -63,7 +63,7 @@ describe('dataGet', () => {
             const expectedContent = 'dummyContent'
 
             nock(providedNetRef)
-                .log(console.log)
+                
                 .get(
                     `/data/${encodeURIComponent(providedDataRef)}`, () => {
                         let stream = new Duplex()
@@ -71,7 +71,7 @@ describe('dataGet', () => {
                         stream.push(null)
                         return stream
                     })
-                .reply('200', expectedContent)
+                .reply(200, expectedContent)
 
             /* act */
             const actualContent = await objectUnderTest(

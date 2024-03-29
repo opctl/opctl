@@ -20,7 +20,7 @@ describe('opStart', () => {
     }
 
     const scope = nock(providedNetRef)
-      .log(console.log)
+      
       .post(
         '/ops/starts',
         JSON.stringify({
@@ -28,7 +28,7 @@ describe('opStart', () => {
           op: providedOp
         })
       )
-      .reply('200')
+      .reply(200)
 
     /* act */
     await objectUnderTest(
@@ -46,10 +46,10 @@ describe('opStart', () => {
       const expectedErrMsg = 'dummyErrorMsg'
 
       nock(providedNetRef)
-        .log(console.log)
+        
         .post(
           `/ops/starts`)
-        .reply('300', expectedErrMsg)
+        .reply(300, expectedErrMsg)
 
       /* act */
       let actualErr: null | Error = null
@@ -79,9 +79,9 @@ describe('opStart', () => {
       const expectedOpId = 'dummyOpId'
 
       nock(providedNetRef)
-        .log(console.log)
+        
         .post('/ops/starts')
-        .reply('200', expectedOpId)
+        .reply(200, expectedOpId)
 
       /* act */
       const actualOpId = await objectUnderTest(
