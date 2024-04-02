@@ -11,7 +11,7 @@ run:
         ref: $(../init)
     - container:
         image: { ref: 'node:20-alpine' }
-        cmd: [npm, test]
+        cmd: [yarn, test]
         envVars:
           CI: true
         dirs:
