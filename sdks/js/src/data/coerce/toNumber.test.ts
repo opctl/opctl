@@ -197,7 +197,7 @@ describe('toNumber', () => {
           providedValue
         ))
           .rejects
-          .toThrow(`unable to coerce string to number; error was Unexpected token o in JSON at position 1`)
+          .toThrow(`unable to coerce string to number; error was Unexpected token 'o', \"notValidJsonNumber\" is not valid JSON`)
       })
     })
   })

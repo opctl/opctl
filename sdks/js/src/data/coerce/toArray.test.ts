@@ -185,7 +185,7 @@ describe('toArray', () => {
           providedValue
         ))
           .rejects
-          .toThrow(`unable to coerce string to array; error was Unexpected token o in JSON at position 1`)
+          .toThrow(`unable to coerce string to array; error was Unexpected token 'o', \"notValidJSONArray\" is not valid JSON`)
       })
     })
   })
