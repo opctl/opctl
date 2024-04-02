@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Object from './Object'
+import _Object from './Object'
 jest.mock('@opctl/sdk/src/api/client', () => ({
   dataGet: async () => ({
     json: async () => ''
@@ -15,7 +15,7 @@ describe('Object', () => {
 
     /* act/assert */
     ReactDOM.render(
-      <Object
+      <_Object
         apiBaseUrl=''
         name=''
         opRef=''
