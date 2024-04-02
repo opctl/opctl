@@ -109,86 +109,84 @@ export default class Op extends PureComponent<Props, State> {
 
   render() {
     const component = (
-      <Fragment>
-        <HotKeys
-          keyMap={{
-            del: 'del',
-            kill: 'ctrl+c',
-            start: 'enter'
-          }}
+      <HotKeys
+        keyMap={{
+          del: 'del',
+          kill: 'ctrl+c',
+          start: 'enter'
+        }}
+        style={{
+          height: '100%'
+        }}
+        handlers={{
+          ...this.props.onDelete && {
+            del: this.props.onDelete
+          },
+          kill: this.props.onKill,
+          start: this.props.onStart
+        }}
+      >
+        <Header
+          isFullScreen={this.state.isFullScreen}
+          isKillable={this.state.isKillable}
+          isStartable={this.props.isStartable}
+          onToggleFullScreen={() => this.setState(prevState => ({ isFullScreen: !prevState.isFullScreen }))}
+          onStart={this.props.onStart}
+          onKill={this.props.onKill}
+          onDelete={this.props.onDelete}
+          name={this.state.name}
+        />
+        <ul
+          className='nav nav-tabs'
           style={{
-            height: '100%'
-          }}
-          handlers={{
-            ...this.props.onDelete && {
-              del: this.props.onDelete
-            },
-            kill: this.props.onKill,
-            start: this.props.onStart
+            height: '37px'
           }}
         >
-          <Header
-            isFullScreen={this.state.isFullScreen}
-            isKillable={this.state.isKillable}
-            isStartable={this.props.isStartable}
-            onToggleFullScreen={() => this.setState(prevState => ({ isFullScreen: !prevState.isFullScreen }))}
-            onStart={this.props.onStart}
-            onKill={this.props.onKill}
-            onDelete={this.props.onDelete}
-            name={this.state.name}
-          />
-          <ul
-            className='nav nav-tabs'
-            style={{
-              height: '37px'
-            }}
-          >
-            <li className='nav-item'>
-              <span
-                style={{
-                  cursor: 'pointer'
-                }}
-                onClick={() => this.setState({ isConfigurationVisible: true })}
-                className={`nav-link ${this.state.isConfigurationVisible && 'active'}`}
-              >
-                Configuration
-            </span>
-            </li>
-            <li className='nav-item'>
-              <span
-                style={{
-                  cursor: 'pointer'
-                }}
-                onClick={() => this.setState({ isConfigurationVisible: false })}
-                className={`nav-link ${!this.state.isConfigurationVisible && 'active'}`}
-              >
-                Logs
-            </span>
-            </li>
-          </ul>
-          <div
-            style={{
-              height: 'calc(100% - 74px)'
-            }}
-          >
-            {
-              this.state.isConfigurationVisible
-                ? <Inputs
-                  inputs={this.props.op.inputs}
-                  onInvalid={this.handleInvalidArg}
-                  onValid={this.handleValidArg}
-                  opRef={this.props.opRef}
-                  scope={this.args}
-                />
-                : <EventStream
-                  eventStore={this.props.eventStore}
-                  key={this.props.opId}
-                  filter={{ roots: [this.props.opId] }}
-                />
-            }
-          </div>
-        </HotKeys>
-      </Fragment>
+          <li className='nav-item'>
+            <span
+              style={{
+                cursor: 'pointer'
+              }}
+              onClick={() => this.setState({ isConfigurationVisible: true })}
+              className={`nav-link ${this.state.isConfigurationVisible && 'active'}`}
+            >
+              Configuration
+          </span>
+          </li>
+          <li className='nav-item'>
+            <span
+              style={{
+                cursor: 'pointer'
+              }}
+              onClick={() => this.setState({ isConfigurationVisible: false })}
+              className={`nav-link ${!this.state.isConfigurationVisible && 'active'}`}
+            >
+              Logs
+          </span>
+          </li>
+        </ul>
+        <div
+          style={{
+            height: 'calc(100% - 74px)'
+          }}
+        >
+          {
+            this.state.isConfigurationVisible
+              ? <Inputs
+                inputs={this.props.op.inputs}
+                onInvalid={this.handleInvalidArg}
+                onValid={this.handleValidArg}
+                opRef={this.props.opRef}
+                scope={this.args}
+              />
+              : <EventStream
+                eventStore={this.props.eventStore}
+                key={this.props.opId}
+                filter={{ roots: [this.props.opId] }}
+              />
+          }
+        </div>
+      </HotKeys>
     )
 
     if (this.state.isFullScreen) {
