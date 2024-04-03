@@ -47,11 +47,6 @@ module.exports = {
               type: "link",
               label: "Js",
               href: "https://github.com/opctl/opctl/tree/main/sdks/js"
-            },
-            {
-              type: "link",
-              label: "React",
-              href: "https://github.com/opctl/opctl/tree/main/sdks/react"
             }
           ]
         }

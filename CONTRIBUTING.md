@@ -30,13 +30,6 @@ SDK (written in typescript) for integrating with opctl from javascript/typescrip
 
 used by:
 - [webapp](webapp)
-- [sdks/react](sdks/react)
-
-## [sdks/react](sdks/react)
-SDK (written in typescript) for integrating with opctl from react.
-
-used by:
-- [webapp](webapp)
 
 ## [test-suite](test-suite)
 End to end tests, maintained as ops, for testing opctl and SDKs.

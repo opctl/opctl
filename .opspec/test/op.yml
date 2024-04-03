@@ -40,9 +40,6 @@ run:
     # js SDK tests
     - op:
         ref: $(../../sdks/js/.opspec/test)
-    # react SDK tests
-    - op:
-        ref: $(../../sdks/react/.opspec/test)
     # check go fmt has been run
     - container:
         cmd:
