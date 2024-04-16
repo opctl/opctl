@@ -21,7 +21,7 @@ import (
 )
 
 var _ = Context("RunContainer", func() {
-	closedContainerWaitOkBodyChan := make(chan container.ContainerWaitOKBody)
+	closedContainerWaitOkBodyChan := make(chan container.WaitResponse)
 	close(closedContainerWaitOkBodyChan)
 
 	dbDir, err := os.MkdirTemp("", "")

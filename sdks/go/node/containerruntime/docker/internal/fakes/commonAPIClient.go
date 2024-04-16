@@ -138,12 +138,12 @@ type FakeCommonAPIClient struct {
 	configUpdateReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ContainerAttachStub        func(context.Context, string, types.ContainerAttachOptions) (types.HijackedResponse, error)
+	ContainerAttachStub        func(context.Context, string, container.AttachOptions) (types.HijackedResponse, error)
 	containerAttachMutex       sync.RWMutex
 	containerAttachArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ContainerAttachOptions
+		arg3 container.AttachOptions
 	}
 	containerAttachReturns struct {
 		result1 types.HijackedResponse
@@ -153,12 +153,12 @@ type FakeCommonAPIClient struct {
 		result1 types.HijackedResponse
 		result2 error
 	}
-	ContainerCommitStub        func(context.Context, string, types.ContainerCommitOptions) (types.IDResponse, error)
+	ContainerCommitStub        func(context.Context, string, container.CommitOptions) (types.IDResponse, error)
 	containerCommitMutex       sync.RWMutex
 	containerCommitArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ContainerCommitOptions
+		arg3 container.CommitOptions
 	}
 	containerCommitReturns struct {
 		result1 types.IDResponse
@@ -186,18 +186,18 @@ type FakeCommonAPIClient struct {
 		result1 container.CreateResponse
 		result2 error
 	}
-	ContainerDiffStub        func(context.Context, string) ([]container.ContainerChangeResponseItem, error)
+	ContainerDiffStub        func(context.Context, string) ([]container.FilesystemChange, error)
 	containerDiffMutex       sync.RWMutex
 	containerDiffArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
 	}
 	containerDiffReturns struct {
-		result1 []container.ContainerChangeResponseItem
+		result1 []container.FilesystemChange
 		result2 error
 	}
 	containerDiffReturnsOnCall map[int]struct {
-		result1 []container.ContainerChangeResponseItem
+		result1 []container.FilesystemChange
 		result2 error
 	}
 	ContainerExecAttachStub        func(context.Context, string, types.ExecStartCheck) (types.HijackedResponse, error)
@@ -1237,11 +1237,11 @@ type FakeCommonAPIClient struct {
 		result1 io.ReadCloser
 		result2 error
 	}
-	RegistryLoginStub        func(context.Context, types.AuthConfig) (registry.AuthenticateOKBody, error)
+	RegistryLoginStub        func(context.Context, registry.AuthConfig) (registry.AuthenticateOKBody, error)
 	registryLoginMutex       sync.RWMutex
 	registryLoginArgsForCall []struct {
 		arg1 context.Context
-		arg2 types.AuthConfig
+		arg2 registry.AuthConfig
 	}
 	registryLoginReturns struct {
 		result1 registry.AuthenticateOKBody
@@ -1603,11 +1603,11 @@ type FakeCommonAPIClient struct {
 		result2 []byte
 		result3 error
 	}
-	VolumeListStub        func(context.Context, filters.Args) (volume.ListResponse, error)
+	VolumeListStub        func(context.Context, volume.ListOptions) (volume.ListResponse, error)
 	volumeListMutex       sync.RWMutex
 	volumeListArgsForCall []struct {
 		arg1 context.Context
-		arg2 filters.Args
+		arg2 volume.ListOptions
 	}
 	volumeListReturns struct {
 		result1 volume.ListResponse
@@ -2210,13 +2210,13 @@ func (fake *FakeCommonAPIClient) ConfigUpdateReturnsOnCall(i int, result1 error)
 	}{result1}
 }
 
-func (fake *FakeCommonAPIClient) ContainerAttach(arg1 context.Context, arg2 string, arg3 types.ContainerAttachOptions) (types.HijackedResponse, error) {
+func (fake *FakeCommonAPIClient) ContainerAttach(arg1 context.Context, arg2 string, arg3 container.AttachOptions) (types.HijackedResponse, error) {
 	fake.containerAttachMutex.Lock()
 	ret, specificReturn := fake.containerAttachReturnsOnCall[len(fake.containerAttachArgsForCall)]
 	fake.containerAttachArgsForCall = append(fake.containerAttachArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ContainerAttachOptions
+		arg3 container.AttachOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ContainerAttach", []interface{}{arg1, arg2, arg3})
 	fake.containerAttachMutex.Unlock()
@@ -2236,13 +2236,13 @@ func (fake *FakeCommonAPIClient) ContainerAttachCallCount() int {
 	return len(fake.containerAttachArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerAttachCalls(stub func(context.Context, string, types.ContainerAttachOptions) (types.HijackedResponse, error)) {
+func (fake *FakeCommonAPIClient) ContainerAttachCalls(stub func(context.Context, string, container.AttachOptions) (types.HijackedResponse, error)) {
 	fake.containerAttachMutex.Lock()
 	defer fake.containerAttachMutex.Unlock()
 	fake.ContainerAttachStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ContainerAttachArgsForCall(i int) (context.Context, string, types.ContainerAttachOptions) {
+func (fake *FakeCommonAPIClient) ContainerAttachArgsForCall(i int) (context.Context, string, container.AttachOptions) {
 	fake.containerAttachMutex.RLock()
 	defer fake.containerAttachMutex.RUnlock()
 	argsForCall := fake.containerAttachArgsForCall[i]
@@ -2275,13 +2275,13 @@ func (fake *FakeCommonAPIClient) ContainerAttachReturnsOnCall(i int, result1 typ
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerCommit(arg1 context.Context, arg2 string, arg3 types.ContainerCommitOptions) (types.IDResponse, error) {
+func (fake *FakeCommonAPIClient) ContainerCommit(arg1 context.Context, arg2 string, arg3 container.CommitOptions) (types.IDResponse, error) {
 	fake.containerCommitMutex.Lock()
 	ret, specificReturn := fake.containerCommitReturnsOnCall[len(fake.containerCommitArgsForCall)]
 	fake.containerCommitArgsForCall = append(fake.containerCommitArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ContainerCommitOptions
+		arg3 container.CommitOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ContainerCommit", []interface{}{arg1, arg2, arg3})
 	fake.containerCommitMutex.Unlock()
@@ -2301,13 +2301,13 @@ func (fake *FakeCommonAPIClient) ContainerCommitCallCount() int {
 	return len(fake.containerCommitArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerCommitCalls(stub func(context.Context, string, types.ContainerCommitOptions) (types.IDResponse, error)) {
+func (fake *FakeCommonAPIClient) ContainerCommitCalls(stub func(context.Context, string, container.CommitOptions) (types.IDResponse, error)) {
 	fake.containerCommitMutex.Lock()
 	defer fake.containerCommitMutex.Unlock()
 	fake.ContainerCommitStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ContainerCommitArgsForCall(i int) (context.Context, string, types.ContainerCommitOptions) {
+func (fake *FakeCommonAPIClient) ContainerCommitArgsForCall(i int) (context.Context, string, container.CommitOptions) {
 	fake.containerCommitMutex.RLock()
 	defer fake.containerCommitMutex.RUnlock()
 	argsForCall := fake.containerCommitArgsForCall[i]
@@ -2408,7 +2408,7 @@ func (fake *FakeCommonAPIClient) ContainerCreateReturnsOnCall(i int, result1 con
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerDiff(arg1 context.Context, arg2 string) ([]container.ContainerChangeResponseItem, error) {
+func (fake *FakeCommonAPIClient) ContainerDiff(arg1 context.Context, arg2 string) ([]container.FilesystemChange, error) {
 	fake.containerDiffMutex.Lock()
 	ret, specificReturn := fake.containerDiffReturnsOnCall[len(fake.containerDiffArgsForCall)]
 	fake.containerDiffArgsForCall = append(fake.containerDiffArgsForCall, struct {
@@ -2433,7 +2433,7 @@ func (fake *FakeCommonAPIClient) ContainerDiffCallCount() int {
 	return len(fake.containerDiffArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerDiffCalls(stub func(context.Context, string) ([]container.ContainerChangeResponseItem, error)) {
+func (fake *FakeCommonAPIClient) ContainerDiffCalls(stub func(context.Context, string) ([]container.FilesystemChange, error)) {
 	fake.containerDiffMutex.Lock()
 	defer fake.containerDiffMutex.Unlock()
 	fake.ContainerDiffStub = stub
@@ -2446,28 +2446,28 @@ func (fake *FakeCommonAPIClient) ContainerDiffArgsForCall(i int) (context.Contex
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCommonAPIClient) ContainerDiffReturns(result1 []container.ContainerChangeResponseItem, result2 error) {
+func (fake *FakeCommonAPIClient) ContainerDiffReturns(result1 []container.FilesystemChange, result2 error) {
 	fake.containerDiffMutex.Lock()
 	defer fake.containerDiffMutex.Unlock()
 	fake.ContainerDiffStub = nil
 	fake.containerDiffReturns = struct {
-		result1 []container.ContainerChangeResponseItem
+		result1 []container.FilesystemChange
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerDiffReturnsOnCall(i int, result1 []container.ContainerChangeResponseItem, result2 error) {
+func (fake *FakeCommonAPIClient) ContainerDiffReturnsOnCall(i int, result1 []container.FilesystemChange, result2 error) {
 	fake.containerDiffMutex.Lock()
 	defer fake.containerDiffMutex.Unlock()
 	fake.ContainerDiffStub = nil
 	if fake.containerDiffReturnsOnCall == nil {
 		fake.containerDiffReturnsOnCall = make(map[int]struct {
-			result1 []container.ContainerChangeResponseItem
+			result1 []container.FilesystemChange
 			result2 error
 		})
 	}
 	fake.containerDiffReturnsOnCall[i] = struct {
-		result1 []container.ContainerChangeResponseItem
+		result1 []container.FilesystemChange
 		result2 error
 	}{result1, result2}
 }
@@ -7185,12 +7185,12 @@ func (fake *FakeCommonAPIClient) PluginUpgradeReturnsOnCall(i int, result1 io.Re
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) RegistryLogin(arg1 context.Context, arg2 types.AuthConfig) (registry.AuthenticateOKBody, error) {
+func (fake *FakeCommonAPIClient) RegistryLogin(arg1 context.Context, arg2 registry.AuthConfig) (registry.AuthenticateOKBody, error) {
 	fake.registryLoginMutex.Lock()
 	ret, specificReturn := fake.registryLoginReturnsOnCall[len(fake.registryLoginArgsForCall)]
 	fake.registryLoginArgsForCall = append(fake.registryLoginArgsForCall, struct {
 		arg1 context.Context
-		arg2 types.AuthConfig
+		arg2 registry.AuthConfig
 	}{arg1, arg2})
 	fake.recordInvocation("RegistryLogin", []interface{}{arg1, arg2})
 	fake.registryLoginMutex.Unlock()
@@ -7210,13 +7210,13 @@ func (fake *FakeCommonAPIClient) RegistryLoginCallCount() int {
 	return len(fake.registryLoginArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) RegistryLoginCalls(stub func(context.Context, types.AuthConfig) (registry.AuthenticateOKBody, error)) {
+func (fake *FakeCommonAPIClient) RegistryLoginCalls(stub func(context.Context, registry.AuthConfig) (registry.AuthenticateOKBody, error)) {
 	fake.registryLoginMutex.Lock()
 	defer fake.registryLoginMutex.Unlock()
 	fake.RegistryLoginStub = stub
 }
 
-func (fake *FakeCommonAPIClient) RegistryLoginArgsForCall(i int) (context.Context, types.AuthConfig) {
+func (fake *FakeCommonAPIClient) RegistryLoginArgsForCall(i int) (context.Context, registry.AuthConfig) {
 	fake.registryLoginMutex.RLock()
 	defer fake.registryLoginMutex.RUnlock()
 	argsForCall := fake.registryLoginArgsForCall[i]
@@ -8848,12 +8848,12 @@ func (fake *FakeCommonAPIClient) VolumeInspectWithRawReturnsOnCall(i int, result
 	}{result1, result2, result3}
 }
 
-func (fake *FakeCommonAPIClient) VolumeList(arg1 context.Context, arg2 filters.Args) (volume.ListResponse, error) {
+func (fake *FakeCommonAPIClient) VolumeList(arg1 context.Context, arg2 volume.ListOptions) (volume.ListResponse, error) {
 	fake.volumeListMutex.Lock()
 	ret, specificReturn := fake.volumeListReturnsOnCall[len(fake.volumeListArgsForCall)]
 	fake.volumeListArgsForCall = append(fake.volumeListArgsForCall, struct {
 		arg1 context.Context
-		arg2 filters.Args
+		arg2 volume.ListOptions
 	}{arg1, arg2})
 	fake.recordInvocation("VolumeList", []interface{}{arg1, arg2})
 	fake.volumeListMutex.Unlock()
@@ -8873,13 +8873,13 @@ func (fake *FakeCommonAPIClient) VolumeListCallCount() int {
 	return len(fake.volumeListArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) VolumeListCalls(stub func(context.Context, filters.Args) (volume.ListResponse, error)) {
+func (fake *FakeCommonAPIClient) VolumeListCalls(stub func(context.Context, volume.ListOptions) (volume.ListResponse, error)) {
 	fake.volumeListMutex.Lock()
 	defer fake.volumeListMutex.Unlock()
 	fake.VolumeListStub = stub
 }
 
-func (fake *FakeCommonAPIClient) VolumeListArgsForCall(i int) (context.Context, filters.Args) {
+func (fake *FakeCommonAPIClient) VolumeListArgsForCall(i int) (context.Context, volume.ListOptions) {
 	fake.volumeListMutex.RLock()
 	defer fake.volumeListMutex.RUnlock()
 	argsForCall := fake.volumeListArgsForCall[i]

@@ -3,7 +3,8 @@ package docker
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/docker/docker/api/types"
+
+	"github.com/docker/docker/api/types/registry"
 )
 
 func constructRegistryAuth(
@@ -13,7 +14,7 @@ func constructRegistryAuth(
 
 	// EncodeAuthToBase64 serializes the auth configuration as JSON base64 payload
 	buf, err := json.Marshal(
-		types.AuthConfig{
+		registry.AuthConfig{
 			Username: identity,
 			Password: secret,
 		})
