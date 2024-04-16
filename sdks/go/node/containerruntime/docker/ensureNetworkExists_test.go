@@ -153,6 +153,4 @@ type dockerNotFoundError struct {
 	error
 }
 
-func (dockerNotFoundError) NotFound() bool {
-	return true
-}
+func (dockerNotFoundError) NotFound() {}

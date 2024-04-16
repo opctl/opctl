@@ -107,7 +107,7 @@ var _ = Context("RunContainer", func() {
 			)
 
 			/* assert */
-			Expect(actualErr).To(MatchError("Invalid containerPort: *"))
+			Expect(actualErr).To(MatchError("invalid containerPort: *"))
 		})
 	})
 	Context("constructPortBindings doesn't err", func() {
