@@ -19,19 +19,19 @@ inputs:
       description: Home directory of caller; used to access go modules
 run:
   serial:
-    # - op:
-    #     ref: $(../../webapp/.opspec/compile)
-    # - op:
-    #     ref: $(../../cli/.opspec/compile)
-    #     inputs:
-    #       HOME:
-    #       version:
-    # - op:
-    #     ref: $(../test)
-    #     inputs:
-    #       dockerSocket:
-    #       HOME:
-    #       version:
+    - op:
+        ref: $(../../webapp/.opspec/compile)
+    - op:
+        ref: $(../../cli/.opspec/compile)
+        inputs:
+          HOME:
+          version:
+    - op:
+        ref: $(../test)
+        inputs:
+          dockerSocket:
+          HOME:
+          version:
     # report codecoverage
     - serial:        
         - op:
@@ -48,7 +48,7 @@ run:
               - -ce
               - |
                 apk add -U curl
-
+              
                 if [[ `uname -m` == "aarch64" ]]; then
                   curl -Os https://uploader.codecov.io/latest/aarch64/codecov
                 else
