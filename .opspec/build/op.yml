@@ -19,19 +19,19 @@ inputs:
       description: Home directory of caller; used to access go modules
 run:
   serial:
-    - op:
-        ref: $(../../webapp/.opspec/compile)
-    - op:
-        ref: $(../../cli/.opspec/compile)
-        inputs:
-          HOME:
-          version:
-    - op:
-        ref: $(../test)
-        inputs:
-          dockerSocket:
-          HOME:
-          version:
+    # - op:
+    #     ref: $(../../webapp/.opspec/compile)
+    # - op:
+    #     ref: $(../../cli/.opspec/compile)
+    #     inputs:
+    #       HOME:
+    #       version:
+    # - op:
+    #     ref: $(../test)
+    #     inputs:
+    #       dockerSocket:
+    #       HOME:
+    #       version:
     # report codecoverage
     - serial:        
         - op:
@@ -48,7 +48,14 @@ run:
               - -ce
               - |
                 apk add -U curl
-                curl -Os https://uploader.codecov.io/latest/aarch64/codecov
+                
+                # the backticks around "uname -m" below are less than ideal, but using $(...) broke the op so I don't
+                # think there's another option
+                if [[ `uname -m` == "aarch64" ]]; then
+                  curl -Os https://uploader.codecov.io/latest/aarch64/codecov
+                else
+                  curl -Os https://uploader.codecov.io/latest/alpine/codecov
+                fi
 
                 chmod +x codecov
                 ./codecov
