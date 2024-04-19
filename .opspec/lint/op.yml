@@ -1,0 +1,13 @@
+description: lints CHANGELOG.md
+name: lint
+run:
+  container:
+    image:
+      ref: ghcr.io/igorshubovych/markdownlint-cli:v0.40.0
+    cmd:
+      - sh
+      - -ce
+      - markdownlint --config .markdownlint/.markdownlint.json CHANGELOG.md --rules .markdownlint/customRule.js
+    dirs:
+      /src: $(../..)
+    workDir: /src

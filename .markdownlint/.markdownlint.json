@@ -1,0 +1,10 @@
+{
+  "default": true,
+  "MD024": { "siblings_only": true },
+  "MD013": {
+    "//": "Might be nice to decrease this value over time",
+    "line_length": 172,
+    "tables": false
+  },
+  "MD033": { "allowed_elements": ["datatype"] }
+}

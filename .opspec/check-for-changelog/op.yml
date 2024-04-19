@@ -1,0 +1,17 @@
+description: checks if CHANGELOG.md is included in the diff between this branch and main
+name: check-for-changelog
+run:
+  container:
+    image:
+      ref: bitnami/git:2.45.0
+    cmd:
+      - /bin/sh
+      - -c
+      - ./.opspec/check-for-changelog/check.sh
+    workDir: /src
+    dirs:
+      /src: $(../..)
+    files:
+      /root/.gitconfig: |
+        [safe]
+          directory = /src

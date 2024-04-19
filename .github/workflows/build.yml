@@ -7,6 +7,29 @@ on:
     branches: [ main ]
 
 jobs:
+  check-for-changelog:
+    name: Check for CHANGELOG.md
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Install Opctl
+      run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+    - name: Check for CHANGELOG.md
+      run: opctl run check-for-changelog
+
+  lint-changelog:
+    name: lint-changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install Opctl
+        run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+      - name: Run Markdownlint
+        run: opctl run lint
 
   build:
     name: Build

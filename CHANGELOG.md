@@ -24,7 +24,7 @@ accordance with
 
 ### Added
 
-- Automatic GPU detection/passthrough for docker runtime 
+- Automatic GPU detection/passthrough for docker runtime
 
 ### Fixed
 
@@ -197,7 +197,7 @@ accordance with
 
 ## 0.1.33 - 2020-04-20
 
-### Fixed 
+### Fixed
 
 - [Nonexistent sub dirs bound to containers aren't sync'd](https://github.com/opctl/opctl/issues/725)
 - [image.ref with multi-variable templated string not working since v0.1.28](https://github.com/opctl/opctl/issues/722)
@@ -447,7 +447,6 @@ accordance with
 - [Param defaults w/ values equal to type default are not defaulted](https://github.com/opctl/opctl/issues/185)
 - [stdOut/stdErr output race condition](https://github.com/opctl/opctl/issues/174)
 - [Unable to run ops w/ containers if using docker 4 windows](https://github.com/opctl/opctl/issues/200)
-
 
 ## 0.1.18 - 2017-03-28
 
