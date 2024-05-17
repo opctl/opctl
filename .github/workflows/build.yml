@@ -8,7 +8,8 @@ on:
 
 jobs:
   check-for-changelog:
-    name: Check for CHANGELOG.md
+    name: Check for CHANGELOG.md (PR)
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
     - name: Check out code
