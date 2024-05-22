@@ -15,9 +15,10 @@ inputs:
         required: [accessToken, username]
       description: configuration required to interact w/ github
   version:
-    string:
-      constraints: { format: semver }
-      description: version of opctl being released
+      string:
+        constraints:
+          format: semver
+        description: the version to release to GitHub
 run:
   serial:
     # create github release
@@ -27,6 +28,20 @@ run:
           dotGitDir: $(../../../.git)
         outputs:
           commit:
+    - container:
+        image:
+          ref: alpine
+        cmd:
+          - sh
+          - -c
+          - |
+            if echo $(version) | grep -q -E '[0-9]+.[0-9]+.[0-9]+-[A-Za-z0-9]{1,}'; then
+              echo -n true > /prerelease
+            else
+              echo -n false > /prerelease
+            fi
+        files:
+          /prerelease: $(prerelease)
     - op:
         ref: github.com/opspec-pkgs/github.release.create#2.0.0
         inputs:
@@ -37,6 +52,7 @@ run:
           repo: opctl
           tag: v$(version)
           name: v$(version)
+          isPrerelease: $(prerelease)
         outputs:
           id: $(releaseId)
     - parallelLoop:
