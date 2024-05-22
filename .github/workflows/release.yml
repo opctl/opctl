@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  create-draft-release:
+    name: Get Latest Version from CHANGELOG.md
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Install Opctl
+      run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+    - name: Get Latest Version from CHANGELOG.md
+      id: get_latest_version
+      run: |
+        echo $(opctl run get-latest-version)
+    # - name: Create Draft Release
+    #   id: create_draft_release
+    #   run: |
+    #     echo "Creating draft release..."
+    #     echo "${{ steps.get_latest_version.outputs.opctl_version }}"
+      

@@ -1,0 +1,17 @@
+description: parse latest version from CHANGELOG
+name: get-latest-version
+run:
+  container:
+    image:
+      ref: ubuntu:20.04
+    cmd:
+      - /bin/sh
+      - -c
+      - sed -rn 's/^## (0.1.*) - .*$/\1/p' CHANGELOG.md | head -n 1
+    workDir: /src
+    dirs:
+      /src: $(../..)
+    files:
+      /root/.gitconfig: |
+        [safe]
+          directory = /src
