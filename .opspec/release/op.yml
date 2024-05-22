@@ -25,10 +25,6 @@ inputs:
   HOME:
     dir:
       description: Home directory of caller; used to access go modules
-  version:
-    string:
-      constraints: { format: semver }
-      description: version of opctl being released
 run:
   serial:
     - op:
@@ -44,7 +40,7 @@ run:
     - container:
         image: { ref: alpine:3.20 }
         envVars:
-          version: $(version)
+          version: $(latestVersion)
         cmd:
           - sh
           - -c

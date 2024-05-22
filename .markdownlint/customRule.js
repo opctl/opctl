@@ -15,7 +15,7 @@ module.exports = {
           "lineNumber": heading.lineNumber,
           "detail": "First heading should be '# Change Log'.",
         });
-      } else if (heading.tag === "h2" && !/^## \d\.\d{1,9}\.\d{1,3} - \d{4}-\d{2}-\d{2}$/.test(heading.line)) {
+      } else if (heading.tag === "h2" && !/^## \d\.\d{1,9}\.\d{1,3}-?[A-Za-z0-9]{0,} - \d{4}-\d{2}-\d{2}$/.test(heading.line)) {
         // every second heading should be a version number, then a dash and a space, and then a date
         return onError({
           "lineNumber": heading.lineNumber,
