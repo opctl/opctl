@@ -20,10 +20,5 @@ jobs:
     - name: Get Latest Version from CHANGELOG.md
       id: get_latest_version
       run: |
-        echo $(opctl run get-latest-version)
-    # - name: Create Draft Release
-    #   id: create_draft_release
-    #   run: |
-    #     echo "Creating draft release..."
-    #     echo "${{ steps.get_latest_version.outputs.opctl_version }}"
+        opctl run release/to-github
       

@@ -1,0 +1,28 @@
+name: changelog/get-latest-version
+description: get latest version from CHANGELOG.md
+outputs:
+  latestVersion:
+    description: latest version from CHANGELOG.md
+    string:
+      constraints:
+        minLength: 0
+run:
+  container:
+    image:
+      ref: ubuntu:20.04
+    cmd:
+      - /bin/sh
+      - -c
+      - |
+        echo "getting latest version from Changelog"
+        sed -rn 's/^## ([0-9]+.[0-9]+.[0-9]+) - .*$/\1/p' CHANGELOG.md | head -n 1 | tr -d '\n' > /latestVersion
+        echo "latestVersion:"
+        cat /latestVersion
+    workDir: /src
+    dirs:
+      /src: $(../../..)
+    files:
+      /latestVersion: $(latestVersion)
+      /root/.gitconfig: |
+        [safe]
+          directory = /src

@@ -14,10 +14,6 @@ inputs:
             type: string
         required: [accessToken, username]
       description: configuration required to interact w/ github
-  version:
-    string:
-      constraints: { format: semver }
-      description: version of opctl being released
 run:
   serial:
     # create github release
@@ -28,6 +24,10 @@ run:
         outputs:
           commit:
     - op:
+        ref: ../../changelog/get-latest-version
+        outputs:
+          latestVersion:
+    - op:
         ref: github.com/opspec-pkgs/github.release.create#1.2.0
         inputs:
           commitish: $(commit)
@@ -35,8 +35,10 @@ run:
           loginUsername: $(github.username)
           owner: opctl
           repo: opctl
-          tag: v$(version)
-          name: v$(version)
+          tag: v$(latestVersion)
+          name: v$(latestVersion)
+          isDraft: true
+          isPreRelease: true
         outputs:
           id: $(releaseId)
     - parallelLoop:
