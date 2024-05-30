@@ -5,7 +5,9 @@ package git
 import (
 	"context"
 	"crypto/sha1"
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -54,9 +56,16 @@ func (gp _git) TryResolve(
 			if err == nil {
 				// complete clone found
 				return handle, nil
-			} else if !os.IsNotExist(err) {
+			} else if errors.Is(err, fs.ErrNotExist) {
+				parsedPkgRef, err := parseRef(dataRef)
+				if err != nil {
+					return nil, fmt.Errorf("invalid git ref: %w", err)
+				}
+
+				opPath := parsedPkgRef.ToPath(gp.basePath)
+
 				// incomplete clone; blow it away
-				if err := os.RemoveAll(repoPath); err != nil {
+				if err := os.RemoveAll(opPath); err != nil {
 					return nil, err
 				}
 			}
