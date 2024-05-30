@@ -28,7 +28,7 @@ run:
         outputs:
           latestVersion:
     - op:
-        ref: github.com/opspec-pkgs/github.release.create#1.2.0
+        ref: github.com/opspec-pkgs/github.release.create#2.0.0
         inputs:
           commitish: $(commit)
           loginPassword: $(github.accessToken)
@@ -38,7 +38,7 @@ run:
           tag: v$(latestVersion)
           name: v$(latestVersion)
           isDraft: true
-          isPreRelease: true
+          isPrerelease: true
         outputs:
           id: $(releaseId)
     - parallelLoop:

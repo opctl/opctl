@@ -6,7 +6,7 @@ accordance with
 
 ## 0.1.54 - 2024-05-23
 
-## Added
+### Added
 
 Create a prerelease whenever the CHANGELOG is changed on a merge to main
 
