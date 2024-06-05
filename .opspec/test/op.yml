@@ -7,11 +7,7 @@ inputs:
   HOME:
     dir:
       description: Home directory of caller; used to access go modules
-  version:
-    string:
-      default: 0.0.0
-      constraints:
-        format: semver
+
 run:
   parallel:
     # api tests

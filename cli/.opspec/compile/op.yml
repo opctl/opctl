@@ -3,7 +3,6 @@ name: compile
 inputs:
   version:
     string:
-      default: 0.0.1
       constraints:
         format: semver
   HOME:
