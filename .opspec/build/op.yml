@@ -30,7 +30,6 @@ run:
         inputs:
           dockerSocket:
           HOME:
-          version:
     # report codecoverage
     - serial:        
         - op:
