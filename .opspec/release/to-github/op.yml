@@ -17,6 +17,13 @@ inputs:
 run:
   serial:
     # create github release
+    - container:
+        image:
+          ref: alpine
+        cmd:
+          - sh
+          - -c
+          - echo $github
     - op:
         ref: github.com/opspec-pkgs/git.repo.resolve-commit#1.0.2
         inputs:
