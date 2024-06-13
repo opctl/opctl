@@ -59,7 +59,7 @@ jobs:
 
   create-draft-release:
     name: Create Draft Release
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: [build, lint-changelog]
     steps:
