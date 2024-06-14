@@ -41,21 +41,24 @@ inputs:
 run:
   serial:
     - op:
+        ref: $(../changelog/get-latest-version)
+        outputs:
+          latestVersion:
+    - op:
         ref: $(../build)
         inputs:
           dockerSocket:
           gitBranch:
           HOME:
-          version:
+          version: $(latestVersion)
     - parallel:
         - op:
-            ref: $(./to-docker)
+            ref: $(./to-ghcr)
             inputs:
-              dockerPassword:
-              dockerUsername:
-              version:
+              github:
+              version: $(latestVersion)
         - op:
             ref: $(./to-github)
             inputs:
               github:
-              version:
+              version: $(latestVersion)

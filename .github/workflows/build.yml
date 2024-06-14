@@ -19,7 +19,7 @@ jobs:
     - name: Install Opctl
       run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
     - name: Check for CHANGELOG.md
-      run: opctl run check-for-changelog
+      run: opctl run changelog/find-in-diff
 
   lint-changelog:
     name: lint-changelog
@@ -30,7 +30,7 @@ jobs:
       - name: Install Opctl
         run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
       - name: Run Markdownlint
-        run: opctl run lint
+        run: opctl run changelog/lint
 
   build:
     name: Build
