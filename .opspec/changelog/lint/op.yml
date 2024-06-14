@@ -9,5 +9,5 @@ run:
       - -ce
       - markdownlint --config .markdownlint/.markdownlint.json CHANGELOG.md --rules .markdownlint/customRule.js
     dirs:
-      /src: $(../..)
+      /src: $(../../..)
     workDir: /src
