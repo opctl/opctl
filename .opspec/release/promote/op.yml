@@ -1,0 +1,40 @@
+name: release/promote
+description: Promote a draft release to a public release
+inputs:
+  github:
+    description: configuration required to interact w/ github
+    object:
+      constraints:
+        properties:
+          accessToken:
+            description: github access token
+          username:
+            description: github username
+run:
+  serial:
+  - op:
+      ref: $(../../changelog/get-latest-version)
+      outputs:
+        latestVersion:
+  - container:
+      image:
+        ref: alpine:3.20
+      envVars:
+        GITHUB_TOKEN: $(github.accessToken)
+        GITHUB_USERNAME: $(github.username)
+        VERSION: $(latestVersion)
+      files:
+        /patch-release.sh:
+      dirs:
+        /src: $(../../..)
+      workDir: /src
+      cmd:
+      - sh
+      - -c
+      - /patch-release.sh
+  - op:
+      ref: $(../to-docker)
+      inputs:
+        version: $(latestVersion)
+        dockerUsername:
+        dockerPassword:

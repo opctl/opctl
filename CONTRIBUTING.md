@@ -82,3 +82,6 @@ Ops are run in a "node" running as an external process, which means debugging th
 ## Tests
 
 This project uses the [Ginkgo](https://github.com/onsi/ginkgo) test framework, which means some IDE's go tooling won't support normal methods of running tests. Run the VSCode "Run and debug this test suite" run configuration while viewing a test file to run the tests attached to the debugger.
+
+## Creating a new Release
+Read more in [RELEASING.md](RELEASING.md).
