@@ -7,10 +7,10 @@ run:
     cmd:
       - /bin/sh
       - -c
-      - ./.opspec/check-for-changelog/check.sh
+      - ./.opspec/changelog/find-in-diff/check.sh
     workDir: /src
     dirs:
-      /src: $(../..)
+      /src: $(../../..)
     files:
       /root/.gitconfig: |
         [safe]

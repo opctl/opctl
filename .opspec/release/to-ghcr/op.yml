@@ -1,27 +1,31 @@
 name: to-docker
 description: releases opctl to [docker hub](https://hub.docker.com/r/opctl/opctl/)
 inputs:
-  dockerPassword:
-    string:
-      constraints: { minLength: 1 }
-      description: password for docker registry
-      isSecret: true
-  dockerUsername:
-    string:
-      constraints: { minLength: 1 }
-      description: username for docker registry
+  github:
+    object:
+      constraints:
+        properties:
+          accessToken:
+            minLength: 1
+            type: string
+            writeOnly: true
+          username:
+            minLength: 1
+            type: string
+        required: [accessToken, username]
+      description: configuration required to interact w/ github
   version:
     string:
       constraints: { format: semver }
-      description: version of opctl being released
+      description: version being published
 run:
   serial:
     - op:
         ref: github.com/opspec-pkgs/base64.encode#1.1.0
         inputs:
-          rawValue: $(dockerUsername):$(dockerPassword)
+          rawValue: $(github.username):$(github.accessToken)
         outputs:
-          encodedValue: $(b64DockerAuth)
+          encodedValue: $(b64GithubAuth)
     - parallelLoop:
         range:
           - dind
@@ -43,7 +47,7 @@ run:
                 --local dockerfile=/
                 --progress plain
                 --opt platform=linux/amd64,linux/arm64
-                --output type=image,name=docker.io/opctl/opctl:$(version)-$(imageVariant),push=true
+                --output type=image,name=ghcr.io/opctl/opctl:$(version)-$(imageVariant),push=true
             dirs:
               /buildCtx:
                 /entrypoint.sh:
@@ -56,5 +60,5 @@ run:
               /Dockerfile: $(./$(imageVariant).Dockerfile)
               /root/.docker/config.json:
                 auths:
-                  https://index.docker.io/v1/:
-                    auth: $(b64DockerAuth)
+                  https://ghcr.io/:
+                    auth: $(b64GithubAuth)
