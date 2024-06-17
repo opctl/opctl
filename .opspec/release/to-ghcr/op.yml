@@ -24,11 +24,8 @@ inputs:
     default: /var/run/docker.sock
 outputs:
   alreadyPublished:
-    number:
-      description: version being published
-      constraints:
-        minimum: 0
-        maximum: 1
+    boolean:
+      description: whether this version is already published
 run:
   serial:
     - op:
@@ -62,7 +59,7 @@ run:
           value: $(imageVariant)
         run:
           if:
-            - eq: [$alreadyPublished, 0]
+            - eq: [$alreadyPublished, false]
           container:
             image: 
               ref: moby/buildkit:latest
