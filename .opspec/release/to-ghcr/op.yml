@@ -18,6 +18,10 @@ inputs:
     string:
       constraints: { format: semver }
       description: version being published
+  dockerSocket:
+    socket:
+      description: docker socket
+    default: /var/run/docker.sock
 run:
   serial:
     - op:
@@ -26,6 +30,22 @@ run:
           rawValue: $(github.username):$(github.accessToken)
         outputs:
           encodedValue: $(b64GithubAuth)
+    - container:
+        image: { ref: alpine:3.20 }
+        envVars:
+          version: $(version)
+        cmd:
+          - sh
+          - -c
+          - /check.sh
+        sockets:
+          /var/run/docker.sock: $(dockerSocket)
+        files:
+          /check.sh:
+          /root/.docker/config.json:
+            auths:
+              ghcr.io:
+                auth: $(b64GithubAuth)
     - parallelLoop:
         range:
           - dind
