@@ -12,9 +12,6 @@ inputs:
     socket:
       description: docker socket
     default: /var/run/docker.sock
-  alreadyPublished:
-    boolean:
-      description: whether this version is already published
 run:
   parallelLoop:
     range:
@@ -23,8 +20,6 @@ run:
     vars:
       value: $(imageVariant)
     run:
-      if:
-        - eq: [$alreadyPublished, false]
       container:
         image: 
           ref: moby/buildkit:latest
@@ -49,7 +44,6 @@ run:
             /opctl-linux-arm64: 
               data: $(../../../cli/opctl-linux-arm64)
         files:
-          /alreadyPublished: $(alreadyPublished)
           /Dockerfile: $(./$(imageVariant).Dockerfile)
           /root/.docker/config.json:
             auths:

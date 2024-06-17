@@ -62,25 +62,25 @@ run:
             auths:
               ghcr.io:
                 auth: $(b64GithubAuth)
-    - op:
-        ref: $(../build)
-        inputs:
-          dockerSocket:
-          gitBranch:
-          HOME:
-          version: $(latestVersion)
-          alreadyPublished:
-    - parallel:
-        - op:
-            ref: $(./to-ghcr)
-            inputs:
-              version: $(latestVersion)
-              alreadyPublished: $(alreadyPublished)
-              encodedGithubAuth: $(b64GithubAuth)
-              dockerSocket:
-        - op:
-            ref: $(./to-github)
-            inputs:
-              github:
-              version: $(latestVersion)
-              alreadyPublished: $(alreadyPublished)
+    - if:
+        - eq: [$(alreadyPublished), false]
+      serial:
+      - op:
+          ref: $(../build)
+          inputs:
+            dockerSocket:
+            gitBranch:
+            HOME:
+            version: $(latestVersion)
+      - parallel:
+          - op:
+              ref: $(./to-ghcr)
+              inputs:
+                version: $(latestVersion)
+                encodedGithubAuth: $(b64GithubAuth)
+                dockerSocket:
+          - op:
+              ref: $(./to-github)
+              inputs:
+                github:
+                version: $(latestVersion)
