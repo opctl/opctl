@@ -1,19 +1,9 @@
 name: to-docker
 description: releases opctl to [docker hub](https://hub.docker.com/r/opctl/opctl/)
 inputs:
-  github:
-    object:
-      constraints:
-        properties:
-          accessToken:
-            minLength: 1
-            type: string
-            writeOnly: true
-          username:
-            minLength: 1
-            type: string
-        required: [accessToken, username]
-      description: configuration required to interact w/ github
+  encodedGithubAuth:
+    string:
+      description: github auth encoded as base64
   version:
     string:
       constraints: { format: semver }
@@ -22,71 +12,46 @@ inputs:
     socket:
       description: docker socket
     default: /var/run/docker.sock
-outputs:
   alreadyPublished:
     boolean:
       description: whether this version is already published
 run:
-  serial:
-    - op:
-        ref: github.com/opspec-pkgs/base64.encode#1.1.0
-        inputs:
-          rawValue: $(github.username):$(github.accessToken)
-        outputs:
-          encodedValue: $(b64GithubAuth)
-    - container:
-        image: { ref: alpine:3.20 }
-        envVars:
-          version: $(version)
+  parallelLoop:
+    range:
+      - dind
+      - dood
+    vars:
+      value: $(imageVariant)
+    run:
+      if:
+        - eq: [$alreadyPublished, false]
+      container:
+        image: 
+          ref: moby/buildkit:latest
         cmd:
           - sh
-          - -c
-          - /check.sh
-        sockets:
-          /var/run/docker.sock: $(dockerSocket)
+          - -ce
+          - >
+            buildctl-daemonless.sh
+            build
+            --frontend dockerfile.v0
+            --local context=/buildCtx
+            --local dockerfile=/
+            --progress plain
+            --opt platform=linux/amd64,linux/arm64
+            --output type=image,name=ghcr.io/opctl/opctl:$(version)-$(imageVariant),push=true
+        dirs:
+          /buildCtx:
+            /entrypoint.sh:
+              data: $(./entrypoint.sh)
+            /opctl-linux-amd64: 
+              data: $(../../../cli/opctl-linux-amd64)
+            /opctl-linux-arm64: 
+              data: $(../../../cli/opctl-linux-arm64)
         files:
           /alreadyPublished: $(alreadyPublished)
-          /check.sh:
+          /Dockerfile: $(./$(imageVariant).Dockerfile)
           /root/.docker/config.json:
             auths:
-              ghcr.io:
-                auth: $(b64GithubAuth)
-    - parallelLoop:
-        range:
-          - dind
-          - dood
-        vars:
-          value: $(imageVariant)
-        run:
-          if:
-            - eq: [$alreadyPublished, false]
-          container:
-            image: 
-              ref: moby/buildkit:latest
-            cmd:
-              - sh
-              - -ce
-              - >
-                buildctl-daemonless.sh
-                build
-                --frontend dockerfile.v0
-                --local context=/buildCtx
-                --local dockerfile=/
-                --progress plain
-                --opt platform=linux/amd64,linux/arm64
-                --output type=image,name=ghcr.io/opctl/opctl:$(version)-$(imageVariant),push=true
-            dirs:
-              /buildCtx:
-                /entrypoint.sh:
-                  data: $(./entrypoint.sh)
-                /opctl-linux-amd64: 
-                  data: $(../../../cli/opctl-linux-amd64)
-                /opctl-linux-arm64: 
-                  data: $(../../../cli/opctl-linux-arm64)
-            files:
-              /alreadyPublished: $(alreadyPublished)
-              /Dockerfile: $(./$(imageVariant).Dockerfile)
-              /root/.docker/config.json:
-                auths:
-                  https://ghcr.io/:
-                    auth: $(b64GithubAuth)
+              https://ghcr.io/:
+                auth: $(encodedGithubAuth)
