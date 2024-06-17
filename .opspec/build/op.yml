@@ -13,15 +13,10 @@ inputs:
     string:
       constraints:
         format: semver
-  alreadyPublished:
-    boolean:
-      description: whether this version is already published
   HOME:
     dir:
       description: Home directory of caller; used to access go modules
 run:
-  if:
-    - eq: [$(alreadyPublished), false]
   serial:
     - op:
         ref: $(../../webapp/.opspec/compile)
