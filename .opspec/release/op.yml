@@ -78,7 +78,6 @@ run:
               inputs:
                 version: $(latestVersion)
                 encodedGithubAuth: $(b64GithubAuth)
-                dockerSocket:
           - op:
               ref: $(./to-github)
               inputs:

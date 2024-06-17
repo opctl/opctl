@@ -8,10 +8,6 @@ inputs:
     string:
       constraints: { format: semver }
       description: version being published
-  dockerSocket:
-    socket:
-      description: docker socket
-    default: /var/run/docker.sock
 run:
   parallelLoop:
     range:
