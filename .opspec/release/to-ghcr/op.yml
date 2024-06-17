@@ -22,6 +22,13 @@ inputs:
     socket:
       description: docker socket
     default: /var/run/docker.sock
+outputs:
+  alreadyPublished:
+    number:
+      description: version being published
+      constraints:
+        minimum: 0
+        maximum: 1
 run:
   serial:
     - op:
@@ -41,6 +48,7 @@ run:
         sockets:
           /var/run/docker.sock: $(dockerSocket)
         files:
+          /alreadyPublished: $(alreadyPublished)
           /check.sh:
           /root/.docker/config.json:
             auths:
@@ -53,6 +61,8 @@ run:
         vars:
           value: $(imageVariant)
         run:
+          if:
+            - eq: [$alreadyPublished, 0]
           container:
             image: 
               ref: moby/buildkit:latest
@@ -77,6 +87,7 @@ run:
                 /opctl-linux-arm64: 
                   data: $(../../../cli/opctl-linux-arm64)
             files:
+              /alreadyPublished: $(alreadyPublished)
               /Dockerfile: $(./$(imageVariant).Dockerfile)
               /root/.docker/config.json:
                 auths:
