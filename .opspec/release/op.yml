@@ -1,18 +1,9 @@
 description: performs a release
 name: release
 inputs:
-  dockerPassword:
-    string:
-      constraints: { minLength: 1 }
-      description: password for docker registry
-      isSecret: true
   dockerSocket:
     socket:
-      description: docker socket to use as container runtime
-  dockerUsername:
-    string:
-      constraints: { minLength: 1 }
-      description: username for docker registry  
+      description: docker socket to use as container runtime 
   gitBranch:
     string:
       constraints: { minLength: 1 }
@@ -38,6 +29,10 @@ inputs:
     string:
       constraints: { format: semver }
       description: version of opctl being released
+outputs:
+  alreadyPublished:
+    boolean:
+      description: whether this version is already published
 run:
   serial:
     - op:
@@ -45,20 +40,47 @@ run:
         outputs:
           latestVersion:
     - op:
+        ref: github.com/opspec-pkgs/base64.encode#1.1.0
+        inputs:
+          rawValue: $(github.username):$(github.accessToken)
+        outputs:
+          encodedValue: $(b64GithubAuth)
+    - container:
+        image: { ref: alpine:3.20 }
+        envVars:
+          version: $(version)
+        cmd:
+          - sh
+          - -c
+          - /check.sh
+        sockets:
+          /var/run/docker.sock: $(dockerSocket)
+        files:
+          /alreadyPublished: $(alreadyPublished)
+          /check.sh:
+          /root/.docker/config.json:
+            auths:
+              ghcr.io:
+                auth: $(b64GithubAuth)
+    - op:
         ref: $(../build)
         inputs:
           dockerSocket:
           gitBranch:
           HOME:
           version: $(latestVersion)
+          alreadyPublished:
     - parallel:
         - op:
             ref: $(./to-ghcr)
             inputs:
-              github:
               version: $(latestVersion)
+              alreadyPublished: $(alreadyPublished)
+              encodedGithubAuth: $(b64GithubAuth)
+              dockerSocket:
         - op:
             ref: $(./to-github)
             inputs:
               github:
               version: $(latestVersion)
+              alreadyPublished: $(alreadyPublished)

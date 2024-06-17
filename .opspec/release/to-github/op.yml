@@ -18,7 +18,12 @@ inputs:
     string:
       constraints: { format: semver }
       description: version of opctl being released
+  alreadyPublished:
+    boolean:
+      description: whether this version is already published
 run:
+  if:
+    - eq: [$(alreadyPublished), false]
   serial:
     # create github release
     - op:
