@@ -21,6 +21,3 @@ run:
       /src: $(../../..)
     files:
       /latestVersion: $(latestVersion)
-      /root/.gitconfig: |
-        [safe]
-          directory = /src
