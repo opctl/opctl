@@ -10,5 +10,5 @@ if docker pull ghcr.io/opctl/opctl:${version}-dind; then
   echo true > /alreadyPublished
 else
   echo "Image does not exist, proceeding with release..."
-  echo false | tr -d '\n' > /alreadyPublished
+  echo false > /alreadyPublished
 fi
