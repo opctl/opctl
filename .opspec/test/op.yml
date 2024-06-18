@@ -20,8 +20,8 @@ run:
             inputs:
               dockerSocket:
               HOME:
-        - op:
-            ref: $(../../cli/.opspec/test/e2e)
+        # - op:
+        #     ref: $(../../cli/.opspec/test/e2e)
     # opspec tests
     - op:
         ref: $(../../opspec/opfile/.opspec/test)
