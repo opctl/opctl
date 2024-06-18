@@ -27,6 +27,16 @@ inputs:
       description: Home directory of caller; used to access go modules
 run:
   serial:
+    - container:
+      # echo github creds
+        image: { ref: bash:4.0-alpine3.20 }
+        envVars:
+          githubAccessToken: $(github.accessToken)
+          githubUsername: $(github.username)
+        cmd:
+          - bash
+          - -c
+          - echo "github: \$github"
     - op:
         ref: $(../changelog/get-latest-version)
         outputs:
