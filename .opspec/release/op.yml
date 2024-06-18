@@ -30,12 +30,14 @@ run:
     - container:
       # echo github creds
         image: { ref: bash:4.0-alpine3.20 }
+        files:
+          /test.sh:
         envVars:
-          github: $(github)
+          GH_TOKEN: $(github.accessToken)
         cmd:
           - bash
           - -c
-          - echo "github: \$github"
+          - /test.sh
     - op:
         ref: $(../changelog/get-latest-version)
         outputs:
