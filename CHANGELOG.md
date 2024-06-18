@@ -13,14 +13,15 @@ Create a prerelease whenever the CHANGELOG is changed on a merge to main. No app
 ## 0.1.53 - 2024-04-18
 
 ### Fixed
+
 - A few dependency updates
   - in the Golang SDK the only breaking upgrade is Docker v23 -> v25.0.3+incompatible
   - in the JS SDK nock (a devDependency) was updated from 9 -> 13.
   - in the JS SDK react-ace was updated from 9 -> 11
 
 ### Removed
-- Deleted the React SDK because it is unused
 
+- Deleted the React SDK because it is unused
 
 ## 0.1.52 - 2023-06-06
 
