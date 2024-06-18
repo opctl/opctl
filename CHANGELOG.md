@@ -8,7 +8,8 @@ accordance with
 
 ### Added
 
-Create a prerelease whenever the CHANGELOG is changed on a merge to main. No application code changes
+Create a prerelease whenever the CHANGELOG is changed on a merge to main. No
+application code changes
 
 ## 0.1.53 - 2024-04-18
 
