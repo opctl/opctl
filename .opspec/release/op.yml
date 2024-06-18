@@ -38,51 +38,51 @@ run:
           - bash
           - -c
           - /test.sh
-    - op:
-        ref: $(../changelog/get-latest-version)
-        outputs:
-          latestVersion:
-    - op:
-        ref: github.com/opspec-pkgs/base64.encode#1.1.0
-        inputs:
-          rawValue: $(github.username):$(github.accessToken)
-        outputs:
-          encodedValue: $(b64GithubAuth)
-    - container:
-        image: { ref: bash:4.0-alpine3.20 }
-        envVars:
-          version: $(latestVersion)
-        cmd:
-          - bash
-          - -c
-          - /check.sh
-        sockets:
-          /var/run/docker.sock: $(dockerSocket)
-        files:
-          /alreadyPublished: $(alreadyPublished)
-          /check.sh:
-          /root/.docker/config.json:
-            auths:
-              ghcr.io:
-                auth: $(b64GithubAuth)
-    - if:
-        - eq: [$(alreadyPublished), false]
-      serial:
-      - op:
-          ref: $(../build)
-          inputs:
-            dockerSocket:
-            gitBranch:
-            HOME:
-            version: $(latestVersion)
-      - parallel:
-          - op:
-              ref: $(./to-ghcr)
-              inputs:
-                version: $(latestVersion)
-                encodedGithubAuth: $(b64GithubAuth)
-          - op:
-              ref: $(./to-github)
-              inputs:
-                github:
-                version: $(latestVersion)
+    # - op:
+    #     ref: $(../changelog/get-latest-version)
+    #     outputs:
+    #       latestVersion:
+    # - op:
+    #     ref: github.com/opspec-pkgs/base64.encode#1.1.0
+    #     inputs:
+    #       rawValue: $(github.username):$(github.accessToken)
+    #     outputs:
+    #       encodedValue: $(b64GithubAuth)
+    # - container:
+    #     image: { ref: bash:4.0-alpine3.20 }
+    #     envVars:
+    #       version: $(latestVersion)
+    #     cmd:
+    #       - bash
+    #       - -c
+    #       - /check.sh
+    #     sockets:
+    #       /var/run/docker.sock: $(dockerSocket)
+    #     files:
+    #       /alreadyPublished: $(alreadyPublished)
+    #       /check.sh:
+    #       /root/.docker/config.json:
+    #         auths:
+    #           ghcr.io:
+    #             auth: $(b64GithubAuth)
+    # - if:
+    #     - eq: [$(alreadyPublished), false]
+    #   serial:
+    #   - op:
+    #       ref: $(../build)
+    #       inputs:
+    #         dockerSocket:
+    #         gitBranch:
+    #         HOME:
+    #         version: $(latestVersion)
+    #   - parallel:
+    #       - op:
+    #           ref: $(./to-ghcr)
+    #           inputs:
+    #             version: $(latestVersion)
+    #             encodedGithubAuth: $(b64GithubAuth)
+    #       - op:
+    #           ref: $(./to-github)
+    #           inputs:
+    #             github:
+    #             version: $(latestVersion)
