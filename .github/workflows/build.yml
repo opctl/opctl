@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install Opctl
         run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
       - name: Run Markdownlint
@@ -38,7 +38,7 @@ jobs:
     steps:
 
     - name: Check out code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Get branch name (push)
       if: github.event_name != 'pull_request'
@@ -59,7 +59,6 @@ jobs:
 
   create-release:
     name: Create Draft Release
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: [build, lint-changelog]
     steps:
@@ -69,5 +68,9 @@ jobs:
       run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
     - name: Create Release for latest version
       id: create_release
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_ACTOR: ${{ github.actor }}
       run: |
-        opctl run -a github='{"username":"${{ github.actor }}", "accessToken": "${{ github.token }}"}' release
+        opctl run release
