@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install Opctl
         run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
       - name: Run Markdownlint
@@ -38,7 +38,7 @@ jobs:
     steps:
 
     - name: Check out code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Get branch name (push)
       if: github.event_name != 'pull_request'
