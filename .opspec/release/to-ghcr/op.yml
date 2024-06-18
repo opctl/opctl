@@ -1,5 +1,5 @@
 name: to-ghcr
-description: releases opctl to [docker hub](https://hub.docker.com/r/opctl/opctl/)
+description: releases opctl to [Github Container Registry](https://ghcr.io/opctl/opctl/)
 inputs:
   encodedGithubAuth:
     string:
