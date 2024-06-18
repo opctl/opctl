@@ -9,69 +9,78 @@ inputs:
       constraints: { minLength: 1 }
       description: git branch the coverage should be associated with
       default: main
-  github:
-    object:
-      constraints:
-        properties:
-          accessToken:
-            minLength: 1
-            type: string
-            writeOnly: true
-          username:
-            minLength: 1
-            type: string
-        required: [accessToken, username]
-      description: configuration required to interact w/ github
+  GITHUB_TOKEN:
+    string:
+      constraints: { minLength: 1 }
+      description: github token
+  GITHUB_ACTOR:
+    string:
+      constraints: { minLength: 1 }
+      description: github actor
   HOME:
     dir:
       description: Home directory of caller; used to access go modules
 run:
   serial:
-    - op:
-        ref: $(../changelog/get-latest-version)
-        outputs:
-          latestVersion:
+    - container:
+      # echo github creds
+        image: { ref: bash:4.0-alpine3.20 }
+        files:
+          /check.sh:
+        envVars:
+          GH_TOKEN: $(GITHUB_TOKEN)
+          GITHUB_TOKEN: $(GITHUB_TOKEN)
+          GITHUB_ACTOR: $(GITHUB_ACTOR)
+          version: spalding-test01
+        cmd:
+          - bash
+          - -c
+          - /check.sh
+    # - op:
+    #     ref: $(../changelog/get-latest-version)
+    #     outputs:
+    #       latestVersion:
     - op:
         ref: github.com/opspec-pkgs/base64.encode#1.1.0
         inputs:
-          rawValue: $(github.username):$(github.accessToken)
+          rawValue: $(GITHUB_ACTOR):$(GITHUB_TOKEN)
         outputs:
           encodedValue: $(b64GithubAuth)
-    - container:
-        image: { ref: alpine:3.20 }
-        envVars:
-          version: $(latestVersion)
-        cmd:
-          - sh
-          - -c
-          - /check.sh
-        sockets:
-          /var/run/docker.sock: $(dockerSocket)
-        files:
-          /alreadyPublished: $(alreadyPublished)
-          /check.sh:
-          /root/.docker/config.json:
-            auths:
-              ghcr.io:
-                auth: $(b64GithubAuth)
+    # - container:
+    #     image: { ref: bash:4.0-alpine3.20 }
+    #     envVars:
+    #       version: $(latestVersion)
+    #     cmd:
+    #       - bash
+    #       - -c
+    #       - /check.sh
+    #     sockets:
+    #       /var/run/docker.sock: $(dockerSocket)
+    #     files:
+    #       /alreadyPublished: $(alreadyPublished)
+    #       /check.sh:
+    #       /root/.docker/config.json:
+    #         auths:
+    #           ghcr.io:
+    #             auth: $(b64GithubAuth)
     - if:
-        - eq: [$(alreadyPublished), false]
+        - eq: [false, false]
       serial:
-      - op:
-          ref: $(../build)
-          inputs:
-            dockerSocket:
-            gitBranch:
-            HOME:
-            version: $(latestVersion)
+    #   - op:
+    #       ref: $(../build)
+    #       inputs:
+    #         dockerSocket:
+    #         gitBranch:
+    #         HOME:
+    #         version: $(latestVersion)
       - parallel:
           - op:
               ref: $(./to-ghcr)
               inputs:
-                version: $(latestVersion)
+                version: spalding-test
                 encodedGithubAuth: $(b64GithubAuth)
-          - op:
-              ref: $(./to-github)
-              inputs:
-                github:
-                version: $(latestVersion)
+    #       - op:
+    #           ref: $(./to-github)
+    #           inputs:
+    #             github:
+    #             version: $(latestVersion)
