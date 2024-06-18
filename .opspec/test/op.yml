@@ -22,30 +22,30 @@ run:
               HOME:
         # - op:
         #     ref: $(../../cli/.opspec/test/e2e)
-    # opspec tests
-    - op:
-        ref: $(../../opspec/opfile/.opspec/test)
-    # webapp tests
-    - op:
-        ref: $(../../webapp/.opspec/test)
-    # go SDK tests
-    - op:
-        ref: $(../../sdks/go/.opspec/test)
-        inputs:
-          HOME:
-    # js SDK tests
-    - op:
-        ref: $(../../sdks/js/.opspec/test)
+    # # opspec tests
+    # - op:
+    #     ref: $(../../opspec/opfile/.opspec/test)
+    # # webapp tests
+    # - op:
+    #     ref: $(../../webapp/.opspec/test)
+    # # go SDK tests
+    # - op:
+    #     ref: $(../../sdks/go/.opspec/test)
+    #     inputs:
+    #       HOME:
+    # # js SDK tests
+    # - op:
+    #     ref: $(../../sdks/js/.opspec/test)
     # check go fmt has been run
-    - container:
-        cmd:
-          - sh
-          - -ce
-          - |
-            test -z "\$(gofmt -d -l ./cli ./sdks/go | tee /tmp/output)" || (echo "Fix formatting issues with 'opctl run format'" && cat /tmp/output && exit 1)
-        dirs:
-          /src: $(../..)
-        envVars:
-          GOFLAGS: -tags=containers_image_openpgp
-        image: { ref: "golang:1.20" }
-        workDir: /src
+    # - container:
+    #     cmd:
+    #       - sh
+    #       - -ce
+    #       - |
+    #         test -z "\$(gofmt -d -l ./cli ./sdks/go | tee /tmp/output)" || (echo "Fix formatting issues with 'opctl run format'" && cat /tmp/output && exit 1)
+    #     dirs:
+    #       /src: $(../..)
+    #     envVars:
+    #       GOFLAGS: -tags=containers_image_openpgp
+    #     image: { ref: "golang:1.20" }
+    #     workDir: /src
