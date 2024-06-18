@@ -31,8 +31,7 @@ run:
       # echo github creds
         image: { ref: bash:4.0-alpine3.20 }
         envVars:
-          githubAccessToken: $(github.accessToken)
-          githubUsername: $(github.username)
+          github: $(github)
         cmd:
           - bash
           - -c
