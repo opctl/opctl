@@ -54,13 +54,16 @@ jobs:
 
     - name: Install Opctl
       run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
-
+    
+      # the release op runs the build step, so only run build on PRs
     - run: opctl run -a gitBranch=${{ steps.branch_name_push.outputs.branch }}${{ steps.branch_name_pr.outputs.branch }} -a version=0.0.1 build
+      if: github.event_name == 'push' && github.ref != 'refs/heads/main'
 
   create-release:
     name: Create Draft Release
     runs-on: ubuntu-latest
-    needs: [build, lint-changelog]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [lint-changelog]
     steps:
     - name: Check out code
       uses: actions/checkout@v4
@@ -68,9 +71,5 @@ jobs:
       run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
     - name: Create Release for latest version
       id: create_release
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GITHUB_ACTOR: ${{ github.actor }}
       run: |
-        opctl run release
+        opctl run -a github='{"username":"${{ github.actor }}","accessToken":"${{ github.token }}"}' release

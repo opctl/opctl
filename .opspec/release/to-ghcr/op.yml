@@ -6,7 +6,7 @@ inputs:
       description: github auth encoded as base64
   version:
     string:
-      # constraints: { format: semver }
+      constraints: { format: semver }
       description: version being published
 run:
   parallelLoop:

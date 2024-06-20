@@ -12,5 +12,5 @@ coverage/
 .idea/
 
 ### build
-# /cli/opctl-*
+/cli/opctl-*
 /opctl-*
