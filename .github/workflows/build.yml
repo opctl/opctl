@@ -69,4 +69,4 @@ jobs:
     - name: Create Release for latest version
       id: create_release
       run: |
-        opctl run -a github='{"username":"${{ github.actor }}", "accessToken": $GITHUB_TOKEN}' release
+        opctl run -a GITHUB_TOKEN=$GITHUB_TOKEN -a GITHUB_ACTOR=$GITHUB_ACTOR release
