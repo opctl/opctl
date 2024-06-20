@@ -68,5 +68,8 @@ jobs:
       run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
     - name: Create Release for latest version
       id: create_release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_ACTOR: ${{ github.actor }}
       run: |
-        opctl run -a GITHUB_TOKEN=$GITHUB_TOKEN -a GITHUB_ACTOR=$GITHUB_ACTOR release
+        opctl run release
