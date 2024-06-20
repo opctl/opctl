@@ -28,6 +28,7 @@ run:
         files:
           /test.sh:
         envVars:
+          GH_TOKEN: $(GITHUB_TOKEN)
           GITHUB_TOKEN: $(GITHUB_TOKEN)
           GITHUB_ACTOR: $(GITHUB_ACTOR)
         cmd:
