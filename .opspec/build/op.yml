@@ -18,52 +18,46 @@ inputs:
       description: Home directory of caller; used to access go modules
 run:
   serial:
-    - container:
-        image: { ref: bash:4.0-alpine3.20 }
-        cmd:
-          - bash
-          - -c
-          - echo "hello"
-    # - op:
-    #     ref: $(../../webapp/.opspec/compile)
-    # - op:
-    #     ref: $(../../cli/.opspec/compile)
-    #     inputs:
-    #       HOME:
-    #       version:
-    # - op:
-    #     ref: $(../test)
-    #     inputs:
-    #       dockerSocket:
-    #       HOME:
-    # # report codecoverage
-    # - serial:        
-    #     - op:
-    #         ref: github.com/opspec-pkgs/git.resolve-commit#1.0.2
-    #         inputs:
-    #           dotGitDir: $(../../.git)
-    #         outputs:
-    #           commit: $(gitCommit)
-    #     - container:
-    #         image:
-    #           ref: alpine
-    #         cmd:
-    #           - sh
-    #           - -ce
-    #           - |
-    #             apk add -U curl
+    - op:
+        ref: $(../../webapp/.opspec/compile)
+    - op:
+        ref: $(../../cli/.opspec/compile)
+        inputs:
+          HOME:
+          version:
+    - op:
+        ref: $(../test)
+        inputs:
+          dockerSocket:
+          HOME:
+    # report codecoverage
+    - serial:        
+        - op:
+            ref: github.com/opspec-pkgs/git.resolve-commit#1.0.2
+            inputs:
+              dotGitDir: $(../../.git)
+            outputs:
+              commit: $(gitCommit)
+        - container:
+            image:
+              ref: alpine
+            cmd:
+              - sh
+              - -ce
+              - |
+                apk add -U curl
               
-    #             if [[ `uname -m` == "aarch64" ]]; then
-    #               curl -Os https://uploader.codecov.io/latest/aarch64/codecov
-    #             else
-    #               curl -Os https://uploader.codecov.io/latest/alpine/codecov
-    #             fi
+                if [[ `uname -m` == "aarch64" ]]; then
+                  curl -Os https://uploader.codecov.io/latest/aarch64/codecov
+                else
+                  curl -Os https://uploader.codecov.io/latest/alpine/codecov
+                fi
 
-    #             chmod +x codecov
-    #             ./codecov
-    #         dirs:
-    #           /src: $(../../)
-    #         envVars:
-    #           GIT_BRANCH: $(gitBranch)
-    #           GIT_COMMIT: $(gitCommit)
-    #         workDir: /src
+                chmod +x codecov
+                ./codecov
+            dirs:
+              /src: $(../../)
+            envVars:
+              GIT_BRANCH: $(gitBranch)
+              GIT_COMMIT: $(gitCommit)
+            workDir: /src

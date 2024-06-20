@@ -9,7 +9,7 @@ outputs:
 run:
   container:
     image:
-      ref: ubuntu:20.04
+      ref: alpine:3.20
     cmd:
       - /bin/sh
       - -c
