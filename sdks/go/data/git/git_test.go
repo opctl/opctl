@@ -187,5 +187,61 @@ var _ = Context("_git", func() {
 				Expect(actualResult2.Path()).To(Equal(expectedResult2.Path()))
 			})
 		})
+    Context("called in parallel w/ different sub ops", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				// some public repo that's relatively small
+				providedRef1 := "github.com/opspec-pkgs/_.op.create#3.3.1/.opspec/build"
+				providedRef2 := "github.com/opspec-pkgs/_.op.create#3.3.1/.opspec/test"
+
+				basePath, err := os.MkdirTemp("", "")
+				if err != nil {
+					panic(err)
+				}
+
+				objectUnderTest := New(basePath, nil)
+
+				expectedResult1 := newHandle(filepath.Join(basePath, providedRef1), providedRef1)
+				expectedResult2 := newHandle(filepath.Join(basePath, providedRef2), providedRef2)
+
+				var (
+					actualResult1,
+					actualResult2 model.DataHandle
+				)
+				var (
+					actualErr1,
+					actualErr2 error
+				)
+
+				/* act */
+				var wg sync.WaitGroup
+				wg.Add(1)
+				go func() {
+					actualResult1, actualErr1 = objectUnderTest.TryResolve(
+						context.Background(),
+						providedRef1,
+					)
+					wg.Done()
+				}()
+
+				wg.Add(1)
+				go func() {
+					actualResult2, actualErr2 = objectUnderTest.TryResolve(
+						context.Background(),
+						providedRef2,
+					)
+					wg.Done()
+				}()
+
+				wg.Wait()
+
+				/* assert */
+				Expect(actualErr1).To(BeNil())
+				Expect(actualResult1.Path()).To(Equal(expectedResult1.Path()))
+
+				Expect(actualErr2).To(BeNil())
+				Expect(actualResult2.Path()).To(Equal(expectedResult2.Path()))
+			})
+		})
 	})
 })
