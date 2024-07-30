@@ -24,12 +24,19 @@ run:
     run:
       container:
         cmd:
-          - go
-          - build
-          - -buildvcs=false
-          - -o
-          - cli/opctl-$(target.os)-$(target.arch)
-          - ./cli
+          - sh
+          - -ce
+          - |
+            go build -buildvcs=false -gcflags=all="-N -l" -o cli/opctl-$(target.os)-$(target.arch) ./cli 
+
+#        cmd:
+#          - go
+#          - build
+#          - -buildvcs=false
+#          - -gcflags="all=-N -l"
+#          - -o
+#          - cli/opctl-$(target.os)-$(target.arch)
+#          - ./cli
         dirs:
           /src: $(../../..)
           /go/pkg: $(HOME/go/pkg)
@@ -40,5 +47,5 @@ run:
           GOFLAGS:
             -tags=containers_image_openpgp
             -ldflags=-X=main.version=$(version)
-        image: { ref: 'golang:1.20' }
+        image: { ref: 'golang:1.22' }
         workDir: /src

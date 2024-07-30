@@ -1,6 +1,8 @@
 module github.com/opctl/opctl
 
-go 1.20
+go 1.22
+
+toolchain go1.22.3
 
 require (
 	github.com/abiosoft/colima v0.3.4
