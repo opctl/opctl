@@ -1,11 +1,12 @@
 package git
 
 import (
-	"errors"
 	"net/url"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 // parseRef string to object
@@ -20,7 +21,7 @@ func parseRef(
 	// fragment MAY be in format: SEM_VER/OP_PATH
 	version := strings.SplitN(refURI.Fragment, "/", 2)[0]
 	if version == "" {
-		return nil, errors.New("missing version")
+		return nil, model.ErrDataMissingVersion{}
 	}
 
 	return &ref{

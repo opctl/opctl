@@ -72,8 +72,10 @@ func (hdlr _handler) Handle(
 			} else if errors.Is(err, model.ErrDataProviderAuthorization{}) {
 				hdlr.setWWWAuthenticateHeader(dataRef, httpResp.Header())
 				status = http.StatusForbidden
-			} else if errors.Is(err, model.ErrDataRefResolution{}) {
+			} else if errors.Is(err, model.ErrDataRefResolution{}) || errors.Is(err, model.ErrDataUnableToResolve{}) {
 				status = http.StatusNotFound
+			} else if errors.Is(err, model.ErrDataMissingVersion{}) || errors.Is(err, model.ErrDataGitInvalidRef{}) {
+				status = http.StatusBadRequest
 			} else {
 				status = http.StatusInternalServerError
 			}

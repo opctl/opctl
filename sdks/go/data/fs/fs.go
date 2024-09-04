@@ -4,7 +4,6 @@ package fs
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -38,7 +37,7 @@ func (fp _fs) TryResolve(
 	if filepath.IsAbs(dataRef) {
 		if _, err := os.Stat(dataRef); err != nil {
 			if os.IsNotExist(err) {
-				return nil, fmt.Errorf("path %s not found", dataRef)
+				return nil, fmt.Errorf("%w: path \"%s\"", model.ErrDataRefResolution{}, dataRef)
 			}
 			return nil, err
 		}
@@ -48,7 +47,7 @@ func (fp _fs) TryResolve(
 	var aggregateErr aggregateError.ErrAggregate
 
 	if len(fp.basePaths) == 0 {
-		return nil, errors.New("skipped")
+		return nil, model.ErrDataSkipped{}
 	}
 
 	for _, basePath := range fp.basePaths {
@@ -60,7 +59,7 @@ func (fp _fs) TryResolve(
 			// don't return not found errors, instead continue checking other base paths
 			return nil, err
 		}
-		aggregateErr.AddError(fmt.Errorf("path %s not found", testPath))
+		aggregateErr.AddError(fmt.Errorf("%w: path \"%s\"", model.ErrDataRefResolution{}, testPath))
 	}
 
 	return nil, aggregateErr

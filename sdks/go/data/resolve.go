@@ -32,5 +32,5 @@ func Resolve(
 		}
 	}
 
-	return nil, fmt.Errorf("unable to resolve op '%s': %w", dataRef, agg)
+	return nil, fmt.Errorf("%w op \"%s\": %w", model.ErrDataUnableToResolve{}, dataRef, agg)
 }

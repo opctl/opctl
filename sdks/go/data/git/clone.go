@@ -29,7 +29,7 @@ func Clone(
 
 	parsedPkgRef, err := parseRef(dataRef)
 	if err != nil {
-		return fmt.Errorf("invalid git ref: %w", err)
+		return fmt.Errorf("%w: %w", model.ErrDataGitInvalidRef{}, err)
 	}
 
 	opPath := parsedPkgRef.ToPath(path)
@@ -54,7 +54,7 @@ func Clone(
 		cloneOptions,
 	); err != nil {
 		if _, ok := err.(git.NoMatchingRefSpecError); ok {
-			return fmt.Errorf("version \"%s\" not found", parsedPkgRef.Version)
+			return fmt.Errorf("%w: version \"%s\"", parsedPkgRef.Version, model.ErrDataRefResolution{})
 		}
 		if errors.Is(err, transport.ErrAuthenticationRequired) {
 			return model.ErrDataProviderAuthentication{}
