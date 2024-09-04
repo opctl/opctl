@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## 0.1.54 - 2024-09-04
+
+### Added
+
+- Fix long time to resolve non-existent op
+
 ## 0.1.54-pre - 2024-05-23
 
 ### Added
@@ -226,7 +232,7 @@ application code changes
 
 ### Added
 
-- [Prefix opctl managed container names with opctl_](https://github.com/opctl/opctl/issues/735)
+- [Prefix opctl managed container names with opctl\_](https://github.com/opctl/opctl/issues/735)
 
 ### Fixed
 
@@ -510,9 +516,9 @@ application code changes
 
 ```yaml
 paramName:
-      string:
-        description: ...
-        # and so on...
+  string:
+    description: ...
+    # and so on...
 ```
 
 ### Removed
@@ -545,7 +551,7 @@ paramName:
 
 ### Fixed
 
-- [Emitted ContainerStd*WrittenToEvent.Data Incomplete](https://github.com/opctl/opctl/issues/32)
+- [Emitted ContainerStd\*WrittenToEvent.Data Incomplete](https://github.com/opctl/opctl/issues/32)
 
 ## 0.1.8 - 2016-09-09
 
