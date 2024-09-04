@@ -32,7 +32,7 @@ func newCallGraphNode(call *model.Call, timestamp time.Time) *callGraphNode {
 	}
 }
 
-var errNotFoundInGraph = errors.New("not found in graph")
+var errNotFoundInGraph = fmt.Errorf("%w in graph", model.ErrDataRefResolution{})
 
 const skippedState = "skipped"
 
