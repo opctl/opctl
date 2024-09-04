@@ -54,7 +54,7 @@ func Clone(
 		cloneOptions,
 	); err != nil {
 		if _, ok := err.(git.NoMatchingRefSpecError); ok {
-			return fmt.Errorf("%w: version \"%s\"", parsedPkgRef.Version, model.ErrDataRefResolution{})
+			return fmt.Errorf("%w: version \"%s\"", model.ErrDataRefResolution{}, parsedPkgRef.Version)
 		}
 		if errors.Is(err, transport.ErrAuthenticationRequired) {
 			return model.ErrDataProviderAuthentication{}
