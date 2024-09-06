@@ -57,7 +57,7 @@ jobs:
     
       # the release op runs the build step, so only run build on PRs
     - run: opctl run -a gitBranch=${{ steps.branch_name_push.outputs.branch }}${{ steps.branch_name_pr.outputs.branch }} -a version=0.0.1 build
-      if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+      if: github.event_name == 'pull_request' && github.ref != 'refs/heads/main'
 
   create-release:
     name: Create Draft Release

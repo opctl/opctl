@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -31,8 +30,8 @@ var _ = Context("Resolve", func() {
 
 			/* assert */
 			var expected aggregateError.ErrAggregate
-			expected.AddError(fmt.Errorf("%s: %w", provider0.Label(), errors.New("skipped")))
-			Expect(actualErr).To(MatchError(fmt.Errorf("unable to resolve op '\\not/exist': %w", expected)))
+			expected.AddError(fmt.Errorf("%s: %w", provider0.Label(), model.ErrDataSkipped{}))
+			Expect(actualErr).To(MatchError(fmt.Errorf("%w op \"%s\": %w", model.ErrDataUnableToResolve{}, dataRef, expected)))
 		})
 	})
 	Context("providers[0].TryResolve doesn't err", func() {
