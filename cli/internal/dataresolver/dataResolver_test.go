@@ -92,10 +92,10 @@ var _ = Context("dataResolver", func() {
 
 					/* assert */
 					Expect(response).To(BeNil())
-					Expect(err).To(MatchError(`unable to resolve op 'dummyDataRef':` + " " + `
+					Expect(err).To(MatchError(`unable to resolve op "dummyDataRef":` + " " + `
 - filesystem:` + " " + `
-  - path /src/cli/internal/dataresolver/.opspec/dummyDataRef not found
-  - path /src/cli/internal/dataresolver/dummyDataRef not found
+  - not found: path "/src/cli/internal/dataresolver/.opspec/dummyDataRef"
+  - not found: path "/src/cli/internal/dataresolver/dummyDataRef"
 - opctl node: expectedErr`))
 				})
 			})

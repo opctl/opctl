@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## 0.1.55 - 2024-09-04
+
+### Added
+
+- Fix failing test from error formatting change
+
 ## 0.1.54 - 2024-09-04
 
 ### Added

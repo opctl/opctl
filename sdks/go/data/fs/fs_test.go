@@ -25,7 +25,7 @@ var _ = Context("_fs", func() {
 
 					/* assert */
 					Expect(actualHandle).To(BeNil())
-					Expect(actualError).To(MatchError("path /doesnt-exist not found"))
+					Expect(actualError).To(MatchError("not found: path \"/doesnt-exist\""))
 				})
 			})
 			Context("exists", func() {
