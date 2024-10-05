@@ -14,7 +14,7 @@ run:
         inputs:
           HOME:
     - container:
-        image: { ref: 'golang:1.20' }
+        image: { ref: 'golang:1.22' }
         cmd:
           - go
           - run
