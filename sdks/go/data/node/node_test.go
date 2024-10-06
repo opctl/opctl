@@ -39,7 +39,7 @@ var _ = Context("_node", func() {
 			actualContext,
 				actualReq := fakeCore.ListDescendantsArgsForCall(0)
 
-			Expect(actualContext).To(Equal(context.TODO()))
+			Expect(actualContext).To(Equal(context.Background()))
 			Expect(actualReq).To(Equal(model.ListDescendantsReq{
 				DataRef:   providedDataRef,
 				PullCreds: providedPullCreds,

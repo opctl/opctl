@@ -5,13 +5,16 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/appdataspec/sdk-golang/appdatapath"
 	mow "github.com/jawher/mow.cli"
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
+	mowclitypes "github.com/opctl/opctl/cli/internal/mowclitypes"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
+	"github.com/opctl/opctl/cli/internal/telemetry"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
 	"golang.org/x/term"
@@ -24,34 +27,11 @@ type cli interface {
 func newCli(
 	cliOutput clioutput.CliOutput,
 ) cli {
-
 	cli := mow.App(
 		"opctl",
 		"Opctl is a free and open source distributed operation control system.",
 	)
 	cli.Version("v version", version)
-
-	exitWith := func(successMessage string, err error) {
-		if err == nil {
-			if successMessage != "" {
-				cliOutput.Success(successMessage)
-			}
-			mow.Exit(0)
-		} else {
-			cliOutput.Error(err.Error())
-
-			if re, ok := err.(RunError); ok {
-				mow.Exit(re.ExitCode)
-			} else {
-				mow.Exit(1)
-			}
-		}
-	}
-
-	perUserAppDataPath, err := appdatapath.New().PerUser()
-	if err != nil {
-		exitWith("", err)
-	}
 
 	containerRuntime := cli.String(
 		mow.StringOpt{
@@ -62,6 +42,7 @@ func newCli(
 		},
 	)
 
+	perUserAppDataPath, perUserAppDataPathErr := appdatapath.New().PerUser()
 	dataDir := cli.String(
 		mow.StringOpt{
 			Desc:   "Path of dir used to store opctl data",
@@ -80,17 +61,58 @@ func newCli(
 		},
 	)
 
+	ctx, cancel := context.WithCancel(context.Background())
+	t, err := telemetry.Setup(ctx, *dataDir)
+	if err != nil {
+		cliOutput.Error(err.Error())
+	}
+
+	exitWith := func(successMessage string, err error) {
+		if t != nil {
+			t.Shutdown(ctx)
+		}
+
+		if err == nil {
+			if successMessage != "" {
+				cliOutput.Success(successMessage)
+			}
+			mow.Exit(0)
+		} else {
+			cliOutput.Error(err.Error())
+
+			if re, ok := err.(RunError); ok {
+				mow.Exit(re.ExitCode)
+			} else {
+				mow.Exit(1)
+			}
+		}
+	}
+
+	instrumentExitWithAction := func(name string, action func() (successMessage string, err error)) func() {
+		return func() {
+			start := time.Now()
+			telemetry.InstrumentCommandUsage(ctx, name)
+			successMessage, err := action()
+			if err != nil {
+				telemetry.InstrumentErrorMetrics(ctx, err)
+			}
+			telemetry.InstrumentExecutionTime(ctx, name, start)
+			exitWith(successMessage, err)
+		}
+	}
+
+	if perUserAppDataPathErr != nil {
+		exitWith("", perUserAppDataPathErr)
+	}
+
 	cliParamSatisfier := cliparamsatisfier.New(cliOutput)
 
 	noColor := cli.BoolOpt("nc no-color", false, "Disable output coloring")
-
 	cli.Before = func() {
 		if *noColor {
 			cliOutput.DisableColor()
 		}
 	}
-
-	ctx, cancel := context.WithCancel(context.Background())
 
 	cli.After = func() {
 		cancel()
@@ -104,44 +126,38 @@ func newCli(
 			username := addCmd.StringOpt("u username", "", "Username")
 			password := addCmd.StringOpt("p password", "", "Password")
 
-			addCmd.Action = func() {
-				exitWith(
-					"",
-					auth(
-						ctx,
-						local.NodeConfig{
-							ContainerRuntime: *containerRuntime,
-							DataDir:          *dataDir,
-							ListenAddress:    *listenAddress,
-						},
-						model.AddAuthReq{
-							Resources: *resources,
-							Creds: model.Creds{
-								Username: *username,
-								Password: *password,
-							},
-						},
-					),
-				)
-			}
-		})
-	})
-
-	cli.Command("events", "Stream events", func(eventsCmd *mow.Cmd) {
-		eventsCmd.Action = func() {
-			exitWith(
-				"",
-				events(
+			addCmd.Action = instrumentExitWithAction("auth.add", func() (string, error) {
+				return "", auth(
 					ctx,
-					cliOutput,
 					local.NodeConfig{
 						ContainerRuntime: *containerRuntime,
 						DataDir:          *dataDir,
 						ListenAddress:    *listenAddress,
 					},
-				),
+					model.AddAuthReq{
+						Resources: *resources,
+						Creds: model.Creds{
+							Username: *username,
+							Password: *password,
+						},
+					},
+				)
+			})
+		})
+	})
+
+	cli.Command("events", "Stream events", func(eventsCmd *mow.Cmd) {
+		eventsCmd.Action = instrumentExitWithAction("events", func() (string, error) {
+			return "", events(
+				ctx,
+				cliOutput,
+				local.NodeConfig{
+					ContainerRuntime: *containerRuntime,
+					DataDir:          *dataDir,
+					ListenAddress:    *listenAddress,
+				},
 			)
-		}
+		})
 	})
 
 	cli.Command("ls", "List operations", func(lsCmd *mow.Cmd) {
@@ -149,70 +165,58 @@ func newCli(
 		lsCmd.Spec = fmt.Sprintf("[%v]", dirRefArgName)
 		dirRef := lsCmd.StringArg(dirRefArgName, opspec.DotOpspecDirName, "Reference to dir ops will be listed from")
 
-		lsCmd.Action = func() {
-			exitWith(
-				"",
-				ls(
+		lsCmd.Action = instrumentExitWithAction("ls", func() (string, error) {
+			return "", ls(
+				ctx,
+				cliParamSatisfier,
+				local.NodeConfig{
+					ContainerRuntime: *containerRuntime,
+					DataDir:          *dataDir,
+					ListenAddress:    *listenAddress,
+				},
+				*dirRef,
+			)
+		})
+	})
+
+	cli.Command("node", "Manage nodes", func(nodeCmd *mow.Cmd) {
+		nodeCmd.Command("create", "Creates a node", func(createCmd *mow.Cmd) {
+			createCmd.Action = instrumentExitWithAction("node.create", func() (string, error) {
+				return "", nodeCreate(
 					ctx,
-					cliParamSatisfier,
 					local.NodeConfig{
 						ContainerRuntime: *containerRuntime,
 						DataDir:          *dataDir,
 						ListenAddress:    *listenAddress,
 					},
-					*dirRef,
-				),
-			)
-		}
-	})
-
-	cli.Command("node", "Manage nodes", func(nodeCmd *mow.Cmd) {
-		nodeCmd.Command("create", "Creates a node", func(createCmd *mow.Cmd) {
-			createCmd.Action = func() {
-				exitWith(
-					"",
-					nodeCreate(
-						ctx,
-						local.NodeConfig{
-							ContainerRuntime: *containerRuntime,
-							DataDir:          *dataDir,
-							ListenAddress:    *listenAddress,
-						},
-					),
 				)
-			}
+			})
 		})
 
 		nodeCmd.Command("delete", "Deletes a node. This is destructive! all node data including auth, caches, and operation state will be permanently removed.", func(deleteCmd *mow.Cmd) {
-			deleteCmd.Action = func() {
-				exitWith(
-					"",
-					nodeDelete(
-						ctx,
-						local.NodeConfig{
-							ContainerRuntime: *containerRuntime,
-							DataDir:          *dataDir,
-							ListenAddress:    *listenAddress,
-						},
-					),
+			deleteCmd.Action = instrumentExitWithAction("node.delete", func() (string, error) {
+				return "", nodeDelete(
+					ctx,
+					local.NodeConfig{
+						ContainerRuntime: *containerRuntime,
+						DataDir:          *dataDir,
+						ListenAddress:    *listenAddress,
+					},
 				)
-			}
+			})
 		})
 
 		nodeCmd.Command("kill", "Kills a node and any running operations. This is non destructive. All node data including auth, caches, and operation state will be retained.", func(killCmd *mow.Cmd) {
-			killCmd.Action = func() {
-				exitWith(
-					"",
-					nodeKill(
-						ctx,
-						local.NodeConfig{
-							ContainerRuntime: *containerRuntime,
-							DataDir:          *dataDir,
-							ListenAddress:    *listenAddress,
-						},
-					),
+			killCmd.Action = instrumentExitWithAction("node.kill", func() (string, error) {
+				return "", nodeKill(
+					ctx,
+					local.NodeConfig{
+						ContainerRuntime: *containerRuntime,
+						DataDir:          *dataDir,
+						ListenAddress:    *listenAddress,
+					},
 				)
-			}
+			})
 		})
 	})
 
@@ -243,16 +247,13 @@ func newCli(
 			description := createCmd.StringOpt("d description", "", "Op description")
 			name := createCmd.StringArg("NAME", "", "Op name")
 
-			createCmd.Action = func() {
-				exitWith(
-					"",
-					opspec.Create(
-						filepath.Join(*path, *name),
-						*name,
-						*description,
-					),
+			createCmd.Action = instrumentExitWithAction("op.create", func() (string, error) {
+				return "", opspec.Create(
+					filepath.Join(*path, *name),
+					*name,
+					*description,
 				)
-			}
+			})
 		})
 
 		opCmd.Command("install", "Install an op", func(installCmd *mow.Cmd) {
@@ -261,53 +262,44 @@ func newCli(
 			username := installCmd.StringOpt("u username", "", "Username used to auth w/ the pkg source")
 			password := installCmd.StringOpt("p password", "", "Password used to auth w/ the pkg source")
 
-			installCmd.Action = func() {
-				exitWith(
-					"",
-					opInstall(
-						ctx,
-						dataResolver,
-						*opRef,
-						*path,
-						&model.Creds{
-							Username: *username,
-							Password: *password,
-						},
-					),
+			installCmd.Action = instrumentExitWithAction("op.install", func() (string, error) {
+				return "", opInstall(
+					ctx,
+					dataResolver,
+					*opRef,
+					*path,
+					&model.Creds{
+						Username: *username,
+						Password: *password,
+					},
 				)
-			}
+			})
 		})
 
 		opCmd.Command("kill", "Kill an op", func(killCmd *mow.Cmd) {
 			opID := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
 
-			killCmd.Action = func() {
-				exitWith(
-					"",
-					node.KillOp(
-						ctx,
-						model.KillOpReq{
-							OpID:       *opID,
-							RootCallID: *opID,
-						},
-					),
+			killCmd.Action = instrumentExitWithAction("op.kill", func() (string, error) {
+				return "", node.KillOp(
+					ctx,
+					model.KillOpReq{
+						OpID:       *opID,
+						RootCallID: *opID,
+					},
 				)
-			}
+			})
 		})
 
 		opCmd.Command("validate", "Validate an op", func(validateCmd *mow.Cmd) {
 			opRef := validateCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
-			validateCmd.Action = func() {
-				exitWith(
-					fmt.Sprintf("%v is valid", *opRef),
-					opValidate(
-						ctx,
-						dataResolver,
-						*opRef,
-					),
+			validateCmd.Action = instrumentExitWithAction("op.validate", func() (string, error) {
+				return fmt.Sprintf("%v is valid", *opRef), opValidate(
+					ctx,
+					dataResolver,
+					*opRef,
 				)
-			}
+			})
 		})
 	})
 
@@ -317,39 +309,34 @@ func newCli(
 		noProgress := runCmd.BoolOpt("no-progress", !term.IsTerminal(int(os.Stdout.Fd())), "Disable live call graph for the op")
 		opRef := runCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
-		runCmd.Action = func() {
-			exitWith(
-				"",
-				run(
-					ctx,
-					cliOutput,
-					cliParamSatisfier,
-					local.NodeConfig{
-						ContainerRuntime: *containerRuntime,
-						DataDir:          *dataDir,
-						ListenAddress:    *listenAddress,
-					},
-					*args,
-					*argFile,
-					*opRef,
-					*noProgress,
-				),
+		runCmd.Action = instrumentExitWithAction("run", func() (string, error) {
+			return "", run(
+				ctx,
+				cliOutput,
+				cliParamSatisfier,
+				local.NodeConfig{
+					ContainerRuntime: *containerRuntime,
+					DataDir:          *dataDir,
+					ListenAddress:    *listenAddress,
+				},
+				*args,
+				*argFile,
+				*opRef,
+				*noProgress,
 			)
-		}
+		})
 	})
 
 	cli.Command("self-update", "Update opctl", func(selfUpdateCmd *mow.Cmd) {
-		selfUpdateCmd.Action = func() {
-			exitWith(
-				selfUpdate(
-					local.NodeConfig{
-						ContainerRuntime: *containerRuntime,
-						DataDir:          *dataDir,
-						ListenAddress:    *listenAddress,
-					},
-				),
+		selfUpdateCmd.Action = instrumentExitWithAction("self-update", func() (string, error) {
+			return selfUpdate(
+				local.NodeConfig{
+					ContainerRuntime: *containerRuntime,
+					DataDir:          *dataDir,
+					ListenAddress:    *listenAddress,
+				},
 			)
-		}
+		})
 	})
 
 	cli.Command("ui", "Open the opctl web UI and mount a reference.", func(uiCmd *mow.Cmd) {
@@ -357,22 +344,79 @@ func newCli(
 		uiCmd.Spec = fmt.Sprintf("[%v]", mountRefArgName)
 		mountRefArg := uiCmd.StringArg(mountRefArgName, ".", "Reference to mount (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 
-		uiCmd.Action = func() {
-			exitWith(
-				"Opctl web UI opened!",
-				ui(
-					ctx,
-					cliParamSatisfier,
-					local.NodeConfig{
-						ContainerRuntime: *containerRuntime,
-						DataDir:          *dataDir,
-						ListenAddress:    *listenAddress,
-					},
-					*listenAddress,
-					*mountRefArg,
-				),
+		uiCmd.Action = instrumentExitWithAction("ui", func() (string, error) {
+			return "Opctl web UI opened!", ui(
+				ctx,
+				cliParamSatisfier,
+				local.NodeConfig{
+					ContainerRuntime: *containerRuntime,
+					DataDir:          *dataDir,
+					ListenAddress:    *listenAddress,
+				},
+				*listenAddress,
+				*mountRefArg,
 			)
-		}
+		})
+	})
+
+	cli.Command("telemetry", "Manage telemetry configuration", func(telemetryCmd *mow.Cmd) {
+		telemetryCmd.Action = instrumentExitWithAction("telemetry", func() (string, error) {
+			return telemetryGet(ctx, cliOutput, *dataDir)
+		})
+
+		telemetryCmd.Command("set", "Set telemetry configuration", func(setCmd *mow.Cmd) {
+			setCmd.Spec = "[(-c=<collector> -e=<endpoint>)] [-i | -t | -m | -l]..."
+
+			config, err := telemetry.ReadConfigFile(*dataDir)
+			if err != nil {
+				exitWith("", err)
+				return
+			}
+
+			collector := mowclitypes.NewEnum(
+				config.Collector,
+				mowclitypes.EnumValue{
+					Value: telemetry.PromPushGatewayCollector,
+					Desc:  "Prometheus Pushgateway",
+				},
+			)
+			setCmd.Var(mow.VarOpt{
+				Name:   "c collector",
+				Desc:   "Telemetry collector",
+				Value:  collector,
+				EnvVar: telemetry.EnvVarOpctlTelemetryCollector,
+			})
+			endpoint := setCmd.String(mow.StringOpt{
+				Name:   "e endpoint",
+				Desc:   "Telemetry HTTP endpoint",
+				Value:  config.Endpoint,
+				EnvVar: telemetry.EnvVarOpctlTelemetryEndpoint,
+			})
+			pushInterval := setCmd.IntOpt("i push-interval", int(config.PushInterval/time.Second), "Interval (in seconds to push telemetry data")
+			tracesEnabled := setCmd.BoolOpt("t traces-enabled", config.TracesEnabled, "Enable traces")
+			metricsEnabled := setCmd.BoolOpt("m metrics-enabled", config.MetricsEnabled, "Enable metrics")
+			logsEnabled := setCmd.BoolOpt("l logs-enabled", config.LogsEnabled, "Enable logs")
+
+			setCmd.Action = instrumentExitWithAction("telemetry.set", func() (string, error) {
+				return telemetrySet(
+					ctx,
+					config,
+					collector.Value,
+					*endpoint,
+					*dataDir,
+					*pushInterval,
+					*tracesEnabled,
+					*metricsEnabled,
+					*logsEnabled,
+				)
+			})
+		})
+
+		telemetryCmd.Command("push", "Manually push collected telemetry data", func(pushCmd *mow.Cmd) {
+			pushCmd.Action = instrumentExitWithAction("telemetry.push", func() (string, error) {
+				return "Pushed telemetry data!", telemetryPush(t, *dataDir)
+			})
+		})
 	})
 
 	return cli
