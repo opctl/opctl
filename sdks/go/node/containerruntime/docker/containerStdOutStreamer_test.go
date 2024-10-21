@@ -5,7 +5,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/opctl/opctl/sdks/go/node/containerruntime/docker/internal/fakes"
@@ -27,7 +27,7 @@ var _ = Context("containerStdOutStreamer", func() {
 				dockerClient: fakeDockerClient,
 			}
 
-			expectedOptions := types.ContainerLogsOptions{
+			expectedOptions := container.LogsOptions{
 				Follow:     true,
 				ShowStdout: true,
 			}
@@ -83,7 +83,7 @@ var _ = Context("containerStdOutStreamer", func() {
 				fakeDockerClient.ContainerLogsStub = func(
 					ctx context.Context,
 					container string,
-					options types.ContainerLogsOptions,
+					options container.LogsOptions,
 				) (io.ReadCloser, error) {
 					return io.NopCloser(bytes.NewBufferString(expectedLogs)), nil
 				}

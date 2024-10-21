@@ -11,7 +11,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/node/api/urltemplates"
 )
 
 var _ = Context("Liveness", func() {
@@ -22,7 +22,7 @@ var _ = Context("Liveness", func() {
 		providedCtx := context.TODO()
 
 		expectedReqURL := url.URL{}
-		expectedReqURL.Path = api.URLLiveness
+		expectedReqURL.Path = urltemplates.Liveness
 
 		expectedHTTPReq, _ := http.NewRequest(
 			"GET",

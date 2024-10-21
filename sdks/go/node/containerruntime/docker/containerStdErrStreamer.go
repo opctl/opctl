@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	dockerClientPkg "github.com/docker/docker/client"
 )
 
@@ -28,7 +28,7 @@ func (cses _containerStdErrStreamer) Stream(
 	src, err := cses.dockerClient.ContainerLogs(
 		ctx,
 		containerName,
-		types.ContainerLogsOptions{
+		container.LogsOptions{
 			Follow:     true,
 			ShowStderr: true,
 		},

@@ -8,12 +8,12 @@ import (
 	"github.com/dgraph-io/badger/v4"
 	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/containerruntime/fakes"
 	. "github.com/opctl/opctl/sdks/go/node/internal/fakes"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	"github.com/opctl/opctl/sdks/go/node/pubsub"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/pubsub/fakes"
 )
 
 var _ = Context("serialLoopCaller", func() {

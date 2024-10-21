@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
@@ -35,7 +34,7 @@ func isGpuSupported(
 	defer dockerClient.ContainerRemove(
 		context.Background(),
 		containerName,
-		types.ContainerRemoveOptions{
+		container.RemoveOptions{
 			RemoveVolumes: true,
 			Force:         true,
 		},
@@ -84,7 +83,7 @@ func isGpuSupported(
 	startErr := dockerClient.ContainerStart(
 		ctx,
 		createResponse.ID,
-		types.ContainerStartOptions{},
+		container.StartOptions{},
 	)
 	if startErr != nil {
 		return false, nil

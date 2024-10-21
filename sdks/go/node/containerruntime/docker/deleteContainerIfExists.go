@@ -3,7 +3,6 @@ package docker
 import (
 	"fmt"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"golang.org/x/net/context"
 )
@@ -27,7 +26,7 @@ func (ctp _containerRuntime) DeleteContainerIfExists(
 	err := ctp.dockerClient.ContainerRemove(
 		ctx,
 		getContainerName(containerID),
-		types.ContainerRemoveOptions{
+		container.RemoveOptions{
 			RemoveVolumes: true,
 			Force:         true,
 		},

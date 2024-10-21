@@ -1,4 +1,4 @@
-description: Initializes and starts the webapp with live-reload. Exposes it on localhost:80
+description: Initializes and starts the webapp with live-reload accessible at http://opctl-webapp
 name: dev
 run:
   serial:
@@ -9,6 +9,5 @@ run:
         image: { ref: 'node:20-alpine' }
         dirs:
           /src: $(../../..)
-        ports:
-          80: 80
+        name: opctl-webapp
         workDir: /src/webapp

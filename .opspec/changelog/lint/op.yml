@@ -3,7 +3,7 @@ name: lint
 run:
   container:
     image:
-      ref: ghcr.io/igorshubovych/markdownlint-cli:v0.40.0
+      ref: ghcr.io/igorshubovych/markdownlint-cli:v0.42.0
     cmd:
       - sh
       - -ce

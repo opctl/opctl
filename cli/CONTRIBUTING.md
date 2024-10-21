@@ -12,11 +12,6 @@ The [opctl webapp](../webapp/README.md) is statically embedded and hosted at run
 ## Build
 1. `opctl run compile` from this directory to compile and test the CLI. On success, `opctl-linux-amd64`, `opctl-darwin-amd64` will exist in this directory.
 
-## (Re)Vendor
-1. `go mod vendor` from this directory will (re)vendor all go dependencies.
-
-## Pull in local [go SDK](../sdks/go/README.md) changes
-1. same as [(Re)Vendor](#revendor).
 
 ## Test
 1. `opctl run test` from this directory to compile and test the CLI.

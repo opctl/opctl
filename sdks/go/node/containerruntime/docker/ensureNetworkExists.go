@@ -2,53 +2,38 @@ package docker
 
 import (
 	"fmt"
+	"strings"
+
+	"context"
 
 	"github.com/docker/docker/api/types"
 	dockerClientPkg "github.com/docker/docker/client"
-	"golang.org/x/net/context"
-	"golang.org/x/sync/singleflight"
+	"github.com/opctl/opctl/sdks/go/model"
 )
-
-// singleFlightGroup is used to ensure creates don't race across calls
-var createSingleFlightGroup singleflight.Group
 
 func ensureNetworkExists(
 	ctx context.Context,
 	dockerClient dockerClientPkg.CommonAPIClient,
-	networkID string,
+	imagePullCreds *model.Creds,
+	networkName string,
 ) error {
-
-	_, networkInspectErr := dockerClient.NetworkInspect(
+	// always attempt to create to avoid races
+	_, networkCreateErr := dockerClient.NetworkCreate(
 		ctx,
-		networkID,
-		types.NetworkInspectOptions{},
-	)
-	if networkInspectErr == nil {
-		// if network exists, we're done
-		return nil
-	}
-
-	if !dockerClientPkg.IsErrNotFound(networkInspectErr) {
-		return fmt.Errorf("unable to inspect network: %w", networkInspectErr)
-	}
-
-	// attempt to resolve within singleFlight.Group to ensure concurrent creates don't race
-	_, err, _ := createSingleFlightGroup.Do(
-		networkID,
-		func() (interface{}, error) {
-			return dockerClient.NetworkCreate(
-				ctx,
-				networkID,
-				types.NetworkCreate{
-					CheckDuplicate: true,
-					Attachable:     true,
-				},
-			)
+		networkName,
+		types.NetworkCreate{
+			CheckDuplicate: true,
+			Attachable:     true,
 		},
 	)
-	if err != nil {
-		return fmt.Errorf("unable to create network: %w", err)
+	// return errors not related to already existing...
+	if networkCreateErr != nil && !strings.Contains(networkCreateErr.Error(), "exists") {
+		return fmt.Errorf("unable to create network: %w", networkCreateErr)
 	}
 
-	return nil
+	return ensureNetworkAttached(
+		ctx,
+		dockerClient,
+		imagePullCreds,
+	)
 }

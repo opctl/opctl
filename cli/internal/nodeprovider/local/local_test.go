@@ -4,6 +4,7 @@ import (
 	"os"
 
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Context("New", func() {
@@ -15,8 +16,12 @@ var _ = Context("New", func() {
 		}
 
 		/* act */
-		New(NodeConfig{
+		actualNode, actualErr := New(NodeConfig{
 			DataDir: dataDir,
 		})
+
+		/* assert */
+		Expect(actualErr).To(BeNil())
+		Expect(actualNode).NotTo(BeNil())
 	})
 })

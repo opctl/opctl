@@ -12,7 +12,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/node/api/urltemplates"
 )
 
 var _ = Context("GetData", func() {
@@ -29,7 +29,7 @@ var _ = Context("GetData", func() {
 			},
 		}
 
-		path := strings.Replace(api.URLData_Ref, "{ref}", url.PathEscape(providedReq.DataRef), 1)
+		path := strings.Replace(urltemplates.Data_Ref, "{ref}", url.PathEscape(providedReq.DataRef), 1)
 
 		expectedReqURL, err := url.Parse(path)
 		if err != nil {

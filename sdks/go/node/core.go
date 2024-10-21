@@ -15,7 +15,7 @@ import (
 	"github.com/dgraph-io/badger/v4"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	"github.com/opctl/opctl/sdks/go/node/pubsub"
 )
 
 // New returns a new LocalCore initialized with the given options
@@ -24,6 +24,7 @@ func New(
 	containerRuntime containerruntime.ContainerRuntime,
 	dataDirPath string,
 ) Core {
+
 	eventDbPath := path.Join(dataDirPath, "dcg", "events")
 	err := os.MkdirAll(eventDbPath, 0700)
 	if err != nil {

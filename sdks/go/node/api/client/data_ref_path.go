@@ -7,7 +7,7 @@ import (
 
 	"github.com/jfbus/httprs"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/node/api/urltemplates"
 )
 
 func (c apiClient) GetData(
@@ -17,7 +17,7 @@ func (c apiClient) GetData(
 	model.ReadSeekCloser,
 	error,
 ) {
-	path := strings.Replace(api.URLData_Ref, "{ref}", url.PathEscape(req.DataRef), 1)
+	path := strings.Replace(urltemplates.Data_Ref, "{ref}", url.PathEscape(req.DataRef), 1)
 
 	httpResp, err := c.getWithAuth(ctx, path, req.PullCreds)
 	if err != nil {

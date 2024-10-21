@@ -14,6 +14,6 @@ run:
           - yarn && yarn run start
         dirs:
           /src: $(../..)
+        # this sets an opctl DNS A record so the containers available via this name.
+        name: run-a-react-app-ui
         workDir: /src
-        ports:
-          3000: 3000

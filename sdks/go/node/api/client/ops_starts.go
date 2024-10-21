@@ -10,7 +10,7 @@ import (
 	"path"
 
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/node/api/urltemplates"
 )
 
 // StartOp starts an op & returns its root op id (ROId)
@@ -33,7 +33,7 @@ func (c apiClient) StartOp(
 	}
 
 	reqURL := c.baseURL
-	reqURL.Path = path.Join(reqURL.Path, api.URLOps_Starts)
+	reqURL.Path = path.Join(reqURL.Path, urltemplates.Ops_Starts)
 
 	httpReq, err := http.NewRequestWithContext(
 		ctx,

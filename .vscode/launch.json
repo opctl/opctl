@@ -39,7 +39,7 @@
             "args": [
                 "--data-dir",
                 "${workspaceFolder}/debug-data-dir",
-                "--listen-address",
+                "--api-listen-address",
                 "127.0.0.1:42224",
                 "node",
                 "create"

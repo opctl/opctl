@@ -5,19 +5,20 @@ package local
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"syscall"
-	"time"
 
 	"github.com/opctl/opctl/sdks/go/node"
 )
 
-func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, error) {
-	apiClientNode, err := newAPIClientNode(np.config.ListenAddress)
+func (np nodeProvider) CreateNodeIfNotExists(
+	ctx context.Context,
+) (node.Node, error) {
+	apiClientNode, err := newAPIClientNode(np.config.APIListenAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -32,63 +33,55 @@ func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, er
 		return nil, err
 	}
 
-	nodeCmd := exec.Command(
-		pathToOpctlBin,
-		"--data-dir",
-		np.dataDir.Path(),
-		"--listen-address",
-		np.config.ListenAddress,
+	cmdName := pathToOpctlBin
+	cmdArgs := []string{
+		"--api-listen-address",
+		np.config.APIListenAddress,
 		"--container-runtime",
 		np.config.ContainerRuntime,
+		"--data-dir",
+		np.config.DataDir,
+		"--dns-listen-address",
+		np.config.DNSListenAddress,
 		"node",
 		"create",
+	}
+
+	if os.Geteuid() != 0 {
+		cmdName = "sudo"
+		cmdArgs = append([]string{"-n", pathToOpctlBin}, cmdArgs...)
+	}
+
+	cmd := exec.Command(
+		cmdName,
+		cmdArgs...,
 	)
 
 	// don't inherit env; some things like jenkins track and kill processes via injecting env vars
-	nodeCmd.Env = []string{
+	cmd.Env = []string{
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")),
 	}
 
-	// ensure node gets it's own process group
-	nodeCmd.SysProcAttr = &syscall.SysProcAttr{
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		// own process group
 		Setpgid: true,
 	}
 
-	nodeLogFilePath := filepath.Join(np.dataDir.Path(), "node.log")
-	nodeLogFile, err := os.OpenFile(nodeLogFilePath, os.O_RDWR|os.O_CREATE, 0666)
-	if err != nil {
+	// always try to create a node; this avoids races
+	if err := cmd.Start(); err != nil {
 		return nil, err
 	}
 
-	nodeCmd.Stderr = io.MultiWriter(nodeLogFile, os.Stderr)
-	nodeCmd.Stdout = io.MultiWriter(nodeLogFile, os.Stdout)
-
-	if err := nodeCmd.Start(); err != nil {
-		return nil, err
+	// try to connect to existing opctl node
+	err = apiClientNode.Liveness(ctx)
+	if err == nil {
+		return apiClientNode, nil
 	}
 
-	ctx, cancel := context.WithCancel(ctx)
-
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			default:
-				if err := apiClientNode.Liveness(ctx); err == nil {
-					cancel()
-				}
-				time.Sleep(time.Second)
-			}
-		}
-	}()
-
-	<-ctx.Done()
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to create daemonized opctl node: %w", err)
+	if os.Geteuid() != 0 {
+		return nil, errors.New("re-run command with sudo")
 	}
 
-	return apiClientNode, nil
+	return nil, fmt.Errorf("failed to create daemonized opctl node")
 }

@@ -4,15 +4,25 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
-## 0.1.55 - 2024-09-04
+## 0.1.56-alpha.0 - 2024-10-30
 
 ### Added
+
+- Access containers by their name from opctl nodes
+
+### Deprecated
+
+- `container.ports`; access containers by name instead
+
+## 0.1.55 - 2024-09-04
+
+### Fixed
 
 - Fix failing test from error formatting change
 
 ## 0.1.54 - 2024-09-04
 
-### Added
+### Fixed
 
 - Fix long time to resolve non-existent op
 

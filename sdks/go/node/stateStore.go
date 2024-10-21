@@ -10,7 +10,7 @@ import (
 
 	"github.com/dgraph-io/badger/v4"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	"github.com/opctl/opctl/sdks/go/node/pubsub"
 )
 
 // stateStore allows efficiently querying the current state of opctl.
