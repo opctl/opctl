@@ -97,7 +97,7 @@ We are now producing an output, let's reference it in another op:
 ```yaml
 name: caddy
 
-description: runs a simple caddy web server that serves a welcome text at http://localthost:8080/
+description: runs a simple caddy web server that serves a welcome text at http://inputs-outputs:2015
 
 inputs:
 # we need an input of person to pass to the hello-world op when we run it as part of the caddy op
@@ -115,14 +115,14 @@ run:
         files:
             /srv/index.html: $(helloperson) # we dereference helloperson and use its value to populate an index.html file at the default root directory of the caddy image
         image: { ref: 'abiosoft/caddy' }
-        ports: { '2015' : '8080' } # caddy image listens to 2015 by default, we'd like to serve on 8080 in this example
+        name: inputs-outputs
 ```
 
 and run it
 ```bash
 $ opctl run -a person=you caddy
 ```
-Now if you navigate to http://localhost:8080 in your browser or via curl, you should see the text "hello you"
+Now if you navigate to http://inputs-outputs:2015 in your browser or via curl, you should see the text "hello you"
 As you make requests to that web server, you should see caddy's log in your terminal
 
 The above is an example of how ops can reference other ops, and how they can be composed. Note also how we effortlessly and implicitly coerced `helloperson`'s value from a `string` into a `file` as we mounted `/srv/index.html` in the container

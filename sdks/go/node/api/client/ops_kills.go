@@ -10,7 +10,7 @@ import (
 	"path"
 
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/node/api/urltemplates"
 )
 
 func (c apiClient) KillOp(
@@ -24,7 +24,7 @@ func (c apiClient) KillOp(
 	}
 
 	reqURL := c.baseURL
-	reqURL.Path = path.Join(reqURL.Path, api.URLOps_Kills)
+	reqURL.Path = path.Join(reqURL.Path, urltemplates.Ops_Kills)
 
 	httpReq, err := http.NewRequestWithContext(
 		ctx,

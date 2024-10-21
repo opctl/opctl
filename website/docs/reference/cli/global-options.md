@@ -1,3 +1,11 @@
+## `--api-listen-address` or `OPCTL_API_LISTEN_ADDRESS` *default: 127.0.0.1:42224*
+To specify the HOST:PORT on which the opctl API server will listen, include a `--api-listen-address` or set an `OPCTL_API_LISTEN_ADDRESS` env var.
+
+### Examples
+```sh
+opctl --api-listen-address 0.0.0.0:42224
+```
+
 ## `--container-runtime` or `OPCTL_CONTAINER_RUNTIME` *default: docker*
 To specify the container runtime opctl uses to run containers, include a `--container-runtime` or set an `OPCTL_CONTAINER_RUNTIME` env var.
 
@@ -24,12 +32,12 @@ opctl --data-dir . node create
 export OPCTL_DATA_DIR=. && opctl node create
 ```
 
-## `--listen-address` or `OPCTL_LISTEN_ADDRESS` *default: 127.0.0.1:42224*
-To specify the HOST:PORT on which the node will listen, include a `--listen-address` or set an `OPCTL_LISTEN_ADDRESS` env var.
+## `--dns-listen-address` or `OPCTL_DNS_LISTEN_ADDRESS` *default: 127.0.0.1:53*
+To specify the HOST:PORT on which the opctl DNS server will listen, include a `--dns-listen-address` or set an `OPCTL_DNS_LISTEN_ADDRESS` env var.
 
 ### Examples
 ```sh
-opctl --listen-address 0.0.0.0:42224
+opctl --dns-listen-address 0.0.0.0:53
 ```
 
 ## `-h` or `--help`

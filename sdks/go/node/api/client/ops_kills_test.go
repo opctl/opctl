@@ -12,7 +12,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/node/api/urltemplates"
 )
 
 var _ = Context("KillOp", func() {
@@ -26,7 +26,7 @@ var _ = Context("KillOp", func() {
 		}
 
 		expectedReqURL := url.URL{}
-		expectedReqURL.Path = api.URLOps_Kills
+		expectedReqURL.Path = urltemplates.Ops_Kills
 
 		expectedBytes, _ := json.Marshal(providedReq)
 

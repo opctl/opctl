@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/node/api/urltemplates"
 )
 
 func (c apiClient) Liveness(
@@ -16,7 +16,7 @@ func (c apiClient) Liveness(
 	httpReq, err := http.NewRequestWithContext(
 		ctx,
 		"GET",
-		c.baseURL.String()+api.URLLiveness,
+		c.baseURL.String()+urltemplates.Liveness,
 		nil,
 	)
 	if err != nil {

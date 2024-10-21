@@ -12,7 +12,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/node/api/urltemplates"
 )
 
 var _ = Context("AddAuth", func() {
@@ -26,7 +26,7 @@ var _ = Context("AddAuth", func() {
 		}
 
 		expectedReqURL := url.URL{}
-		expectedReqURL.Path = api.URLAuths_Adds
+		expectedReqURL.Path = urltemplates.Auths_Adds
 
 		expectedBytes, _ := json.Marshal(providedReq)
 

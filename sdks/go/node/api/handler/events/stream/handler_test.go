@@ -12,7 +12,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/node/api/urltemplates"
 	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 )
 
@@ -38,7 +38,7 @@ var _ = Context("Handler", func() {
 
 				providedHTTPResp := httptest.NewRecorder()
 
-				providedHTTPReq, err := http.NewRequest(http.MethodGet, api.URLEvents_Stream, bytes.NewReader([]byte{}))
+				providedHTTPReq, err := http.NewRequest(http.MethodGet, urltemplates.Events_Stream, bytes.NewReader([]byte{}))
 				if err != nil {
 					panic(err.Error())
 				}
@@ -66,7 +66,7 @@ var _ = Context("Handler", func() {
 
 					providedHTTPReq, err := http.NewRequest(
 						http.MethodGet,
-						fmt.Sprintf("%v?since=%v", api.URLEvents_Stream, invalidSince),
+						fmt.Sprintf("%v?since=%v", urltemplates.Events_Stream, invalidSince),
 						bytes.NewReader([]byte{}),
 					)
 					if err != nil {
@@ -108,7 +108,7 @@ var _ = Context("Handler", func() {
 
 					providedHTTPReq, err := http.NewRequest(
 						http.MethodGet,
-						fmt.Sprintf("%v?since=%v", api.URLEvents_Stream, expectedSince.Format(time.RFC3339)),
+						fmt.Sprintf("%v?since=%v", urltemplates.Events_Stream, expectedSince.Format(time.RFC3339)),
 						bytes.NewReader([]byte{}),
 					)
 					if err != nil {
@@ -155,7 +155,7 @@ var _ = Context("Handler", func() {
 
 				providedHTTPReq, err := http.NewRequest(
 					http.MethodGet,
-					fmt.Sprintf("%v?roots=%v,%v", api.URLEvents_Stream, expectedRoots[0], expectedRoots[1]),
+					fmt.Sprintf("%v?roots=%v,%v", urltemplates.Events_Stream, expectedRoots[0], expectedRoots[1]),
 					bytes.NewReader([]byte{}),
 				)
 				if err != nil {

@@ -5,9 +5,4 @@ inputs:
   arg2:
     boolean: {}
 run:
-  container:
-    image: 
-      ref: alpine
-    cmd:
-      - echo
-      - hi
+  serial: []

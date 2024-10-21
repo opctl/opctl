@@ -71,12 +71,21 @@ func newCli(
 		},
 	)
 
-	listenAddress := cli.String(
+	apiListenAddress := cli.String(
 		mow.StringOpt{
-			Desc:   "HOST:PORT on which the node will listen",
-			EnvVar: "OPCTL_LISTEN_ADDRESS",
-			Name:   "listen-address",
+			Desc:   "HOST:PORT on which the API server will listen",
+			EnvVar: "OPCTL_API_LISTEN_ADDRESS",
+			Name:   "api-listen-address",
 			Value:  "127.0.0.1:42224",
+		},
+	)
+
+	dnsListenAddress := cli.String(
+		mow.StringOpt{
+			Desc:   "HOST:PORT on which the DNS server will listen",
+			EnvVar: "OPCTL_DNS_LISTEN_ADDRESS",
+			Name:   "dns-listen-address",
+			Value:  "127.0.0.1:53",
 		},
 	)
 
@@ -110,9 +119,10 @@ func newCli(
 					auth(
 						ctx,
 						local.NodeConfig{
+							APIListenAddress: *apiListenAddress,
 							ContainerRuntime: *containerRuntime,
 							DataDir:          *dataDir,
-							ListenAddress:    *listenAddress,
+							DNSListenAddress: *dnsListenAddress,
 						},
 						model.AddAuthReq{
 							Resources: *resources,
@@ -135,9 +145,10 @@ func newCli(
 					ctx,
 					cliOutput,
 					local.NodeConfig{
+						APIListenAddress: *apiListenAddress,
 						ContainerRuntime: *containerRuntime,
 						DataDir:          *dataDir,
-						ListenAddress:    *listenAddress,
+						DNSListenAddress: *dnsListenAddress,
 					},
 				),
 			)
@@ -156,9 +167,10 @@ func newCli(
 					ctx,
 					cliParamSatisfier,
 					local.NodeConfig{
+						APIListenAddress: *apiListenAddress,
 						ContainerRuntime: *containerRuntime,
 						DataDir:          *dataDir,
-						ListenAddress:    *listenAddress,
+						DNSListenAddress: *dnsListenAddress,
 					},
 					*dirRef,
 				),
@@ -174,9 +186,10 @@ func newCli(
 					nodeCreate(
 						ctx,
 						local.NodeConfig{
+							APIListenAddress: *apiListenAddress,
 							ContainerRuntime: *containerRuntime,
 							DataDir:          *dataDir,
-							ListenAddress:    *listenAddress,
+							DNSListenAddress: *dnsListenAddress,
 						},
 					),
 				)
@@ -190,9 +203,10 @@ func newCli(
 					nodeDelete(
 						ctx,
 						local.NodeConfig{
+							APIListenAddress: *apiListenAddress,
 							ContainerRuntime: *containerRuntime,
 							DataDir:          *dataDir,
-							ListenAddress:    *listenAddress,
+							DNSListenAddress: *dnsListenAddress,
 						},
 					),
 				)
@@ -206,9 +220,10 @@ func newCli(
 					nodeKill(
 						ctx,
 						local.NodeConfig{
+							APIListenAddress: *apiListenAddress,
 							ContainerRuntime: *containerRuntime,
 							DataDir:          *dataDir,
-							ListenAddress:    *listenAddress,
+							DNSListenAddress: *dnsListenAddress,
 						},
 					),
 				)
@@ -219,9 +234,10 @@ func newCli(
 	cli.Command("op", "Manage ops", func(opCmd *mow.Cmd) {
 		np, err := local.New(
 			local.NodeConfig{
+				APIListenAddress: *apiListenAddress,
 				ContainerRuntime: *containerRuntime,
 				DataDir:          *dataDir,
-				ListenAddress:    *listenAddress,
+				DNSListenAddress: *dnsListenAddress,
 			},
 		)
 		if err != nil {
@@ -325,9 +341,10 @@ func newCli(
 					cliOutput,
 					cliParamSatisfier,
 					local.NodeConfig{
+						APIListenAddress: *apiListenAddress,
 						ContainerRuntime: *containerRuntime,
 						DataDir:          *dataDir,
-						ListenAddress:    *listenAddress,
+						DNSListenAddress: *dnsListenAddress,
 					},
 					*args,
 					*argFile,
@@ -343,9 +360,10 @@ func newCli(
 			exitWith(
 				selfUpdate(
 					local.NodeConfig{
+						APIListenAddress: *apiListenAddress,
 						ContainerRuntime: *containerRuntime,
 						DataDir:          *dataDir,
-						ListenAddress:    *listenAddress,
+						DNSListenAddress: *dnsListenAddress,
 					},
 				),
 			)
@@ -364,11 +382,12 @@ func newCli(
 					ctx,
 					cliParamSatisfier,
 					local.NodeConfig{
+						APIListenAddress: *apiListenAddress,
 						ContainerRuntime: *containerRuntime,
 						DataDir:          *dataDir,
-						ListenAddress:    *listenAddress,
+						DNSListenAddress: *dnsListenAddress,
 					},
-					*listenAddress,
+					*apiListenAddress,
 					*mountRefArg,
 				),
 			)

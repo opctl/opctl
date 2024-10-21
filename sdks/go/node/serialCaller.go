@@ -7,7 +7,7 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	"github.com/opctl/opctl/sdks/go/node/pubsub"
 )
 
 //counterfeiter:generate -o internal/fakes/serialCaller.go . serialCaller

@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	dockerClientPkg "github.com/docker/docker/client"
 )
 
@@ -29,7 +29,7 @@ func (ctp _containerStdOutStreamer) Stream(
 	src, err := ctp.dockerClient.ContainerLogs(
 		ctx,
 		containerName,
-		types.ContainerLogsOptions{
+		container.LogsOptions{
 			Follow:     true,
 			ShowStdout: true,
 		},

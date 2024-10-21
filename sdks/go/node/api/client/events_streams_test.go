@@ -11,7 +11,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/node/api/urltemplates"
 )
 
 var _ = Context("GetEventStream", func() {
@@ -33,7 +33,7 @@ var _ = Context("GetEventStream", func() {
 		// construct expected URL
 		expectedReqURL := url.URL{}
 		expectedReqURL.Scheme = "ws"
-		expectedReqURL.Path = api.URLEvents_Stream
+		expectedReqURL.Path = urltemplates.Events_Stream
 
 		queryValues := expectedReqURL.Query()
 		if providedReq.Filter.Since != nil {

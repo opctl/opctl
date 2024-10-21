@@ -10,7 +10,7 @@ import (
 	"path"
 
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/node/api/urltemplates"
 )
 
 func (c apiClient) AddAuth(
@@ -24,7 +24,7 @@ func (c apiClient) AddAuth(
 	}
 
 	reqURL := c.baseURL
-	reqURL.Path = path.Join(reqURL.Path, api.URLAuths_Adds)
+	reqURL.Path = path.Join(reqURL.Path, urltemplates.Auths_Adds)
 
 	httpReq, err := http.NewRequestWithContext(
 		ctx,

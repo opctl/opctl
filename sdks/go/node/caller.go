@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/pubsub"
 	callpkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/call"
-	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 //counterfeiter:generate -o internal/fakes/caller.go . caller

@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"context"
@@ -8,14 +8,10 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/opctl/opctl/cli/internal/clicolorer"
 	core "github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/node/api/handler"
 	"github.com/opctl/opctl/webapp"
@@ -23,45 +19,21 @@ import (
 
 /*
 *
-listener is a generic interface for things which expose opctl via some protocol
+Listen for API requests
 */
-type listener interface {
-	listen(
-		ctx context.Context,
-		address string,
-	) error
-}
-
-/*
-*
-newHTTPListener returns a listener which exposes opctl over http (& websockets via connection upgrades)
-*/
-func newHTTPListener(
-	opspecNodeCore core.Core,
-) listener {
-	return _httpListener{
-		opspecNodeCore: opspecNodeCore,
-		cliColorer:     clicolorer.New(),
-	}
-}
-
-type _httpListener struct {
-	opspecNodeCore core.Core
-	cliColorer     clicolorer.CliColorer
-}
-
-func (hd _httpListener) listen(
+func Listen(
 	ctx context.Context,
 	address string,
+	opctlNodeCore core.Core,
 ) error {
 	router := mux.NewRouter()
 	router.UseEncodedPath()
 
 	router.PathPrefix("/api/").Handler(
-		hd.StripPrefixAndRecover(
+		stripPrefixAndRecover(
 			"/api/",
 			handler.New(
-				hd.opspecNodeCore,
+				opctlNodeCore,
 			),
 		),
 	)
@@ -73,31 +45,23 @@ func (hd _httpListener) listen(
 
 	router.PathPrefix("/").Handler(http.FileServer(http.FS(buildFS)))
 
-	httpServer := http.Server{
+	apiServer := http.Server{
 		Addr:    address,
 		Handler: handlers.CORS()(router),
 	}
 
-	// catch signals to ensure shutdown properly happens
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-
 	go func() {
-		<-done
+		<-ctx.Done()
 		ctx, _ := context.WithTimeout(ctx, 5*time.Second)
 
 		// little hammer
-		httpServer.Shutdown(ctx)
+		apiServer.Shutdown(ctx)
 
 		// big hammer
-		httpServer.Close()
+		apiServer.Close()
 	}()
 
-	fmt.Println(
-		hd.cliColorer.Info(fmt.Sprintf("opctl listening on %s", address)),
-	)
-
-	if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
+	if err := apiServer.ListenAndServe(); err != http.ErrServerClosed {
 		return err
 	}
 
@@ -109,7 +73,7 @@ func (hd _httpListener) listen(
 // and invoking the handler h. StripPrefix handles a
 // request for a path that doesn't begin with prefix by
 // replying with an HTTP 404 not found error.
-func (hd _httpListener) StripPrefixAndRecover(prefix string, h http.Handler) http.Handler {
+func stripPrefixAndRecover(prefix string, h http.Handler) http.Handler {
 	defer func() {
 		// don't let panics from any operation kill the server.
 		if panic := recover(); panic != nil {

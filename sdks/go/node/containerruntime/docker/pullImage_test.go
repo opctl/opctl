@@ -13,7 +13,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/containerruntime/docker/internal/fakes"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	"github.com/opctl/opctl/sdks/go/node/pubsub"
 )
 
 var _ = Context("pullImage", func() {

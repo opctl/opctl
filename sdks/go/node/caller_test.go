@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/internal/fakes"
-	. "github.com/opctl/opctl/sdks/go/pubsub/fakes"
+	. "github.com/opctl/opctl/sdks/go/node/pubsub/fakes"
 )
 
 var _ = Context("caller", func() {

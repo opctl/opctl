@@ -17,7 +17,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/containerruntime/docker/internal/fakes"
-	"github.com/opctl/opctl/sdks/go/pubsub"
+	"github.com/opctl/opctl/sdks/go/node/pubsub"
 )
 
 var _ = Context("RunContainer", func() {
@@ -48,7 +48,7 @@ var _ = Context("RunContainer", func() {
 			Ports: map[string]string{"*": "&"},
 		}
 
-		expectedContainerRemoveOptions := types.ContainerRemoveOptions{
+		expectedContainerRemoveOptions := container.RemoveOptions{
 			RemoveVolumes: true,
 			Force:         true,
 		}
@@ -127,6 +127,7 @@ var _ = Context("RunContainer", func() {
 
 			_fakeDockerClient := new(FakeCommonAPIClient)
 			_fakeDockerClient.ContainerWaitReturns(closedContainerWaitOkBodyChan, nil)
+			_fakeDockerClient.ContainerInspectReturns(types.ContainerJSON{NetworkSettings: &types.NetworkSettings{}}, nil)
 			_fakeDockerClient.ImagePullReturns(io.NopCloser(bytes.NewBufferString("")), nil)
 
 			objectUnderTest := _runContainer{
@@ -251,6 +252,7 @@ var _ = Context("RunContainer", func() {
 
 			fakeDockerClient := new(FakeCommonAPIClient)
 			fakeDockerClient.ContainerWaitReturns(closedContainerWaitOkBodyChan, nil)
+			fakeDockerClient.ContainerInspectReturns(types.ContainerJSON{NetworkSettings: &types.NetworkSettings{}}, nil)
 
 			objectUnderTest := _runContainer{
 				containerStdErrStreamer: new(FakeContainerLogStreamer),

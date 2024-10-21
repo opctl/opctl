@@ -944,6 +944,7 @@
               "$ref": "#/definitions/stringExpression"
             },
             "ports": {
+              "deprecated": true,
               "description": "Ports bound from the container to the host",
               "type": "object",
               "patternProperties": {

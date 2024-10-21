@@ -9,8 +9,8 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/pubsub"
 	"github.com/opctl/opctl/sdks/go/opspec"
-	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 //counterfeiter:generate -o internal/fakes/parallelCaller.go . parallelCaller

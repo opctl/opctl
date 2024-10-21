@@ -7,7 +7,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/node/api/urltemplates"
 	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 )
 
@@ -28,7 +28,7 @@ var _ = Context("Handler", func() {
 				}
 				providedHTTPResp := httptest.NewRecorder()
 
-				providedHTTPReq, err := http.NewRequest(http.MethodPost, api.URLAuths_Adds, bytes.NewReader([]byte{}))
+				providedHTTPReq, err := http.NewRequest(http.MethodPost, urltemplates.Auths_Adds, bytes.NewReader([]byte{}))
 				if err != nil {
 					panic(err.Error())
 				}

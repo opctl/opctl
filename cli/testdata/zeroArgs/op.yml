@@ -1,8 +1,3 @@
 name: zeroArgs
 run:
-  container:
-    image: 
-      ref: alpine
-    cmd:
-      - echo
-      - hi
+  serial: []

@@ -1,6 +1,6 @@
 module github.com/opctl/opctl
 
-go 1.20
+go 1.23
 
 require (
 	github.com/abiosoft/colima v0.3.4
@@ -8,11 +8,13 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/containers/image/v5 v5.30.0
 	github.com/dgraph-io/badger/v4 v4.1.0
+	github.com/distribution/reference v0.5.0
 	github.com/docker/distribution v2.8.3+incompatible
 	github.com/docker/docker v25.0.3+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/fatih/color v1.15.0
 	github.com/ghodss/yaml v1.0.0
+	github.com/glinton/ping v0.1.3
 	github.com/go-delve/delve v1.9.1
 	github.com/go-git/go-git/v5 v5.2.0
 	github.com/golang-interfaces/github.com-gorilla-websocket v0.0.0-20190604222234-f7c71d63fecb
@@ -25,6 +27,7 @@ require (
 	github.com/jawher/mow.cli v1.1.0
 	github.com/jfbus/httprs v0.0.0-20180614100821-7861a1150846
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.3
+	github.com/miekg/dns v1.1.55
 	github.com/onsi/ginkgo v1.16.6-0.20211014152641-f228134fe057
 	github.com/onsi/gomega v1.29.0
 	github.com/opencontainers/image-spec v1.1.0
@@ -37,9 +40,11 @@ require (
 	github.com/sethgrid/pester v1.2.0
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/xeipuuv/gojsonschema v1.2.0
-	golang.org/x/net v0.24.0
-	golang.org/x/sync v0.6.0
-	golang.org/x/term v0.19.0
+	golang.org/x/net v0.27.0
+	golang.org/x/sync v0.7.0
+	golang.org/x/term v0.22.0
+	golang.zx2c4.com/wireguard v0.0.0-20231211153847-12269c276173
+	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20230429144221-925a1e7659e6
 	k8s.io/api v0.29.3
 	k8s.io/apimachinery v0.29.3
 	k8s.io/client-go v0.29.3
@@ -62,7 +67,6 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/derekparker/trie v0.0.0-20200317170641-1fdf38b7b0e9 // indirect
 	github.com/dgraph-io/ristretto v0.1.1 // indirect
-	github.com/distribution/reference v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
@@ -93,6 +97,7 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/flatbuffers v1.12.1 // indirect
 	github.com/google/gnostic-models v0.6.8 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-containerregistry v0.19.0 // indirect
 	github.com/google/go-dap v0.6.0 // indirect
 	github.com/google/go-github/v30 v30.1.0 // indirect
@@ -105,6 +110,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
+	github.com/josharian/native v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd // indirect
 	github.com/klauspost/compress v1.17.7 // indirect
@@ -115,6 +121,9 @@ require (
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
+	github.com/mdlayher/genetlink v1.3.2 // indirect
+	github.com/mdlayher/netlink v1.7.2 // indirect
+	github.com/mdlayher/socket v0.4.1 // indirect
 	github.com/miekg/pkcs11 v1.1.1 // indirect
 	github.com/mitchellh/copystructure v1.0.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -163,14 +172,15 @@ require (
 	go.opentelemetry.io/proto/otlp v1.1.0 // indirect
 	go.starlark.net v0.0.0-20220816155156-cfacd8902214 // indirect
 	golang.org/x/arch v0.0.0-20190927153633-4e8777c89be4 // indirect
-	golang.org/x/crypto v0.22.0 // indirect
+	golang.org/x/crypto v0.25.0 // indirect
 	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225 // indirect
-	golang.org/x/mod v0.15.0 // indirect
+	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/oauth2 v0.19.0 // indirect
-	golang.org/x/sys v0.19.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	golang.org/x/tools v0.18.0 // indirect
+	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
+	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240102182953-50ed04b92917 // indirect
 	google.golang.org/grpc v1.60.1 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect

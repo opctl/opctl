@@ -33,22 +33,22 @@ run:
           - yarn && yarn run start
         dirs:
           /src: $(../..)
+        # this sets an opctl DNS A record so the containers available via this name.
+        name: run-a-react-app-ui
         workDir: /src
-        ports:
-          3000: 3000
 ```
 
-going to http://localhost:8080 should show us the `go-svc` api being served, and http://localhost:3000 should show us the react app, which in turns is making a call to `go-svc` and fetching data to show.
+going to http://run-a-go-service-api should show us the `go-svc` api being served, and http://run-a-react-app-ui:3000 should show us the react app, which in turns is making a call to `go-svc` and fetching data to show.
 
 Notice the following:
 1. we're referencing the `dev` op from the go-svc.
 2. we can run our ops in any combination of `parallel` and `serial` blocks, composing them as needed. for our case the `dev` op can run in the background while we init then run our react app
-3. networking between our services "just works" by referencing containers by name, thanks to how they all are in the same Docker container network, so the webpack dev server proxy configuration in `package.json` targets `go-svc`:
+3. networking between our services "just works" by referencing containers by name, so the webpack dev server proxy configuration in `package.json` targets `run-a-go-service-api`:
 
 ``` json
 "proxy": {
     "/api": {
-      "target": "http://go-svc:8080"
+      "target": "http://run-a-go-service-api"
     }
   }
 ```

@@ -45,8 +45,6 @@ run:
       MYSQL_PASSWORD:
       MYSQL_DATABASE:
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-    ports:
-      3306: 3306
 ```
 This op will run a MySQL database in a Docker container and seeds the MySQL database with a single table and a single row of data.
 
@@ -91,7 +89,7 @@ run:
           MYSQL_DATABASE:
     - container:
         image:
-          ref: 'golang:1.20'
+          ref: 'golang:1.23'
         name: go-svc
         dirs:
           # mount the source code of our app to the container
@@ -102,9 +100,9 @@ run:
           MYSQL_PASSWORD:
           MYSQL_HOST:
           MYSQL_DATABASE:
+        # this sets an opctl DNS A record so the containers available via this name.
+        name: run-a-go-service-api
         workDir: /src
-        ports:
-          8080: 8080
         cmd:
           - sh
           - -ce

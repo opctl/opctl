@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/opctl/opctl/sdks/go/node/containerruntime/docker/internal/fakes"
@@ -18,7 +18,7 @@ var _ = Context("DeleteContainerIfExists", func() {
 		providedCtx := context.Background()
 		providedContainerName := "dummyContainerName"
 		expectedContainerName := "opctl_" + providedContainerName
-		expectedContainerRemoveOptions := types.ContainerRemoveOptions{
+		expectedContainerRemoveOptions := container.RemoveOptions{
 			RemoveVolumes: true,
 			Force:         true,
 		}

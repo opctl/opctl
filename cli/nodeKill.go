@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
+	"github.com/opctl/opctl/sdks/go/node/dns"
 )
 
 // nodeKill implements the node kill command
@@ -22,6 +23,10 @@ func nodeKill(
 	}
 
 	if err := np.KillNodeIfExists(); err != nil {
+		return err
+	}
+
+	if err := dns.Delete(); err != nil {
 		return err
 	}
 

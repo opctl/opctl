@@ -1,4 +1,4 @@
-description: Initializes and starts the website with live-reload. Exposes it on localhost:3000
+description: Initializes and starts the website with live-reload. Exposes it at http://opctl.private
 name: dev
 run:
   serial:
@@ -7,9 +7,7 @@ run:
     - container:
         cmd: [ yarn, start ]
         image: { ref: 'node:20-alpine' }
+        name: opctl.private
         dirs:
           /src: $(../../..)
-        ports:
-          3000: 3000
-          35729: 35729
         workDir: /src/website

@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/node/api/urltemplates"
 )
 
 func (c apiClient) GetEventStream(
@@ -19,7 +19,7 @@ func (c apiClient) GetEventStream(
 
 	reqURL := c.baseURL
 	reqURL.Scheme = "ws"
-	reqURL.Path = path.Join(reqURL.Path, api.URLEvents_Stream)
+	reqURL.Path = path.Join(reqURL.Path, urltemplates.Events_Stream)
 
 	queryValues := reqURL.Query()
 	if req.Filter.Since != nil {

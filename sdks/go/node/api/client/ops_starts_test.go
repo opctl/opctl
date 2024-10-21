@@ -13,7 +13,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/node/api/urltemplates"
 )
 
 var _ = Context("StartOp", func() {
@@ -59,7 +59,7 @@ var _ = Context("StartOp", func() {
 			}
 
 			expectedReqURL := url.URL{Host: "opctl"}
-			expectedReqURL.Path = api.URLOps_Starts
+			expectedReqURL.Path = urltemplates.Ops_Starts
 
 			expectedReqBytes, _ := json.Marshal(providedReq)
 			expectedResult := "dummyOpID"
