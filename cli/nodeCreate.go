@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"errors"
+	"os"
 
 	"github.com/opctl/opctl/cli/internal/datadir"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
@@ -13,6 +15,10 @@ func nodeCreate(
 	ctx context.Context,
 	nodeConfig local.NodeConfig,
 ) error {
+	if os.Geteuid() != 0 {
+		return errors.New("re-run command with sudo")
+	}
+
 	dataDir, err := datadir.New(nodeConfig.DataDir)
 	if err != nil {
 		return err

@@ -8,7 +8,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	dockerClientPkg "github.com/docker/docker/client"
@@ -55,6 +54,7 @@ func (cr _runContainer) RunContainer(
 ) (*int64, error) {
 	defer stdout.Close()
 	defer stderr.Close()
+	var containerIPAddress string
 
 	// ensure user defined network exists to allow inter container resolution via name
 	// @TODO: remove when socket outputs supported
@@ -68,7 +68,7 @@ func (cr _runContainer) RunContainer(
 
 	// for docker, we prefix name with opctl_ in order to allow external tools to know it's an opctl managed container
 	// do not change this prefix as it might break external consumers
-	containerName := getContainerName(req.ContainerID)
+	dockerContainerName := getContainerName(req.ContainerID)
 	defer func() {
 		// ensure container always cleaned up: gracefully stop then delete it
 		// @TODO: consolidate logic with DeleteContainerIfExists
@@ -76,19 +76,23 @@ func (cr _runContainer) RunContainer(
 		stopTimeout := 3
 		cr.dockerClient.ContainerStop(
 			newCtx,
-			containerName,
+			dockerContainerName,
 			container.StopOptions{
 				Timeout: &stopTimeout,
 			},
 		)
 		cr.dockerClient.ContainerRemove(
 			newCtx,
-			containerName,
-			types.ContainerRemoveOptions{
+			dockerContainerName,
+			container.RemoveOptions{
 				RemoveVolumes: true,
 				Force:         true,
 			},
 		)
+
+		if containerIPAddress != "" {
+			unregisterDNSName(newCtx, containerIPAddress)
+		}
 	}()
 
 	var imageErr error
@@ -156,7 +160,7 @@ func (cr _runContainer) RunContainer(
 		networkingConfig,
 		// platform requires API v1.41 so set to nil to avoid version errors
 		nil,
-		containerName,
+		dockerContainerName,
 	)
 	if createErr != nil {
 		select {
@@ -176,9 +180,24 @@ func (cr _runContainer) RunContainer(
 	if err := cr.dockerClient.ContainerStart(
 		ctx,
 		containerCreatedResponse.ID,
-		types.ContainerStartOptions{},
+		container.StartOptions{},
 	); err != nil {
 		return nil, err
+	}
+
+	containerJSON, err := cr.dockerClient.ContainerInspect(ctx, containerCreatedResponse.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	if endpointSettings, ok := containerJSON.NetworkSettings.Networks[networkName]; ok && req.Name != nil {
+		if err := registerDNSName(
+			ctx,
+			*req.Name,
+			endpointSettings.IPAddress,
+		); err != nil {
+			return nil, err
+		}
 	}
 
 	var waitGroup sync.WaitGroup
@@ -188,7 +207,7 @@ func (cr _runContainer) RunContainer(
 	go func() {
 		if err := cr.containerStdErrStreamer.Stream(
 			ctx,
-			containerName,
+			dockerContainerName,
 			stderr,
 		); err != nil {
 			errChan <- err
@@ -199,7 +218,7 @@ func (cr _runContainer) RunContainer(
 	go func() {
 		if err := cr.containerStdOutStreamer.Stream(
 			ctx,
-			containerName,
+			dockerContainerName,
 			stdout,
 		); err != nil {
 			errChan <- err
@@ -210,7 +229,7 @@ func (cr _runContainer) RunContainer(
 	var exitCode int64
 	waitOkChan, waitErrChan := cr.dockerClient.ContainerWait(
 		ctx,
-		containerName,
+		dockerContainerName,
 		container.WaitConditionNotRunning,
 	)
 	select {

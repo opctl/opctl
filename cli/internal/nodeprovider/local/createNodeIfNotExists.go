@@ -4,14 +4,14 @@
 package local
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"syscall"
-	"time"
 
 	"github.com/opctl/opctl/sdks/go/node"
 )
@@ -32,63 +32,75 @@ func (np nodeProvider) CreateNodeIfNotExists(ctx context.Context) (node.Node, er
 		return nil, err
 	}
 
-	nodeCmd := exec.Command(
-		pathToOpctlBin,
+	cmdCtx, cancel := context.WithCancel(
+		context.Background(),
+	)
+
+	cmdName := pathToOpctlBin
+	cmdArgs := []string{
 		"--data-dir",
-		np.dataDir.Path(),
+		np.config.DataDir,
 		"--listen-address",
 		np.config.ListenAddress,
 		"--container-runtime",
 		np.config.ContainerRuntime,
 		"node",
 		"create",
+	}
+
+	if os.Geteuid() != 0 {
+		cmdName = "sudo"
+		cmdArgs = append([]string{pathToOpctlBin}, cmdArgs...)
+	}
+
+	cmd := exec.CommandContext(
+		cmdCtx,
+		cmdName,
+		cmdArgs...,
 	)
 
 	// don't inherit env; some things like jenkins track and kill processes via injecting env vars
-	nodeCmd.Env = []string{
+	cmd.Env = []string{
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")),
 	}
 
-	// ensure node gets it's own process group
-	nodeCmd.SysProcAttr = &syscall.SysProcAttr{
+	// buffer output
+	nodeCmdOutput := bytes.Buffer{}
+	cmd.Stderr = &nodeCmdOutput
+	cmd.Stdout = &nodeCmdOutput
+	cmd.Stdin = nil
+
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		// own process group
 		Setpgid: true,
 	}
 
-	nodeLogFilePath := filepath.Join(np.dataDir.Path(), "node.log")
-	nodeLogFile, err := os.OpenFile(nodeLogFilePath, os.O_RDWR|os.O_CREATE, 0666)
-	if err != nil {
+	// always try to create a node; this avoids races
+	if err := cmd.Start(); err != nil {
 		return nil, err
 	}
 
-	nodeCmd.Stderr = io.MultiWriter(nodeLogFile, os.Stderr)
-	nodeCmd.Stdout = io.MultiWriter(nodeLogFile, os.Stdout)
-
-	if err := nodeCmd.Start(); err != nil {
-		return nil, err
-	}
-
-	ctx, cancel := context.WithCancel(ctx)
-
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			default:
-				if err := apiClientNode.Liveness(ctx); err == nil {
-					cancel()
-				}
-				time.Sleep(time.Second)
-			}
+	defer func() {
+		// ensure resources always cleaned up
+		if cmd.ProcessState != nil {
+			cmd.Wait()
 		}
 	}()
 
-	<-ctx.Done()
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to create daemonized opctl node: %w", err)
+	// try to connect to existing opctl node
+	err = apiClientNode.Liveness(ctx)
+	if err == nil {
+		return apiClientNode, nil
 	}
 
-	return apiClientNode, nil
+	cancel()
+
+	cmd.Wait()
+
+	if os.Geteuid() != 0 {
+		return nil, errors.New("re-run command with sudo")
+	}
+
+	return nil, fmt.Errorf("failed to create daemonized opctl node: %s", nodeCmdOutput.String())
 }

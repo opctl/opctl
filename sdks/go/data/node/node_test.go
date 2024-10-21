@@ -15,6 +15,7 @@ var _ = Context("_node", func() {
 	Context("TryResolve", func() {
 		It("should call apiClient.ListDescendants w/ expected args", func() {
 			/* arrange */
+			providedCtx := context.Background()
 			providedDataRef := "dummyDataRef"
 
 			fakeCore := new(nodeFakes.FakeNode)
@@ -31,7 +32,7 @@ var _ = Context("_node", func() {
 
 			/* act */
 			objectUnderTest.TryResolve(
-				context.Background(),
+				providedCtx,
 				providedDataRef,
 			)
 
@@ -39,7 +40,7 @@ var _ = Context("_node", func() {
 			actualContext,
 				actualReq := fakeCore.ListDescendantsArgsForCall(0)
 
-			Expect(actualContext).To(Equal(context.TODO()))
+			Expect(actualContext).To(Equal(providedCtx))
 			Expect(actualReq).To(Equal(model.ListDescendantsReq{
 				DataRef:   providedDataRef,
 				PullCreds: providedPullCreds,

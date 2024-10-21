@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
+	"syscall"
 )
 
 // nodeDelete implements the node delete command
@@ -20,6 +22,13 @@ func nodeDelete(
 	np, err := local.New(nodeConfig)
 	if err != nil {
 		return err
+	}
+
+	if os.Geteuid() != 0 {
+		err := syscall.Seteuid(0)
+		if err != nil {
+			return fmt.Errorf("re-run command with sudo: %s", err.Error())
+		}
 	}
 
 	err = containerRT.Delete(ctx)

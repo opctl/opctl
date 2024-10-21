@@ -9,7 +9,7 @@ import (
 func (np nodeProvider) KillNodeIfExists() error {
 	pID, err := getPIDFromFile(
 		filepath.Join(
-			np.dataDir.Path(),
+			np.config.DataDir,
 			"pid.lock",
 		),
 	)
