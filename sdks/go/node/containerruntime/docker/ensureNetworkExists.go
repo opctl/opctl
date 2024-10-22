@@ -29,10 +29,8 @@ func ensureNetworkExists(
 		return fmt.Errorf("unable to create network: %w", networkCreateErr)
 	}
 
-	return ensureNetworkRoutable(
+	return ensureNetworkAttached(
 		ctx,
 		dockerClient,
 	)
-
-	return nil
 }

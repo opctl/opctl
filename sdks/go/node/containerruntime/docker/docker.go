@@ -19,6 +19,12 @@ func New(
 	ctx context.Context,
 	host string,
 ) (containerruntime.ContainerRuntime, error) {
+	go func() {
+		err := StartDNSServer()
+		if nil != err {
+			fmt.Println("dns server error " + err.Error())
+		}
+	}()
 
 	dockerClient, err := dockerClientPkg.NewClientWithOpts(dockerClientPkg.FromEnv, dockerClientPkg.WithHost(host))
 	if err != nil {

@@ -10,7 +10,7 @@ import (
 	dockerClientPkg "github.com/docker/docker/client"
 )
 
-func ensureNetworkRoutable(
+func ensureNetworkDetached(
 	ctx context.Context,
 	dockerClient dockerClientPkg.CommonAPIClient,
 ) error {
@@ -29,13 +29,15 @@ func ensureNetworkRoutable(
 			return fmt.Errorf("unable to inspect network: %w", networkInspectErr)
 		}
 
-		for _, ipamConfig := range networkResource.IPAM.Config {
-			cmd := exec.Command("route", "add", ipamConfig.Subnet, "192.168.64.2")
+		for _, config := range networkResource.IPAM.Config {
+			if networkResource.Scope == "local" {
+				cmd := exec.Command("route", "-q", "-n", "delete", "-inet", config.Subnet)
 
-			// Execute the command
-			output, err := cmd.CombinedOutput()
-			if err != nil {
-				return fmt.Errorf("unable to ensure network routable %w: %s", err, string(output))
+				outputBytes, err := cmd.CombinedOutput()
+
+				if err != nil {
+					fmt.Errorf("Failed to delete route: %w, %s", err, string(outputBytes))
+				}
 			}
 		}
 	}

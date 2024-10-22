@@ -91,7 +91,11 @@ func (cr _runContainer) RunContainer(
 		)
 
 		if containerIPAddress != "" {
-			unregisterDNSName(newCtx, containerIPAddress)
+			for _, ips := range dnsIPByHostname {
+				if _, ok := ips[containerIPAddress]; ok {
+					delete(ips, containerIPAddress)
+				}
+			}
 		}
 	}()
 
@@ -191,13 +195,14 @@ func (cr _runContainer) RunContainer(
 	}
 
 	if endpointSettings, ok := containerJSON.NetworkSettings.Networks[networkName]; ok && req.Name != nil {
-		if err := registerDNSName(
-			ctx,
-			*req.Name,
-			endpointSettings.IPAddress,
-		); err != nil {
-			return nil, err
+		ips, _ := dnsIPByHostname[*req.Name]
+		if ips == nil {
+			dnsIPByHostname[*req.Name] = map[string]interface{}{}
 		}
+
+		dnsIPByHostname[*req.Name][endpointSettings.IPAddress] = nil
+		
+		ensureDnsServerRegistered()
 	}
 
 	var waitGroup sync.WaitGroup
