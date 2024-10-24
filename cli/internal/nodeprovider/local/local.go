@@ -1,7 +1,6 @@
 package local
 
 import (
-	"github.com/opctl/opctl/cli/internal/datadir"
 	"github.com/opctl/opctl/cli/internal/nodeprovider"
 )
 
@@ -18,18 +17,11 @@ type NodeConfig struct {
 func New(
 	config NodeConfig,
 ) (nodeprovider.NodeProvider, error) {
-	dataDir, err := datadir.New(config.DataDir)
-	if err != nil {
-		return nil, err
-	}
-
 	return nodeProvider{
-		config:  config,
-		dataDir: dataDir,
+		config: config,
 	}, nil
 }
 
 type nodeProvider struct {
-	config  NodeConfig
-	dataDir datadir.DataDir
+	config NodeConfig
 }

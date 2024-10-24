@@ -22,7 +22,7 @@ run:
     envVars:
       OPCTL_DATA_DIR: /tmp/opctl
       GOFLAGS: -tags=containers_image_openpgp
-    image: { ref: 'golang:1.20' }
+    image: { ref: 'golang:1.23' }
     sockets:
       /var/run/docker.sock: $(dockerSocket)
     workDir: /src

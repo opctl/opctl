@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime"
@@ -19,6 +19,12 @@ func New(
 	ctx context.Context,
 	host string,
 ) (containerruntime.ContainerRuntime, error) {
+	go func() {
+		err := StartDNSServer()
+		if nil != err {
+			fmt.Println("dns server error " + err.Error())
+		}
+	}()
 
 	dockerClient, err := dockerClientPkg.NewClientWithOpts(dockerClientPkg.FromEnv, dockerClientPkg.WithHost(host))
 	if err != nil {
@@ -49,7 +55,7 @@ func (cr _containerRuntime) Delete(
 ) error {
 	containers, err := cr.dockerClient.ContainerList(
 		ctx,
-		types.ContainerListOptions{
+		container.ListOptions{
 			Filters: filters.NewArgs(
 				filters.KeyValuePair{
 					Key:   "name",
