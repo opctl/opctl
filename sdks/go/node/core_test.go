@@ -19,13 +19,14 @@ var _ = Context("core", func() {
 			}
 
 			/* act/assert */
-			Expect(
-				New(
-					context.Background(),
-					new(FakeContainerRuntime),
-					dataDir,
-				),
-			).To(Not(BeNil()))
+			actual, actualErr := New(
+				context.Background(),
+				new(FakeContainerRuntime),
+				dataDir,
+			)
+
+			Expect(actualErr).To(BeNil())
+			Expect(actual).To(Not(BeNil()))
 		})
 	})
 })
