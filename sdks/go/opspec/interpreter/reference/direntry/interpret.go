@@ -34,7 +34,7 @@ func Interpret(
 	} else if opts != nil && os.IsNotExist(err) {
 
 		if *opts == "Dir" {
-			err := os.MkdirAll(valuePath, 0700)
+			err := os.MkdirAll(valuePath, 0770)
 			if err != nil {
 				return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref: %w", ref, err)
 			}
@@ -43,7 +43,7 @@ func Interpret(
 		}
 
 		// handle file ref
-		err := os.MkdirAll(filepath.Dir(valuePath), 0700)
+		err := os.MkdirAll(filepath.Dir(valuePath), 0770)
 		if err != nil {
 			return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref: %w", ref, err)
 		}

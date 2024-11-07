@@ -162,10 +162,10 @@ func getRootValue(
 
 		switch opts.Type {
 		case "Dir":
-			os.MkdirAll(fsPath, 0700)
+			os.MkdirAll(fsPath, 0770)
 			return &model.Value{Dir: &fsPath}, "", nil
 		case "File":
-			os.MkdirAll(filepath.Dir(fsPath), 0700)
+			os.MkdirAll(filepath.Dir(fsPath), 0770)
 			os.Create(fsPath)
 			return &model.Value{File: &fsPath}, "", nil
 		}

@@ -57,14 +57,19 @@ func nodeCreate(
 				cliColorer.Info(fmt.Sprintf("opctl API listening at %s", nodeConfig.APIListenAddress)),
 			)
 
+			c, err := core.New(
+				ctx,
+				containerRT,
+				dataDir.Path(),
+			)
+			if err != nil {
+				return err
+			}
+
 			return api.Listen(
 				ctx,
 				nodeConfig.APIListenAddress,
-				core.New(
-					ctx,
-					containerRT,
-					dataDir.Path(),
-				),
+				c,
 			)
 		},
 	)

@@ -52,7 +52,8 @@ func Listen(
 
 	go func() {
 		<-ctx.Done()
-		ctx, _ := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
 
 		// little hammer
 		apiServer.Shutdown(ctx)

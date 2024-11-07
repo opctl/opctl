@@ -43,7 +43,7 @@ func Interpret(
 		containerID,
 		"fs",
 	)
-	if err := os.MkdirAll(scratchDirPath, 0700); err != nil {
+	if err := os.MkdirAll(scratchDirPath, 0770); err != nil {
 		return nil, err
 	}
 
