@@ -243,14 +243,8 @@ github.com/golang-interfaces/github.com-gorilla-websocket v0.0.0-20190604222234-
 github.com/golang-interfaces/github.com-gorilla-websocket v0.0.0-20190604222234-f7c71d63fecb/go.mod h1:LGRJUddCJ272W6opH9FHaNNchd+6dR+CmfQhKjfjJ/o=
 github.com/golang-interfaces/ihttp v0.0.0-20170731143308-228dd9eedf13 h1:yDWO64LqfZDxygDvBUKxA53Aft4UrJZYNf9HXei9JmA=
 github.com/golang-interfaces/ihttp v0.0.0-20170731143308-228dd9eedf13/go.mod h1:KlJAztOus0bxzLi/Xewl9EoLhDzvSRcnVzZbN0CPpDE=
-github.com/golang-interfaces/iioutil v0.0.0-20170803194630-7d1c0886acdc h1:J98T48OIENjW8z8uOsZYq2Nprbn5iX3cPsRMaPHdXMs=
-github.com/golang-interfaces/iioutil v0.0.0-20170803194630-7d1c0886acdc/go.mod h1:KutS7pJ3VjHY3k+I+MaXpBCRWbMIwME5dyJObdagWSE=
 github.com/golang-interfaces/ios v0.0.0-20170803194714-da59acb78efc h1:b+cg/D8nIua9FZgnR8b5MpcCgQih/g+mZZGAK03CXX8=
 github.com/golang-interfaces/ios v0.0.0-20170803194714-da59acb78efc/go.mod h1:aF6E7f2TOZM3ucm5Xcv8H9UJvKoPoWComRgDsktXIzM=
-github.com/golang-utils/dircopier v0.0.0-20170803194507-75bc9e581ed2 h1:4XofjUu5+MvhL+xifx+lT7PpYvNNxgJpb74yssLPgXc=
-github.com/golang-utils/dircopier v0.0.0-20170803194507-75bc9e581ed2/go.mod h1:Uifx34PxULgdfm2y4C6rF5xwJHvuos9sjO5wqi6e9R0=
-github.com/golang-utils/filecopier v0.0.0-20170803193939-16f96e9dcff4 h1:5DX5FHugxH+10CE5+xvWrS1Ay9GCrSEflBZuMUWPw+o=
-github.com/golang-utils/filecopier v0.0.0-20170803193939-16f96e9dcff4/go.mod h1:mpRsyJvlXQzm3NxF6ZZXxfKCtm+kPND+Cw774dsZbHo=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=
 github.com/golang/glog v1.1.2 h1:DVjP2PbBOzHyzA+dn3WhHIq4NdVu3Q+pvivFICf/7fo=
 github.com/golang/glog v1.1.2/go.mod h1:zR+okUeTbrL6EL3xHUDxZuEtGv04p5shwip1+mL/rLQ=

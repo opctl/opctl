@@ -61,6 +61,9 @@ func (np nodeProvider) CreateNodeIfNotExists(
 	cmd.Env = []string{
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")),
+		// set by sudo; passthru so we maintain provenance for use by "unsudo"
+		fmt.Sprintf("SUDO_GID=%s", os.Getenv("SUDO_GID")),
+		fmt.Sprintf("SUDO_UID=%s", os.Getenv("SUDO_UID")),
 	}
 
 	cmd.SysProcAttr = &syscall.SysProcAttr{

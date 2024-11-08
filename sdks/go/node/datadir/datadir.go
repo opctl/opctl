@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/rogpeppe/go-internal/lockedfile"
-	"golang.org/x/sys/unix"
 )
 
 // DataDir is an interface exposing the functionality we require in conjunction with our "data dir".
@@ -22,10 +22,7 @@ type DataDir interface {
 func ensureExists(
 	resolvedDataDirPath string,
 ) error {
-	// don't de-privilege group
-	unix.Umask(0002)
-
-	return os.MkdirAll(resolvedDataDirPath, 0770|os.ModeSetgid)
+	return unsudo.CreateDir(resolvedDataDirPath)
 }
 
 // New returns an initialized data dir instance

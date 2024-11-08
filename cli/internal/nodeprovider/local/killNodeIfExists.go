@@ -28,7 +28,7 @@ func (np nodeProvider) KillNodeIfExists() error {
 	}
 
 	if nodeProcess != nil {
-		err = nodeProcess.Kill()
+		err = nodeProcess.Signal(os.Interrupt)
 		if nil != err && !strings.Contains(err.Error(), "os: process already finished") {
 			return err
 		}

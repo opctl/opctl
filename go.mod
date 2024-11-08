@@ -19,8 +19,6 @@ require (
 	github.com/go-git/go-git/v5 v5.2.0
 	github.com/golang-interfaces/github.com-gorilla-websocket v0.0.0-20190604222234-f7c71d63fecb
 	github.com/golang-interfaces/ihttp v0.0.0-20170731143308-228dd9eedf13
-	github.com/golang-utils/dircopier v0.0.0-20170803194507-75bc9e581ed2
-	github.com/golang-utils/filecopier v0.0.0-20170803193939-16f96e9dcff4
 	github.com/gorilla/handlers v1.4.1
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.0
@@ -89,7 +87,6 @@ require (
 	github.com/go-openapi/swag v0.22.10 // indirect
 	github.com/go-openapi/validate v0.22.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang-interfaces/iioutil v0.0.0-20170803194630-7d1c0886acdc // indirect
 	github.com/golang-interfaces/ios v0.0.0-20170803194714-da59acb78efc // indirect
 	github.com/golang/glog v1.1.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect

@@ -16,7 +16,7 @@ If multiple containers have the same [name](../../reference/opspec/op-directory/
     run:
       parallel:
         - container:
-            image: { ref: alpine }
+            image: { ref: nginx }
             # some syntactically valid hostname
             name: nginx.demo.wow
         - container:

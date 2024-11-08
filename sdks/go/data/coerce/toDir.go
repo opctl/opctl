@@ -3,11 +3,11 @@ package coerce
 import (
 	"errors"
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
+	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -66,30 +66,14 @@ func rCreateFileItem(
 			return fmt.Errorf("%s .data not string", relParentPath)
 		}
 
-		// ensure parent exists
-		err := os.MkdirAll(
-			filepath.Dir(itemPath),
-			0777,
-		)
-		if err != nil {
-			return fmt.Errorf("error creating %s: %w", itemPath, err)
-		}
-
-		err = os.WriteFile(itemPath, []byte(dataString), 0777)
-		if err != nil {
+		if err := unsudo.CreateFile(
+			itemPath,
+			[]byte(dataString),
+		); err != nil {
 			return fmt.Errorf("error creating %s: %w", itemPath, err)
 		}
 
 		return nil
-	}
-
-	// ensure dir exists
-	err := os.MkdirAll(
-		itemPath,
-		0777,
-	)
-	if err != nil {
-		return fmt.Errorf("error creating %s: %w", itemPath, err)
 	}
 
 	for k, v := range children {

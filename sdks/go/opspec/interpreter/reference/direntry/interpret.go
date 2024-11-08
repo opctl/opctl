@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -34,8 +35,7 @@ func Interpret(
 	} else if opts != nil && os.IsNotExist(err) {
 
 		if *opts == "Dir" {
-			err := os.MkdirAll(valuePath, 0770)
-			if err != nil {
+			if err := unsudo.CreateDir(valuePath); err != nil {
 				return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref: %w", ref, err)
 			}
 
@@ -43,14 +43,7 @@ func Interpret(
 		}
 
 		// handle file ref
-		err := os.MkdirAll(filepath.Dir(valuePath), 0770)
-		if err != nil {
-			return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref: %w", ref, err)
-		}
-
-		file, err := os.Create(valuePath)
-		file.Close()
-		if err != nil {
+		if err := unsudo.CreateFile(valuePath, []byte{}); err != nil {
 			return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref: %w", ref, err)
 		}
 

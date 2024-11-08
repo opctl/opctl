@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/golang-utils/dircopier"
+	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
@@ -46,8 +46,7 @@ dirLoop:
 		// copy cached files to ensure can't be mutated
 		containerCallDirs[callSpecContainerDirPath] = filepath.Join(scratchDirPath, callSpecContainerDirPath)
 
-		dirCopier := dircopier.New()
-		if err := dirCopier.OS(
+		if err := unsudo.CloneDir(
 			*dirValue.Dir,
 			containerCallDirs[callSpecContainerDirPath],
 		); err != nil {

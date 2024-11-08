@@ -3,11 +3,11 @@ package coerce
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"path/filepath"
 	"strconv"
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
+	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
@@ -63,23 +63,7 @@ func ToFile(
 
 	path := filepath.Join(scratchDir, uniqueStr)
 
-	err = os.WriteFile(
-		path,
-		data,
-		0666,
-	)
-	if os.IsNotExist(err) {
-		// ensure path exists & re-attempt
-		if err = os.MkdirAll(filepath.Dir(path), os.FileMode(0777)); err == nil {
-			err = os.WriteFile(
-				path,
-				data,
-				0666,
-			)
-		}
-	}
-
-	if err != nil {
+	if err := unsudo.CreateFile(path, data); err != nil {
 		return nil, fmt.Errorf("unable to coerce '%+v' to file: %w", value, err)
 	}
 

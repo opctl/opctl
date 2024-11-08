@@ -3,6 +3,7 @@ package dns
 import (
 	"context"
 	"runtime"
+	"time"
 
 	miekgdns "github.com/miekg/dns"
 )
@@ -24,8 +25,11 @@ func Listen(
 
 	go func() {
 		<-ctx.Done()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
 		// little hammer
-		dnsServer.Shutdown()
+		dnsServer.ShutdownContext(ctx)
 	}()
 
 	if runtime.GOOS == "linux" {

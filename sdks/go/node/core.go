@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/dgraph-io/badger/v4"
+	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
@@ -26,7 +27,7 @@ func New(
 ) (Core, error) {
 
 	eventDbPath := path.Join(dataDirPath, "dcg", "events")
-	if err := os.MkdirAll(eventDbPath, 0770); err != nil {
+	if err := unsudo.CreateDir(eventDbPath); err != nil {
 		return nil, err
 	}
 

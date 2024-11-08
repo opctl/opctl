@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"os/signal"
@@ -22,8 +21,8 @@ func nodeCreate(
 	ctx context.Context,
 	nodeConfig local.NodeConfig,
 ) error {
-	if os.Geteuid() != 0 {
-		return errors.New("re-run command with sudo")
+	if err := ensureEuid0(); err != nil {
+		return err
 	}
 
 	cliColorer := clicolorer.New()
