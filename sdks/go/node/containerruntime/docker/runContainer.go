@@ -197,6 +197,7 @@ func (cr _runContainer) RunContainer(
 
 	if endpointSettings, ok := containerJSON.NetworkSettings.Networks[networkName]; ok && req.Name != nil {
 		err = dns.RegisterName(
+			ctx,
 			*req.Name,
 			endpointSettings.IPAddress,
 		)

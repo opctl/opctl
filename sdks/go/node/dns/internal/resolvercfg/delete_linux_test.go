@@ -1,13 +1,14 @@
-package dns
+package resolvercfg
 
 import (
+	"context"
 	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
-var _ = Context("unregisterAllServers", func() {
+var _ = Context("Delete", func() {
 	Context("server exists", func() {
 		It("should return expected result", func() {
 			/* arrange */
@@ -32,7 +33,9 @@ nameserver 127.0.0.1 # do not edit; managed by opctl
 `
 
 			/* act */
-			err = unregisterAllServers()
+			err = Delete(
+				context.Background(),
+			)
 			if err != nil {
 				panic(err)
 			}

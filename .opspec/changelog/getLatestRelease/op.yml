@@ -1,0 +1,34 @@
+description: Parses the latest version in CHANGELOG.md
+name: parse
+inputs:
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
+outputs:
+  latestRelease:
+    object:
+      constraints:
+        properties:
+          description:
+            type: string
+          isPrerelease:
+            type: boolean
+          version:
+            type: string
+run:
+  container:
+    image:
+      ref: golang:1.23
+    cmd:
+      - go
+      - run
+      - /main.go
+    dirs:
+      /go/pkg: $(HOME/go/pkg)
+    files:
+      /go.mod:
+      /go.sum:
+      /main.go:
+      /CHANGELOG.md: $(../../../CHANGELOG.md)
+      /latestRelease.json: $(latestRelease)
+      

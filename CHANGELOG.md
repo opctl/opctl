@@ -1,10 +1,10 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
-## 0.1.56-alpha.0 - 2024-10-30
+## [0.1.56-alpha.1] - 2024-11-08
 
 ### Added
 
@@ -14,26 +14,23 @@ accordance with
 
 - `container.ports`; access containers by name instead
 
-## 0.1.55 - 2024-09-04
+## [0.1.56-alpha.0] - 2024-10-30
 
-### Fixed
+### Added
 
-- Fix failing test from error formatting change
+- Access containers by their name from opctl nodes
 
-## 0.1.54 - 2024-09-04
+### Deprecated
+
+- `container.ports`; access containers by name instead
+
+## [0.1.55] - 2024-09-04
 
 ### Fixed
 
 - Fix long time to resolve non-existent op
 
-## 0.1.54-pre - 2024-05-23
-
-### Added
-
-Create a prerelease whenever the CHANGELOG is changed on a merge to main. No
-application code changes
-
-## 0.1.53 - 2024-04-18
+## [0.1.53] - 2024-04-18
 
 ### Fixed
 
@@ -46,13 +43,13 @@ application code changes
 
 - Deleted the React SDK because it is unused
 
-## 0.1.52 - 2023-06-06
+## [0.1.52] - 2023-06-06
 
 ### Fixed
 
 - [Escaped references are not escaped if an unescaped '$' exists prior in the string](https://github.com/opctl/opctl/issues/1063)
 
-## 0.1.51 - 2023-06-01
+## [0.1.51] - 2023-06-01
 
 ### Added
 
@@ -62,7 +59,7 @@ application code changes
 
 - Simultaneously defining a default plus constraints on an object or array input results in a validation error
 
-## 0.1.50 - 2023-05-01
+## [0.1.50] - 2023-05-01
 
 ### Added
 
@@ -77,7 +74,7 @@ application code changes
 - In some cases, `Runtime error: invalid memory address or nil pointer dereference` error occurs
 - CLI not logging errors from the root op
 
-## 0.1.49 - 2022-09-21
+## [0.1.49] - 2022-09-21
 
 ### Added
 
@@ -95,7 +92,7 @@ application code changes
 - [Node locking mechanism doesn't ensure process is opctl](https://github.com/opctl/opctl/issues/913)
 - [CLI no longer logs errors occurring in parallel calls](https://github.com/opctl/opctl/issues/1032)
 
-## 0.1.48 - 2021-08-13
+## [0.1.48] - 2021-08-13
 
 ### Added
 
@@ -127,7 +124,7 @@ application code changes
 - pkgs API endpoint; use data API endpoint
 - Windows build; use linux build via WSL 2 instead
 
-## 0.1.47 - 2021-01-22
+## [0.1.47] - 2021-01-22
 
 ### Added
 
@@ -137,19 +134,19 @@ application code changes
 
 - Dir initializer doesn't initialize more than one child entry
 
-## 0.1.46 - 2021-01-04
+## [0.1.46] - 2021-01-04
 
 ### Fixed
 
 - [container.envVars string double interpreted](https://github.com/opctl/opctl/issues/849)
 
-## 0.1.45 - 2020-11-17
+## [0.1.45] - 2020-11-17
 
 ### Fixed
 
 - Calls killed by needs declaration exiting non-zero
 
-## 0.1.44 - 2020-11-16
+## [0.1.44] - 2020-11-16
 
 ### Added
 
@@ -164,13 +161,13 @@ application code changes
 
 - Certain child call errors not shown.
 
-## 0.1.43 - 2020-11-04
+## [0.1.43] - 2020-11-04
 
 ### Fixed
 
 - ParallelLoop loop iteration vars sometimes get set to values from other iterations.
 
-## 0.1.42 - 2020-11-03
+## [0.1.42] - 2020-11-03
 
 ### Added
 
@@ -191,19 +188,19 @@ application code changes
 - [Gracefully handle docker restarts](https://github.com/opctl/opctl/issues/678)
 - [Running an op should never kill a node](https://github.com/opctl/opctl/issues/756)
 
-## 0.1.41 - 2020-06-03
+## [0.1.41] - 2020-06-03
 
 ### Changed
 
 - [Listen on localhost by default](https://github.com/opctl/opctl/issues/738)
 
-## 0.1.39 - 2020-05-04
+## [0.1.39] - 2020-05-04
 
 ### Fixed
 
 - ["manifest has unsupported version: 4" errors on newer versions of opctl](https://github.com/opctl/opctl/issues/768)
 
-## 0.1.38 - 2020-05-03
+## [0.1.38] - 2020-05-03
 
 ### Changed
 
@@ -215,7 +212,7 @@ application code changes
 - [Nested ops can't be referenced using relative path](https://github.com/opctl/opctl/issues/762)
 - [Inconsistent behavior when running locally installed vs remotely referenced ops.](https://github.com/opctl/opctl/issues/732)
 
-## 0.1.37 - 2020-05-03
+## [0.1.37] - 2020-05-03
 
 ### Added
 
@@ -225,26 +222,26 @@ application code changes
 - Make call bounding box extend from call summary rather than start below in UI
 - Remove extraneous lines extending from top and bottom of parallel call in UI
 
-## 0.1.35 - 2020-04-29
+## [0.1.35] - 2020-04-29
 
 ### Changed
 
 - [Stop logging "Replaying from value pointer: {Fid:0 Len:0 Offset:0}"](https://github.com/opctl/opctl/issues/754)
 
-## 0.1.34 - 2020-04-23
+## [0.1.34] - 2020-04-23
 
 ### Added
 
 - [UI: visualize referenced ops](https://github.com/opctl/opctl/issues/739)
 
-## 0.1.33 - 2020-04-20
+## [0.1.33] - 2020-04-20
 
 ### Fixed
 
 - [Nonexistent sub dirs bound to containers aren't sync'd](https://github.com/opctl/opctl/issues/725)
 - [image.ref with multi-variable templated string not working since v0.1.28](https://github.com/opctl/opctl/issues/722)
 
-## 0.1.32 - 2020-04-16
+## [0.1.32] - 2020-04-16
 
 ### Added
 
@@ -254,14 +251,14 @@ application code changes
 
 - variable reference validation triggered for valid refs
 
-## 0.1.31 - 2020-04-15
+## [0.1.31] - 2020-04-15
 
 ### Fixed
 
 - variable reference validation triggered for valid refs
 - failure interpreting needed call panics
 
-## 0.1.30 - 2020-04-15
+## [0.1.30] - 2020-04-15
 
 ### Added
 
@@ -273,7 +270,7 @@ application code changes
 
 - [Running `op install` twice wipes out op file contents](https://github.com/opctl/opctl/issues/718)
 
-## 0.1.28 - 2020-03-26
+## [0.1.28] - 2020-03-26
 
 ### Added
 
@@ -298,13 +295,13 @@ application code changes
 
 - UI: Events/Op/Vars pages
 
-## 0.1.27 - 2020-02-04
+## [0.1.27] - 2020-02-04
 
 ### Fixed
 
 - Object initializers passed as inputs to constrained parameters don't pass validation
 
-## 0.1.26 - 2020-01-30
+## [0.1.26] - 2020-01-30
 
 ### Added
 
@@ -332,7 +329,7 @@ application code changes
 
 - Remove support for `.` in op parameter names (to avoid ambiguity between referencing object properties)
 
-## 0.1.25 - 2019-07-13
+## [0.1.25] - 2019-07-13
 
 ### Added
 
@@ -362,7 +359,7 @@ application code changes
 
 - website/docs moved to [https://github.com/opctl/website](https://github.com/opctl/website)
 
-## 0.1.24 - 2018-04-06
+## [0.1.24] - 2018-04-06
 
 ### Added
 
@@ -389,7 +386,7 @@ application code changes
 
 - References in/as expressions w/out explicit opener $( and closer )
 
-## 0.1.23 - 2018-01-15
+## [0.1.23] - 2018-01-15
 
 ### Added
 
@@ -401,7 +398,7 @@ application code changes
 - coercion doesn't occur when de referencing scope object paths
 - scope file path refs don't de reference
 
-## 0.1.22 - 2017-11-05
+## [0.1.22] - 2017-11-05
 
 ### Added
 
@@ -411,7 +408,7 @@ application code changes
 
 - Auto node creation requires opctl bin within path
 
-## 0.1.21 - 2017-10-01
+## [0.1.21] - 2017-10-01
 
 ### Added
 
@@ -448,13 +445,13 @@ application code changes
 - api schema updated to OAS 3.0.0
   syntax
 
-## 0.1.20 - 2017-06-23
+## [0.1.20] - 2017-06-23
 
 ### Fixed
 
 - [Unexpected git capabilities encountered during pkg pull not gracefully handled](https://github.com/opctl/opctl/issues/257)
 
-## 0.1.19 - 2017-06-05
+## [0.1.19] - 2017-06-05
 
 ### Added
 
@@ -490,7 +487,7 @@ application code changes
 - [stdOut/stdErr output race condition](https://github.com/opctl/opctl/issues/174)
 - [Unable to run ops w/ containers if using docker 4 windows](https://github.com/opctl/opctl/issues/200)
 
-## 0.1.18 - 2017-03-28
+## [0.1.18] - 2017-03-28
 
 ### Changed
 
@@ -500,13 +497,13 @@ application code changes
 
 - [Multiple opctl networks created leading to lack of inter-container connectivity](https://github.com/opctl/opctl/issues/167)
 
-## 0.1.16 - 2017-03-26
+## [0.1.16] - 2017-03-26
 
 ### Fixed
 
 - [Outputs internal to op call graph not initialized](https://github.com/opctl/opctl/issues/165)
 
-## 0.1.15 - 2017-03-23
+## [0.1.15] - 2017-03-23
 
 ### Added
 
@@ -545,13 +542,13 @@ paramName:
 - support for < [opspec 0.1.3](https://opspec.io)
 - `collection` command
 
-## 0.1.10 - 2016-11-21
+## [0.1.10] - 2016-11-21
 
 ### Added
 
 - [Add support for "default" input values](https://github.com/opctl/opctl/issues/41)
 
-## 0.1.9 - 2016-11-06
+## [0.1.9] - 2016-11-06
 
 ### Added
 
@@ -569,7 +566,7 @@ paramName:
 
 - [Emitted ContainerStd\*WrittenToEvent.Data Incomplete](https://github.com/opctl/opctl/issues/32)
 
-## 0.1.8 - 2016-09-09
+## [0.1.8] - 2016-09-09
 
 ### Added
 
@@ -583,20 +580,20 @@ paramName:
 
 - support for < [opspec 0.1.2](https://opspec.io)
 
-## 0.1.7 - 2016-09-02
+## [0.1.7] - 2016-09-02
 
 ### Fixed
 
 - [opctl does not wait for parallel op containers to die before returning](https://github.com/opctl/cli/issues/8)
 - [Many parallel ops crash engine](https://github.com/opctl/opctl/issues/17)
 
-## 0.1.6 - 2016-08-21
+## [0.1.6] - 2016-08-21
 
 ### Fixed
 
 - OpEnded event not sent on `Failed` outcome
 
-## 0.1.5 - 2016-08-02
+## [0.1.5] - 2016-08-02
 
 ### Added
 
@@ -606,13 +603,13 @@ paramName:
 
 - support for [opspec 0.1.0](https://opspec.io)
 
-## 0.1.4 - 2016-07-20
+## [0.1.4] - 2016-07-20
 
 ### Added
 
 - normalization of windows paths if provided to op run
 
-## 0.1.3 - 2016-07-09
+## [0.1.3] - 2016-07-09
 
 ### Added
 
@@ -622,14 +619,14 @@ paramName:
 
 - [Unable to simultaneously run multiple ops from same collection](https://github.com/opctl/opctl/issues/10)
 
-## 0.1.2 - 2016-06-22
+## [0.1.2] - 2016-06-22
 
 ### Fixed
 
 - [Missleading `variable is not set` message on op finish](https://github.com/opctl/opctl/issues/5)
 - [Engine not observing exitcode of op entrypoint](https://github.com/opctl/opctl/issues/9)
 
-## 0.1.1 - 2016-06-22
+## [0.1.1] - 2016-06-22
 
 ### Changed
 
@@ -644,7 +641,7 @@ paramName:
 
 - add sub-op use case
 
-## 0.1.0 - 2016-06-16
+## [0.1.0] - 2016-06-16
 
 ### Removed
 

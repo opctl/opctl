@@ -8,5 +8,5 @@ import (
 
 type NodeProvider interface {
 	CreateNodeIfNotExists(ctx context.Context) (node.Node, error)
-	KillNodeIfExists() error
+	KillNodeIfExists(ctx context.Context) error
 }

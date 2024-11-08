@@ -32,11 +32,15 @@ func nodeDelete(
 		return err
 	}
 
-	if err := np.KillNodeIfExists(); err != nil {
+	if err := np.KillNodeIfExists(
+		ctx,
+	); err != nil {
 		return err
 	}
 
-	if err := dns.Delete(); err != nil {
+	if err := dns.DeleteResolverCfgs(
+		ctx,
+	); err != nil {
 		return err
 	}
 

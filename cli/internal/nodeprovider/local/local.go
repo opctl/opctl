@@ -6,12 +6,12 @@ import (
 
 // NodeConfig are options for creating a local opctl node
 type NodeConfig struct {
-	// APIListenAddress sets the HOST:PORT on which the API server will listen
+	// APIListenAddress sets the IP:PORT on which the API server will listen
 	APIListenAddress string
 	ContainerRuntime string
 	// DataDir sets the path of dir used to store node data
 	DataDir string
-	// DNSListenAddress sets the HOST:PORT on which the DNS server will listen
+	// DNSListenAddress sets the IP:PORT on which the DNS server will listen
 	DNSListenAddress string
 }
 

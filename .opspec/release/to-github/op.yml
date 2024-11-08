@@ -14,11 +14,16 @@ inputs:
             type: string
         required: [accessToken, username]
       description: configuration required to interact w/ github
-  version:
-      string:
-        constraints:
-          format: semver
-        description: the version to release to GitHub
+  latestRelease:
+    object:
+      constraints:
+        properties:
+          description:
+            type: string
+          isPrerelease:
+            type: boolean
+          version:
+            type: string
 run:
   serial:
     # create github release
@@ -28,31 +33,18 @@ run:
           dotGitDir: $(../../../.git)
         outputs:
           commit:
-    - container:
-        image:
-          ref: alpine
-        cmd:
-          - sh
-          - -c
-          - |
-            if echo $(version) | grep -q -E '[0-9]+.[0-9]+.[0-9]+-[A-Za-z0-9]{1,}'; then
-              echo -n true > /prerelease
-            else
-              echo -n false > /prerelease
-            fi
-        files:
-          /prerelease: $(prerelease)
     - op:
         ref: github.com/opspec-pkgs/github.release.create#2.0.0
         inputs:
           commitish: $(commit)
+          description: $(latestRelease.description)
           loginPassword: $(github.accessToken)
           loginUsername: $(github.username)
           owner: opctl
           repo: opctl
-          tag: v$(version)
-          name: v$(version)
-          isPrerelease: $(prerelease)
+          tag: v$(latestRelease.version)
+          name: v$(latestRelease.version)
+          isPrerelease: $(latestRelease.isPrerelease)
         outputs:
           id: $(releaseId)
     - parallelLoop:

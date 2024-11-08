@@ -45,7 +45,7 @@ export default function CallHasOp(
           if (errAsError.message.includes('authentication')) {
             toast.warn(`Loading ${opRef} skipped; because it requires authentication.`)
           } else if (errAsError.message.includes('service=git-upload-pack')) {
-            toast.warn(`Loading 'ref: ${opRef}' skipped because you're using deprecated syntax! To fix, use 'ref: ../${opRef}'.`)
+            toast.warn(`Loading 'ref: ${opRef}' skipped because you're using deprecated syntax! To fix, use 'ref: $(../${opRef})'.`)
           } else {
             toast.error(errAsError.toString())
           }

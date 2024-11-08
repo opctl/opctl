@@ -36,8 +36,12 @@ func ToDir(
 		}
 
 		rootDirPath := filepath.Join(scratchDir, uniqueStr)
-		err = rCreateFileItem(rootDirPath, "", *value.Object)
-		if err != nil {
+
+		if err := unsudo.CreateDir(rootDirPath); err != nil {
+			return nil, fmt.Errorf("unable to coerce object to dir: %w", err)
+		}
+
+		if err := rCreateFileItem(rootDirPath, "", *value.Object); err != nil {
 			return nil, fmt.Errorf("unable to coerce object to dir: %w", err)
 		}
 

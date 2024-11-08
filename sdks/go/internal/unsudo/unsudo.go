@@ -1,7 +1,9 @@
 package unsudo
 
+import "os"
+
 func getSudoUID() int {
-	uid := 0
+	uid := os.Geteuid()
 	if sudoUID := tryGetEnvInt("SUDO_UID"); sudoUID != nil {
 		uid = *sudoUID
 	}
@@ -9,7 +11,7 @@ func getSudoUID() int {
 }
 
 func getSudoGID() int {
-	gid := 0
+	gid := os.Getegid()
 	if sudoGID := tryGetEnvInt("SUDO_GID"); sudoGID != nil {
 		gid = *sudoGID
 	}
