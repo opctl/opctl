@@ -5,13 +5,13 @@ package local
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"syscall"
 
+	"github.com/opctl/opctl/cli/internal/pidfile"
 	"github.com/opctl/opctl/sdks/go/node"
 )
 
@@ -21,6 +21,24 @@ func (np nodeProvider) CreateNodeIfNotExists(
 	apiClientNode, err := newAPIClientNode(np.config.APIListenAddress)
 	if err != nil {
 		return nil, err
+	}
+
+	nodeProcess, err := pidfile.TryGetProcess(
+		ctx,
+		np.config.DataDir,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if nodeProcess != nil {
+		return apiClientNode, nil
+	}
+
+	// no process running, need to daemonize node...
+
+	if os.Geteuid() != 0 {
+		return nil, fmt.Errorf("re-run command with sudo")
 	}
 
 	pathToOpctlBin, err := os.Executable()
@@ -57,6 +75,9 @@ func (np nodeProvider) CreateNodeIfNotExists(
 		cmdArgs...,
 	)
 
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
 	// don't inherit env; some things like jenkins track and kill processes via injecting env vars
 	cmd.Env = []string{
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
@@ -77,14 +98,9 @@ func (np nodeProvider) CreateNodeIfNotExists(
 	}
 
 	// try to connect to existing opctl node
-	err = apiClientNode.Liveness(ctx)
-	if err == nil {
-		return apiClientNode, nil
+	if err := apiClientNode.Liveness(ctx); err != nil {
+		return nil, err
 	}
 
-	if os.Geteuid() != 0 {
-		return nil, errors.New("re-run command with sudo")
-	}
-
-	return nil, fmt.Errorf("failed to create daemonized opctl node")
+	return apiClientNode, nil
 }

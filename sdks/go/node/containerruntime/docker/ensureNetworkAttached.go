@@ -3,6 +3,7 @@ package docker
 import (
 	"context"
 	"fmt"
+	"io"
 	"os/exec"
 	"runtime"
 	"runtime/debug"
@@ -416,7 +417,7 @@ func setupVm(
 
 	defer reader.Close()
 
-	_, err = stdcopy.StdCopy(os.Stdout, os.Stderr, reader)
+	_, err = stdcopy.StdCopy(io.Discard, os.Stderr, reader)
 	if err != nil {
 		return err
 	}

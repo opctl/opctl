@@ -73,7 +73,7 @@ func newCli(
 
 	apiListenAddress := cli.String(
 		mow.StringOpt{
-			Desc:   "HOST:PORT on which the API server will listen",
+			Desc:   "IP:PORT on which the API server will listen",
 			EnvVar: "OPCTL_API_LISTEN_ADDRESS",
 			Name:   "api-listen-address",
 			Value:  "127.0.0.1:42224",
@@ -82,7 +82,7 @@ func newCli(
 
 	dnsListenAddress := cli.String(
 		mow.StringOpt{
-			Desc:   "HOST:PORT on which the DNS server will listen",
+			Desc:   "IP:PORT on which the DNS server will listen",
 			EnvVar: "OPCTL_DNS_LISTEN_ADDRESS",
 			Name:   "dns-listen-address",
 			Value:  "127.0.0.1:53",
@@ -359,6 +359,7 @@ func newCli(
 		selfUpdateCmd.Action = func() {
 			exitWith(
 				selfUpdate(
+					ctx,
 					local.NodeConfig{
 						APIListenAddress: *apiListenAddress,
 						ContainerRuntime: *containerRuntime,

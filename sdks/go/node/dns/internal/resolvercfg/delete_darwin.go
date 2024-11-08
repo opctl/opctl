@@ -1,15 +1,19 @@
-package dns
+package resolvercfg
 
 import (
+	"context"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-func deleteAllResolvers() error {
-	return filepath.WalkDir(
-		etcResolverPath,
+// Delete modifications to the current system
+func Delete(
+	ctx context.Context,
+) error {
+	if err := filepath.WalkDir(
+		resolverDir,
 		func(path string, d fs.DirEntry, err error) error {
 			if err != nil && !os.IsNotExist(err) {
 				if os.IsNotExist(err) {
@@ -21,12 +25,16 @@ func deleteAllResolvers() error {
 
 			if strings.HasPrefix(
 				d.Name(),
-				"opctl_",
+				resolverPrefix,
 			) {
 				return os.Remove(path)
 			}
 
 			return nil
 		},
-	)
+	); err != nil {
+		return err
+	}
+
+	return clearCaches(ctx)
 }

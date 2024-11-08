@@ -1,6 +1,7 @@
 package local
 
 import (
+	"context"
 	"os"
 
 	. "github.com/onsi/ginkgo"
@@ -19,7 +20,9 @@ var _ = Context("KillNodeIfExists", func() {
 		})
 
 		/* act */
-		nodeProvider.KillNodeIfExists()
+		nodeProvider.KillNodeIfExists(
+			context.Background(),
+		)
 
 		/* assert */
 		Expect(actualErr).To(BeNil())

@@ -9,13 +9,13 @@ module.exports = {
     params.parsers.markdownit.tokens.filter(function filterToken(token) {
       return token.type === "heading_open";
     }).forEach(function forToken(heading, index, headings) {
-      if (heading.tag === "h1" && heading.line !== "# Change Log") {
+      if (heading.tag === "h1" && heading.line !== "# Changelog") {
         // this explicit text is the only valid content for the first heading
         return onError({
           "lineNumber": heading.lineNumber,
-          "detail": "First heading should be '# Change Log'.",
+          "detail": "First heading should be '# Changelog'.",
         });
-      } else if (heading.tag === "h2" && !/^## \d\.\d{1,9}\.\d{1,3}(-[.A-Za-z0-9]+)? - \d{4}-\d{2}-\d{2}$/.test(heading.line)) {
+      } else if (heading.tag === "h2" && !/^## \[(\d\.\d{1,9}\.\d{1,3}(-[.A-Za-z0-9]+)?)|Unreleased\]| - \d{4}-\d{2}-\d{2}$/.test(heading.line)) {
         // every second heading should be a version number, then a dash and a space, and then a date
         return onError({
           "lineNumber": heading.lineNumber,

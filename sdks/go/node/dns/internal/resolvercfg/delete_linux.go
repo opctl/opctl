@@ -1,11 +1,15 @@
-package dns
+package resolvercfg
 
 import (
+	"context"
 	"os"
 	"regexp"
 )
 
-func unregisterAllServers() error {
+// Delete modifications to the current system
+func Delete(
+	ctx context.Context,
+) error {
 	rc, err := os.ReadFile(etcResolvConfPath)
 	if err != nil {
 		return err

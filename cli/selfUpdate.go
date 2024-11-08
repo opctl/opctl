@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/blang/semver"
@@ -9,6 +10,7 @@ import (
 )
 
 func selfUpdate(
+	ctx context.Context,
 	nodeConfig local.NodeConfig,
 ) (string, error) {
 	v := semver.MustParse(version)
@@ -28,7 +30,9 @@ func selfUpdate(
 		return "", err
 	}
 
-	err = np.KillNodeIfExists()
+	err = np.KillNodeIfExists(
+		ctx,
+	)
 	if err != nil {
 		err = fmt.Errorf("unable to kill running node; run `node kill` to complete the update: %w", err)
 	}

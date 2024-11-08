@@ -28,9 +28,9 @@ inputs:
 run:
   serial:
     - op:
-        ref: $(../changelog/get-latest-version)
+        ref: $(../changelog/getLatestRelease)
         outputs:
-          latestVersion:
+          latestRelease:
     - op:
         ref: github.com/opspec-pkgs/base64.encode#1.1.0
         inputs:
@@ -40,7 +40,7 @@ run:
     - container:
         image: { ref: alpine:3.20 }
         envVars:
-          version: $(latestVersion)
+          version: $(latestRelease.version)
         cmd:
           - sh
           - -c
@@ -59,15 +59,15 @@ run:
             dockerSocket:
             gitBranch:
             HOME:
-            version: $(latestVersion)
+            version: $(latestRelease.version)
       - parallel:
           - op:
               ref: $(./to-ghcr)
               inputs:
-                version: $(latestVersion)
+                version: $(latestRelease.version)
                 encodedGithubAuth: $(b64GithubAuth)
           - op:
               ref: $(./to-github)
               inputs:
                 github:
-                version: $(latestVersion)
+                latestRelease: $(latestRelease)

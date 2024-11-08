@@ -9,6 +9,7 @@ import (
 
 	"github.com/opctl/opctl/cli/internal/clicolorer"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
+	"github.com/opctl/opctl/cli/internal/pidfile"
 	core "github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/node/api"
 	"github.com/opctl/opctl/sdks/go/node/datadir"
@@ -32,12 +33,17 @@ func nodeCreate(
 		return err
 	}
 
-	unlock, err := dataDir.InitAndLock()
+	gotLock, err := pidfile.TryGetLock(
+		ctx,
+		nodeConfig.DataDir,
+	)
 	if err != nil {
 		return err
 	}
 
-	defer unlock()
+	if !gotLock {
+		return fmt.Errorf("node already running; to kill use \"sudo opctl node kill\"")
+	}
 
 	containerRT, err := getContainerRuntime(ctx, nodeConfig)
 	if err != nil {

@@ -2,10 +2,15 @@ package dns
 
 import (
 	"context"
-	"runtime"
+	"net"
 	"time"
 
 	miekgdns "github.com/miekg/dns"
+)
+
+var (
+	nsIPAddress = ""
+	nsPort      = ""
 )
 
 /*
@@ -16,6 +21,12 @@ func Listen(
 	ctx context.Context,
 	address string,
 ) error {
+
+	var err error
+	nsIPAddress, nsPort, err = net.SplitHostPort(address)
+	if err != nil {
+		return err
+	}
 
 	dnsServer := miekgdns.Server{
 		Addr:    address,
@@ -31,13 +42,6 @@ func Listen(
 		// little hammer
 		dnsServer.ShutdownContext(ctx)
 	}()
-
-	if runtime.GOOS == "linux" {
-		err := registerServer(address)
-		if nil != err {
-			return err
-		}
-	}
 
 	return dnsServer.ListenAndServe()
 }
