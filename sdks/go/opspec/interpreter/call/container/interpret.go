@@ -1,9 +1,9 @@
 package container
 
 import (
-	"os"
 	"path/filepath"
 
+	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/cmd"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/dirs"
@@ -43,7 +43,8 @@ func Interpret(
 		containerID,
 		"fs",
 	)
-	if err := os.MkdirAll(scratchDirPath, 0770); err != nil {
+
+	if err := unsudo.CreateDir(scratchDirPath); err != nil {
 		return nil, err
 	}
 

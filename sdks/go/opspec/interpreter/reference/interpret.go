@@ -2,11 +2,11 @@ package reference
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
+	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/direntry"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/unbracketed"
 
@@ -162,11 +162,14 @@ func getRootValue(
 
 		switch opts.Type {
 		case "Dir":
-			os.MkdirAll(fsPath, 0770)
+			if err := unsudo.CreateDir(fsPath); err != nil {
+				return nil, "", err
+			}
 			return &model.Value{Dir: &fsPath}, "", nil
 		case "File":
-			os.MkdirAll(filepath.Dir(fsPath), 0770)
-			os.Create(fsPath)
+			if err := unsudo.CreateFile(fsPath, []byte{}); err != nil {
+				return nil, "", err
+			}
 			return &model.Value{File: &fsPath}, "", nil
 		}
 	}

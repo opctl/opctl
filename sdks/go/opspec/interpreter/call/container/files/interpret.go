@@ -5,9 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"os"
-
-	"github.com/golang-utils/filecopier"
+	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/file"
@@ -48,21 +46,10 @@ fileLoop:
 		// copy cached files to ensure can't be mutated
 		containerCallFiles[callSpecContainerFilePath] = filepath.Join(scratchDirPath, callSpecContainerFilePath)
 
-		// create parent dir
-		if err := os.MkdirAll(
-			filepath.Dir(containerCallFiles[callSpecContainerFilePath]),
-			0777,
-		); err != nil {
-			return nil, fmt.Errorf("unable to bind %v to %v: %w", callSpecContainerFilePath, fileExpression, err)
-		}
-
-		// copy file
-		fileCopier := filecopier.New()
-		err = fileCopier.OS(
+		if err := unsudo.CloneFile(
 			*fileValue.File,
 			containerCallFiles[callSpecContainerFilePath],
-		)
-		if err != nil {
+		); err != nil {
 			return nil, fmt.Errorf("unable to bind %v to %v: %w", callSpecContainerFilePath, fileExpression, err)
 		}
 

@@ -12,6 +12,10 @@ func nodeKill(
 	ctx context.Context,
 	nodeConfig local.NodeConfig,
 ) error {
+	if err := ensureEuid0(); err != nil {
+		return err
+	}
+
 	containerRT, err := getContainerRuntime(ctx, nodeConfig)
 	if err != nil {
 		return err

@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 )
@@ -27,12 +28,10 @@ func Interpret(
 			// bound to output
 			// create outputSocket on host so the output points to something
 			dcgHostSocketAddress := filepath.Join(scratchDirPath, callSpecContainerSocketAddress)
-			var outputSocket *os.File
-			outputSocket, err := os.Create(dcgHostSocketAddress)
-			outputSocket.Close()
-			if err != nil {
+			if err := unsudo.CreateFile(dcgHostSocketAddress, []byte{}); err != nil {
 				return nil, err
 			}
+
 			if err := os.Chmod(
 				dcgHostSocketAddress,
 				os.ModeSocket,
