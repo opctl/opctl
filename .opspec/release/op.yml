@@ -29,6 +29,8 @@ run:
   serial:
     - op:
         ref: $(../changelog/getLatestRelease)
+        inputs:
+          HOME:
         outputs:
           latestRelease:
     - op:
