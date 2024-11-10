@@ -10,7 +10,7 @@ import (
 
 type Release struct {
 	Description  string `json:"description"`
-	IsPrerelease bool   `json:"isPreRelease"`
+	IsPrerelease bool   `json:"isPrerelease"`
 	Version      string `json:"version"`
 }
 
