@@ -13,11 +13,11 @@ import (
 
 // Interpret container dirs
 func Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	containerCallSpecDirs map[string]interface{},
 	scratchDirPath string,
 	dataCachePath string,
-) (map[string]string, error) {
+) (model.StringMap, error) {
 	containerCallDirs := map[string]string{}
 dirLoop:
 	for callSpecContainerDirPath, dirExpression := range containerCallSpecDirs {
@@ -34,7 +34,7 @@ dirLoop:
 			true,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("unable to bind directory %v to %v: %w", callSpecContainerDirPath, dirExpression, err)
+			return model.StringMap{}, fmt.Errorf("unable to bind directory %v to %v: %w", callSpecContainerDirPath, dirExpression, err)
 		}
 
 		if *dirValue.Dir != "" && !strings.HasPrefix(*dirValue.Dir, dataCachePath) {
@@ -51,9 +51,11 @@ dirLoop:
 			*dirValue.Dir,
 			containerCallDirs[callSpecContainerDirPath],
 		); err != nil {
-			return nil, fmt.Errorf("unable to bind %v to %v: %w", callSpecContainerDirPath, dirExpression, err)
+			return model.StringMap{}, fmt.Errorf("unable to bind %v to %v: %w", callSpecContainerDirPath, dirExpression, err)
 		}
 
 	}
-	return containerCallDirs, nil
+	return model.NewStringMap(
+		containerCallDirs,
+	), nil
 }

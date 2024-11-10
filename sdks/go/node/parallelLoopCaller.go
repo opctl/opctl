@@ -22,13 +22,13 @@ type parallelLoopCaller interface {
 	Call(
 		parentCtx context.Context,
 		id string,
-		inboundScope map[string]*model.Value,
+		inboundScope map[string]*ipld.Node,
 		callSpecParallelLoop model.ParallelLoopCallSpec,
 		opPath string,
 		parentCallID *string,
 		rootCallID string,
 	) (
-		map[string]*model.Value,
+		map[string]*ipld.Node,
 		error,
 	)
 }
@@ -51,13 +51,13 @@ type _parallelLoopCaller struct {
 func (plpr _parallelLoopCaller) Call(
 	parentCtx context.Context,
 	id string,
-	inboundScope map[string]*model.Value,
+	inboundScope map[string]*ipld.Node,
 	callSpecParallelLoop model.ParallelLoopCallSpec,
 	opPath string,
 	parentCallID *string,
 	rootCallID string,
 ) (
-	map[string]*model.Value,
+	map[string]*ipld.Node,
 	error,
 ) {
 	// setup cancellation
@@ -143,7 +143,7 @@ func (plpr _parallelLoopCaller) Call(
 	)
 
 	var isChildErred = false
-	childCallOutputsByIndex := map[int]map[string]*model.Value{}
+	childCallOutputsByIndex := map[int]map[string]*ipld.Node{}
 	outputs := inboundScope
 
 eventLoop:

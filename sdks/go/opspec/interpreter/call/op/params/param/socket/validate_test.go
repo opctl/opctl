@@ -13,7 +13,7 @@ var _ = Context("Validate", func() {
 		It("should return expected errors", func() {
 
 			/* arrange */
-			providedValue := &model.Value{}
+			providedValue := &ipld.Node{}
 
 			expectedErrors := []error{
 				errors.New("socket required"),
@@ -32,7 +32,7 @@ var _ = Context("Validate", func() {
 
 			/* arrange */
 			providedValueSocket := "dummySocket"
-			providedValue := &model.Value{
+			providedValue := &ipld.Node{
 				Socket: &providedValueSocket,
 			}
 

@@ -17,7 +17,7 @@ var _ = Context("Interpret", func() {
 				model.ParallelLoopCallSpec{
 					Range: "range",
 				},
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 			)
 
 			/* assert */
@@ -30,7 +30,7 @@ var _ = Context("Interpret", func() {
 		providedScgLoop := model.ParallelLoopCallSpec{
 			Range: fmt.Sprintf("$(%s)", identifier),
 		}
-		providedScope := map[string]*model.Value{
+		providedScope := map[string]*ipld.Node{
 			identifier: {Array: new([]interface{})},
 		}
 

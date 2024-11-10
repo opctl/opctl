@@ -17,13 +17,13 @@ type caller interface {
 	Call(
 		ctx context.Context,
 		id string,
-		scope map[string]*model.Value,
+		scope map[string]*ipld.Node,
 		callSpec *model.CallSpec,
 		opPath string,
 		parentCallID *string,
 		rootCallID string,
 	) (
-		map[string]*model.Value,
+		map[string]*ipld.Node,
 		error,
 	)
 }
@@ -81,20 +81,20 @@ type _caller struct {
 func (clr _caller) Call(
 	ctx context.Context,
 	id string,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	callSpec *model.CallSpec,
 	opPath string,
 	parentCallID *string,
 	rootCallID string,
 ) (
-	map[string]*model.Value,
+	map[string]*ipld.Node,
 	error,
 ) {
 	callCtx, cancelCall := context.WithCancel(ctx)
 	defer cancelCall()
 	var err error
 	var isKilled bool
-	var outputs map[string]*model.Value
+	var outputs map[string]*ipld.Node
 	var call *model.Call
 	callStartTime := time.Now().UTC()
 
@@ -212,7 +212,6 @@ func (clr _caller) Call(
 		outputs, err = clr.opCaller.Call(
 			callCtx,
 			call.Op,
-			scope,
 			parentCallID,
 			rootCallID,
 			callSpec.Op,

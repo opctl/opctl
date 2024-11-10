@@ -15,7 +15,7 @@ var _ = Context("Validate", func() {
 		It("should return expected errors", func() {
 
 			/* arrange */
-			providedValue := &model.Value{}
+			providedValue := &ipld.Node{}
 
 			expectedErrors := []error{
 				errors.New("file required"),
@@ -37,7 +37,7 @@ var _ = Context("Validate", func() {
 
 				/* arrange */
 				providedValueFile := "dummyFile"
-				providedValue := &model.Value{
+				providedValue := &ipld.Node{
 					File: &providedValueFile,
 				}
 
@@ -65,7 +65,7 @@ var _ = Context("Validate", func() {
 
 					tmpFilePath := tmpFile.Name()
 
-					providedValue := &model.Value{
+					providedValue := &ipld.Node{
 						File: &tmpFilePath,
 					}
 
@@ -91,7 +91,7 @@ var _ = Context("Validate", func() {
 						panic(err)
 					}
 
-					providedValue := &model.Value{
+					providedValue := &ipld.Node{
 						File: &tmpDirPath,
 					}
 

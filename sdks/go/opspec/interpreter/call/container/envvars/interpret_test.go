@@ -14,7 +14,7 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			/* act */
 			_, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				"$()",
 			)
 
@@ -31,8 +31,8 @@ var _ = Context("Interpret", func() {
 					"key": nil,
 				}
 
-				providedScope := map[string]*model.Value{
-					identifier: &model.Value{
+				providedScope := map[string]*ipld.Node{
+					identifier: &ipld.Node{
 						Object: &objectValue,
 					},
 				}
@@ -53,8 +53,8 @@ var _ = Context("Interpret", func() {
 				identifier := "identifier"
 				objectValue := map[string]interface{}{}
 
-				providedScope := map[string]*model.Value{
-					identifier: &model.Value{
+				providedScope := map[string]*ipld.Node{
+					identifier: {
 						Object: &objectValue,
 					},
 				}
@@ -67,7 +67,7 @@ var _ = Context("Interpret", func() {
 
 				/* assert */
 				Expect(actualErr).To(BeNil())
-				Expect(actualResult).To(Equal(map[string]string{}))
+				Expect(actualResult).To(Equal(model.NewStringMap(map[string]string{})))
 			})
 		})
 	})

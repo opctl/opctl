@@ -20,7 +20,7 @@ import (
 // Interpret interprets an OpCallSpec into a OpCall
 func Interpret(
 	ctx context.Context,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	opCallSpec *model.OpCallSpec,
 	opID string,
 	parentOpPath string,

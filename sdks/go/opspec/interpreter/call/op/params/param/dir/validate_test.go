@@ -15,7 +15,7 @@ var _ = Context("Validate", func() {
 		It("should return expected errors", func() {
 
 			/* arrange */
-			providedValue := &model.Value{}
+			providedValue := &ipld.Node{}
 
 			expectedErrors := []error{
 				errors.New("dir required"),
@@ -38,7 +38,7 @@ var _ = Context("Validate", func() {
 
 					/* arrange */
 					providedValueDir := "dummyDir"
-					providedValue := &model.Value{
+					providedValue := &ipld.Node{
 						Dir: &providedValueDir,
 					}
 
@@ -64,7 +64,7 @@ var _ = Context("Validate", func() {
 							panic(err)
 						}
 
-						providedValue := &model.Value{
+						providedValue := &ipld.Node{
 							Dir: &tmpDirPath,
 						}
 
@@ -92,7 +92,7 @@ var _ = Context("Validate", func() {
 
 						tmpFilePath := tmpFile.Name()
 
-						providedValue := &model.Value{
+						providedValue := &ipld.Node{
 							Dir: &tmpFilePath,
 						}
 

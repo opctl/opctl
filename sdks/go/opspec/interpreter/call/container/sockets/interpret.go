@@ -11,10 +11,10 @@ import (
 
 // Interpret container sockets
 func Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	containerCallSpecSockets map[string]string,
 	scratchDirPath string,
-) (map[string]string, error) {
+) (model.StringMap, error) {
 	containerCallSockets := map[string]string{}
 	for callSpecContainerSocketAddress, callSpecContainerSocketBind := range containerCallSpecSockets {
 		// @TODO: use reference.interpret once reference syntax no longer optional
@@ -31,16 +31,18 @@ func Interpret(
 			outputSocket, err := os.Create(dcgHostSocketAddress)
 			outputSocket.Close()
 			if err != nil {
-				return nil, err
+				return model.StringMap{}, err
 			}
 			if err := os.Chmod(
 				dcgHostSocketAddress,
 				os.ModeSocket,
 			); err != nil {
-				return nil, err
+				return model.StringMap{}, err
 			}
 			containerCallSockets[callSpecContainerSocketAddress] = dcgHostSocketAddress
 		}
 	}
-	return containerCallSockets, nil
+	return model.NewStringMap(
+		containerCallSockets,
+	), nil
 }

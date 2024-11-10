@@ -50,7 +50,7 @@ var _ = Context("caller", func() {
 				objectUnderTest.Call(
 					context.Background(),
 					"dummyCallID",
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					nil,
 					"dummyOpPath",
 					nil,
@@ -112,7 +112,7 @@ var _ = Context("caller", func() {
 				objectUnderTest.Call(
 					context.Background(),
 					providedCallID,
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					&model.CallSpec{
 						If:     &ifSpec,
 						Serial: &[]*model.CallSpec{},
@@ -141,7 +141,7 @@ var _ = Context("caller", func() {
 				providedOpPath := "providedOpPath"
 				fakeContainerCaller := new(FakeContainerCaller)
 
-				providedScope := map[string]*model.Value{}
+				providedScope := map[string]*ipld.Node{}
 				imageSpec := &model.ContainerCallImageSpec{
 					Ref: "docker.io/library/ref",
 				}
@@ -159,12 +159,12 @@ var _ = Context("caller", func() {
 						},
 						ContainerID: providedCallID,
 						Cmd:         []string{},
-						Dirs:        map[string]string{},
-						Files:       map[string]string{},
+						Dirs:        model.NewStringMap(map[string]string{}),
+						Files:       model.NewStringMap(map[string]string{}),
 						Image: &model.ContainerCallImage{
 							Ref: &imageSpec.Ref,
 						},
-						Sockets: map[string]string{},
+						Sockets: model.NewStringMap(map[string]string{}),
 					},
 				}
 
@@ -221,7 +221,6 @@ var _ = Context("caller", func() {
 				providedOpPath := filepath.Join(wd, "testdata/caller")
 
 				providedCallID := "dummyCallID"
-				providedScope := map[string]*model.Value{}
 				providedCallSpec := &model.CallSpec{
 					Op: &model.OpCallSpec{
 						Ref: providedOpPath,
@@ -236,7 +235,7 @@ var _ = Context("caller", func() {
 							OpPath: providedOpPath,
 						},
 						OpID:   providedCallID,
-						Inputs: map[string]*model.Value{},
+						Inputs: map[string]*ipld.Node{},
 					},
 				}
 
@@ -259,7 +258,7 @@ var _ = Context("caller", func() {
 				_, actualErr := objectUnderTest.Call(
 					context.Background(),
 					providedCallID,
-					providedScope,
+					map[string]*ipld.Node{},
 					providedCallSpec,
 					providedOpPath,
 					&providedParentID,
@@ -270,7 +269,6 @@ var _ = Context("caller", func() {
 				Expect(actualErr).To(BeNil())
 				_,
 					actualOpCall,
-					actualScope,
 					actualParentID,
 					actualRootCallID,
 					actualCallSpec := fakeOpCaller.CallArgsForCall(0)
@@ -279,7 +277,6 @@ var _ = Context("caller", func() {
 				actualOpCall.ChildCallID = expectedCall.Op.ChildCallID
 
 				Expect(*actualOpCall).To(Equal(*expectedCall.Op))
-				Expect(actualScope).To(Equal(providedScope))
 				Expect(*actualParentID).To(Equal(providedParentID))
 				Expect(actualRootCallID).To(Equal(providedRootCallID))
 				Expect(actualCallSpec).To(Equal(providedCallSpec.Op))
@@ -292,7 +289,7 @@ var _ = Context("caller", func() {
 				fakeParallelCaller := new(FakeParallelCaller)
 
 				providedCallID := "dummyCallID"
-				providedScope := map[string]*model.Value{}
+				providedScope := map[string]*ipld.Node{}
 				providedCallSpec := &model.CallSpec{
 					Parallel: &[]*model.CallSpec{
 						{Container: &model.ContainerCallSpec{}},
@@ -343,7 +340,7 @@ var _ = Context("caller", func() {
 				fakeParallelLoopCaller := new(FakeParallelLoopCaller)
 
 				providedCallID := "dummyCallID"
-				providedScope := map[string]*model.Value{}
+				providedScope := map[string]*ipld.Node{}
 				providedCallSpec := &model.CallSpec{
 					ParallelLoop: &model.ParallelLoopCallSpec{},
 				}
@@ -396,7 +393,7 @@ var _ = Context("caller", func() {
 				fakeSerialCaller := new(FakeSerialCaller)
 
 				providedCallID := "dummyCallID"
-				providedScope := map[string]*model.Value{}
+				providedScope := map[string]*ipld.Node{}
 				providedCallSpec := &model.CallSpec{
 					Serial: &[]*model.CallSpec{
 						{Container: &model.ContainerCallSpec{}},
@@ -448,7 +445,7 @@ var _ = Context("caller", func() {
 				fakeSerialLoopCaller := new(FakeSerialLoopCaller)
 
 				providedCallID := "dummyCallID"
-				providedScope := map[string]*model.Value{}
+				providedScope := map[string]*ipld.Node{}
 				providedCallSpec := &model.CallSpec{
 					SerialLoop: &model.SerialLoopCallSpec{
 						Range: []interface{}{},

@@ -13,7 +13,7 @@ var _ = Context("Interpret", func() {
 		arrayValue := []interface{}{"item"}
 		stringParamName := "stringParamName"
 
-		providedArgs := map[string]*model.Value{
+		providedArgs := map[string]*ipld.Node{
 			stringParamName: {Array: &arrayValue},
 		}
 
@@ -28,7 +28,7 @@ var _ = Context("Interpret", func() {
 			panic(err)
 		}
 
-		expectedOutputs := map[string]*model.Value{
+		expectedOutputs := map[string]*ipld.Node{
 			stringParamName: arrayValueAsString,
 		}
 
@@ -58,7 +58,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			actualResult, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				providedParams,
 				map[string]string{},
 				"opPath",
@@ -76,7 +76,7 @@ var _ = Context("Interpret", func() {
 			arrayValue := []interface{}{"item"}
 			stringParamName := "stringParamName"
 
-			providedArgs := map[string]*model.Value{
+			providedArgs := map[string]*ipld.Node{
 				stringParamName: {Array: &arrayValue},
 			}
 
@@ -93,7 +93,7 @@ var _ = Context("Interpret", func() {
 				panic(err)
 			}
 
-			expectedOutputs := map[string]*model.Value{
+			expectedOutputs := map[string]*ipld.Node{
 				stringParamName: arrayValueAsString,
 			}
 
@@ -115,7 +115,7 @@ var _ = Context("Interpret", func() {
 		It("indicates what was expected when one output exists", func() {
 			/* act */
 			actualOutputs, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				map[string]*model.ParamSpec{
 					"bar": {String: &model.StringParamSpec{}},
 				},
@@ -133,7 +133,7 @@ var _ = Context("Interpret", func() {
 		It("indicates what was expected when one remaining output exists", func() {
 			/* act */
 			actualOutputs, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				map[string]*model.ParamSpec{
 					"x": {String: &model.StringParamSpec{}},
 					"y": {String: &model.StringParamSpec{}},
@@ -155,7 +155,7 @@ var _ = Context("Interpret", func() {
 		It("indicates what was expected when multiple outputs exist", func() {
 			/* act */
 			actualOutputs, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				map[string]*model.ParamSpec{
 					"x": {String: &model.StringParamSpec{}},
 					"y": {String: &model.StringParamSpec{}},
@@ -175,7 +175,7 @@ var _ = Context("Interpret", func() {
 		It("indicates what was expected when multiple remaining outputs exist", func() {
 			/* act */
 			actualOutputs, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				map[string]*model.ParamSpec{
 					"x": {String: &model.StringParamSpec{}},
 					"y": {String: &model.StringParamSpec{}},
@@ -196,7 +196,7 @@ var _ = Context("Interpret", func() {
 		It("provides information when it doesn't know what was expected", func() {
 			/* act */
 			actualOutputs, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				map[string]*model.ParamSpec{},
 				map[string]string{
 					"a": "",

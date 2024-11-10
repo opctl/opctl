@@ -11,7 +11,7 @@ var _ = Context("CoerceToArrayOrObject", func() {
 		It("should call coerce.ToArray w/ expected args", func() {
 			/* arrange */
 
-			providedData := model.Value{Array: new([]interface{})}
+			providedData := ipld.Node{Array: new([]interface{})}
 
 			/* act */
 			actualResult, actualErr := CoerceToArrayOrObject(
@@ -20,7 +20,7 @@ var _ = Context("CoerceToArrayOrObject", func() {
 
 			/* assert */
 			Expect(actualErr).To(BeNil())
-			Expect(*actualResult).To(Equal(model.Value{Array: new([]interface{})}))
+			Expect(*actualResult).To(Equal(ipld.Node{Array: new([]interface{})}))
 		})
 	})
 })

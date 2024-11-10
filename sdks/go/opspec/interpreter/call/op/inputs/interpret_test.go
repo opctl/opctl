@@ -21,7 +21,7 @@ var _ = Context("Interpret", func() {
 			},
 		}
 
-		expectedInputs := map[string]*model.Value{
+		expectedInputs := map[string]*ipld.Node{
 			providedArgName: {
 				String: new(string),
 			},
@@ -32,7 +32,7 @@ var _ = Context("Interpret", func() {
 			providedInputArgs,
 			providedParams,
 			"dummyOpPath",
-			map[string]*model.Value{
+			map[string]*ipld.Node{
 				providedArgName: {
 					String: new(string),
 				},
@@ -60,7 +60,7 @@ var _ = Context("Interpret", func() {
 				map[string]interface{}{},
 				providedParams,
 				"dummyOpPath",
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				"dummyOpScratchDir",
 			)
 

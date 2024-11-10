@@ -5,16 +5,16 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/ipld/go-ipld-prime"
 )
 
 // ToNumber coerces a value to a number value
 func ToNumber(
-	value *model.Value,
-) (*model.Value, error) {
+	value ipld.Node,
+) (ipld.Node, error) {
 	switch {
 	case value == nil:
-		return &model.Value{Number: new(float64)}, nil
+		return ipld.Node{Number: new(float64)}, nil
 	case value.Array != nil:
 		return nil, fmt.Errorf("unable to coerce array to number: %w", errIncompatibleTypes)
 	case value.Dir != nil:
@@ -29,7 +29,7 @@ func ToNumber(
 		if err != nil {
 			return nil, fmt.Errorf("unable to coerce file to number: %w", err)
 		}
-		return &model.Value{Number: &float64Value}, nil
+		return ipld.Node{Number: &float64Value}, nil
 	case value.Number != nil:
 		return value, nil
 	case value.Object != nil:
@@ -39,7 +39,7 @@ func ToNumber(
 		if err != nil {
 			return nil, fmt.Errorf("unable to coerce string to number: %w", err)
 		}
-		return &model.Value{Number: &float64Value}, nil
+		return ipld.Node{Number: &float64Value}, nil
 	default:
 		return nil, fmt.Errorf("unable to coerce '%+v' to number", value)
 	}

@@ -1,10 +1,16 @@
 package model
 
+import (
+	"sort"
+
+	"github.com/ipld/go-ipld-prime"
+)
+
 // Auth holds auth data
 type Auth struct {
 	// Resources designates which resources this auth applies to in the form of a reference (or prefix thereof)
 	Resources string
-	Creds
+	Creds     Creds
 }
 
 // Call is a node of a call graph; see https://en.wikipedia.org/wiki/Call_graph
@@ -37,29 +43,54 @@ type ContainerCall struct {
 	ContainerID string   `json:"containerId"`
 	Cmd         []string `json:"cmd"`
 	// format: containerPath => hostPath
-	Dirs map[string]string `json:"dirs"`
+	Dirs StringMap `json:"dirs"`
 	// format: name => value
-	EnvVars map[string]string `json:"envVars"`
+	EnvVars StringMap `json:"envVars"`
 	// format: containerPath => hostPath
-	Files map[string]string   `json:"files"`
+	Files StringMap           `json:"files"`
 	Image *ContainerCallImage `json:"image"`
 	// format: containerSocket => hostSocket
-	Sockets map[string]string `json:"sockets"`
-	WorkDir string            `json:"workDir"`
-	Name    *string           `json:"name,omitempty"`
-	Ports   map[string]string `json:"ports,omitempty"`
+	Sockets StringMap `json:"sockets"`
+	WorkDir string    `json:"workDir"`
+	Name    *string   `json:"name,omitempty"`
+	Ports   StringMap `json:"ports,omitempty"`
+}
+
+func NewStringMap(input map[string]string) StringMap {
+	var keys []string
+
+	if input != nil {
+		// Extract keys from the map and sort them
+		keys = make([]string, 0, len(input))
+		for key := range input {
+			keys = append(keys, key)
+		}
+	}
+
+	// Sort keys for deterministic ordering
+	sort.Strings(keys)
+
+	return StringMap{
+		Keys:   keys,
+		Values: input,
+	}
+}
+
+type StringMap struct {
+	Keys   []string
+	Values map[string]string
 }
 
 // ContainerCallImage is the image used when calling a container
 type ContainerCallImage struct {
-	Src       *Value  `json:"src,omitempty"`
+	//	Src       *Value  `json:"src,omitempty"`
 	Ref       *string `json:"ref"`
 	PullCreds *Creds  `json:"pullCreds,omitempty"`
 }
 
 // Creds contains authentication credentials
 type Creds struct {
-	Username,
+	Username string
 	Password string
 }
 
@@ -74,7 +105,7 @@ type LoopVars struct {
 type OpCall struct {
 	BaseCall
 	OpID              string            `json:"opId"`
-	Inputs            map[string]*Value `json:"inputs"`
+	Inputs            map[string]*ipld.Node `json:"inputs"`
 	ChildCallCallSpec *CallSpec         `json:"childCallScg"`
 	ChildCallID       string            `json:"childCallId"`
 }
@@ -82,21 +113,15 @@ type OpCall struct {
 // ParallelLoopCall is a call of a parallel loop
 type ParallelLoopCall struct {
 	// an array or object
-	Range *Value    `json:"range,omitempty"`
+	Range *ipld.Node    `json:"range,omitempty"`
 	Run   Call      `json:"run,omitempty"`
 	Vars  *LoopVars `json:"vars,omitempty"`
-}
-
-// Predicate is a predicate i.e. something that evaluates to true or false
-type Predicate struct {
-	Eq []*Value `json:"eq"`
-	Ne []*Value `json:"ne"`
 }
 
 // SerialLoopCall is a call of a serial loop
 type SerialLoopCall struct {
 	// an array or object
-	Range *Value    `json:"range,omitempty"`
+	Range *ipld.Node    `json:"range,omitempty"`
 	Run   Call      `json:"run,omitempty"`
 	Until *bool     `json:"until,omitempty"`
 	Vars  *LoopVars `json:"vars,omitempty"`

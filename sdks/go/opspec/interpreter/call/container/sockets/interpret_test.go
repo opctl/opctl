@@ -17,7 +17,7 @@ var _ = Context("Interpret", func() {
 		providedCurrentScopeRef2 := "/unix-socket"
 		providedCurrentScopeRef2String := "scopeRef2String"
 
-		providedCurrentScope := map[string]*model.Value{
+		providedCurrentScope := map[string]*ipld.Node{
 			providedCurrentScopeRef1: {Socket: &providedCurrentScopeRef1String},
 		}
 
@@ -33,10 +33,12 @@ var _ = Context("Interpret", func() {
 			panic(err)
 		}
 
-		expectedSockets := map[string]string{
-			providedCurrentScopeRef1: providedCurrentScopeRef1String,
-			providedCurrentScopeRef2: filepath.Join(providedScratchDirPath, providedCurrentScopeRef2),
-		}
+		expectedSockets := model.NewStringMap(
+			map[string]string{
+				providedCurrentScopeRef1: providedCurrentScopeRef1String,
+				providedCurrentScopeRef2: filepath.Join(providedScratchDirPath, providedCurrentScopeRef2),
+			},
+		)
 
 		/* act */
 		actualContainerCallSockets, err := Interpret(

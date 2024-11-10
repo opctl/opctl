@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"github.com/ipld/go-ipld-prime"
+)
 
 // Event represents a distributed state change
 type Event struct {
@@ -34,7 +38,7 @@ type CallEnded struct {
 	Call    Call              `json:"call"`
 	Ref     string            `json:"ref"`
 	Error   *CallEndedError   `json:"error,omitempty"`
-	Outputs map[string]*Value `json:"outputs"`
+	Outputs map[string]*ipld.Node `json:"outputs"`
 	Outcome string            `json:"outcome"`
 }
 

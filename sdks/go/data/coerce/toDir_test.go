@@ -4,9 +4,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/ipld/go-ipld-prime"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 )
 
 var _ = Context("ToDir", func() {
@@ -26,7 +26,7 @@ var _ = Context("ToDir", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			array := &[]interface{}{"dummyItem"}
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Array: array,
 			}
 
@@ -42,7 +42,7 @@ var _ = Context("ToDir", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedBoolean := true
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Boolean: &providedBoolean,
 			}
 
@@ -57,7 +57,7 @@ var _ = Context("ToDir", func() {
 	Context("Value.Dir isn't nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Dir: new(string),
 			}
 
@@ -72,7 +72,7 @@ var _ = Context("ToDir", func() {
 	Context("Value.File isn't nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				File: new(string),
 			}
 
@@ -88,7 +88,7 @@ var _ = Context("ToDir", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedNumber := 2.2
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Number: &providedNumber,
 			}
 
@@ -118,7 +118,7 @@ var _ = Context("ToDir", func() {
 					panic(err)
 				}
 
-				providedValue := &model.Value{
+				providedValue := ipld.Node{
 					Object: &providedObject,
 				}
 
@@ -144,7 +144,7 @@ var _ = Context("ToDir", func() {
 					panic(err)
 				}
 
-				providedValue := &model.Value{
+				providedValue := ipld.Node{
 					Object: &providedObject,
 				}
 
@@ -162,7 +162,7 @@ var _ = Context("ToDir", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedSocket := "dummySocket"
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Socket: &providedSocket,
 			}
 
@@ -177,7 +177,7 @@ var _ = Context("ToDir", func() {
 	Context("Value.String isn't nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				String: new(string),
 			}
 
@@ -192,7 +192,7 @@ var _ = Context("ToDir", func() {
 	Context("Value.Array,Dir,File,Number,Dir,Socket,String nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedValue := &model.Value{}
+			providedValue := ipld.Node{}
 
 			/* act */
 			actualValue, actualErr := ToDir(providedValue, "scratchDir")

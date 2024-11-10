@@ -11,11 +11,11 @@ import (
 
 // Interpret container envVars
 func Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	containerCallSpecEnvVars interface{},
-) (map[string]string, error) {
+) (model.StringMap, error) {
 	if containerCallSpecEnvVars == nil {
-		return nil, nil
+		return model.StringMap{}, nil
 	}
 
 	envVarsMap, err := object.Interpret(
@@ -23,22 +23,24 @@ func Interpret(
 		containerCallSpecEnvVars,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("unable to interpret '%v' as envVars: %w", containerCallSpecEnvVars, err)
+		return model.StringMap{}, fmt.Errorf("unable to interpret '%v' as envVars: %w", containerCallSpecEnvVars, err)
 	}
 
 	envVarsStringMap := map[string]string{}
 	for envVarName, envVarValueInterface := range *envVarsMap.Object {
 		envVarValue, err := value.Construct(envVarValueInterface)
 		if err != nil {
-			return nil, fmt.Errorf("unable to construct value for env var '%s': %w", envVarName, err)
+			return model.StringMap{}, fmt.Errorf("unable to construct value for env var '%s': %w", envVarName, err)
 		}
 
 		envVarValueString, err := coerce.ToString(envVarValue)
 		if err != nil {
-			return nil, fmt.Errorf("unable to interpret '%+v' as value of env var '%v': %w", envVarValue, envVarName, err)
+			return model.StringMap{}, fmt.Errorf("unable to interpret '%+v' as value of env var '%v': %w", envVarValue, envVarName, err)
 		}
 
 		envVarsStringMap[envVarName] = *envVarValueString.String
 	}
-	return envVarsStringMap, nil
+	return model.NewStringMap(
+		envVarsStringMap,
+	), nil
 }

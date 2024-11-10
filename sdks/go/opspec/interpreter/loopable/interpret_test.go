@@ -15,8 +15,8 @@ var _ = Context("Interpret", func() {
 			identifier := "identifier"
 			arrayValue := []interface{}{"item"}
 
-			providedScope := map[string]*model.Value{
-				identifier: &model.Value{
+			providedScope := map[string]*ipld.Node{
+				identifier: &ipld.Node{
 					Array: &arrayValue,
 				},
 			}
@@ -40,8 +40,8 @@ var _ = Context("Interpret", func() {
 				"key": "value",
 			}
 
-			providedScope := map[string]*model.Value{
-				identifier: &model.Value{
+			providedScope := map[string]*ipld.Node{
+				identifier: &ipld.Node{
 					Object: &objectValue,
 				},
 			}

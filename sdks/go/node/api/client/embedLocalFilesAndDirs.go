@@ -20,7 +20,7 @@ func getMaxEmbedMB() float64 {
 // note1: this loads referenced files/dirs into memory so we limit max combined embed to maxEmbedBytes to reduce the chances of memory exhaustion.
 // note2: this approach is primitive; we will need to support de-dupe and chunking in the future.
 func embedLocalFilesAndDirs(
-	args map[string]*model.Value,
+	args map[string]*ipld.Node,
 ) error {
 	var totalSize int64
 	for key, val := range args {
@@ -43,7 +43,7 @@ func embedLocalFilesAndDirs(
 			return fmt.Errorf("embedding failed: combined size of files/dirs cannot exceed %gMb", getMaxEmbedMB())
 		}
 
-		args[key] = &model.Value{Object: &fileObj}
+		args[key] = &ipld.Node{Object: &fileObj}
 	}
 	return nil
 }

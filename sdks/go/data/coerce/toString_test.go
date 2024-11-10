@@ -4,9 +4,9 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/ipld/go-ipld-prime"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 )
 
 var _ = Context("ToString", func() {
@@ -17,7 +17,7 @@ var _ = Context("ToString", func() {
 			actualValue, actualErr := ToString(nil)
 
 			/* assert */
-			Expect(*actualValue).To(Equal(model.Value{String: new(string)}))
+			Expect(*actualValue).To(Equal(ipld.Node{String: new(string)}))
 			Expect(actualErr).To(BeNil())
 		})
 	})
@@ -28,11 +28,11 @@ var _ = Context("ToString", func() {
 				jsonArray := "[]"
 				/* act */
 				actualValue, actualErr := ToString(
-					&model.Value{Array: new([]interface{})},
+					ipld.Node{Array: new([]interface{})},
 				)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{String: &jsonArray}))
+				Expect(*actualValue).To(Equal(ipld.Node{String: &jsonArray}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -41,12 +41,12 @@ var _ = Context("ToString", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedBoolean := true
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Boolean: &providedBoolean,
 			}
 
 			booleanString := strconv.FormatBool(providedBoolean)
-			expectedValue := model.Value{String: &booleanString}
+			expectedValue := ipld.Node{String: &booleanString}
 
 			/* act */
 			actualValue, actualErr := ToString(providedValue)
@@ -60,7 +60,7 @@ var _ = Context("ToString", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedDir := "dummyValue"
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Dir: &providedDir,
 			}
 
@@ -78,7 +78,7 @@ var _ = Context("ToString", func() {
 				/* arrange */
 				/* act */
 				actualValue, actualErr := ToString(
-					&model.Value{File: new(string)},
+					ipld.Node{File: new(string)},
 				)
 
 				/* assert */
@@ -102,11 +102,11 @@ var _ = Context("ToString", func() {
 					panic(err)
 				}
 
-				expectedValue := model.Value{String: &expectedString}
+				expectedValue := ipld.Node{String: &expectedString}
 
 				/* act */
 				actualValue, actualErr := ToString(
-					&model.Value{File: &filePath},
+					ipld.Node{File: &filePath},
 				)
 
 				/* assert */
@@ -119,12 +119,12 @@ var _ = Context("ToString", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedNumber := 2.2
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Number: &providedNumber,
 			}
 
 			numberString := strconv.FormatFloat(providedNumber, 'f', -1, 64)
-			expectedValue := model.Value{String: &numberString}
+			expectedValue := ipld.Node{String: &numberString}
 
 			/* act */
 			actualValue, actualErr := ToString(providedValue)
@@ -140,11 +140,11 @@ var _ = Context("ToString", func() {
 				/* arrange */
 
 				marshaledString := string("{}")
-				expectedValue := model.Value{String: &marshaledString}
+				expectedValue := ipld.Node{String: &marshaledString}
 
 				/* act */
 				actualValue, actualErr := ToString(
-					&model.Value{Object: new(map[string]interface{})},
+					ipld.Node{Object: new(map[string]interface{})},
 				)
 
 				/* assert */
@@ -157,7 +157,7 @@ var _ = Context("ToString", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedString := "dummyValue"
-			providedValue := model.Value{
+			providedValue := ipld.Node{
 				String: &providedString,
 			}
 
@@ -172,7 +172,7 @@ var _ = Context("ToString", func() {
 	Context("Value.Dir,File,Number,Object,String nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedValue := &model.Value{}
+			providedValue := ipld.Node{}
 
 			/* act */
 			actualValue, actualErr := ToString(providedValue)

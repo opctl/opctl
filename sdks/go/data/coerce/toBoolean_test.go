@@ -3,9 +3,9 @@ package coerce
 import (
 	"os"
 
+	"github.com/ipld/go-ipld-prime"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 )
 
 var _ = Context("ToBoolean", func() {
@@ -16,7 +16,7 @@ var _ = Context("ToBoolean", func() {
 			actualValue, actualErr := ToBoolean(nil)
 
 			/* assert */
-			Expect(*actualValue).To(Equal(model.Value{Boolean: new(bool)}))
+			Expect(*actualValue).To(Equal(ipld.Node{Boolean: new(bool)}))
 			Expect(actualErr).To(BeNil())
 		})
 	})
@@ -28,13 +28,13 @@ var _ = Context("ToBoolean", func() {
 
 				/* act */
 				actualValue, actualErr := ToBoolean(
-					&model.Value{
+					ipld.Node{
 						Array: new([]interface{}),
 					},
 				)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+				Expect(*actualValue).To(Equal(ipld.Node{Boolean: &expectedBoolean}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -49,13 +49,13 @@ var _ = Context("ToBoolean", func() {
 
 				/* act */
 				actualValue, actualErr := ToBoolean(
-					&model.Value{
+					ipld.Node{
 						Array: array,
 					},
 				)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+				Expect(*actualValue).To(Equal(ipld.Node{Boolean: &expectedBoolean}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -64,7 +64,7 @@ var _ = Context("ToBoolean", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedBoolean := true
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Boolean: &providedBoolean,
 			}
 
@@ -82,7 +82,7 @@ var _ = Context("ToBoolean", func() {
 
 			/* act */
 			actualValue, actualErr := ToBoolean(
-				&model.Value{Dir: new(string)},
+				ipld.Node{Dir: new(string)},
 			)
 
 			/* assert */
@@ -96,7 +96,7 @@ var _ = Context("ToBoolean", func() {
 				/* arrange */
 				/* act */
 				actualValue, actualErr := ToBoolean(
-					&model.Value{File: new(string)},
+					ipld.Node{File: new(string)},
 				)
 
 				/* assert */
@@ -123,11 +123,11 @@ var _ = Context("ToBoolean", func() {
 
 					/* act */
 					actualValue, actualErr := ToBoolean(
-						&model.Value{File: &filePath},
+						ipld.Node{File: &filePath},
 					)
 
 					/* assert */
-					Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+					Expect(*actualValue).To(Equal(ipld.Node{Boolean: &expectedBoolean}))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -149,11 +149,11 @@ var _ = Context("ToBoolean", func() {
 
 					/* act */
 					actualValue, actualErr := ToBoolean(
-						&model.Value{File: &filePath},
+						ipld.Node{File: &filePath},
 					)
 
 					/* assert */
-					Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+					Expect(*actualValue).To(Equal(ipld.Node{Boolean: &expectedBoolean}))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -164,7 +164,7 @@ var _ = Context("ToBoolean", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedNumber := 0.0
-				providedValue := &model.Value{
+				providedValue := ipld.Node{
 					Number: &providedNumber,
 				}
 
@@ -174,7 +174,7 @@ var _ = Context("ToBoolean", func() {
 				actualValue, actualErr := ToBoolean(providedValue)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+				Expect(*actualValue).To(Equal(ipld.Node{Boolean: &expectedBoolean}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -182,7 +182,7 @@ var _ = Context("ToBoolean", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedNumber := 1.0
-				providedValue := &model.Value{
+				providedValue := ipld.Node{
 					Number: &providedNumber,
 				}
 
@@ -192,7 +192,7 @@ var _ = Context("ToBoolean", func() {
 				actualValue, actualErr := ToBoolean(providedValue)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+				Expect(*actualValue).To(Equal(ipld.Node{Boolean: &expectedBoolean}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -205,13 +205,13 @@ var _ = Context("ToBoolean", func() {
 
 				/* act */
 				actualValue, actualErr := ToBoolean(
-					&model.Value{
+					ipld.Node{
 						Object: new(map[string]interface{}),
 					},
 				)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+				Expect(*actualValue).To(Equal(ipld.Node{Boolean: &expectedBoolean}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -226,13 +226,13 @@ var _ = Context("ToBoolean", func() {
 
 				/* act */
 				actualValue, actualErr := ToBoolean(
-					&model.Value{
+					ipld.Node{
 						Object: object,
 					},
 				)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+				Expect(*actualValue).To(Equal(ipld.Node{Boolean: &expectedBoolean}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -240,7 +240,7 @@ var _ = Context("ToBoolean", func() {
 	Context("Value.Array,Boolean,Dir,File,Number,Object,Boolean nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedValue := &model.Value{}
+			providedValue := ipld.Node{}
 
 			/* act */
 			actualBoolean, actualErr := ToBoolean(providedValue)

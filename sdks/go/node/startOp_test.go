@@ -54,7 +54,7 @@ var _ = Context("core", func() {
 					}
 					providedOpPath := filepath.Join(wd, "testdata/startOp")
 					providedReq := model.StartOpReq{
-						Args: map[string]*model.Value{
+						Args: map[string]*ipld.Node{
 							"dummyArg1Name": {String: &providedArg1String},
 							"dummyArg2Name": {Dir: &providedArg2Dir},
 							"dummyArg3Name": {Dir: &providedArg3Dir},

@@ -15,7 +15,7 @@ var _ = Context("Interpret", func() {
 			/* act */
 			_, actualErr := Interpret(
 				"dummyIndexString",
-				model.Value{Array: new([]interface{})},
+				ipld.Node{Array: new([]interface{})},
 			)
 
 			/* assert */
@@ -30,7 +30,7 @@ var _ = Context("Interpret", func() {
 				/* arrange */
 
 				arrayData := &[]interface{}{nil}
-				providedData := model.Value{Array: arrayData}
+				providedData := ipld.Node{Array: arrayData}
 
 				/* act */
 				_, actualErr := Interpret(
@@ -47,7 +47,7 @@ var _ = Context("Interpret", func() {
 				/* arrange */
 
 				arrayData := &[]interface{}{"item"}
-				providedData := model.Value{Array: arrayData}
+				providedData := ipld.Node{Array: arrayData}
 
 				expectedValue, err := value.Construct((*providedData.Array)[0])
 				if err != nil {

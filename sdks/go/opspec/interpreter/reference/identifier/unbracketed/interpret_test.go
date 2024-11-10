@@ -15,7 +15,7 @@ var _ = Context("Interpret", func() {
 
 			/* arrange */
 			providedRef := "dummyRef"
-			providedData := model.Value{String: new(string)}
+			providedData := ipld.Node{String: new(string)}
 
 			/* act */
 			_, _, actualErr := Interpret(
@@ -43,7 +43,7 @@ var _ = Context("Interpret", func() {
 				/* act */
 				_, _, actualErr := Interpret(
 					providedRef,
-					&model.Value{Object: &objectData},
+					&ipld.Node{Object: &objectData},
 				)
 
 				/* assert */
@@ -65,7 +65,7 @@ var _ = Context("Interpret", func() {
 					/* act */
 					_, _, actualErr := Interpret(
 						providedRef,
-						&model.Value{Object: &objectData},
+						&ipld.Node{Object: &objectData},
 					)
 
 					/* assert */
@@ -91,7 +91,7 @@ var _ = Context("Interpret", func() {
 					/* act */
 					actualRefRemainder, actualValue, actualErr := Interpret(
 						providedRef,
-						&model.Value{Object: &objectData},
+						&ipld.Node{Object: &objectData},
 					)
 
 					/* assert */

@@ -8,7 +8,7 @@ import (
 // Interpret an eq predicate
 func Interpret(
 	expressions []interface{},
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 ) (bool, error) {
 	var previousItemAsString string
 	for i, expression := range expressions {

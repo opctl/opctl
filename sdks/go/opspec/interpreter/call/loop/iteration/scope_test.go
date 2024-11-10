@@ -17,14 +17,14 @@ var _ = Context("Scope", func() {
 
 					indexName := "indexName"
 
-					expectedScope := map[string]*model.Value{
-						indexName: &model.Value{Number: &indexValueAsFloat64},
+					expectedScope := map[string]*ipld.Node{
+						indexName: &ipld.Node{Number: &indexValueAsFloat64},
 					}
 
 					/* act */
 					actualScope, _ := Scope(
 						indexValue,
-						map[string]*model.Value{},
+						map[string]*ipld.Node{},
 						nil,
 						&model.LoopVarsSpec{
 							Index: &indexName,
@@ -43,8 +43,8 @@ var _ = Context("Scope", func() {
 					/* arrange */
 					providedLoopRange := "providedLoopRange"
 
-					providedScope := map[string]*model.Value{
-						"name1": &model.Value{String: new(string)},
+					providedScope := map[string]*ipld.Node{
+						"name1": &ipld.Node{String: new(string)},
 					}
 
 					/* act */

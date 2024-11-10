@@ -12,13 +12,13 @@ import (
 
 // Interpret applies defaults to & validates output args
 func Interpret(
-	outputArgs map[string]*model.Value,
+	outputArgs map[string]*ipld.Node,
 	outputParams map[string]*model.ParamSpec,
 	callOutputs map[string]string,
 	opPath string,
 	opScratchDir string,
 ) (
-	map[string]*model.Value,
+	map[string]*ipld.Node,
 	error,
 ) {
 	outputArgs, err := params.Coerce(outputArgs, outputParams, opScratchDir)

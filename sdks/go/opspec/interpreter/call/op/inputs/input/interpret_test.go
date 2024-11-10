@@ -29,7 +29,7 @@ var _ = Context("Interpret", func() {
 				providedName,
 				"dummyValue",
 				nil,
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				"dummyScratchDir",
 			)
 
@@ -50,7 +50,7 @@ var _ = Context("Interpret", func() {
 					providedName,
 					"",
 					&model.ParamSpec{},
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					"dummyScratchDir",
 				)
 
@@ -63,7 +63,7 @@ var _ = Context("Interpret", func() {
 		Context("Input is array", func() {
 			It("should return expected results", func() {
 				name := "name"
-				providedScope := map[string]*model.Value{
+				providedScope := map[string]*ipld.Node{
 					name: {Array: new([]interface{})},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
@@ -90,7 +90,7 @@ var _ = Context("Interpret", func() {
 		Context("Input is boolean", func() {
 			It("should return expected results", func() {
 				name := "name"
-				providedScope := map[string]*model.Value{
+				providedScope := map[string]*ipld.Node{
 					name: {Boolean: new(bool)},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
@@ -117,7 +117,7 @@ var _ = Context("Interpret", func() {
 		Context("Input is dir", func() {
 			It("should return expected results", func() {
 				name := "name"
-				providedScope := map[string]*model.Value{
+				providedScope := map[string]*ipld.Node{
 					name: {Dir: new(string)},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
@@ -145,7 +145,7 @@ var _ = Context("Interpret", func() {
 		Context("Input is file", func() {
 			It("should return expected results", func() {
 				name := "name"
-				providedScope := map[string]*model.Value{
+				providedScope := map[string]*ipld.Node{
 					name: {File: new(string)},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
@@ -173,7 +173,7 @@ var _ = Context("Interpret", func() {
 		Context("Input is number", func() {
 			It("should return expected results", func() {
 				name := "name"
-				providedScope := map[string]*model.Value{
+				providedScope := map[string]*ipld.Node{
 					name: {Number: new(float64)},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
@@ -200,7 +200,7 @@ var _ = Context("Interpret", func() {
 		Context("Input is object", func() {
 			It("should return expected result", func() {
 				name := "name"
-				providedScope := map[string]*model.Value{
+				providedScope := map[string]*ipld.Node{
 					name: {Object: new(map[string]interface{})},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
@@ -227,7 +227,7 @@ var _ = Context("Interpret", func() {
 		Context("Input is string", func() {
 			It("should return expected result", func() {
 				name := "name"
-				providedScope := map[string]*model.Value{
+				providedScope := map[string]*ipld.Node{
 					name: {String: new(string)},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)
@@ -261,7 +261,7 @@ var _ = Context("Interpret", func() {
 						name,
 						fmt.Sprintf("$(%s)", name),
 						&model.ParamSpec{Array: &model.ArrayParamSpec{}},
-						map[string]*model.Value{},
+						map[string]*ipld.Node{},
 						"dummyScratchDir",
 					)
 
@@ -271,7 +271,7 @@ var _ = Context("Interpret", func() {
 			})
 			It("should return expected result", func() {
 				name := "name"
-				providedScope := map[string]*model.Value{
+				providedScope := map[string]*ipld.Node{
 					name: {Socket: new(string)},
 				}
 				providedExpression := fmt.Sprintf("$(%s)", name)

@@ -7,8 +7,8 @@ import (
 
 // CoerceToArrayOrObject data to an object or an array value
 func CoerceToArrayOrObject(
-	data *model.Value,
-) (*model.Value, error) {
+	data *ipld.Node,
+) (*ipld.Node, error) {
 
 	if dataAsArray, err := coerce.ToArray(data); err == nil {
 		// array coercible type

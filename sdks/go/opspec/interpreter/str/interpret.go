@@ -10,9 +10,9 @@ import (
 
 // Interpret an expression to a string value.
 func Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	expression interface{},
-) (*model.Value, error) {
+) (*ipld.Node, error) {
 	v, err := value.Interpret(
 		expression,
 		scope,

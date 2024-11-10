@@ -14,9 +14,9 @@ import (
 // returns ref remainder, dereferenced data, and error if one occurred
 func Interpret(
 	ref string,
-	data *model.Value,
+	data *ipld.Node,
 	opts *string,
-) (string, *model.Value, error) {
+) (string, *ipld.Node, error) {
 
 	if !strings.HasPrefix(ref, "/") {
 		return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref: expected '/'", ref)
@@ -27,10 +27,10 @@ func Interpret(
 	fileInfo, err := os.Stat(valuePath)
 	if err == nil {
 		if fileInfo.IsDir() {
-			return "", &model.Value{Dir: &valuePath}, nil
+			return "", &ipld.Node{Dir: &valuePath}, nil
 		}
 
-		return "", &model.Value{File: &valuePath}, nil
+		return "", &ipld.Node{File: &valuePath}, nil
 	} else if opts != nil && os.IsNotExist(err) {
 
 		if *opts == "Dir" {
@@ -39,7 +39,7 @@ func Interpret(
 				return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref: %w", ref, err)
 			}
 
-			return "", &model.Value{Dir: &valuePath}, nil
+			return "", &ipld.Node{Dir: &valuePath}, nil
 		}
 
 		// handle file ref
@@ -54,7 +54,7 @@ func Interpret(
 			return "", nil, fmt.Errorf("unable to interpret '%v' as dir entry ref: %w", ref, err)
 		}
 
-		return "", &model.Value{File: &valuePath}, nil
+		return "", &ipld.Node{File: &valuePath}, nil
 
 	}
 

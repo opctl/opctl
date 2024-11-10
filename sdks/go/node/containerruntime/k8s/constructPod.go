@@ -35,7 +35,7 @@ func constructPod(
 		)
 	}
 
-	for envVarName, envVarValue := range req.EnvVars {
+	for envVarName, envVarValue := range req.EnvVars.Values {
 		container.Env = append(
 			container.Env,
 			coreV1.EnvVar{
@@ -46,7 +46,7 @@ func constructPod(
 	}
 
 	pathPrefix := "/root/opctl/"
-	for containerPath, hostPath := range req.Dirs {
+	for containerPath, hostPath := range req.Dirs.Values {
 		container.VolumeMounts = append(
 			container.VolumeMounts,
 			coreV1.VolumeMount{
@@ -57,7 +57,7 @@ func constructPod(
 		)
 	}
 
-	for containerPath, hostPath := range req.Files {
+	for containerPath, hostPath := range req.Files.Values {
 		container.VolumeMounts = append(
 			container.VolumeMounts,
 			coreV1.VolumeMount{

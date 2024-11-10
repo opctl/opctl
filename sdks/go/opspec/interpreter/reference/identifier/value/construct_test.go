@@ -16,7 +16,7 @@ var _ = Context("Construct", func() {
 			actualValue, actualErr := Construct(providedData)
 
 			/* assert */
-			Expect(*actualValue).To(Equal(model.Value{Boolean: &providedData}))
+			Expect(*actualValue).To(Equal(ipld.Node{Boolean: &providedData}))
 			Expect(actualErr).To(BeNil())
 		})
 	})
@@ -29,7 +29,7 @@ var _ = Context("Construct", func() {
 			actualValue, actualErr := Construct(providedData)
 
 			/* assert */
-			Expect(*actualValue).To(Equal(model.Value{Number: &providedData}))
+			Expect(*actualValue).To(Equal(ipld.Node{Number: &providedData}))
 			Expect(actualErr).To(BeNil())
 		})
 	})
@@ -43,7 +43,7 @@ var _ = Context("Construct", func() {
 			actualValue, actualErr := Construct(providedData)
 
 			/* assert */
-			Expect(*actualValue).To(Equal(model.Value{Number: &providedDataAsFloat64}))
+			Expect(*actualValue).To(Equal(ipld.Node{Number: &providedDataAsFloat64}))
 			Expect(actualErr).To(BeNil())
 		})
 	})
@@ -56,7 +56,7 @@ var _ = Context("Construct", func() {
 			actualValue, actualErr := Construct(providedData)
 
 			/* assert */
-			Expect(*actualValue).To(Equal(model.Value{String: &providedData}))
+			Expect(*actualValue).To(Equal(ipld.Node{String: &providedData}))
 			Expect(actualErr).To(BeNil())
 		})
 	})
@@ -69,7 +69,7 @@ var _ = Context("Construct", func() {
 			actualValue, actualErr := Construct(providedData)
 
 			/* assert */
-			Expect(*actualValue).To(Equal(model.Value{Object: &providedData}))
+			Expect(*actualValue).To(Equal(ipld.Node{Object: &providedData}))
 			Expect(actualErr).To(BeNil())
 		})
 	})
@@ -82,7 +82,7 @@ var _ = Context("Construct", func() {
 			actualValue, actualErr := Construct(providedData)
 
 			/* assert */
-			Expect(*actualValue).To(Equal(model.Value{Array: &providedData}))
+			Expect(*actualValue).To(Equal(ipld.Node{Array: &providedData}))
 			Expect(actualErr).To(BeNil())
 		})
 	})

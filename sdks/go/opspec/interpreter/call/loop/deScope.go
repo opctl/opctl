@@ -6,16 +6,16 @@ import (
 
 // DeScope de-scopes loop vars (index, key, value)
 func DeScope(
-	parentScope map[string]*model.Value,
+	parentScope map[string]*ipld.Node,
 	callSpecLoopRange interface{},
 	loopVarsSpec *model.LoopVarsSpec,
-	iterationScope map[string]*model.Value,
-) map[string]*model.Value {
+	iterationScope map[string]*ipld.Node,
+) map[string]*ipld.Node {
 	if loopVarsSpec == nil {
 		return parentScope
 	}
 
-	outboundScope := map[string]*model.Value{}
+	outboundScope := map[string]*ipld.Node{}
 	for varName, varData := range iterationScope {
 		outboundScope[varName] = varData
 	}

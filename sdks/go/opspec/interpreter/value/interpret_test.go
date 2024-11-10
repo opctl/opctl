@@ -15,11 +15,11 @@ var _ = Context("Interpret", func() {
 			/* act */
 			actualValue, _ := Interpret(
 				providedValueExpression,
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 			)
 
 			/* assert */
-			Expect(actualValue).To(Equal(model.Value{Boolean: &providedValueExpression}))
+			Expect(actualValue).To(Equal(ipld.Node{Boolean: &providedValueExpression}))
 		})
 	})
 	Context("expression is float64", func() {
@@ -30,11 +30,11 @@ var _ = Context("Interpret", func() {
 			/* act */
 			actualValue, _ := Interpret(
 				providedValueExpression,
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 			)
 
 			/* assert */
-			Expect(actualValue).To(Equal(model.Value{Number: &providedValueExpression}))
+			Expect(actualValue).To(Equal(ipld.Node{Number: &providedValueExpression}))
 		})
 	})
 	Context("expression is int", func() {
@@ -46,11 +46,11 @@ var _ = Context("Interpret", func() {
 			/* act */
 			actualValue, _ := Interpret(
 				providedValueExpression,
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 			)
 
 			/* assert */
-			Expect(actualValue).To(Equal(model.Value{Number: &expectedNumber}))
+			Expect(actualValue).To(Equal(ipld.Node{Number: &expectedNumber}))
 		})
 	})
 	Context("expression is map[string]interface{}", func() {
@@ -64,7 +64,7 @@ var _ = Context("Interpret", func() {
 				/* act */
 				_, actualErr := Interpret(
 					"$()",
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 				)
 
 				/* assert */
@@ -76,12 +76,12 @@ var _ = Context("Interpret", func() {
 	It("should return expected result", func() {
 		/* arrange */
 		identifier := "identifier"
-		stringValue := model.Value{String: new(string)}
+		stringValue := ipld.Node{String: new(string)}
 
 		/* act */
 		actualValue, actualErr := Interpret(
 			"$(identifier)",
-			map[string]*model.Value{
+			map[string]*ipld.Node{
 				identifier: &stringValue,
 			},
 		)

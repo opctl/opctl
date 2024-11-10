@@ -45,7 +45,9 @@ var _ = Context("RunContainer", func() {
 			ContainerID: "containerID",
 			Image:       &model.ContainerCallImage{Ref: new(string)},
 			// invalid to trigger early return
-			Ports: map[string]string{"*": "&"},
+			Ports: model.NewStringMap(
+				map[string]string{"*": "&"},
+			),
 		}
 
 		expectedContainerRemoveOptions := container.RemoveOptions{
@@ -96,9 +98,11 @@ var _ = Context("RunContainer", func() {
 				context.Background(),
 				&model.ContainerCall{
 					Image: &model.ContainerCallImage{Ref: new(string)},
-					Ports: map[string]string{
-						"*": "&",
-					},
+					Ports: model.NewStringMap(
+						map[string]string{
+							"*": "&",
+						},
+					),
 				},
 				"rootCallID",
 				pubSub,
@@ -159,30 +163,38 @@ var _ = Context("RunContainer", func() {
 			providedReq := &model.ContainerCall{
 				BaseCall:    model.BaseCall{},
 				ContainerID: "dummyContainerID",
-				Dirs: map[string]string{
-					"dir1ContainerPath": "dir1HostPath",
-				},
-				Files: map[string]string{
-					"file1ContainerPath": "file1HostPath",
-				},
+				Dirs: model.NewStringMap(
+					map[string]string{
+						"dir1ContainerPath": "dir1HostPath",
+					},
+				),
+				Files: model.NewStringMap(
+					map[string]string{
+						"file1ContainerPath": "file1HostPath",
+					},
+				),
 				Image: &model.ContainerCallImage{Ref: new(string)},
 				Name:  new(string),
-				Sockets: map[string]string{
-					"/unixSocket1ContainerAddress": "/unixSocket1HostAddress",
-				},
-				Ports: map[string]string{
-					"80": "80",
-				},
+				Sockets: model.NewStringMap(
+					map[string]string{
+						"/unixSocket1ContainerAddress": "/unixSocket1HostAddress",
+					},
+				),
+				Ports: model.NewStringMap(
+					map[string]string{
+						"80": "80",
+					},
+				),
 			}
 
-			expectedPortBindings, err := constructPortBindings(providedReq.Ports)
+			expectedPortBindings, err := constructPortBindings(providedReq.Ports.Values)
 			if err != nil {
 				panic(err)
 			}
 
 			expectedContainerConfig := constructContainerConfig(
 				providedReq.Cmd,
-				providedReq.EnvVars,
+				providedReq.EnvVars.Values,
 				*providedReq.Image.Ref,
 				expectedPortBindings,
 				providedReq.WorkDir,

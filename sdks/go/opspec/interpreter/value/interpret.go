@@ -14,16 +14,16 @@ import (
 // Interpret an expression to a value
 func Interpret(
 	valueExpression interface{},
-	scope map[string]*model.Value,
-) (model.Value, error) {
+	scope map[string]*ipld.Node,
+) (ipld.Node, error) {
 	switch typedValueExpression := valueExpression.(type) {
 	case bool:
-		return model.Value{Boolean: &typedValueExpression}, nil
+		return ipld.Node{Boolean: &typedValueExpression}, nil
 	case float64:
-		return model.Value{Number: &typedValueExpression}, nil
+		return ipld.Node{Number: &typedValueExpression}, nil
 	case int:
 		number := float64(typedValueExpression)
-		return model.Value{Number: &number}, nil
+		return ipld.Node{Number: &number}, nil
 	case map[string]interface{}:
 		// object initializer
 		value := map[string]interface{}{}
@@ -33,7 +33,7 @@ func Interpret(
 				scope,
 			)
 			if err != nil {
-				return model.Value{}, err
+				return ipld.Node{}, err
 			}
 
 			if propertyValueExpression == nil {
@@ -45,32 +45,32 @@ func Interpret(
 				scope,
 			)
 			if err != nil {
-				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property: %w", propertyKeyExpression, propertyValueExpression, err)
+				return ipld.Node{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property: %w", propertyKeyExpression, propertyValueExpression, err)
 			}
 
 			if propertyValue.File != nil {
 				fileBytes, err := os.ReadFile(*propertyValue.File)
 				if err != nil {
-					return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property: %w", propertyKeyExpression, propertyValueExpression, err)
+					return ipld.Node{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property: %w", propertyKeyExpression, propertyValueExpression, err)
 				}
 
 				value[propertyKey] = string(fileBytes)
 				continue
 			} else if propertyValue.Dir != nil {
-				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property: directories aren't valid object properties", propertyKeyExpression, propertyValueExpression)
+				return ipld.Node{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property: directories aren't valid object properties", propertyKeyExpression, propertyValueExpression)
 			} else if propertyValue.Socket != nil {
-				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property: sockets aren't valid object properties", propertyKeyExpression, propertyValueExpression)
+				return ipld.Node{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property: sockets aren't valid object properties", propertyKeyExpression, propertyValueExpression)
 			}
 
 			unboxedPropertyValue, unboxErr := propertyValue.Unbox()
 			if unboxErr != nil {
-				return model.Value{}, unboxErr
+				return ipld.Node{}, unboxErr
 			}
 
 			value[propertyKey] = unboxedPropertyValue
 		}
 
-		return model.Value{Object: &value}, nil
+		return ipld.Node{Object: &value}, nil
 	case []interface{}:
 		// array initializer
 		value := []interface{}{}
@@ -80,11 +80,11 @@ func Interpret(
 				scope,
 			)
 			if err != nil {
-				return model.Value{}, fmt.Errorf("unable to interpret '%+v' as array initializer item: %w", itemExpression, err)
+				return ipld.Node{}, fmt.Errorf("unable to interpret '%+v' as array initializer item: %w", itemExpression, err)
 			}
 			value = append(value, itemValue)
 		}
-		return model.Value{Array: &value}, nil
+		return ipld.Node{Array: &value}, nil
 	case string:
 		if regexp.MustCompile("^\\$\\(.+\\)$").MatchString(typedValueExpression) {
 			// attempt to process as a reference since its reference like.
@@ -106,13 +106,13 @@ func Interpret(
 			scope,
 		)
 		if err != nil {
-			return model.Value{}, err
+			return ipld.Node{}, err
 		}
 
-		return model.Value{String: &valueString}, nil
-	case model.Value:
+		return ipld.Node{String: &valueString}, nil
+	case ipld.Node:
 		return typedValueExpression, nil
 	default:
-		return model.Value{}, fmt.Errorf("unable to interpret %+v as value: unsupported type", typedValueExpression)
+		return ipld.Node{}, fmt.Errorf("unable to interpret %+v as value: unsupported type", typedValueExpression)
 	}
 }

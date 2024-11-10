@@ -18,7 +18,7 @@ import (
 // Validate validates a value against a parameter
 // note: param defaults aren't considered
 func Validate(
-	value *model.Value,
+	value *ipld.Node,
 	param *model.ParamSpec,
 ) []error {
 	if value == nil {

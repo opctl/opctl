@@ -101,28 +101,28 @@ func (cr _runContainer) RunContainer(
 	}()
 
 	var imageErr error
-	if req.Image.Src != nil {
-		imageRef := fmt.Sprintf("%s:latest", req.ContainerID)
-		req.Image.Ref = &imageRef
+	// if req.Image.Src != nil {
+	// 	imageRef := fmt.Sprintf("%s:latest", req.ContainerID)
+	// 	req.Image.Ref = &imageRef
 
-		imageErr = pushImage(
-			ctx,
-			imageRef,
-			req.Image.Src,
-		)
-	} else {
-		imageErr = pullImage(
-			ctx,
-			req,
-			cr.dockerClient,
-			rootCallID,
-			eventPublisher,
-		)
-		// don't err yet; image might be cached. We allow this to support offline use
-	}
+	// 	imageErr = pushImage(
+	// 		ctx,
+	// 		imageRef,
+	// 		req.Image.Src,
+	// 	)
+	// } else {
+	imageErr = pullImage(
+		ctx,
+		req,
+		cr.dockerClient,
+		rootCallID,
+		eventPublisher,
+	)
+	// don't err yet; image might be cached. We allow this to support offline use
+	// }
 
 	portBindings, err := constructPortBindings(
-		req.Ports,
+		req.Ports.Values,
 	)
 	if err != nil {
 		return nil, err
@@ -150,15 +150,15 @@ func (cr _runContainer) RunContainer(
 		ctx,
 		constructContainerConfig(
 			req.Cmd,
-			req.EnvVars,
+			req.EnvVars.Values,
 			*req.Image.Ref,
 			portBindings,
 			req.WorkDir,
 		),
 		constructHostConfig(
-			req.Dirs,
-			req.Files,
-			req.Sockets,
+			req.Dirs.Values,
+			req.Files.Values,
+			req.Sockets.Values,
 			portBindings,
 			isGpuSupported,
 		),

@@ -9,29 +9,29 @@ import (
 )
 
 type FakeParallelCaller struct {
-	CallStub        func(context.Context, string, map[string]*model.Value, string, string, []*model.CallSpec) (map[string]*model.Value, error)
+	CallStub        func(context.Context, string, map[string]*ipld.Node, string, string, []*model.CallSpec) (map[string]*ipld.Node, error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 map[string]*model.Value
+		arg3 map[string]*ipld.Node
 		arg4 string
 		arg5 string
 		arg6 []*model.CallSpec
 	}
 	callReturns struct {
-		result1 map[string]*model.Value
+		result1 map[string]*ipld.Node
 		result2 error
 	}
 	callReturnsOnCall map[int]struct {
-		result1 map[string]*model.Value
+		result1 map[string]*ipld.Node
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeParallelCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 string, arg5 string, arg6 []*model.CallSpec) (map[string]*model.Value, error) {
+func (fake *FakeParallelCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*ipld.Node, arg4 string, arg5 string, arg6 []*model.CallSpec) (map[string]*ipld.Node, error) {
 	var arg6Copy []*model.CallSpec
 	if arg6 != nil {
 		arg6Copy = make([]*model.CallSpec, len(arg6))
@@ -42,7 +42,7 @@ func (fake *FakeParallelCaller) Call(arg1 context.Context, arg2 string, arg3 map
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 map[string]*model.Value
+		arg3 map[string]*ipld.Node
 		arg4 string
 		arg5 string
 		arg6 []*model.CallSpec
@@ -65,41 +65,41 @@ func (fake *FakeParallelCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *FakeParallelCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, string, string, []*model.CallSpec) (map[string]*model.Value, error)) {
+func (fake *FakeParallelCaller) CallCalls(stub func(context.Context, string, map[string]*ipld.Node, string, string, []*model.CallSpec) (map[string]*ipld.Node, error)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
 }
 
-func (fake *FakeParallelCaller) CallArgsForCall(i int) (context.Context, string, map[string]*model.Value, string, string, []*model.CallSpec) {
+func (fake *FakeParallelCaller) CallArgsForCall(i int) (context.Context, string, map[string]*ipld.Node, string, string, []*model.CallSpec) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5, argsForCall.arg6
 }
 
-func (fake *FakeParallelCaller) CallReturns(result1 map[string]*model.Value, result2 error) {
+func (fake *FakeParallelCaller) CallReturns(result1 map[string]*ipld.Node, result2 error) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = nil
 	fake.callReturns = struct {
-		result1 map[string]*model.Value
+		result1 map[string]*ipld.Node
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeParallelCaller) CallReturnsOnCall(i int, result1 map[string]*model.Value, result2 error) {
+func (fake *FakeParallelCaller) CallReturnsOnCall(i int, result1 map[string]*ipld.Node, result2 error) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = nil
 	if fake.callReturnsOnCall == nil {
 		fake.callReturnsOnCall = make(map[int]struct {
-			result1 map[string]*model.Value
+			result1 map[string]*ipld.Node
 			result2 error
 		})
 	}
 	fake.callReturnsOnCall[i] = struct {
-		result1 map[string]*model.Value
+		result1 map[string]*ipld.Node
 		result2 error
 	}{result1, result2}
 }

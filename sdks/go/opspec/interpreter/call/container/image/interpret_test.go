@@ -16,7 +16,7 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			/* act */
 			_, actualError := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				nil,
 				"dummyScratchDir",
 			)
@@ -36,7 +36,7 @@ var _ = Context("Interpret", func() {
 			passwordVariable := "passwordVariable"
 			passwordValue := "passwordValue"
 
-			providedScope := map[string]*model.Value{
+			providedScope := map[string]*ipld.Node{
 				usernameVariable: {
 					String: &usernameValue,
 				},

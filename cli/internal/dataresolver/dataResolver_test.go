@@ -35,7 +35,7 @@ var _ = Context("dataResolver", func() {
 
 					fakeCliParamSatisfier := new(cliparamsatisfierFakes.FakeCLIParamSatisfier)
 					fakeCliParamSatisfier.SatisfyReturns(
-						map[string]*model.Value{
+						map[string]*ipld.Node{
 							usernameInputName: {String: &username},
 							passwordInputName: {String: &password},
 						},

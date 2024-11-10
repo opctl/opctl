@@ -12,7 +12,7 @@ var _ = Context("Validate", func() {
 		It("should return expected errors", func() {
 
 			/* arrange */
-			providedValue := &model.Value{}
+			providedValue := &ipld.Node{}
 
 			expectedErrors := []error{
 				errors.New("boolean required"),
@@ -31,7 +31,7 @@ var _ = Context("Validate", func() {
 
 			/* arrange */
 			providedValueBoolean := true
-			providedValue := &model.Value{
+			providedValue := &ipld.Node{
 				Boolean: &providedValueBoolean,
 			}
 

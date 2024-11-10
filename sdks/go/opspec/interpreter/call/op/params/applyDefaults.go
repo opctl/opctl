@@ -18,20 +18,20 @@ import (
 // ApplyDefaults to params w/out corresponding args
 // opScratchDir will be used to store any run data such as type coercions to files
 func ApplyDefaults(
-	args map[string]*model.Value,
+	args map[string]*ipld.Node,
 	params map[string]*model.ParamSpec,
 	opPath,
 	opScratchDir string,
-) (map[string]*model.Value, error) {
+) (map[string]*ipld.Node, error) {
 
-	argsWithDefaults := map[string]*model.Value{}
+	argsWithDefaults := map[string]*ipld.Node{}
 	// don't mutate provided args map
 	for argName, argValue := range args {
 		argsWithDefaults[argName] = argValue
 	}
 
 	parentDirPath := filepath.Dir(opPath)
-	defaultsScope := map[string]*model.Value{
+	defaultsScope := map[string]*ipld.Node{
 		// add deprecated absolute path to scope
 		"/": {
 			Dir: &opPath,

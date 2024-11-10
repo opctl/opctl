@@ -9,34 +9,34 @@ import (
 )
 
 type FakeContainerCaller struct {
-	CallStub        func(context.Context, *model.ContainerCall, map[string]*model.Value, *model.ContainerCallSpec, string) (map[string]*model.Value, error)
+	CallStub        func(context.Context, *model.ContainerCall, map[string]*ipld.Node, *model.ContainerCallSpec, string) (map[string]*ipld.Node, error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		arg1 context.Context
 		arg2 *model.ContainerCall
-		arg3 map[string]*model.Value
+		arg3 map[string]*ipld.Node
 		arg4 *model.ContainerCallSpec
 		arg5 string
 	}
 	callReturns struct {
-		result1 map[string]*model.Value
+		result1 map[string]*ipld.Node
 		result2 error
 	}
 	callReturnsOnCall map[int]struct {
-		result1 map[string]*model.Value
+		result1 map[string]*ipld.Node
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeContainerCaller) Call(arg1 context.Context, arg2 *model.ContainerCall, arg3 map[string]*model.Value, arg4 *model.ContainerCallSpec, arg5 string) (map[string]*model.Value, error) {
+func (fake *FakeContainerCaller) Call(arg1 context.Context, arg2 *model.ContainerCall, arg3 map[string]*ipld.Node, arg4 *model.ContainerCallSpec, arg5 string) (map[string]*ipld.Node, error) {
 	fake.callMutex.Lock()
 	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		arg1 context.Context
 		arg2 *model.ContainerCall
-		arg3 map[string]*model.Value
+		arg3 map[string]*ipld.Node
 		arg4 *model.ContainerCallSpec
 		arg5 string
 	}{arg1, arg2, arg3, arg4, arg5})
@@ -58,41 +58,41 @@ func (fake *FakeContainerCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *FakeContainerCaller) CallCalls(stub func(context.Context, *model.ContainerCall, map[string]*model.Value, *model.ContainerCallSpec, string) (map[string]*model.Value, error)) {
+func (fake *FakeContainerCaller) CallCalls(stub func(context.Context, *model.ContainerCall, map[string]*ipld.Node, *model.ContainerCallSpec, string) (map[string]*ipld.Node, error)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
 }
 
-func (fake *FakeContainerCaller) CallArgsForCall(i int) (context.Context, *model.ContainerCall, map[string]*model.Value, *model.ContainerCallSpec, string) {
+func (fake *FakeContainerCaller) CallArgsForCall(i int) (context.Context, *model.ContainerCall, map[string]*ipld.Node, *model.ContainerCallSpec, string) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5
 }
 
-func (fake *FakeContainerCaller) CallReturns(result1 map[string]*model.Value, result2 error) {
+func (fake *FakeContainerCaller) CallReturns(result1 map[string]*ipld.Node, result2 error) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = nil
 	fake.callReturns = struct {
-		result1 map[string]*model.Value
+		result1 map[string]*ipld.Node
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeContainerCaller) CallReturnsOnCall(i int, result1 map[string]*model.Value, result2 error) {
+func (fake *FakeContainerCaller) CallReturnsOnCall(i int, result1 map[string]*ipld.Node, result2 error) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = nil
 	if fake.callReturnsOnCall == nil {
 		fake.callReturnsOnCall = make(map[int]struct {
-			result1 map[string]*model.Value
+			result1 map[string]*ipld.Node
 			result2 error
 		})
 	}
 	fake.callReturnsOnCall[i] = struct {
-		result1 map[string]*model.Value
+		result1 map[string]*ipld.Node
 		result2 error
 	}{result1, result2}
 }

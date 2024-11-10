@@ -22,7 +22,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			_, actualErr := Interpret(
-				map[string]*model.Value{
+				map[string]*ipld.Node{
 					identifier: {Socket: new(string)},
 				},
 				providedContainerCallSpecFiles,
@@ -38,7 +38,7 @@ var _ = Context("Interpret", func() {
 		It("should return expected results", func() {
 			/* arrange */
 			identifier := "identifier"
-			providedScope := map[string]*model.Value{
+			providedScope := map[string]*ipld.Node{
 				identifier: {File: new(string)},
 			}
 
@@ -49,9 +49,11 @@ var _ = Context("Interpret", func() {
 				containerPath: fmt.Sprintf("$(%s)", identifier),
 			}
 
-			expectedResult := map[string]string{
-				containerPath: *providedScope[identifier].File,
-			}
+			expectedResult := model.NewStringMap(
+				map[string]string{
+					containerPath: *providedScope[identifier].File,
+				},
+			)
 
 			/* act */
 			actualResult, actualErr := Interpret(
@@ -85,13 +87,15 @@ var _ = Context("Interpret", func() {
 
 			referencedFilePath := referencedFile.Name()
 
-			expectedResult := map[string]string{
-				containerFilePath: filepath.Join(scratchDirPath, containerFilePath),
-			}
+			expectedResult := model.NewStringMap(
+				map[string]string{
+					containerFilePath: filepath.Join(scratchDirPath, containerFilePath),
+				},
+			)
 
 			/* act */
 			actualResult, actualErr := Interpret(
-				map[string]*model.Value{
+				map[string]*ipld.Node{
 					identifier: {
 						File: &referencedFilePath,
 					},

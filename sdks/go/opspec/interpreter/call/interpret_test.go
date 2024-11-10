@@ -26,7 +26,7 @@ var _ = Context("Interpret", func() {
 				/* act */
 				_, actualError := Interpret(
 					context.Background(),
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					&model.CallSpec{
 						If: &predicateSpec,
 					},
@@ -45,7 +45,7 @@ var _ = Context("Interpret", func() {
 	Context("callSpec.Container not nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedScope := map[string]*model.Value{}
+			providedScope := map[string]*ipld.Node{}
 			providedID := "providedID"
 			providedOpPath := "providedOpPath"
 			providedParentIDValue := "providedParentID"
@@ -102,7 +102,7 @@ var _ = Context("Interpret", func() {
 	Context("callSpec.Op not nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedScope := map[string]*model.Value{}
+			providedScope := map[string]*ipld.Node{}
 			providedID := "providedID"
 			providedOpPath := "providedOpPath"
 			providedParentIDValue := "providedParentID"
@@ -167,7 +167,7 @@ var _ = Context("Interpret", func() {
 	Context("callSpec.Parallel not empty", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedScope := map[string]*model.Value{}
+			providedScope := map[string]*ipld.Node{}
 			providedID := "providedID"
 			providedOpPath := "providedOpPath"
 			providedParentIDValue := "providedParentID"
@@ -210,7 +210,7 @@ var _ = Context("Interpret", func() {
 	Context("callSpec.Serial not empty", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedScope := map[string]*model.Value{}
+			providedScope := map[string]*ipld.Node{}
 			providedID := "providedID"
 			providedOpPath := "providedOpPath"
 			providedParentIDValue := "providedParentID"
@@ -255,7 +255,7 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			providedName := "test-$(value)"
 			stringValue := "hello-world"
-			providedScope := map[string]*model.Value{
+			providedScope := map[string]*ipld.Node{
 				"value": {String: &stringValue},
 			}
 			providedID := "providedID"

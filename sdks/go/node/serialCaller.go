@@ -16,12 +16,12 @@ type serialCaller interface {
 	Call(
 		ctx context.Context,
 		callID string,
-		inboundScope map[string]*model.Value,
+		inboundScope map[string]*ipld.Node,
 		rootCallID string,
 		opPath string,
 		callSpecSerialCall []*model.CallSpec,
 	) (
-		map[string]*model.Value,
+		map[string]*ipld.Node,
 		error,
 	)
 }
@@ -46,15 +46,15 @@ type _serialCaller struct {
 func (sc _serialCaller) Call(
 	ctx context.Context,
 	callID string,
-	inboundScope map[string]*model.Value,
+	inboundScope map[string]*ipld.Node,
 	rootCallID string,
 	opPath string,
 	callSpecSerialCall []*model.CallSpec,
 ) (
-	map[string]*model.Value,
+	map[string]*ipld.Node,
 	error,
 ) {
-	outputs := map[string]*model.Value{}
+	outputs := map[string]*ipld.Node{}
 	for varName, varData := range inboundScope {
 		outputs[varName] = varData
 	}

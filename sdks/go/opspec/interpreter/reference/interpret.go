@@ -39,11 +39,11 @@ const (
 // - op file path refs: $(/name/sub/file.ext)
 func Interpret(
 	ref string,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	opts *model.ReferenceOpts,
-) (*model.Value, error) {
+) (*ipld.Node, error) {
 
-	var data *model.Value
+	var data *ipld.Node
 	var err error
 
 	ref = strings.TrimSuffix(strings.TrimPrefix(ref, RefStart), RefEnd)
@@ -75,7 +75,7 @@ func Interpret(
 // interpolate interpolates a ref; refs can be nested at most, one level i.e. $(refOuter$(refInner))
 func interpolate(
 	ref string,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 ) (string, error) {
 	refBuffer := []byte{}
 	i := 0
@@ -92,7 +92,7 @@ func interpolate(
 			nestedRef := ref[nestedRefStartIndex:nestedRefEndBracketIndex]
 			i += len(RefStart) + len(nestedRef) + len(RefEnd)
 
-			var nestedRefRootValue *model.Value
+			var nestedRefRootValue *ipld.Node
 			var err error
 			nestedRefRootValue, nestedRef, err = getRootValue(
 				nestedRef,
@@ -128,9 +128,9 @@ func interpolate(
 
 func getRootValue(
 	ref string,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	opts *model.ReferenceOpts,
-) (*model.Value, string, error) {
+) (*ipld.Node, string, error) {
 	if strings.HasPrefix(ref, "/") {
 		// handle deprecated absolute path reference
 		return scope["/"], ref, nil
@@ -163,11 +163,11 @@ func getRootValue(
 		switch opts.Type {
 		case "Dir":
 			os.MkdirAll(fsPath, 0770)
-			return &model.Value{Dir: &fsPath}, "", nil
+			return &ipld.Node{Dir: &fsPath}, "", nil
 		case "File":
 			os.MkdirAll(filepath.Dir(fsPath), 0770)
 			os.Create(fsPath)
-			return &model.Value{File: &fsPath}, "", nil
+			return &ipld.Node{File: &fsPath}, "", nil
 		}
 	}
 
@@ -183,9 +183,9 @@ func getRootValue(
 // i1/p1.ext
 func rInterpret(
 	ref string,
-	data *model.Value,
+	data *ipld.Node,
 	opts *model.ReferenceOpts,
-) (string, *model.Value, error) {
+) (string, *ipld.Node, error) {
 
 	if ref == "" {
 		return "", data, nil

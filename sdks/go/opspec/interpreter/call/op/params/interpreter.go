@@ -6,12 +6,12 @@ import (
 
 // Interpret params
 func Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	params map[string]*model.ParamSpec,
 	opPath string,
 	opScratchDir string,
 ) (
-	map[string]*model.Value,
+	map[string]*ipld.Node,
 	error,
 ) {
 

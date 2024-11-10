@@ -16,7 +16,7 @@ var _ = Context("Interpret", func() {
 				/* arrange */
 				/* act */
 				actualValue, actualErr := Interpret(
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					"$()",
 					"providedScratchDir",
 					false,
@@ -31,7 +31,7 @@ var _ = Context("Interpret", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				identifier := "identifier"
-				expectedValue := model.Value{File: new(string)}
+				expectedValue := ipld.Node{File: new(string)}
 				scratchDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
@@ -39,7 +39,7 @@ var _ = Context("Interpret", func() {
 
 				/* act */
 				actualResultValue, actualErr := Interpret(
-					map[string]*model.Value{
+					map[string]*ipld.Node{
 						identifier: &expectedValue,
 					},
 					fmt.Sprintf("$(%s)", identifier),
@@ -63,7 +63,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			_, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				nil,
 				scratchDir,
 				false,
@@ -76,7 +76,7 @@ var _ = Context("Interpret", func() {
 	Context("value.Interpret doesn't err", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedExpression := model.Value{File: new(string)}
+			providedExpression := ipld.Node{File: new(string)}
 			scratchDir, err := os.MkdirTemp("", "")
 			if err != nil {
 				panic(err)
@@ -84,7 +84,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			actualResultValue, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				providedExpression,
 				scratchDir,
 				false,

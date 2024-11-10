@@ -13,7 +13,7 @@ var _ = Context("Interpret", func() {
 		It("should return expected err", func() {
 			/* act */
 			_, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				"$()",
 			)
 
@@ -28,11 +28,11 @@ var _ = Context("Interpret", func() {
 			identifier := "identifier"
 
 			number := 2.2
-			expectedValue := model.Value{Number: &number}
+			expectedValue := ipld.Node{Number: &number}
 
 			/* act */
 			actualNumber, actualErr := Interpret(
-				map[string]*model.Value{
+				map[string]*ipld.Node{
 					identifier: &expectedValue,
 				},
 				fmt.Sprintf("$(%s)", identifier),

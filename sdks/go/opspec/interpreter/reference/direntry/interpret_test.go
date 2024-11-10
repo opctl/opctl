@@ -48,13 +48,13 @@ var _ = Context("Interpret", func() {
 
 			actualRefRemainder, actualValue, actualErr := Interpret(
 				providedRef,
-				&model.Value{Dir: &dirData},
+				&ipld.Node{Dir: &dirData},
 				nil,
 			)
 
 			/* assert */
 			Expect(actualRefRemainder).To(BeEmpty())
-			Expect(*actualValue).To(Equal(model.Value{File: &expectedPath}))
+			Expect(*actualValue).To(Equal(ipld.Node{File: &expectedPath}))
 			Expect(actualErr).To(BeNil())
 
 		})
@@ -78,13 +78,13 @@ var _ = Context("Interpret", func() {
 
 			actualRefRemainder, actualValue, actualErr := Interpret(
 				providedRef,
-				&model.Value{Dir: &dirData},
+				&ipld.Node{Dir: &dirData},
 				nil,
 			)
 
 			/* assert */
 			Expect(actualRefRemainder).To(BeEmpty())
-			Expect(*actualValue).To(Equal(model.Value{Dir: &expectedPath}))
+			Expect(*actualValue).To(Equal(ipld.Node{Dir: &expectedPath}))
 			Expect(actualErr).To(BeNil())
 
 		})

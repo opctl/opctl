@@ -10,7 +10,7 @@ var _ = Context("Validate", func() {
 	It("should return expected result", func() {
 		/* arrange */
 
-		providedValues := map[string]*model.Value{
+		providedValues := map[string]*ipld.Node{
 			"expectedName1": {
 				String: new(string),
 			},

@@ -66,7 +66,7 @@ var _ = Context("parallelCaller", func() {
 				_, actualErr := objectUnderTest.Call(
 					context.Background(),
 					"callID",
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					"rootCallID",
 					"opPath",
 					[]*model.CallSpec{
@@ -137,7 +137,7 @@ var _ = Context("parallelCaller", func() {
 			}
 
 			input1Value := "input1Value"
-			providedInboundScope := map[string]*model.Value{
+			providedInboundScope := map[string]*ipld.Node{
 				input1Key: {String: &input1Value},
 			}
 

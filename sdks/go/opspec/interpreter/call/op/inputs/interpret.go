@@ -15,10 +15,10 @@ func Interpret(
 	inputArgs map[string]interface{},
 	inputParams map[string]*model.ParamSpec,
 	opPath string,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	opScratchDir string,
-) (map[string]*model.Value, error) {
-	interpretedArgs := map[string]*model.Value{}
+) (map[string]*ipld.Node, error) {
+	interpretedArgs := map[string]*ipld.Node{}
 
 	// 1) interpret
 	paramErrMap := map[string]error{}

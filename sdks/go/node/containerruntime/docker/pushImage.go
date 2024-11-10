@@ -14,7 +14,7 @@ import (
 func pushImage(
 	ctx context.Context,
 	imageRef string,
-	imageSrc *model.Value,
+	imageSrc *ipld.Node,
 ) error {
 	policyCtx, err := signature.NewPolicyContext(
 		&signature.Policy{

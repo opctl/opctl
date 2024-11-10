@@ -8,7 +8,7 @@ import (
 // Interpret a ne expression
 func Interpret(
 	expressions []interface{},
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 ) (bool, error) {
 	var itemsAsStrings []string
 	for _, expression := range expressions {

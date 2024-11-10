@@ -9,8 +9,8 @@ import (
 // Interpret an expression to a loopable value.
 func Interpret(
 	expression interface{},
-	scope map[string]*model.Value,
-) (*model.Value, error) {
+	scope map[string]*ipld.Node,
+) (*ipld.Node, error) {
 	// try interpreting as array
 	if dcgForEach, err := array.Interpret(
 		scope,

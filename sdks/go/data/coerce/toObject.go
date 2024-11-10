@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/ipld/go-ipld-prime"
 )
 
 // ToObject coerces a value to an object value
 func ToObject(
-	value *model.Value,
-) (*model.Value, error) {
+	value ipld.Node,
+) (ipld.Node, error) {
 	switch {
 	case value == nil:
 		return nil, nil
@@ -29,7 +29,7 @@ func ToObject(
 		if err != nil {
 			return nil, fmt.Errorf("unable to coerce file to object: %w", err)
 		}
-		return &model.Value{Object: valueMap}, nil
+		return ipld.Node{Object: valueMap}, nil
 	case value.Number != nil:
 		return nil, fmt.Errorf("unable to coerce number '%v' to object: %w", *value.Number, errIncompatibleTypes)
 	case value.Object != nil:
@@ -40,7 +40,7 @@ func ToObject(
 		if err != nil {
 			return nil, fmt.Errorf("unable to coerce string to object: %w", err)
 		}
-		return &model.Value{Object: valueMap}, nil
+		return ipld.Node{Object: valueMap}, nil
 	default:
 		return nil, fmt.Errorf("unable to coerce '%+v' to object", value)
 	}

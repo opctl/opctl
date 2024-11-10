@@ -15,8 +15,8 @@ import (
 // @TODO: find this a better home
 func TryResolveExplicitRef(
 	expression string,
-	scope map[string]*model.Value,
-) (*model.Value, bool) {
+	scope map[string]*ipld.Node,
+) (*ipld.Node, bool) {
 	if strings.HasPrefix(expression, interpolater.RefStart) && strings.HasSuffix(expression, interpolater.RefEnd) {
 		dcgValue, ok := scope[expression[2:len(expression)-1]]
 		return dcgValue, ok

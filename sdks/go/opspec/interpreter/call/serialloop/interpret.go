@@ -9,7 +9,7 @@ import (
 // Interpret a serial loop
 func Interpret(
 	serialLoopCallSpec model.SerialLoopCallSpec,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 ) (*model.SerialLoopCall, error) {
 	dcgSerialLoop := model.SerialLoopCall{}
 

@@ -8,7 +8,7 @@ import (
 // Interpret a parallel Loop
 func Interpret(
 	parallelLoopCallSpec model.ParallelLoopCallSpec,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 ) (*model.ParallelLoopCall, error) {
 	parallelLoopCall := model.ParallelLoopCall{}
 

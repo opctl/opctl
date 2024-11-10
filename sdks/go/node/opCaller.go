@@ -17,12 +17,11 @@ type opCaller interface {
 	Call(
 		ctx context.Context,
 		opCall *model.OpCall,
-		inboundScope map[string]*model.Value,
 		parentCallID *string,
 		rootCallID string,
 		opCallSpec *model.OpCallSpec,
 	) (
-		map[string]*model.Value,
+		map[string]*ipld.Node,
 		error,
 	)
 }
@@ -45,34 +44,33 @@ type _opCaller struct {
 func (oc _opCaller) Call(
 	ctx context.Context,
 	opCall *model.OpCall,
-	inboundScope map[string]*model.Value,
 	parentCallID *string,
 	rootCallID string,
 	opCallSpec *model.OpCallSpec,
 ) (
-	map[string]*model.Value,
+	map[string]*ipld.Node,
 	error,
 ) {
 	var err error
-	outboundScope := map[string]*model.Value{}
+	outboundScope := map[string]*ipld.Node{}
 
 	// form scope for op call by combining defined inputs & op dir
-	opCallScope := map[string]*model.Value{}
+	opCallScope := map[string]*ipld.Node{}
 	for varName, varData := range opCall.Inputs {
 		opCallScope[varName] = varData
 	}
 	// add deprecated absolute path to scope
-	opCallScope["/"] = &model.Value{
+	opCallScope["/"] = &ipld.Node{
 		Dir: &opCall.OpPath,
 	}
 	// add current directory to scope
-	opCallScope["./"] = &model.Value{
+	opCallScope["./"] = &ipld.Node{
 		Dir: &opCall.OpPath,
 	}
 
 	// add parent directory to scope
 	parentDirPath := filepath.Dir(opCall.OpPath)
-	opCallScope["../"] = &model.Value{
+	opCallScope["../"] = &ipld.Node{
 		Dir: &parentDirPath,
 	}
 

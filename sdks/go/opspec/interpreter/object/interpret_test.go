@@ -12,7 +12,7 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			/* act */
 			_, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				"$()",
 			)
 
@@ -27,13 +27,13 @@ var _ = Context("Interpret", func() {
 			objectData := map[string]interface{}{}
 			/* act */
 			actualObject, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				"{}",
 			)
 
 			/* assert */
 
-			Expect(*actualObject).To(Equal(model.Value{Object: &objectData}))
+			Expect(*actualObject).To(Equal(ipld.Node{Object: &objectData}))
 			Expect(actualErr).To(BeNil())
 		})
 	})

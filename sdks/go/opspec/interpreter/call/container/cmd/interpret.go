@@ -8,7 +8,7 @@ import (
 
 // Interpret a container cmd
 func Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	containerCallSpecCmd interface{},
 ) ([]string, error) {
 	if containerCallSpecCmd == nil {

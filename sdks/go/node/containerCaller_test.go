@@ -75,7 +75,7 @@ var _ = Context("containerCaller", func() {
 			objectUnderTest.Call(
 				providedCtx,
 				providedContainerCall,
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				&model.ContainerCallSpec{},
 				providedRootCallID,
 			)
@@ -126,13 +126,13 @@ var _ = Context("containerCaller", func() {
 						BaseCall: model.BaseCall{},
 						Image:    &model.ContainerCallImage{},
 					},
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					&model.ContainerCallSpec{},
 					"rootCallID",
 				)
 
 				/* assert */
-				Expect(actualOutputs).To(Equal(map[string]*model.Value{}))
+				Expect(actualOutputs).To(Equal(map[string]*ipld.Node{}))
 				Expect(actualErr).To(MatchError(expectedErrorMessage))
 			})
 		})
@@ -148,7 +148,7 @@ var _ = Context("containerCaller", func() {
 			ContainerID: "providedContainerID",
 			Image:       &model.ContainerCallImage{},
 		}
-		providedInboundScope := map[string]*model.Value{}
+		providedInboundScope := map[string]*ipld.Node{}
 		providedContainerCallSpec := &model.ContainerCallSpec{}
 
 		fakeContainerRuntime := new(FakeContainerRuntime)
@@ -184,7 +184,7 @@ var _ = Context("containerCaller", func() {
 		)
 
 		/* assert */
-		Expect(actualOutputs).To(Equal(map[string]*model.Value{}))
+		Expect(actualOutputs).To(Equal(map[string]*ipld.Node{}))
 		Expect(actualErr).To(Equal(expectedErr))
 	})
 })

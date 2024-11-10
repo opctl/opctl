@@ -14,7 +14,7 @@ import (
 
 // Validate validates a value against an object parameter
 func Validate(
-	value *model.Value,
+	value *ipld.Node,
 	constraints map[string]interface{},
 ) []error {
 

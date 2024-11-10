@@ -16,7 +16,7 @@ import (
 
 // Interpret a container
 func Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	containerCallSpec *model.ContainerCallSpec,
 	containerID string,
 	opPath string,
@@ -27,13 +27,11 @@ func Interpret(
 		BaseCall: model.BaseCall{
 			OpPath: opPath,
 		},
-		Dirs:        map[string]string{},
-		EnvVars:     map[string]string{},
-		Files:       map[string]string{},
-		Sockets:     map[string]string{},
 		WorkDir:     containerCallSpec.WorkDir,
 		ContainerID: containerID,
-		Ports:       containerCallSpec.Ports,
+		Ports: model.NewStringMap(
+			containerCallSpec.Ports,
+		),
 	}
 
 	// construct dcg container path

@@ -27,7 +27,7 @@ var _ = Context("Interpret", func() {
 
 		providedOpPath := "dummyOpPath"
 
-		expectedOutputs := map[string]*model.Value{
+		expectedOutputs := map[string]*ipld.Node{
 			defaultStrParamName: {
 				String: &defaultStrParamValue,
 			},
@@ -38,7 +38,7 @@ var _ = Context("Interpret", func() {
 
 		/* act */
 		actualOutputs, actualErr := Interpret(
-			map[string]*model.Value{
+			map[string]*ipld.Node{
 				defaultStrParamName: {
 					String: &defaultStrParamValue,
 				},
@@ -70,7 +70,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			actualResult, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				providedParams,
 				"opPath",
 				"opScratchDir",

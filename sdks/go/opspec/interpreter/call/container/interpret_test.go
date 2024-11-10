@@ -20,7 +20,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			_, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				&model.ContainerCallSpec{
 					Image: &model.ContainerCallImageSpec{
 						Ref: "ref",
@@ -50,7 +50,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			_, actualErr := Interpret(
-				map[string]*model.Value{
+				map[string]*ipld.Node{
 					identifier: {
 						Socket: new(string),
 					},
@@ -83,7 +83,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			_, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				&model.ContainerCallSpec{
 					Image: &model.ContainerCallImageSpec{
 						Ref: "ref",
@@ -110,7 +110,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			_, actualErr := Interpret(
-				map[string]*model.Value{
+				map[string]*ipld.Node{
 					"not": {
 						Socket: new(string),
 					},
@@ -143,7 +143,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			_, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				&model.ContainerCallSpec{
 					Image: &model.ContainerCallImageSpec{
 						Ref: "$()",
@@ -172,12 +172,12 @@ var _ = Context("Interpret", func() {
 			},
 			ContainerID: providedContainerID,
 			Cmd:         []string{},
-			Dirs:        map[string]string{},
-			Files:       map[string]string{},
+			Dirs:        model.NewStringMap(map[string]string{}),
+			Files:       model.NewStringMap(map[string]string{}),
 			Image: &model.ContainerCallImage{
 				Ref: &expectedRef,
 			},
-			Sockets: map[string]string{},
+			Sockets: model.NewStringMap(map[string]string{}),
 			WorkDir: "",
 		}
 
@@ -188,7 +188,7 @@ var _ = Context("Interpret", func() {
 
 		/* act */
 		actualResult, actualErr := Interpret(
-			map[string]*model.Value{},
+			map[string]*ipld.Node{},
 			&model.ContainerCallSpec{
 				Image: &model.ContainerCallImageSpec{
 					Ref: "ref",

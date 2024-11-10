@@ -14,7 +14,7 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			/* act */
 			_, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				"$()",
 			)
 
@@ -26,7 +26,7 @@ var _ = Context("Interpret", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedExpression := "providedExpression"
-			providedValue := model.Value{String: &providedExpression}
+			providedValue := ipld.Node{String: &providedExpression}
 
 			expectedValue, err := coerce.ToString(&providedValue)
 			if err != nil {
@@ -35,7 +35,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			actualValue, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				providedExpression,
 			)
 

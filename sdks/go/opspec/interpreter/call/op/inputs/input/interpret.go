@@ -20,9 +20,9 @@ func Interpret(
 	name string,
 	valueExpression interface{},
 	param *model.ParamSpec,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	opScratchDir string,
-) (*model.Value, error) {
+) (*ipld.Node, error) {
 
 	if param == nil {
 		return nil, fmt.Errorf("unable to bind to '%v': '%v' not a defined input", name, name)

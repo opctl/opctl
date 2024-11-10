@@ -80,7 +80,7 @@ var _ = Context("parameterSatisfier", func() {
 						input1Name: {Array: &model.ArrayParamSpec{}},
 					}
 
-					expectedOutputs := map[string]*model.Value{
+					expectedOutputs := map[string]*ipld.Node{
 						input1Name: {
 							Array: new([]interface{}),
 						},
@@ -122,7 +122,7 @@ var _ = Context("parameterSatisfier", func() {
 					valueString := strconv.FormatBool(valueBool)
 					providedInputSourcer.SourceReturns(&valueString, true)
 
-					expectedOutputs := map[string]*model.Value{
+					expectedOutputs := map[string]*ipld.Node{
 						inputIdentifier: {Boolean: &valueBool},
 					}
 
@@ -158,7 +158,7 @@ var _ = Context("parameterSatisfier", func() {
 
 					providedInputSourcer.SourceReturns(&valueDir, true)
 
-					expectedOutputs := map[string]*model.Value{
+					expectedOutputs := map[string]*ipld.Node{
 						inputIdentifier: {Dir: &valueDir},
 					}
 
@@ -194,7 +194,7 @@ var _ = Context("parameterSatisfier", func() {
 
 					providedInputSourcer.SourceReturns(&valueFile, true)
 
-					expectedOutputs := map[string]*model.Value{
+					expectedOutputs := map[string]*ipld.Node{
 						inputIdentifier: {File: &valueFile},
 					}
 
@@ -226,7 +226,7 @@ var _ = Context("parameterSatisfier", func() {
 					valueString := fmt.Sprintf("%v", valueNumber)
 					providedInputSourcer.SourceReturns(&valueString, true)
 
-					expectedOutputs := map[string]*model.Value{
+					expectedOutputs := map[string]*ipld.Node{
 						inputIdentifier: {Number: &valueNumber},
 					}
 
@@ -255,7 +255,7 @@ var _ = Context("parameterSatisfier", func() {
 						input1Name: {Object: &model.ObjectParamSpec{}},
 					}
 
-					expectedOutputs := map[string]*model.Value{
+					expectedOutputs := map[string]*ipld.Node{
 						input1Name: {
 							Object: new(map[string]interface{}),
 						},

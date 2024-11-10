@@ -52,7 +52,7 @@ var _ = Context("Interpret", func() {
 
 			/* arrange */
 			providedRef := "[]"
-			providedData := model.Value{String: new(string)}
+			providedData := ipld.Node{String: new(string)}
 
 			/* act */
 			_, _, actualErr := Interpret(
@@ -73,7 +73,7 @@ var _ = Context("Interpret", func() {
 				providedRef := fmt.Sprintf("[%v]", providedRefIdentifier)
 
 				arrayValue := []interface{}{nil}
-				providedData := model.Value{Array: &arrayValue}
+				providedData := ipld.Node{Array: &arrayValue}
 
 				/* act */
 				_, _, actualErr := Interpret(
@@ -94,7 +94,7 @@ var _ = Context("Interpret", func() {
 				providedRef := fmt.Sprintf("[%v]", providedRefIdentifier)
 
 				arrayValue := []interface{}{"item"}
-				providedData := model.Value{Array: &arrayValue}
+				providedData := ipld.Node{Array: &arrayValue}
 
 				expectedValue, err := item.Interpret(providedRefIdentifier, providedData)
 				if err != nil {
@@ -123,7 +123,7 @@ var _ = Context("Interpret", func() {
 				providedRef := fmt.Sprintf("[%v]", providedRefIdentifier)
 
 				object := &map[string]interface{}{providedRefIdentifier: nil}
-				providedData := model.Value{Object: object}
+				providedData := ipld.Node{Object: object}
 
 				/* act */
 				_, _, actualErr := Interpret(
@@ -144,7 +144,7 @@ var _ = Context("Interpret", func() {
 				providedRef := fmt.Sprintf("[%v]", providedRefIdentifier)
 
 				object := &map[string]interface{}{providedRefIdentifier: "string"}
-				providedData := model.Value{Object: object}
+				providedData := ipld.Node{Object: object}
 
 				expectedData, err := value.Construct((*providedData.Object)[providedRefIdentifier])
 				if err != nil {

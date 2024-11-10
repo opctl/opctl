@@ -13,7 +13,7 @@ var _ = Context("Interpret", func() {
 			/* act */
 			_, actualError := Interpret(
 				[]interface{}{nil},
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 			)
 
 			/* assert */
@@ -29,7 +29,7 @@ var _ = Context("Interpret", func() {
 					1,
 					2,
 				},
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 			)
 
 			/* assert */
@@ -46,7 +46,7 @@ var _ = Context("Interpret", func() {
 					1,
 					2,
 				},
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 			)
 
 			/* assert */
@@ -62,7 +62,7 @@ var _ = Context("Interpret", func() {
 					2,
 					1,
 				},
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 			)
 
 			/* assert */

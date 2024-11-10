@@ -18,7 +18,7 @@ var _ = Context("Interpret", func() {
 				[]*model.PredicateSpec{
 					{Eq: &eqPredicate},
 				},
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 			)
 
 			/* assert */
@@ -38,7 +38,7 @@ var _ = Context("Interpret", func() {
 				[]*model.PredicateSpec{
 					{Eq: &eqPredicate},
 				},
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 			)
 
 			/* assert */
@@ -58,7 +58,7 @@ var _ = Context("Interpret", func() {
 				[]*model.PredicateSpec{
 					{Eq: &eqPredicate},
 				},
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 			)
 
 			/* assert */

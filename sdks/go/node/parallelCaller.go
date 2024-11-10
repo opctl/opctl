@@ -19,12 +19,12 @@ type parallelCaller interface {
 	Call(
 		parentCtx context.Context,
 		callID string,
-		inboundScope map[string]*model.Value,
+		inboundScope map[string]*ipld.Node,
 		rootCallID string,
 		opPath string,
 		callSpecParallelCall []*model.CallSpec,
 	) (
-		map[string]*model.Value,
+		map[string]*ipld.Node,
 		error,
 	)
 }
@@ -49,12 +49,12 @@ type _parallelCaller struct {
 func (pc _parallelCaller) Call(
 	parentCtx context.Context,
 	callID string,
-	inboundScope map[string]*model.Value,
+	inboundScope map[string]*ipld.Node,
 	rootCallID string,
 	opPath string,
 	callSpecParallelCall []*model.CallSpec,
 ) (
-	map[string]*model.Value,
+	map[string]*ipld.Node,
 	error,
 ) {
 	// setup cancellation
@@ -72,7 +72,7 @@ func (pc _parallelCaller) Call(
 	startTime := time.Now().UTC()
 	childCallIndexByID := map[string]int{}
 	childCallIDByName := map[string]string{}
-	childCallOutputsByIndex := map[int]map[string]*model.Value{}
+	childCallOutputsByIndex := map[int]map[string]*ipld.Node{}
 
 	// perform calls in parallel w/ cancellation
 	for childCallIndex, childCall := range callSpecParallelCall {
@@ -125,7 +125,7 @@ func (pc _parallelCaller) Call(
 	)
 
 	var isChildErred = false
-	outputs := map[string]*model.Value{}
+	outputs := map[string]*ipld.Node{}
 
 eventLoop:
 	for event := range eventChannel {

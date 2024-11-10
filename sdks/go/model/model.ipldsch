@@ -1,0 +1,329 @@
+# data.go
+type DirEntry struct {
+	Path String
+	Size Int
+	Mode String
+}
+
+# call.go
+type Auth struct {
+	Resources String
+	Creds Creds
+}
+
+type Call struct {
+	Container ContainerCall
+	ID           String
+	If           Bool
+	IsKilled     Bool
+	Name         String
+	Needs        [String]
+	Op           OpCall
+#	Parallel     [CallSpec]
+	ParallelLoop ParallelLoopCall
+	ParentID String
+	RootID     String
+#	Serial     [CallSpec]
+	SerialLoop SerialLoopCall
+}
+
+type BaseCall struct {
+	OpPath String
+}
+
+type ContainerCall struct {
+	BaseCall BaseCall
+	ContainerID String
+	Cmd         [String]
+	Dirs {String:String}
+	EnvVars {String:String}
+	Files {String:String}
+	Image ContainerCallImage
+	Sockets {String:String}
+	WorkDir String
+	Name    String
+	Ports   {String:String}
+}
+
+type ContainerCallImage struct {
+#	Src       Any
+	Ref       String
+	PullCreds Creds
+}
+
+type Creds struct {
+	Username String
+	Password String
+}
+
+type LoopVars struct {
+	Index String
+	Key   String
+	Value String
+}
+
+type OpCall struct {
+	BaseCall BaseCall
+	OpID              String
+	Inputs            {String:Any}
+#	ChildCallCallSpec CallSpec
+	ChildCallID       String
+}
+
+type ParallelLoopCall struct {
+	Range Any
+	Run   Call
+	Vars  LoopVars
+}
+
+type SerialLoopCall struct {
+	Range Any
+	Run   Call
+	Until Bool
+	Vars  LoopVars
+}
+
+
+# event.go
+type Event struct {
+	AuthAdded                AuthAdded
+	CallEnded                CallEnded
+	CallStarted              CallStarted
+	ContainerStdErrWrittenTo ContainerStdErrWrittenTo
+	ContainerStdOutWrittenTo ContainerStdOutWrittenTo
+	CallKillRequested        CallKillRequested
+	Timestamp                String
+}
+
+type AuthAdded struct {
+	Auth Auth
+}
+
+type CallKillRequested struct {
+	Request KillOpReq
+}
+
+type CallEnded struct {
+	Call    Call
+	Ref     String
+	Error   CallEndedError
+	Outputs {String:Any}
+	Outcome String
+}
+
+type CallStarted struct {
+	Call Call
+	Ref  String
+}
+
+type CallEndedError struct {
+	Message String
+}
+
+type ContainerStdErrWrittenTo struct {
+	ImageRef    String
+	Data        Bytes
+	RootCallID  String
+	ContainerID String
+	OpRef       String
+}
+
+type ContainerStdOutWrittenTo struct {
+	ImageRef    String
+	Data        Bytes
+	RootCallID  String
+	ContainerID String
+	OpRef       String
+}
+
+#opSpec.go
+type OpSpec struct {
+	Description String
+	Inputs      {String:ParamSpec}
+	Name        String
+	Outputs     {String:ParamSpec}
+	Run         CallSpec
+	Version     String
+}
+
+type CallSpec struct {
+	Container    ContainerCallSpec
+	Description  String
+	If           [PredicateSpec]
+	Name         String
+	Needs        [String]
+	Op           OpCallSpec
+	Parallel     [CallSpec]
+	ParallelLoop ParallelLoopCallSpec
+	Serial       [CallSpec]
+	SerialLoop   SerialLoopCallSpec
+}
+
+type ContainerCallSpec struct {
+	Cmd Any
+	Dirs {String:Any}
+	EnvVars Any
+	Files   {String:Any}
+	Image   ContainerCallImageSpec
+	Sockets {String:String}
+	WorkDir String
+	Name    String
+	Ports   {String:String}
+}
+
+type ContainerCallImageSpec struct {
+	Ref       String
+	PullCreds CredsSpec
+}
+
+type LoopVarsSpec struct {
+	Index String
+	Key   String
+	Value String
+}
+
+type OpCallSpec struct {
+	Ref String
+	PullCreds CredsSpec
+	Inputs {String:Any}
+	Outputs {String:String}
+}
+
+type ParallelLoopCallSpec struct {
+	Range Any
+	Run   CallSpec
+	Vars  LoopVarsSpec
+}
+
+type PredicateSpec struct {
+	Eq        [Any]
+	Exists    String
+	LT        [Any]
+	LTE       [Any]
+	GT        [Any]
+	GTE       [Any]
+	NE        [Any]
+	NotExists String
+}
+
+type CredsSpec struct {
+	Username String
+	Password String
+}
+
+type SerialLoopCallSpec struct {
+	Range Any
+	Run   CallSpec
+	Until [PredicateSpec]
+	Vars  LoopVarsSpec
+}
+
+type ReferenceOpts struct {
+	Type String
+	ScratchDir String
+}
+
+#paramSpec.go
+type ParamSpec struct {
+	Array       ArrayParamSpec
+	Boolean     BooleanParamSpec
+	Description String
+	Dir         DirParamSpec
+	File        FileParamSpec
+	Number      NumberParamSpec
+	Object      ObjectParamSpec
+	Socket      SocketParamSpec
+	String      StringParamSpec
+}
+
+type ArrayParamSpec struct {
+	Constraints Constraints
+	Default     Any
+	Description String
+	IsSecret    Bool
+}
+
+type BooleanParamSpec struct {
+	Default Any
+	Description String
+}
+
+type DirParamSpec struct {
+	Default Any
+	Description String
+	IsSecret    Bool
+}
+
+type FileParamSpec struct {
+	Default Any
+	Description String
+	IsSecret    Bool
+}
+
+type NumberParamSpec struct {
+	Constraints Constraints
+	Default     Any
+	Description String
+	IsSecret    Bool
+}
+
+type ObjectParamSpec struct {
+	Constraints Constraints
+	Default     Any
+	Description String
+	IsSecret    Bool
+}
+
+type SocketParamSpec struct {
+	Description String
+	IsSecret    Bool
+}
+
+type StringParamSpec struct {
+	Constraints Constraints
+	Default     Any
+	Description String
+	IsSecret    Bool
+}
+
+type Constraints {String:Any}
+
+# req.go
+type AddAuthReq struct {
+	Resources String
+	Creds Creds
+}
+
+type EventFilter struct {
+	Roots [String]
+	Since String
+}
+
+type GetEventStreamReq struct {
+	Filter EventFilter
+}
+
+type GetDataReq struct {
+	PullCreds Creds
+	DataRef   String
+}
+
+type ListDescendantsReq struct {
+	PullCreds Creds
+	DataRef   String
+}
+
+type KillOpReq struct {
+	OpID       String
+	RootCallID String
+}
+
+type StartOpReq struct {
+	Args {String:Any}
+	Op StartOpReqOp
+}
+
+type StartOpReqOp struct {
+	Ref       String
+	PullCreds Creds
+}

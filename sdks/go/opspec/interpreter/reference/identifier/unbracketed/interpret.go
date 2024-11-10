@@ -12,8 +12,8 @@ import (
 // returns remaining ref, dereferenced data, and error if one occurred
 func Interpret(
 	ref string,
-	data *model.Value,
-) (string, *model.Value, error) {
+	data *ipld.Node,
+) (string, *ipld.Node, error) {
 
 	dataAsObject, err := coerce.ToObject(data)
 	if err != nil {

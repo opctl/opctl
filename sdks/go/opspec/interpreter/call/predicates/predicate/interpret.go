@@ -17,7 +17,7 @@ import (
 // Interpret a predicate
 func Interpret(
 	predicateSpec *model.PredicateSpec,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 ) (bool, error) {
 	switch {
 	case predicateSpec.Eq != nil:

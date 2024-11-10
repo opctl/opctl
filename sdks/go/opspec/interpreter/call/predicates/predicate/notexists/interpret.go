@@ -8,7 +8,7 @@ import (
 // Interpret a notExists expression
 func Interpret(
 	expression string,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 ) (bool, error) {
 	// @TODO: make more exact. reference.Interpret can err for more reasons than simply null pointer exceptions.
 	_, err := reference.Interpret(

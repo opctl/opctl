@@ -10,7 +10,7 @@ import (
 
 // Validate validates values for/against params
 func Validate(
-	values map[string]*model.Value,
+	values map[string]*ipld.Node,
 	params map[string]*model.ParamSpec,
 ) error {
 

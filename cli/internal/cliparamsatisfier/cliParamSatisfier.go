@@ -27,7 +27,7 @@ type CLIParamSatisfier interface {
 	Satisfy(
 		inputSourcer InputSourcer,
 		inputs map[string]*model.ParamSpec,
-	) (map[string]*model.Value, error)
+	) (map[string]*ipld.Node, error)
 }
 
 func New(
@@ -48,15 +48,15 @@ type _CLIParamSatisfier struct {
 func (cps _CLIParamSatisfier) Satisfy(
 	inputSourcer InputSourcer,
 	inputs map[string]*model.ParamSpec,
-) (map[string]*model.Value, error) {
+) (map[string]*ipld.Node, error) {
 
-	argMap := map[string]*model.Value{}
+	argMap := map[string]*ipld.Node{}
 	for _, paramName := range getSortedParamNames(inputs) {
 		param := inputs[paramName]
 
 	paramLoop:
 		for {
-			var arg *model.Value
+			var arg *ipld.Node
 
 			rawArg, ok := inputSourcer.Source(paramName)
 			if !ok {
@@ -81,10 +81,10 @@ func (cps _CLIParamSatisfier) Satisfy(
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				arg = &model.Value{Array: argValue}
+				arg = &ipld.Node{Array: argValue}
 			case param.Boolean != nil:
 				var err error
-				if arg, err = coerce.ToBoolean(&model.Value{String: rawArg}); err != nil {
+				if arg, err = coerce.ToBoolean(&ipld.Node{String: rawArg}); err != nil {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
@@ -96,7 +96,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				arg = &model.Value{Dir: &absPath}
+				arg = &ipld.Node{Dir: &absPath}
 			case param.File != nil:
 				absPath, err := filepath.Abs(*rawArg)
 				if err != nil {
@@ -104,10 +104,10 @@ func (cps _CLIParamSatisfier) Satisfy(
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				arg = &model.Value{File: &absPath}
+				arg = &ipld.Node{File: &absPath}
 			case param.Number != nil:
 				var err error
-				if arg, err = coerce.ToNumber(&model.Value{String: rawArg}); err != nil {
+				if arg, err = coerce.ToNumber(&ipld.Node{String: rawArg}); err != nil {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
@@ -126,15 +126,15 @@ func (cps _CLIParamSatisfier) Satisfy(
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				arg = &model.Value{Object: argValue}
+				arg = &ipld.Node{Object: argValue}
 			case param.Socket != nil:
-				arg = &model.Value{Socket: rawArg}
+				arg = &ipld.Node{Socket: rawArg}
 			case param.String != nil:
-				arg = &model.Value{String: rawArg}
+				arg = &ipld.Node{String: rawArg}
 			}
 
 			validateErr := params.Validate(
-				map[string]*model.Value{paramName: arg},
+				map[string]*ipld.Node{paramName: arg},
 				map[string]*model.ParamSpec{paramName: param},
 			)
 			if validateErr != nil {

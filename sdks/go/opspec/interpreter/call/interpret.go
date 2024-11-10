@@ -16,7 +16,7 @@ import (
 // Interpret a spec into a call
 func Interpret(
 	ctx context.Context,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	callSpec *model.CallSpec,
 	id string,
 	opPath string,

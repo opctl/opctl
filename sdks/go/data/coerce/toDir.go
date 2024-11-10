@@ -1,51 +1,86 @@
 package coerce
 
 import (
+	"bytes"
+	stdjson "encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec/json"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
-	"github.com/opctl/opctl/sdks/go/model"
 )
 
 // ToDir attempts to coerce value to a dir
 func ToDir(
-	value *model.Value,
+	value ipld.Node,
 	scratchDir string,
-) (*model.Value, error) {
+) (ipld.Node, error) {
 	switch {
-	case value == nil:
+	case value.IsNull():
 		return nil, errors.New("unable to coerce null to dir")
-	case value.Array != nil:
+	case value.Kind() == ipld.Kind_List:
 		return nil, fmt.Errorf("unable to coerce array to dir: %w", errIncompatibleTypes)
-	case value.Boolean != nil:
+	case value.Kind() == ipld.Kind_Bool:
 		return nil, fmt.Errorf("unable to coerce boolean to dir: %w", errIncompatibleTypes)
-	case value.Dir != nil:
-		return value, nil
-	case value.File != nil:
-		return nil, fmt.Errorf("unable to coerce file to dir: %w", errIncompatibleTypes)
-	case value.Number != nil:
+	case value.Kind() == ipld.Kind_String:
+		str, err := value.AsString()
+		if err != nil {
+			return nil, fmt.Errorf("unable to coerce string to dir: %w", err)
+		}
+
+		strIsPath := filepath.IsAbs(str)
+		if strIsPath {
+			stat, err := os.Stat(str)
+			if err != nil {
+				return nil, fmt.Errorf("unable to coerce string to dir: %w", err)
+			}
+
+			if stat.IsDir() {
+				return value, nil
+			}
+
+			if !stat.Mode().IsRegular() {
+				return nil, fmt.Errorf("unable to coerce socket to dir: %w", errIncompatibleTypes)
+			}
+
+			return nil, fmt.Errorf("unable to coerce file to dir: %w", errIncompatibleTypes)
+		}
+
+		return nil, fmt.Errorf("unable to coerce string to dir: %w", errIncompatibleTypes)
+	case value.Kind() == ipld.Kind_Int || value.Kind() == ipld.Kind_Float:
 		return nil, fmt.Errorf("unable to coerce number to dir: %w", errIncompatibleTypes)
-	case value.Object != nil:
+	case value.Kind() == ipld.Kind_Map:
 		uniqueStr, err := uniquestring.Construct()
 		if err != nil {
 			return nil, fmt.Errorf("unable to coerce object to dir: %w", err)
 		}
 
 		rootDirPath := filepath.Join(scratchDir, uniqueStr)
-		err = rCreateFileItem(rootDirPath, "", *value.Object)
+
+		var buf bytes.Buffer
+		if err := json.Encode(value, &buf); err != nil {
+			return nil, fmt.Errorf("unable to coerce object to dir: %w", err)
+		}
+	
+		// Deserialize JSON into a map[string]interface{}
+		var children map[string]interface{}
+		if err := stdjson.Unmarshal(buf.Bytes(), &children); err != nil {
+			return nil, fmt.Errorf("unable to coerce object to dir: %w", err)
+		}
+
+		err = rCreateFileItem(rootDirPath, "", children)
 		if err != nil {
 			return nil, fmt.Errorf("unable to coerce object to dir: %w", err)
 		}
 
-		return &model.Value{Dir: &rootDirPath}, nil
-	case value.Socket != nil:
-		return nil, fmt.Errorf("unable to coerce socket to dir: %w", errIncompatibleTypes)
-	case value.String != nil:
-		return nil, fmt.Errorf("unable to coerce string to dir: %w", errIncompatibleTypes)
+		nb := basicnode.Prototype.Bool.NewBuilder()
+		nb.AssignString(rootDirPath)
+		return nb.Build(), nil
 	default:
 		return nil, fmt.Errorf("unable to coerce '%+v' to dir", value)
 	}

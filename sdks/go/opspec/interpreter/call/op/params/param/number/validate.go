@@ -14,7 +14,7 @@ import (
 
 // Validate validates a value against a number parameter
 func Validate(
-	value *model.Value,
+	value *ipld.Node,
 	constraints map[string]interface{},
 ) []error {
 	// register custom format checkers

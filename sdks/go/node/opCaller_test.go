@@ -40,22 +40,22 @@ var _ = Context("opCaller", func() {
 						},
 					},
 				},
-				Inputs: map[string]*model.Value{
+				Inputs: map[string]*ipld.Node{
 					"dummyScopeName": {String: &dummyString},
 				},
 				OpID: "providedOpID",
 			}
 			providedRootCallID := "providedRootCallID"
 
-			expectedChildCallScope := map[string]*model.Value{
+			expectedChildCallScope := map[string]*ipld.Node{
 				"dummyScopeName": providedOpCall.Inputs["dummyScopeName"],
-				"./": &model.Value{
+				"./": &ipld.Node{
 					Dir: &providedOpPath,
 				},
-				"../": &model.Value{
+				"../": &ipld.Node{
 					Dir: &parentProvidedOpPath,
 				},
-				"/": &model.Value{
+				"/": &ipld.Node{
 					Dir: &providedOpPath,
 				},
 			}
@@ -70,7 +70,6 @@ var _ = Context("opCaller", func() {
 			objectUnderTest.Call(
 				providedCtx,
 				providedOpCall,
-				map[string]*model.Value{},
 				nil,
 				providedRootCallID,
 				&model.OpCallSpec{},
@@ -112,15 +111,15 @@ var _ = Context("opCaller", func() {
 				},
 			}
 
-			callOutputs := map[string]*model.Value{
-				expectedOutputName: &model.Value{
+			callOutputs := map[string]*ipld.Node{
+				expectedOutputName: &ipld.Node{
 					String: new(string),
 				},
 				// include unbound output to ensure it's not added to scope
-				"unexpectedOutputName": new(model.Value),
+				"unexpectedOutputName": new(ipld.Node),
 			}
 
-			expectedOutputs := map[string]*model.Value{
+			expectedOutputs := map[string]*ipld.Node{
 				expectedOutputName: callOutputs[expectedOutputName],
 			}
 
@@ -138,7 +137,6 @@ var _ = Context("opCaller", func() {
 			actualOutputs, actualErr := objectUnderTest.Call(
 				context.Background(),
 				providedOpCall,
-				map[string]*model.Value{},
 				nil,
 				"rootCallID",
 				providedOpCallSpec,

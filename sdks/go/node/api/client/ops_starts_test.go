@@ -26,8 +26,8 @@ var _ = Context("StartOp", func() {
 
 				pathDoesntExist := "path/doesnt/exist"
 				providedReq := model.StartOpReq{
-					Args: map[string]*model.Value{
-						"pathDoesntExist": &model.Value{
+					Args: map[string]*ipld.Node{
+						"pathDoesntExist": &ipld.Node{
 							File: &pathDoesntExist,
 						},
 					},
@@ -48,7 +48,7 @@ var _ = Context("StartOp", func() {
 			/* arrange */
 			providedCtx := context.TODO()
 			providedReq := model.StartOpReq{
-				Args: map[string]*model.Value{},
+				Args: map[string]*ipld.Node{},
 				Op: model.StartOpReqOp{
 					Ref: "dummyOpRef",
 					PullCreds: &model.Creds{

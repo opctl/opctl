@@ -21,11 +21,11 @@ import (
 // pkg fs ref: $(/pkg-fs-ref)
 // pkg fs ref w/ path: $(/pkg-fs-ref/file.txt)
 func Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	expression interface{},
 	scratchDir string,
 	createIfNotExist bool,
-) (*model.Value, error) {
+) (*ipld.Node, error) {
 	expressionAsString, expressionIsString := expression.(string)
 
 	if expressionIsString && regexp.MustCompile(`^\$\(.+\)$`).MatchString(expressionAsString) {

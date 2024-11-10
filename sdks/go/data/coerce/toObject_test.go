@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ipld/go-ipld-prime"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 )
 
 var _ = Context("ToObject", func() {
@@ -24,7 +24,7 @@ var _ = Context("ToObject", func() {
 	Context("Value.Array isn't nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Array: new([]interface{}),
 			}
 
@@ -40,7 +40,7 @@ var _ = Context("ToObject", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedDir := "dummyValue"
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Dir: &providedDir,
 			}
 
@@ -60,7 +60,7 @@ var _ = Context("ToObject", func() {
 
 				/* act */
 				actualValue, actualErr := ToObject(
-					&model.Value{File: &nonExistentPath},
+					ipld.Node{File: &nonExistentPath},
 				)
 
 				/* assert */
@@ -82,7 +82,7 @@ var _ = Context("ToObject", func() {
 
 					/* act */
 					actualValue, actualErr := ToObject(
-						&model.Value{File: &filePath},
+						ipld.Node{File: &filePath},
 					)
 
 					/* assert */
@@ -111,11 +111,11 @@ var _ = Context("ToObject", func() {
 					mapValue := map[string]interface{}{
 						mapEntryKey: mapEntryValue,
 					}
-					expectedValue := model.Value{Object: &mapValue}
+					expectedValue := ipld.Node{Object: &mapValue}
 
 					/* act */
 					actualValue, actualErr := ToObject(
-						&model.Value{File: &filePath},
+						ipld.Node{File: &filePath},
 					)
 
 					/* assert */
@@ -129,7 +129,7 @@ var _ = Context("ToObject", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedNumber := 2.2
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Number: &providedNumber,
 			}
 
@@ -144,7 +144,7 @@ var _ = Context("ToObject", func() {
 	Context("Value.Object isn't nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Object: new(map[string]interface{}),
 			}
 
@@ -163,7 +163,7 @@ var _ = Context("ToObject", func() {
 
 				/* act */
 				actualValue, actualErr := ToObject(
-					&model.Value{String: new(string)},
+					ipld.Node{String: new(string)},
 				)
 
 				/* assert */
@@ -181,11 +181,11 @@ var _ = Context("ToObject", func() {
 				mapValue := map[string]interface{}{
 					mapEntryKey: mapEntryValue,
 				}
-				expectedValue := model.Value{Object: &mapValue}
+				expectedValue := ipld.Node{Object: &mapValue}
 
 				/* act */
 				actualValue, actualErr := ToObject(
-					&model.Value{String: &mapValueJSON},
+					ipld.Node{String: &mapValueJSON},
 				)
 
 				/* assert */
@@ -197,7 +197,7 @@ var _ = Context("ToObject", func() {
 	Context("Value.Array,Value.Dir,File,Number,Object,String nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedValue := &model.Value{}
+			providedValue := ipld.Node{}
 
 			/* act */
 			actualValue, actualErr := ToObject(providedValue)

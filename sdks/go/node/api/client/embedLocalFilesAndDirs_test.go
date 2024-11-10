@@ -29,7 +29,7 @@ var _ = Context("embedLocalFilesAndDirs", func() {
 			maxEmbedBytes = 0
 			testDataFilePath := filepath.Join(wd, "testdata/embedLocalFilesAndDirs/rootfile1.txt")
 
-			args := map[string]*model.Value{
+			args := map[string]*ipld.Node{
 				"dummyFile": {
 					File: &testDataFilePath,
 				},
@@ -52,7 +52,7 @@ var _ = Context("embedLocalFilesAndDirs", func() {
 			maxEmbedBytes = 15
 			testDataFilePath := filepath.Join(wd, "testdata/embedLocalFilesAndDirs")
 
-			args := map[string]*model.Value{
+			args := map[string]*ipld.Node{
 				"dummyDir": {
 					Dir: &testDataFilePath,
 				},
@@ -76,7 +76,7 @@ var _ = Context("embedLocalFilesAndDirs", func() {
 			testDataFile1Path := filepath.Join(wd, "testdata/embedLocalFilesAndDirs/rootfile1.txt")
 			testDataFile2Path := filepath.Join(wd, "testdata/embedLocalFilesAndDirs/rootfile2.txt")
 
-			args := map[string]*model.Value{
+			args := map[string]*ipld.Node{
 				"testDataFile1": {
 					File: &testDataFile1Path,
 				},
@@ -101,7 +101,7 @@ var _ = Context("embedLocalFilesAndDirs", func() {
 			// arrange
 			pathDoesntExist := "path/doesnt/exist"
 
-			args := map[string]*model.Value{
+			args := map[string]*ipld.Node{
 				"pathDoesntExist": {
 					Dir: &pathDoesntExist,
 				},
@@ -121,7 +121,7 @@ var _ = Context("embedLocalFilesAndDirs", func() {
 			// arrange
 			pathDoesntExist := "path/doesnt/exist"
 
-			args := map[string]*model.Value{
+			args := map[string]*ipld.Node{
 				"pathDoesntExist": {
 					File: &pathDoesntExist,
 				},
@@ -141,7 +141,7 @@ var _ = Context("embedLocalFilesAndDirs", func() {
 			// arrange
 			pathDoesntExist := filepath.Join(wd, "testdata/embedLocalFilesAndDirs", "path/doesnt/exist")
 
-			args := map[string]*model.Value{
+			args := map[string]*ipld.Node{
 				"pathDoesntExist": {
 					File: &pathDoesntExist,
 				},
@@ -162,22 +162,22 @@ var _ = Context("embedLocalFilesAndDirs", func() {
 		testDataDirPath := filepath.Join(wd, "testdata/embedLocalFilesAndDirs")
 
 		providedDirKey := "dir"
-		providedDirValue := &model.Value{
+		providedDirValue := &ipld.Node{
 			Dir: &testDataDirPath,
 		}
 
 		testDataFilePath := filepath.Join(wd, "testdata/embedLocalFilesAndDirs/rootfile1.txt")
 		providedFileKey := "file"
-		providedFileValue := &model.Value{
+		providedFileValue := &ipld.Node{
 			File: &testDataFilePath,
 		}
 
 		providedStringKey := "string"
-		providedStringValue := &model.Value{
+		providedStringValue := &ipld.Node{
 			String: new(string),
 		}
 
-		args := map[string]*model.Value{
+		args := map[string]*ipld.Node{
 			providedDirKey:    providedDirValue,
 			providedFileKey:   providedFileValue,
 			providedStringKey: providedStringValue,
@@ -192,7 +192,7 @@ var _ = Context("embedLocalFilesAndDirs", func() {
 		Expect(actualErr).To(BeNil())
 		Expect(args).To(
 			BeEquivalentTo(
-				map[string]*model.Value{
+				map[string]*ipld.Node{
 					providedDirKey: {
 						Object: &map[string]interface{}{
 							"/subdir1": map[string]interface{}{

@@ -24,18 +24,18 @@ func sortMap(
 // Scope scopes loop iteration vars (index, key, value)
 func Scope(
 	index int,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	callSpecLoopRange interface{},
 	loopVarsSpec *model.LoopVarsSpec,
 ) (
-	map[string]*model.Value,
+	map[string]*ipld.Node,
 	error,
 ) {
 	if loopVarsSpec == nil {
 		return scope, nil
 	}
 
-	outboundScope := map[string]*model.Value{}
+	outboundScope := map[string]*ipld.Node{}
 	for varName, varData := range scope {
 		outboundScope[varName] = varData
 	}
@@ -43,7 +43,7 @@ func Scope(
 	if loopVarsSpec.Index != nil {
 		// assign iteration index to requested inboundScope variable
 		indexAsFloat64 := float64(index)
-		outboundScope[opspec.RefToName(*loopVarsSpec.Index)] = &model.Value{
+		outboundScope[opspec.RefToName(*loopVarsSpec.Index)] = &ipld.Node{
 			Number: &indexAsFloat64,
 		}
 	}
@@ -53,7 +53,7 @@ func Scope(
 		return outboundScope, nil
 	}
 
-	var v *model.Value
+	var v *ipld.Node
 	var err error
 	v, err = loopable.Interpret(
 		callSpecLoopRange,
@@ -86,12 +86,12 @@ func Scope(
 
 		if loopVarsSpec.Key != nil {
 			// only add key to scope if declared
-			outboundScope[opspec.RefToName(*loopVarsSpec.Key)] = &model.Value{String: &name}
+			outboundScope[opspec.RefToName(*loopVarsSpec.Key)] = &ipld.Node{String: &name}
 		}
 	}
 
 	if loopVarsSpec.Value != nil {
-		var v model.Value
+		var v ipld.Node
 		v, err = value.Interpret(
 			rawValue,
 			outboundScope,

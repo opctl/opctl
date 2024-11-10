@@ -34,7 +34,7 @@ var _ = Context("Interpolate", func() {
 							scenarioOpFile := []struct {
 								Name     string
 								Template string
-								Scope    map[string]*model.Value
+								Scope    map[string]*ipld.Node
 								Expected string
 							}{}
 							if err := yaml.Unmarshal(scenariosOpFileBytes, &scenarioOpFile); err != nil {
@@ -54,15 +54,15 @@ var _ = Context("Interpolate", func() {
 							for _, scenario := range scenarioOpFile {
 								// add op dir to scope
 								if len(scenario.Scope) == 0 {
-									scenario.Scope = map[string]*model.Value{}
+									scenario.Scope = map[string]*ipld.Node{}
 								}
-								scenario.Scope["/"] = &model.Value{Dir: opHandle.Path()}
+								scenario.Scope["/"] = &ipld.Node{Dir: opHandle.Path()}
 
 								for name, value := range scenario.Scope {
 									// make file refs absolute
 									if value.File != nil {
 										absFilePath := filepath.Join(absPath, *value.File)
-										scenario.Scope[name] = &model.Value{File: &absFilePath}
+										scenario.Scope[name] = &ipld.Node{File: &absFilePath}
 									}
 								}
 

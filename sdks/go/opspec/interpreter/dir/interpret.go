@@ -19,11 +19,11 @@ import (
 // pkg fs ref: $(/pkg-fs-ref)
 // pkg fs ref w/ path: $(/pkg-fs-ref/sub-dir)
 func Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	expression interface{},
 	scratchDir string,
 	createIfNotExist bool,
-) (*model.Value, error) {
+) (*ipld.Node, error) {
 	switch expression := expression.(type) {
 	case string:
 		if regexp.MustCompile(`^\$\(.+\)$`).MatchString(expression) {

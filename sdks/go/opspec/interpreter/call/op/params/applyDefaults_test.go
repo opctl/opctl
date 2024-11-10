@@ -22,13 +22,13 @@ var _ = Context("ApplyDefaults", func() {
 					providedOutputName: {Array: &model.ArrayParamSpec{Default: providedOutputDefault}},
 				}
 
-				expectedOutputs := map[string]*model.Value{
+				expectedOutputs := map[string]*ipld.Node{
 					providedOutputName: {Array: &providedOutputDefault},
 				}
 
 				/* act */
 				actualOutputs, actualErr := ApplyDefaults(
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					providedOutputParams,
 					"dummyOpPath",
 					"dummyOpScratchDir",
@@ -50,7 +50,7 @@ var _ = Context("ApplyDefaults", func() {
 
 					/* act */
 					actualOutputs, actualErr := ApplyDefaults(
-						map[string]*model.Value{},
+						map[string]*ipld.Node{},
 						providedOutputParams,
 						"dummyOpPath",
 						"dummyOpScratchDir",
@@ -74,13 +74,13 @@ var _ = Context("ApplyDefaults", func() {
 					providedOutputName: {Boolean: &model.BooleanParamSpec{Default: providedOutputDefault}},
 				}
 
-				expectedOutputs := map[string]*model.Value{
+				expectedOutputs := map[string]*ipld.Node{
 					providedOutputName: {Boolean: &providedOutputDefault},
 				}
 
 				/* act */
 				actualOutputs, actualErr := ApplyDefaults(
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					providedOutputParams,
 					"dummyOpPath",
 					"dummyOpScratchDir",
@@ -102,7 +102,7 @@ var _ = Context("ApplyDefaults", func() {
 
 					/* act */
 					actualOutputs, actualErr := ApplyDefaults(
-						map[string]*model.Value{},
+						map[string]*ipld.Node{},
 						providedOutputParams,
 						"dummyOpPath",
 						"dummyOpScratchDir",
@@ -134,13 +134,13 @@ var _ = Context("ApplyDefaults", func() {
 				}
 
 				expectedOutputValue := filepath.Join(providedOpPath, defaultRelPath)
-				expectedOutputs := map[string]*model.Value{
+				expectedOutputs := map[string]*ipld.Node{
 					providedOutputName: {Dir: &expectedOutputValue},
 				}
 
 				/* act */
 				actualOutputs, actualErr := ApplyDefaults(
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					providedOutputParams,
 					providedOpPath,
 					"dummyOpScratchDir",
@@ -162,7 +162,7 @@ var _ = Context("ApplyDefaults", func() {
 
 					/* act */
 					actualOutputs, actualErr := ApplyDefaults(
-						map[string]*model.Value{},
+						map[string]*ipld.Node{},
 						providedOutputParams,
 						"dummyOpPath",
 						"dummyOpScratchDir",
@@ -194,13 +194,13 @@ var _ = Context("ApplyDefaults", func() {
 				}
 
 				expectedOutputValue := filepath.Join(providedOpPath, defaultRelPath)
-				expectedOutputs := map[string]*model.Value{
+				expectedOutputs := map[string]*ipld.Node{
 					providedOutputName: {File: &expectedOutputValue},
 				}
 
 				/* act */
 				actualOutputs, actualErr := ApplyDefaults(
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					providedOutputParams,
 					providedOpPath,
 					"dummyOpScratchDir",
@@ -222,7 +222,7 @@ var _ = Context("ApplyDefaults", func() {
 
 					/* act */
 					actualOutputs, actualErr := ApplyDefaults(
-						map[string]*model.Value{},
+						map[string]*ipld.Node{},
 						providedOutputParams,
 						"dummyOpPath",
 						"dummyOpScratchDir",
@@ -246,13 +246,13 @@ var _ = Context("ApplyDefaults", func() {
 					providedOutputName: {Number: &model.NumberParamSpec{Default: providedOutputDefault}},
 				}
 
-				expectedOutputs := map[string]*model.Value{
+				expectedOutputs := map[string]*ipld.Node{
 					providedOutputName: {Number: &providedOutputDefault},
 				}
 
 				/* act */
 				actualOutputs, actualErr := ApplyDefaults(
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					providedOutputParams,
 					"dummyOpPath",
 					"dummyOpScratchDir",
@@ -274,7 +274,7 @@ var _ = Context("ApplyDefaults", func() {
 
 					/* act */
 					actualOutputs, actualErr := ApplyDefaults(
-						map[string]*model.Value{},
+						map[string]*ipld.Node{},
 						providedOutputParams,
 						"dummyOpPath",
 						"dummyOpScratchDir",
@@ -298,13 +298,13 @@ var _ = Context("ApplyDefaults", func() {
 					providedOutputName: {Object: &model.ObjectParamSpec{Default: providedOutputDefault}},
 				}
 
-				expectedOutputs := map[string]*model.Value{
+				expectedOutputs := map[string]*ipld.Node{
 					providedOutputName: {Object: &providedOutputDefault},
 				}
 
 				/* act */
 				actualOutputs, actualErr := ApplyDefaults(
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					providedOutputParams,
 					"dummyOpPath",
 					"dummyOpScratchDir",
@@ -326,7 +326,7 @@ var _ = Context("ApplyDefaults", func() {
 
 					/* act */
 					actualOutputs, actualErr := ApplyDefaults(
-						map[string]*model.Value{},
+						map[string]*ipld.Node{},
 						providedOutputParams,
 						"dummyOpPath",
 						"dummyOpScratchDir",
@@ -350,13 +350,13 @@ var _ = Context("ApplyDefaults", func() {
 					providedOutputName: {String: &model.StringParamSpec{Default: providedOutputDefault}},
 				}
 
-				expectedOutputs := map[string]*model.Value{
+				expectedOutputs := map[string]*ipld.Node{
 					providedOutputName: {String: &providedOutputDefault},
 				}
 
 				/* act */
 				actualOutputs, actualErr := ApplyDefaults(
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					providedOutputParams,
 					"dummyOpPath",
 					"dummyOpScratchDir",
@@ -378,7 +378,7 @@ var _ = Context("ApplyDefaults", func() {
 
 					/* act */
 					actualOutputs, actualErr := ApplyDefaults(
-						map[string]*model.Value{},
+						map[string]*ipld.Node{},
 						providedOutputParams,
 						"dummyOpPath",
 						"dummyOpScratchDir",

@@ -12,9 +12,9 @@ import (
 // Expression must be either a type supported by coerce.ToArray
 // or an array initializer
 func Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	expression interface{},
-) (*model.Value, error) {
+) (*ipld.Node, error) {
 	v, err := value.Interpret(
 		expression,
 		scope,

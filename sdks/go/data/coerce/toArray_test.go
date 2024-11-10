@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ipld/go-ipld-prime"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 )
 
 var _ = Context("ToArray", func() {
@@ -26,7 +26,7 @@ var _ = Context("ToArray", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			array := &[]interface{}{"dummyItem"}
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Array: array,
 			}
 
@@ -42,7 +42,7 @@ var _ = Context("ToArray", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedBoolean := true
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Boolean: &providedBoolean,
 			}
 
@@ -58,7 +58,7 @@ var _ = Context("ToArray", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedDir := "dummyValue"
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Dir: &providedDir,
 			}
 
@@ -78,7 +78,7 @@ var _ = Context("ToArray", func() {
 
 				/* act */
 				actualValue, actualErr := ToArray(
-					&model.Value{File: &nonExistentPath},
+					ipld.Node{File: &nonExistentPath},
 				)
 
 				/* assert */
@@ -100,7 +100,7 @@ var _ = Context("ToArray", func() {
 
 					/* act */
 					actualValue, actualErr := ToArray(
-						&model.Value{File: &filePath},
+						ipld.Node{File: &filePath},
 					)
 
 					/* assert */
@@ -126,11 +126,11 @@ var _ = Context("ToArray", func() {
 					}
 
 					array := []interface{}{arrayItem}
-					expectedValue := model.Value{Array: &array}
+					expectedValue := ipld.Node{Array: &array}
 
 					/* act */
 					actualValue, actualErr := ToArray(
-						&model.Value{File: &filePath},
+						ipld.Node{File: &filePath},
 					)
 
 					/* assert */
@@ -144,7 +144,7 @@ var _ = Context("ToArray", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedNumber := 2.2
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Number: &providedNumber,
 			}
 
@@ -160,7 +160,7 @@ var _ = Context("ToArray", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedSocket := "dummySocket"
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Socket: &providedSocket,
 			}
 
@@ -179,7 +179,7 @@ var _ = Context("ToArray", func() {
 
 				/* act */
 				actualValue, actualErr := ToArray(
-					&model.Value{String: new(string)},
+					ipld.Node{String: new(string)},
 				)
 
 				/* assert */
@@ -194,11 +194,11 @@ var _ = Context("ToArray", func() {
 				arrayItem := "arrayItem"
 				arrayJSON := fmt.Sprintf(`["%s"]`, arrayItem)
 				array := &[]interface{}{arrayItem}
-				expectedValue := model.Value{Array: array}
+				expectedValue := ipld.Node{Array: array}
 
 				/* act */
 				actualValue, actualErr := ToArray(
-					&model.Value{String: &arrayJSON},
+					ipld.Node{String: &arrayJSON},
 				)
 
 				/* assert */
@@ -210,7 +210,7 @@ var _ = Context("ToArray", func() {
 	Context("Value.Dir,File,Number,Array,String nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedValue := &model.Value{}
+			providedValue := ipld.Node{}
 
 			/* act */
 			actualValue, actualErr := ToArray(providedValue)

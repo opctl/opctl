@@ -3,9 +3,11 @@ package coerce
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
 // isStringTruthy ensures value isn't:
@@ -24,35 +26,74 @@ func isStringTruthy(value string) bool {
 
 // ToBoolean attempts to coerce value to a boolean
 func ToBoolean(
-	value *model.Value,
-) (*model.Value, error) {
+	value ipld.Node,
+) (ipld.Node, error) {
+	nb := basicnode.Prototype.Bool.NewBuilder()
+
 	switch {
-	case value == nil:
-		return &model.Value{Boolean: new(bool)}, nil
-	case value.Array != nil:
-		booleanValue := value.Array != nil && len(*value.Array) != 0
-		return &model.Value{Boolean: &booleanValue}, nil
-	case value.Boolean != nil:
+	case value.IsNull():
+		nb.AssignBool(false)
+		return nb.Build(), nil
+	case value.Kind() == ipld.Kind_List:
+		nb.AssignBool(value.Length() != 0)
+		return nb.Build(), nil
+	case value.Kind() == ipld.Kind_Bool:
 		return value, nil
-	case value.Dir != nil:
-		return nil, fmt.Errorf("unable to coerce dir to boolean: %w", errIncompatibleTypes)
-	case value.File != nil:
-		fileBytes, err := os.ReadFile(*value.File)
+	case value.Kind() == ipld.Kind_String:
+		str, err := value.AsString()
 		if err != nil {
-			return nil, fmt.Errorf("unable to coerce file to boolean: %w", err)
+			return nil, fmt.Errorf("unable to coerce string to boolean: %w", err)
 		}
 
-		booleanValue := isStringTruthy(string(fileBytes))
-		return &model.Value{Boolean: &booleanValue}, nil
-	case value.Number != nil:
-		booleanValue := *value.Number != 0
-		return &model.Value{Boolean: &booleanValue}, nil
-	case value.Object != nil:
-		booleanValue := value.Object != nil && len(*value.Object) != 0
-		return &model.Value{Boolean: &booleanValue}, nil
-	case value.String != nil:
-		booleanValue := isStringTruthy(*value.String)
-		return &model.Value{Boolean: &booleanValue}, nil
+		strIsPath := filepath.IsAbs(str)
+		if strIsPath {
+			stat, err := os.Stat(str)
+			if err != nil {
+				return nil, fmt.Errorf("unable to coerce string to boolean: %w", err)
+			}
+
+			if stat.IsDir() {
+				return nil, fmt.Errorf("unable to coerce dir to boolean: %w", errIncompatibleTypes)
+			}
+
+			if !stat.Mode().IsRegular() {
+				return nil, fmt.Errorf("unable to coerce socket to boolean: %w", errIncompatibleTypes)
+			}
+
+			fileBytes, err := os.ReadFile(str)
+			if err != nil {
+				return nil, fmt.Errorf("unable to coerce file to boolean: %w", err)
+			}
+
+			nb.AssignBool(isStringTruthy(string(fileBytes)))
+
+			return nb.Build(), nil
+		}
+
+		nb.AssignBool(isStringTruthy(str))
+
+		return nb.Build(), nil
+	case value.Kind() == ipld.Kind_Float:
+		nb := basicnode.Prototype.Bool.NewBuilder()
+		f, err := value.AsFloat()
+		if err != nil {
+			return nil, fmt.Errorf("unable to coerce float to boolean: %w", err)
+		}
+
+		nb.AssignBool(f == 0)
+		return nb.Build(), nil
+	case value.Kind() == ipld.Kind_Int:
+		nb := basicnode.Prototype.Bool.NewBuilder()
+		f, err := value.AsInt()
+		if err != nil {
+			return nil, fmt.Errorf("unable to coerce int to boolean: %w", err)
+		}
+
+		nb.AssignBool(f == 0)
+		return nb.Build(), nil
+	case value.Kind() == ipld.Kind_Map:
+		nb.AssignBool(value.Length() != 0)
+		return nb.Build(), nil
 	default:
 		return nil, fmt.Errorf("unable to coerce '%+v' to boolean", value)
 	}

@@ -10,14 +10,14 @@ import (
 
 // Coerce args to satisfy params
 func Coerce(
-	values map[string]*model.Value,
+	values map[string]*ipld.Node,
 	params map[string]*model.ParamSpec,
 	opScratchDir string,
 ) (
-	map[string]*model.Value,
+	map[string]*ipld.Node,
 	error,
 ) {
-	coercedValues := map[string]*model.Value{}
+	coercedValues := map[string]*ipld.Node{}
 
 	paramErrMap := map[string]error{}
 paramLoop:

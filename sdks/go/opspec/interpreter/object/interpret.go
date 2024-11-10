@@ -12,9 +12,9 @@ import (
 // Expression must be either a type supported by coerce.ToObject
 // or an object initializer
 func Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	expression interface{},
-) (*model.Value, error) {
+) (*ipld.Node, error) {
 	value, err := value.Interpret(
 		expression,
 		scope,

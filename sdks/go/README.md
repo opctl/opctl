@@ -56,7 +56,7 @@ func main() {
 	rootID, err := apiClient.StartOp(
 		ctx,
 		model.StartOpReq{
-			Args: map[string]*model.Value{},
+			Args: map[string]*ipld.Node{},
 			Op: model.StartOpReqOp{
 				Ref: "github.com/opspec-pkgs/uuid.v4.generate#1.1.0",
 			},

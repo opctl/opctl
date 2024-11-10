@@ -5,9 +5,9 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/ipld/go-ipld-prime"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 )
 
 var _ = Context("ToNumber", func() {
@@ -18,14 +18,14 @@ var _ = Context("ToNumber", func() {
 			actualValue, actualErr := ToNumber(nil)
 
 			/* assert */
-			Expect(*actualValue).To(Equal(model.Value{Number: new(float64)}))
+			Expect(*actualValue).To(Equal(ipld.Node{Number: new(float64)}))
 			Expect(actualErr).To(BeNil())
 		})
 	})
 	Context("Value.Array isn't nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Array: new([]interface{}),
 			}
 
@@ -41,7 +41,7 @@ var _ = Context("ToNumber", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedDir := "dummyValue"
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Dir: &providedDir,
 			}
 
@@ -59,7 +59,7 @@ var _ = Context("ToNumber", func() {
 				/* arrange */
 				/* act */
 				actualValue, actualErr := ToNumber(
-					&model.Value{File: new(string)},
+					ipld.Node{File: new(string)},
 				)
 
 				/* assert */
@@ -84,11 +84,11 @@ var _ = Context("ToNumber", func() {
 
 				/* act */
 				actualValue, actualErr := ToNumber(
-					&model.Value{File: &filePath},
+					ipld.Node{File: &filePath},
 				)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Number: &number}))
+				Expect(*actualValue).To(Equal(ipld.Node{Number: &number}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -97,7 +97,7 @@ var _ = Context("ToNumber", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedNumber := float64(2.2)
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Number: &providedNumber,
 			}
 
@@ -112,7 +112,7 @@ var _ = Context("ToNumber", func() {
 	Context("Value.Object isn't nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Object: new(map[string]interface{}),
 			}
 
@@ -128,7 +128,7 @@ var _ = Context("ToNumber", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedString := "2.2"
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				String: &providedString,
 			}
 
@@ -141,14 +141,14 @@ var _ = Context("ToNumber", func() {
 			actualValue, actualErr := ToNumber(providedValue)
 
 			/* assert */
-			Expect(*actualValue).To(Equal(model.Value{Number: &parsedNumber}))
+			Expect(*actualValue).To(Equal(ipld.Node{Number: &parsedNumber}))
 			Expect(actualErr).To(BeNil())
 		})
 	})
 	Context("Value.Array,Value.Dir,File,Number,Object,Number nil", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			providedValue := &model.Value{}
+			providedValue := ipld.Node{}
 
 			/* act */
 			actualNumber, actualErr := ToNumber(providedValue)

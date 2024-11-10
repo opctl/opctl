@@ -7,13 +7,13 @@ import (
 
 	"github.com/docker/distribution/reference"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
+	//"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
 )
 
 // Interpret container image
 func Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	containerCallImageSpec *model.ContainerCallImageSpec,
 	scratchDir string,
 ) (*model.ContainerCallImage, error) {
@@ -23,17 +23,17 @@ func Interpret(
 	}
 
 	// try to interpret as dir
-	src, err := dir.Interpret(
-		scope,
-		containerCallImageSpec.Ref,
-		scratchDir,
-		false,
-	)
-	if err == nil {
-		return &model.ContainerCallImage{
-			Src: src,
-		}, nil
-	}
+	// src, err := dir.Interpret(
+	// 	scope,
+	// 	containerCallImageSpec.Ref,
+	// 	scratchDir,
+	// 	false,
+	// )
+	// if err == nil {
+	// 	return &model.ContainerCallImage{
+	// 		Src: src,
+	// 	}, nil
+	// }
 
 	// fallback to string
 	containerCallImage := &model.ContainerCallImage{}

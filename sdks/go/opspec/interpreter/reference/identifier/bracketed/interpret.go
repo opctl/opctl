@@ -16,8 +16,8 @@ import (
 // returns ref remainder, dereferenced data, and error if one occurred
 func Interpret(
 	ref string,
-	data *model.Value,
-) (string, *model.Value, error) {
+	data *ipld.Node,
+) (string, *ipld.Node, error) {
 
 	if !strings.HasPrefix(ref, "[") {
 		return "", nil, fmt.Errorf("unable to interpret '%v': expected '['", ref)

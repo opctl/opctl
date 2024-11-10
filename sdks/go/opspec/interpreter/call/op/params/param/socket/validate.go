@@ -7,7 +7,7 @@ import (
 
 // Validate validates a value against a string parameter
 func Validate(
-	value *model.Value,
+	value *ipld.Node,
 ) []error {
 	// handle no value passed
 	if value == nil || value.Socket == nil {

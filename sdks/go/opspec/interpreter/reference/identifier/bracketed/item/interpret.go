@@ -11,8 +11,8 @@ import (
 // data MUST be an array & indexString MUST parse to a +- integer within bounds of array
 func Interpret(
 	indexString string,
-	data model.Value,
-) (*model.Value, error) {
+	data ipld.Node,
+) (*ipld.Node, error) {
 	itemIndex, err := ParseIndex(indexString, *data.Array)
 	if err != nil {
 		return nil, fmt.Errorf("unable to interpret item: %w", err)

@@ -8,7 +8,7 @@ import (
 // Interpret predicates
 func Interpret(
 	predicateSpecs []*model.PredicateSpec,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 ) (bool, error) {
 	for _, predicateSpec := range predicateSpecs {
 		predicate, err := predicate.Interpret(

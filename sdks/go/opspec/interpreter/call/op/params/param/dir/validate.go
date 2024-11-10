@@ -10,7 +10,7 @@ import (
 
 // Validate validates a value against a string parameter
 func Validate(
-	value *model.Value,
+	value *ipld.Node,
 ) []error {
 	if value == nil || value.Dir == nil {
 		return []error{errors.New("dir required")}

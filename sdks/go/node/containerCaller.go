@@ -18,11 +18,11 @@ type containerCaller interface {
 	Call(
 		ctx context.Context,
 		containerCall *model.ContainerCall,
-		inboundScope map[string]*model.Value,
+		inboundScope map[string]*ipld.Node,
 		containerCallSpec *model.ContainerCallSpec,
 		rootCallID string,
 	) (
-		map[string]*model.Value,
+		map[string]*ipld.Node,
 		error,
 	)
 }
@@ -50,14 +50,14 @@ type _containerCaller struct {
 func (cc _containerCaller) Call(
 	ctx context.Context,
 	containerCall *model.ContainerCall,
-	inboundScope map[string]*model.Value,
+	inboundScope map[string]*ipld.Node,
 	containerCallSpec *model.ContainerCallSpec,
 	rootCallID string,
 ) (
-	map[string]*model.Value,
+	map[string]*ipld.Node,
 	error,
 ) {
-	outputs := map[string]*model.Value{}
+	outputs := map[string]*ipld.Node{}
 	var exitCode int64
 
 	if containerCall.Image.Ref != nil && containerCall.Image.PullCreds == nil {
@@ -176,13 +176,13 @@ func (this _containerCaller) interpretLogs(
 func (this _containerCaller) interpretOutputs(
 	containerCallSpec *model.ContainerCallSpec,
 	containerCall *model.ContainerCall,
-) map[string]*model.Value {
-	outputs := map[string]*model.Value{}
+) map[string]*ipld.Node {
+	outputs := map[string]*ipld.Node{}
 
 	for socketAddr, name := range containerCallSpec.Sockets {
 		// add socket outputs
 		if "0.0.0.0" == socketAddr {
-			outputs[name] = &model.Value{Socket: &containerCall.ContainerID}
+			outputs[name] = &ipld.Node{Socket: &containerCall.ContainerID}
 		}
 	}
 	for callSpecContainerFilePath, mountSrc := range containerCallSpec.Files {
@@ -197,11 +197,11 @@ func (this _containerCaller) interpretOutputs(
 		}
 
 		// add file outputs
-		for callContainerFilePath, callHostFilePath := range containerCall.Files {
+		for callContainerFilePath, callHostFilePath := range containerCall.Files.Values {
 			if callSpecContainerFilePath == callContainerFilePath {
 				// copy callHostFilePath before taking address; range vars have same address for every iteration
 				value := callHostFilePath
-				outputs[opspec.RefToName(mountSrcStr)] = &model.Value{File: &value}
+				outputs[opspec.RefToName(mountSrcStr)] = &ipld.Node{File: &value}
 			}
 		}
 	}
@@ -217,11 +217,11 @@ func (this _containerCaller) interpretOutputs(
 		}
 
 		// add dir outputs
-		for callContainerDirPath, callHostDirPath := range containerCall.Dirs {
+		for callContainerDirPath, callHostDirPath := range containerCall.Dirs.Values {
 			if callSpecContainerDirPath == callContainerDirPath {
 				// copy callHostDirPath before taking address; range vars have same address for every iteration
 				value := callHostDirPath
-				outputs[opspec.RefToName(mountSrcStr)] = &model.Value{Dir: &value}
+				outputs[opspec.RefToName(mountSrcStr)] = &ipld.Node{Dir: &value}
 			}
 		}
 	}

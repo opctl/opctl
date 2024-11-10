@@ -20,7 +20,7 @@ const (
 // similar: https://github.com/kubernetes/kubernetes/blob/5066a67caaf8638c7473d4bd228037d0c270c546/third_party/forked/golang/expansion/expand.go#L1
 func Interpolate(
 	expression string,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 ) (string, error) {
 	refBuffer := []byte{}
 	i := 0
@@ -76,7 +76,7 @@ func Interpolate(
 // returns the interpreted value (if any), number of bytes consumed, and any err
 func tryDeRef(
 	possibleRef string,
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 ) (string, int, error) {
 	refBuffer := []byte{}
 	i := 0

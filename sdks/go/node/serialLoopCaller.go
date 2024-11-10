@@ -20,13 +20,13 @@ type serialLoopCaller interface {
 	Call(
 		ctx context.Context,
 		id string,
-		inboundScope map[string]*model.Value,
+		inboundScope map[string]*ipld.Node,
 		callSpecSerialLoop model.SerialLoopCallSpec,
 		opPath string,
 		parentCallID *string,
 		rootCallID string,
 	) (
-		map[string]*model.Value,
+		map[string]*ipld.Node,
 		error,
 	)
 }
@@ -49,16 +49,16 @@ type _serialLoopCaller struct {
 func (lpr _serialLoopCaller) Call(
 	ctx context.Context,
 	id string,
-	inboundScope map[string]*model.Value,
+	inboundScope map[string]*ipld.Node,
 	callSpecSerialLoop model.SerialLoopCallSpec,
 	opPath string,
 	parentCallID *string,
 	rootCallID string,
 ) (
-	map[string]*model.Value,
+	map[string]*ipld.Node,
 	error,
 ) {
-	outboundScope := map[string]*model.Value{}
+	outboundScope := map[string]*ipld.Node{}
 	var callSerialLoop *model.SerialLoopCall
 
 	index := 0

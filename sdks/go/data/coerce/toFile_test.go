@@ -3,9 +3,9 @@ package coerce
 import (
 	"os"
 
+	"github.com/ipld/go-ipld-prime"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 )
 
 var _ = Context("ToFile", func() {
@@ -41,7 +41,7 @@ var _ = Context("ToFile", func() {
 
 					/* act */
 					actualValue, actualErr := ToFile(
-						&model.Value{
+						ipld.Node{
 							Array: new([]interface{}),
 						},
 						providedScratchDir,
@@ -62,7 +62,7 @@ var _ = Context("ToFile", func() {
 
 				/* act */
 				actualValue, actualErr := ToFile(
-					&model.Value{
+					ipld.Node{
 						Boolean: new(bool),
 					},
 					providedScratchDir,
@@ -80,7 +80,7 @@ var _ = Context("ToFile", func() {
 			providedScratchDir := tmpDir
 
 			providedDir := "dummyValue"
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				Dir: &providedDir,
 			}
 
@@ -98,7 +98,7 @@ var _ = Context("ToFile", func() {
 			providedScratchDir := tmpDir
 
 			providedFile := "dummyFile"
-			providedValue := &model.Value{
+			providedValue := ipld.Node{
 				File: &providedFile,
 			}
 
@@ -118,7 +118,7 @@ var _ = Context("ToFile", func() {
 
 				/* act */
 				actualValue, actualErr := ToFile(
-					&model.Value{
+					ipld.Node{
 						Number: new(float64),
 					},
 					providedScratchDir,
@@ -139,7 +139,7 @@ var _ = Context("ToFile", func() {
 
 					/* act */
 					actualValue, actualErr := ToFile(
-						&model.Value{
+						ipld.Node{
 							Object: new(map[string]interface{}),
 						},
 						providedScratchDir,
@@ -160,7 +160,7 @@ var _ = Context("ToFile", func() {
 
 				/* act */
 				actualValue, actualErr := ToFile(
-					&model.Value{
+					ipld.Node{
 						String: new(string),
 					},
 					providedScratchDir,
@@ -177,7 +177,7 @@ var _ = Context("ToFile", func() {
 			/* arrange */
 			providedScratchDir := tmpDir
 
-			providedValue := &model.Value{}
+			providedValue := ipld.Node{}
 
 			/* act */
 			actualValue, actualErr := ToFile(providedValue, providedScratchDir)
@@ -196,7 +196,7 @@ var _ = Context("ToFile", func() {
 
 					/* act */
 					actualValue, actualErr := ToFile(
-						&model.Value{
+						ipld.Node{
 							String: new(string),
 						},
 						providedScratchDir,

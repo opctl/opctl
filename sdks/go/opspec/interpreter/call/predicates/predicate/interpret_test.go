@@ -22,7 +22,7 @@ var _ = Context("Interpret", func() {
 				&model.PredicateSpec{
 					Eq: &eqPredicate,
 				},
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 			)
 
 			/* assert */
@@ -41,7 +41,7 @@ var _ = Context("Interpret", func() {
 				&model.PredicateSpec{
 					Exists: &existsPredicate,
 				},
-				map[string]*model.Value{
+				map[string]*ipld.Node{
 					identifier: {String: new(string)},
 				},
 			)
@@ -64,7 +64,7 @@ var _ = Context("Interpret", func() {
 				&model.PredicateSpec{
 					NE: &nePredicate,
 				},
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 			)
 
 			/* assert */
@@ -83,7 +83,7 @@ var _ = Context("Interpret", func() {
 				&model.PredicateSpec{
 					NotExists: &notExistsPredicate,
 				},
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 			)
 
 			/* assert */
@@ -101,7 +101,7 @@ var _ = Context("Interpret", func() {
 			/* act */
 			_, actualError := Interpret(
 				providedScgPredicate,
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 			)
 
 			/* assert */

@@ -67,7 +67,7 @@ var _ = Context("serialCaller", func() {
 				_, actualErr := objectUnderTest.Call(
 					context.Background(),
 					"callID",
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					"rootCallID",
 					"opPath",
 					[]*model.CallSpec{
@@ -138,7 +138,7 @@ var _ = Context("serialCaller", func() {
 			}
 
 			input1Value := "input1Value"
-			providedInboundScope := map[string]*model.Value{
+			providedInboundScope := map[string]*ipld.Node{
 				input1Key: {String: &input1Value},
 			}
 
@@ -234,7 +234,7 @@ var _ = Context("serialCaller", func() {
 									BaseCall: model.BaseCall{
 										OpPath: childOp2Path,
 									},
-									Inputs: map[string]*model.Value{
+									Inputs: map[string]*ipld.Node{
 										input2Key: {String: &input2Value},
 									},
 									ChildCallCallSpec: nil,

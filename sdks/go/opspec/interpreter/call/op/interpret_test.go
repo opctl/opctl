@@ -38,14 +38,14 @@ var _ = Context("Interpret", func() {
 					},
 				},
 			},
-			Inputs: map[string]*model.Value{},
+			Inputs: map[string]*ipld.Node{},
 			OpID:   providedOpId,
 		}
 
 		/* act */
 		actualResult, actualError := Interpret(
 			context.Background(),
-			map[string]*model.Value{},
+			map[string]*ipld.Node{},
 			&model.OpCallSpec{
 				Ref: opRef,
 			},

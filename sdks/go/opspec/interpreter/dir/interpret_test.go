@@ -22,7 +22,7 @@ var _ = Context("Interpret", func() {
 
 				/* act */
 				_, actualErr := Interpret(
-					map[string]*model.Value{
+					map[string]*ipld.Node{
 						identifier: {
 							Socket: new(string),
 						},
@@ -42,7 +42,7 @@ var _ = Context("Interpret", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					identifier := "identifier"
-					providedScope := map[string]*model.Value{
+					providedScope := map[string]*ipld.Node{
 						identifier: {Dir: nil},
 					}
 					providedExpression := fmt.Sprintf("$(%s)", identifier)
@@ -67,7 +67,7 @@ var _ = Context("Interpret", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					identifier := "identifier"
-					providedScope := map[string]*model.Value{
+					providedScope := map[string]*ipld.Node{
 						identifier: {Dir: new(string)},
 					}
 					scratchDir, err := os.MkdirTemp("", "")

@@ -67,18 +67,18 @@ type FakeCLIParamSatisfier struct {
 		result1 inputsrc.InputSrc
 		result2 error
 	}
-	SatisfyStub        func(cliparamsatisfier.InputSourcer, map[string]*model.ParamSpec) (map[string]*model.Value, error)
+	SatisfyStub        func(cliparamsatisfier.InputSourcer, map[string]*model.ParamSpec) (map[string]*ipld.Node, error)
 	satisfyMutex       sync.RWMutex
 	satisfyArgsForCall []struct {
 		arg1 cliparamsatisfier.InputSourcer
 		arg2 map[string]*model.ParamSpec
 	}
 	satisfyReturns struct {
-		result1 map[string]*model.Value
+		result1 map[string]*ipld.Node
 		result2 error
 	}
 	satisfyReturnsOnCall map[int]struct {
-		result1 map[string]*model.Value
+		result1 map[string]*ipld.Node
 		result2 error
 	}
 	invocations      map[string][][]interface{}
@@ -386,7 +386,7 @@ func (fake *FakeCLIParamSatisfier) NewYMLFileInputSrcReturnsOnCall(i int, result
 	}{result1, result2}
 }
 
-func (fake *FakeCLIParamSatisfier) Satisfy(arg1 cliparamsatisfier.InputSourcer, arg2 map[string]*model.ParamSpec) (map[string]*model.Value, error) {
+func (fake *FakeCLIParamSatisfier) Satisfy(arg1 cliparamsatisfier.InputSourcer, arg2 map[string]*model.ParamSpec) (map[string]*ipld.Node, error) {
 	fake.satisfyMutex.Lock()
 	ret, specificReturn := fake.satisfyReturnsOnCall[len(fake.satisfyArgsForCall)]
 	fake.satisfyArgsForCall = append(fake.satisfyArgsForCall, struct {
@@ -411,7 +411,7 @@ func (fake *FakeCLIParamSatisfier) SatisfyCallCount() int {
 	return len(fake.satisfyArgsForCall)
 }
 
-func (fake *FakeCLIParamSatisfier) SatisfyCalls(stub func(cliparamsatisfier.InputSourcer, map[string]*model.ParamSpec) (map[string]*model.Value, error)) {
+func (fake *FakeCLIParamSatisfier) SatisfyCalls(stub func(cliparamsatisfier.InputSourcer, map[string]*model.ParamSpec) (map[string]*ipld.Node, error)) {
 	fake.satisfyMutex.Lock()
 	defer fake.satisfyMutex.Unlock()
 	fake.SatisfyStub = stub
@@ -424,28 +424,28 @@ func (fake *FakeCLIParamSatisfier) SatisfyArgsForCall(i int) (cliparamsatisfier.
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCLIParamSatisfier) SatisfyReturns(result1 map[string]*model.Value, result2 error) {
+func (fake *FakeCLIParamSatisfier) SatisfyReturns(result1 map[string]*ipld.Node, result2 error) {
 	fake.satisfyMutex.Lock()
 	defer fake.satisfyMutex.Unlock()
 	fake.SatisfyStub = nil
 	fake.satisfyReturns = struct {
-		result1 map[string]*model.Value
+		result1 map[string]*ipld.Node
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCLIParamSatisfier) SatisfyReturnsOnCall(i int, result1 map[string]*model.Value, result2 error) {
+func (fake *FakeCLIParamSatisfier) SatisfyReturnsOnCall(i int, result1 map[string]*ipld.Node, result2 error) {
 	fake.satisfyMutex.Lock()
 	defer fake.satisfyMutex.Unlock()
 	fake.SatisfyStub = nil
 	if fake.satisfyReturnsOnCall == nil {
 		fake.satisfyReturnsOnCall = make(map[int]struct {
-			result1 map[string]*model.Value
+			result1 map[string]*ipld.Node
 			result2 error
 		})
 	}
 	fake.satisfyReturnsOnCall[i] = struct {
-		result1 map[string]*model.Value
+		result1 map[string]*ipld.Node
 		result2 error
 	}{result1, result2}
 }

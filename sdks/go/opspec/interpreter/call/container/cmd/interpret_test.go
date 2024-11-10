@@ -14,7 +14,7 @@ var _ = Context("Interpret", func() {
 			It("should return expected dcg.Cmd", func() {
 				/* arrange */
 				identifier := "identifier"
-				providedScope := map[string]*model.Value{
+				providedScope := map[string]*ipld.Node{
 					identifier: {String: new(string)},
 				}
 

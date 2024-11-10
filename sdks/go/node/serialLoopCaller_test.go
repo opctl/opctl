@@ -42,7 +42,7 @@ var _ = Context("serialLoopCaller", func() {
 				objectUnderTest.Call(
 					context.Background(),
 					"id",
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					model.SerialLoopCallSpec{
 						Until: []*model.PredicateSpec{
 							{
@@ -76,7 +76,7 @@ var _ = Context("serialLoopCaller", func() {
 				objectUnderTest.Call(
 					context.Background(),
 					"id",
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					model.SerialLoopCallSpec{
 						Range: []interface{}{},
 					},
@@ -109,7 +109,7 @@ var _ = Context("serialLoopCaller", func() {
 					pubSub := pubsub.New(db)
 
 					providedCtx := context.Background()
-					providedScope := map[string]*model.Value{}
+					providedScope := map[string]*ipld.Node{}
 
 					caller := newCaller(
 						newContainerCaller(
@@ -221,9 +221,9 @@ var _ = Context("serialLoopCaller", func() {
 				_, actualErr := objectUnderTest.Call(
 					ctx,
 					"",
-					map[string]*model.Value{},
+					map[string]*ipld.Node{},
 					model.SerialLoopCallSpec{
-						Range: model.Value{
+						Range: ipld.Node{
 							Array: &[]interface{}{0, 1},
 						},
 						Run: model.CallSpec{
@@ -267,12 +267,12 @@ var _ = Context("serialLoopCaller", func() {
 											OpPath: providedOpRef,
 										},
 										Cmd:   []string{},
-										Dirs:  map[string]string{},
-										Files: map[string]string{},
+										Dirs:  model.NewStringMap(map[string]string{}),
+										Files: model.NewStringMap(map[string]string{}),
 										Image: &model.ContainerCallImage{
 											Ref: &imageRef,
 										},
-										Sockets: map[string]string{},
+										Sockets: model.NewStringMap(map[string]string{}),
 									},
 									ParentID: &providedParentID,
 									RootID:   providedRootID,
@@ -286,12 +286,12 @@ var _ = Context("serialLoopCaller", func() {
 											OpPath: providedOpRef,
 										},
 										Cmd:   []string{},
-										Dirs:  map[string]string{},
-										Files: map[string]string{},
+										Dirs:  model.NewStringMap(map[string]string{}),
+										Files: model.NewStringMap(map[string]string{}),
 										Image: &model.ContainerCallImage{
 											Ref: &imageRef,
 										},
-										Sockets: map[string]string{},
+										Sockets: model.NewStringMap(map[string]string{}),
 									},
 									ParentID: &providedParentID,
 									RootID:   providedRootID,

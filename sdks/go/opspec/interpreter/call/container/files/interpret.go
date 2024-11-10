@@ -15,11 +15,11 @@ import (
 
 // Interpret container files
 func Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*ipld.Node,
 	containerCallSpecFiles map[string]interface{},
 	scratchDirPath string,
 	dataCachePath string,
-) (map[string]string, error) {
+) (model.StringMap, error) {
 	containerCallFiles := map[string]string{}
 fileLoop:
 	for callSpecContainerFilePath, fileExpression := range containerCallSpecFiles {
@@ -36,7 +36,7 @@ fileLoop:
 			true,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("unable to bind file %v to %v: %w", callSpecContainerFilePath, fileExpression, err)
+			return model.StringMap{}, fmt.Errorf("unable to bind file %v to %v: %w", callSpecContainerFilePath, fileExpression, err)
 		}
 
 		if !strings.HasPrefix(*fileValue.File, dataCachePath) {
@@ -53,7 +53,7 @@ fileLoop:
 			filepath.Dir(containerCallFiles[callSpecContainerFilePath]),
 			0777,
 		); err != nil {
-			return nil, fmt.Errorf("unable to bind %v to %v: %w", callSpecContainerFilePath, fileExpression, err)
+			return model.StringMap{}, fmt.Errorf("unable to bind %v to %v: %w", callSpecContainerFilePath, fileExpression, err)
 		}
 
 		// copy file
@@ -63,9 +63,11 @@ fileLoop:
 			containerCallFiles[callSpecContainerFilePath],
 		)
 		if err != nil {
-			return nil, fmt.Errorf("unable to bind %v to %v: %w", callSpecContainerFilePath, fileExpression, err)
+			return model.StringMap{}, fmt.Errorf("unable to bind %v to %v: %w", callSpecContainerFilePath, fileExpression, err)
 		}
 
 	}
-	return containerCallFiles, nil
+	return model.NewStringMap(
+		containerCallFiles,
+	), nil
 }

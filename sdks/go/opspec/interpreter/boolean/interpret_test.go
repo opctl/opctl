@@ -12,7 +12,7 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			/* act */
 			_, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				"$()",
 			)
 
@@ -25,11 +25,11 @@ var _ = Context("Interpret", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			booleanValue := true
-			expectedValue := model.Value{Boolean: &booleanValue}
+			expectedValue := ipld.Node{Boolean: &booleanValue}
 
 			/* act */
 			actualBoolean, actualErr := Interpret(
-				map[string]*model.Value{},
+				map[string]*ipld.Node{},
 				booleanValue,
 			)
 

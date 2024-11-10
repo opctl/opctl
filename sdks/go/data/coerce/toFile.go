@@ -7,15 +7,15 @@ import (
 	"path/filepath"
 	"strconv"
 
+	"github.com/ipld/go-ipld-prime"
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
-	"github.com/opctl/opctl/sdks/go/model"
 )
 
 // ToFile attempts to coerce value to a file
 func ToFile(
-	value *model.Value,
+	value ipld.Node,
 	scratchDir string,
-) (*model.Value, error) {
+) (ipld.Node, error) {
 	var data []byte
 
 	switch {
@@ -83,5 +83,5 @@ func ToFile(
 		return nil, fmt.Errorf("unable to coerce '%+v' to file: %w", value, err)
 	}
 
-	return &model.Value{File: &path}, nil
+	return &ipld.Node{File: &path}, nil
 }
