@@ -2,8 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"golang.org/x/mod/semver"
 	"os"
+
+	"github.com/Masterminds/semver/v3"
 
 	changelog "github.com/anton-yurchenko/go-changelog"
 )
@@ -26,11 +27,15 @@ func main() {
 	}
 
 	latestRelease := c.Releases[0]
+	sv, err := semver.NewVersion(*latestRelease.Version)
+	if err != nil {
+		panic(err)
+	}
 
 	lateReleaseJSON, err := json.Marshal(
 		Release{
 			Description:  latestRelease.Changes.ToString(),
-			IsPrerelease: semver.Prerelease(*latestRelease.Version) != "",
+			IsPrerelease: sv.Prerelease() != "",
 			Version:      *latestRelease.Version,
 		},
 	)
