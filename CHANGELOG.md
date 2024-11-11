@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.56] - 2024-11-11
+
+### Added
+
+- Access containers by their name from opctl nodes
+
+### Deprecated
+
+- `container.ports`; access containers by name instead
+
 ## [0.1.56-alpha.1] - 2024-11-08
 
 ### Added

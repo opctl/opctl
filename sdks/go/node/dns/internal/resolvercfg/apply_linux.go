@@ -35,7 +35,7 @@ func Apply(
 	)
 
 	rcString := string(rc)
-	if strings.HasPrefix(rcString, nsPrefix) {
+	if !strings.HasPrefix(rcString, nsPrefix) {
 		return os.WriteFile(
 			etcResolvConfPath,
 			[]byte(fmt.Sprintf(
