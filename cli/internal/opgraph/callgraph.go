@@ -32,8 +32,6 @@ func newCallGraphNode(call *model.Call, timestamp time.Time) *callGraphNode {
 	}
 }
 
-var errNotFoundInGraph = fmt.Errorf("%w in graph", model.ErrDataRefResolution{})
-
 const skippedState = "skipped"
 
 func (n *callGraphNode) insert(call *model.Call, startTime time.Time, initialState string) error {
@@ -55,7 +53,9 @@ func (n *callGraphNode) insert(call *model.Call, startTime time.Time, initialSta
 			return nil
 		}
 	}
-	return errNotFoundInGraph
+
+	// received unexpected call; return empty error since we'll just ignore it
+	return errors.New("")
 }
 
 func (n *callGraphNode) find(call *model.Call) *callGraphNode {

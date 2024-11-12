@@ -14,7 +14,6 @@ An object defining a container call.
   - [envVars](#envvars)
   - [files](#files)
   - [name](#name)
-  - [ports](#ports)
   - [sockets](#sockets)
   - [workDir](#workdir)
 
@@ -50,14 +49,9 @@ An object for which each key is an absolute path in the container and each value
 |[file initializer](../../../../types/file.md#initialization)|Evaluate and mount|
 
 ### name
-A [string initializer](../../../../types/string.md#initialization) defining a name by which the container can be resolved on the opctl network.
+A [string initializer](../../../../types/string.md#initialization) defining a name by which the container can be reached by other opctl containers and opctl host nodes.
 
 > if multiple containers are given the same name, network requests will be distributed (load balanced) across them. 
-
-### ports
-An object defining container ports exposed on the opctl host where:
-- each key is a container port or range of ports (optionally including protocol) matching `[0-9]+(-[0-9]+)?(tcp|udp)`
-- each value is a corresponding opctl host port or range of ports matching `[0-9]+(-[0-9]+)?`
 
 ### sockets
 An object for which each key is an absolute path in the container and and each value is a [socket](../../../../types/socket.md) [variable-reference [string]](../../variable-reference.md) to mount. 
