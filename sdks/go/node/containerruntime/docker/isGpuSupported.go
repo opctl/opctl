@@ -42,7 +42,7 @@ func isGpuSupported(
 
 	imageRef := "alpine"
 
-	err := pullImage(
+	if err := pullImage(
 		context.Background(),
 		&model.ContainerCall{
 			Image: &model.ContainerCallImage{
@@ -53,7 +53,9 @@ func isGpuSupported(
 		dockerClient,
 		"",
 		noOpEventPublisher{},
-	)
+	); err != nil {
+		return false, err
+	}
 
 	createResponse, err := dockerClient.ContainerCreate(
 		ctx,

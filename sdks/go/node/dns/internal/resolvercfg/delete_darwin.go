@@ -23,6 +23,10 @@ func Delete(
 				return err
 			}
 
+			if d == nil {
+				return nil
+			}
+
 			if strings.HasPrefix(
 				d.Name(),
 				resolverPrefix,

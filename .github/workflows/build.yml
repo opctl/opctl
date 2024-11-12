@@ -17,7 +17,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Install Opctl
-      run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+      run: curl -L https://github.com/opctl/opctl/releases/download/v0.1.55/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
     - name: Check for CHANGELOG.md
       run: opctl run changelog/find-in-diff
 
@@ -28,7 +28,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
       - name: Install Opctl
-        run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+        run: curl -L https://github.com/opctl/opctl/releases/download/v0.1.55/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
       - name: Run Markdownlint
         run: opctl run changelog/lint
 
@@ -53,7 +53,7 @@ jobs:
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF})"
 
     - name: Install Opctl
-      run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+      run: curl -L https://github.com/opctl/opctl/releases/download/v0.1.55/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
     
       # the release op runs the build step, so only run build on PRs
     - run: opctl run -a gitBranch=${{ steps.branch_name_push.outputs.branch }}${{ steps.branch_name_pr.outputs.branch }} -a version=0.0.1 build
@@ -68,7 +68,7 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v4
     - name: Install Opctl
-      run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+      run: curl -L https://github.com/opctl/opctl/releases/download/v0.1.55/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
     - name: Create Release for latest version
       id: create_release
       run: |

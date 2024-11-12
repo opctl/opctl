@@ -14,7 +14,7 @@ func CreateFile(
 		return err
 	}
 
-	if err := os.WriteFile(fsPath, []byte{}, 0700); err != nil {
+	if err := os.WriteFile(fsPath, data, 0700); err != nil {
 		return err
 	}
 

@@ -14,14 +14,22 @@ If multiple containers have the same [name](../../reference/opspec/op-directory/
     ```yaml
     name: containerNetworking
     run:
-      parallel:
+    parallel:
         - container:
             image: { ref: nginx }
             # some syntactically valid hostname
             name: nginx.demo.wow
         - container:
-            image: { ref: alpine/curl }
-            cmd: [ping, nginx.demo.wow]
+            image: { ref: alpine }
+            cmd:
+            - sh
+            - -ce
+            - |
+                # wait up
+                sleep 1; until ping -c1 nginx.demo.wow >/dev/null 2>&1; do :; done
+
+                # ping forever
+                ping nginx.demo.wow
     ```
 
 1. Observe the second container succeeds in `ping`ing the `nginx.demo.wow` container.
