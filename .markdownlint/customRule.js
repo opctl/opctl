@@ -15,11 +15,10 @@ module.exports = {
           "lineNumber": heading.lineNumber,
           "detail": "First heading should be '# Changelog'.",
         });
-      } else if (heading.tag === "h2" && !/^## \[(\d\.\d{1,9}\.\d{1,3}(-[.A-Za-z0-9]+)?)|Unreleased\]| - \d{4}-\d{2}-\d{2}$/.test(heading.line)) {
-        // every second heading should be a version number, then a dash and a space, and then a date
+      } else if (heading.tag === "h2" && !/^## (\[\d\.\d{1,9}\.\d{1,3}(-[.A-Za-z0-9]+)?\] - \d{4}-\d{2}-\d{2})|(\[Unreleased\])$/.test(heading.line)) {
         return onError({
           "lineNumber": heading.lineNumber,
-          "detail": "Second heading should be a version number and date.",
+          "detail": "Second heading should be a '[version number] - date' or '[Unreleased]'.",
         });
       } else if (heading.tag === "h3") {
         // every third heading should contain some descriptive information about the changes in the version being described

@@ -38,4 +38,4 @@ run:
                   /cmd.sh:
                   /usr/local/bin/opctl: $(../../../opctl-linux-amd64)
                 image:
-                  ref: docker:20.10.17-dind
+                  ref: docker:27.3-dind

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [Unreleased]
+
+### Fixed
+
+- Rate limit errors surfacing as "image not found" errors
+
 ## [0.1.56] - 2024-11-11
 
 ### Added
@@ -274,7 +280,7 @@ accordance with
 
 - [Named calls and needs](https://github.com/opctl/opctl/issues/643)
 
-## 0.1.29 - 2020-04-02
+## [0.1.29] - 2020-04-02
 
 ### Fixed
 

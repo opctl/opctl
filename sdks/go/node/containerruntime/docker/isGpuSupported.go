@@ -54,6 +54,9 @@ func isGpuSupported(
 		"",
 		noOpEventPublisher{},
 	)
+	if err != nil {
+		return false, err
+	}
 
 	createResponse, err := dockerClient.ContainerCreate(
 		ctx,
