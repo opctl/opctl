@@ -17,7 +17,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Install Opctl
-      run: curl -L https://github.com/opctl/opctl/releases/download/v0.1.55/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+      run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
     - name: Check for CHANGELOG.md
       run: opctl run changelog/find-in-diff
 
@@ -28,39 +28,26 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
       - name: Install Opctl
-        run: curl -L https://github.com/opctl/opctl/releases/download/v0.1.55/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+        run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
       - name: Run Markdownlint
         run: opctl run changelog/lint
 
   build:
     name: Build
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.ref != 'refs/heads/main'
     steps:
-
     - name: Check out code
       uses: actions/checkout@v4
-
-    - name: Get branch name (push)
-      if: github.event_name != 'pull_request'
-      shell: bash
-      id: branch_name_push
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-
-    - name: Get branch name (pull_request)
-      if: github.event_name == 'pull_request'
-      shell: bash
-      id: branch_name_pr
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF})"
-
     - name: Install Opctl
-      run: curl -L https://github.com/opctl/opctl/releases/download/v0.1.55/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
-    
-      # the release op runs the build step, so only run build on PRs
-    - run: opctl run -a gitBranch=${{ steps.branch_name_push.outputs.branch }}${{ steps.branch_name_pr.outputs.branch }} -a version=0.0.1 build
-      if: github.event_name == 'pull_request' && github.ref != 'refs/heads/main'
+      run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+    - name: Compile
+      run: opctl run -a version=0.0.0 compile
+    - name: Test
+      run: opctl run test
 
   create-release:
-    name: Create Draft Release
+    name: Release
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [lint-changelog]
@@ -68,8 +55,7 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v4
     - name: Install Opctl
-      run: curl -L https://github.com/opctl/opctl/releases/download/v0.1.55/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
-    - name: Create Release for latest version
+      run: curl -L https://github.com/opctl/opctl/releases/latest/download/opctl-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+    - name: Create release from latest changelog entry
       id: create_release
-      run: |
-        opctl run -a github='{"username":"${{ github.actor }}","accessToken":"${{ github.token }}"}' release
+      run: opctl run -a github='{"username":"${{ github.actor }}","accessToken":"${{ github.token }}"}' release

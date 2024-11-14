@@ -1,0 +1,19 @@
+name: build
+description: runs ops necessary to go from src to vetted artifact(s) and tests everything
+inputs:
+  version:
+    string:
+      constraints:
+        format: semver
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
+run:
+  serial:
+    - op:
+        ref: $(../../webapp/.opspec/compile)
+    - op:
+        ref: $(../../cli/.opspec/compile)
+        inputs:
+          HOME:
+          version:
