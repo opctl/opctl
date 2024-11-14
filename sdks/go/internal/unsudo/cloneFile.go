@@ -23,12 +23,23 @@ func CloneFile(
 	}
 	defer srcFile.Close()
 
+	srcInfo, err := srcFile.Stat()
+	if err != nil {
+		return err
+	}
+
 	destFile, err := os.Create(dstPath)
 	if err != nil {
 		return err
 	}
 	defer destFile.Close()
 
+	// copy mode
+	if err := os.Chmod(dstPath, srcInfo.Mode()); err != nil {
+		return err
+	}
+
+	// copy content
 	if _, err = io.Copy(destFile, srcFile); err != nil {
 		return err
 	}

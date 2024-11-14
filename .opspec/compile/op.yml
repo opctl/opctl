@@ -1,5 +1,5 @@
-name: build
-description: runs ops necessary to go from src to vetted artifact(s) and tests everything
+name: compile
+description: runs ops necessary to go from src to releasable artifact(s)
 inputs:
   version:
     string:
