@@ -3,12 +3,7 @@ name: release
 inputs:
   dockerSocket:
     socket:
-      description: docker socket to use as container runtime 
-  gitBranch:
-    string:
-      constraints: { minLength: 1 }
-      description: git branch the coverage should be associated with
-      default: main
+      description: docker socket to use as container runtime
   github:
     object:
       constraints:
@@ -56,10 +51,8 @@ run:
         - eq: [$(alreadyPublished), false]
       serial:
       - op:
-          ref: $(../build)
+          ref: $(../compile)
           inputs:
-            dockerSocket:
-            gitBranch:
             HOME:
             version: $(latestRelease.version)
       - parallel:
