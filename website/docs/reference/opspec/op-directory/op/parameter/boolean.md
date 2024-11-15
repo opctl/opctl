@@ -7,7 +7,6 @@ An object defining a parameter which accepts a [boolean typed value](../../../ty
 ## Boolean Properties:
 - may have:
   - [default](#default)
-  - [isSecret](#issecret)
 
 ### default
 A [boolean initializer](../../../types/boolean.md#initialization) to use as the value of the parameter when no argument is provided.
