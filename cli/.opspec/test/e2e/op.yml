@@ -1,5 +1,12 @@
 name: e2e
 description: runs all CLI end to end (e2e) tests
+inputs:
+  githubAccessToken:
+    description: accessToken for cloning github.com/opctl/test-suite-auth repo
+    string:
+      isSecret: true
+      constraints:
+        minLength: 1
 run:
   serial:
     - op:
@@ -16,26 +23,44 @@ run:
         run:
           if:
             - exists: $(../../../../test-suite/$(entry.path)/scenarios.json)
-          parallelLoop:
+          serialLoop:
             range: $(../../../../test-suite/$(entry.path)/scenarios.json)
             vars:
               value: $(scenario)
             run:
               if:
                 - exists: $(scenario.call)
-              container:
-                cmd:
-                  - sh
-                  - -ce
-                  - /cmd.sh
-                dirs:
-                  /test: $(../../../../test-suite/$(entry.path))
-                envVars:
-                  op: $(entry.path)
-                  expect: $(scenario.call.expect)
-                files:
-                  /args.yml: $(scenario.call.scope)
-                  /cmd.sh:
-                  /usr/local/bin/opctl: $(../../../opctl-linux-amd64)
-                image:
-                  ref: docker:27.3.1-dind
+              name: "op: $(entry.path)"
+              serial:
+                - name: applyScenarioDefaults
+                  op:
+                    ref: github.com/opspec-pkgs/object.merge#1.0.0
+                    inputs:
+                      default:
+                        opRef: ''
+                        authAddGithub: false
+                      override:  $(scenario.call)
+                    outputs:
+                      result: $(call)
+                - name: runScenario
+                  container:
+                    cmd:
+                      - sh
+                      - -ce
+                      - /cmd.sh
+                    dirs:
+                      /test: $(../../../../test-suite/$(entry.path))
+                    envVars:
+                      # help differentiate test harness from test output by configuring system under test to not color output
+                      OPCTL_NO_COLOR: true
+                      opRef: $(call.opRef)
+                      op: $(entry.path)
+                      expect: $(call.expect)
+                      authAddGithub: $(call.authAddGithub)
+                      githubAccessToken:
+                    files:
+                      /args.yml: $(call.scope)
+                      /cmd.sh:
+                      /usr/local/bin/opctl: $(../../../opctl-linux-amd64)
+                    image:
+                      ref: docker:27.3.1-dind

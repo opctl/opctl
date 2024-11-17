@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"runtime/debug"
 
-	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/data/fs"
-	"github.com/opctl/opctl/sdks/go/data/git"
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
@@ -17,11 +14,10 @@ func (this core) StartOp(
 	ctx context.Context,
 	req model.StartOpReq,
 ) (string, error) {
-	opHandle, err := data.Resolve(
+	opHandle, err := this.ResolveData(
 		ctx,
 		req.Op.Ref,
-		fs.New(this.dataCachePath),
-		git.New(this.dataCachePath, req.Op.PullCreds),
+		req.Op.PullCreds,
 	)
 	if err != nil {
 		return "", err

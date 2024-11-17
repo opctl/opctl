@@ -10,10 +10,16 @@ nohup dockerd \
 # and is use solely for this purpose
 opctl auth add docker.io -u 3hhyyicl1mzqsr6tggmg -p '%7Oe^4#fGGwc96rGcV&4'
 
+if [[ $authAddGithub == "true" ]]; then
+  opctl auth add github.com -u " " -p $githubAccessToken
+fi
+
 exec <&-
 
+opRef="${opRef:-/test}"
+
 echo "op: $op"
-blah=$(opctl run --no-progress --arg-file /args.yml /test)
+blah=$(opctl run --no-progress --arg-file /args.yml $opRef)
 
 case "$expect" in
   success)

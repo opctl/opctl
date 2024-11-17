@@ -7,6 +7,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 var _ = Context("core", func() {
@@ -30,7 +31,7 @@ var _ = Context("core", func() {
 			actualOp, actualErr := objectUnderTest.ResolveData(
 				providedCtx,
 				providedOpRef,
-				nil,
+				&model.Creds{},
 			)
 
 			/* assert */

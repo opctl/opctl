@@ -44,7 +44,7 @@ jobs:
     - name: Compile
       run: opctl run -a version=0.0.0 compile
     - name: Test
-      run: opctl run test
+      run: opctl run -a githubAccessToken='${{ secrets.TEST_GITHUB_ACCESS_TOKEN }}' test
 
   create-release:
     name: Release

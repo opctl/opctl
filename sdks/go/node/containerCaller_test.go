@@ -12,7 +12,6 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/containerruntime/fakes"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
-	. "github.com/opctl/opctl/sdks/go/node/pubsub/fakes"
 )
 
 var _ = Context("containerCaller", func() {
@@ -31,10 +30,16 @@ var _ = Context("containerCaller", func() {
 	Context("newContainerCaller", func() {
 		It("should return containerCaller", func() {
 			/* arrange/act/assert */
+			pubSub := pubsub.New(db)
+
 			Expect(newContainerCaller(
 				new(FakeContainerRuntime),
-				new(FakePubSub),
-				newStateStore(context.Background(), db, new(FakePubSub)),
+				pubSub,
+				newStateStore(
+					context.Background(),
+					db,
+					pubSub,
+				),
 			)).To(Not(BeNil()))
 		})
 	})
@@ -64,11 +69,11 @@ var _ = Context("containerCaller", func() {
 				return nil, nil
 			}
 
-			fakePubSub := new(FakePubSub)
+			pubSub := pubsub.New(db)
 
 			objectUnderTest := _containerCaller{
 				containerRuntime: fakeContainerRuntime,
-				pubSub:           fakePubSub,
+				pubSub:           pubSub,
 			}
 
 			/* act */
@@ -89,13 +94,12 @@ var _ = Context("containerCaller", func() {
 				_ := fakeContainerRuntime.RunContainerArgsForCall(0)
 			Expect(actualContainerCall).To(Equal(providedContainerCall))
 			Expect(actualRootCallID).To(Equal(providedRootCallID))
-			Expect(actualEventPublisher).To(Equal(fakePubSub))
+			Expect(actualEventPublisher).To(Equal(pubSub))
 		})
 		Context("containerRuntime.RunContainer errors", func() {
 			It("should publish expected ContainerExited", func() {
 				/* arrange */
 				expectedErrorMessage := "expectedErrorMessage"
-				fakePubSub := new(FakePubSub)
 
 				fakeContainerRuntime := new(FakeContainerRuntime)
 
@@ -116,7 +120,7 @@ var _ = Context("containerCaller", func() {
 
 				objectUnderTest := _containerCaller{
 					containerRuntime: fakeContainerRuntime,
-					pubSub:           fakePubSub,
+					pubSub:           pubsub.New(db),
 				}
 
 				/* act */
@@ -171,7 +175,7 @@ var _ = Context("containerCaller", func() {
 
 		objectUnderTest := _containerCaller{
 			containerRuntime: fakeContainerRuntime,
-			pubSub:           new(FakePubSub),
+			pubSub:           pubsub.New(db),
 		}
 
 		/* act */

@@ -4,6 +4,12 @@ inputs:
   dockerSocket:
     socket:
       description: docker socket to use as container runtime
+  githubAccessToken:
+    description: accessToken for cloning github.com/opctl/test-suite-auth repo
+    string:
+      isSecret: true
+      constraints:
+        minLength: 1
   HOME:
     dir:
       description: Home directory of caller; used to access go modules
@@ -22,6 +28,8 @@ run:
               HOME:
         - op:
             ref: $(../../cli/.opspec/test/e2e)
+            inputs:
+              githubAccessToken:
     # opspec tests
     - op:
         ref: $(../../opspec/opfile/.opspec/test)

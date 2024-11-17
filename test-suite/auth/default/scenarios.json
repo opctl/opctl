@@ -1,0 +1,30 @@
+[
+  {
+    "call": {
+      "authAddGithub": true,
+      "expect": "success",
+      "scope": {}
+    }
+  },
+  {
+    "call": {
+      "authAddGithub": true,
+      "expect": "success",
+      "opRef": "github.com/opctl/test-suite-auth#1.0.0",
+      "scope": {}
+    }
+  },
+  {
+    "call": {
+      "expect": "failure",
+      "scope": {}
+    }
+  },
+  {
+    "call": {
+      "expect": "failure",
+      "opRef": "github.com/opctl/test-suite-auth#1.0.0",
+      "scope": {}
+    }
+  }
+]

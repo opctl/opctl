@@ -1,7 +1,5 @@
 package pubsub
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
-
 import (
 	"context"
 	"fmt"
@@ -31,7 +29,6 @@ type EventSubscriber interface {
 	)
 }
 
-//counterfeiter:generate -o fakes/pubSub.go . PubSub
 type PubSub interface {
 	EventPublisher
 	EventSubscriber

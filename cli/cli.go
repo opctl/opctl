@@ -110,14 +110,14 @@ func newCli(
 		cancel()
 	}
 
-	cli.Command("auth", "Manage auth for OCI image registries", func(authCmd *mow.Cmd) {
-		authCmd.Command("add", "Add auth for an OCI image registry", func(addCmd *mow.Cmd) {
+	cli.Command("auth", "Manage default auth used to pull ops and images", func(authCmd *mow.Cmd) {
+		authCmd.Command("add", "Add default auth used to pull ops and images", func(addCmd *mow.Cmd) {
 			addCmd.Spec = "RESOURCES [ -u=<username> ] [ -p=<password> ]"
 
 			resources := addCmd.String(mow.StringArg{
 				Name:   "RESOURCES",
 				Value:  "",
-				Desc:   "Resources this auth applies to in the form of a host or host/path (e.g. docker.io)",
+				Desc:   "Op or image ref prefixes this auth applies to (e.g. docker.io, github.com/some-org, etc.)",
 				EnvVar: "OPCTL_AUTH_RESOURCES",
 			})
 			username := addCmd.String(mow.StringOpt{
@@ -282,7 +282,7 @@ func newCli(
 		opCmd.Command("create", "Create an op", func(createCmd *mow.Cmd) {
 			path := createCmd.String(mow.StringOpt{
 				Name:   "path",
-				Value:  opspec.DotOpspecDirName,
+				Value:  model.DotOpspecDirName,
 				Desc:   "Path the op will be created at",
 				EnvVar: "OPCTL_CREATE_PATH",
 			})
@@ -314,7 +314,7 @@ func newCli(
 		opCmd.Command("install", "Install an op", func(installCmd *mow.Cmd) {
 			path := installCmd.String(mow.StringOpt{
 				Name:   "path",
-				Value:  opspec.DotOpspecDirName,
+				Value:  model.DotOpspecDirName,
 				Desc:   "Path the op will be installed at",
 				EnvVar: "OPCTL_INSTALL_PATH",
 			})
@@ -407,7 +407,7 @@ func newCli(
 		argFile := runCmd.String(mow.StringOpt{
 			Name:   "arg-file",
 			Desc:   "Read in a file of args in yml format",
-			Value:  filepath.Join(opspec.DotOpspecDirName, "args.yml"),
+			Value:  filepath.Join(model.DotOpspecDirName, "args.yml"),
 			EnvVar: "OPCTL_RUN_ARG_FILE",
 		})
 		noProgress := runCmd.Bool(mow.BoolOpt{
