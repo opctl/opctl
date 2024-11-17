@@ -2,6 +2,7 @@ package dataresolver
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -20,6 +21,7 @@ type DataResolver interface {
 	Resolve(
 		ctx context.Context,
 		dataRef string,
+		opPath []string,
 		pullCreds *model.Creds,
 	) (model.DataHandle, error)
 }
@@ -42,6 +44,7 @@ type _dataResolver struct {
 func (dtr _dataResolver) Resolve(
 	ctx context.Context,
 	dataRef string,
+	opPath []string,
 	pullCreds *model.Creds,
 ) (model.DataHandle, error) {
 	cwd, err := os.Getwd()
@@ -50,78 +53,93 @@ func (dtr _dataResolver) Resolve(
 	}
 
 	fsProvider := fs.New(
-		filepath.Join(cwd, ".opspec"),
+		filepath.Join(cwd, model.DotOpspecDirName),
 		cwd,
 	)
 
-	domain := strings.Split(dataRef, "/")[0]
-
-	passwordDescription := fmt.Sprintf("Password for %s.", domain)
-	if domain == "github.com" {
-		// customize github.com password description...
-		passwordDescription = "Personal access token for github.com with 'Repo' permissions."
+	qualifiedDataRefs := []string{
+		dataRef,
 	}
 
-	credsPromptInputs := map[string]*model.ParamSpec{
-		usernameInputName: {
-			String: &model.StringParamSpec{
-				Description: fmt.Sprintf("Username for %s.", domain),
-				Constraints: map[string]interface{}{
-					"MinLength": 1,
-				},
-			},
-		},
-		passwordInputName: {
-			String: &model.StringParamSpec{
-				Description: passwordDescription,
-				Constraints: map[string]interface{}{
-					"MinLength": 1,
-				},
-				IsSecret: true,
-			},
-		},
+	if !filepath.IsAbs(dataRef) {
+		for _, opDirRef := range opPath {
+			qualifiedDataRefs = append(qualifiedDataRefs, opDirRef+"/"+dataRef)
+		}
 	}
 
-	reattemptedAuth := false
+dataRefLoop:
+	for _, dataRef := range qualifiedDataRefs {
 
-	for {
-		opDirHandle, err := data.Resolve(
-			ctx,
-			dataRef,
-			fsProvider,
-			dataNode.New(
-				dtr.node,
-				pullCreds,
-			),
-		)
+		domain := strings.Split(dataRef, "/")[0]
 
-		if err == nil {
-			return opDirHandle, nil
+		passwordDescription := fmt.Sprintf("Password for %s.", domain)
+		if domain == "github.com" {
+			// customize github.com password description...
+			passwordDescription = "Personal access token for github.com with 'Repo' permissions."
 		}
 
-		if model.IsAuthError(err) && !reattemptedAuth {
-			// auth errors can be fixed by supplying correct creds so don't give up; prompt
-			cliPromptInputSrc := dtr.cliParamSatisfier.NewCliPromptInputSrc(credsPromptInputs)
+		credsPromptInputs := map[string]*model.ParamSpec{
+			usernameInputName: {
+				String: &model.StringParamSpec{
+					Description: fmt.Sprintf("Username for %s.", domain),
+					Constraints: map[string]interface{}{
+						"MinLength": 1,
+					},
+				},
+			},
+			passwordInputName: {
+				String: &model.StringParamSpec{
+					Description: passwordDescription,
+					Constraints: map[string]interface{}{
+						"MinLength": 1,
+					},
+					IsSecret: true,
+				},
+			},
+		}
 
-			argMap, err := dtr.cliParamSatisfier.Satisfy(
-				cliparamsatisfier.NewInputSourcer(cliPromptInputSrc),
-				credsPromptInputs,
+		for {
+			opDirHandle, err := data.Resolve(
+				ctx,
+				dataRef,
+				fsProvider,
+				dataNode.New(
+					dtr.node,
+					pullCreds,
+				),
 			)
-			if err != nil {
-				return nil, err
+
+			if err == nil {
+				return opDirHandle, nil
 			}
 
-			// save providedArgs & re-attempt
-			pullCreds = &model.Creds{
-				Username: *(argMap[usernameInputName].String),
-				Password: *(argMap[passwordInputName].String),
+			if model.IsAuthError(err) {
+				// auth errors can be fixed by supplying correct creds so don't give up; prompt
+				cliPromptInputSrc := dtr.cliParamSatisfier.NewCliPromptInputSrc(credsPromptInputs)
+
+				argMap, err := dtr.cliParamSatisfier.Satisfy(
+					cliparamsatisfier.NewInputSourcer(cliPromptInputSrc),
+					credsPromptInputs,
+				)
+				if err != nil {
+					return nil, err
+				}
+
+				// save providedArgs & re-attempt
+				pullCreds = &model.Creds{
+					Username: *(argMap[usernameInputName].String),
+					Password: *(argMap[passwordInputName].String),
+				}
+				continue
+			} else if errors.Is(err, model.ErrDataUnableToResolve{}) {
+				continue dataRefLoop
 			}
-			reattemptedAuth = true
-			continue
+
+			return nil, err
 		}
-
-		return nil, err
 	}
+
+	return nil, model.ErrDataUnableToResolve{}
 }
 
 const (

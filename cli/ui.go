@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
+	"github.com/opctl/opctl/cli/internal/oppath"
 	"github.com/skratchdot/open-golang/open"
 )
 
@@ -45,10 +47,26 @@ func ui(
 			node,
 		)
 
+		cwd, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+
+		opPath, err := oppath.Get(
+			ctx,
+			cwd,
+			dataResolver,
+			node,
+		)
+		if err != nil {
+			return err
+		}
+
 		// otherwise use same resolution as run
 		mountHandle, err := dataResolver.Resolve(
 			ctx,
 			mountRefArg,
+			opPath,
 			nil,
 		)
 		if err != nil {

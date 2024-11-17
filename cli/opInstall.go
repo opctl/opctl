@@ -15,6 +15,7 @@ import (
 func opInstall(
 	ctx context.Context,
 	dataResolver dataresolver.DataResolver,
+	opPath []string,
 	opRef string,
 	path string,
 	creds *model.Creds,
@@ -33,6 +34,7 @@ func opInstall(
 	opDirHandle, err := dataResolver.Resolve(
 		ctx,
 		dataRef,
+		opPath,
 		creds,
 	)
 	if err != nil {

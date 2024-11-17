@@ -15,26 +15,24 @@ var _ = Context("_git", func() {
 	Context("TryResolve", func() {
 		Context("repo exists but completion marker doesn't", func() {
 			Context("invalid git ref", func() {
+				It("should return error", func() {
+					/* arrange */
+					dataDir, err := os.MkdirTemp("", "")
+					if err != nil {
+						panic(err)
+					}
+					objectUnderTest := New(dataDir, nil)
 
-			})
-			It("should return error", func() {
-				wd, err := os.Getwd()
-				if err != nil {
-					panic(err)
-				}
-				opRef := filepath.Join(wd, "../testdata/testop")
+					/* act */
+					actualHandle, actualErr := objectUnderTest.TryResolve(
+						context.Background(),
+						"test#not-a-semver",
+					)
 
-				objectUnderTest := New(filepath.Dir(opRef), nil)
-
-				/* act */
-				actualHandle, actualErr := objectUnderTest.TryResolve(
-					context.Background(),
-					opRef,
-				)
-
-				/* assert */
-				Expect(actualErr).To(MatchError("invalid git ref: missing version"))
-				Expect(actualHandle).To(BeNil())
+					/* assert */
+					Expect(actualErr).To(MatchError("invalid git ref: not-a-semver is not a valid semver"))
+					Expect(actualHandle).To(BeNil())
+				})
 			})
 			Context("clone errors", func() {
 				It("should return err", func() {
@@ -47,11 +45,11 @@ var _ = Context("_git", func() {
 					/* act */
 					_, actualErr := objectUnderTest.TryResolve(
 						context.Background(),
-						"not/exists",
+						"test#not-a-semver",
 					)
 
 					/* assert */
-					Expect(actualErr).To(MatchError("invalid git ref: missing version"))
+					Expect(actualErr).To(MatchError("invalid git ref: not-a-semver is not a valid semver"))
 				})
 				Context("Clone doesn't error", func() {
 					It("should return expected result", func() {

@@ -15,6 +15,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 	"github.com/opctl/opctl/cli/internal/opgraph"
+	"github.com/opctl/opctl/cli/internal/oppath"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
@@ -47,9 +48,25 @@ func run(
 		node,
 	)
 
+	cwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	opPath, err := oppath.Get(
+		ctx,
+		cwd,
+		dataResolver,
+		node,
+	)
+	if err != nil {
+		return err
+	}
+
 	opHandle, err := dataResolver.Resolve(
 		ctx,
 		opRef,
+		opPath,
 		nil,
 	)
 	if err != nil {
