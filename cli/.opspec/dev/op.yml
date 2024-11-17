@@ -24,12 +24,13 @@ run:
           - --headless=true
           - --api-version=2
           - exec
-          - ./cli/opctl-linux-amd64
+          - ./cli/opctl-linux-arm64
           - run
           - github.com/opspec-pkgs/uuid.v4.generate#1.1.0
         dirs:
           /src: $(../../..)
           /go/pkg: $(HOME/go/pkg)
+        name: opctl-cli
         sockets:
           /var/run/docker.sock: $(dockerSocket)
         workDir: /src

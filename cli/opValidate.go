@@ -10,11 +10,13 @@ import (
 func opValidate(
 	ctx context.Context,
 	dataResolver dataresolver.DataResolver,
+	opPath []string,
 	opRef string,
 ) error {
 	opDirHandle, err := dataResolver.Resolve(
 		ctx,
 		opRef,
+		opPath,
 		nil,
 	)
 	if err != nil {

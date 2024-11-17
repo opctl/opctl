@@ -1,12 +1,13 @@
 package git
 
 import (
+	"fmt"
 	"net/url"
 	"path"
 	"path/filepath"
 	"strings"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/blang/semver"
 )
 
 // parseRef string to object
@@ -20,12 +21,15 @@ func parseRef(
 
 	// fragment MAY be in format: SEM_VER/OP_PATH
 	version := strings.SplitN(refURI.Fragment, "/", 2)[0]
-	if version == "" {
-		return nil, model.ErrDataMissingVersion{}
+
+	if version != "" {
+		if _, err = semver.Parse(version); err != nil {
+			err = fmt.Errorf("%s is not a valid semver", version)
+		}
 	}
 
 	return &ref{
 		Name:    path.Join(refURI.Host, refURI.Path),
 		Version: version,
-	}, nil
+	}, err
 }

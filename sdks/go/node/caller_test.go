@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/dgraph-io/badger/v4"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -14,14 +15,29 @@ import (
 )
 
 var _ = Context("caller", func() {
+	dbDir, err := os.MkdirTemp("", "")
+	if err != nil {
+		panic(err)
+	}
+
+	db, err := badger.Open(
+		badger.DefaultOptions(dbDir).WithLogger(nil),
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	Context("newCaller", func() {
 		It("should return caller", func() {
 			/* arrange/act/assert */
+			fakePubSub := new(FakePubSub)
+
 			Expect(
 				newCaller(
 					new(FakeContainerCaller),
 					"dummyDataDir",
-					new(FakePubSub),
+					fakePubSub,
+					newStateStore(context.Background(), db, fakePubSub),
 				),
 			).To(Not(BeNil()))
 		})
@@ -253,6 +269,7 @@ var _ = Context("caller", func() {
 					dataDirPath: dataDir,
 					opCaller:    fakeOpCaller,
 					pubSub:      fakePubSub,
+					stateStore:  newStateStore(context.Background(), db, fakePubSub),
 				}
 
 				/* act */

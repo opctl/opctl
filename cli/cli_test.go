@@ -93,7 +93,9 @@ var _ = Context("cli", func() {
 				Expect(actualErr).NotTo(HaveOccurred())
 				Eventually(session, 10).Should(gexec.Exit(0))
 				Expect(string(session.Out.Contents())).Should(Equal(
-					`REF		DESCRIPTION
+					`run "opctl auth add github.com -u <username> -p <password>" to complete setup
+
+REF		DESCRIPTION
 testdata/ls/op1	A single line description
 `))
 			})

@@ -56,6 +56,13 @@ func (gp _git) TryResolve(
 
 			_, err := os.Stat(completeMarkerPath)
 			if err == nil {
+				if repoRef.Version == "" {
+					return nil, update(
+						ctx,
+						repoPath,
+						gp.pullCreds,
+					)
+				}
 				// complete clone found
 				return nil, nil
 			} else if os.IsNotExist(err) {
@@ -66,7 +73,12 @@ func (gp _git) TryResolve(
 			}
 
 			// attempt clone
-			if err := Clone(ctx, repoPath, repoRef, gp.pullCreds); err != nil {
+			if err := Clone(
+				ctx,
+				repoPath,
+				repoRef,
+				gp.pullCreds,
+			); err != nil {
 				return nil, err
 			}
 

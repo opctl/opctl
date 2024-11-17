@@ -12,6 +12,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
+	"github.com/opctl/opctl/cli/internal/oppath"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
 	"golang.org/x/term"
@@ -110,14 +111,14 @@ func newCli(
 		cancel()
 	}
 
-	cli.Command("auth", "Manage auth for OCI image registries", func(authCmd *mow.Cmd) {
-		authCmd.Command("add", "Add auth for an OCI image registry", func(addCmd *mow.Cmd) {
+	cli.Command("auth", "Manage default auth for OCI image and git repositories", func(authCmd *mow.Cmd) {
+		authCmd.Command("add", "Add default auth for OCI image and git repositories", func(addCmd *mow.Cmd) {
 			addCmd.Spec = "RESOURCES [ -u=<username> ] [ -p=<password> ]"
 
 			resources := addCmd.String(mow.StringArg{
 				Name:   "RESOURCES",
 				Value:  "",
-				Desc:   "Resources this auth applies to in the form of a host or host/path (e.g. docker.io)",
+				Desc:   "Resources this auth applies to in the form of a ref prefix (e.g. docker.io, github.com/some-org, etc.)",
 				EnvVar: "OPCTL_AUTH_RESOURCES",
 			})
 			username := addCmd.String(mow.StringOpt{
@@ -178,9 +179,10 @@ func newCli(
 	cli.Command("ls", "List operations", func(lsCmd *mow.Cmd) {
 		const dirRefArgName = "DIR_REF"
 		lsCmd.Spec = fmt.Sprintf("[%v]", dirRefArgName)
+
 		dirRef := lsCmd.String(mow.StringArg{
 			Name:   dirRefArgName,
-			Value:  "",
+			Value:  model.DotOpspecDirName,
 			Desc:   "Reference to dir ops will be listed from",
 			EnvVar: "OPCTL_LS_DIR_REF",
 		})
@@ -278,11 +280,25 @@ func newCli(
 			cliParamSatisfier,
 			node,
 		)
+		cwd, err := os.Getwd()
+		if err != nil {
+			exitWith("", err)
+		}
+
+		opPath, err := oppath.Get(
+			ctx,
+			cwd,
+			dataResolver,
+			node,
+		)
+		if err != nil {
+			exitWith("", err)
+		}
 
 		opCmd.Command("create", "Create an op", func(createCmd *mow.Cmd) {
 			path := createCmd.String(mow.StringOpt{
 				Name:   "path",
-				Value:  opspec.DotOpspecDirName,
+				Value:  model.DotOpspecDirName,
 				Desc:   "Path the op will be created at",
 				EnvVar: "OPCTL_CREATE_PATH",
 			})
@@ -314,7 +330,7 @@ func newCli(
 		opCmd.Command("install", "Install an op", func(installCmd *mow.Cmd) {
 			path := installCmd.String(mow.StringOpt{
 				Name:   "path",
-				Value:  opspec.DotOpspecDirName,
+				Value:  model.DotOpspecDirName,
 				Desc:   "Path the op will be installed at",
 				EnvVar: "OPCTL_INSTALL_PATH",
 			})
@@ -343,6 +359,7 @@ func newCli(
 					opInstall(
 						ctx,
 						dataResolver,
+						opPath,
 						*opRef,
 						*path,
 						&model.Creds{
@@ -390,6 +407,7 @@ func newCli(
 					opValidate(
 						ctx,
 						dataResolver,
+						opPath,
 						*opRef,
 					),
 				)
@@ -407,7 +425,7 @@ func newCli(
 		argFile := runCmd.String(mow.StringOpt{
 			Name:   "arg-file",
 			Desc:   "Read in a file of args in yml format",
-			Value:  filepath.Join(opspec.DotOpspecDirName, "args.yml"),
+			Value:  filepath.Join(model.DotOpspecDirName, "args.yml"),
 			EnvVar: "OPCTL_RUN_ARG_FILE",
 		})
 		noProgress := runCmd.Bool(mow.BoolOpt{

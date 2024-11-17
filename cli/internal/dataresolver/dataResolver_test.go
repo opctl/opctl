@@ -68,7 +68,7 @@ var _ = Context("dataResolver", func() {
 					}
 
 					/* act */
-					objectUnderTest.Resolve(context.Background(), "github.com/opctl/opctl/.opspec/build", &model.Creds{})
+					objectUnderTest.Resolve(context.Background(), "github.com/opctl/opctl/.opspec/build", nil, &model.Creds{})
 
 					/* assert */
 					_, actualInputs := fakeCliParamSatisfier.SatisfyArgsForCall(0)
@@ -88,15 +88,11 @@ var _ = Context("dataResolver", func() {
 					}
 
 					/* act */
-					response, err := objectUnderTest.Resolve(context.Background(), providedDataRef, &model.Creds{})
+					response, err := objectUnderTest.Resolve(context.Background(), providedDataRef, nil, &model.Creds{})
 
 					/* assert */
 					Expect(response).To(BeNil())
-					Expect(err).To(MatchError(`unable to resolve op "dummyDataRef":` + " " + `
-- filesystem:` + " " + `
-  - not found: path "/src/cli/internal/dataresolver/.opspec/dummyDataRef"
-  - not found: path "/src/cli/internal/dataresolver/dummyDataRef"
-- opctl node: expectedErr`))
+					Expect(err).To(MatchError("unable to resolve"))
 				})
 			})
 		})
@@ -119,6 +115,7 @@ var _ = Context("dataResolver", func() {
 				actualPkgHandle, err := objectUnderTest.Resolve(
 					context.Background(),
 					providedDataRef,
+					nil,
 					&model.Creds{},
 				)
 

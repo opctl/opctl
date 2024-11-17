@@ -45,19 +45,22 @@ var _ = Context("parallelCaller", func() {
 				}
 				pubSub := pubsub.New(db)
 
+				stateStore := newStateStore(
+					context.Background(),
+					db,
+					pubSub,
+				)
+
 				objectUnderTest := _parallelCaller{
 					caller: newCaller(
 						newContainerCaller(
 							new(containerRuntimeFakes.FakeContainerRuntime),
 							pubSub,
-							newStateStore(
-								context.Background(),
-								db,
-								pubSub,
-							),
+							stateStore,
 						),
 						dbDir,
 						pubSub,
+						stateStore,
 					),
 					pubSub: pubSub,
 				}
@@ -141,19 +144,22 @@ var _ = Context("parallelCaller", func() {
 				input1Key: {String: &input1Value},
 			}
 
+			stateStore := newStateStore(
+				ctx,
+				db,
+				pubSub,
+			)
+
 			objectUnderTest := _parallelCaller{
 				caller: newCaller(
 					newContainerCaller(
 						fakeContainerRuntime,
 						pubSub,
-						newStateStore(
-							ctx,
-							db,
-							pubSub,
-						),
+						stateStore,
 					),
 					dbDir,
 					pubSub,
+					stateStore,
 				),
 				pubSub: pubSub,
 			}

@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/dgraph-io/badger/v4"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -14,6 +15,18 @@ import (
 )
 
 var _ = Context("core", func() {
+	dbDir, err := os.MkdirTemp("", "")
+	if err != nil {
+		panic(err)
+	}
+
+	db, err := badger.Open(
+		badger.DefaultOptions(dbDir).WithLogger(nil),
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	Context("StartOp", func() {
 		Context("data.Resolve errs", func() {
 			It("should return expected result", func() {
@@ -25,7 +38,9 @@ var _ = Context("core", func() {
 					},
 				}
 
-				objectUnderTest := core{}
+				objectUnderTest := core{
+					stateStore: newStateStore(context.Background(), db, new(FakePubSub)),
+				}
 
 				/* act */
 				_, actualErr := objectUnderTest.StartOp(
@@ -90,10 +105,13 @@ var _ = Context("core", func() {
 						panic(err)
 					}
 
+					fakePubSub := new(FakePubSub)
+
 					objectUnderTest := core{
 						caller:        fakeCaller,
 						dataCachePath: dataCachePath,
-						pubSub:        new(FakePubSub),
+						pubSub:        fakePubSub,
+						stateStore:    newStateStore(context.Background(), db, fakePubSub),
 					}
 
 					/* act */

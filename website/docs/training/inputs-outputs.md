@@ -45,7 +45,7 @@ if you type in "you", the container will run and echo out "hello you"
 Now you may not want to be prompted for the input everytime you run the op. That's why there's several ways to accept input:
 
 1. `-a` cli flag: explicitly pass args to op. eg: `-a NAME1=VALUE1 -a NAME2=VALUE2`
-2. `--arg-file` cli flag: reads in a file of args as key=value, in yml format. eg: `--arg-file="./args.yml"`. This flag has a default value of `.opspec/args.yml` i.e. opctl will automatically check for an args file at `.opspec/args.yml`
+2. `--arg-file` cli flag: reads in a file of args as key=value, in yml format. eg: `--arg-file="./args.yml"`. This flag has a default value of `.opctl/args.yml` i.e. opctl will automatically check for an args file at `.opctl/args.yml`
 3. Environment variables: If you define an environment variable with the same name as an input on the machine you're running opctl on, its value will be supplied as the input's value
 4. `default` property: You can define a `default` property for each input, containing a value to assign if no other input method was invoked (cli args or args file)
 

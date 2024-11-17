@@ -75,18 +75,21 @@ var _ = Context("parallelLoopCaller", func() {
 				providedCtx := context.Background()
 				providedScope := map[string]*model.Value{}
 
+				stateStore := newStateStore(
+					providedCtx,
+					db,
+					pubSub,
+				)
+
 				caller := newCaller(
 					newContainerCaller(
 						new(containerRuntimeFakes.FakeContainerRuntime),
 						pubSub,
-						newStateStore(
-							providedCtx,
-							db,
-							pubSub,
-						),
+						stateStore,
 					),
 					dbDir,
 					pubSub,
+					stateStore,
 				)
 
 				objectUnderTest := _parallelLoopCaller{
@@ -164,19 +167,22 @@ var _ = Context("parallelLoopCaller", func() {
 				panic(err)
 			}
 
+			stateStore := newStateStore(
+				ctx,
+				db,
+				pubSub,
+			)
+
 			objectUnderTest := _parallelLoopCaller{
 				caller: newCaller(
 					newContainerCaller(
 						fakeContainerRuntime,
 						pubSub,
-						newStateStore(
-							ctx,
-							db,
-							pubSub,
-						),
+						stateStore,
 					),
 					dbDir,
 					pubSub,
+					stateStore,
 				),
 				pubSub: pubSub,
 			}

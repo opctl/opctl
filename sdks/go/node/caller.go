@@ -32,11 +32,13 @@ func newCaller(
 	containerCaller containerCaller,
 	dataDirPath string,
 	pubSub pubsub.PubSub,
+	stateStore stateStore,
 ) caller {
 	instance := &_caller{
 		containerCaller: containerCaller,
 		dataDirPath:     dataDirPath,
 		pubSub:          pubSub,
+		stateStore:      stateStore,
 	}
 
 	instance.opCaller = newOpCaller(
@@ -76,6 +78,7 @@ type _caller struct {
 	pubSub             pubsub.PubSub
 	serialCaller       serialCaller
 	serialLoopCaller   serialLoopCaller
+	stateStore         stateStore
 }
 
 func (clr _caller) Call(
@@ -140,6 +143,15 @@ func (clr _caller) Call(
 	if callSpec == nil {
 		// NOOP
 		return outputs, err
+	}
+
+	if callSpec.Op != nil && callSpec.Op.PullCreds == nil {
+		if auth := clr.stateStore.TryGetAuth(callSpec.Op.Ref); auth != nil {
+			callSpec.Op.PullCreds = &model.CredsSpec{
+				Username: auth.Username,
+				Password: auth.Password,
+			}
+		}
 	}
 
 	call, err = callpkg.Interpret(
