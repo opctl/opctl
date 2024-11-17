@@ -19,7 +19,7 @@ Name of the op
 ### `-d` or `--description`
 Description of the op
 
-### `--path` *default: `.opspec`*
+### `--path` *default: `.opctl`*
 Path to create the op at
 
 ## Global Options

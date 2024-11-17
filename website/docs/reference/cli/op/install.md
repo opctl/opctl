@@ -16,7 +16,7 @@ Op reference (`host/path/repo#tag`, or `host/path/repo#tag/path`)
 
 ## Options
 
-### `--path` *default: `.opspec/OP_REF`*
+### `--path` *default: `.opctl/OP_REF`*
 Path to install the op at
 
 ### `-u` or `--username`

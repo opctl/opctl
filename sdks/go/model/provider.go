@@ -7,6 +7,8 @@ import (
 const (
 	OpFileName       = "op.yml"
 	DotOpspecDirName = ".opspec"
+	DotOpctlDirName  = ".opctl"
+	OpsDirName       = "ops"
 )
 
 // DataProvider is the interface for something that provides data
@@ -18,7 +20,7 @@ type DataProvider interface {
 	// expected errs:
 	//  - ErrDataProviderAuthentication on authentication failure
 	//  - ErrDataProviderAuthorization on authorization failure
-	//  - ErrDataRefResolution on resolution failure
+	//  - ErrDataNotFoundResolution on resolution failure
 	TryResolve(
 		ctx context.Context,
 		dataRef string,

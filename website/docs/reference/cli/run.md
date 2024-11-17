@@ -21,7 +21,7 @@ Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or
 ### `-a`
 Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`
 
-### `--arg-file` *default: `.opspec/args.yml`*
+### `--arg-file` *default: `.opctl/args.yml`*
 Read in a file of args in yml format
 
 ### `--no-progress` *default: `false`*

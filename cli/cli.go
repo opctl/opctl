@@ -12,6 +12,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
+	"github.com/opctl/opctl/cli/internal/opspath"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
 	"golang.org/x/term"
@@ -158,7 +159,16 @@ func newCli(
 	cli.Command("ls", "List operations", func(lsCmd *mow.Cmd) {
 		const dirRefArgName = "DIR_REF"
 		lsCmd.Spec = fmt.Sprintf("[%v]", dirRefArgName)
-		dirRef := lsCmd.StringArg(dirRefArgName, opspec.DotOpspecDirName, "Reference to dir ops will be listed from")
+
+		defaultDirRef, err := opspath.GetLocal()
+		if err != nil {
+			exitWith(
+				"",
+				err,
+			)
+		}
+
+		dirRef := lsCmd.StringArg(dirRefArgName, defaultDirRef, "Reference to dir ops will be listed from")
 
 		lsCmd.Action = func() {
 			exitWith(
@@ -255,7 +265,7 @@ func newCli(
 		)
 
 		opCmd.Command("create", "Create an op", func(createCmd *mow.Cmd) {
-			path := createCmd.StringOpt("path", opspec.DotOpspecDirName, "Path the op will be created at")
+			path := createCmd.StringOpt("path", model.DotOpspecDirName, "Path the op will be created at")
 			description := createCmd.StringOpt("d description", "", "Op description")
 			name := createCmd.StringArg("NAME", "", "Op name")
 
@@ -272,7 +282,7 @@ func newCli(
 		})
 
 		opCmd.Command("install", "Install an op", func(installCmd *mow.Cmd) {
-			path := installCmd.StringOpt("path", opspec.DotOpspecDirName, "Path the op will be installed at")
+			path := installCmd.StringOpt("path", model.DotOpspecDirName, "Path the op will be installed at")
 			opRef := installCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 			username := installCmd.StringOpt("u username", "", "Username used to auth w/ the pkg source")
 			password := installCmd.StringOpt("p password", "", "Password used to auth w/ the pkg source")
@@ -329,7 +339,7 @@ func newCli(
 
 	cli.Command("run", "Start and wait on an op", func(runCmd *mow.Cmd) {
 		args := runCmd.StringsOpt("a", []string{}, "Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`")
-		argFile := runCmd.StringOpt("arg-file", filepath.Join(opspec.DotOpspecDirName, "args.yml"), "Read in a file of args in yml format")
+		argFile := runCmd.StringOpt("arg-file", filepath.Join(model.DotOpspecDirName, "args.yml"), "Read in a file of args in yml format")
 		noProgress := runCmd.BoolOpt("no-progress", !term.IsTerminal(int(os.Stdout.Fd())), "Disable live call graph for the op")
 		opRef := runCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
 

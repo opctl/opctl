@@ -16,12 +16,12 @@ run:
     # CLI tests
     - serial:
         - op:
-            ref: $(../../cli/.opspec/test/unit)
+            ref: $(../../cli/.opctl/test/unit)
             inputs:
               dockerSocket:
               HOME:
         - op:
-            ref: $(../../cli/.opspec/test/e2e)
+            ref: $(../../cli/.opctl/test/e2e)
     # opspec tests
     - op:
         ref: $(../../opspec/opfile/.opspec/test)

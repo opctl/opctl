@@ -41,7 +41,7 @@ var _ = Context("Resolve", func() {
 				panic(err)
 			}
 			opRef := filepath.Join(wd, "testdata/testop")
-			provider0 := fs.New(filepath.Dir(opRef))
+			provider0 := fs.New()
 
 			providedProviders := []model.DataProvider{provider0}
 

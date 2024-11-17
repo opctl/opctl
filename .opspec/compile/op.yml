@@ -13,7 +13,7 @@ run:
     - op:
         ref: $(../../webapp/.opspec/compile)
     - op:
-        ref: $(../../cli/.opspec/compile)
+        ref: $(../../cli/.opctl/compile)
         inputs:
           HOME:
           version:
