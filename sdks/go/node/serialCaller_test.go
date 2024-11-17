@@ -46,19 +46,22 @@ var _ = Context("serialCaller", func() {
 				}
 				pubSub := pubsub.New(db)
 
+				stateStore := newStateStore(
+					context.Background(),
+					db,
+					pubSub,
+				)
+
 				objectUnderTest := _serialCaller{
 					caller: newCaller(
 						newContainerCaller(
 							new(containerRuntimeFakes.FakeContainerRuntime),
 							pubSub,
-							newStateStore(
-								context.Background(),
-								db,
-								pubSub,
-							),
+							stateStore,
 						),
 						dbDir,
 						pubSub,
+						stateStore,
 					),
 					pubSub: pubSub,
 				}
@@ -144,19 +147,22 @@ var _ = Context("serialCaller", func() {
 
 			input2Value := "input2Value"
 
+			stateStore := newStateStore(
+				ctx,
+				db,
+				pubSub,
+			)
+
 			objectUnderTest := _serialCaller{
 				caller: newCaller(
 					newContainerCaller(
 						fakeContainerRuntime,
 						pubSub,
-						newStateStore(
-							ctx,
-							db,
-							pubSub,
-						),
+						stateStore,
 					),
 					dbDir,
 					pubSub,
+					stateStore,
 				),
 				pubSub: pubSub,
 			}
