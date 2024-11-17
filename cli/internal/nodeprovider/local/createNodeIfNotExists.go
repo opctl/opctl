@@ -66,7 +66,14 @@ func (np nodeProvider) CreateNodeIfNotExists(
 
 	if os.Geteuid() != 0 {
 		cmdName = "sudo"
-		cmdArgs = append([]string{"-n", pathToOpctlBin}, cmdArgs...)
+		cmdArgs = append(
+			[]string{
+				// non interactive
+				"-n",
+				pathToOpctlBin,
+			},
+			cmdArgs...,
+		)
 	}
 
 	cmd := exec.Command(

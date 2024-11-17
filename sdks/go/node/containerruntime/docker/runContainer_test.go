@@ -9,7 +9,9 @@ import (
 
 	"github.com/dgraph-io/badger/v4"
 	"github.com/docker/docker/api/types"
+
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
@@ -123,7 +125,7 @@ var _ = Context("RunContainer", func() {
 				Image:       &model.ContainerCallImage{Ref: &providedImageRef},
 			}
 			providedRootCallID := "providedRootCallID"
-			expectedImagePullOptions := types.ImagePullOptions{Platform: "linux"}
+			expectedImagePullOptions := image.PullOptions{Platform: "linux"}
 
 			_fakeDockerClient := new(FakeCommonAPIClient)
 			_fakeDockerClient.ContainerWaitReturns(closedContainerWaitOkBodyChan, nil)
@@ -189,7 +191,6 @@ var _ = Context("RunContainer", func() {
 			)
 
 			expectedHostConfig := &container.HostConfig{
-				AutoRemove: true,
 				Mounts: []mount.Mount{
 					{
 						Type:          "bind",

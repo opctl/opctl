@@ -9,6 +9,7 @@ import (
 
 	"github.com/dgraph-io/badger/v4"
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/image"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -35,7 +36,7 @@ var _ = Context("pullImage", func() {
 		It("should call dockerClient.ImagePull w/ expected args", func() {
 			/* arrange */
 			providedImageRef := "imageRef"
-			expectedImagePullOptions := types.ImagePullOptions{Platform: "linux"}
+			expectedImagePullOptions := image.PullOptions{Platform: "linux"}
 			providedCtx := context.Background()
 
 			imagePullResponse := io.NopCloser(bytes.NewBufferString(""))
@@ -102,7 +103,7 @@ var _ = Context("pullImage", func() {
 		It("should pul when image is not present and ref is tagged non-latest", func() {
 			/* arrange */
 			providedImageRef := "imageRef:myversion"
-			expectedImagePullOptions := types.ImagePullOptions{Platform: "linux"}
+			expectedImagePullOptions := image.PullOptions{Platform: "linux"}
 			providedCtx := context.Background()
 
 			imagePullResponse := io.NopCloser(bytes.NewBufferString(""))

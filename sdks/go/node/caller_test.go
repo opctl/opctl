@@ -270,7 +270,6 @@ var _ = Context("caller", func() {
 				Expect(actualErr).To(BeNil())
 				_,
 					actualOpCall,
-					actualScope,
 					actualParentID,
 					actualRootCallID,
 					actualCallSpec := fakeOpCaller.CallArgsForCall(0)
@@ -279,7 +278,6 @@ var _ = Context("caller", func() {
 				actualOpCall.ChildCallID = expectedCall.Op.ChildCallID
 
 				Expect(*actualOpCall).To(Equal(*expectedCall.Op))
-				Expect(actualScope).To(Equal(providedScope))
 				Expect(*actualParentID).To(Equal(providedParentID))
 				Expect(actualRootCallID).To(Equal(providedRootCallID))
 				Expect(actualCallSpec).To(Equal(providedCallSpec.Op))

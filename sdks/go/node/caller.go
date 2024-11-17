@@ -175,7 +175,7 @@ func (clr _caller) Call(
 			if panic := recover(); panic != nil {
 				// recover from panics; treat as errors
 				err = fmt.Errorf(
-					fmt.Sprintf("recovered from panic: %s\n%s", panic, string(debug.Stack())),
+					"recovered from panic: %s\n%s", panic, string(debug.Stack()),
 				)
 			}
 		}()
@@ -212,7 +212,6 @@ func (clr _caller) Call(
 		outputs, err = clr.opCaller.Call(
 			callCtx,
 			call.Op,
-			scope,
 			parentCallID,
 			rootCallID,
 			callSpec.Op,

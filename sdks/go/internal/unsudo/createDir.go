@@ -18,16 +18,17 @@ func CreateDir(
 	for i := 0; i < len(parts); i++ {
 		currentPath = filepath.Join(currentPath, parts[i])
 
-		// Check if the directory already exists
-		_, err := os.Stat(currentPath)
-		if os.IsNotExist(err) {
-			if err := os.Mkdir(currentPath, 0700); err != nil {
-				return err
+		if err := os.Mkdir(currentPath, 0700); err != nil {
+			if os.IsExist(err) {
+				// if existing nothing to do
+				continue
 			}
 
-			if err := os.Chown(currentPath, getSudoUID(), getSudoGID()); err != nil {
-				return err
-			}
+			return err
+		}
+
+		if err := os.Chown(currentPath, getSudoUID(), getSudoGID()); err != nil {
+			return err
 		}
 	}
 

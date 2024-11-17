@@ -16,7 +16,6 @@ func constructHostConfig(
 	isGpuSupported bool,
 ) *container.HostConfig {
 	hostConfig := &container.HostConfig{
-		AutoRemove:   true,
 		PortBindings: portBindings,
 		// support docker in docker
 		// @TODO: reconsider; can we avoid this?

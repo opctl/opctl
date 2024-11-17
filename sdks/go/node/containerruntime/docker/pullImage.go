@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/distribution/reference"
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/image"
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -45,7 +45,7 @@ func pullImage(
 	imagePullCreds := containerCall.Image.PullCreds
 	containerID := containerCall.ContainerID
 
-	imagePullOptions := types.ImagePullOptions{
+	imagePullOptions := image.PullOptions{
 		Platform: "linux",
 	}
 	if imagePullCreds != nil &&

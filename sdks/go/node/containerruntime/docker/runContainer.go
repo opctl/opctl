@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"strings"
-	"sync"
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
@@ -14,6 +12,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/dns"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
+	"golang.org/x/sync/errgroup"
 )
 
 type runContainer interface {
@@ -173,11 +172,7 @@ func (cr _runContainer) RunContainer(
 			// we got killed;
 			return nil, nil
 		default:
-			if imageErr == nil {
-				return nil, createErr
-			}
-			// if imageErr occurred prior; combine errors
-			return nil, errors.New(strings.Join([]string{imageErr.Error(), createErr.Error()}, ", "))
+			return nil, errors.Join(imageErr, createErr)
 		}
 	}
 
@@ -190,49 +185,49 @@ func (cr _runContainer) RunContainer(
 		return nil, err
 	}
 
-	containerJSON, err := cr.dockerClient.ContainerInspect(ctx, dockerContainerName)
-	if err != nil {
-		return nil, err
-	}
+	eg, ctx := errgroup.WithContext(ctx)
 
-	if endpointSettings, ok := containerJSON.NetworkSettings.Networks[networkName]; ok && req.Name != nil {
-		err = dns.RegisterName(
-			ctx,
-			*req.Name,
-			endpointSettings.IPAddress,
-		)
+	eg.Go(
+		func() error {
+			return cr.containerStdErrStreamer.Stream(
+				ctx,
+				dockerContainerName,
+				stderr,
+			)
+		},
+	)
+	eg.Go(
+		func() error {
+			return cr.containerStdOutStreamer.Stream(
+				ctx,
+				dockerContainerName,
+				stdout,
+			)
+		},
+	)
+
+	if req.Name != nil {
+		containerJSON, err := cr.dockerClient.ContainerInspect(ctx, dockerContainerName)
 		if err != nil {
 			return nil, err
 		}
+
+		if endpointSettings, ok := containerJSON.NetworkSettings.Networks[networkName]; ok {
+			err = dns.RegisterName(
+				ctx,
+				*req.Name,
+				endpointSettings.IPAddress,
+			)
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
 
-	var waitGroup sync.WaitGroup
-	errChan := make(chan error, 3)
-	waitGroup.Add(2)
-
-	go func() {
-		if err := cr.containerStdErrStreamer.Stream(
-			ctx,
-			dockerContainerName,
-			stderr,
-		); err != nil {
-			errChan <- err
-		}
-		waitGroup.Done()
-	}()
-
-	go func() {
-		if err := cr.containerStdOutStreamer.Stream(
-			ctx,
-			dockerContainerName,
-			stdout,
-		); err != nil {
-			errChan <- err
-		}
-		waitGroup.Done()
-	}()
-
-	var exitCode int64
+	var (
+		exitCode int64
+		waitErr  error
+	)
 	waitOkChan, waitErrChan := cr.dockerClient.ContainerWait(
 		ctx,
 		dockerContainerName,
@@ -242,16 +237,12 @@ func (cr _runContainer) RunContainer(
 	case waitOk := <-waitOkChan:
 		exitCode = waitOk.StatusCode
 	case waitErr := <-waitErrChan:
-		err = fmt.Errorf("error waiting on container: %w", waitErr)
+		waitErr = fmt.Errorf("error waiting on container: %w", waitErr)
 	}
 
 	// ensure stdout, and stderr all read before returning
-	waitGroup.Wait()
+	logErr := eg.Wait()
 
-	if err != nil && len(errChan) > 0 {
-		// non-destructively set err
-		err = <-errChan
-	}
-	return &exitCode, err
+	return &exitCode, errors.Join(waitErr, logErr)
 
 }

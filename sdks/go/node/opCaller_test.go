@@ -70,7 +70,6 @@ var _ = Context("opCaller", func() {
 			objectUnderTest.Call(
 				providedCtx,
 				providedOpCall,
-				map[string]*model.Value{},
 				nil,
 				providedRootCallID,
 				&model.OpCallSpec{},
@@ -138,7 +137,6 @@ var _ = Context("opCaller", func() {
 			actualOutputs, actualErr := objectUnderTest.Call(
 				context.Background(),
 				providedOpCall,
-				map[string]*model.Value{},
 				nil,
 				"rootCallID",
 				providedOpCallSpec,

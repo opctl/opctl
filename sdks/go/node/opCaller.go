@@ -17,7 +17,6 @@ type opCaller interface {
 	Call(
 		ctx context.Context,
 		opCall *model.OpCall,
-		inboundScope map[string]*model.Value,
 		parentCallID *string,
 		rootCallID string,
 		opCallSpec *model.OpCallSpec,
@@ -45,7 +44,6 @@ type _opCaller struct {
 func (oc _opCaller) Call(
 	ctx context.Context,
 	opCall *model.OpCall,
-	inboundScope map[string]*model.Value,
 	parentCallID *string,
 	rootCallID string,
 	opCallSpec *model.OpCallSpec,
