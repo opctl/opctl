@@ -64,5 +64,5 @@ run:
           - op:
               ref: $(./to-github)
               inputs:
-                github:
-                latestRelease: $(latestRelease)
+                githubAccessToken: $(github.accessToken)
+                latestRelease:
