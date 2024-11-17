@@ -8,22 +8,15 @@ import (
 	"os"
 	"path/filepath"
 
-	aggregateError "github.com/opctl/opctl/sdks/go/internal/aggregate_error"
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
 // New returns a data provider which sources data from the filesystem
-func New(
-	basePaths ...string,
-) model.DataProvider {
-	return _fs{
-		basePaths: basePaths,
-	}
+func New() model.DataProvider {
+	return _fs{}
 }
 
-type _fs struct {
-	basePaths []string
-}
+type _fs struct{}
 
 func (fp _fs) Label() string {
 	return "filesystem"
@@ -37,30 +30,12 @@ func (fp _fs) TryResolve(
 	if filepath.IsAbs(dataRef) {
 		if _, err := os.Stat(dataRef); err != nil {
 			if os.IsNotExist(err) {
-				return nil, fmt.Errorf("%w: path \"%s\"", model.ErrDataRefResolution{}, dataRef)
+				return nil, fmt.Errorf("%w: path \"%s\"", model.ErrDataNotFoundResolution{}, dataRef)
 			}
 			return nil, err
 		}
 		return newHandle(dataRef), nil
 	}
 
-	var aggregateErr aggregateError.ErrAggregate
-
-	if len(fp.basePaths) == 0 {
-		return nil, model.ErrDataSkipped{}
-	}
-
-	for _, basePath := range fp.basePaths {
-		// attempt to resolve from basePath
-		testPath := filepath.Join(basePath, dataRef)
-		if _, err := os.Stat(testPath); err == nil {
-			return newHandle(testPath), nil
-		} else if !os.IsNotExist(err) {
-			// don't return not found errors, instead continue checking other base paths
-			return nil, err
-		}
-		aggregateErr.AddError(fmt.Errorf("%w: path \"%s\"", model.ErrDataRefResolution{}, testPath))
-	}
-
-	return nil, aggregateErr
+	return nil, fmt.Errorf("%w: path \"%s\"", model.ErrDataNotFoundResolution{}, dataRef)
 }
