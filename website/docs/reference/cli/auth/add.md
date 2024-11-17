@@ -7,25 +7,28 @@ title: opctl auth add
 opctl auth add RESOURCES [ -u=<username> ] [ -p=<password> ]
 ```
 
-Add auth for an OCI image registry.
+Add default auth used to pull ops and images.
 
 ## Arguments
 
 ### `RESOURCES`
-Resources this auth applies to in the form of a host or host/path.
+Op or image ref prefixes this auth applies to (e.g. docker.io, github.com/some-org, etc.)
 
 ## Options
 
 ### `-u` or `--username`
 Username
-
 ### `-p` or `--password`
 Password
-
 ## Global Options
 see [global options](../global-options.md)
 
-### Examples 
+### Examples
+
+#### [github.com](https://github.com)
+```sh
+opctl auth add github.com -u <username> -p <password>
+```
 
 #### [docker.io](https://hub.docker.com)
 ```sh

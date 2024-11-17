@@ -1,0 +1,4 @@
+name: auth/default
+run:
+  op:
+    ref: github.com/opctl/test-suite-auth#1.0.0

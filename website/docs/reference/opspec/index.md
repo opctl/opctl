@@ -67,6 +67,7 @@ Reference:
                 - [files](op-directory/op/call/container/index.md#files)
                 - [image](op-directory/op/call/container/image.md)
                     - [ref](op-directory/op/call/container/image.md#ref)
+                    - [platform](op-directory/op/call/container/image.md#platform)
                     - [pullCreds](op-directory/op/call/container/image.md#pullcreds)
                 - [name](op-directory/op/call/container/index.md#name)
                 - [ports](op-directory/op/call/container/index.md#ports)

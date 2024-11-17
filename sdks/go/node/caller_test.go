@@ -6,22 +6,39 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/dgraph-io/badger/v4"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/internal/fakes"
-	. "github.com/opctl/opctl/sdks/go/node/pubsub/fakes"
+	"github.com/opctl/opctl/sdks/go/node/pubsub"
+	uuid "github.com/satori/go.uuid"
 )
 
 var _ = Context("caller", func() {
+	dbDir, err := os.MkdirTemp("", "")
+	if err != nil {
+		panic(err)
+	}
+
+	db, err := badger.Open(
+		badger.DefaultOptions(dbDir).WithLogger(nil),
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	Context("newCaller", func() {
 		It("should return caller", func() {
 			/* arrange/act/assert */
+			pubSub := pubsub.New(db)
+
 			Expect(
 				newCaller(
 					new(FakeContainerCaller),
 					"dummyDataDir",
-					new(FakePubSub),
+					pubSub,
+					newStateStore(context.Background(), db, pubSub),
 				),
 			).To(Not(BeNil()))
 		})
@@ -43,7 +60,7 @@ var _ = Context("caller", func() {
 				objectUnderTest := _caller{
 					containerCaller: fakeContainerCaller,
 					dataDirPath:     dataDir,
-					pubSub:          new(FakePubSub),
+					pubSub:          pubsub.New(db),
 				}
 
 				/* assert */
@@ -64,35 +81,34 @@ var _ = Context("caller", func() {
 				/* arrange */
 				providedCallID := "dummyCallID"
 				providedOpPath := "testdata/startOp"
-				providedRootCallID := "dummyRootCallID"
+				providedRootCallID := uuid.NewV4().String()
 
-				predicateSpec := []interface{}{
-					true,
-					true,
-				}
-
-				ifSpec := []*model.PredicateSpec{
-					{
-						Eq: &predicateSpec,
-					},
-				}
-
-				expectedIf := true
+				expectedIf := false
 				expectedEvent := model.Event{
-					CallStarted: &model.CallStarted{
+					CallEnded: &model.CallEnded{
 						Call: model.Call{
 							ID:     providedCallID,
 							If:     &expectedIf,
 							RootID: providedRootCallID,
-							Serial: []*model.CallSpec{},
 						},
-						Ref: providedOpPath,
+						Ref:     providedOpPath,
+						Outcome: model.OpOutcomeSucceeded,
 					},
 				}
 
-				fakePubSub := new(FakePubSub)
-				// ensure eventChan closed so call exits
-				fakePubSub.SubscribeReturns(closedEventChan, nil)
+				pubSub := pubsub.New(db)
+
+				eventChannel, err := pubSub.Subscribe(
+					context.Background(),
+					model.EventFilter{
+						Roots: []string{
+							providedRootCallID,
+						},
+					},
+				)
+				if err != nil {
+					panic(err)
+				}
 
 				fakeSerialCaller := new(FakeSerialCaller)
 
@@ -104,7 +120,7 @@ var _ = Context("caller", func() {
 				objectUnderTest := _caller{
 					containerCaller: new(FakeContainerCaller),
 					dataDirPath:     dataDir,
-					pubSub:          fakePubSub,
+					pubSub:          pubSub,
 					serialCaller:    fakeSerialCaller,
 				}
 
@@ -114,7 +130,14 @@ var _ = Context("caller", func() {
 					providedCallID,
 					map[string]*model.Value{},
 					&model.CallSpec{
-						If:     &ifSpec,
+						If: &[]*model.PredicateSpec{
+							{
+								Eq: &[]interface{}{
+									false,
+									true,
+								},
+							},
+						},
 						Serial: &[]*model.CallSpec{},
 					},
 					providedOpPath,
@@ -123,14 +146,19 @@ var _ = Context("caller", func() {
 				)
 
 				/* assert */
-				actualEvent := fakePubSub.PublishArgsForCall(0)
 
-				// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
-				Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
-				// set temporal fields to expected vals since they're already asserted
-				actualEvent.Timestamp = expectedEvent.Timestamp
+				for {
+					actualEvent := <-eventChannel
 
-				Expect(actualEvent).To(Equal(expectedEvent))
+					// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
+					Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
+					// set temporal fields to expected vals since they're already asserted
+					actualEvent.Timestamp = expectedEvent.Timestamp
+
+					Expect(actualEvent).To(Equal(expectedEvent))
+
+					break
+				}
 			})
 		})
 
@@ -168,10 +196,6 @@ var _ = Context("caller", func() {
 					},
 				}
 
-				fakePubSub := new(FakePubSub)
-				// ensure eventChan closed so call exits
-				fakePubSub.SubscribeReturns(closedEventChan, nil)
-
 				dataDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
@@ -180,7 +204,7 @@ var _ = Context("caller", func() {
 				objectUnderTest := _caller{
 					containerCaller: fakeContainerCaller,
 					dataDirPath:     dataDir,
-					pubSub:          fakePubSub,
+					pubSub:          pubsub.New(db),
 				}
 
 				/* act */
@@ -240,19 +264,18 @@ var _ = Context("caller", func() {
 					},
 				}
 
-				fakePubSub := new(FakePubSub)
-				// ensure eventChan closed so call exits
-				fakePubSub.SubscribeReturns(closedEventChan, nil)
-
 				dataDir, err := os.MkdirTemp("", "")
 				if err != nil {
 					panic(err)
 				}
 
+				pubSub := pubsub.New(db)
+
 				objectUnderTest := _caller{
 					dataDirPath: dataDir,
 					opCaller:    fakeOpCaller,
-					pubSub:      fakePubSub,
+					pubSub:      pubSub,
+					stateStore:  newStateStore(context.Background(), db, pubSub),
 				}
 
 				/* act */
@@ -299,13 +322,9 @@ var _ = Context("caller", func() {
 				providedOpPath := "providedOpPath"
 				providedRootCallID := "dummyRootCallID"
 
-				fakePubSub := new(FakePubSub)
-				// ensure eventChan closed so call exits
-				fakePubSub.SubscribeReturns(closedEventChan, nil)
-
 				objectUnderTest := _caller{
 					parallelCaller: fakeParallelCaller,
-					pubSub:         fakePubSub,
+					pubSub:         pubsub.New(db),
 				}
 
 				/* act */
@@ -349,13 +368,9 @@ var _ = Context("caller", func() {
 				providedRootCallID := "dummyRootCallID"
 				providedParentID := "providedParentID"
 
-				fakePubSub := new(FakePubSub)
-				// ensure eventChan closed so call exits
-				fakePubSub.SubscribeReturns(closedEventChan, nil)
-
 				objectUnderTest := _caller{
 					parallelLoopCaller: fakeParallelLoopCaller,
-					pubSub:             fakePubSub,
+					pubSub:             pubsub.New(db),
 				}
 
 				/* act */
@@ -403,13 +418,9 @@ var _ = Context("caller", func() {
 				providedOpPath := "providedOpPath"
 				providedRootCallID := "dummyRootCallID"
 
-				fakePubSub := new(FakePubSub)
-				// ensure eventChan closed so call exits
-				fakePubSub.SubscribeReturns(closedEventChan, nil)
-
 				objectUnderTest := _caller{
 					containerCaller: new(FakeContainerCaller),
-					pubSub:          fakePubSub,
+					pubSub:          pubsub.New(db),
 					serialCaller:    fakeSerialCaller,
 				}
 
@@ -456,13 +467,13 @@ var _ = Context("caller", func() {
 				providedRootCallID := "dummyRootCallID"
 				providedParentID := "providedParentID"
 
-				fakePubSub := new(FakePubSub)
-				// ensure eventChan closed so call exits
-				fakePubSub.SubscribeReturns(closedEventChan, nil)
+				// fakePubSub := new(FakePubSub)
+				// // ensure eventChan closed so call exits
+				// fakePubSub.SubscribeReturns(closedEventChan, nil)
 
 				objectUnderTest := _caller{
 					serialLoopCaller: fakeSerialLoopCaller,
-					pubSub:           fakePubSub,
+					pubSub:           pubsub.New(db),
 				}
 
 				/* act */

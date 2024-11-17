@@ -73,6 +73,7 @@ func New(
 		),
 		dataDirPath,
 		pubSub,
+		stateStore,
 	)
 
 	go func() {

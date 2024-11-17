@@ -24,6 +24,12 @@ func (cr core) ResolveData(
 	model.DataHandle,
 	error,
 ) {
+	if pullCreds == nil {
+		if auth := cr.stateStore.TryGetAuth(dataRef); auth != nil {
+			pullCreds = &auth.Creds
+		}
+	}
+
 	return data.Resolve(
 		ctx,
 		dataRef,
