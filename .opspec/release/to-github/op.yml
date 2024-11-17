@@ -1,19 +1,10 @@
 name: to-github
 description: releases opctl to [github](https://github.com/opctl/opctl/)
 inputs:
-  github:
-    object:
-      constraints:
-        properties:
-          accessToken:
-            minLength: 1
-            type: string
-            writeOnly: true
-          username:
-            minLength: 1
-            type: string
-        required: [accessToken, username]
-      description: configuration required to interact w/ github
+  githubAccessToken:
+    description: Access token for interacting w/ github
+    string:
+      isSecret: true
   latestRelease:
     object:
       constraints:
@@ -34,12 +25,11 @@ run:
         outputs:
           commit:
     - op:
-        ref: github.com/opspec-pkgs/github.release.create#2.0.0
+        ref: github.com/opspec-pkgs/github.release.create#3.0.0
         inputs:
           commitish: $(commit)
           description: $(latestRelease.description)
-          loginPassword: $(github.accessToken)
-          loginUsername: $(github.username)
+          accessToken: $(githubAccessToken)
           owner: opctl
           repo: opctl
           tag: v$(latestRelease.version)
@@ -68,12 +58,11 @@ run:
                   /opctl: $(../../../cli/opctl-$(target))
                   /opctl.tgz: $(opctlTgz)
             - op:
-                ref: github.com/opspec-pkgs/github.release.upload#1.0.0
+                ref: github.com/opspec-pkgs/github.release.upload#2.0.0
                 inputs:
                   asset: $(opctlTgz)
                   id: $(releaseId)
-                  loginPassword: $(github.accessToken)
-                  loginUsername: $(github.username)
+                  accessToken: $(githubAccessToken)
                   name: opctl-$(target).tgz
                   owner: opctl
                   repo: opctl
