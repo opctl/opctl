@@ -2,7 +2,9 @@ package call
 
 import (
 	"context"
+	"errors"
 	"fmt"
+
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op"
@@ -10,7 +12,6 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/serialloop"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
-	"github.com/pkg/errors"
 )
 
 // Interpret a spec into a call
@@ -28,7 +29,7 @@ func Interpret(
 	if callSpec.Name != nil {
 		value, err := str.Interpret(scope, *callSpec.Name)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to interpret call name")
+			return nil, fmt.Errorf("failed to interpret call name: %w", err)
 		}
 		if value.String == nil {
 			return nil, errors.New("call name not interpretable to string")

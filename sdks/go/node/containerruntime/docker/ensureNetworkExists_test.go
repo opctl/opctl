@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/network"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -19,9 +19,8 @@ var _ = Context("ensureNetworkExists", func() {
 
 			providedContainerID := "dummyContainerID"
 			expectedContainerID := providedContainerID
-			expectedNetworkCreations := types.NetworkCreate{
-				Attachable:     true,
-				CheckDuplicate: true,
+			expectedNetworkCreations := network.CreateOptions{
+				Attachable: true,
 			}
 
 			/* act */
@@ -43,13 +42,13 @@ var _ = Context("ensureNetworkExists", func() {
 				fakeDockerClient := new(FakeCommonAPIClient)
 
 				fakeDockerClient.NetworkInspectReturns(
-					types.NetworkResource{},
+					network.Inspect{},
 					dockerNotFoundError{
 						errors.New("dummyError"),
 					},
 				)
 
-				fakeDockerClient.NetworkCreateReturns(types.NetworkCreateResponse{}, errors.New("dummyError"))
+				fakeDockerClient.NetworkCreateReturns(network.CreateResponse{}, errors.New("dummyError"))
 
 				/* act */
 				actualError := ensureNetworkExists(

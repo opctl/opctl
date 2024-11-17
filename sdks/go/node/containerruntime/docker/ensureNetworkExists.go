@@ -6,7 +6,7 @@ import (
 
 	"context"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/network"
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/opctl/opctl/sdks/go/model"
 )
@@ -21,9 +21,8 @@ func ensureNetworkExists(
 	_, networkCreateErr := dockerClient.NetworkCreate(
 		ctx,
 		networkName,
-		types.NetworkCreate{
-			CheckDuplicate: true,
-			Attachable:     true,
+		network.CreateOptions{
+			Attachable: true,
 		},
 	)
 	// return errors not related to already existing...

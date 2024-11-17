@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"runtime"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/network"
 	dockerClientPkg "github.com/docker/docker/client"
 )
 
@@ -19,7 +19,7 @@ func ensureNetworkDetached(
 		networkResource, networkInspectErr := dockerClient.NetworkInspect(
 			ctx,
 			networkName,
-			types.NetworkInspectOptions{},
+			network.InspectOptions{},
 		)
 		if networkInspectErr != nil {
 			return fmt.Errorf("unable to inspect network: %w", networkInspectErr)

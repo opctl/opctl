@@ -16,6 +16,7 @@ import (
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/api/types/registry"
 	"github.com/docker/docker/api/types/swarm"
+	"github.com/docker/docker/api/types/system"
 	"github.com/docker/docker/api/types/volume"
 	"github.com/docker/docker/client"
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
@@ -200,12 +201,12 @@ type FakeCommonAPIClient struct {
 		result1 []container.FilesystemChange
 		result2 error
 	}
-	ContainerExecAttachStub        func(context.Context, string, types.ExecStartCheck) (types.HijackedResponse, error)
+	ContainerExecAttachStub        func(context.Context, string, container.ExecAttachOptions) (types.HijackedResponse, error)
 	containerExecAttachMutex       sync.RWMutex
 	containerExecAttachArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ExecStartCheck
+		arg3 container.ExecAttachOptions
 	}
 	containerExecAttachReturns struct {
 		result1 types.HijackedResponse
@@ -215,12 +216,12 @@ type FakeCommonAPIClient struct {
 		result1 types.HijackedResponse
 		result2 error
 	}
-	ContainerExecCreateStub        func(context.Context, string, types.ExecConfig) (types.IDResponse, error)
+	ContainerExecCreateStub        func(context.Context, string, container.ExecOptions) (types.IDResponse, error)
 	containerExecCreateMutex       sync.RWMutex
 	containerExecCreateArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ExecConfig
+		arg3 container.ExecOptions
 	}
 	containerExecCreateReturns struct {
 		result1 types.IDResponse
@@ -230,26 +231,26 @@ type FakeCommonAPIClient struct {
 		result1 types.IDResponse
 		result2 error
 	}
-	ContainerExecInspectStub        func(context.Context, string) (types.ContainerExecInspect, error)
+	ContainerExecInspectStub        func(context.Context, string) (container.ExecInspect, error)
 	containerExecInspectMutex       sync.RWMutex
 	containerExecInspectArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
 	}
 	containerExecInspectReturns struct {
-		result1 types.ContainerExecInspect
+		result1 container.ExecInspect
 		result2 error
 	}
 	containerExecInspectReturnsOnCall map[int]struct {
-		result1 types.ContainerExecInspect
+		result1 container.ExecInspect
 		result2 error
 	}
-	ContainerExecResizeStub        func(context.Context, string, types.ResizeOptions) error
+	ContainerExecResizeStub        func(context.Context, string, container.ResizeOptions) error
 	containerExecResizeMutex       sync.RWMutex
 	containerExecResizeArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ResizeOptions
+		arg3 container.ResizeOptions
 	}
 	containerExecResizeReturns struct {
 		result1 error
@@ -257,12 +258,12 @@ type FakeCommonAPIClient struct {
 	containerExecResizeReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ContainerExecStartStub        func(context.Context, string, types.ExecStartCheck) error
+	ContainerExecStartStub        func(context.Context, string, container.ExecStartOptions) error
 	containerExecStartMutex       sync.RWMutex
 	containerExecStartArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ExecStartCheck
+		arg3 container.ExecStartOptions
 	}
 	containerExecStartReturns struct {
 		result1 error
@@ -328,11 +329,11 @@ type FakeCommonAPIClient struct {
 	containerKillReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ContainerListStub        func(context.Context, types.ContainerListOptions) ([]types.Container, error)
+	ContainerListStub        func(context.Context, container.ListOptions) ([]types.Container, error)
 	containerListMutex       sync.RWMutex
 	containerListArgsForCall []struct {
 		arg1 context.Context
-		arg2 types.ContainerListOptions
+		arg2 container.ListOptions
 	}
 	containerListReturns struct {
 		result1 []types.Container
@@ -342,12 +343,12 @@ type FakeCommonAPIClient struct {
 		result1 []types.Container
 		result2 error
 	}
-	ContainerLogsStub        func(context.Context, string, types.ContainerLogsOptions) (io.ReadCloser, error)
+	ContainerLogsStub        func(context.Context, string, container.LogsOptions) (io.ReadCloser, error)
 	containerLogsMutex       sync.RWMutex
 	containerLogsArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ContainerLogsOptions
+		arg3 container.LogsOptions
 	}
 	containerLogsReturns struct {
 		result1 io.ReadCloser
@@ -369,12 +370,12 @@ type FakeCommonAPIClient struct {
 	containerPauseReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ContainerRemoveStub        func(context.Context, string, types.ContainerRemoveOptions) error
+	ContainerRemoveStub        func(context.Context, string, container.RemoveOptions) error
 	containerRemoveMutex       sync.RWMutex
 	containerRemoveArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ContainerRemoveOptions
+		arg3 container.RemoveOptions
 	}
 	containerRemoveReturns struct {
 		result1 error
@@ -395,12 +396,12 @@ type FakeCommonAPIClient struct {
 	containerRenameReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ContainerResizeStub        func(context.Context, string, types.ResizeOptions) error
+	ContainerResizeStub        func(context.Context, string, container.ResizeOptions) error
 	containerResizeMutex       sync.RWMutex
 	containerResizeArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ResizeOptions
+		arg3 container.ResizeOptions
 	}
 	containerResizeReturns struct {
 		result1 error
@@ -421,12 +422,12 @@ type FakeCommonAPIClient struct {
 	containerRestartReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ContainerStartStub        func(context.Context, string, types.ContainerStartOptions) error
+	ContainerStartStub        func(context.Context, string, container.StartOptions) error
 	containerStartMutex       sync.RWMutex
 	containerStartArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ContainerStartOptions
+		arg3 container.StartOptions
 	}
 	containerStartReturns struct {
 		result1 error
@@ -434,7 +435,7 @@ type FakeCommonAPIClient struct {
 	containerStartReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ContainerStatPathStub        func(context.Context, string, string) (types.ContainerPathStat, error)
+	ContainerStatPathStub        func(context.Context, string, string) (container.PathStat, error)
 	containerStatPathMutex       sync.RWMutex
 	containerStatPathArgsForCall []struct {
 		arg1 context.Context
@@ -442,14 +443,14 @@ type FakeCommonAPIClient struct {
 		arg3 string
 	}
 	containerStatPathReturns struct {
-		result1 types.ContainerPathStat
+		result1 container.PathStat
 		result2 error
 	}
 	containerStatPathReturnsOnCall map[int]struct {
-		result1 types.ContainerPathStat
+		result1 container.PathStat
 		result2 error
 	}
-	ContainerStatsStub        func(context.Context, string, bool) (types.ContainerStats, error)
+	ContainerStatsStub        func(context.Context, string, bool) (container.StatsResponseReader, error)
 	containerStatsMutex       sync.RWMutex
 	containerStatsArgsForCall []struct {
 		arg1 context.Context
@@ -457,25 +458,25 @@ type FakeCommonAPIClient struct {
 		arg3 bool
 	}
 	containerStatsReturns struct {
-		result1 types.ContainerStats
+		result1 container.StatsResponseReader
 		result2 error
 	}
 	containerStatsReturnsOnCall map[int]struct {
-		result1 types.ContainerStats
+		result1 container.StatsResponseReader
 		result2 error
 	}
-	ContainerStatsOneShotStub        func(context.Context, string) (types.ContainerStats, error)
+	ContainerStatsOneShotStub        func(context.Context, string) (container.StatsResponseReader, error)
 	containerStatsOneShotMutex       sync.RWMutex
 	containerStatsOneShotArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
 	}
 	containerStatsOneShotReturns struct {
-		result1 types.ContainerStats
+		result1 container.StatsResponseReader
 		result2 error
 	}
 	containerStatsOneShotReturnsOnCall map[int]struct {
-		result1 types.ContainerStats
+		result1 container.StatsResponseReader
 		result2 error
 	}
 	ContainerStopStub        func(context.Context, string, container.StopOptions) error
@@ -548,21 +549,21 @@ type FakeCommonAPIClient struct {
 		result1 <-chan container.WaitResponse
 		result2 <-chan error
 	}
-	ContainersPruneStub        func(context.Context, filters.Args) (types.ContainersPruneReport, error)
+	ContainersPruneStub        func(context.Context, filters.Args) (container.PruneReport, error)
 	containersPruneMutex       sync.RWMutex
 	containersPruneArgsForCall []struct {
 		arg1 context.Context
 		arg2 filters.Args
 	}
 	containersPruneReturns struct {
-		result1 types.ContainersPruneReport
+		result1 container.PruneReport
 		result2 error
 	}
 	containersPruneReturnsOnCall map[int]struct {
-		result1 types.ContainersPruneReport
+		result1 container.PruneReport
 		result2 error
 	}
-	CopyFromContainerStub        func(context.Context, string, string) (io.ReadCloser, types.ContainerPathStat, error)
+	CopyFromContainerStub        func(context.Context, string, string) (io.ReadCloser, container.PathStat, error)
 	copyFromContainerMutex       sync.RWMutex
 	copyFromContainerArgsForCall []struct {
 		arg1 context.Context
@@ -571,22 +572,22 @@ type FakeCommonAPIClient struct {
 	}
 	copyFromContainerReturns struct {
 		result1 io.ReadCloser
-		result2 types.ContainerPathStat
+		result2 container.PathStat
 		result3 error
 	}
 	copyFromContainerReturnsOnCall map[int]struct {
 		result1 io.ReadCloser
-		result2 types.ContainerPathStat
+		result2 container.PathStat
 		result3 error
 	}
-	CopyToContainerStub        func(context.Context, string, string, io.Reader, types.CopyToContainerOptions) error
+	CopyToContainerStub        func(context.Context, string, string, io.Reader, container.CopyToContainerOptions) error
 	copyToContainerMutex       sync.RWMutex
 	copyToContainerArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
 		arg3 string
 		arg4 io.Reader
-		arg5 types.CopyToContainerOptions
+		arg5 container.CopyToContainerOptions
 	}
 	copyToContainerReturns struct {
 		result1 error
@@ -659,11 +660,11 @@ type FakeCommonAPIClient struct {
 		result1 registry.DistributionInspect
 		result2 error
 	}
-	EventsStub        func(context.Context, types.EventsOptions) (<-chan events.Message, <-chan error)
+	EventsStub        func(context.Context, events.ListOptions) (<-chan events.Message, <-chan error)
 	eventsMutex       sync.RWMutex
 	eventsArgsForCall []struct {
 		arg1 context.Context
-		arg2 types.EventsOptions
+		arg2 events.ListOptions
 	}
 	eventsReturns struct {
 		result1 <-chan events.Message
@@ -698,12 +699,12 @@ type FakeCommonAPIClient struct {
 		result1 types.ImageBuildResponse
 		result2 error
 	}
-	ImageCreateStub        func(context.Context, string, types.ImageCreateOptions) (io.ReadCloser, error)
+	ImageCreateStub        func(context.Context, string, image.CreateOptions) (io.ReadCloser, error)
 	imageCreateMutex       sync.RWMutex
 	imageCreateArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ImageCreateOptions
+		arg3 image.CreateOptions
 	}
 	imageCreateReturns struct {
 		result1 io.ReadCloser
@@ -727,13 +728,13 @@ type FakeCommonAPIClient struct {
 		result1 []image.HistoryResponseItem
 		result2 error
 	}
-	ImageImportStub        func(context.Context, types.ImageImportSource, string, types.ImageImportOptions) (io.ReadCloser, error)
+	ImageImportStub        func(context.Context, image.ImportSource, string, image.ImportOptions) (io.ReadCloser, error)
 	imageImportMutex       sync.RWMutex
 	imageImportArgsForCall []struct {
 		arg1 context.Context
-		arg2 types.ImageImportSource
+		arg2 image.ImportSource
 		arg3 string
-		arg4 types.ImageImportOptions
+		arg4 image.ImportOptions
 	}
 	imageImportReturns struct {
 		result1 io.ReadCloser
@@ -759,21 +760,21 @@ type FakeCommonAPIClient struct {
 		result2 []byte
 		result3 error
 	}
-	ImageListStub        func(context.Context, types.ImageListOptions) ([]types.ImageSummary, error)
+	ImageListStub        func(context.Context, image.ListOptions) ([]image.Summary, error)
 	imageListMutex       sync.RWMutex
 	imageListArgsForCall []struct {
 		arg1 context.Context
-		arg2 types.ImageListOptions
+		arg2 image.ListOptions
 	}
 	imageListReturns struct {
-		result1 []types.ImageSummary
+		result1 []image.Summary
 		result2 error
 	}
 	imageListReturnsOnCall map[int]struct {
-		result1 []types.ImageSummary
+		result1 []image.Summary
 		result2 error
 	}
-	ImageLoadStub        func(context.Context, io.Reader, bool) (types.ImageLoadResponse, error)
+	ImageLoadStub        func(context.Context, io.Reader, bool) (image.LoadResponse, error)
 	imageLoadMutex       sync.RWMutex
 	imageLoadArgsForCall []struct {
 		arg1 context.Context
@@ -781,19 +782,19 @@ type FakeCommonAPIClient struct {
 		arg3 bool
 	}
 	imageLoadReturns struct {
-		result1 types.ImageLoadResponse
+		result1 image.LoadResponse
 		result2 error
 	}
 	imageLoadReturnsOnCall map[int]struct {
-		result1 types.ImageLoadResponse
+		result1 image.LoadResponse
 		result2 error
 	}
-	ImagePullStub        func(context.Context, string, types.ImagePullOptions) (io.ReadCloser, error)
+	ImagePullStub        func(context.Context, string, image.PullOptions) (io.ReadCloser, error)
 	imagePullMutex       sync.RWMutex
 	imagePullArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ImagePullOptions
+		arg3 image.PullOptions
 	}
 	imagePullReturns struct {
 		result1 io.ReadCloser
@@ -803,12 +804,12 @@ type FakeCommonAPIClient struct {
 		result1 io.ReadCloser
 		result2 error
 	}
-	ImagePushStub        func(context.Context, string, types.ImagePushOptions) (io.ReadCloser, error)
+	ImagePushStub        func(context.Context, string, image.PushOptions) (io.ReadCloser, error)
 	imagePushMutex       sync.RWMutex
 	imagePushArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ImagePushOptions
+		arg3 image.PushOptions
 	}
 	imagePushReturns struct {
 		result1 io.ReadCloser
@@ -818,19 +819,19 @@ type FakeCommonAPIClient struct {
 		result1 io.ReadCloser
 		result2 error
 	}
-	ImageRemoveStub        func(context.Context, string, types.ImageRemoveOptions) ([]types.ImageDeleteResponseItem, error)
+	ImageRemoveStub        func(context.Context, string, image.RemoveOptions) ([]image.DeleteResponse, error)
 	imageRemoveMutex       sync.RWMutex
 	imageRemoveArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ImageRemoveOptions
+		arg3 image.RemoveOptions
 	}
 	imageRemoveReturns struct {
-		result1 []types.ImageDeleteResponseItem
+		result1 []image.DeleteResponse
 		result2 error
 	}
 	imageRemoveReturnsOnCall map[int]struct {
-		result1 []types.ImageDeleteResponseItem
+		result1 []image.DeleteResponse
 		result2 error
 	}
 	ImageSaveStub        func(context.Context, []string) (io.ReadCloser, error)
@@ -847,12 +848,12 @@ type FakeCommonAPIClient struct {
 		result1 io.ReadCloser
 		result2 error
 	}
-	ImageSearchStub        func(context.Context, string, types.ImageSearchOptions) ([]registry.SearchResult, error)
+	ImageSearchStub        func(context.Context, string, registry.SearchOptions) ([]registry.SearchResult, error)
 	imageSearchMutex       sync.RWMutex
 	imageSearchArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ImageSearchOptions
+		arg3 registry.SearchOptions
 	}
 	imageSearchReturns struct {
 		result1 []registry.SearchResult
@@ -875,31 +876,31 @@ type FakeCommonAPIClient struct {
 	imageTagReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ImagesPruneStub        func(context.Context, filters.Args) (types.ImagesPruneReport, error)
+	ImagesPruneStub        func(context.Context, filters.Args) (image.PruneReport, error)
 	imagesPruneMutex       sync.RWMutex
 	imagesPruneArgsForCall []struct {
 		arg1 context.Context
 		arg2 filters.Args
 	}
 	imagesPruneReturns struct {
-		result1 types.ImagesPruneReport
+		result1 image.PruneReport
 		result2 error
 	}
 	imagesPruneReturnsOnCall map[int]struct {
-		result1 types.ImagesPruneReport
+		result1 image.PruneReport
 		result2 error
 	}
-	InfoStub        func(context.Context) (types.Info, error)
+	InfoStub        func(context.Context) (system.Info, error)
 	infoMutex       sync.RWMutex
 	infoArgsForCall []struct {
 		arg1 context.Context
 	}
 	infoReturns struct {
-		result1 types.Info
+		result1 system.Info
 		result2 error
 	}
 	infoReturnsOnCall map[int]struct {
-		result1 types.Info
+		result1 system.Info
 		result2 error
 	}
 	NegotiateAPIVersionStub        func(context.Context)
@@ -926,19 +927,19 @@ type FakeCommonAPIClient struct {
 	networkConnectReturnsOnCall map[int]struct {
 		result1 error
 	}
-	NetworkCreateStub        func(context.Context, string, types.NetworkCreate) (types.NetworkCreateResponse, error)
+	NetworkCreateStub        func(context.Context, string, network.CreateOptions) (network.CreateResponse, error)
 	networkCreateMutex       sync.RWMutex
 	networkCreateArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.NetworkCreate
+		arg3 network.CreateOptions
 	}
 	networkCreateReturns struct {
-		result1 types.NetworkCreateResponse
+		result1 network.CreateResponse
 		result2 error
 	}
 	networkCreateReturnsOnCall map[int]struct {
-		result1 types.NetworkCreateResponse
+		result1 network.CreateResponse
 		result2 error
 	}
 	NetworkDisconnectStub        func(context.Context, string, string, bool) error
@@ -955,50 +956,50 @@ type FakeCommonAPIClient struct {
 	networkDisconnectReturnsOnCall map[int]struct {
 		result1 error
 	}
-	NetworkInspectStub        func(context.Context, string, types.NetworkInspectOptions) (types.NetworkResource, error)
+	NetworkInspectStub        func(context.Context, string, network.InspectOptions) (network.Inspect, error)
 	networkInspectMutex       sync.RWMutex
 	networkInspectArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.NetworkInspectOptions
+		arg3 network.InspectOptions
 	}
 	networkInspectReturns struct {
-		result1 types.NetworkResource
+		result1 network.Inspect
 		result2 error
 	}
 	networkInspectReturnsOnCall map[int]struct {
-		result1 types.NetworkResource
+		result1 network.Inspect
 		result2 error
 	}
-	NetworkInspectWithRawStub        func(context.Context, string, types.NetworkInspectOptions) (types.NetworkResource, []byte, error)
+	NetworkInspectWithRawStub        func(context.Context, string, network.InspectOptions) (network.Inspect, []byte, error)
 	networkInspectWithRawMutex       sync.RWMutex
 	networkInspectWithRawArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.NetworkInspectOptions
+		arg3 network.InspectOptions
 	}
 	networkInspectWithRawReturns struct {
-		result1 types.NetworkResource
+		result1 network.Inspect
 		result2 []byte
 		result3 error
 	}
 	networkInspectWithRawReturnsOnCall map[int]struct {
-		result1 types.NetworkResource
+		result1 network.Inspect
 		result2 []byte
 		result3 error
 	}
-	NetworkListStub        func(context.Context, types.NetworkListOptions) ([]types.NetworkResource, error)
+	NetworkListStub        func(context.Context, network.ListOptions) ([]network.Summary, error)
 	networkListMutex       sync.RWMutex
 	networkListArgsForCall []struct {
 		arg1 context.Context
-		arg2 types.NetworkListOptions
+		arg2 network.ListOptions
 	}
 	networkListReturns struct {
-		result1 []types.NetworkResource
+		result1 []network.Summary
 		result2 error
 	}
 	networkListReturnsOnCall map[int]struct {
-		result1 []types.NetworkResource
+		result1 []network.Summary
 		result2 error
 	}
 	NetworkRemoveStub        func(context.Context, string) error
@@ -1013,18 +1014,18 @@ type FakeCommonAPIClient struct {
 	networkRemoveReturnsOnCall map[int]struct {
 		result1 error
 	}
-	NetworksPruneStub        func(context.Context, filters.Args) (types.NetworksPruneReport, error)
+	NetworksPruneStub        func(context.Context, filters.Args) (network.PruneReport, error)
 	networksPruneMutex       sync.RWMutex
 	networksPruneArgsForCall []struct {
 		arg1 context.Context
 		arg2 filters.Args
 	}
 	networksPruneReturns struct {
-		result1 types.NetworksPruneReport
+		result1 network.PruneReport
 		result2 error
 	}
 	networksPruneReturnsOnCall map[int]struct {
-		result1 types.NetworksPruneReport
+		result1 network.PruneReport
 		result2 error
 	}
 	NodeInspectWithRawStub        func(context.Context, string) (swarm.Node, []byte, error)
@@ -1334,7 +1335,7 @@ type FakeCommonAPIClient struct {
 		result1 types.Version
 		result2 error
 	}
-	ServiceCreateStub        func(context.Context, swarm.ServiceSpec, types.ServiceCreateOptions) (types.ServiceCreateResponse, error)
+	ServiceCreateStub        func(context.Context, swarm.ServiceSpec, types.ServiceCreateOptions) (swarm.ServiceCreateResponse, error)
 	serviceCreateMutex       sync.RWMutex
 	serviceCreateArgsForCall []struct {
 		arg1 context.Context
@@ -1342,11 +1343,11 @@ type FakeCommonAPIClient struct {
 		arg3 types.ServiceCreateOptions
 	}
 	serviceCreateReturns struct {
-		result1 types.ServiceCreateResponse
+		result1 swarm.ServiceCreateResponse
 		result2 error
 	}
 	serviceCreateReturnsOnCall map[int]struct {
-		result1 types.ServiceCreateResponse
+		result1 swarm.ServiceCreateResponse
 		result2 error
 	}
 	ServiceInspectWithRawStub        func(context.Context, string, types.ServiceInspectOptions) (swarm.Service, []byte, error)
@@ -1380,12 +1381,12 @@ type FakeCommonAPIClient struct {
 		result1 []swarm.Service
 		result2 error
 	}
-	ServiceLogsStub        func(context.Context, string, types.ContainerLogsOptions) (io.ReadCloser, error)
+	ServiceLogsStub        func(context.Context, string, container.LogsOptions) (io.ReadCloser, error)
 	serviceLogsMutex       sync.RWMutex
 	serviceLogsArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ContainerLogsOptions
+		arg3 container.LogsOptions
 	}
 	serviceLogsReturns struct {
 		result1 io.ReadCloser
@@ -1407,7 +1408,7 @@ type FakeCommonAPIClient struct {
 	serviceRemoveReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ServiceUpdateStub        func(context.Context, string, swarm.Version, swarm.ServiceSpec, types.ServiceUpdateOptions) (types.ServiceUpdateResponse, error)
+	ServiceUpdateStub        func(context.Context, string, swarm.Version, swarm.ServiceSpec, types.ServiceUpdateOptions) (swarm.ServiceUpdateResponse, error)
 	serviceUpdateMutex       sync.RWMutex
 	serviceUpdateArgsForCall []struct {
 		arg1 context.Context
@@ -1417,11 +1418,11 @@ type FakeCommonAPIClient struct {
 		arg5 types.ServiceUpdateOptions
 	}
 	serviceUpdateReturns struct {
-		result1 types.ServiceUpdateResponse
+		result1 swarm.ServiceUpdateResponse
 		result2 error
 	}
 	serviceUpdateReturnsOnCall map[int]struct {
-		result1 types.ServiceUpdateResponse
+		result1 swarm.ServiceUpdateResponse
 		result2 error
 	}
 	SwarmGetUnlockKeyStub        func(context.Context) (types.SwarmUnlockKeyResponse, error)
@@ -1544,12 +1545,12 @@ type FakeCommonAPIClient struct {
 		result1 []swarm.Task
 		result2 error
 	}
-	TaskLogsStub        func(context.Context, string, types.ContainerLogsOptions) (io.ReadCloser, error)
+	TaskLogsStub        func(context.Context, string, container.LogsOptions) (io.ReadCloser, error)
 	taskLogsMutex       sync.RWMutex
 	taskLogsArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ContainerLogsOptions
+		arg3 container.LogsOptions
 	}
 	taskLogsReturns struct {
 		result1 io.ReadCloser
@@ -1644,18 +1645,18 @@ type FakeCommonAPIClient struct {
 	volumeUpdateReturnsOnCall map[int]struct {
 		result1 error
 	}
-	VolumesPruneStub        func(context.Context, filters.Args) (types.VolumesPruneReport, error)
+	VolumesPruneStub        func(context.Context, filters.Args) (volume.PruneReport, error)
 	volumesPruneMutex       sync.RWMutex
 	volumesPruneArgsForCall []struct {
 		arg1 context.Context
 		arg2 filters.Args
 	}
 	volumesPruneReturns struct {
-		result1 types.VolumesPruneReport
+		result1 volume.PruneReport
 		result2 error
 	}
 	volumesPruneReturnsOnCall map[int]struct {
-		result1 types.VolumesPruneReport
+		result1 volume.PruneReport
 		result2 error
 	}
 	invocations      map[string][][]interface{}
@@ -2472,13 +2473,13 @@ func (fake *FakeCommonAPIClient) ContainerDiffReturnsOnCall(i int, result1 []con
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecAttach(arg1 context.Context, arg2 string, arg3 types.ExecStartCheck) (types.HijackedResponse, error) {
+func (fake *FakeCommonAPIClient) ContainerExecAttach(arg1 context.Context, arg2 string, arg3 container.ExecAttachOptions) (types.HijackedResponse, error) {
 	fake.containerExecAttachMutex.Lock()
 	ret, specificReturn := fake.containerExecAttachReturnsOnCall[len(fake.containerExecAttachArgsForCall)]
 	fake.containerExecAttachArgsForCall = append(fake.containerExecAttachArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ExecStartCheck
+		arg3 container.ExecAttachOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ContainerExecAttach", []interface{}{arg1, arg2, arg3})
 	fake.containerExecAttachMutex.Unlock()
@@ -2498,13 +2499,13 @@ func (fake *FakeCommonAPIClient) ContainerExecAttachCallCount() int {
 	return len(fake.containerExecAttachArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecAttachCalls(stub func(context.Context, string, types.ExecStartCheck) (types.HijackedResponse, error)) {
+func (fake *FakeCommonAPIClient) ContainerExecAttachCalls(stub func(context.Context, string, container.ExecAttachOptions) (types.HijackedResponse, error)) {
 	fake.containerExecAttachMutex.Lock()
 	defer fake.containerExecAttachMutex.Unlock()
 	fake.ContainerExecAttachStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecAttachArgsForCall(i int) (context.Context, string, types.ExecStartCheck) {
+func (fake *FakeCommonAPIClient) ContainerExecAttachArgsForCall(i int) (context.Context, string, container.ExecAttachOptions) {
 	fake.containerExecAttachMutex.RLock()
 	defer fake.containerExecAttachMutex.RUnlock()
 	argsForCall := fake.containerExecAttachArgsForCall[i]
@@ -2537,13 +2538,13 @@ func (fake *FakeCommonAPIClient) ContainerExecAttachReturnsOnCall(i int, result1
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecCreate(arg1 context.Context, arg2 string, arg3 types.ExecConfig) (types.IDResponse, error) {
+func (fake *FakeCommonAPIClient) ContainerExecCreate(arg1 context.Context, arg2 string, arg3 container.ExecOptions) (types.IDResponse, error) {
 	fake.containerExecCreateMutex.Lock()
 	ret, specificReturn := fake.containerExecCreateReturnsOnCall[len(fake.containerExecCreateArgsForCall)]
 	fake.containerExecCreateArgsForCall = append(fake.containerExecCreateArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ExecConfig
+		arg3 container.ExecOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ContainerExecCreate", []interface{}{arg1, arg2, arg3})
 	fake.containerExecCreateMutex.Unlock()
@@ -2563,13 +2564,13 @@ func (fake *FakeCommonAPIClient) ContainerExecCreateCallCount() int {
 	return len(fake.containerExecCreateArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecCreateCalls(stub func(context.Context, string, types.ExecConfig) (types.IDResponse, error)) {
+func (fake *FakeCommonAPIClient) ContainerExecCreateCalls(stub func(context.Context, string, container.ExecOptions) (types.IDResponse, error)) {
 	fake.containerExecCreateMutex.Lock()
 	defer fake.containerExecCreateMutex.Unlock()
 	fake.ContainerExecCreateStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecCreateArgsForCall(i int) (context.Context, string, types.ExecConfig) {
+func (fake *FakeCommonAPIClient) ContainerExecCreateArgsForCall(i int) (context.Context, string, container.ExecOptions) {
 	fake.containerExecCreateMutex.RLock()
 	defer fake.containerExecCreateMutex.RUnlock()
 	argsForCall := fake.containerExecCreateArgsForCall[i]
@@ -2602,7 +2603,7 @@ func (fake *FakeCommonAPIClient) ContainerExecCreateReturnsOnCall(i int, result1
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecInspect(arg1 context.Context, arg2 string) (types.ContainerExecInspect, error) {
+func (fake *FakeCommonAPIClient) ContainerExecInspect(arg1 context.Context, arg2 string) (container.ExecInspect, error) {
 	fake.containerExecInspectMutex.Lock()
 	ret, specificReturn := fake.containerExecInspectReturnsOnCall[len(fake.containerExecInspectArgsForCall)]
 	fake.containerExecInspectArgsForCall = append(fake.containerExecInspectArgsForCall, struct {
@@ -2627,7 +2628,7 @@ func (fake *FakeCommonAPIClient) ContainerExecInspectCallCount() int {
 	return len(fake.containerExecInspectArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecInspectCalls(stub func(context.Context, string) (types.ContainerExecInspect, error)) {
+func (fake *FakeCommonAPIClient) ContainerExecInspectCalls(stub func(context.Context, string) (container.ExecInspect, error)) {
 	fake.containerExecInspectMutex.Lock()
 	defer fake.containerExecInspectMutex.Unlock()
 	fake.ContainerExecInspectStub = stub
@@ -2640,39 +2641,39 @@ func (fake *FakeCommonAPIClient) ContainerExecInspectArgsForCall(i int) (context
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecInspectReturns(result1 types.ContainerExecInspect, result2 error) {
+func (fake *FakeCommonAPIClient) ContainerExecInspectReturns(result1 container.ExecInspect, result2 error) {
 	fake.containerExecInspectMutex.Lock()
 	defer fake.containerExecInspectMutex.Unlock()
 	fake.ContainerExecInspectStub = nil
 	fake.containerExecInspectReturns = struct {
-		result1 types.ContainerExecInspect
+		result1 container.ExecInspect
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecInspectReturnsOnCall(i int, result1 types.ContainerExecInspect, result2 error) {
+func (fake *FakeCommonAPIClient) ContainerExecInspectReturnsOnCall(i int, result1 container.ExecInspect, result2 error) {
 	fake.containerExecInspectMutex.Lock()
 	defer fake.containerExecInspectMutex.Unlock()
 	fake.ContainerExecInspectStub = nil
 	if fake.containerExecInspectReturnsOnCall == nil {
 		fake.containerExecInspectReturnsOnCall = make(map[int]struct {
-			result1 types.ContainerExecInspect
+			result1 container.ExecInspect
 			result2 error
 		})
 	}
 	fake.containerExecInspectReturnsOnCall[i] = struct {
-		result1 types.ContainerExecInspect
+		result1 container.ExecInspect
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecResize(arg1 context.Context, arg2 string, arg3 types.ResizeOptions) error {
+func (fake *FakeCommonAPIClient) ContainerExecResize(arg1 context.Context, arg2 string, arg3 container.ResizeOptions) error {
 	fake.containerExecResizeMutex.Lock()
 	ret, specificReturn := fake.containerExecResizeReturnsOnCall[len(fake.containerExecResizeArgsForCall)]
 	fake.containerExecResizeArgsForCall = append(fake.containerExecResizeArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ResizeOptions
+		arg3 container.ResizeOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ContainerExecResize", []interface{}{arg1, arg2, arg3})
 	fake.containerExecResizeMutex.Unlock()
@@ -2692,13 +2693,13 @@ func (fake *FakeCommonAPIClient) ContainerExecResizeCallCount() int {
 	return len(fake.containerExecResizeArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecResizeCalls(stub func(context.Context, string, types.ResizeOptions) error) {
+func (fake *FakeCommonAPIClient) ContainerExecResizeCalls(stub func(context.Context, string, container.ResizeOptions) error) {
 	fake.containerExecResizeMutex.Lock()
 	defer fake.containerExecResizeMutex.Unlock()
 	fake.ContainerExecResizeStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecResizeArgsForCall(i int) (context.Context, string, types.ResizeOptions) {
+func (fake *FakeCommonAPIClient) ContainerExecResizeArgsForCall(i int) (context.Context, string, container.ResizeOptions) {
 	fake.containerExecResizeMutex.RLock()
 	defer fake.containerExecResizeMutex.RUnlock()
 	argsForCall := fake.containerExecResizeArgsForCall[i]
@@ -2728,13 +2729,13 @@ func (fake *FakeCommonAPIClient) ContainerExecResizeReturnsOnCall(i int, result1
 	}{result1}
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecStart(arg1 context.Context, arg2 string, arg3 types.ExecStartCheck) error {
+func (fake *FakeCommonAPIClient) ContainerExecStart(arg1 context.Context, arg2 string, arg3 container.ExecStartOptions) error {
 	fake.containerExecStartMutex.Lock()
 	ret, specificReturn := fake.containerExecStartReturnsOnCall[len(fake.containerExecStartArgsForCall)]
 	fake.containerExecStartArgsForCall = append(fake.containerExecStartArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ExecStartCheck
+		arg3 container.ExecStartOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ContainerExecStart", []interface{}{arg1, arg2, arg3})
 	fake.containerExecStartMutex.Unlock()
@@ -2754,13 +2755,13 @@ func (fake *FakeCommonAPIClient) ContainerExecStartCallCount() int {
 	return len(fake.containerExecStartArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecStartCalls(stub func(context.Context, string, types.ExecStartCheck) error) {
+func (fake *FakeCommonAPIClient) ContainerExecStartCalls(stub func(context.Context, string, container.ExecStartOptions) error) {
 	fake.containerExecStartMutex.Lock()
 	defer fake.containerExecStartMutex.Unlock()
 	fake.ContainerExecStartStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ContainerExecStartArgsForCall(i int) (context.Context, string, types.ExecStartCheck) {
+func (fake *FakeCommonAPIClient) ContainerExecStartArgsForCall(i int) (context.Context, string, container.ExecStartOptions) {
 	fake.containerExecStartMutex.RLock()
 	defer fake.containerExecStartMutex.RUnlock()
 	argsForCall := fake.containerExecStartArgsForCall[i]
@@ -3048,12 +3049,12 @@ func (fake *FakeCommonAPIClient) ContainerKillReturnsOnCall(i int, result1 error
 	}{result1}
 }
 
-func (fake *FakeCommonAPIClient) ContainerList(arg1 context.Context, arg2 types.ContainerListOptions) ([]types.Container, error) {
+func (fake *FakeCommonAPIClient) ContainerList(arg1 context.Context, arg2 container.ListOptions) ([]types.Container, error) {
 	fake.containerListMutex.Lock()
 	ret, specificReturn := fake.containerListReturnsOnCall[len(fake.containerListArgsForCall)]
 	fake.containerListArgsForCall = append(fake.containerListArgsForCall, struct {
 		arg1 context.Context
-		arg2 types.ContainerListOptions
+		arg2 container.ListOptions
 	}{arg1, arg2})
 	fake.recordInvocation("ContainerList", []interface{}{arg1, arg2})
 	fake.containerListMutex.Unlock()
@@ -3073,13 +3074,13 @@ func (fake *FakeCommonAPIClient) ContainerListCallCount() int {
 	return len(fake.containerListArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerListCalls(stub func(context.Context, types.ContainerListOptions) ([]types.Container, error)) {
+func (fake *FakeCommonAPIClient) ContainerListCalls(stub func(context.Context, container.ListOptions) ([]types.Container, error)) {
 	fake.containerListMutex.Lock()
 	defer fake.containerListMutex.Unlock()
 	fake.ContainerListStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ContainerListArgsForCall(i int) (context.Context, types.ContainerListOptions) {
+func (fake *FakeCommonAPIClient) ContainerListArgsForCall(i int) (context.Context, container.ListOptions) {
 	fake.containerListMutex.RLock()
 	defer fake.containerListMutex.RUnlock()
 	argsForCall := fake.containerListArgsForCall[i]
@@ -3112,13 +3113,13 @@ func (fake *FakeCommonAPIClient) ContainerListReturnsOnCall(i int, result1 []typ
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerLogs(arg1 context.Context, arg2 string, arg3 types.ContainerLogsOptions) (io.ReadCloser, error) {
+func (fake *FakeCommonAPIClient) ContainerLogs(arg1 context.Context, arg2 string, arg3 container.LogsOptions) (io.ReadCloser, error) {
 	fake.containerLogsMutex.Lock()
 	ret, specificReturn := fake.containerLogsReturnsOnCall[len(fake.containerLogsArgsForCall)]
 	fake.containerLogsArgsForCall = append(fake.containerLogsArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ContainerLogsOptions
+		arg3 container.LogsOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ContainerLogs", []interface{}{arg1, arg2, arg3})
 	fake.containerLogsMutex.Unlock()
@@ -3138,13 +3139,13 @@ func (fake *FakeCommonAPIClient) ContainerLogsCallCount() int {
 	return len(fake.containerLogsArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerLogsCalls(stub func(context.Context, string, types.ContainerLogsOptions) (io.ReadCloser, error)) {
+func (fake *FakeCommonAPIClient) ContainerLogsCalls(stub func(context.Context, string, container.LogsOptions) (io.ReadCloser, error)) {
 	fake.containerLogsMutex.Lock()
 	defer fake.containerLogsMutex.Unlock()
 	fake.ContainerLogsStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ContainerLogsArgsForCall(i int) (context.Context, string, types.ContainerLogsOptions) {
+func (fake *FakeCommonAPIClient) ContainerLogsArgsForCall(i int) (context.Context, string, container.LogsOptions) {
 	fake.containerLogsMutex.RLock()
 	defer fake.containerLogsMutex.RUnlock()
 	argsForCall := fake.containerLogsArgsForCall[i]
@@ -3238,13 +3239,13 @@ func (fake *FakeCommonAPIClient) ContainerPauseReturnsOnCall(i int, result1 erro
 	}{result1}
 }
 
-func (fake *FakeCommonAPIClient) ContainerRemove(arg1 context.Context, arg2 string, arg3 types.ContainerRemoveOptions) error {
+func (fake *FakeCommonAPIClient) ContainerRemove(arg1 context.Context, arg2 string, arg3 container.RemoveOptions) error {
 	fake.containerRemoveMutex.Lock()
 	ret, specificReturn := fake.containerRemoveReturnsOnCall[len(fake.containerRemoveArgsForCall)]
 	fake.containerRemoveArgsForCall = append(fake.containerRemoveArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ContainerRemoveOptions
+		arg3 container.RemoveOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ContainerRemove", []interface{}{arg1, arg2, arg3})
 	fake.containerRemoveMutex.Unlock()
@@ -3264,13 +3265,13 @@ func (fake *FakeCommonAPIClient) ContainerRemoveCallCount() int {
 	return len(fake.containerRemoveArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerRemoveCalls(stub func(context.Context, string, types.ContainerRemoveOptions) error) {
+func (fake *FakeCommonAPIClient) ContainerRemoveCalls(stub func(context.Context, string, container.RemoveOptions) error) {
 	fake.containerRemoveMutex.Lock()
 	defer fake.containerRemoveMutex.Unlock()
 	fake.ContainerRemoveStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ContainerRemoveArgsForCall(i int) (context.Context, string, types.ContainerRemoveOptions) {
+func (fake *FakeCommonAPIClient) ContainerRemoveArgsForCall(i int) (context.Context, string, container.RemoveOptions) {
 	fake.containerRemoveMutex.RLock()
 	defer fake.containerRemoveMutex.RUnlock()
 	argsForCall := fake.containerRemoveArgsForCall[i]
@@ -3362,13 +3363,13 @@ func (fake *FakeCommonAPIClient) ContainerRenameReturnsOnCall(i int, result1 err
 	}{result1}
 }
 
-func (fake *FakeCommonAPIClient) ContainerResize(arg1 context.Context, arg2 string, arg3 types.ResizeOptions) error {
+func (fake *FakeCommonAPIClient) ContainerResize(arg1 context.Context, arg2 string, arg3 container.ResizeOptions) error {
 	fake.containerResizeMutex.Lock()
 	ret, specificReturn := fake.containerResizeReturnsOnCall[len(fake.containerResizeArgsForCall)]
 	fake.containerResizeArgsForCall = append(fake.containerResizeArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ResizeOptions
+		arg3 container.ResizeOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ContainerResize", []interface{}{arg1, arg2, arg3})
 	fake.containerResizeMutex.Unlock()
@@ -3388,13 +3389,13 @@ func (fake *FakeCommonAPIClient) ContainerResizeCallCount() int {
 	return len(fake.containerResizeArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerResizeCalls(stub func(context.Context, string, types.ResizeOptions) error) {
+func (fake *FakeCommonAPIClient) ContainerResizeCalls(stub func(context.Context, string, container.ResizeOptions) error) {
 	fake.containerResizeMutex.Lock()
 	defer fake.containerResizeMutex.Unlock()
 	fake.ContainerResizeStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ContainerResizeArgsForCall(i int) (context.Context, string, types.ResizeOptions) {
+func (fake *FakeCommonAPIClient) ContainerResizeArgsForCall(i int) (context.Context, string, container.ResizeOptions) {
 	fake.containerResizeMutex.RLock()
 	defer fake.containerResizeMutex.RUnlock()
 	argsForCall := fake.containerResizeArgsForCall[i]
@@ -3486,13 +3487,13 @@ func (fake *FakeCommonAPIClient) ContainerRestartReturnsOnCall(i int, result1 er
 	}{result1}
 }
 
-func (fake *FakeCommonAPIClient) ContainerStart(arg1 context.Context, arg2 string, arg3 types.ContainerStartOptions) error {
+func (fake *FakeCommonAPIClient) ContainerStart(arg1 context.Context, arg2 string, arg3 container.StartOptions) error {
 	fake.containerStartMutex.Lock()
 	ret, specificReturn := fake.containerStartReturnsOnCall[len(fake.containerStartArgsForCall)]
 	fake.containerStartArgsForCall = append(fake.containerStartArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ContainerStartOptions
+		arg3 container.StartOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ContainerStart", []interface{}{arg1, arg2, arg3})
 	fake.containerStartMutex.Unlock()
@@ -3512,13 +3513,13 @@ func (fake *FakeCommonAPIClient) ContainerStartCallCount() int {
 	return len(fake.containerStartArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerStartCalls(stub func(context.Context, string, types.ContainerStartOptions) error) {
+func (fake *FakeCommonAPIClient) ContainerStartCalls(stub func(context.Context, string, container.StartOptions) error) {
 	fake.containerStartMutex.Lock()
 	defer fake.containerStartMutex.Unlock()
 	fake.ContainerStartStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ContainerStartArgsForCall(i int) (context.Context, string, types.ContainerStartOptions) {
+func (fake *FakeCommonAPIClient) ContainerStartArgsForCall(i int) (context.Context, string, container.StartOptions) {
 	fake.containerStartMutex.RLock()
 	defer fake.containerStartMutex.RUnlock()
 	argsForCall := fake.containerStartArgsForCall[i]
@@ -3548,7 +3549,7 @@ func (fake *FakeCommonAPIClient) ContainerStartReturnsOnCall(i int, result1 erro
 	}{result1}
 }
 
-func (fake *FakeCommonAPIClient) ContainerStatPath(arg1 context.Context, arg2 string, arg3 string) (types.ContainerPathStat, error) {
+func (fake *FakeCommonAPIClient) ContainerStatPath(arg1 context.Context, arg2 string, arg3 string) (container.PathStat, error) {
 	fake.containerStatPathMutex.Lock()
 	ret, specificReturn := fake.containerStatPathReturnsOnCall[len(fake.containerStatPathArgsForCall)]
 	fake.containerStatPathArgsForCall = append(fake.containerStatPathArgsForCall, struct {
@@ -3574,7 +3575,7 @@ func (fake *FakeCommonAPIClient) ContainerStatPathCallCount() int {
 	return len(fake.containerStatPathArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerStatPathCalls(stub func(context.Context, string, string) (types.ContainerPathStat, error)) {
+func (fake *FakeCommonAPIClient) ContainerStatPathCalls(stub func(context.Context, string, string) (container.PathStat, error)) {
 	fake.containerStatPathMutex.Lock()
 	defer fake.containerStatPathMutex.Unlock()
 	fake.ContainerStatPathStub = stub
@@ -3587,33 +3588,33 @@ func (fake *FakeCommonAPIClient) ContainerStatPathArgsForCall(i int) (context.Co
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeCommonAPIClient) ContainerStatPathReturns(result1 types.ContainerPathStat, result2 error) {
+func (fake *FakeCommonAPIClient) ContainerStatPathReturns(result1 container.PathStat, result2 error) {
 	fake.containerStatPathMutex.Lock()
 	defer fake.containerStatPathMutex.Unlock()
 	fake.ContainerStatPathStub = nil
 	fake.containerStatPathReturns = struct {
-		result1 types.ContainerPathStat
+		result1 container.PathStat
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerStatPathReturnsOnCall(i int, result1 types.ContainerPathStat, result2 error) {
+func (fake *FakeCommonAPIClient) ContainerStatPathReturnsOnCall(i int, result1 container.PathStat, result2 error) {
 	fake.containerStatPathMutex.Lock()
 	defer fake.containerStatPathMutex.Unlock()
 	fake.ContainerStatPathStub = nil
 	if fake.containerStatPathReturnsOnCall == nil {
 		fake.containerStatPathReturnsOnCall = make(map[int]struct {
-			result1 types.ContainerPathStat
+			result1 container.PathStat
 			result2 error
 		})
 	}
 	fake.containerStatPathReturnsOnCall[i] = struct {
-		result1 types.ContainerPathStat
+		result1 container.PathStat
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerStats(arg1 context.Context, arg2 string, arg3 bool) (types.ContainerStats, error) {
+func (fake *FakeCommonAPIClient) ContainerStats(arg1 context.Context, arg2 string, arg3 bool) (container.StatsResponseReader, error) {
 	fake.containerStatsMutex.Lock()
 	ret, specificReturn := fake.containerStatsReturnsOnCall[len(fake.containerStatsArgsForCall)]
 	fake.containerStatsArgsForCall = append(fake.containerStatsArgsForCall, struct {
@@ -3639,7 +3640,7 @@ func (fake *FakeCommonAPIClient) ContainerStatsCallCount() int {
 	return len(fake.containerStatsArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerStatsCalls(stub func(context.Context, string, bool) (types.ContainerStats, error)) {
+func (fake *FakeCommonAPIClient) ContainerStatsCalls(stub func(context.Context, string, bool) (container.StatsResponseReader, error)) {
 	fake.containerStatsMutex.Lock()
 	defer fake.containerStatsMutex.Unlock()
 	fake.ContainerStatsStub = stub
@@ -3652,33 +3653,33 @@ func (fake *FakeCommonAPIClient) ContainerStatsArgsForCall(i int) (context.Conte
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeCommonAPIClient) ContainerStatsReturns(result1 types.ContainerStats, result2 error) {
+func (fake *FakeCommonAPIClient) ContainerStatsReturns(result1 container.StatsResponseReader, result2 error) {
 	fake.containerStatsMutex.Lock()
 	defer fake.containerStatsMutex.Unlock()
 	fake.ContainerStatsStub = nil
 	fake.containerStatsReturns = struct {
-		result1 types.ContainerStats
+		result1 container.StatsResponseReader
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerStatsReturnsOnCall(i int, result1 types.ContainerStats, result2 error) {
+func (fake *FakeCommonAPIClient) ContainerStatsReturnsOnCall(i int, result1 container.StatsResponseReader, result2 error) {
 	fake.containerStatsMutex.Lock()
 	defer fake.containerStatsMutex.Unlock()
 	fake.ContainerStatsStub = nil
 	if fake.containerStatsReturnsOnCall == nil {
 		fake.containerStatsReturnsOnCall = make(map[int]struct {
-			result1 types.ContainerStats
+			result1 container.StatsResponseReader
 			result2 error
 		})
 	}
 	fake.containerStatsReturnsOnCall[i] = struct {
-		result1 types.ContainerStats
+		result1 container.StatsResponseReader
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerStatsOneShot(arg1 context.Context, arg2 string) (types.ContainerStats, error) {
+func (fake *FakeCommonAPIClient) ContainerStatsOneShot(arg1 context.Context, arg2 string) (container.StatsResponseReader, error) {
 	fake.containerStatsOneShotMutex.Lock()
 	ret, specificReturn := fake.containerStatsOneShotReturnsOnCall[len(fake.containerStatsOneShotArgsForCall)]
 	fake.containerStatsOneShotArgsForCall = append(fake.containerStatsOneShotArgsForCall, struct {
@@ -3703,7 +3704,7 @@ func (fake *FakeCommonAPIClient) ContainerStatsOneShotCallCount() int {
 	return len(fake.containerStatsOneShotArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainerStatsOneShotCalls(stub func(context.Context, string) (types.ContainerStats, error)) {
+func (fake *FakeCommonAPIClient) ContainerStatsOneShotCalls(stub func(context.Context, string) (container.StatsResponseReader, error)) {
 	fake.containerStatsOneShotMutex.Lock()
 	defer fake.containerStatsOneShotMutex.Unlock()
 	fake.ContainerStatsOneShotStub = stub
@@ -3716,28 +3717,28 @@ func (fake *FakeCommonAPIClient) ContainerStatsOneShotArgsForCall(i int) (contex
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCommonAPIClient) ContainerStatsOneShotReturns(result1 types.ContainerStats, result2 error) {
+func (fake *FakeCommonAPIClient) ContainerStatsOneShotReturns(result1 container.StatsResponseReader, result2 error) {
 	fake.containerStatsOneShotMutex.Lock()
 	defer fake.containerStatsOneShotMutex.Unlock()
 	fake.ContainerStatsOneShotStub = nil
 	fake.containerStatsOneShotReturns = struct {
-		result1 types.ContainerStats
+		result1 container.StatsResponseReader
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainerStatsOneShotReturnsOnCall(i int, result1 types.ContainerStats, result2 error) {
+func (fake *FakeCommonAPIClient) ContainerStatsOneShotReturnsOnCall(i int, result1 container.StatsResponseReader, result2 error) {
 	fake.containerStatsOneShotMutex.Lock()
 	defer fake.containerStatsOneShotMutex.Unlock()
 	fake.ContainerStatsOneShotStub = nil
 	if fake.containerStatsOneShotReturnsOnCall == nil {
 		fake.containerStatsOneShotReturnsOnCall = make(map[int]struct {
-			result1 types.ContainerStats
+			result1 container.StatsResponseReader
 			result2 error
 		})
 	}
 	fake.containerStatsOneShotReturnsOnCall[i] = struct {
-		result1 types.ContainerStats
+		result1 container.StatsResponseReader
 		result2 error
 	}{result1, result2}
 }
@@ -4065,7 +4066,7 @@ func (fake *FakeCommonAPIClient) ContainerWaitReturnsOnCall(i int, result1 <-cha
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainersPrune(arg1 context.Context, arg2 filters.Args) (types.ContainersPruneReport, error) {
+func (fake *FakeCommonAPIClient) ContainersPrune(arg1 context.Context, arg2 filters.Args) (container.PruneReport, error) {
 	fake.containersPruneMutex.Lock()
 	ret, specificReturn := fake.containersPruneReturnsOnCall[len(fake.containersPruneArgsForCall)]
 	fake.containersPruneArgsForCall = append(fake.containersPruneArgsForCall, struct {
@@ -4090,7 +4091,7 @@ func (fake *FakeCommonAPIClient) ContainersPruneCallCount() int {
 	return len(fake.containersPruneArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ContainersPruneCalls(stub func(context.Context, filters.Args) (types.ContainersPruneReport, error)) {
+func (fake *FakeCommonAPIClient) ContainersPruneCalls(stub func(context.Context, filters.Args) (container.PruneReport, error)) {
 	fake.containersPruneMutex.Lock()
 	defer fake.containersPruneMutex.Unlock()
 	fake.ContainersPruneStub = stub
@@ -4103,33 +4104,33 @@ func (fake *FakeCommonAPIClient) ContainersPruneArgsForCall(i int) (context.Cont
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCommonAPIClient) ContainersPruneReturns(result1 types.ContainersPruneReport, result2 error) {
+func (fake *FakeCommonAPIClient) ContainersPruneReturns(result1 container.PruneReport, result2 error) {
 	fake.containersPruneMutex.Lock()
 	defer fake.containersPruneMutex.Unlock()
 	fake.ContainersPruneStub = nil
 	fake.containersPruneReturns = struct {
-		result1 types.ContainersPruneReport
+		result1 container.PruneReport
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ContainersPruneReturnsOnCall(i int, result1 types.ContainersPruneReport, result2 error) {
+func (fake *FakeCommonAPIClient) ContainersPruneReturnsOnCall(i int, result1 container.PruneReport, result2 error) {
 	fake.containersPruneMutex.Lock()
 	defer fake.containersPruneMutex.Unlock()
 	fake.ContainersPruneStub = nil
 	if fake.containersPruneReturnsOnCall == nil {
 		fake.containersPruneReturnsOnCall = make(map[int]struct {
-			result1 types.ContainersPruneReport
+			result1 container.PruneReport
 			result2 error
 		})
 	}
 	fake.containersPruneReturnsOnCall[i] = struct {
-		result1 types.ContainersPruneReport
+		result1 container.PruneReport
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) CopyFromContainer(arg1 context.Context, arg2 string, arg3 string) (io.ReadCloser, types.ContainerPathStat, error) {
+func (fake *FakeCommonAPIClient) CopyFromContainer(arg1 context.Context, arg2 string, arg3 string) (io.ReadCloser, container.PathStat, error) {
 	fake.copyFromContainerMutex.Lock()
 	ret, specificReturn := fake.copyFromContainerReturnsOnCall[len(fake.copyFromContainerArgsForCall)]
 	fake.copyFromContainerArgsForCall = append(fake.copyFromContainerArgsForCall, struct {
@@ -4155,7 +4156,7 @@ func (fake *FakeCommonAPIClient) CopyFromContainerCallCount() int {
 	return len(fake.copyFromContainerArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) CopyFromContainerCalls(stub func(context.Context, string, string) (io.ReadCloser, types.ContainerPathStat, error)) {
+func (fake *FakeCommonAPIClient) CopyFromContainerCalls(stub func(context.Context, string, string) (io.ReadCloser, container.PathStat, error)) {
 	fake.copyFromContainerMutex.Lock()
 	defer fake.copyFromContainerMutex.Unlock()
 	fake.CopyFromContainerStub = stub
@@ -4168,36 +4169,36 @@ func (fake *FakeCommonAPIClient) CopyFromContainerArgsForCall(i int) (context.Co
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeCommonAPIClient) CopyFromContainerReturns(result1 io.ReadCloser, result2 types.ContainerPathStat, result3 error) {
+func (fake *FakeCommonAPIClient) CopyFromContainerReturns(result1 io.ReadCloser, result2 container.PathStat, result3 error) {
 	fake.copyFromContainerMutex.Lock()
 	defer fake.copyFromContainerMutex.Unlock()
 	fake.CopyFromContainerStub = nil
 	fake.copyFromContainerReturns = struct {
 		result1 io.ReadCloser
-		result2 types.ContainerPathStat
+		result2 container.PathStat
 		result3 error
 	}{result1, result2, result3}
 }
 
-func (fake *FakeCommonAPIClient) CopyFromContainerReturnsOnCall(i int, result1 io.ReadCloser, result2 types.ContainerPathStat, result3 error) {
+func (fake *FakeCommonAPIClient) CopyFromContainerReturnsOnCall(i int, result1 io.ReadCloser, result2 container.PathStat, result3 error) {
 	fake.copyFromContainerMutex.Lock()
 	defer fake.copyFromContainerMutex.Unlock()
 	fake.CopyFromContainerStub = nil
 	if fake.copyFromContainerReturnsOnCall == nil {
 		fake.copyFromContainerReturnsOnCall = make(map[int]struct {
 			result1 io.ReadCloser
-			result2 types.ContainerPathStat
+			result2 container.PathStat
 			result3 error
 		})
 	}
 	fake.copyFromContainerReturnsOnCall[i] = struct {
 		result1 io.ReadCloser
-		result2 types.ContainerPathStat
+		result2 container.PathStat
 		result3 error
 	}{result1, result2, result3}
 }
 
-func (fake *FakeCommonAPIClient) CopyToContainer(arg1 context.Context, arg2 string, arg3 string, arg4 io.Reader, arg5 types.CopyToContainerOptions) error {
+func (fake *FakeCommonAPIClient) CopyToContainer(arg1 context.Context, arg2 string, arg3 string, arg4 io.Reader, arg5 container.CopyToContainerOptions) error {
 	fake.copyToContainerMutex.Lock()
 	ret, specificReturn := fake.copyToContainerReturnsOnCall[len(fake.copyToContainerArgsForCall)]
 	fake.copyToContainerArgsForCall = append(fake.copyToContainerArgsForCall, struct {
@@ -4205,7 +4206,7 @@ func (fake *FakeCommonAPIClient) CopyToContainer(arg1 context.Context, arg2 stri
 		arg2 string
 		arg3 string
 		arg4 io.Reader
-		arg5 types.CopyToContainerOptions
+		arg5 container.CopyToContainerOptions
 	}{arg1, arg2, arg3, arg4, arg5})
 	fake.recordInvocation("CopyToContainer", []interface{}{arg1, arg2, arg3, arg4, arg5})
 	fake.copyToContainerMutex.Unlock()
@@ -4225,13 +4226,13 @@ func (fake *FakeCommonAPIClient) CopyToContainerCallCount() int {
 	return len(fake.copyToContainerArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) CopyToContainerCalls(stub func(context.Context, string, string, io.Reader, types.CopyToContainerOptions) error) {
+func (fake *FakeCommonAPIClient) CopyToContainerCalls(stub func(context.Context, string, string, io.Reader, container.CopyToContainerOptions) error) {
 	fake.copyToContainerMutex.Lock()
 	defer fake.copyToContainerMutex.Unlock()
 	fake.CopyToContainerStub = stub
 }
 
-func (fake *FakeCommonAPIClient) CopyToContainerArgsForCall(i int) (context.Context, string, string, io.Reader, types.CopyToContainerOptions) {
+func (fake *FakeCommonAPIClient) CopyToContainerArgsForCall(i int) (context.Context, string, string, io.Reader, container.CopyToContainerOptions) {
 	fake.copyToContainerMutex.RLock()
 	defer fake.copyToContainerMutex.RUnlock()
 	argsForCall := fake.copyToContainerArgsForCall[i]
@@ -4560,12 +4561,12 @@ func (fake *FakeCommonAPIClient) DistributionInspectReturnsOnCall(i int, result1
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) Events(arg1 context.Context, arg2 types.EventsOptions) (<-chan events.Message, <-chan error) {
+func (fake *FakeCommonAPIClient) Events(arg1 context.Context, arg2 events.ListOptions) (<-chan events.Message, <-chan error) {
 	fake.eventsMutex.Lock()
 	ret, specificReturn := fake.eventsReturnsOnCall[len(fake.eventsArgsForCall)]
 	fake.eventsArgsForCall = append(fake.eventsArgsForCall, struct {
 		arg1 context.Context
-		arg2 types.EventsOptions
+		arg2 events.ListOptions
 	}{arg1, arg2})
 	fake.recordInvocation("Events", []interface{}{arg1, arg2})
 	fake.eventsMutex.Unlock()
@@ -4585,13 +4586,13 @@ func (fake *FakeCommonAPIClient) EventsCallCount() int {
 	return len(fake.eventsArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) EventsCalls(stub func(context.Context, types.EventsOptions) (<-chan events.Message, <-chan error)) {
+func (fake *FakeCommonAPIClient) EventsCalls(stub func(context.Context, events.ListOptions) (<-chan events.Message, <-chan error)) {
 	fake.eventsMutex.Lock()
 	defer fake.eventsMutex.Unlock()
 	fake.EventsStub = stub
 }
 
-func (fake *FakeCommonAPIClient) EventsArgsForCall(i int) (context.Context, types.EventsOptions) {
+func (fake *FakeCommonAPIClient) EventsArgsForCall(i int) (context.Context, events.ListOptions) {
 	fake.eventsMutex.RLock()
 	defer fake.eventsMutex.RUnlock()
 	argsForCall := fake.eventsArgsForCall[i]
@@ -4741,13 +4742,13 @@ func (fake *FakeCommonAPIClient) ImageBuildReturnsOnCall(i int, result1 types.Im
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ImageCreate(arg1 context.Context, arg2 string, arg3 types.ImageCreateOptions) (io.ReadCloser, error) {
+func (fake *FakeCommonAPIClient) ImageCreate(arg1 context.Context, arg2 string, arg3 image.CreateOptions) (io.ReadCloser, error) {
 	fake.imageCreateMutex.Lock()
 	ret, specificReturn := fake.imageCreateReturnsOnCall[len(fake.imageCreateArgsForCall)]
 	fake.imageCreateArgsForCall = append(fake.imageCreateArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ImageCreateOptions
+		arg3 image.CreateOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ImageCreate", []interface{}{arg1, arg2, arg3})
 	fake.imageCreateMutex.Unlock()
@@ -4767,13 +4768,13 @@ func (fake *FakeCommonAPIClient) ImageCreateCallCount() int {
 	return len(fake.imageCreateArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ImageCreateCalls(stub func(context.Context, string, types.ImageCreateOptions) (io.ReadCloser, error)) {
+func (fake *FakeCommonAPIClient) ImageCreateCalls(stub func(context.Context, string, image.CreateOptions) (io.ReadCloser, error)) {
 	fake.imageCreateMutex.Lock()
 	defer fake.imageCreateMutex.Unlock()
 	fake.ImageCreateStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ImageCreateArgsForCall(i int) (context.Context, string, types.ImageCreateOptions) {
+func (fake *FakeCommonAPIClient) ImageCreateArgsForCall(i int) (context.Context, string, image.CreateOptions) {
 	fake.imageCreateMutex.RLock()
 	defer fake.imageCreateMutex.RUnlock()
 	argsForCall := fake.imageCreateArgsForCall[i]
@@ -4870,14 +4871,14 @@ func (fake *FakeCommonAPIClient) ImageHistoryReturnsOnCall(i int, result1 []imag
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ImageImport(arg1 context.Context, arg2 types.ImageImportSource, arg3 string, arg4 types.ImageImportOptions) (io.ReadCloser, error) {
+func (fake *FakeCommonAPIClient) ImageImport(arg1 context.Context, arg2 image.ImportSource, arg3 string, arg4 image.ImportOptions) (io.ReadCloser, error) {
 	fake.imageImportMutex.Lock()
 	ret, specificReturn := fake.imageImportReturnsOnCall[len(fake.imageImportArgsForCall)]
 	fake.imageImportArgsForCall = append(fake.imageImportArgsForCall, struct {
 		arg1 context.Context
-		arg2 types.ImageImportSource
+		arg2 image.ImportSource
 		arg3 string
-		arg4 types.ImageImportOptions
+		arg4 image.ImportOptions
 	}{arg1, arg2, arg3, arg4})
 	fake.recordInvocation("ImageImport", []interface{}{arg1, arg2, arg3, arg4})
 	fake.imageImportMutex.Unlock()
@@ -4897,13 +4898,13 @@ func (fake *FakeCommonAPIClient) ImageImportCallCount() int {
 	return len(fake.imageImportArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ImageImportCalls(stub func(context.Context, types.ImageImportSource, string, types.ImageImportOptions) (io.ReadCloser, error)) {
+func (fake *FakeCommonAPIClient) ImageImportCalls(stub func(context.Context, image.ImportSource, string, image.ImportOptions) (io.ReadCloser, error)) {
 	fake.imageImportMutex.Lock()
 	defer fake.imageImportMutex.Unlock()
 	fake.ImageImportStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ImageImportArgsForCall(i int) (context.Context, types.ImageImportSource, string, types.ImageImportOptions) {
+func (fake *FakeCommonAPIClient) ImageImportArgsForCall(i int) (context.Context, image.ImportSource, string, image.ImportOptions) {
 	fake.imageImportMutex.RLock()
 	defer fake.imageImportMutex.RUnlock()
 	argsForCall := fake.imageImportArgsForCall[i]
@@ -5003,12 +5004,12 @@ func (fake *FakeCommonAPIClient) ImageInspectWithRawReturnsOnCall(i int, result1
 	}{result1, result2, result3}
 }
 
-func (fake *FakeCommonAPIClient) ImageList(arg1 context.Context, arg2 types.ImageListOptions) ([]types.ImageSummary, error) {
+func (fake *FakeCommonAPIClient) ImageList(arg1 context.Context, arg2 image.ListOptions) ([]image.Summary, error) {
 	fake.imageListMutex.Lock()
 	ret, specificReturn := fake.imageListReturnsOnCall[len(fake.imageListArgsForCall)]
 	fake.imageListArgsForCall = append(fake.imageListArgsForCall, struct {
 		arg1 context.Context
-		arg2 types.ImageListOptions
+		arg2 image.ListOptions
 	}{arg1, arg2})
 	fake.recordInvocation("ImageList", []interface{}{arg1, arg2})
 	fake.imageListMutex.Unlock()
@@ -5028,46 +5029,46 @@ func (fake *FakeCommonAPIClient) ImageListCallCount() int {
 	return len(fake.imageListArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ImageListCalls(stub func(context.Context, types.ImageListOptions) ([]types.ImageSummary, error)) {
+func (fake *FakeCommonAPIClient) ImageListCalls(stub func(context.Context, image.ListOptions) ([]image.Summary, error)) {
 	fake.imageListMutex.Lock()
 	defer fake.imageListMutex.Unlock()
 	fake.ImageListStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ImageListArgsForCall(i int) (context.Context, types.ImageListOptions) {
+func (fake *FakeCommonAPIClient) ImageListArgsForCall(i int) (context.Context, image.ListOptions) {
 	fake.imageListMutex.RLock()
 	defer fake.imageListMutex.RUnlock()
 	argsForCall := fake.imageListArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCommonAPIClient) ImageListReturns(result1 []types.ImageSummary, result2 error) {
+func (fake *FakeCommonAPIClient) ImageListReturns(result1 []image.Summary, result2 error) {
 	fake.imageListMutex.Lock()
 	defer fake.imageListMutex.Unlock()
 	fake.ImageListStub = nil
 	fake.imageListReturns = struct {
-		result1 []types.ImageSummary
+		result1 []image.Summary
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ImageListReturnsOnCall(i int, result1 []types.ImageSummary, result2 error) {
+func (fake *FakeCommonAPIClient) ImageListReturnsOnCall(i int, result1 []image.Summary, result2 error) {
 	fake.imageListMutex.Lock()
 	defer fake.imageListMutex.Unlock()
 	fake.ImageListStub = nil
 	if fake.imageListReturnsOnCall == nil {
 		fake.imageListReturnsOnCall = make(map[int]struct {
-			result1 []types.ImageSummary
+			result1 []image.Summary
 			result2 error
 		})
 	}
 	fake.imageListReturnsOnCall[i] = struct {
-		result1 []types.ImageSummary
+		result1 []image.Summary
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ImageLoad(arg1 context.Context, arg2 io.Reader, arg3 bool) (types.ImageLoadResponse, error) {
+func (fake *FakeCommonAPIClient) ImageLoad(arg1 context.Context, arg2 io.Reader, arg3 bool) (image.LoadResponse, error) {
 	fake.imageLoadMutex.Lock()
 	ret, specificReturn := fake.imageLoadReturnsOnCall[len(fake.imageLoadArgsForCall)]
 	fake.imageLoadArgsForCall = append(fake.imageLoadArgsForCall, struct {
@@ -5093,7 +5094,7 @@ func (fake *FakeCommonAPIClient) ImageLoadCallCount() int {
 	return len(fake.imageLoadArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ImageLoadCalls(stub func(context.Context, io.Reader, bool) (types.ImageLoadResponse, error)) {
+func (fake *FakeCommonAPIClient) ImageLoadCalls(stub func(context.Context, io.Reader, bool) (image.LoadResponse, error)) {
 	fake.imageLoadMutex.Lock()
 	defer fake.imageLoadMutex.Unlock()
 	fake.ImageLoadStub = stub
@@ -5106,39 +5107,39 @@ func (fake *FakeCommonAPIClient) ImageLoadArgsForCall(i int) (context.Context, i
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeCommonAPIClient) ImageLoadReturns(result1 types.ImageLoadResponse, result2 error) {
+func (fake *FakeCommonAPIClient) ImageLoadReturns(result1 image.LoadResponse, result2 error) {
 	fake.imageLoadMutex.Lock()
 	defer fake.imageLoadMutex.Unlock()
 	fake.ImageLoadStub = nil
 	fake.imageLoadReturns = struct {
-		result1 types.ImageLoadResponse
+		result1 image.LoadResponse
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ImageLoadReturnsOnCall(i int, result1 types.ImageLoadResponse, result2 error) {
+func (fake *FakeCommonAPIClient) ImageLoadReturnsOnCall(i int, result1 image.LoadResponse, result2 error) {
 	fake.imageLoadMutex.Lock()
 	defer fake.imageLoadMutex.Unlock()
 	fake.ImageLoadStub = nil
 	if fake.imageLoadReturnsOnCall == nil {
 		fake.imageLoadReturnsOnCall = make(map[int]struct {
-			result1 types.ImageLoadResponse
+			result1 image.LoadResponse
 			result2 error
 		})
 	}
 	fake.imageLoadReturnsOnCall[i] = struct {
-		result1 types.ImageLoadResponse
+		result1 image.LoadResponse
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ImagePull(arg1 context.Context, arg2 string, arg3 types.ImagePullOptions) (io.ReadCloser, error) {
+func (fake *FakeCommonAPIClient) ImagePull(arg1 context.Context, arg2 string, arg3 image.PullOptions) (io.ReadCloser, error) {
 	fake.imagePullMutex.Lock()
 	ret, specificReturn := fake.imagePullReturnsOnCall[len(fake.imagePullArgsForCall)]
 	fake.imagePullArgsForCall = append(fake.imagePullArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ImagePullOptions
+		arg3 image.PullOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ImagePull", []interface{}{arg1, arg2, arg3})
 	fake.imagePullMutex.Unlock()
@@ -5158,13 +5159,13 @@ func (fake *FakeCommonAPIClient) ImagePullCallCount() int {
 	return len(fake.imagePullArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ImagePullCalls(stub func(context.Context, string, types.ImagePullOptions) (io.ReadCloser, error)) {
+func (fake *FakeCommonAPIClient) ImagePullCalls(stub func(context.Context, string, image.PullOptions) (io.ReadCloser, error)) {
 	fake.imagePullMutex.Lock()
 	defer fake.imagePullMutex.Unlock()
 	fake.ImagePullStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ImagePullArgsForCall(i int) (context.Context, string, types.ImagePullOptions) {
+func (fake *FakeCommonAPIClient) ImagePullArgsForCall(i int) (context.Context, string, image.PullOptions) {
 	fake.imagePullMutex.RLock()
 	defer fake.imagePullMutex.RUnlock()
 	argsForCall := fake.imagePullArgsForCall[i]
@@ -5197,13 +5198,13 @@ func (fake *FakeCommonAPIClient) ImagePullReturnsOnCall(i int, result1 io.ReadCl
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ImagePush(arg1 context.Context, arg2 string, arg3 types.ImagePushOptions) (io.ReadCloser, error) {
+func (fake *FakeCommonAPIClient) ImagePush(arg1 context.Context, arg2 string, arg3 image.PushOptions) (io.ReadCloser, error) {
 	fake.imagePushMutex.Lock()
 	ret, specificReturn := fake.imagePushReturnsOnCall[len(fake.imagePushArgsForCall)]
 	fake.imagePushArgsForCall = append(fake.imagePushArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ImagePushOptions
+		arg3 image.PushOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ImagePush", []interface{}{arg1, arg2, arg3})
 	fake.imagePushMutex.Unlock()
@@ -5223,13 +5224,13 @@ func (fake *FakeCommonAPIClient) ImagePushCallCount() int {
 	return len(fake.imagePushArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ImagePushCalls(stub func(context.Context, string, types.ImagePushOptions) (io.ReadCloser, error)) {
+func (fake *FakeCommonAPIClient) ImagePushCalls(stub func(context.Context, string, image.PushOptions) (io.ReadCloser, error)) {
 	fake.imagePushMutex.Lock()
 	defer fake.imagePushMutex.Unlock()
 	fake.ImagePushStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ImagePushArgsForCall(i int) (context.Context, string, types.ImagePushOptions) {
+func (fake *FakeCommonAPIClient) ImagePushArgsForCall(i int) (context.Context, string, image.PushOptions) {
 	fake.imagePushMutex.RLock()
 	defer fake.imagePushMutex.RUnlock()
 	argsForCall := fake.imagePushArgsForCall[i]
@@ -5262,13 +5263,13 @@ func (fake *FakeCommonAPIClient) ImagePushReturnsOnCall(i int, result1 io.ReadCl
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ImageRemove(arg1 context.Context, arg2 string, arg3 types.ImageRemoveOptions) ([]types.ImageDeleteResponseItem, error) {
+func (fake *FakeCommonAPIClient) ImageRemove(arg1 context.Context, arg2 string, arg3 image.RemoveOptions) ([]image.DeleteResponse, error) {
 	fake.imageRemoveMutex.Lock()
 	ret, specificReturn := fake.imageRemoveReturnsOnCall[len(fake.imageRemoveArgsForCall)]
 	fake.imageRemoveArgsForCall = append(fake.imageRemoveArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ImageRemoveOptions
+		arg3 image.RemoveOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ImageRemove", []interface{}{arg1, arg2, arg3})
 	fake.imageRemoveMutex.Unlock()
@@ -5288,41 +5289,41 @@ func (fake *FakeCommonAPIClient) ImageRemoveCallCount() int {
 	return len(fake.imageRemoveArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ImageRemoveCalls(stub func(context.Context, string, types.ImageRemoveOptions) ([]types.ImageDeleteResponseItem, error)) {
+func (fake *FakeCommonAPIClient) ImageRemoveCalls(stub func(context.Context, string, image.RemoveOptions) ([]image.DeleteResponse, error)) {
 	fake.imageRemoveMutex.Lock()
 	defer fake.imageRemoveMutex.Unlock()
 	fake.ImageRemoveStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ImageRemoveArgsForCall(i int) (context.Context, string, types.ImageRemoveOptions) {
+func (fake *FakeCommonAPIClient) ImageRemoveArgsForCall(i int) (context.Context, string, image.RemoveOptions) {
 	fake.imageRemoveMutex.RLock()
 	defer fake.imageRemoveMutex.RUnlock()
 	argsForCall := fake.imageRemoveArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeCommonAPIClient) ImageRemoveReturns(result1 []types.ImageDeleteResponseItem, result2 error) {
+func (fake *FakeCommonAPIClient) ImageRemoveReturns(result1 []image.DeleteResponse, result2 error) {
 	fake.imageRemoveMutex.Lock()
 	defer fake.imageRemoveMutex.Unlock()
 	fake.ImageRemoveStub = nil
 	fake.imageRemoveReturns = struct {
-		result1 []types.ImageDeleteResponseItem
+		result1 []image.DeleteResponse
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ImageRemoveReturnsOnCall(i int, result1 []types.ImageDeleteResponseItem, result2 error) {
+func (fake *FakeCommonAPIClient) ImageRemoveReturnsOnCall(i int, result1 []image.DeleteResponse, result2 error) {
 	fake.imageRemoveMutex.Lock()
 	defer fake.imageRemoveMutex.Unlock()
 	fake.ImageRemoveStub = nil
 	if fake.imageRemoveReturnsOnCall == nil {
 		fake.imageRemoveReturnsOnCall = make(map[int]struct {
-			result1 []types.ImageDeleteResponseItem
+			result1 []image.DeleteResponse
 			result2 error
 		})
 	}
 	fake.imageRemoveReturnsOnCall[i] = struct {
-		result1 []types.ImageDeleteResponseItem
+		result1 []image.DeleteResponse
 		result2 error
 	}{result1, result2}
 }
@@ -5396,13 +5397,13 @@ func (fake *FakeCommonAPIClient) ImageSaveReturnsOnCall(i int, result1 io.ReadCl
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ImageSearch(arg1 context.Context, arg2 string, arg3 types.ImageSearchOptions) ([]registry.SearchResult, error) {
+func (fake *FakeCommonAPIClient) ImageSearch(arg1 context.Context, arg2 string, arg3 registry.SearchOptions) ([]registry.SearchResult, error) {
 	fake.imageSearchMutex.Lock()
 	ret, specificReturn := fake.imageSearchReturnsOnCall[len(fake.imageSearchArgsForCall)]
 	fake.imageSearchArgsForCall = append(fake.imageSearchArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ImageSearchOptions
+		arg3 registry.SearchOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ImageSearch", []interface{}{arg1, arg2, arg3})
 	fake.imageSearchMutex.Unlock()
@@ -5422,13 +5423,13 @@ func (fake *FakeCommonAPIClient) ImageSearchCallCount() int {
 	return len(fake.imageSearchArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ImageSearchCalls(stub func(context.Context, string, types.ImageSearchOptions) ([]registry.SearchResult, error)) {
+func (fake *FakeCommonAPIClient) ImageSearchCalls(stub func(context.Context, string, registry.SearchOptions) ([]registry.SearchResult, error)) {
 	fake.imageSearchMutex.Lock()
 	defer fake.imageSearchMutex.Unlock()
 	fake.ImageSearchStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ImageSearchArgsForCall(i int) (context.Context, string, types.ImageSearchOptions) {
+func (fake *FakeCommonAPIClient) ImageSearchArgsForCall(i int) (context.Context, string, registry.SearchOptions) {
 	fake.imageSearchMutex.RLock()
 	defer fake.imageSearchMutex.RUnlock()
 	argsForCall := fake.imageSearchArgsForCall[i]
@@ -5523,7 +5524,7 @@ func (fake *FakeCommonAPIClient) ImageTagReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeCommonAPIClient) ImagesPrune(arg1 context.Context, arg2 filters.Args) (types.ImagesPruneReport, error) {
+func (fake *FakeCommonAPIClient) ImagesPrune(arg1 context.Context, arg2 filters.Args) (image.PruneReport, error) {
 	fake.imagesPruneMutex.Lock()
 	ret, specificReturn := fake.imagesPruneReturnsOnCall[len(fake.imagesPruneArgsForCall)]
 	fake.imagesPruneArgsForCall = append(fake.imagesPruneArgsForCall, struct {
@@ -5548,7 +5549,7 @@ func (fake *FakeCommonAPIClient) ImagesPruneCallCount() int {
 	return len(fake.imagesPruneArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ImagesPruneCalls(stub func(context.Context, filters.Args) (types.ImagesPruneReport, error)) {
+func (fake *FakeCommonAPIClient) ImagesPruneCalls(stub func(context.Context, filters.Args) (image.PruneReport, error)) {
 	fake.imagesPruneMutex.Lock()
 	defer fake.imagesPruneMutex.Unlock()
 	fake.ImagesPruneStub = stub
@@ -5561,33 +5562,33 @@ func (fake *FakeCommonAPIClient) ImagesPruneArgsForCall(i int) (context.Context,
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCommonAPIClient) ImagesPruneReturns(result1 types.ImagesPruneReport, result2 error) {
+func (fake *FakeCommonAPIClient) ImagesPruneReturns(result1 image.PruneReport, result2 error) {
 	fake.imagesPruneMutex.Lock()
 	defer fake.imagesPruneMutex.Unlock()
 	fake.ImagesPruneStub = nil
 	fake.imagesPruneReturns = struct {
-		result1 types.ImagesPruneReport
+		result1 image.PruneReport
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ImagesPruneReturnsOnCall(i int, result1 types.ImagesPruneReport, result2 error) {
+func (fake *FakeCommonAPIClient) ImagesPruneReturnsOnCall(i int, result1 image.PruneReport, result2 error) {
 	fake.imagesPruneMutex.Lock()
 	defer fake.imagesPruneMutex.Unlock()
 	fake.ImagesPruneStub = nil
 	if fake.imagesPruneReturnsOnCall == nil {
 		fake.imagesPruneReturnsOnCall = make(map[int]struct {
-			result1 types.ImagesPruneReport
+			result1 image.PruneReport
 			result2 error
 		})
 	}
 	fake.imagesPruneReturnsOnCall[i] = struct {
-		result1 types.ImagesPruneReport
+		result1 image.PruneReport
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) Info(arg1 context.Context) (types.Info, error) {
+func (fake *FakeCommonAPIClient) Info(arg1 context.Context) (system.Info, error) {
 	fake.infoMutex.Lock()
 	ret, specificReturn := fake.infoReturnsOnCall[len(fake.infoArgsForCall)]
 	fake.infoArgsForCall = append(fake.infoArgsForCall, struct {
@@ -5611,7 +5612,7 @@ func (fake *FakeCommonAPIClient) InfoCallCount() int {
 	return len(fake.infoArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) InfoCalls(stub func(context.Context) (types.Info, error)) {
+func (fake *FakeCommonAPIClient) InfoCalls(stub func(context.Context) (system.Info, error)) {
 	fake.infoMutex.Lock()
 	defer fake.infoMutex.Unlock()
 	fake.InfoStub = stub
@@ -5624,28 +5625,28 @@ func (fake *FakeCommonAPIClient) InfoArgsForCall(i int) context.Context {
 	return argsForCall.arg1
 }
 
-func (fake *FakeCommonAPIClient) InfoReturns(result1 types.Info, result2 error) {
+func (fake *FakeCommonAPIClient) InfoReturns(result1 system.Info, result2 error) {
 	fake.infoMutex.Lock()
 	defer fake.infoMutex.Unlock()
 	fake.InfoStub = nil
 	fake.infoReturns = struct {
-		result1 types.Info
+		result1 system.Info
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) InfoReturnsOnCall(i int, result1 types.Info, result2 error) {
+func (fake *FakeCommonAPIClient) InfoReturnsOnCall(i int, result1 system.Info, result2 error) {
 	fake.infoMutex.Lock()
 	defer fake.infoMutex.Unlock()
 	fake.InfoStub = nil
 	if fake.infoReturnsOnCall == nil {
 		fake.infoReturnsOnCall = make(map[int]struct {
-			result1 types.Info
+			result1 system.Info
 			result2 error
 		})
 	}
 	fake.infoReturnsOnCall[i] = struct {
-		result1 types.Info
+		result1 system.Info
 		result2 error
 	}{result1, result2}
 }
@@ -5775,13 +5776,13 @@ func (fake *FakeCommonAPIClient) NetworkConnectReturnsOnCall(i int, result1 erro
 	}{result1}
 }
 
-func (fake *FakeCommonAPIClient) NetworkCreate(arg1 context.Context, arg2 string, arg3 types.NetworkCreate) (types.NetworkCreateResponse, error) {
+func (fake *FakeCommonAPIClient) NetworkCreate(arg1 context.Context, arg2 string, arg3 network.CreateOptions) (network.CreateResponse, error) {
 	fake.networkCreateMutex.Lock()
 	ret, specificReturn := fake.networkCreateReturnsOnCall[len(fake.networkCreateArgsForCall)]
 	fake.networkCreateArgsForCall = append(fake.networkCreateArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.NetworkCreate
+		arg3 network.CreateOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("NetworkCreate", []interface{}{arg1, arg2, arg3})
 	fake.networkCreateMutex.Unlock()
@@ -5801,41 +5802,41 @@ func (fake *FakeCommonAPIClient) NetworkCreateCallCount() int {
 	return len(fake.networkCreateArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) NetworkCreateCalls(stub func(context.Context, string, types.NetworkCreate) (types.NetworkCreateResponse, error)) {
+func (fake *FakeCommonAPIClient) NetworkCreateCalls(stub func(context.Context, string, network.CreateOptions) (network.CreateResponse, error)) {
 	fake.networkCreateMutex.Lock()
 	defer fake.networkCreateMutex.Unlock()
 	fake.NetworkCreateStub = stub
 }
 
-func (fake *FakeCommonAPIClient) NetworkCreateArgsForCall(i int) (context.Context, string, types.NetworkCreate) {
+func (fake *FakeCommonAPIClient) NetworkCreateArgsForCall(i int) (context.Context, string, network.CreateOptions) {
 	fake.networkCreateMutex.RLock()
 	defer fake.networkCreateMutex.RUnlock()
 	argsForCall := fake.networkCreateArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeCommonAPIClient) NetworkCreateReturns(result1 types.NetworkCreateResponse, result2 error) {
+func (fake *FakeCommonAPIClient) NetworkCreateReturns(result1 network.CreateResponse, result2 error) {
 	fake.networkCreateMutex.Lock()
 	defer fake.networkCreateMutex.Unlock()
 	fake.NetworkCreateStub = nil
 	fake.networkCreateReturns = struct {
-		result1 types.NetworkCreateResponse
+		result1 network.CreateResponse
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) NetworkCreateReturnsOnCall(i int, result1 types.NetworkCreateResponse, result2 error) {
+func (fake *FakeCommonAPIClient) NetworkCreateReturnsOnCall(i int, result1 network.CreateResponse, result2 error) {
 	fake.networkCreateMutex.Lock()
 	defer fake.networkCreateMutex.Unlock()
 	fake.NetworkCreateStub = nil
 	if fake.networkCreateReturnsOnCall == nil {
 		fake.networkCreateReturnsOnCall = make(map[int]struct {
-			result1 types.NetworkCreateResponse
+			result1 network.CreateResponse
 			result2 error
 		})
 	}
 	fake.networkCreateReturnsOnCall[i] = struct {
-		result1 types.NetworkCreateResponse
+		result1 network.CreateResponse
 		result2 error
 	}{result1, result2}
 }
@@ -5903,13 +5904,13 @@ func (fake *FakeCommonAPIClient) NetworkDisconnectReturnsOnCall(i int, result1 e
 	}{result1}
 }
 
-func (fake *FakeCommonAPIClient) NetworkInspect(arg1 context.Context, arg2 string, arg3 types.NetworkInspectOptions) (types.NetworkResource, error) {
+func (fake *FakeCommonAPIClient) NetworkInspect(arg1 context.Context, arg2 string, arg3 network.InspectOptions) (network.Inspect, error) {
 	fake.networkInspectMutex.Lock()
 	ret, specificReturn := fake.networkInspectReturnsOnCall[len(fake.networkInspectArgsForCall)]
 	fake.networkInspectArgsForCall = append(fake.networkInspectArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.NetworkInspectOptions
+		arg3 network.InspectOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("NetworkInspect", []interface{}{arg1, arg2, arg3})
 	fake.networkInspectMutex.Unlock()
@@ -5929,52 +5930,52 @@ func (fake *FakeCommonAPIClient) NetworkInspectCallCount() int {
 	return len(fake.networkInspectArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) NetworkInspectCalls(stub func(context.Context, string, types.NetworkInspectOptions) (types.NetworkResource, error)) {
+func (fake *FakeCommonAPIClient) NetworkInspectCalls(stub func(context.Context, string, network.InspectOptions) (network.Inspect, error)) {
 	fake.networkInspectMutex.Lock()
 	defer fake.networkInspectMutex.Unlock()
 	fake.NetworkInspectStub = stub
 }
 
-func (fake *FakeCommonAPIClient) NetworkInspectArgsForCall(i int) (context.Context, string, types.NetworkInspectOptions) {
+func (fake *FakeCommonAPIClient) NetworkInspectArgsForCall(i int) (context.Context, string, network.InspectOptions) {
 	fake.networkInspectMutex.RLock()
 	defer fake.networkInspectMutex.RUnlock()
 	argsForCall := fake.networkInspectArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeCommonAPIClient) NetworkInspectReturns(result1 types.NetworkResource, result2 error) {
+func (fake *FakeCommonAPIClient) NetworkInspectReturns(result1 network.Inspect, result2 error) {
 	fake.networkInspectMutex.Lock()
 	defer fake.networkInspectMutex.Unlock()
 	fake.NetworkInspectStub = nil
 	fake.networkInspectReturns = struct {
-		result1 types.NetworkResource
+		result1 network.Inspect
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) NetworkInspectReturnsOnCall(i int, result1 types.NetworkResource, result2 error) {
+func (fake *FakeCommonAPIClient) NetworkInspectReturnsOnCall(i int, result1 network.Inspect, result2 error) {
 	fake.networkInspectMutex.Lock()
 	defer fake.networkInspectMutex.Unlock()
 	fake.NetworkInspectStub = nil
 	if fake.networkInspectReturnsOnCall == nil {
 		fake.networkInspectReturnsOnCall = make(map[int]struct {
-			result1 types.NetworkResource
+			result1 network.Inspect
 			result2 error
 		})
 	}
 	fake.networkInspectReturnsOnCall[i] = struct {
-		result1 types.NetworkResource
+		result1 network.Inspect
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) NetworkInspectWithRaw(arg1 context.Context, arg2 string, arg3 types.NetworkInspectOptions) (types.NetworkResource, []byte, error) {
+func (fake *FakeCommonAPIClient) NetworkInspectWithRaw(arg1 context.Context, arg2 string, arg3 network.InspectOptions) (network.Inspect, []byte, error) {
 	fake.networkInspectWithRawMutex.Lock()
 	ret, specificReturn := fake.networkInspectWithRawReturnsOnCall[len(fake.networkInspectWithRawArgsForCall)]
 	fake.networkInspectWithRawArgsForCall = append(fake.networkInspectWithRawArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.NetworkInspectOptions
+		arg3 network.InspectOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("NetworkInspectWithRaw", []interface{}{arg1, arg2, arg3})
 	fake.networkInspectWithRawMutex.Unlock()
@@ -5994,54 +5995,54 @@ func (fake *FakeCommonAPIClient) NetworkInspectWithRawCallCount() int {
 	return len(fake.networkInspectWithRawArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) NetworkInspectWithRawCalls(stub func(context.Context, string, types.NetworkInspectOptions) (types.NetworkResource, []byte, error)) {
+func (fake *FakeCommonAPIClient) NetworkInspectWithRawCalls(stub func(context.Context, string, network.InspectOptions) (network.Inspect, []byte, error)) {
 	fake.networkInspectWithRawMutex.Lock()
 	defer fake.networkInspectWithRawMutex.Unlock()
 	fake.NetworkInspectWithRawStub = stub
 }
 
-func (fake *FakeCommonAPIClient) NetworkInspectWithRawArgsForCall(i int) (context.Context, string, types.NetworkInspectOptions) {
+func (fake *FakeCommonAPIClient) NetworkInspectWithRawArgsForCall(i int) (context.Context, string, network.InspectOptions) {
 	fake.networkInspectWithRawMutex.RLock()
 	defer fake.networkInspectWithRawMutex.RUnlock()
 	argsForCall := fake.networkInspectWithRawArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeCommonAPIClient) NetworkInspectWithRawReturns(result1 types.NetworkResource, result2 []byte, result3 error) {
+func (fake *FakeCommonAPIClient) NetworkInspectWithRawReturns(result1 network.Inspect, result2 []byte, result3 error) {
 	fake.networkInspectWithRawMutex.Lock()
 	defer fake.networkInspectWithRawMutex.Unlock()
 	fake.NetworkInspectWithRawStub = nil
 	fake.networkInspectWithRawReturns = struct {
-		result1 types.NetworkResource
+		result1 network.Inspect
 		result2 []byte
 		result3 error
 	}{result1, result2, result3}
 }
 
-func (fake *FakeCommonAPIClient) NetworkInspectWithRawReturnsOnCall(i int, result1 types.NetworkResource, result2 []byte, result3 error) {
+func (fake *FakeCommonAPIClient) NetworkInspectWithRawReturnsOnCall(i int, result1 network.Inspect, result2 []byte, result3 error) {
 	fake.networkInspectWithRawMutex.Lock()
 	defer fake.networkInspectWithRawMutex.Unlock()
 	fake.NetworkInspectWithRawStub = nil
 	if fake.networkInspectWithRawReturnsOnCall == nil {
 		fake.networkInspectWithRawReturnsOnCall = make(map[int]struct {
-			result1 types.NetworkResource
+			result1 network.Inspect
 			result2 []byte
 			result3 error
 		})
 	}
 	fake.networkInspectWithRawReturnsOnCall[i] = struct {
-		result1 types.NetworkResource
+		result1 network.Inspect
 		result2 []byte
 		result3 error
 	}{result1, result2, result3}
 }
 
-func (fake *FakeCommonAPIClient) NetworkList(arg1 context.Context, arg2 types.NetworkListOptions) ([]types.NetworkResource, error) {
+func (fake *FakeCommonAPIClient) NetworkList(arg1 context.Context, arg2 network.ListOptions) ([]network.Summary, error) {
 	fake.networkListMutex.Lock()
 	ret, specificReturn := fake.networkListReturnsOnCall[len(fake.networkListArgsForCall)]
 	fake.networkListArgsForCall = append(fake.networkListArgsForCall, struct {
 		arg1 context.Context
-		arg2 types.NetworkListOptions
+		arg2 network.ListOptions
 	}{arg1, arg2})
 	fake.recordInvocation("NetworkList", []interface{}{arg1, arg2})
 	fake.networkListMutex.Unlock()
@@ -6061,41 +6062,41 @@ func (fake *FakeCommonAPIClient) NetworkListCallCount() int {
 	return len(fake.networkListArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) NetworkListCalls(stub func(context.Context, types.NetworkListOptions) ([]types.NetworkResource, error)) {
+func (fake *FakeCommonAPIClient) NetworkListCalls(stub func(context.Context, network.ListOptions) ([]network.Summary, error)) {
 	fake.networkListMutex.Lock()
 	defer fake.networkListMutex.Unlock()
 	fake.NetworkListStub = stub
 }
 
-func (fake *FakeCommonAPIClient) NetworkListArgsForCall(i int) (context.Context, types.NetworkListOptions) {
+func (fake *FakeCommonAPIClient) NetworkListArgsForCall(i int) (context.Context, network.ListOptions) {
 	fake.networkListMutex.RLock()
 	defer fake.networkListMutex.RUnlock()
 	argsForCall := fake.networkListArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCommonAPIClient) NetworkListReturns(result1 []types.NetworkResource, result2 error) {
+func (fake *FakeCommonAPIClient) NetworkListReturns(result1 []network.Summary, result2 error) {
 	fake.networkListMutex.Lock()
 	defer fake.networkListMutex.Unlock()
 	fake.NetworkListStub = nil
 	fake.networkListReturns = struct {
-		result1 []types.NetworkResource
+		result1 []network.Summary
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) NetworkListReturnsOnCall(i int, result1 []types.NetworkResource, result2 error) {
+func (fake *FakeCommonAPIClient) NetworkListReturnsOnCall(i int, result1 []network.Summary, result2 error) {
 	fake.networkListMutex.Lock()
 	defer fake.networkListMutex.Unlock()
 	fake.NetworkListStub = nil
 	if fake.networkListReturnsOnCall == nil {
 		fake.networkListReturnsOnCall = make(map[int]struct {
-			result1 []types.NetworkResource
+			result1 []network.Summary
 			result2 error
 		})
 	}
 	fake.networkListReturnsOnCall[i] = struct {
-		result1 []types.NetworkResource
+		result1 []network.Summary
 		result2 error
 	}{result1, result2}
 }
@@ -6161,7 +6162,7 @@ func (fake *FakeCommonAPIClient) NetworkRemoveReturnsOnCall(i int, result1 error
 	}{result1}
 }
 
-func (fake *FakeCommonAPIClient) NetworksPrune(arg1 context.Context, arg2 filters.Args) (types.NetworksPruneReport, error) {
+func (fake *FakeCommonAPIClient) NetworksPrune(arg1 context.Context, arg2 filters.Args) (network.PruneReport, error) {
 	fake.networksPruneMutex.Lock()
 	ret, specificReturn := fake.networksPruneReturnsOnCall[len(fake.networksPruneArgsForCall)]
 	fake.networksPruneArgsForCall = append(fake.networksPruneArgsForCall, struct {
@@ -6186,7 +6187,7 @@ func (fake *FakeCommonAPIClient) NetworksPruneCallCount() int {
 	return len(fake.networksPruneArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) NetworksPruneCalls(stub func(context.Context, filters.Args) (types.NetworksPruneReport, error)) {
+func (fake *FakeCommonAPIClient) NetworksPruneCalls(stub func(context.Context, filters.Args) (network.PruneReport, error)) {
 	fake.networksPruneMutex.Lock()
 	defer fake.networksPruneMutex.Unlock()
 	fake.NetworksPruneStub = stub
@@ -6199,28 +6200,28 @@ func (fake *FakeCommonAPIClient) NetworksPruneArgsForCall(i int) (context.Contex
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCommonAPIClient) NetworksPruneReturns(result1 types.NetworksPruneReport, result2 error) {
+func (fake *FakeCommonAPIClient) NetworksPruneReturns(result1 network.PruneReport, result2 error) {
 	fake.networksPruneMutex.Lock()
 	defer fake.networksPruneMutex.Unlock()
 	fake.NetworksPruneStub = nil
 	fake.networksPruneReturns = struct {
-		result1 types.NetworksPruneReport
+		result1 network.PruneReport
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) NetworksPruneReturnsOnCall(i int, result1 types.NetworksPruneReport, result2 error) {
+func (fake *FakeCommonAPIClient) NetworksPruneReturnsOnCall(i int, result1 network.PruneReport, result2 error) {
 	fake.networksPruneMutex.Lock()
 	defer fake.networksPruneMutex.Unlock()
 	fake.NetworksPruneStub = nil
 	if fake.networksPruneReturnsOnCall == nil {
 		fake.networksPruneReturnsOnCall = make(map[int]struct {
-			result1 types.NetworksPruneReport
+			result1 network.PruneReport
 			result2 error
 		})
 	}
 	fake.networksPruneReturnsOnCall[i] = struct {
-		result1 types.NetworksPruneReport
+		result1 network.PruneReport
 		result2 error
 	}{result1, result2}
 }
@@ -7631,7 +7632,7 @@ func (fake *FakeCommonAPIClient) ServerVersionReturnsOnCall(i int, result1 types
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ServiceCreate(arg1 context.Context, arg2 swarm.ServiceSpec, arg3 types.ServiceCreateOptions) (types.ServiceCreateResponse, error) {
+func (fake *FakeCommonAPIClient) ServiceCreate(arg1 context.Context, arg2 swarm.ServiceSpec, arg3 types.ServiceCreateOptions) (swarm.ServiceCreateResponse, error) {
 	fake.serviceCreateMutex.Lock()
 	ret, specificReturn := fake.serviceCreateReturnsOnCall[len(fake.serviceCreateArgsForCall)]
 	fake.serviceCreateArgsForCall = append(fake.serviceCreateArgsForCall, struct {
@@ -7657,7 +7658,7 @@ func (fake *FakeCommonAPIClient) ServiceCreateCallCount() int {
 	return len(fake.serviceCreateArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ServiceCreateCalls(stub func(context.Context, swarm.ServiceSpec, types.ServiceCreateOptions) (types.ServiceCreateResponse, error)) {
+func (fake *FakeCommonAPIClient) ServiceCreateCalls(stub func(context.Context, swarm.ServiceSpec, types.ServiceCreateOptions) (swarm.ServiceCreateResponse, error)) {
 	fake.serviceCreateMutex.Lock()
 	defer fake.serviceCreateMutex.Unlock()
 	fake.ServiceCreateStub = stub
@@ -7670,28 +7671,28 @@ func (fake *FakeCommonAPIClient) ServiceCreateArgsForCall(i int) (context.Contex
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeCommonAPIClient) ServiceCreateReturns(result1 types.ServiceCreateResponse, result2 error) {
+func (fake *FakeCommonAPIClient) ServiceCreateReturns(result1 swarm.ServiceCreateResponse, result2 error) {
 	fake.serviceCreateMutex.Lock()
 	defer fake.serviceCreateMutex.Unlock()
 	fake.ServiceCreateStub = nil
 	fake.serviceCreateReturns = struct {
-		result1 types.ServiceCreateResponse
+		result1 swarm.ServiceCreateResponse
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ServiceCreateReturnsOnCall(i int, result1 types.ServiceCreateResponse, result2 error) {
+func (fake *FakeCommonAPIClient) ServiceCreateReturnsOnCall(i int, result1 swarm.ServiceCreateResponse, result2 error) {
 	fake.serviceCreateMutex.Lock()
 	defer fake.serviceCreateMutex.Unlock()
 	fake.ServiceCreateStub = nil
 	if fake.serviceCreateReturnsOnCall == nil {
 		fake.serviceCreateReturnsOnCall = make(map[int]struct {
-			result1 types.ServiceCreateResponse
+			result1 swarm.ServiceCreateResponse
 			result2 error
 		})
 	}
 	fake.serviceCreateReturnsOnCall[i] = struct {
-		result1 types.ServiceCreateResponse
+		result1 swarm.ServiceCreateResponse
 		result2 error
 	}{result1, result2}
 }
@@ -7828,13 +7829,13 @@ func (fake *FakeCommonAPIClient) ServiceListReturnsOnCall(i int, result1 []swarm
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ServiceLogs(arg1 context.Context, arg2 string, arg3 types.ContainerLogsOptions) (io.ReadCloser, error) {
+func (fake *FakeCommonAPIClient) ServiceLogs(arg1 context.Context, arg2 string, arg3 container.LogsOptions) (io.ReadCloser, error) {
 	fake.serviceLogsMutex.Lock()
 	ret, specificReturn := fake.serviceLogsReturnsOnCall[len(fake.serviceLogsArgsForCall)]
 	fake.serviceLogsArgsForCall = append(fake.serviceLogsArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ContainerLogsOptions
+		arg3 container.LogsOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("ServiceLogs", []interface{}{arg1, arg2, arg3})
 	fake.serviceLogsMutex.Unlock()
@@ -7854,13 +7855,13 @@ func (fake *FakeCommonAPIClient) ServiceLogsCallCount() int {
 	return len(fake.serviceLogsArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ServiceLogsCalls(stub func(context.Context, string, types.ContainerLogsOptions) (io.ReadCloser, error)) {
+func (fake *FakeCommonAPIClient) ServiceLogsCalls(stub func(context.Context, string, container.LogsOptions) (io.ReadCloser, error)) {
 	fake.serviceLogsMutex.Lock()
 	defer fake.serviceLogsMutex.Unlock()
 	fake.ServiceLogsStub = stub
 }
 
-func (fake *FakeCommonAPIClient) ServiceLogsArgsForCall(i int) (context.Context, string, types.ContainerLogsOptions) {
+func (fake *FakeCommonAPIClient) ServiceLogsArgsForCall(i int) (context.Context, string, container.LogsOptions) {
 	fake.serviceLogsMutex.RLock()
 	defer fake.serviceLogsMutex.RUnlock()
 	argsForCall := fake.serviceLogsArgsForCall[i]
@@ -7954,7 +7955,7 @@ func (fake *FakeCommonAPIClient) ServiceRemoveReturnsOnCall(i int, result1 error
 	}{result1}
 }
 
-func (fake *FakeCommonAPIClient) ServiceUpdate(arg1 context.Context, arg2 string, arg3 swarm.Version, arg4 swarm.ServiceSpec, arg5 types.ServiceUpdateOptions) (types.ServiceUpdateResponse, error) {
+func (fake *FakeCommonAPIClient) ServiceUpdate(arg1 context.Context, arg2 string, arg3 swarm.Version, arg4 swarm.ServiceSpec, arg5 types.ServiceUpdateOptions) (swarm.ServiceUpdateResponse, error) {
 	fake.serviceUpdateMutex.Lock()
 	ret, specificReturn := fake.serviceUpdateReturnsOnCall[len(fake.serviceUpdateArgsForCall)]
 	fake.serviceUpdateArgsForCall = append(fake.serviceUpdateArgsForCall, struct {
@@ -7982,7 +7983,7 @@ func (fake *FakeCommonAPIClient) ServiceUpdateCallCount() int {
 	return len(fake.serviceUpdateArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) ServiceUpdateCalls(stub func(context.Context, string, swarm.Version, swarm.ServiceSpec, types.ServiceUpdateOptions) (types.ServiceUpdateResponse, error)) {
+func (fake *FakeCommonAPIClient) ServiceUpdateCalls(stub func(context.Context, string, swarm.Version, swarm.ServiceSpec, types.ServiceUpdateOptions) (swarm.ServiceUpdateResponse, error)) {
 	fake.serviceUpdateMutex.Lock()
 	defer fake.serviceUpdateMutex.Unlock()
 	fake.ServiceUpdateStub = stub
@@ -7995,28 +7996,28 @@ func (fake *FakeCommonAPIClient) ServiceUpdateArgsForCall(i int) (context.Contex
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5
 }
 
-func (fake *FakeCommonAPIClient) ServiceUpdateReturns(result1 types.ServiceUpdateResponse, result2 error) {
+func (fake *FakeCommonAPIClient) ServiceUpdateReturns(result1 swarm.ServiceUpdateResponse, result2 error) {
 	fake.serviceUpdateMutex.Lock()
 	defer fake.serviceUpdateMutex.Unlock()
 	fake.ServiceUpdateStub = nil
 	fake.serviceUpdateReturns = struct {
-		result1 types.ServiceUpdateResponse
+		result1 swarm.ServiceUpdateResponse
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) ServiceUpdateReturnsOnCall(i int, result1 types.ServiceUpdateResponse, result2 error) {
+func (fake *FakeCommonAPIClient) ServiceUpdateReturnsOnCall(i int, result1 swarm.ServiceUpdateResponse, result2 error) {
 	fake.serviceUpdateMutex.Lock()
 	defer fake.serviceUpdateMutex.Unlock()
 	fake.ServiceUpdateStub = nil
 	if fake.serviceUpdateReturnsOnCall == nil {
 		fake.serviceUpdateReturnsOnCall = make(map[int]struct {
-			result1 types.ServiceUpdateResponse
+			result1 swarm.ServiceUpdateResponse
 			result2 error
 		})
 	}
 	fake.serviceUpdateReturnsOnCall[i] = struct {
-		result1 types.ServiceUpdateResponse
+		result1 swarm.ServiceUpdateResponse
 		result2 error
 	}{result1, result2}
 }
@@ -8588,13 +8589,13 @@ func (fake *FakeCommonAPIClient) TaskListReturnsOnCall(i int, result1 []swarm.Ta
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) TaskLogs(arg1 context.Context, arg2 string, arg3 types.ContainerLogsOptions) (io.ReadCloser, error) {
+func (fake *FakeCommonAPIClient) TaskLogs(arg1 context.Context, arg2 string, arg3 container.LogsOptions) (io.ReadCloser, error) {
 	fake.taskLogsMutex.Lock()
 	ret, specificReturn := fake.taskLogsReturnsOnCall[len(fake.taskLogsArgsForCall)]
 	fake.taskLogsArgsForCall = append(fake.taskLogsArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 types.ContainerLogsOptions
+		arg3 container.LogsOptions
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("TaskLogs", []interface{}{arg1, arg2, arg3})
 	fake.taskLogsMutex.Unlock()
@@ -8614,13 +8615,13 @@ func (fake *FakeCommonAPIClient) TaskLogsCallCount() int {
 	return len(fake.taskLogsArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) TaskLogsCalls(stub func(context.Context, string, types.ContainerLogsOptions) (io.ReadCloser, error)) {
+func (fake *FakeCommonAPIClient) TaskLogsCalls(stub func(context.Context, string, container.LogsOptions) (io.ReadCloser, error)) {
 	fake.taskLogsMutex.Lock()
 	defer fake.taskLogsMutex.Unlock()
 	fake.TaskLogsStub = stub
 }
 
-func (fake *FakeCommonAPIClient) TaskLogsArgsForCall(i int) (context.Context, string, types.ContainerLogsOptions) {
+func (fake *FakeCommonAPIClient) TaskLogsArgsForCall(i int) (context.Context, string, container.LogsOptions) {
 	fake.taskLogsMutex.RLock()
 	defer fake.taskLogsMutex.RUnlock()
 	argsForCall := fake.taskLogsArgsForCall[i]
@@ -9037,7 +9038,7 @@ func (fake *FakeCommonAPIClient) VolumeUpdateReturnsOnCall(i int, result1 error)
 	}{result1}
 }
 
-func (fake *FakeCommonAPIClient) VolumesPrune(arg1 context.Context, arg2 filters.Args) (types.VolumesPruneReport, error) {
+func (fake *FakeCommonAPIClient) VolumesPrune(arg1 context.Context, arg2 filters.Args) (volume.PruneReport, error) {
 	fake.volumesPruneMutex.Lock()
 	ret, specificReturn := fake.volumesPruneReturnsOnCall[len(fake.volumesPruneArgsForCall)]
 	fake.volumesPruneArgsForCall = append(fake.volumesPruneArgsForCall, struct {
@@ -9062,7 +9063,7 @@ func (fake *FakeCommonAPIClient) VolumesPruneCallCount() int {
 	return len(fake.volumesPruneArgsForCall)
 }
 
-func (fake *FakeCommonAPIClient) VolumesPruneCalls(stub func(context.Context, filters.Args) (types.VolumesPruneReport, error)) {
+func (fake *FakeCommonAPIClient) VolumesPruneCalls(stub func(context.Context, filters.Args) (volume.PruneReport, error)) {
 	fake.volumesPruneMutex.Lock()
 	defer fake.volumesPruneMutex.Unlock()
 	fake.VolumesPruneStub = stub
@@ -9075,28 +9076,28 @@ func (fake *FakeCommonAPIClient) VolumesPruneArgsForCall(i int) (context.Context
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCommonAPIClient) VolumesPruneReturns(result1 types.VolumesPruneReport, result2 error) {
+func (fake *FakeCommonAPIClient) VolumesPruneReturns(result1 volume.PruneReport, result2 error) {
 	fake.volumesPruneMutex.Lock()
 	defer fake.volumesPruneMutex.Unlock()
 	fake.VolumesPruneStub = nil
 	fake.volumesPruneReturns = struct {
-		result1 types.VolumesPruneReport
+		result1 volume.PruneReport
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeCommonAPIClient) VolumesPruneReturnsOnCall(i int, result1 types.VolumesPruneReport, result2 error) {
+func (fake *FakeCommonAPIClient) VolumesPruneReturnsOnCall(i int, result1 volume.PruneReport, result2 error) {
 	fake.volumesPruneMutex.Lock()
 	defer fake.volumesPruneMutex.Unlock()
 	fake.VolumesPruneStub = nil
 	if fake.volumesPruneReturnsOnCall == nil {
 		fake.volumesPruneReturnsOnCall = make(map[int]struct {
-			result1 types.VolumesPruneReport
+			result1 volume.PruneReport
 			result2 error
 		})
 	}
 	fake.volumesPruneReturnsOnCall[i] = struct {
-		result1 types.VolumesPruneReport
+		result1 volume.PruneReport
 		result2 error
 	}{result1, result2}
 }

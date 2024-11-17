@@ -33,7 +33,6 @@ var _ = Context("constructHostConfig", func() {
 		}
 
 		expectedHostConfig := &container.HostConfig{
-			AutoRemove: true,
 			Mounts: []mount.Mount{
 				{
 					Type:        mount.TypeBind,

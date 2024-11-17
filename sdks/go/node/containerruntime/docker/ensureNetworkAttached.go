@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/docker/docker/api/types"
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/opctl/opctl/sdks/go/model"
 	uuid "github.com/satori/go.uuid"
@@ -20,6 +19,7 @@ import (
 	"strconv"
 
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/glinton/ping"
 	"golang.zx2c4.com/wireguard/conn"
@@ -58,10 +58,10 @@ func ensureNetworkAttached(
 	//
 	// note: This will likely be brittle because It's relying on undocumented docker for mac internals.
 	if runtime.GOOS == "darwin" {
-		networkResource, networkInspectErr := dockerClient.NetworkInspect(
+		networkInspect, networkInspectErr := dockerClient.NetworkInspect(
 			ctx,
 			networkName,
-			types.NetworkInspectOptions{},
+			network.InspectOptions{},
 		)
 		if networkInspectErr != nil {
 			return fmt.Errorf("unable to inspect network: %w", networkInspectErr)
@@ -75,7 +75,7 @@ func ensureNetworkAttached(
 				}
 			}()
 
-			err := wgUp(dockerClient, networkResource, imagePullCreds)
+			err := wgUp(dockerClient, networkInspect, imagePullCreds)
 			if err != nil {
 				fmt.Println(err.Error())
 			}
@@ -87,7 +87,7 @@ func ensureNetworkAttached(
 
 func wgUp(
 	dockerClient dockerClientPkg.CommonAPIClient,
-	network types.NetworkResource,
+	network network.Inspect,
 	imagePullCreds *model.Creds,
 ) error {
 
