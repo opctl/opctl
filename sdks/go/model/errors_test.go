@@ -38,12 +38,12 @@ var _ = Context("ErrDataProviderAuthorization", func() {
 		})
 	})
 })
-var _ = Context("ErrDataRefResolution", func() {
+var _ = Context("ErrDataNotFoundResolution", func() {
 	Context("Error", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			expectedResult := "not found"
-			objectUnderTest := ErrDataRefResolution{}
+			objectUnderTest := ErrDataNotFoundResolution{}
 
 			/* act */
 			actualResult := objectUnderTest.Error()

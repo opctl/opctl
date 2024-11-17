@@ -145,7 +145,7 @@ type Core interface {
 	// expected errs:
 	//  - ErrDataProviderAuthentication on authentication failure
 	//  - ErrDataProviderAuthorization on authorization failure
-	//  - ErrDataRefResolution on resolution failure
+	//  - ErrDataNotFoundResolution on resolution failure
 	ResolveData(
 		ctx context.Context,
 		dataRef string,

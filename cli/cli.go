@@ -12,6 +12,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
+	"github.com/opctl/opctl/cli/internal/opspath"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
 	"golang.org/x/term"
@@ -178,9 +179,18 @@ func newCli(
 	cli.Command("ls", "List operations", func(lsCmd *mow.Cmd) {
 		const dirRefArgName = "DIR_REF"
 		lsCmd.Spec = fmt.Sprintf("[%v]", dirRefArgName)
+
+		defaultDirRef, err := opspath.GetLocal()
+		if err != nil {
+			exitWith(
+				"",
+				err,
+			)
+		}
+
 		dirRef := lsCmd.String(mow.StringArg{
 			Name:   dirRefArgName,
-			Value:  "",
+			Value:  defaultDirRef,
 			Desc:   "Reference to dir ops will be listed from",
 			EnvVar: "OPCTL_LS_DIR_REF",
 		})
@@ -282,7 +292,7 @@ func newCli(
 		opCmd.Command("create", "Create an op", func(createCmd *mow.Cmd) {
 			path := createCmd.String(mow.StringOpt{
 				Name:   "path",
-				Value:  opspec.DotOpspecDirName,
+				Value:  model.DotOpspecDirName,
 				Desc:   "Path the op will be created at",
 				EnvVar: "OPCTL_CREATE_PATH",
 			})
@@ -314,7 +324,7 @@ func newCli(
 		opCmd.Command("install", "Install an op", func(installCmd *mow.Cmd) {
 			path := installCmd.String(mow.StringOpt{
 				Name:   "path",
-				Value:  opspec.DotOpspecDirName,
+				Value:  model.DotOpspecDirName,
 				Desc:   "Path the op will be installed at",
 				EnvVar: "OPCTL_INSTALL_PATH",
 			})
@@ -407,7 +417,7 @@ func newCli(
 		argFile := runCmd.String(mow.StringOpt{
 			Name:   "arg-file",
 			Desc:   "Read in a file of args in yml format",
-			Value:  filepath.Join(opspec.DotOpspecDirName, "args.yml"),
+			Value:  filepath.Join(model.DotOpspecDirName, "args.yml"),
 			EnvVar: "OPCTL_RUN_ARG_FILE",
 		})
 		noProgress := runCmd.Bool(mow.BoolOpt{

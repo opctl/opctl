@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.68] - 2024-03-17
+
+### Deprecated
+
+- `.opspec` directory; use `.opctl` instead
+
 ## [0.1.67] - 2024-03-08
 
 ### Fixed

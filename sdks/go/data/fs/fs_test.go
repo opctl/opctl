@@ -77,16 +77,14 @@ var _ = Context("_fs", func() {
 						panic(err)
 					}
 
-					providedDataRef := "testdata/file1.txt"
+					providedDataRef := filepath.Join(basePath, "testdata/file1.txt")
 
 					expectedHandle := newHandle(filepath.Join(
 						basePath,
 						providedDataRef,
 					))
 
-					objectUnderTest := _fs{
-						basePaths: []string{basePath},
-					}
+					objectUnderTest := _fs{}
 
 					/* act */
 					actualHandle, actualError := objectUnderTest.TryResolve(

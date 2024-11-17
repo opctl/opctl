@@ -13,7 +13,7 @@ import (
 // expected errs:
 //   - ErrDataProviderAuthentication on authentication failure
 //   - ErrDataProviderAuthorization on authorization failure
-//   - ErrDataRefResolution on resolution failure
+//   - ErrDataNotFoundResolution on resolution failure
 func Resolve(
 	ctx context.Context,
 	dataRef string,
@@ -32,5 +32,5 @@ func Resolve(
 		}
 	}
 
-	return nil, fmt.Errorf("%w op \"%s\": %w", model.ErrDataUnableToResolve{}, dataRef, agg)
+	return nil, fmt.Errorf("%w \"%s\": %w", model.ErrDataUnableToResolve{}, dataRef, agg)
 }

@@ -15,7 +15,7 @@ import (
 // expected errs:
 //   - ErrDataProviderAuthentication on authentication failure
 //   - ErrDataProviderAuthorization on authorization failure
-//   - ErrDataRefResolution on resolution failure
+//   - ErrDataNotFoundResolution on resolution failure
 func (cr core) ResolveData(
 	ctx context.Context,
 	dataRef string,

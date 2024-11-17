@@ -186,7 +186,7 @@ var _ = Context("GetData", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(MatchError(model.ErrDataRefResolution{}))
+				Expect(actualErr).To(MatchError(model.ErrDataNotFoundResolution{}))
 
 			})
 

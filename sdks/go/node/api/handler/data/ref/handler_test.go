@@ -189,11 +189,11 @@ var _ = Context("Handler", func() {
 						Expect(providedHTTPResp.Header().Get("WWW-Authenticate")).To(Equal(fmt.Sprintf(`Basic realm="%s"`, dataRefSegment1)))
 					})
 				})
-				Context("err is ErrDataRefResolution", func() {
+				Context("err is ErrDataNotFoundResolution", func() {
 					It("should return expected result", func() {
 						/* arrange */
 						fakeCore := new(nodeFakes.FakeCore)
-						fakeCore.ResolveDataReturns(nil, model.ErrDataRefResolution{})
+						fakeCore.ResolveDataReturns(nil, model.ErrDataNotFoundResolution{})
 
 						objectUnderTest := _handler{
 							node: fakeCore,

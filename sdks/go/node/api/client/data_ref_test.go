@@ -178,7 +178,7 @@ var _ = Context("ListDescendants", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(model.ErrDataRefResolution{}))
+				Expect(actualErr).To(Equal(model.ErrDataNotFoundResolution{}))
 
 			})
 

@@ -53,7 +53,7 @@ type Node interface {
 	// expected errs:
 	//  - ErrDataProviderAuthentication on authentication failure
 	//  - ErrDataProviderAuthorization on authorization failure
-	//  - ErrDataRefResolution on resolution failure
+	//  - ErrDataNotFoundResolution on resolution failure
 	GetData(
 		ctx context.Context,
 		req model.GetDataReq,
@@ -67,7 +67,7 @@ type Node interface {
 	// expected errs:
 	//  - ErrDataProviderAuthentication on authentication failure
 	//  - ErrDataProviderAuthorization on authorization failure
-	//  - ErrDataRefResolution on resolution failure
+	//  - ErrDataNotFoundResolution on resolution failure
 	ListDescendants(
 		ctx context.Context,
 		req model.ListDescendantsReq,

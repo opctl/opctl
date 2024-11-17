@@ -2,6 +2,7 @@ package op
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"path/filepath"
 	"regexp"
@@ -60,16 +61,36 @@ func Interpret(
 		}
 		opPath = *dirValue.Dir
 	} else {
-		opHandle, err := data.Resolve(
-			ctx,
-			opCallSpec.Ref,
-			fs.New(parentOpPath, filepath.Dir(parentOpPath)),
-			git.New(filepath.Join(dataDirPath, "ops"), pkgPullCreds),
-		)
-		if err != nil {
+		dataRefs := []string{}
+		if filepath.IsAbs(opCallSpec.Ref) {
+			dataRefs = append(dataRefs, opCallSpec.Ref)
+		} else {
+			dataRefs = append(
+				dataRefs,
+				opCallSpec.Ref,
+				parentOpPath+"/"+opCallSpec.Ref,
+				filepath.Dir(parentOpPath)+"/"+opCallSpec.Ref,
+			)
+		}
+
+		for _, dataRef := range dataRefs {
+			opHandle, err := data.Resolve(
+				ctx,
+				dataRef,
+				fs.New(),
+				git.New(filepath.Join(dataDirPath, "ops"), pkgPullCreds),
+			)
+			if err == nil {
+				opPath = *opHandle.Path()
+				break
+			}
+
+			if errors.As(err, &model.ErrDataNotFoundResolution{}) {
+				continue
+			}
+
 			return nil, err
 		}
-		opPath = *opHandle.Path()
 	}
 
 	opFile, err := opfile.Get(

@@ -20,7 +20,7 @@ func (this core) StartOp(
 	opHandle, err := data.Resolve(
 		ctx,
 		req.Op.Ref,
-		fs.New(this.dataCachePath),
+		fs.New(),
 		git.New(this.dataCachePath, req.Op.PullCreds),
 	)
 	if err != nil {

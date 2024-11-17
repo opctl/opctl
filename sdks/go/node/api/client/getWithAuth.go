@@ -58,7 +58,7 @@ func (c apiClient) getWithAuth(ctx context.Context, path string, pullCreds *mode
 			}
 			return nil, fmt.Errorf("%w: %s", model.ErrDataProviderAuthorization{}, body)
 		case http.StatusNotFound:
-			return nil, model.ErrDataRefResolution{}
+			return nil, model.ErrDataNotFoundResolution{}
 		default:
 			body, err := readBody()
 			if err != nil {
