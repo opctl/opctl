@@ -6,7 +6,7 @@ require (
 	github.com/abiosoft/colima v0.3.4
 	github.com/appdataspec/sdk-golang v0.0.0-20170917062448-0c0ade7a92f7
 	github.com/blang/semver v3.5.1+incompatible
-	github.com/containers/image/v5 v5.30.0
+	github.com/containers/image/v5 v5.30.1
 	github.com/dgraph-io/badger/v4 v4.1.0
 	github.com/distribution/reference v0.5.0
 	github.com/docker/distribution v2.8.3+incompatible
