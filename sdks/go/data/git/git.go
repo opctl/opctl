@@ -40,21 +40,25 @@ func (gp _git) TryResolve(
 	ctx context.Context,
 	dataRef string,
 ) (model.DataHandle, error) {
-	// attempt to resolve within singleFlight.Group to ensure concurrent resolves don't race
-	handle, err, _ := resolveSingleFlightGroup.Do(
-		dataRef,
-		func() (interface{}, error) {
-			repoPath := filepath.Join(gp.basePath, dataRef)
-			handle := newHandle(repoPath, dataRef)
+	repoRef, err := parseRef(dataRef)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", model.ErrDataGitInvalidRef{}, err)
+	}
 
+	repoPath := repoRef.ToPath(gp.basePath)
+
+	// attempt to resolve within singleFlight.Group to ensure concurrent resolves don't race
+	if _, err, _ := resolveSingleFlightGroup.Do(
+		repoPath,
+		func() (interface{}, error) {
 			// we'll mark complete clones in case we get interrupted
-			completeMarkerPath := filepath.Join(gp.basePath, fmt.Sprintf(".%x", sha1.Sum([]byte(dataRef))))
+			completeMarkerPath := filepath.Join(gp.basePath, fmt.Sprintf(".%x", sha1.Sum([]byte(repoPath))))
 
 			_, err := os.Stat(completeMarkerPath)
 			if err == nil {
 				// complete clone found
-				return handle, nil
-			} else if !os.IsNotExist(err) {
+				return nil, nil
+			} else if os.IsNotExist(err) {
 				// incomplete clone; blow it away
 				if err := os.RemoveAll(repoPath); err != nil {
 					return nil, err
@@ -62,19 +66,20 @@ func (gp _git) TryResolve(
 			}
 
 			// attempt clone
-			if err := Clone(ctx, gp.basePath, dataRef, gp.pullCreds); err != nil {
+			if err := Clone(ctx, repoPath, repoRef, gp.pullCreds); err != nil {
 				return nil, err
 			}
 
 			// mark complete
-			f, err := os.Create(completeMarkerPath)
-			f.Close()
+			if err := os.WriteFile(completeMarkerPath, nil, 0755); err != nil {
+				return nil, err
+			}
 
-			return handle, err
+			return nil, nil
 		},
-	)
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
-	return handle.(model.DataHandle), nil
+
+	return newHandle(filepath.Join(gp.basePath, dataRef), dataRef), nil
 }
