@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.60] - 2024-11-24
+
+### Fixed
+
+- Fix a regression in the 'opctl op install' command introduced in 0.1.48 which caused it to be much slower than previous
+- Fix a potential race condition encountered when pulling/using multiple remote ops from the same repo at once
+
 ## [0.1.59] - 2024-11-17
 
 ### Fixed
