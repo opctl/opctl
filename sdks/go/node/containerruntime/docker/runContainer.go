@@ -141,7 +141,8 @@ func (cr _runContainer) RunContainer(
 
 	isGpuSupported, err := isGpuSupported(ctx, cr.dockerClient, req.Image.PullCreds)
 	if nil != err {
-		return nil, err
+		// Failure to determine GPU support just really means no, GPU is not supported.
+		isGpuSupported = false
 	}
 
 	// create container
