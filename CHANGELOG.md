@@ -8,7 +8,8 @@ accordance with
 
 ### Fixed
 
-- Put in a short term fix so that when `pullCreds` is used on Linux against something other than `docker.io`, things don't error out any more.
+- Put in a short term fix so that when `pullCreds` is used on Linux against
+something other than `docker.io`, things don't error out any more.
 
 ## [0.1.60] - 2024-11-24
 
