@@ -7,7 +7,6 @@ import (
 	"github.com/docker/docker/api/types/network"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/containerruntime/docker/internal/fakes"
 )
 
@@ -27,7 +26,6 @@ var _ = Context("ensureNetworkExists", func() {
 			ensureNetworkExists(
 				context.Background(),
 				fakeDockerClient,
-				&model.Creds{},
 				providedContainerID,
 			)
 
@@ -54,7 +52,6 @@ var _ = Context("ensureNetworkExists", func() {
 				actualError := ensureNetworkExists(
 					context.Background(),
 					fakeDockerClient,
-					&model.Creds{},
 					"",
 				)
 
@@ -71,7 +68,6 @@ var _ = Context("ensureNetworkExists", func() {
 				actualError := ensureNetworkExists(
 					context.Background(),
 					fakeDockerClient,
-					&model.Creds{},
 					"",
 				)
 

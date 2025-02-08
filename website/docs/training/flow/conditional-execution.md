@@ -18,7 +18,7 @@ Opctl supports using [if](../../reference/opspec/op-directory/op/call/index.md#i
         - eq: [true, $(shouldRunContainer)]
       container:
         cmd: [echo, 'hello!']
-        image: { ref: alpine }
+        image: { ref: ghcr.io/linuxcontainers/alpine }
     ```
 1. When prompted, enter `true` or `false`
 1. Observe you only see the container run and `hello!` logged when you enter `true`.

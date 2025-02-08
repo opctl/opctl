@@ -44,7 +44,7 @@ Number typed values are coercible to:
 name: numAsFile
 run:
   container:
-    image: { ref: alpine }
+    image: { ref: ghcr.io/linuxcontainers/alpine }
     cmd:
     - sh
     - -ce

@@ -48,7 +48,7 @@ run:
           serial:
             - container:
                 image:
-                  ref: alpine
+                  ref: ghcr.io/linuxcontainers/alpine
                 cmd:
                   - tar
                   - -czf
