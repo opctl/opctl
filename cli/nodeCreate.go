@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/opctl/opctl/cli/internal/clicolorer"
+	"github.com/opctl/opctl/cli/internal/euid0"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 	"github.com/opctl/opctl/cli/internal/pidfile"
 	core "github.com/opctl/opctl/sdks/go/node"
@@ -22,7 +23,7 @@ func nodeCreate(
 	ctx context.Context,
 	nodeConfig local.NodeConfig,
 ) error {
-	if err := ensureEuid0(); err != nil {
+	if err := euid0.Ensure(); err != nil {
 		return err
 	}
 
