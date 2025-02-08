@@ -34,7 +34,7 @@ var _ = Context("Interpret", func() {
 			ChildCallCallSpec: &model.CallSpec{
 				Container: &model.ContainerCallSpec{
 					Image: &model.ContainerCallImageSpec{
-						Ref: "alpine",
+						Ref: "ghcr.io/linuxcontainers/alpine",
 					},
 				},
 			},

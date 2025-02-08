@@ -19,7 +19,7 @@ Opctl supports using [serialLoop](../../reference/opspec/op-directory/op/call/se
             run:
               container:
                 cmd: [echo, "parallelLoop| index: $(index), value: $(value)"]
-                image: { ref: alpine }
+                image: { ref: ghcr.io/linuxcontainers/alpine }
         - serialLoop:
             range: [1,2,3]
             vars:
@@ -28,7 +28,7 @@ Opctl supports using [serialLoop](../../reference/opspec/op-directory/op/call/se
             run:
               container:
                 cmd: [echo, "serialLoop| index: $(index), value: $(value)"]
-                image: { ref: alpine }
+                image: { ref: ghcr.io/linuxcontainers/alpine }
     ```
 1. Observe:
    1. for the `parallelLoop` statement, containers for all values in `range` are run in parallel (all at once without order)

@@ -20,7 +20,7 @@ If multiple containers have the same [name](../../reference/opspec/op-directory/
             # some syntactically valid hostname
             name: nginx.demo.wow
         - container:
-            image: { ref: alpine }
+            image: { ref: ghcr.io/linuxcontainers/alpine }
             cmd:
             - sh
             - -ce

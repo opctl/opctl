@@ -8,13 +8,11 @@ import (
 
 	"github.com/docker/docker/api/types/network"
 	dockerClientPkg "github.com/docker/docker/client"
-	"github.com/opctl/opctl/sdks/go/model"
 )
 
 func ensureNetworkExists(
 	ctx context.Context,
 	dockerClient dockerClientPkg.CommonAPIClient,
-	imagePullCreds *model.Creds,
 	networkName string,
 ) error {
 	// always attempt to create to avoid races
@@ -33,6 +31,5 @@ func ensureNetworkExists(
 	return ensureNetworkAttached(
 		ctx,
 		dockerClient,
-		imagePullCreds,
 	)
 }

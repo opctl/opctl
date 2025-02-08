@@ -61,7 +61,6 @@ func (cr _runContainer) RunContainer(
 	if err := ensureNetworkExists(
 		ctx,
 		cr.dockerClient,
-		req.Image.PullCreds,
 		networkName,
 	); err != nil {
 		return nil, err
