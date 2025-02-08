@@ -50,7 +50,6 @@ var (
 func ensureNetworkAttached(
 	ctx context.Context,
 	dockerClient dockerClientPkg.CommonAPIClient,
-	imagePullCreds *model.Creds,
 ) error {
 
 	// Routes to container IPs do not exist on docker for mac. This is inconsistent with linux docker
@@ -75,7 +74,7 @@ func ensureNetworkAttached(
 				}
 			}()
 
-			err := wgUp(dockerClient, networkInspect, imagePullCreds)
+			err := wgUp(dockerClient, networkInspect)
 			if err != nil {
 				fmt.Println(err.Error())
 			}
@@ -88,7 +87,6 @@ func ensureNetworkAttached(
 func wgUp(
 	dockerClient dockerClientPkg.CommonAPIClient,
 	network network.Inspect,
-	imagePullCreds *model.Creds,
 ) error {
 
 	if hostPrivateKey == nil {
@@ -127,7 +125,6 @@ func wgUp(
 		if err := setupVm(
 			ctx,
 			dockerClient,
-			imagePullCreds,
 			listenPort,
 			hostPeerIp,
 			vmPeerIp,
@@ -337,7 +334,6 @@ func getLowestTunIndex(
 func setupVm(
 	ctx context.Context,
 	dockerClient dockerClientPkg.CommonAPIClient,
-	imagePullCreds *model.Creds,
 	serverPort int,
 	hostPeerIp string,
 	vmPeerIp string,
@@ -350,8 +346,7 @@ func setupVm(
 		ctx,
 		&model.ContainerCall{
 			Image: &model.ContainerCallImage{
-				Ref:       &imageRef,
-				PullCreds: imagePullCreds,
+				Ref: &imageRef,
 			},
 		},
 		dockerClient,

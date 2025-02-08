@@ -7,5 +7,5 @@ inputs:
           enum: [2]
 run:
   container:
-    image: { ref: alpine }
+    image: { ref: ghcr.io/linuxcontainers/alpine }
     cmd: [echo]

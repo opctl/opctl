@@ -2,4 +2,4 @@ name: interpret
 run:
   container:
     image:
-      ref: alpine
+      ref: ghcr.io/linuxcontainers/alpine

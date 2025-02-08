@@ -3,6 +3,6 @@ run:
   name: string
   container:
     image:
-      ref: alpine
+      ref: ghcr.io/linuxcontainers/alpine
     cmd:
       - echo
