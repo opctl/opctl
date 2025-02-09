@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/opctl/opctl/cli/internal/euid0"
 	"github.com/opctl/opctl/sdks/go/node"
@@ -26,8 +27,9 @@ func (np nodeProvider) CreateNodeIfNotExists(
 		return nil, err
 	}
 
+	tstCtx, _ := context.WithTimeout(ctx, time.Second)
 	// check if node API reachable
-	if err := apiClientNode.Liveness(ctx); err == nil {
+	if err := apiClientNode.Liveness(tstCtx); err == nil {
 		return apiClientNode, nil
 	}
 

@@ -32,7 +32,7 @@ import (
 func constructAPIClient(
 ) client.Client {
 	// get client
-	nodeURL, err := url.Parse("http://localhost:42224/api")
+	nodeURL, err := url.Parse("http://127.0.42.224/api")
 	if err != nil {
 		panic(err)
 	}

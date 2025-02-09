@@ -1,9 +1,9 @@
-## `--api-listen-address` or `OPCTL_API_LISTEN_ADDRESS` *default: 127.0.0.1:42224*
+## `--api-listen-address` or `OPCTL_API_LISTEN_ADDRESS` *default: 127.0.42.224:80*
 To specify the HOST:PORT on which the opctl API server will listen, include a `--api-listen-address` or set an `OPCTL_API_LISTEN_ADDRESS` env var.
 
 ### Examples
 ```sh
-opctl --api-listen-address 0.0.0.0:42224
+opctl --api-listen-address 127.0.0.1:8080
 ```
 
 ## `--container-runtime` or `OPCTL_CONTAINER_RUNTIME` *default: docker*

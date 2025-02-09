@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/opctl/opctl/cli/internal/clicolorer"
@@ -25,6 +26,18 @@ func nodeCreate(
 ) error {
 	if err := euid0.Ensure(); err != nil {
 		return err
+	}
+
+	if strings.HasPrefix(nodeConfig.APIListenAddress, "127.") {
+		if err := addLoopbackIP(nodeConfig.APIListenAddress); err != nil {
+			return err
+		}
+	}
+
+	if strings.HasPrefix(nodeConfig.DNSListenAddress, "127.") {
+		if err := addLoopbackIP(nodeConfig.DNSListenAddress); err != nil {
+			return err
+		}
 	}
 
 	cliColorer := clicolorer.New()

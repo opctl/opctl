@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.64] - 2024-02-09
+
+### Changed
+
+- Make dedicated loopback IP the default opctl node binding address, to remove any possibility of port conflicts
+
 ## [0.1.63] - 2024-02-08
 
 ### Added

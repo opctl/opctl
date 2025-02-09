@@ -18,7 +18,6 @@ var _ = Context("CreateNodeIfNotExists", func() {
 		nodeProvider, err := New(NodeConfig{
 			ContainerRuntime: "docker",
 			DataDir:          dataDir,
-			APIListenAddress: "localhost:42224",
 		})
 		if err != nil {
 			panic(err)

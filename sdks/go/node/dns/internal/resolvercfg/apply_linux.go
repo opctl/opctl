@@ -13,17 +13,8 @@ var etcResolvConfPath = "/etc/resolv.conf"
 func Apply(
 	ctx context.Context,
 	domain,
-	nsIPAddress,
-	nsPort string,
+	nsIPAddress string,
 ) error {
-	if nsPort != "53" {
-		return fmt.Errorf(
-			"%s:%s invalid; linux DNS resolver requires servers listen on port 53",
-			nsIPAddress,
-			nsPort,
-		)
-	}
-
 	rc, err := os.ReadFile(etcResolvConfPath)
 	if err != nil {
 		return err

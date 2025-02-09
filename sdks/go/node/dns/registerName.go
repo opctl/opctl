@@ -25,6 +25,5 @@ func RegisterName(
 		ctx,
 		nameParts[len(nameParts)-1],
 		nsIPAddress,
-		nsPort,
 	)
 }

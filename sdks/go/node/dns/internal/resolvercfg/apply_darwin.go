@@ -15,8 +15,7 @@ var resolverDir = "/etc/resolver"
 func Apply(
 	ctx context.Context,
 	domain,
-	nsIPAddress,
-	nsPort string,
+	nsIPAddress string,
 ) error {
 	var buf bytes.Buffer
 	buf.WriteString(
@@ -32,9 +31,8 @@ func Apply(
 
 	buf.WriteString(
 		fmt.Sprintf(
-			"nameserver %s.%s\n",
+			"nameserver %s\n",
 			nsIPAddress,
-			nsPort,
 		),
 	)
 

@@ -36,8 +36,8 @@ import {
   opStart
 } from '@opctl/sdk/dist/api/client'
 
-// opctl api available from nodes via localhost:42224/api
-const apiBaseUrl = 'localhost:42224/api'
+// by default, opctl node API available at 127.0.42.224/api
+const apiBaseUrl = '127.0.42.224/api'
 
 // get the liveness of the api
 await livenessGet(

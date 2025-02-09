@@ -26,7 +26,7 @@ import TabItem from '@theme/TabItem';
             ports:
                 # expose to other containers
                 - name: http
-                containerPort: 42224
+                containerPort: 80
                 protocol: TCP
             securityContext:
                 privileged: true

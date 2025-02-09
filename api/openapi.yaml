@@ -1,6 +1,6 @@
 openapi: 3.0.0
 servers:
-  - url: 'localhost:42224'
+  - url: '127.0.42.224'
     variables: {}
     description: Local opctl node bound to default port
 info:

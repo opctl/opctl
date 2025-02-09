@@ -77,7 +77,7 @@ On macOS, you can debug exit signal handling by sending an interrupt to the unde
 
 ## Node debugging
 
-Ops are run in a "node" running as an external process, which means debugging the CLI directly doesn't catch most of the logic. To debug this external process, run `opctl node kill` to kill the current node (attached to port 42224), then use the VSCode "Run and debug an opctl node" run configuration to spin up a new node with the debugger attached or debug the CLI command "opctl node create".
+Ops are run in a "node" running as an external process, which means debugging the CLI directly doesn't catch most of the logic. To debug this external process, run `opctl node kill` to kill the current node, then use the VSCode "Run and debug an opctl node" run configuration to spin up a new node with the debugger attached or debug the CLI command "opctl node create".
 
 ## Tests
 

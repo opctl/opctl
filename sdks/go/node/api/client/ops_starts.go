@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"path"
+	"strings"
 
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/urltemplates"
@@ -20,7 +21,7 @@ func (c apiClient) StartOp(
 ) (string, error) {
 
 	// if remote node; need to embed local file/dir args
-	if c.baseURL.Hostname() != "localhost" && c.baseURL.Hostname() != "127.0.0.1" {
+	if c.baseURL.Hostname() != "localhost" && !strings.HasPrefix(c.baseURL.Hostname(), "127.") {
 		err := embedLocalFilesAndDirs(req.Args)
 		if err != nil {
 			return "", err

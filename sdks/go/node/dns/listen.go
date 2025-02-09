@@ -3,6 +3,7 @@ package dns
 import (
 	"context"
 	"net"
+	"runtime"
 	"time"
 
 	miekgdns "github.com/miekg/dns"
@@ -10,7 +11,6 @@ import (
 
 var (
 	nsIPAddress = ""
-	nsPort      = ""
 )
 
 /*
@@ -23,7 +23,8 @@ func Listen(
 ) error {
 
 	var err error
-	nsIPAddress, nsPort, err = net.SplitHostPort(address)
+	// var nsPort string
+	nsIPAddress, _, err = net.SplitHostPort(address)
 	if err != nil {
 		return err
 	}
@@ -32,6 +33,11 @@ func Listen(
 		Addr:    address,
 		Handler: newHandler(),
 		Net:     "udp",
+	}
+
+	if runtime.GOOS == "darwin" {
+		// on Mac OS, mDNSResponder binds to *:53. This is a workaround
+		dnsServer.ReusePort = true
 	}
 
 	go func() {
