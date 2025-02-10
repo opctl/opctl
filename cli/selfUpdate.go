@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/blang/semver"
+	"github.com/opctl/opctl/cli/internal/euid0"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 	"github.com/rhysd/go-github-selfupdate/selfupdate"
 )
@@ -13,6 +14,10 @@ func selfUpdate(
 	ctx context.Context,
 	nodeConfig local.NodeConfig,
 ) (string, error) {
+	if err := euid0.Ensure(); err != nil {
+		return "", err
+	}
+
 	v := semver.MustParse(version)
 	latest, err := selfupdate.UpdateSelf(v, "opctl/opctl")
 	if err != nil {
