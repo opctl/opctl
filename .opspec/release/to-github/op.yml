@@ -36,7 +36,7 @@ run:
           name: v$(latestRelease.version)
           isPrerelease: $(latestRelease.isPrerelease)
         outputs:
-          id: $(releaseId)
+          release: $(githubRelease)
     - parallelLoop:
         range:
           - darwin-amd64
@@ -48,7 +48,7 @@ run:
           serial:
             - container:
                 image:
-                  ref: alpine
+                  ref: ghcr.io/linuxcontainers/alpine
                 cmd:
                   - tar
                   - -czf
@@ -61,7 +61,7 @@ run:
                 ref: github.com/opspec-pkgs/github.release.upload#2.0.0
                 inputs:
                   asset: $(opctlTgz)
-                  id: $(releaseId)
+                  id: $(githubRelease.id)
                   accessToken: $(githubAccessToken)
                   name: opctl-$(target).tgz
                   owner: opctl

@@ -19,8 +19,8 @@ run:
   # run a container
   container:
 
-    # use image resolvable via reference alpine:3.6
-    image: { ref: 'alpine:3.6' }
+    # use alpine:3.6 image from github container registry
+    image: { ref: 'ghcr.io/linuxcontainers/alpine:3.6' }
 
     # invoke echo w/ arg "hello world"
     cmd: [ echo, "hello world" ]

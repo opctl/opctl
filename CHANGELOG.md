@@ -4,6 +4,42 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.65] - 2024-02-10
+
+### Added
+
+- Automatic handling of mDNSResponder port conflict on OSX
+
+### Fixed
+
+- Binding opctl DNS to a non-standard port (e.g. 54)
+
+## [0.1.64] - 2024-02-10
+
+### Added
+
+- Leverage native privilege escalation handling for self-update
+
+## [0.1.63] - 2024-02-08
+
+### Added
+
+- Native privilege escalation handling (i.e. no more calling with sudo)
+
+## [0.1.62] - 2024-02-05
+
+### Fixed
+
+- Put in a short term fix so that when `pullCreds` is used on Linux against
+something other than `docker.io`, things don't error out any more.
+
+## [0.1.60] - 2024-11-24
+
+### Fixed
+
+- Fix a regression in the 'opctl op install' command introduced in 0.1.48 which caused it to be much slower than previous
+- Fix a potential race condition encountered when pulling/using multiple remote ops from the same repo at once
+
 ## [0.1.59] - 2024-11-17
 
 ### Fixed

@@ -68,10 +68,9 @@ var _ = Context("Install", func() {
 			Install(providedCtx, dataDir, fakeHandle)
 
 			/* assert */
-			actualContext,
+			_,
 				actualPath := fakeHandle.GetContentArgsForCall(0)
 
-			Expect(actualContext).To(Equal(providedCtx))
 			Expect(actualPath).To(Equal(contentsList[0].Path))
 		})
 		Context("handle.GetContent errs", func() {

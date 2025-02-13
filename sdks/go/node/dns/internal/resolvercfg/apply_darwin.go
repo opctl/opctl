@@ -32,11 +32,19 @@ func Apply(
 
 	buf.WriteString(
 		fmt.Sprintf(
-			"nameserver %s.%s\n",
+			"nameserver %s\n",
 			nsIPAddress,
-			nsPort,
 		),
 	)
+
+	if nsPort != "53" {
+		buf.WriteString(
+			fmt.Sprintf(
+				"port %s\n",
+				nsPort,
+			),
+		)
+	}
 
 	buf.WriteString(
 		"nameserver 8.8.8.8\n",
