@@ -22,21 +22,14 @@ import (
 //   - ErrDataProviderAuthorization on authorization failure
 func Clone(
 	ctx context.Context,
-	path string,
-	dataRef string,
+	repoPath string,
+	repoRef *ref,
 	authOpts *model.Creds,
 ) error {
 
-	parsedPkgRef, err := parseRef(dataRef)
-	if err != nil {
-		return fmt.Errorf("%w: %w", model.ErrDataGitInvalidRef{}, err)
-	}
-
-	opPath := parsedPkgRef.ToPath(path)
-
 	cloneOptions := &git.CloneOptions{
-		URL:           fmt.Sprintf("https://%v", parsedPkgRef.Name),
-		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", parsedPkgRef.Version)),
+		URL:           fmt.Sprintf("https://%v", repoRef.Name),
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", repoRef.Version)),
 		Depth:         1,
 	}
 
@@ -49,12 +42,12 @@ func Clone(
 
 	if _, err := git.PlainCloneContext(
 		ctx,
-		opPath,
+		repoPath,
 		false,
 		cloneOptions,
 	); err != nil {
 		if _, ok := err.(git.NoMatchingRefSpecError); ok {
-			return fmt.Errorf("%w: version \"%s\"", model.ErrDataRefResolution{}, parsedPkgRef.Version)
+			return fmt.Errorf("%w: version \"%s\"", model.ErrDataRefResolution{}, repoRef.Version)
 		}
 		if errors.Is(err, transport.ErrAuthenticationRequired) {
 			return model.ErrDataProviderAuthentication{}
@@ -65,6 +58,6 @@ func Clone(
 		return err
 	}
 
-	return os.RemoveAll(filepath.Join(opPath, ".git"))
+	return os.RemoveAll(filepath.Join(repoPath, ".git"))
 
 }
