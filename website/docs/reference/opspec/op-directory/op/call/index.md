@@ -59,10 +59,10 @@ run:
   parallel:
     - name: systemUnderTest
       container:
-        image: {ref: alpine}
+        image: {ref: ghcr.io/linuxcontainers/alpine}
         cmd: [sleep, 100000]
     - container:
-        image: {ref: alpine}
+        image: {ref: ghcr.io/linuxcontainers/alpine}
         cmd: [sleep, 1]
       needs:
         - systemUnderTest

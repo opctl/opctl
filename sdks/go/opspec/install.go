@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/opctl/opctl/sdks/go/model"
+	"golang.org/x/sync/errgroup"
 )
 
 // Install an op at path
@@ -20,24 +21,28 @@ func Install(
 		return err
 	}
 
+	eg, ctx := errgroup.WithContext(ctx)
+	eg.SetLimit(250)
+
 	for _, content := range contentsList {
-		dstPath := filepath.Join(path, content.Path)
+		eg.Go(func() error {
 
-		if _, statErr := os.Stat(dstPath); statErr == nil {
-			// don't overwrite existing content
-			continue
-		} else if !os.IsNotExist(statErr) {
-			return statErr
-		}
+			dstPath := filepath.Join(path, content.Path)
 
-		if content.Mode.IsDir() {
-			// ensure content path exists
-			if err = os.MkdirAll(dstPath, content.Mode); err != nil {
-				return err
+			if _, statErr := os.Stat(dstPath); statErr == nil {
+				// don't overwrite existing content
+				return nil
+			} else if !os.IsNotExist(statErr) {
+				return statErr
 			}
-		} else {
+
+			if content.Mode.IsDir() {
+				// ensure content path exists
+				return os.MkdirAll(dstPath, content.Mode)
+			}
+
 			// ensure content dir exists
-			if err = os.MkdirAll(filepath.Dir(dstPath), 0777); err != nil {
+			if err := os.MkdirAll(filepath.Dir(dstPath), 0777); err != nil {
 				return err
 			}
 
@@ -47,7 +52,7 @@ func Install(
 			}
 			defer dst.Close()
 
-			if err = os.Chmod(dstPath, content.Mode); err != nil {
+			if err := os.Chmod(dstPath, content.Mode); err != nil {
 				return err
 			}
 
@@ -57,11 +62,10 @@ func Install(
 			}
 			defer src.Close()
 
-			if _, err = io.Copy(dst, src); err != nil {
-				return err
-			}
-		}
+			_, err = io.Copy(dst, src)
+			return err
+		})
 	}
 
-	return nil
+	return eg.Wait()
 }
