@@ -40,14 +40,13 @@ func isGpuSupported(
 		},
 	)
 
-	imageRef := "alpine"
+	imageRef := "ghcr.io/linuxcontainers/alpine"
 
 	if err := pullImage(
 		context.Background(),
 		&model.ContainerCall{
 			Image: &model.ContainerCallImage{
-				Ref:       &imageRef,
-				PullCreds: imagePullCreds,
+				Ref: &imageRef,
 			},
 		},
 		dockerClient,

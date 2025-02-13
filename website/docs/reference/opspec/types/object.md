@@ -77,7 +77,7 @@ inputs:
         prop2: [ item1 ]
 run:
   container:
-    image: { ref: alpine }
+    image: { ref: ghcr.io/linuxcontainers/alpine }
     cmd:
     - echo
     - $(obj)

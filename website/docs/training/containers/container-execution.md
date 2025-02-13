@@ -14,6 +14,6 @@ Opctl supports using [container](../../reference/opspec/op-directory/op/call/con
     run:
       container:
         cmd: [echo, 'hello!']
-        image: { ref: alpine }
+        image: { ref: ghcr.io/linuxcontainers/alpine }
     ```
 2. Observe the container is started, `hello!` is logged, and the container exits.

@@ -4,7 +4,7 @@ inputs:
     file: {}
 run:
   container:
-    image: { ref: alpine }
+    image: { ref: ghcr.io/linuxcontainers/alpine }
     cmd: [echo]
     files:
       /file: $(file)

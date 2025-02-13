@@ -34,6 +34,14 @@ func Listen(
 		Net:     "udp",
 	}
 
+	dnsServer.ReusePort, err = shouldReusePort(
+		ctx,
+		nsPort,
+	)
+	if err != nil {
+		return err
+	}
+
 	go func() {
 		<-ctx.Done()
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
