@@ -2,5 +2,5 @@ name: inputs/not-object
 inputs: *
 run:
   container:
-    image: { ref: alpine }
+    image: { ref: ghcr.io/linuxcontainers/alpine }
     cmd: [echo]

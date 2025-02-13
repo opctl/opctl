@@ -14,17 +14,17 @@ Opctl supports using [serial](../../reference/opspec/op-directory/op/call/index.
         - parallel:
             - container:
                 cmd: [echo, "parallel[0]"]
-                image: { ref: alpine }
+                image: { ref: ghcr.io/linuxcontainers/alpine }
             - container:
                 cmd: [echo, "parallel[1]"]
-                image: { ref: alpine }
+                image: { ref: ghcr.io/linuxcontainers/alpine }
         - serial:
             - container:
                 cmd: [echo, "serial[0]"]
-                image: { ref: alpine }
+                image: { ref: ghcr.io/linuxcontainers/alpine }
             - container:
                 cmd: [echo, "serial[1]"]
-                image: { ref: alpine }
+                image: { ref: ghcr.io/linuxcontainers/alpine }
     ```
 2. Observe:
    1. for the `parallel` statement, containers are run in parallel (all at once without order)
