@@ -14,7 +14,7 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/opctl/opctl/cli/internal/pidfile"
+	"github.com/opctl/opctl/cli/internal/euid0"
 	"github.com/opctl/opctl/sdks/go/node"
 )
 
@@ -26,19 +26,15 @@ func (np nodeProvider) CreateNodeIfNotExists(
 		return nil, err
 	}
 
-	nodeProcess, err := pidfile.TryGetProcess(
-		ctx,
-		np.config.DataDir,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	if nodeProcess != nil {
+	// check if node API reachable
+	if err := apiClientNode.Liveness(ctx); err == nil {
 		return apiClientNode, nil
 	}
 
-	// no process running, need to daemonize node...
+	// node API unreachable, need to daemonize node...
+	if err := euid0.Ensure(); err != nil {
+		return nil, err
+	}
 
 	pathToOpctlBin, err := os.Executable()
 	if err != nil {
@@ -50,8 +46,8 @@ func (np nodeProvider) CreateNodeIfNotExists(
 		return nil, err
 	}
 
-	cmdName := pathToOpctlBin
-	cmdArgs := []string{
+	cmd := exec.Command(
+		pathToOpctlBin,
 		"--api-listen-address",
 		np.config.APIListenAddress,
 		"--container-runtime",
@@ -62,23 +58,6 @@ func (np nodeProvider) CreateNodeIfNotExists(
 		np.config.DNSListenAddress,
 		"node",
 		"create",
-	}
-
-	if os.Geteuid() != 0 {
-		cmdName = "sudo"
-		cmdArgs = append(
-			[]string{
-				// non interactive
-				"-n",
-				pathToOpctlBin,
-			},
-			cmdArgs...,
-		)
-	}
-
-	cmd := exec.Command(
-		cmdName,
-		cmdArgs...,
 	)
 
 	cmd.Stdout = os.Stdout
@@ -126,18 +105,13 @@ func (np nodeProvider) CreateNodeIfNotExists(
 			return apiClientNode, nil
 		}
 
-		// handle "sudo: a password is required"
-		if strings.Contains(stderr.String(), "password") {
-			return nil, fmt.Errorf("re-run command with sudo")
-		}
-
 		return nil, errors.New(stderr.String())
 	}
 
-	// handle timeout reaching opctl API
+	// handle timeout reaching node API
 	if timeoutErr != nil {
 		return nil, fmt.Errorf(
-			"timeout reaching opctl API at %s; try re-running command",
+			"timeout reaching node API at %s; try re-running command",
 			np.config.APIListenAddress,
 		)
 	}

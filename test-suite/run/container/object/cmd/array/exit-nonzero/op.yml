@@ -2,7 +2,7 @@ name: run/container/object/cmd/array/exit-nonzero
 run:
   container:
     image:
-      ref: alpine
+      ref: ghcr.io/linuxcontainers/alpine
     cmd:
       - sh
       - -ce
