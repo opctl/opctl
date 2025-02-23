@@ -1,4 +1,4 @@
-package cmd
+package stringarray
 
 import (
 	"testing"
@@ -9,5 +9,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "opspec/interpreter/call/container/cmd")
+	RunSpecs(t, "opspec/interpreter/stringarray")
 }

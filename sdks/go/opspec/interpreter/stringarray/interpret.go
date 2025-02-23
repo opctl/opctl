@@ -1,4 +1,4 @@
-package cmd
+package stringarray
 
 import (
 	"github.com/opctl/opctl/sdks/go/model"
@@ -6,33 +6,33 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
 )
 
-// Interpret a container cmd
+// Interpret a string array
 func Interpret(
 	scope map[string]*model.Value,
-	containerCallSpecCmd interface{},
+	expression interface{},
 ) ([]string, error) {
-	if containerCallSpecCmd == nil {
+	if expression == nil {
 		return []string{}, nil
 	}
 
-	containerCallCmdArray, err := array.Interpret(
+	a, err := array.Interpret(
 		scope,
-		containerCallSpecCmd,
+		expression,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	containerCallCmd := []string{}
+	sa := []string{}
 
-	for _, cmdEntryExpression := range *containerCallCmdArray.Array {
+	for _, cmdEntryExpression := range *a.Array {
 		// interpret each entry as string
 		cmdEntry, err := str.Interpret(scope, cmdEntryExpression)
 		if err != nil {
 			return nil, err
 		}
-		containerCallCmd = append(containerCallCmd, *cmdEntry.String)
+		sa = append(sa, *cmdEntry.String)
 	}
 
-	return containerCallCmd, nil
+	return sa, nil
 }

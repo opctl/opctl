@@ -1,42 +1,30 @@
 package opfile
 
 import (
-	"fmt"
+	"encoding/json"
 
 	"github.com/ghodss/yaml"
 	"github.com/opctl/opctl/opspec/opfile"
-	"github.com/xeipuuv/gojsonschema"
+	"github.com/opctl/opctl/sdks/go/internal/jsonschema"
 )
 
 // Validate validates an "op.yml"
 func Validate(
 	opFileBytes []byte,
 ) []error {
-	opFileSchema, err := gojsonschema.NewSchema(
-		gojsonschema.NewBytesLoader(opfile.JsonSchemaBytes),
-	)
+
+	var unmarshalledSchema map[string]interface{}
+	err := json.Unmarshal(opfile.JsonSchemaBytes, &unmarshalledSchema)
 	if err != nil {
 		return []error{err}
 	}
 
-	var unmarshalledYAML map[string]interface{}
-	err = yaml.Unmarshal(opFileBytes, &unmarshalledYAML)
+	var unmarshalledOp map[string]interface{}
+	err = yaml.Unmarshal(opFileBytes, &unmarshalledOp)
 	if err != nil {
 		// handle syntax errors specially
 		return []error{err}
 	}
 
-	var errs []error
-	result, err := opFileSchema.Validate(
-		gojsonschema.NewGoLoader(unmarshalledYAML),
-	)
-	if err != nil {
-		// handle syntax errors specially
-		return append(errs, err)
-	}
-	for _, desc := range result.Errors() {
-		errs = append(errs, fmt.Errorf("%s", desc))
-	}
-
-	return errs
+	return jsonschema.Validate(unmarshalledOp, unmarshalledSchema)
 }

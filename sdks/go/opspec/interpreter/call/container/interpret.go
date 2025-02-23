@@ -5,13 +5,13 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/cmd"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/dirs"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/envvars"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/files"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/image"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/sockets"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/stringarray"
 )
 
 // Interpret a container
@@ -28,6 +28,7 @@ func Interpret(
 			OpPath: opPath,
 		},
 		Dirs:        map[string]string{},
+		DNSNames:    []string{},
 		EnvVars:     map[string]string{},
 		Files:       map[string]string{},
 		Sockets:     map[string]string{},
@@ -50,7 +51,7 @@ func Interpret(
 
 	// interpret cmd
 	var err error
-	containerCall.Cmd, err = cmd.Interpret(
+	containerCall.Cmd, err = stringarray.Interpret(
 		scope,
 		containerCallSpec.Cmd,
 	)
@@ -66,6 +67,14 @@ func Interpret(
 		containerCallSpec.Dirs,
 		scratchDirPath,
 		dataCachePath,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	containerCall.DNSNames, err = stringarray.Interpret(
+		scope,
+		containerCallSpec.DNSNames,
 	)
 	if err != nil {
 		return nil, err
@@ -111,6 +120,9 @@ func Interpret(
 			return nil, err
 		}
 		containerCall.Name = containerCallName.String
+
+		// backwards compatibility
+		containerCall.DNSNames = append(containerCall.DNSNames, *containerCall.Name)
 	}
 
 	// interpret workDir

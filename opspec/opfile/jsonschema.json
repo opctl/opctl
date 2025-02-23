@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Opctl opspec op",
   "description": "Defines an op",
   "definitions": {
@@ -43,9 +43,17 @@
     },
     "arrayExpression": {
       "description": "Expression which evaluates to an array",
-      "type": [
-        "array",
-        "string"
+      "oneOf": [
+        {
+          "$ref": "#/definitions/variableReference"
+        },
+        {
+          "type": "array",
+          "items": {
+            "description": "Expression coercible to string value",
+            "$ref": "#/definitions/expression"
+          }
+        }
       ]
     },
     "booleanExpression": {
@@ -654,7 +662,7 @@
             },
             {
               "title": "docker-image-ref",
-              "description": "A docker image reference as defined by [github.com/docker/distribution/reference](https://github.com/docker/distribution/tree/docker/1.13/reference)",
+              "description": "A docker image reference as defined by [github.com/distribution/reference](https://github.com/distribution/distribution/tree/docker/1.13/reference)",
               "type": "string",
               "enum": [
                 "docker-image-ref"
@@ -874,6 +882,10 @@
               },
               "additionalProperties": false
             },
+            "dnsNames": {
+              "description": "Names opctl DNS resolves to this container",
+              "$ref": "#/definitions/arrayExpression"
+            },
             "envVars": {
               "oneOf": [
                 {
@@ -940,7 +952,8 @@
               "additionalProperties": false
             },
             "name": {
-              "description": "Name the container can be referenced by from other containers",
+              "deprecated": true,
+              "description": "Name opctl DNS resolves to this container",
               "$ref": "#/definitions/stringExpression"
             },
             "ports": {
@@ -977,7 +990,45 @@
           "required": [
             "image"
           ],
-          "additionalProperties": false
+          "additionalProperties": false,
+          "anyOf": [
+            {
+              "format": "error-message",
+              "not": {
+                "format": "error-message",
+                "required": [
+                  "name",
+                  "dnsNames"
+                ],
+                "errorMessage": "1 `container.name` is deprecated; use `container.dnsNames` (for registering names with opctl DNS) and/or `call.name` (for tracking in the call graph)"
+              },
+              "errorMessage": "2 `container.name` is deprecated; use `container.dnsNames` (for registering names with opctl DNS) and/or `call.name` (for tracking in the call graph)"
+            },
+            {
+              "format": "error-message",
+              "required": [
+                "name"
+              ],
+              "not": {
+                "required": [
+                  "dnsNames"
+                ],
+                "errorMessage": "a `container.name` is deprecated; use `container.dnsNames` (for registering names with opctl DNS) and/or `call.name` (for tracking in the call graph)"
+              }
+            },
+            {
+              "format": "error-message",
+              "required": [
+                "dnsNames"
+              ],
+              "not": {
+                "required": [
+                  "name"
+                ],
+                "errorMessage": "b `container.name` is deprecated; use `container.dnsNames` (for registering names with opctl DNS) and/or `call.name` (for tracking in the call graph)"
+              }
+            }
+          ]
         },
         "description": {
           "$ref": "#/definitions/markdown"

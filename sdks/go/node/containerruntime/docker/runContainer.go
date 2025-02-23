@@ -121,13 +121,10 @@ func (cr _runContainer) RunContainer(
 	// construct networking config
 	networkingConfig := &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{
-			networkName: {},
+			networkName: {
+				DNSNames: req.DNSNames,
+			},
 		},
-	}
-	if req.Name != nil {
-		networkingConfig.EndpointsConfig[networkName].Aliases = []string{
-			*req.Name,
-		}
 	}
 
 	isGpuSupported, err := isGpuSupported(ctx, cr.dockerClient, req.Image.PullCreds)
@@ -198,21 +195,21 @@ func (cr _runContainer) RunContainer(
 		},
 	)
 
-	if req.Name != nil {
+	if len(req.DNSNames) > 0 {
 		containerJSON, err := cr.dockerClient.ContainerInspect(ctx, dockerContainerName)
 		if err != nil {
 			return nil, err
 		}
 
 		if endpointSettings, ok := containerJSON.NetworkSettings.Networks[networkName]; ok {
-			defer dns.UnregisterName(
-				*req.Name,
+			defer dns.UnregisterNames(
+				req.DNSNames,
 				endpointSettings.IPAddress,
 			)
 
-			err = dns.RegisterName(
+			err = dns.RegisterNames(
 				ctx,
-				*req.Name,
+				req.DNSNames,
 				endpointSettings.IPAddress,
 			)
 			if err != nil {

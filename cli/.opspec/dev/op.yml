@@ -26,7 +26,7 @@ run:
           - exec
           - ./cli/opctl-linux-amd64
           - run
-          - github.com/opspec-pkgs/uuid.v4.generate#1.1.0
+          - /src/cli/.opspec/dev/t
         dirs:
           /src: $(../../..)
           /go/pkg: $(HOME/go/pkg)

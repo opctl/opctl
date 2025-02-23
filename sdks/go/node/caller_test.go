@@ -160,6 +160,7 @@ var _ = Context("caller", func() {
 						ContainerID: providedCallID,
 						Cmd:         []string{},
 						Dirs:        map[string]string{},
+						DNSNames:    []string{},
 						Files:       map[string]string{},
 						Image: &model.ContainerCallImage{
 							Ref: &imageSpec.Ref,

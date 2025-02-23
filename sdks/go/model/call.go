@@ -37,7 +37,8 @@ type ContainerCall struct {
 	ContainerID string   `json:"containerId"`
 	Cmd         []string `json:"cmd"`
 	// format: containerPath => hostPath
-	Dirs map[string]string `json:"dirs"`
+	Dirs     map[string]string `json:"dirs"`
+	DNSNames []string          `json:"dnsNames,omitempty"`
 	// format: name => value
 	EnvVars map[string]string `json:"envVars"`
 	// format: containerPath => hostPath
@@ -85,12 +86,6 @@ type ParallelLoopCall struct {
 	Range *Value    `json:"range,omitempty"`
 	Run   Call      `json:"run,omitempty"`
 	Vars  *LoopVars `json:"vars,omitempty"`
-}
-
-// Predicate is a predicate i.e. something that evaluates to true or false
-type Predicate struct {
-	Eq []*Value `json:"eq"`
-	Ne []*Value `json:"ne"`
 }
 
 // SerialLoopCall is a call of a serial loop

@@ -4,7 +4,7 @@ import (
 	"math/big"
 
 	"github.com/blang/semver"
-	"github.com/docker/distribution/reference"
+	"github.com/distribution/reference"
 )
 
 // DockerImageRefFormatChecker is a gojsonschema.FormatChecker for docker image refs
@@ -13,7 +13,7 @@ type DockerImageRefFormatChecker struct{}
 // Implement gojsonschema.FormatChecker interface
 func (f DockerImageRefFormatChecker) IsFormat(input interface{}) bool {
 	asString, ok := input.(string)
-	if ok == false {
+	if !ok {
 		return false
 	}
 
@@ -28,7 +28,7 @@ type IntegerFormatChecker struct{}
 func (f IntegerFormatChecker) IsFormat(input interface{}) bool {
 
 	asRat, ok := input.(*big.Rat)
-	if ok == false {
+	if !ok {
 		return false
 	}
 
@@ -41,7 +41,7 @@ type SemVerFormatChecker struct{}
 // Implement gojsonschema.FormatChecker interface
 func (f SemVerFormatChecker) IsFormat(input interface{}) bool {
 	asString, ok := input.(string)
-	if ok == false {
+	if !ok {
 		return false
 	}
 

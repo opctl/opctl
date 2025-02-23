@@ -1,4 +1,4 @@
-package cmd
+package stringarray
 
 import (
 	"fmt"
@@ -9,9 +9,9 @@ import (
 )
 
 var _ = Context("Interpret", func() {
-	Context("containerCallSpecCmd not empty", func() {
+	Context("expression not empty", func() {
 		Context("Contains reference", func() {
-			It("should return expected dcg.Cmd", func() {
+			It("should return expected string array", func() {
 				/* arrange */
 				identifier := "identifier"
 				providedScope := map[string]*model.Value{

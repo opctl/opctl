@@ -16,6 +16,7 @@ func constructHostConfig(
 	isGpuSupported bool,
 ) *container.HostConfig {
 	hostConfig := &container.HostConfig{
+		DNS:          []string{"10.1.200.69"},
 		PortBindings: portBindings,
 		// support docker in docker
 		// @TODO: reconsider; can we avoid this?

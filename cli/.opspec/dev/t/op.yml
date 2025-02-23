@@ -1,0 +1,9 @@
+name: t
+run:
+  container:
+    image:
+      ref: alpine
+    name: aname
+    dnsNames:
+      - blah
+      - blah2
