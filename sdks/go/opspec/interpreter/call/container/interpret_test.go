@@ -173,6 +173,7 @@ var _ = Context("Interpret", func() {
 			ContainerID: providedContainerID,
 			Cmd:         []string{},
 			Dirs:        map[string]string{},
+			DNSNames:    []string{},
 			Files:       map[string]string{},
 			Image: &model.ContainerCallImage{
 				Ref: &expectedRef,

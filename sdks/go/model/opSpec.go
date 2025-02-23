@@ -30,7 +30,8 @@ type ContainerCallSpec struct {
 	Cmd interface{} `json:"cmd,omitempty"`
 	// Dirs entries will be interpreted to dirs
 	Dirs map[string]interface{} `json:"dirs,omitempty"`
-
+	// DNSNames  will be interpreted to array of strings
+	DNSNames interface{} `json:"dnsNames,omitempty"`
 	// EnvVars entries will be interpreted to strings
 	EnvVars interface{} `json:"envVars,omitempty"`
 	// Dirs entries will be interpreted to files
@@ -38,8 +39,9 @@ type ContainerCallSpec struct {
 	Image   *ContainerCallImageSpec `json:"image"`
 	Sockets map[string]string       `json:"sockets,omitempty"`
 	WorkDir string                  `json:"workDir,omitempty"`
-	Name    *string                 `json:"name,omitempty"`
-	Ports   map[string]string       `json:"ports,omitempty"`
+	// Name is deprecated; use CallSpec.Name instead
+	Name  *string           `json:"name,omitempty"`
+	Ports map[string]string `json:"ports,omitempty"`
 }
 
 // ContainerCallImageSpec is a spec for the image when calling a container

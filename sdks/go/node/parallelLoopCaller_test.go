@@ -230,9 +230,10 @@ var _ = Context("parallelLoopCaller", func() {
 									BaseCall: model.BaseCall{
 										OpPath: providedOpRef,
 									},
-									Cmd:   []string{},
-									Dirs:  map[string]string{},
-									Files: map[string]string{},
+									Cmd:      []string{},
+									Dirs:     map[string]string{},
+									DNSNames: []string{},
+									Files:    map[string]string{},
 									Image: &model.ContainerCallImage{
 										Ref: &imageRef,
 									},
@@ -249,9 +250,10 @@ var _ = Context("parallelLoopCaller", func() {
 									BaseCall: model.BaseCall{
 										OpPath: providedOpRef,
 									},
-									Cmd:   []string{},
-									Dirs:  map[string]string{},
-									Files: map[string]string{},
+									Cmd:      []string{},
+									Dirs:     map[string]string{},
+									DNSNames: []string{},
+									Files:    map[string]string{},
 									Image: &model.ContainerCallImage{
 										Ref: &imageRef,
 									},

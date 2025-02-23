@@ -1,20 +1,28 @@
 package opfile
 
 import (
-	"fmt"
-
+	"bytes"
 	"github.com/ghodss/yaml"
 	"github.com/opctl/opctl/opspec/opfile"
-	"github.com/xeipuuv/gojsonschema"
+	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
 // Validate validates an "op.yml"
 func Validate(
 	opFileBytes []byte,
 ) []error {
-	opFileSchema, err := gojsonschema.NewSchema(
-		gojsonschema.NewBytesLoader(opfile.JsonSchemaBytes),
-	)
+	schemaID := "op.yml"
+	doc, err := jsonschema.UnmarshalJSON(bytes.NewReader(opfile.JsonSchemaBytes))
+	if err != nil {
+		return []error{err}
+	}
+
+	compiler := jsonschema.NewCompiler()
+	if err := compiler.AddResource(schemaID, doc); err != nil {
+		return []error{err}
+	}
+
+	opFileSchema, err := compiler.Compile(schemaID)
 	if err != nil {
 		return []error{err}
 	}
@@ -26,17 +34,15 @@ func Validate(
 		return []error{err}
 	}
 
-	var errs []error
-	result, err := opFileSchema.Validate(
-		gojsonschema.NewGoLoader(unmarshalledYAML),
-	)
-	if err != nil {
-		// handle syntax errors specially
-		return append(errs, err)
+	if err := opFileSchema.Validate(unmarshalledYAML); err != nil {
+		if vErr, ok := err.(*jsonschema.ValidationError); ok {
+			var errs []error
+			for _, cause := range vErr.Causes {
+				errs = append(errs, cause)
+			}
+			return errs
+		}
+		return []error{err}
 	}
-	for _, desc := range result.Errors() {
-		errs = append(errs, fmt.Errorf("%s", desc))
-	}
-
-	return errs
+	return nil
 }

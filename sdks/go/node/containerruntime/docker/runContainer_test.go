@@ -164,11 +164,11 @@ var _ = Context("RunContainer", func() {
 				Dirs: map[string]string{
 					"dir1ContainerPath": "dir1HostPath",
 				},
+				DNSNames: []string{"dnsName"},
 				Files: map[string]string{
 					"file1ContainerPath": "file1HostPath",
 				},
 				Image: &model.ContainerCallImage{Ref: new(string)},
-				Name:  new(string),
 				Sockets: map[string]string{
 					"/unixSocket1ContainerAddress": "/unixSocket1HostAddress",
 				},
@@ -244,9 +244,7 @@ var _ = Context("RunContainer", func() {
 			expectedNetworkingConfig := &network.NetworkingConfig{
 				EndpointsConfig: map[string]*network.EndpointSettings{
 					networkName: {
-						Aliases: []string{
-							*providedReq.Name,
-						},
+						DNSNames: providedReq.DNSNames,
 					},
 				},
 			}

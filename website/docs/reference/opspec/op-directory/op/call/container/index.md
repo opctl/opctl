@@ -9,13 +9,18 @@ An object defining a container call.
 - must have
   - [image](#image)
 - may have
+  - [dnsNames](#dnsNames)
   - [cmd](#cmd)
   - [dirs](#dirs)
   - [envVars](#envvars)
   - [files](#files)
-  - [name](#name)
   - [sockets](#sockets)
   - [workDir](#workdir)
+
+### dnsNames
+An [array](../../../../types/array.md) [initializer](../../../../types/array.md#initialization) or [variable-reference [string]](../../variable-reference.md) defining names opctl DNS resolves to this container.
+
+> if a name resolves to multiple containers, network requests will be distributed (load balanced) across them. 
 
 ### image
 An [image [object]](image.md) defining the container image run by the call.
@@ -49,9 +54,9 @@ An object for which each key is an absolute path in the container and each value
 |[file initializer](../../../../types/file.md#initialization)|Evaluate and mount|
 
 ### name
-A [string initializer](../../../../types/string.md#initialization) defining a name by which the container can be reached by other opctl containers and opctl host nodes.
+A [string initializer](../../../../types/string.md#initialization) defining a name opctl DNS resolves to this container.
 
-> if multiple containers are given the same name, network requests will be distributed (load balanced) across them. 
+> if a name resolves to multiple containers, network requests will be distributed (load balanced) across them. 
 
 ### sockets
 An object for which each key is an absolute path in the container and and each value is a [socket](../../../../types/socket.md) [variable-reference [string]](../../variable-reference.md) to mount. 

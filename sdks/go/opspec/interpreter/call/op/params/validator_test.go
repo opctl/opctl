@@ -33,6 +33,6 @@ var _ = Context("Validate", func() {
 		)
 
 		/* assert */
-		Expect(actualErr).To(MatchError("\n-\n  validation error(s):\n\n    - expectedName1: String length must be greater than or equal to 10\n\n-"))
+		Expect(actualErr).To(MatchError("\n-\n  validation error(s):\n\n    - expectedName1: at '': minLength: got 0, want 10\n\n-"))
 	})
 })
