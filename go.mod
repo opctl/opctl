@@ -1,6 +1,7 @@
 module github.com/opctl/opctl
 
 go 1.23.0
+
 require (
 	github.com/abiosoft/colima v0.3.4
 	github.com/appdataspec/sdk-golang v0.0.0-20170917062448-0c0ade7a92f7
@@ -30,11 +31,11 @@ require (
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58
 	github.com/peterh/liner v1.1.0
 	github.com/rhysd/go-github-selfupdate v1.2.3
+	github.com/santhosh-tekuri/jsonschema/v6 v6.0.1
 	github.com/satori/go.uuid v1.2.0
 	github.com/sethgrid/pester v1.2.0
 	github.com/shirou/gopsutil/v4 v4.25.1
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
-	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/net v0.35.0
 	golang.org/x/sync v0.11.0
 	golang.org/x/term v0.29.0
@@ -152,6 +153,7 @@ require (
 	github.com/sigstore/sigstore v1.8.2 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/skeema/knownhosts v1.3.0 // indirect
+	github.com/smartystreets/goconvey v1.8.1 // indirect
 	github.com/spf13/cobra v1.9.1 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/stefanberger/go-pkcs11uri v0.0.0-20201008174630-78d3cae3a980 // indirect
@@ -164,8 +166,6 @@ require (
 	github.com/vbatts/tar-split v0.11.5 // indirect
 	github.com/vbauerster/mpb/v8 v8.7.2 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
-	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
-	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.mongodb.org/mongo-driver v1.14.0 // indirect
 	go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 // indirect

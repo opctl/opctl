@@ -3,7 +3,7 @@ run:
   container:
     image:
       ref: alpine
-    name: aname
+    name: myname
     dnsNames:
-      - blah
-      - blah2
+      - one
+      - two

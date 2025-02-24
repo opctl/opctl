@@ -24,12 +24,16 @@ run:
     run:
       container:
         cmd:
-          - go
-          - build
-          - -buildvcs=false
-          - -o
-          - cli/opctl-$(target.os)-$(target.arch)
-          - ./cli
+          - sh
+          - -ce
+          - go build -gcflags=all='-N -l' -buildvcs=false -o cli/opctl-$(target.os)-$(target.arch) ./cli
+          # - go
+          # - build
+          # - -gcflags=all='-N -l'
+          # - -buildvcs=false
+          # - -o
+          # - cli/opctl-$(target.os)-$(target.arch)
+          # - ./cli
         dirs:
           /src: $(../../..)
           /go/pkg: $(HOME/go/pkg)

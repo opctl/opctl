@@ -1,11 +1,7 @@
 package jsonschema
 
 import (
-	"errors"
-	"strings"
-
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/formats"
-	"github.com/xeipuuv/gojsonschema"
+	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
 // Validate validates a value against constraints
@@ -19,28 +15,35 @@ func Validate(
 	}
 
 	// register custom format checkers
-	gojsonschema.FormatCheckers.Add("docker-image-ref", formats.DockerImageRefFormatChecker{})
-	gojsonschema.FormatCheckers.Add("integer", formats.IntegerFormatChecker{})
-	gojsonschema.FormatCheckers.Add("semver", formats.SemVerFormatChecker{})
+	// gojsonschema.FormatCheckers.Add("docker-image-ref", formats.DockerImageRefFormatChecker{})
+	// gojsonschema.FormatCheckers.Add("integer", formats.IntegerFormatChecker{})
+	// gojsonschema.FormatCheckers.Add("semver", formats.SemVerFormatChecker{})
+	schemaID := "schema.json" // Arbitrary ID for the schema
+	compiler := jsonschema.NewCompiler()
 
-	result, err := gojsonschema.Validate(
-		gojsonschema.NewGoLoader(schema),
-		gojsonschema.NewGoLoader(value),
-	)
+	if err := compiler.AddResource(schemaID, schema); err != nil {
+		return []error{err}
+	}
+
+	s, err := compiler.Compile(schemaID)
 	if err != nil {
-		return []error{
-			err,
+		return []error{err}
+	}
+
+	errorMessages := map[string]string{}
+	extractErrorMessages(schema, "", errorMessages)
+
+	// Validate the parsed document
+	if err := s.Validate(value); err != nil {
+		if vErr, ok := err.(*jsonschema.ValidationError); ok {
+			var errs []error
+			for _, cause := range vErr.Causes {
+				errs = append(errs, cause)
+			}
+			return errs
 		}
+		return []error{err}
 	}
 
-	errs := []error{}
-	for _, verr := range result.Errors() {
-		// enum validation errors include `(root) ` prefix we don't want
-		errs = append(
-			errs,
-			errors.New(strings.TrimPrefix(verr.Description(), "(root) ")),
-		)
-	}
-
-	return errs
+	return nil
 }
