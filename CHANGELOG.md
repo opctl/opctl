@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.66] - 2024-02-26
+
+### Added
+
+- Support for environment variables for each CLI command options and arguments
+
 ## [0.1.65] - 2024-02-10
 
 ### Added
