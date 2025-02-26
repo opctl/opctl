@@ -91,7 +91,12 @@ func newCli(
 
 	cliParamSatisfier := cliparamsatisfier.New(cliOutput)
 
-	noColor := cli.BoolOpt("nc no-color", false, "Disable output coloring")
+	noColor := cli.Bool(mow.BoolOpt{
+		Name:   "nc no-color",
+		Value:  false,
+		Desc:   "Disable output coloring",
+		EnvVar: "OPCTL_NO_COLOR",
+	})
 
 	cli.Before = func() {
 		if *noColor {
@@ -109,9 +114,24 @@ func newCli(
 		authCmd.Command("add", "Add auth for an OCI image registry", func(addCmd *mow.Cmd) {
 			addCmd.Spec = "RESOURCES [ -u=<username> ] [ -p=<password> ]"
 
-			resources := addCmd.StringArg("RESOURCES", "", "Resources this auth applies to in the form of a host or host/path (e.g. docker.io)")
-			username := addCmd.StringOpt("u username", "", "Username")
-			password := addCmd.StringOpt("p password", "", "Password")
+			resources := addCmd.String(mow.StringArg{
+				Name:   "RESOURCES",
+				Value:  "",
+				Desc:   "Resources this auth applies to in the form of a host or host/path (e.g. docker.io)",
+				EnvVar: "OPCTL_AUTH_RESOURCES",
+			})
+			username := addCmd.String(mow.StringOpt{
+				Name:   "u username",
+				Value:  "",
+				Desc:   "Username",
+				EnvVar: "OPCTL_AUTH_USERNAME",
+			})
+			password := addCmd.String(mow.StringOpt{
+				Name:   "p password",
+				Value:  "",
+				Desc:   "Password",
+				EnvVar: "OPCTL_AUTH_PASSWORD",
+			})
 
 			addCmd.Action = func() {
 				exitWith(
@@ -158,7 +178,12 @@ func newCli(
 	cli.Command("ls", "List operations", func(lsCmd *mow.Cmd) {
 		const dirRefArgName = "DIR_REF"
 		lsCmd.Spec = fmt.Sprintf("[%v]", dirRefArgName)
-		dirRef := lsCmd.StringArg(dirRefArgName, opspec.DotOpspecDirName, "Reference to dir ops will be listed from")
+		dirRef := lsCmd.String(mow.StringArg{
+			Name:   dirRefArgName,
+			Value:  "",
+			Desc:   "Reference to dir ops will be listed from",
+			EnvVar: "OPCTL_LS_DIR_REF",
+		})
 
 		lsCmd.Action = func() {
 			exitWith(
@@ -255,9 +280,24 @@ func newCli(
 		)
 
 		opCmd.Command("create", "Create an op", func(createCmd *mow.Cmd) {
-			path := createCmd.StringOpt("path", opspec.DotOpspecDirName, "Path the op will be created at")
-			description := createCmd.StringOpt("d description", "", "Op description")
-			name := createCmd.StringArg("NAME", "", "Op name")
+			path := createCmd.String(mow.StringOpt{
+				Name:   "path",
+				Value:  opspec.DotOpspecDirName,
+				Desc:   "Path the op will be created at",
+				EnvVar: "OPCTL_CREATE_PATH",
+			})
+			description := createCmd.String(mow.StringOpt{
+				Name:   "d description",
+				Value:  "",
+				Desc:   "Op description",
+				EnvVar: "OPCTL_CREATE_DESCRIPTION",
+			})
+			name := createCmd.String(mow.StringArg{
+				Name:   "NAME",
+				Value:  "",
+				Desc:   "Op name",
+				EnvVar: "OPCTL_CREATE_NAME",
+			})
 
 			createCmd.Action = func() {
 				exitWith(
@@ -272,10 +312,30 @@ func newCli(
 		})
 
 		opCmd.Command("install", "Install an op", func(installCmd *mow.Cmd) {
-			path := installCmd.StringOpt("path", opspec.DotOpspecDirName, "Path the op will be installed at")
-			opRef := installCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
-			username := installCmd.StringOpt("u username", "", "Username used to auth w/ the pkg source")
-			password := installCmd.StringOpt("p password", "", "Password used to auth w/ the pkg source")
+			path := installCmd.String(mow.StringOpt{
+				Name:   "path",
+				Value:  opspec.DotOpspecDirName,
+				Desc:   "Path the op will be installed at",
+				EnvVar: "OPCTL_INSTALL_PATH",
+			})
+			opRef := installCmd.String(mow.StringArg{
+				Name:   "OP_REF",
+				Value:  "",
+				Desc:   "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)",
+				EnvVar: "OPCTL_INSTALL_OP_REF",
+			})
+			username := installCmd.String(mow.StringOpt{
+				Name:   "u username",
+				Value:  "",
+				Desc:   "Username used to auth w/ the pkg source",
+				EnvVar: "OPCTL_INSTALL_USERNAME",
+			})
+			password := installCmd.String(mow.StringOpt{
+				Name:   "p password",
+				Value:  "",
+				Desc:   "Password used to auth w/ the pkg source",
+				EnvVar: "OPCTL_INSTALL_PASSWORD",
+			})
 
 			installCmd.Action = func() {
 				exitWith(
@@ -295,7 +355,12 @@ func newCli(
 		})
 
 		opCmd.Command("kill", "Kill an op", func(killCmd *mow.Cmd) {
-			opID := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
+			opID := killCmd.String(mow.StringArg{
+				Name:   "OP_ID",
+				Value:  "",
+				Desc:   "Id of the op to kill",
+				EnvVar: "OPCTL_KILL_OP_ID",
+			})
 
 			killCmd.Action = func() {
 				exitWith(
@@ -312,7 +377,12 @@ func newCli(
 		})
 
 		opCmd.Command("validate", "Validate an op", func(validateCmd *mow.Cmd) {
-			opRef := validateCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
+			opRef := validateCmd.String(mow.StringArg{
+				Name:   "OP_REF",
+				Value:  "",
+				Desc:   "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)",
+				EnvVar: "OPCTL_VALIDATE_OP_REF",
+			})
 
 			validateCmd.Action = func() {
 				exitWith(
@@ -328,10 +398,30 @@ func newCli(
 	})
 
 	cli.Command("run", "Start and wait on an op", func(runCmd *mow.Cmd) {
-		args := runCmd.StringsOpt("a", []string{}, "Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`")
-		argFile := runCmd.StringOpt("arg-file", filepath.Join(opspec.DotOpspecDirName, "args.yml"), "Read in a file of args in yml format")
-		noProgress := runCmd.BoolOpt("no-progress", !term.IsTerminal(int(os.Stdout.Fd())), "Disable live call graph for the op")
-		opRef := runCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
+		args := runCmd.Strings(mow.StringsOpt{
+			Name:   "a",
+			Desc:   "Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`",
+			Value:  []string{},
+			EnvVar: "OPCTL_RUN_ARGS",
+		})
+		argFile := runCmd.String(mow.StringOpt{
+			Name:   "arg-file",
+			Desc:   "Read in a file of args in yml format",
+			Value:  filepath.Join(opspec.DotOpspecDirName, "args.yml"),
+			EnvVar: "OPCTL_RUN_ARG_FILE",
+		})
+		noProgress := runCmd.Bool(mow.BoolOpt{
+			Name:   "no-progress",
+			Desc:   "Disable live call graph for the op",
+			Value:  !term.IsTerminal(int(os.Stdout.Fd())),
+			EnvVar: "OPCTL_RUN_NO_PROGRESS",
+		})
+		opRef := runCmd.String(mow.StringArg{
+			Name:   "OP_REF",
+			Desc:   "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)",
+			Value:  "",
+			EnvVar: "OPCTL_RUN_OP_REF",
+		})
 
 		runCmd.Action = func() {
 			exitWith(
@@ -374,7 +464,12 @@ func newCli(
 	cli.Command("ui", "Open the opctl web UI and mount a reference.", func(uiCmd *mow.Cmd) {
 		const mountRefArgName = "MOUNT_REF"
 		uiCmd.Spec = fmt.Sprintf("[%v]", mountRefArgName)
-		mountRefArg := uiCmd.StringArg(mountRefArgName, ".", "Reference to mount (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)")
+		mountRefArg := uiCmd.String(mow.StringArg{
+			Name:   mountRefArgName,
+			Desc:   "Reference to mount (either `relative/path`, `/absolute/path`, `host/path/repo#tag`, or `host/path/repo#tag/path`)",
+			Value:  ".",
+			EnvVar: "OPCTL_UI_MOUNT_REF",
+		})
 
 		uiCmd.Action = func() {
 			exitWith(
