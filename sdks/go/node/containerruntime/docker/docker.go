@@ -46,11 +46,6 @@ type _containerRuntime struct {
 func (cr _containerRuntime) Delete(
 	ctx context.Context,
 ) error {
-	err := ensureNetworkDetached(ctx, cr.dockerClient)
-	if err != nil {
-		return err
-	}
-
 	containers, err := cr.dockerClient.ContainerList(
 		ctx,
 		container.ListOptions{
@@ -70,7 +65,7 @@ func (cr _containerRuntime) Delete(
 		return err
 	}
 
-	errGroup, ctx := errgroup.WithContext(ctx)
+	errGroup, egCtx := errgroup.WithContext(ctx)
 	for _, container := range containers {
 		for _, containerName := range container.Names {
 			containerName := containerName
@@ -79,7 +74,7 @@ func (cr _containerRuntime) Delete(
 				// check if containerName is a conventional opctl container name
 				if strings.HasPrefix(containerName, slashPrefix) {
 					return cr.DeleteContainerIfExists(
-						ctx,
+						egCtx,
 						// convert containerName to opctl container id as required by cr.DeleteContainerIfExists
 						strings.Replace(containerName, slashPrefix, "", 1),
 					)
@@ -89,7 +84,13 @@ func (cr _containerRuntime) Delete(
 		}
 	}
 
-	return errGroup.Wait()
+	err = errGroup.Wait()
+	if err != nil {
+		return err
+	}
+
+	return ensureNetworkDetached(ctx, cr.dockerClient)
+
 }
 
 func (cr _containerRuntime) Kill(

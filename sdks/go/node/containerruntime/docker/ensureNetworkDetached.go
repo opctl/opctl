@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"runtime"
 
-	"github.com/docker/docker/api/types/network"
 	dockerClientPkg "github.com/docker/docker/client"
 )
 
@@ -14,27 +13,25 @@ func ensureNetworkDetached(
 	ctx context.Context,
 	dockerClient dockerClientPkg.CommonAPIClient,
 ) error {
+	err := dockerClient.NetworkRemove(ctx, networkName)
+	if err != nil && !dockerClientPkg.IsErrNotFound(err) {
+		return err
+	}
 
 	if runtime.GOOS == "darwin" {
-		networkResource, networkInspectErr := dockerClient.NetworkInspect(
-			ctx,
-			networkName,
-			network.InspectOptions{},
-		)
-		if networkInspectErr != nil {
-			return fmt.Errorf("unable to inspect network: %w", networkInspectErr)
+		tunIndex, err := getCurrentTunIndex(ctx)
+		if err != nil {
+			return err
 		}
 
-		for _, config := range networkResource.IPAM.Config {
-			if networkResource.Scope == "local" {
-				cmd := exec.Command("route", "-q", "-n", "delete", "-inet", config.Subnet)
+		tunName := fmt.Sprintf("tun%d", tunIndex)
 
-				outputBytes, err := cmd.CombinedOutput()
+		cmd := exec.Command("ip", "link", "delete", tunName)
 
-				if err != nil {
-					fmt.Errorf("Failed to delete route: %w, %s", err, string(outputBytes))
-				}
-			}
+		outputBytes, err := cmd.CombinedOutput()
+
+		if err != nil {
+			fmt.Errorf("Failed to delete %s: %w, %s", tunName, err, string(outputBytes))
 		}
 	}
 
