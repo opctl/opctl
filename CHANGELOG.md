@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.67] - 2024-03-08
+
+### Fixed
+
+- Fix accessing containers by name from the opctl host on Docker For Mac 4.39.0+
+
 ## [0.1.66] - 2024-02-26
 
 ### Added

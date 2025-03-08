@@ -20,6 +20,10 @@ var _ = Context("ensureNetworkExists", func() {
 			expectedContainerID := providedContainerID
 			expectedNetworkCreations := network.CreateOptions{
 				Attachable: true,
+				Options: map[string]string{
+					gatewayModeIpV4: natUnprotected,
+					"com.docker.network.bridge.gateway_mode_ipv6": natUnprotected,
+				},
 			}
 
 			/* act */
