@@ -22,10 +22,11 @@ require (
 	github.com/gorilla/handlers v1.4.1
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.0
+	github.com/iguanesolutions/go-systemd/v5 v5.2.0
 	github.com/jawher/mow.cli v1.1.0
 	github.com/jfbus/httprs v0.0.0-20180614100821-7861a1150846
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.3
-	github.com/miekg/dns v1.1.55
+	github.com/miekg/dns v1.1.59
 	github.com/onsi/ginkgo v1.16.6-0.20211014152641-f228134fe057
 	github.com/onsi/gomega v1.34.1
 	github.com/opencontainers/image-spec v1.1.0
@@ -91,6 +92,7 @@ require (
 	github.com/go-openapi/strfmt v0.22.2 // indirect
 	github.com/go-openapi/swag v0.22.10 // indirect
 	github.com/go-openapi/validate v0.22.1 // indirect
+	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-interfaces/ios v0.0.0-20170803194714-da59acb78efc // indirect
 	github.com/golang/glog v1.1.2 // indirect
