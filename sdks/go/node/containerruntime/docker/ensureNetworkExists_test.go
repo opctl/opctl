@@ -20,6 +20,7 @@ var _ = Context("ensureNetworkExists", func() {
 			expectedContainerID := providedContainerID
 			expectedNetworkCreations := network.CreateOptions{
 				Attachable: true,
+				Options:    map[string]string{},
 			}
 
 			/* act */

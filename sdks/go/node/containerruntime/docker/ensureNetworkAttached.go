@@ -66,6 +66,16 @@ func ensureNetworkAttached(
 			return fmt.Errorf("unable to inspect network: %w", networkInspectErr)
 		}
 
+		if gwm, _ := networkInspect.Options[gatewayModeIpV4]; gwm != natUnprotected {
+			// recreate network if gateway_mode_ipv4 not nat-unprotected
+			err := dockerClient.NetworkRemove(ctx, networkName)
+			if err != nil {
+				return err
+			}
+
+			return ensureNetworkExists(ctx, dockerClient, networkName)
+		}
+
 		go func() {
 			defer func() {
 				if panic := recover(); panic != nil {
@@ -275,7 +285,7 @@ func createTunIfNotExists(
 		return nil, err
 	}
 
-	lowestTunIndex, err := getLowestTunIndex(
+	lowestTunIndex, err := getCurrentTunIndex(
 		context.Background(),
 	)
 	if nil != err {
@@ -291,8 +301,8 @@ func createTunIfNotExists(
 	return tunDevice, nil
 }
 
-// getLowestTunIndex retrieves the lowest index of any existing utun interface on the system
-func getLowestTunIndex(
+// getCurrentTunIndex retrieves the lowest index of any existing utun interface on the system
+func getCurrentTunIndex(
 	ctx context.Context,
 ) (int, error) {
 
