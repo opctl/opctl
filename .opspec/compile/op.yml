@@ -12,8 +12,22 @@ run:
   serial:
     - op:
         ref: $(../../webapp/.opspec/compile)
-    - op:
-        ref: $(../../cli/.opspec/compile)
-        inputs:
-          HOME:
-          version:
+    - parallel:
+      - op:
+          ref: $(../../website/.opspec/dev)
+      - serial:
+        - op:
+            ref: $(../../cli/.opspec/compile)
+            inputs:
+              HOME:
+              version:
+        - op:
+            ref: $(../../cli/.opspec/compile)
+            inputs:
+              HOME:
+              version:
+        - op:
+            ref: $(../../cli/.opspec/compile)
+            inputs:
+              HOME:
+              version:

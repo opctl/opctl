@@ -15,14 +15,14 @@ func Apply(ctx context.Context, domain, nsIPAddress, nsPort string) error {
 	fmt.Println("Attempting to configure split DNS via systemd-resolved...")
 	conn, err := resolved.NewConn()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to create resolved connection: %v\n", err)
+		fmt.Println("Failed to create resolved connection: %w\n", err)
 		fmt.Println("Falling back to /etc/resolv.conf configuration...")
 		return configureFallbackDNS(domain, nsIPAddress, nsPort)
 	}
 	defer conn.Close()
 
 	if err := configureSplitDNS(ctx, conn, domain, nsIPAddress, nsPort); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to configure split DNS via systemd-resolved: %v\n", err)
+		fmt.Println("Failed to configure split DNS via systemd-resolved: %w\n", err)
 		fmt.Println("Falling back to /etc/resolv.conf configuration...")
 		return configureFallbackDNS(domain, nsIPAddress, nsPort)
 	}
