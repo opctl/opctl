@@ -2,13 +2,25 @@ package dns
 
 import (
 	"context"
+	"strings"
 
-	"github.com/opctl/opctl/sdks/go/node/dns/internal/resolvercfg"
+	"github.com/goodhosts/hostsfile"
 )
 
 // DeleteResolverCfgs we've made to the OS
 func DeleteResolverCfgs(
 	ctx context.Context,
 ) error {
-	return resolvercfg.Delete(ctx)
+	h, err := hostsfile.NewHosts()
+	if err != nil {
+		return err
+	}
+
+	for _, l := range h.Lines {
+		if strings.Contains(l.Comment, managedByOpctlComment) {
+			h.Remove(l.IP, l.Hosts...)
+		}
+	}
+
+	return h.Flush()
 }

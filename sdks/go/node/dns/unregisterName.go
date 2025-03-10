@@ -1,16 +1,25 @@
 package dns
 
+import (
+	"github.com/goodhosts/hostsfile"
+)
+
 func UnregisterName(
 	name,
 	ipAddress string,
 ) error {
-	ips, ok := ipsByHostname[name]
-	if !ok {
-		return nil
+	h, err := hostsfile.NewHosts()
+	if err != nil {
+		return err
 	}
 
-	delete(ips, ipAddress)
+	err = h.Remove(
+		ipAddress,
+		name,
+	)
+	if err != nil {
+		return err
+	}
 
-	return nil
-
+	return h.Flush()
 }

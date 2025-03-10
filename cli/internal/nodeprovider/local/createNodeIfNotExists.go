@@ -54,8 +54,6 @@ func (np nodeProvider) CreateNodeIfNotExists(
 		np.config.ContainerRuntime,
 		"--data-dir",
 		np.config.DataDir,
-		"--dns-listen-address",
-		np.config.DNSListenAddress,
 		"node",
 		"create",
 	)

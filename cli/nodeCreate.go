@@ -14,7 +14,6 @@ import (
 	core "github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/node/api"
 	"github.com/opctl/opctl/sdks/go/node/datadir"
-	"github.com/opctl/opctl/sdks/go/node/dns"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -76,19 +75,6 @@ func nodeCreate(
 				ctx,
 				nodeConfig.APIListenAddress,
 				c,
-			)
-		},
-	)
-
-	eg.Go(
-		func() error {
-			fmt.Println(
-				cliColorer.Info(fmt.Sprintf("opctl DNS listening at %s", nodeConfig.DNSListenAddress)),
-			)
-
-			return dns.Listen(
-				ctx,
-				nodeConfig.DNSListenAddress,
 			)
 		},
 	)

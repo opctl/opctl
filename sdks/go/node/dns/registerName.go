@@ -2,29 +2,33 @@ package dns
 
 import (
 	"context"
-	"strings"
-
-	"github.com/opctl/opctl/sdks/go/node/dns/internal/resolvercfg"
+	"fmt"
+	"github.com/goodhosts/hostsfile"
 )
+
+const managedByOpctlComment = "managed by opctl"
 
 func RegisterName(
 	ctx context.Context,
 	name,
 	ipAddress string,
 ) error {
-	ips := ipsByHostname[name]
-	if ips == nil {
-		ipsByHostname[name] = map[string]interface{}{}
+	h, err := hostsfile.NewHosts()
+	if err != nil {
+		return err
 	}
 
-	ipsByHostname[name][ipAddress] = nil
-
-	nameParts := strings.Split(name, ".")
-
-	return resolvercfg.Apply(
-		ctx,
-		nameParts[len(nameParts)-1],
-		nsIPAddress,
-		nsPort,
+	err = h.AddRaw(
+		fmt.Sprintf(
+			"%s %s # %s",
+			ipAddress,
+			name,
+			managedByOpctlComment,
+		),
 	)
+	if err != nil {
+		return err
+	}
+
+	return h.Flush()
 }

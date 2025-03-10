@@ -1,6 +1,7 @@
 module github.com/opctl/opctl
 
 go 1.23.0
+
 require (
 	github.com/abiosoft/colima v0.3.4
 	github.com/appdataspec/sdk-golang v0.0.0-20170917062448-0c0ade7a92f7
@@ -18,13 +19,13 @@ require (
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/golang-interfaces/github.com-gorilla-websocket v0.0.0-20190604222234-f7c71d63fecb
 	github.com/golang-interfaces/ihttp v0.0.0-20170731143308-228dd9eedf13
+	github.com/goodhosts/hostsfile v0.1.6
 	github.com/gorilla/handlers v1.4.1
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.0
 	github.com/jawher/mow.cli v1.1.0
 	github.com/jfbus/httprs v0.0.0-20180614100821-7861a1150846
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.3
-	github.com/miekg/dns v1.1.55
 	github.com/onsi/ginkgo v1.16.6-0.20211014152641-f228134fe057
 	github.com/onsi/gomega v1.34.1
 	github.com/opencontainers/image-spec v1.1.0
@@ -67,6 +68,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/derekparker/trie v0.0.0-20200317170641-1fdf38b7b0e9 // indirect
 	github.com/dgraph-io/ristretto v0.1.1 // indirect
+	github.com/dimchansky/utfbom v1.1.1 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/ebitengine/purego v0.8.2 // indirect
@@ -117,6 +119,7 @@ require (
 	github.com/klauspost/pgzip v1.2.6 // indirect
 	github.com/letsencrypt/boulder v0.0.0-20230907030200-6d76a0f91e1e // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
+	github.com/magefile/mage v1.15.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
@@ -181,7 +184,7 @@ require (
 	go.starlark.net v0.0.0-20220816155156-cfacd8902214 // indirect
 	golang.org/x/arch v0.0.0-20190927153633-4e8777c89be4 // indirect
 	golang.org/x/crypto v0.29.0 // indirect
-	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
+	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa // indirect
 	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/oauth2 v0.19.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect

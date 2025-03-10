@@ -80,15 +80,6 @@ func newCli(
 		},
 	)
 
-	dnsListenAddress := cli.String(
-		mow.StringOpt{
-			Desc:   "IP:PORT on which the DNS server will listen",
-			EnvVar: "OPCTL_DNS_LISTEN_ADDRESS",
-			Name:   "dns-listen-address",
-			Value:  "127.0.0.1:53",
-		},
-	)
-
 	cliParamSatisfier := cliparamsatisfier.New(cliOutput)
 
 	noColor := cli.Bool(mow.BoolOpt{
@@ -142,7 +133,6 @@ func newCli(
 							APIListenAddress: *apiListenAddress,
 							ContainerRuntime: *containerRuntime,
 							DataDir:          *dataDir,
-							DNSListenAddress: *dnsListenAddress,
 						},
 						model.AddAuthReq{
 							Resources: *resources,
@@ -168,7 +158,6 @@ func newCli(
 						APIListenAddress: *apiListenAddress,
 						ContainerRuntime: *containerRuntime,
 						DataDir:          *dataDir,
-						DNSListenAddress: *dnsListenAddress,
 					},
 				),
 			)
@@ -195,7 +184,6 @@ func newCli(
 						APIListenAddress: *apiListenAddress,
 						ContainerRuntime: *containerRuntime,
 						DataDir:          *dataDir,
-						DNSListenAddress: *dnsListenAddress,
 					},
 					*dirRef,
 				),
@@ -214,7 +202,6 @@ func newCli(
 							APIListenAddress: *apiListenAddress,
 							ContainerRuntime: *containerRuntime,
 							DataDir:          *dataDir,
-							DNSListenAddress: *dnsListenAddress,
 						},
 					),
 				)
@@ -231,7 +218,6 @@ func newCli(
 							APIListenAddress: *apiListenAddress,
 							ContainerRuntime: *containerRuntime,
 							DataDir:          *dataDir,
-							DNSListenAddress: *dnsListenAddress,
 						},
 					),
 				)
@@ -248,7 +234,6 @@ func newCli(
 							APIListenAddress: *apiListenAddress,
 							ContainerRuntime: *containerRuntime,
 							DataDir:          *dataDir,
-							DNSListenAddress: *dnsListenAddress,
 						},
 					),
 				)
@@ -262,7 +247,6 @@ func newCli(
 				APIListenAddress: *apiListenAddress,
 				ContainerRuntime: *containerRuntime,
 				DataDir:          *dataDir,
-				DNSListenAddress: *dnsListenAddress,
 			},
 		)
 		if err != nil {
@@ -434,7 +418,6 @@ func newCli(
 						APIListenAddress: *apiListenAddress,
 						ContainerRuntime: *containerRuntime,
 						DataDir:          *dataDir,
-						DNSListenAddress: *dnsListenAddress,
 					},
 					*args,
 					*argFile,
@@ -454,7 +437,6 @@ func newCli(
 						APIListenAddress: *apiListenAddress,
 						ContainerRuntime: *containerRuntime,
 						DataDir:          *dataDir,
-						DNSListenAddress: *dnsListenAddress,
 					},
 				),
 			)
@@ -481,7 +463,6 @@ func newCli(
 						APIListenAddress: *apiListenAddress,
 						ContainerRuntime: *containerRuntime,
 						DataDir:          *dataDir,
-						DNSListenAddress: *dnsListenAddress,
 					},
 					*apiListenAddress,
 					*mountRefArg,

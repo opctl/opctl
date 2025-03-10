@@ -11,8 +11,6 @@ type NodeConfig struct {
 	ContainerRuntime string
 	// DataDir sets the path of dir used to store node data
 	DataDir string
-	// DNSListenAddress sets the IP:PORT on which the DNS server will listen
-	DNSListenAddress string
 }
 
 // New returns an initialized "local" node provider
