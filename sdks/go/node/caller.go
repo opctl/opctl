@@ -1,15 +1,38 @@
 package node
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
+	"path/filepath"
 	"runtime/debug"
+	"strings"
 	"time"
 
+	"github.com/ipfs/go-cid"
+	"github.com/ipld/go-ipld-prime"
+	ipldjson "github.com/ipld/go-ipld-prime/codec/json"
+	"github.com/ipld/go-ipld-prime/linking"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
+	"github.com/ipld/go-ipld-prime/storage/fsstore"
+	"github.com/multiformats/go-multicodec"
+	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
 	callpkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/call"
 )
+
+var linkPrototype = cidlink.LinkPrototype{
+	Prefix: cid.Prefix{
+		Version:  1,
+		Codec:    uint64(multicodec.Json),
+		MhType:   uint64(multicodec.Sha2_512),
+		MhLength: 64,
+	},
+}
 
 //counterfeiter:generate -o internal/fakes/caller.go . caller
 type caller interface {
@@ -33,9 +56,67 @@ func newCaller(
 	dataDirPath string,
 	pubSub pubsub.PubSub,
 ) caller {
+	ipldPath := filepath.Join(dataDirPath, "dcg", "ipld")
+	if err := unsudo.CreateDir(ipldPath); err != nil {
+		panic(err)
+	}
+
+	fsStore := fsstore.Store{}
+	// if err := fsStore.Init(
+	// 	ipldPath,
+	// 	b32enc,
+	// 	sharding.Shard_r122,
+	// ); err != nil {
+	// 	panic(err)
+	// }
+	if err := fsStore.InitDefaults(
+		ipldPath,
+	); err != nil {
+		panic(err)
+	}
+
+	lsys := cidlink.DefaultLinkSystem()
+	lsys.SetReadStorage(&fsStore)
+	lsys.SetWriteStorage(&fsStore)
+	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
+		// change prefix
+		buf := bytes.Buffer{}
+		return &buf, func(lnk ipld.Link) error {
+			var key string
+			if lnkCtx.LinkPath.Len() == 0 {
+				key = lnk.String()
+			} else {
+				key = strings.Join([]string{lnk.String(), lnkCtx.LinkPath.String()}, "/")
+			}
+
+			wr, cb, err := fsStore.PutStream(lnkCtx.Ctx)
+			if err != nil {
+				return fmt.Errorf("error while reading stream")
+			}
+			wr.Write(buf.Bytes())
+			cb(key)
+			return err
+		}, nil
+	}
+	lsys.StorageReadOpener = func(lnkCtx ipld.LinkContext, link ipld.Link) (io.Reader, error) {
+		var key string
+		if lnkCtx.LinkPath.Len() == 0 {
+			key = link.String()
+		} else {
+			key = strings.Join([]string{link.String(), lnkCtx.LinkPath.String()}, "/")
+		}
+
+		reader, err := fsStore.GetStream(lnkCtx.Ctx, key)
+		if err != nil {
+			return nil, fmt.Errorf("path not found")
+		}
+		return reader, nil
+	}
+
 	instance := &_caller{
 		containerCaller: containerCaller,
 		dataDirPath:     dataDirPath,
+		lsys:            lsys,
 		pubSub:          pubSub,
 	}
 
@@ -70,6 +151,7 @@ func newCaller(
 type _caller struct {
 	containerCaller    containerCaller
 	dataDirPath        string
+	lsys               linking.LinkSystem
 	opCaller           opCaller
 	parallelCaller     parallelCaller
 	parallelLoopCaller parallelLoopCaller
@@ -257,6 +339,53 @@ func (clr _caller) Call(
 	default:
 		err = fmt.Errorf("invalid call graph '%+v'", callSpec)
 	}
+
+	if err != nil {
+		return outputs, err
+	}
+
+	outputsBytes, err := json.Marshal(outputs)
+	if err != nil {
+		return nil, err
+	}
+
+	nb := basicnode.Prototype.Any.NewBuilder()
+	if err := ipldjson.Decode(
+		nb,
+		bytes.NewReader(outputsBytes),
+	); err != nil {
+		return nil, err
+	}
+
+	lnk, err := clr.lsys.Store(
+		linking.LinkContext{},
+		linkPrototype,
+		nb.Build(),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Printf("stored node with CID: %s\n", lnk)
+	// Retrieve the node from the filesystem store using its CID
+	retrievedNode, err := clr.lsys.Load(
+		linking.LinkContext{},
+		lnk,
+		basicnode.Prototype.Any,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// Print the retrieved node as JSON to stdout
+	var buf bytes.Buffer
+	if err := ipldjson.Encode(
+		retrievedNode,
+		&buf,
+	); err != nil {
+		return nil, err
+	}
+	fmt.Printf("Retrieved Node: %s\n", buf.String())
 
 	return outputs, err
 }

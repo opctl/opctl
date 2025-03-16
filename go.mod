@@ -1,6 +1,7 @@
 module github.com/opctl/opctl
 
 go 1.23.0
+
 require (
 	github.com/abiosoft/colima v0.3.4
 	github.com/appdataspec/sdk-golang v0.0.0-20170917062448-0c0ade7a92f7
@@ -21,10 +22,13 @@ require (
 	github.com/gorilla/handlers v1.4.1
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.0
+	github.com/ipfs/go-cid v0.4.1
+	github.com/ipld/go-ipld-prime v0.21.0
 	github.com/jawher/mow.cli v1.1.0
 	github.com/jfbus/httprs v0.0.0-20180614100821-7861a1150846
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.3
 	github.com/miekg/dns v1.1.55
+	github.com/multiformats/go-multicodec v0.9.0
 	github.com/onsi/ginkgo v1.16.6-0.20211014152641-f228134fe057
 	github.com/onsi/gomega v1.34.1
 	github.com/opencontainers/image-spec v1.1.0
@@ -114,6 +118,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/klauspost/compress v1.17.7 // indirect
+	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/klauspost/pgzip v1.2.6 // indirect
 	github.com/letsencrypt/boulder v0.0.0-20230907030200-6d76a0f91e1e // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
@@ -126,6 +131,7 @@ require (
 	github.com/mdlayher/netlink v1.7.2 // indirect
 	github.com/mdlayher/socket v0.4.1 // indirect
 	github.com/miekg/pkcs11 v1.1.1 // indirect
+	github.com/minio/sha256-simd v1.0.0 // indirect
 	github.com/mitchellh/copystructure v1.0.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.1 // indirect
@@ -136,12 +142,19 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
+	github.com/mr-tron/base58 v1.2.0 // indirect
+	github.com/multiformats/go-base32 v0.0.3 // indirect
+	github.com/multiformats/go-base36 v0.1.0 // indirect
+	github.com/multiformats/go-multibase v0.0.3 // indirect
+	github.com/multiformats/go-multihash v0.2.3 // indirect
+	github.com/multiformats/go-varint v0.0.6 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/runtime-spec v1.2.0 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/polydawn/refmt v0.89.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/proglottis/gpgme v0.1.3 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
@@ -152,7 +165,8 @@ require (
 	github.com/sigstore/rekor v1.2.2 // indirect
 	github.com/sigstore/sigstore v1.8.2 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/skeema/knownhosts v1.3.0 // indirect
+	github.com/skeema/knownhosts v1.2.2 // indirect
+	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/cobra v1.7.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stefanberger/go-pkcs11uri v0.0.0-20201008174630-78d3cae3a980 // indirect
@@ -200,6 +214,7 @@ require (
 	k8s.io/klog/v2 v2.120.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20231010175941-2dd684a91f00 // indirect
 	k8s.io/utils v0.0.0-20240310230437-4693a0247e57 // indirect
+	lukechampine.com/blake3 v1.1.6 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
