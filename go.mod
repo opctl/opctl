@@ -1,7 +1,6 @@
 module github.com/opctl/opctl
 
 go 1.23.0
-
 require (
 	github.com/abiosoft/colima v0.3.4
 	github.com/appdataspec/sdk-golang v0.0.0-20170917062448-0c0ade7a92f7
@@ -77,7 +76,7 @@ require (
 	github.com/go-delve/liner v1.2.3-0.20220127212407-d32d89dd2a5d // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.6.0 // indirect
-	github.com/go-jose/go-jose/v3 v3.0.2 // indirect
+	github.com/go-jose/go-jose/v3 v3.0.4 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
