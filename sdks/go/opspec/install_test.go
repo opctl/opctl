@@ -96,7 +96,7 @@ var _ = Context("Install", func() {
 					Context("os.Chmod doesn't err", func() {
 						It("should copy content", func() {
 							/* arrange */
-							fsDataSource := fs.New("")
+							fsDataSource := fs.New()
 							ref := "testdata/testop"
 							handle, err := fsDataSource.TryResolve(providedCtx, ref)
 							if err != nil {

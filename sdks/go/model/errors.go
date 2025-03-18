@@ -18,10 +18,10 @@ func (ErrDataProviderAuthorization) Error() string {
 	return "unauthorized"
 }
 
-// ErrDataRefResolution conveys no such data could be found
-type ErrDataRefResolution struct{}
+// ErrDataNotFoundResolution conveys no such data could be found
+type ErrDataNotFoundResolution struct{}
 
-func (e ErrDataRefResolution) Error() string {
+func (e ErrDataNotFoundResolution) Error() string {
 	return "not found"
 }
 
