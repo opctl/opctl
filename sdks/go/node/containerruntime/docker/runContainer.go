@@ -54,7 +54,6 @@ func (cr _runContainer) RunContainer(
 ) (*int64, error) {
 	defer stdout.Close()
 	defer stderr.Close()
-	var containerIPAddress string
 
 	// ensure user defined network exists to allow inter container resolution via name
 	// @TODO: remove when socket outputs supported
@@ -89,13 +88,6 @@ func (cr _runContainer) RunContainer(
 				Force:         true,
 			},
 		)
-
-		if req.Name != nil {
-			dns.UnregisterName(
-				*req.Name,
-				containerIPAddress,
-			)
-		}
 	}()
 
 	var imageErr error
@@ -213,6 +205,11 @@ func (cr _runContainer) RunContainer(
 		}
 
 		if endpointSettings, ok := containerJSON.NetworkSettings.Networks[networkName]; ok {
+			defer dns.UnregisterName(
+				*req.Name,
+				endpointSettings.IPAddress,
+			)
+
 			err = dns.RegisterName(
 				ctx,
 				*req.Name,
