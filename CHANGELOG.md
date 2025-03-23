@@ -4,19 +4,25 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
-## [0.1.67] - 2024-03-08
+## [0.1.68] - 2025-03-22
+
+### Fixed
+
+- Fix accessing containers by name from opctl nodes stops working due to prior registrations not being cleaned up on container exit
+
+## [0.1.67] - 2025-03-08
 
 ### Fixed
 
 - Fix accessing Docker For Mac 4.39.0+ containers by name from opctl nodes
 
-## [0.1.66] - 2024-02-26
+## [0.1.66] - 2025-02-26
 
 ### Added
 
 - Support for environment variables for each CLI command options and arguments
 
-## [0.1.65] - 2024-02-10
+## [0.1.65] - 2025-02-10
 
 ### Added
 
@@ -26,19 +32,19 @@ accordance with
 
 - Binding opctl DNS to a non-standard port (e.g. 54)
 
-## [0.1.64] - 2024-02-10
+## [0.1.64] - 2025-02-10
 
 ### Added
 
 - Leverage native privilege escalation handling for self-update
 
-## [0.1.63] - 2024-02-08
+## [0.1.63] - 2025-02-08
 
 ### Added
 
 - Native privilege escalation handling (i.e. no more calling with sudo)
 
-## [0.1.62] - 2024-02-05
+## [0.1.62] - 2025-02-05
 
 ### Fixed
 
