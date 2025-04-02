@@ -8,6 +8,7 @@ An object which defines the image of a container call.
 - must have
   - [ref](#ref)
 - may have
+  - [platform](#platform)
   - [pullCreds](#pullcreds)
 
 ### ref
@@ -22,6 +23,9 @@ Must be one of:
 
 ### Example ref (variable)
 `ref: $(myOCIImageLayoutDir)`
+
+### platform
+An [oci-image-platform [object]](../oci-image-platform.md) constraining the image which will be pulled from the source.
 
 ### pullCreds
 A [pull-creds [object]](../pull-creds.md) defining creds used to pull the image from a private source.

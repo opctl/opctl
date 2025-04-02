@@ -29,6 +29,8 @@ var _ = Context("Interpret", func() {
 		It("should return expected result", func() {
 
 			/* arrange */
+			archVariable := "archVariable"
+			archValue := "archValue"
 			refVariable := "refVariable"
 			refValue := "refValue"
 			usernameVariable := "usernameVariable"
@@ -37,6 +39,9 @@ var _ = Context("Interpret", func() {
 			passwordValue := "passwordValue"
 
 			providedScope := map[string]*model.Value{
+				archVariable: {
+					String: &archValue,
+				},
 				usernameVariable: {
 					String: &usernameValue,
 				},
@@ -50,6 +55,9 @@ var _ = Context("Interpret", func() {
 
 			providedContainerCallImageSpec := &model.ContainerCallImageSpec{
 				Ref: fmt.Sprintf("$(%s)", refVariable),
+				Platform: &model.OCIImagePlatformSpec{
+					Arch: fmt.Sprintf("$(%s)", archVariable),
+				},
 				PullCreds: &model.CredsSpec{
 					Username: fmt.Sprintf("$(%s)", usernameVariable),
 					Password: fmt.Sprintf("$(%s)", passwordVariable),
@@ -65,6 +73,9 @@ var _ = Context("Interpret", func() {
 
 			expectedImage := &model.ContainerCallImage{
 				Ref: &expectedImageRef,
+				Platform: &model.OCIImagePlatform{
+					Arch: &archValue,
+				},
 				PullCreds: &model.Creds{
 					Username: usernameValue,
 					Password: passwordValue,

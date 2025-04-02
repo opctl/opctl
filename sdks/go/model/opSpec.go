@@ -44,8 +44,9 @@ type ContainerCallSpec struct {
 
 // ContainerCallImageSpec is a spec for the image when calling a container
 type ContainerCallImageSpec struct {
-	Ref       string     `json:"ref"`
-	PullCreds *CredsSpec `json:"pullCreds,omitempty"`
+	Platform  *OCIImagePlatformSpec `json:"platform,omitempty"`
+	PullCreds *CredsSpec            `json:"pullCreds,omitempty"`
+	Ref       string                `json:"ref"`
 }
 
 // LoopVarsSpec is a spec for a loops vars
@@ -65,6 +66,10 @@ type OpCallSpec struct {
 	Inputs map[string]interface{} `json:"inputs,omitempty"`
 	// binds scope to outputs of referenced op
 	Outputs map[string]string `json:"outputs,omitempty"`
+}
+
+type OCIImagePlatformSpec struct {
+	Arch string `json:"arch,omitempty"`
 }
 
 // ParallelLoopCallSpec is a spec for calling a parallel loop

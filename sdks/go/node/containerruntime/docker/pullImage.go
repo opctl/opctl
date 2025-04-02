@@ -45,9 +45,21 @@ func pullImage(
 	imagePullCreds := containerCall.Image.PullCreds
 	containerID := containerCall.ContainerID
 
-	imagePullOptions := image.PullOptions{
-		Platform: "linux",
+	platformParts := []string{
+		"linux",
 	}
+
+	if containerCall.Image.Platform != nil && containerCall.Image.Platform.Arch != nil {
+		platformParts = append(platformParts, *containerCall.Image.Platform.Arch)
+	}
+
+	imagePullOptions := image.PullOptions{
+		Platform: strings.Join(
+			platformParts,
+			"/",
+		),
+	}
+
 	if imagePullCreds != nil &&
 		imagePullCreds.Username != "" &&
 		imagePullCreds.Password != "" {
