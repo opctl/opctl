@@ -52,9 +52,10 @@ type ContainerCall struct {
 
 // ContainerCallImage is the image used when calling a container
 type ContainerCallImage struct {
-	Src       *Value  `json:"src,omitempty"`
-	Ref       *string `json:"ref"`
-	PullCreds *Creds  `json:"pullCreds,omitempty"`
+	Platform  *OCIImagePlatform `json:"platform,omitempty"`
+	PullCreds *Creds            `json:"pullCreds,omitempty"`
+	Ref       *string           `json:"ref"`
+	Src       *Value            `json:"src,omitempty"`
 }
 
 // Creds contains authentication credentials
@@ -68,6 +69,10 @@ type LoopVars struct {
 	Index *string `json:"index,omitempty"`
 	Key   *string `json:"key,omitempty"`
 	Value *string `json:"value,omitempty"`
+}
+
+type OCIImagePlatform struct {
+	Arch *string `json:"arch,omitempty"`
 }
 
 // OpCall is a call of an op

@@ -7,6 +7,7 @@ import (
 
 	"github.com/docker/distribution/reference"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/image/platform"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
 )
@@ -43,6 +44,19 @@ func Interpret(
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	if containerCallImageSpec.Platform != nil {
+		platform, err := platform.Interpret(
+			scope,
+			containerCallImageSpec.Platform,
+			scratchDir,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		containerCallImage.Platform = platform
 	}
 
 	parsedRef, err := reference.ParseAnyReference(strings.ToLower(*ref.String))
