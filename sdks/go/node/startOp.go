@@ -17,11 +17,17 @@ func (this core) StartOp(
 	ctx context.Context,
 	req model.StartOpReq,
 ) (string, error) {
+	if req.Op.PullCreds == nil {
+		if auth := this.stateStore.TryGetAuth(req.Op.Ref); auth != nil {
+			req.Op.PullCreds = &auth.Creds
+		}
+	}
+
 	opHandle, err := data.Resolve(
 		ctx,
 		req.Op.Ref,
-		fs.New(this.dataCachePath),
 		git.New(this.dataCachePath, req.Op.PullCreds),
+		fs.New(this.dataCachePath),
 	)
 	if err != nil {
 		return "", err

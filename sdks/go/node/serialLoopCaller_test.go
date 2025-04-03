@@ -111,18 +111,21 @@ var _ = Context("serialLoopCaller", func() {
 					providedCtx := context.Background()
 					providedScope := map[string]*model.Value{}
 
+					stateStore := newStateStore(
+						context.Background(),
+						db,
+						pubSub,
+					)
+
 					caller := newCaller(
 						newContainerCaller(
 							new(containerRuntimeFakes.FakeContainerRuntime),
 							pubSub,
-							newStateStore(
-								context.Background(),
-								db,
-								pubSub,
-							),
+							stateStore,
 						),
 						dbDir,
 						pubSub,
+						stateStore,
 					)
 
 					objectUnderTest := _serialLoopCaller{
@@ -200,19 +203,22 @@ var _ = Context("serialLoopCaller", func() {
 					panic(err)
 				}
 
+				stateStore := newStateStore(
+					ctx,
+					db,
+					pubSub,
+				)
+
 				objectUnderTest := _serialLoopCaller{
 					caller: newCaller(
 						newContainerCaller(
 							fakeContainerRuntime,
 							pubSub,
-							newStateStore(
-								ctx,
-								db,
-								pubSub,
-							),
+							stateStore,
 						),
 						dbDir,
 						pubSub,
+						stateStore,
 					),
 					pubSub: pubSub,
 				}
