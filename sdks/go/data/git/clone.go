@@ -28,9 +28,14 @@ func Clone(
 ) error {
 
 	cloneOptions := &git.CloneOptions{
-		URL:           fmt.Sprintf("https://%v", repoRef.Name),
-		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", repoRef.Version)),
-		Depth:         1,
+		Depth:        1,
+		SingleBranch: true,
+		Tags:         git.NoTags,
+		URL:          fmt.Sprintf("https://%v", repoRef.Name),
+	}
+
+	if repoRef.Version != "" {
+		cloneOptions.ReferenceName = plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", repoRef.Version))
 	}
 
 	if authOpts != nil {
@@ -56,6 +61,11 @@ func Clone(
 			return model.ErrDataProviderAuthorization{}
 		}
 		return err
+	}
+
+	if repoRef.Version == "" {
+		// for no version, we'll always attempt to pull latest
+		return nil
 	}
 
 	return os.RemoveAll(filepath.Join(repoPath, ".git"))

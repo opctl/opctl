@@ -12,6 +12,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
+	"github.com/opctl/opctl/cli/internal/oppath"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
 	"golang.org/x/term"
@@ -278,11 +279,25 @@ func newCli(
 			cliParamSatisfier,
 			node,
 		)
+		cwd, err := os.Getwd()
+		if err != nil {
+			exitWith("", err)
+		}
+
+		opPath, err := oppath.Get(
+			ctx,
+			cwd,
+			dataResolver,
+			node,
+		)
+		if err != nil {
+			exitWith("", err)
+		}
 
 		opCmd.Command("create", "Create an op", func(createCmd *mow.Cmd) {
 			path := createCmd.String(mow.StringOpt{
 				Name:   "path",
-				Value:  opspec.DotOpspecDirName,
+				Value:  model.DotOpspecDirName,
 				Desc:   "Path the op will be created at",
 				EnvVar: "OPCTL_CREATE_PATH",
 			})
@@ -314,7 +329,7 @@ func newCli(
 		opCmd.Command("install", "Install an op", func(installCmd *mow.Cmd) {
 			path := installCmd.String(mow.StringOpt{
 				Name:   "path",
-				Value:  opspec.DotOpspecDirName,
+				Value:  model.DotOpspecDirName,
 				Desc:   "Path the op will be installed at",
 				EnvVar: "OPCTL_INSTALL_PATH",
 			})
@@ -343,6 +358,7 @@ func newCli(
 					opInstall(
 						ctx,
 						dataResolver,
+						opPath,
 						*opRef,
 						*path,
 						&model.Creds{
@@ -390,6 +406,7 @@ func newCli(
 					opValidate(
 						ctx,
 						dataResolver,
+						opPath,
 						*opRef,
 					),
 				)
@@ -407,7 +424,7 @@ func newCli(
 		argFile := runCmd.String(mow.StringOpt{
 			Name:   "arg-file",
 			Desc:   "Read in a file of args in yml format",
-			Value:  filepath.Join(opspec.DotOpspecDirName, "args.yml"),
+			Value:  filepath.Join(model.DotOpspecDirName, "args.yml"),
 			EnvVar: "OPCTL_RUN_ARG_FILE",
 		})
 		noProgress := runCmd.Bool(mow.BoolOpt{
