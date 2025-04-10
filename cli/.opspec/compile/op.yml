@@ -39,6 +39,6 @@ run:
           GOARCH: $(target.arch)
           GOFLAGS:
             -tags=containers_image_openpgp
-            -ldflags=-X=main.version=$(version)
+            -ldflags=-X=github.com/opctl/opctl/cli/cmd.version=$(version)
         image: { ref: 'golang:1.23' }
         workDir: /src

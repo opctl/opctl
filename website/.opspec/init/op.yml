@@ -1,10 +1,19 @@
 name: init
 description: inits the working copy for development
 opspec: 0.1.6
+inputs:
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
 run:
-  container:
-    image: { ref: 'node:20-alpine' }
-    cmd: [yarn]
-    dirs:
-      /src: $(../../..)
-    workDir: /src/website
+  parallel:
+    - container:
+        image: { ref: 'node:20-alpine' }
+        cmd: [yarn]
+        dirs:
+          /src: $(../../..)
+        workDir: /src/website
+    - op:
+        ref: $(../generate)
+        inputs:
+          HOME:

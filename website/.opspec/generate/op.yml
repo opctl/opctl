@@ -1,0 +1,21 @@
+description: generates doc content
+name: generate
+inputs:
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
+run:
+  container:
+    cmd:
+      - go
+      - run
+      - ./website/.opspec/generate
+    dirs:
+      /src: $(../../..)
+      /go/pkg: $(HOME/go/pkg)
+    envVars:
+      CGO_ENABLED: 0
+      GOFLAGS:
+        -tags=containers_image_openpgp
+    image: { ref: 'golang:1.23' }
+    workDir: /src

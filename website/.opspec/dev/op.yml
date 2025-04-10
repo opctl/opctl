@@ -1,9 +1,15 @@
 description: Initializes and starts the website with live-reload. Exposes it at http://opctl.private
 name: dev
+inputs:
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
 run:
   serial:
     - op:
         ref: $(../init)
+        inputs:
+          HOME:
     - container:
         cmd: [ yarn, start ]
         image: { ref: 'node:20-alpine' }
