@@ -241,7 +241,7 @@ testdata/ls/op1	A single line description
 					"install",
 					"--path",
 					"/tmp/twoArgsCopy",
-					"./testdata/twoArgs",
+					"github.com/opspec-pkgs/uuid.v4.generate#1.1.0",
 				)
 
 				/* act */

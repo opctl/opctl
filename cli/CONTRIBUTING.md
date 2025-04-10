@@ -1,5 +1,5 @@
 # Implementation details
-The CLI is built using [mow](https://github.com/jawher/mow.cli) and tries to rely on the [opctl go SDK](../sdks/go/README.md) whenever behavior is not specific to the CLI.
+The CLI is built using [cobra](https://github.com/spf13/cobra) and tries to rely on the [opctl go SDK](../sdks/go/README.md) whenever behavior is not specific to the CLI.
 
 The [opctl webapp](../webapp/README.md) is statically embedded and hosted at runtime.
 

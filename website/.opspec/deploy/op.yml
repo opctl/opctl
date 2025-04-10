@@ -14,10 +14,15 @@ inputs:
             type: string
         required: [accessToken, username]
       description: configuration required to interact w/ github
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
 run:
   serial:
     - op:
         ref: $(../init)
+        inputs:
+          HOME:
     - container:
         cmd: [/cmd.sh]
         dirs:

@@ -5,24 +5,20 @@ import (
 	"os"
 	"runtime/debug"
 
-	"github.com/opctl/opctl/cli/internal/clicolorer"
-	"github.com/opctl/opctl/cli/internal/clioutput"
+	"github.com/opctl/opctl/cli/cmd"
 )
 
 func main() {
-	cliOutput := clioutput.New(clicolorer.New(), os.Stderr, os.Stdout)
 	defer func() {
 		if panic := recover(); panic != nil {
-			cliOutput.Error(
+			fmt.Fprintf(
+				os.Stderr,
 				fmt.Sprintf("recovered from panic: %s\n%s", panic, string(debug.Stack())),
 			)
 			os.Exit(1)
 		}
 	}()
 
-	newCli(
-		cliOutput,
-	).
-		Run(os.Args)
+	cmd.Execute()
 
 }
