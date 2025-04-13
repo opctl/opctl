@@ -23,11 +23,11 @@ func newUICmd(
 
 	return &cobra.Command{
 		Args: cobra.MaximumNArgs(1),
-		Example: `# open web UI to current working directory
+		Example: `# Open the opctl web UI to the current working directory.
 opctl ui
 
-# open web UI to root of github.com/opspec-pkgs/_.op.create git repository tag 3.3.1
-opctl ui 'github.com/opspec-pkgs/_.op.create#3.3.1'
+# Open the opctl web UI to the root directory of the 'github.com/opctl/opctl' git repository commit tagged '0.1.71'.
+opctl ui github.com/opctl/opctl#0.1.71
 `,
 		Use: fmt.Sprintf(
 			"ui [%s]",

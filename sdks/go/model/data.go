@@ -34,11 +34,7 @@ type DataHandle interface {
 		error,
 	)
 
-	// Path returns the local path of the data; may or may not be same as Ref
-	// returns nil if data doesn't exist locally
-	Path() *string
-
-	// Ref returns a ref to the data; may or may not be same as Path
+	// Ref returns a ref to the data
 	Ref() string
 }
 
@@ -60,31 +56,6 @@ type Value struct {
 	Socket  *string                 `json:"socket,omitempty"`
 	String  *string                 `json:"string,omitempty"`
 }
-
-// // ValueNode interfaces with a value of any type
-// type ValueNode interface {
-// 	// ID returns a globally unique id for this value
-// 	ID() string
-// }
-
-// // FileValue interfaces with a file typed value
-// type FileValue interface {
-// 	GetReadSeekCloser() (ReadSeekCloser, error)
-
-// 	ValueNode
-// }
-
-// // DirValue interfaces with a directory typed value
-// type DirValue interface {
-// 	GetDescendant(
-// 		ref string,
-// 	) (
-// 		Value,
-// 		error,
-// 	)
-
-// 	ValueNode
-// }
 
 // Unbox unboxes a Value into a native go type
 func (value Value) Unbox() (interface{}, error) {

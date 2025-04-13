@@ -17,7 +17,7 @@ func newDeleteCmd(
 	deleteCmd := cobra.Command{
 		Args:  cobra.ExactArgs(0),
 		Use:   "delete",
-		Short: "Deletes a node",
+		Short: "Delete an opctl node",
 		Long:  "Deleting a node is destructive! All node data including auth, caches, and operation state will be permanently removed.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()

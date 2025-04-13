@@ -36,16 +36,6 @@ type FakeDataHandle struct {
 		result1 []*model.DirEntry
 		result2 error
 	}
-	PathStub        func() *string
-	pathMutex       sync.RWMutex
-	pathArgsForCall []struct {
-	}
-	pathReturns struct {
-		result1 *string
-	}
-	pathReturnsOnCall map[int]struct {
-		result1 *string
-	}
 	RefStub        func() string
 	refMutex       sync.RWMutex
 	refArgsForCall []struct {
@@ -187,58 +177,6 @@ func (fake *FakeDataHandle) ListDescendantsReturnsOnCall(i int, result1 []*model
 	}{result1, result2}
 }
 
-func (fake *FakeDataHandle) Path() *string {
-	fake.pathMutex.Lock()
-	ret, specificReturn := fake.pathReturnsOnCall[len(fake.pathArgsForCall)]
-	fake.pathArgsForCall = append(fake.pathArgsForCall, struct {
-	}{})
-	fake.recordInvocation("Path", []interface{}{})
-	fake.pathMutex.Unlock()
-	if fake.PathStub != nil {
-		return fake.PathStub()
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	fakeReturns := fake.pathReturns
-	return fakeReturns.result1
-}
-
-func (fake *FakeDataHandle) PathCallCount() int {
-	fake.pathMutex.RLock()
-	defer fake.pathMutex.RUnlock()
-	return len(fake.pathArgsForCall)
-}
-
-func (fake *FakeDataHandle) PathCalls(stub func() *string) {
-	fake.pathMutex.Lock()
-	defer fake.pathMutex.Unlock()
-	fake.PathStub = stub
-}
-
-func (fake *FakeDataHandle) PathReturns(result1 *string) {
-	fake.pathMutex.Lock()
-	defer fake.pathMutex.Unlock()
-	fake.PathStub = nil
-	fake.pathReturns = struct {
-		result1 *string
-	}{result1}
-}
-
-func (fake *FakeDataHandle) PathReturnsOnCall(i int, result1 *string) {
-	fake.pathMutex.Lock()
-	defer fake.pathMutex.Unlock()
-	fake.PathStub = nil
-	if fake.pathReturnsOnCall == nil {
-		fake.pathReturnsOnCall = make(map[int]struct {
-			result1 *string
-		})
-	}
-	fake.pathReturnsOnCall[i] = struct {
-		result1 *string
-	}{result1}
-}
-
 func (fake *FakeDataHandle) Ref() string {
 	fake.refMutex.Lock()
 	ret, specificReturn := fake.refReturnsOnCall[len(fake.refArgsForCall)]
@@ -298,8 +236,6 @@ func (fake *FakeDataHandle) Invocations() map[string][][]interface{} {
 	defer fake.getContentMutex.RUnlock()
 	fake.listDescendantsMutex.RLock()
 	defer fake.listDescendantsMutex.RUnlock()
-	fake.pathMutex.RLock()
-	defer fake.pathMutex.RUnlock()
 	fake.refMutex.RLock()
 	defer fake.refMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

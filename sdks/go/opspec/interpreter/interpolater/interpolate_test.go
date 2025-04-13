@@ -56,7 +56,8 @@ var _ = Context("Interpolate", func() {
 								if len(scenario.Scope) == 0 {
 									scenario.Scope = map[string]*model.Value{}
 								}
-								scenario.Scope["/"] = &model.Value{Dir: opHandle.Path()}
+								opPath := opHandle.Ref()
+								scenario.Scope["/"] = &model.Value{Dir: &opPath}
 
 								for name, value := range scenario.Scope {
 									// make file refs absolute

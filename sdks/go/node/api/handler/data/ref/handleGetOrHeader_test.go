@@ -68,18 +68,13 @@ var _ = Context("HandleGetOrHeader", func() {
 			})
 		})
 
-		wd, err := os.Getwd()
-		if err != nil {
-			panic(err)
-		}
 		Describe("ref + path is dir", func() {
 
 			It("should call handle.ListDescendants", func() {
 				/* arrange */
 				fakeDataHandle := new(modelFakes.FakeDataHandle)
-				fakeDataHandle.PathReturns(&wd)
 				// error to trigger immediate return
-				fakeDataHandle.ListDescendantsReturns(nil, errors.New("dummyError"))
+				fakeDataHandle.ListDescendantsReturns([]*model.DirEntry{}, nil)
 
 				fakeCore := new(nodeFakes.FakeCore)
 				fakeCore.ResolveDataReturns(fakeDataHandle, nil)
@@ -110,9 +105,9 @@ var _ = Context("HandleGetOrHeader", func() {
 					expectedBody := "dummyErrorMsg"
 
 					fakeDataHandle := new(modelFakes.FakeDataHandle)
-					fakeDataHandle.PathReturns(&wd)
+					fakeDataHandle.ListDescendantsReturns(nil, errors.New("dummyError"))
 					// error to trigger immediate return
-					fakeDataHandle.ListDescendantsReturns(nil, errors.New(expectedBody))
+					fakeDataHandle.GetContentReturns(nil, errors.New(expectedBody))
 
 					fakeCore := new(nodeFakes.FakeCore)
 					fakeCore.ResolveDataReturns(fakeDataHandle, nil)
@@ -148,7 +143,8 @@ var _ = Context("HandleGetOrHeader", func() {
 					fakeCore := new(nodeFakes.FakeCore)
 
 					fakeDataHandle := new(modelFakes.FakeDataHandle)
-					fakeDataHandle.PathReturns(&wd)
+					fakeDataHandle.ListDescendantsReturns(nil, errors.New("dummyError"))
+
 					contentsList := []*model.DirEntry{
 						{Path: "dummyPath"},
 					}
@@ -186,12 +182,10 @@ var _ = Context("HandleGetOrHeader", func() {
 			})
 		})
 		Describe("ref + path is file", func() {
-			currentFilePath := path.Join(wd, "handleGetOrHeader_test.go")
-
 			It("should call handle.GetContent w/ expected args", func() {
 				/* arrange */
 				fakeDataHandle := new(modelFakes.FakeDataHandle)
-				fakeDataHandle.PathReturns(&currentFilePath)
+				fakeDataHandle.ListDescendantsReturns(nil, errors.New("dummyError"))
 				// error to trigger immediate return
 				fakeDataHandle.GetContentReturns(nil, errors.New("dummyError"))
 
@@ -227,7 +221,7 @@ var _ = Context("HandleGetOrHeader", func() {
 					expectedBody := "dummyErrorMsg"
 
 					fakeDataHandle := new(modelFakes.FakeDataHandle)
-					fakeDataHandle.PathReturns(&currentFilePath)
+					fakeDataHandle.ListDescendantsReturns(nil, errors.New("dummyError"))
 					fakeDataHandle.GetContentReturns(nil, errors.New(expectedBody))
 
 					fakeCore := new(nodeFakes.FakeCore)
@@ -256,7 +250,7 @@ var _ = Context("HandleGetOrHeader", func() {
 
 					/* assert */
 					Expect(providedHTTPResp.Code).To(Equal(http.StatusInternalServerError))
-					Expect(providedHTTPResp.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
+					Expect(providedHTTPResp.Header().Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
 					actualBody := strings.TrimSpace(providedHTTPResp.Body.String())
 					Expect(actualBody).To(Equal(expectedBody))
 				})
@@ -265,11 +259,11 @@ var _ = Context("HandleGetOrHeader", func() {
 				It("should call http.ServeContent w/ expected args", func() {
 					/* arrange */
 
-					expectedReadSeeker, err := os.CreateTemp("", "")
+					expectedReadSeeker, _ := os.CreateTemp("", "")
 					defer expectedReadSeeker.Close()
 
 					fakeDataHandle := new(modelFakes.FakeDataHandle)
-					fakeDataHandle.PathReturns(&currentFilePath)
+					fakeDataHandle.ListDescendantsReturns(nil, errors.New("dummyError"))
 					fakeDataHandle.GetContentReturns(expectedReadSeeker, nil)
 
 					fakeCore := new(nodeFakes.FakeCore)

@@ -139,7 +139,7 @@ func NewRootCmd() (*cobra.Command, error) {
 					strings.Split(cmd.InheritedFlags().FlagUsages(), "\n"),
 				)
 			}
-			if cmd.HasInheritedFlags() {
+			if strings.TrimSpace(cmd.Example) != "" {
 				printUsageSection(
 					cmd,
 					"Examples",

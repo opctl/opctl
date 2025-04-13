@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"regexp"
 
+	"github.com/opctl/opctl/sdks/go/data/fs"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs"
@@ -31,14 +32,14 @@ func newOpCaller(
 	dataDirPath string,
 ) opCaller {
 	return _opCaller{
-		caller:         caller,
-		callScratchDir: filepath.Join(dataDirPath, "call"),
+		caller:      caller,
+		dataDirPath: dataDirPath,
 	}
 }
 
 type _opCaller struct {
-	caller         caller
-	callScratchDir string
+	caller      caller
+	dataDirPath string
 }
 
 func (oc _opCaller) Call(
@@ -87,10 +88,15 @@ func (oc _opCaller) Call(
 		return outboundScope, err
 	}
 
+	opDir, err := fs.New(filepath.Join(oc.dataDirPath, "ops")).TryResolve(ctx, opCall.OpPath)
+	if err != nil {
+		return nil, err
+	}
+
 	var opFile *model.OpSpec
 	opFile, err = opfile.Get(
 		ctx,
-		opCall.OpPath,
+		opDir,
 	)
 	if err != nil {
 		return outboundScope, err
@@ -100,7 +106,7 @@ func (oc _opCaller) Call(
 		opFile.Outputs,
 		opCallSpec.Outputs,
 		opCall.OpPath,
-		filepath.Join(oc.callScratchDir, opCall.OpID),
+		filepath.Join(oc.dataDirPath, "call", opCall.OpID),
 	)
 
 	// filter op outboundScope to bound call outboundScope

@@ -27,7 +27,7 @@ func newCreateCmd(
 	createCmd := cobra.Command{
 		Args:  cobra.ExactArgs(0),
 		Use:   "create",
-		Short: "Creates a node",
+		Short: "Create an opctl node",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 

@@ -53,22 +53,7 @@ func (hg _handleGetOrHeader) HandleGetOrHead(
 		return
 	}
 
-	dataPath := dataHandle.Path()
-	dataFileInfo, err := os.Stat(*dataPath)
-	if err != nil {
-		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if dataFileInfo.IsDir() {
-		dirEntriesList, err := dataHandle.ListDescendants(
-			httpReq.Context(),
-		)
-		if err != nil {
-			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
+	if dirEntriesList, err := dataHandle.ListDescendants(httpReq.Context()); err == nil {
 		httpResp.Header().Set("Content-Type", "application/vnd.opspec.0.1.6.dir+json; charset=UTF-8")
 
 		if err := json.NewEncoder(httpResp).Encode(dirEntriesList); err != nil {
@@ -83,6 +68,10 @@ func (hg _handleGetOrHeader) HandleGetOrHead(
 		"",
 	)
 	if err != nil {
+		if os.IsNotExist(err) {
+			http.Error(httpResp, "", http.StatusNotFound)
+			return
+		}
 		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 		return
 	}

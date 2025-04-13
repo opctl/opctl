@@ -46,7 +46,7 @@ func Interpret(
 		pkgPullCreds.Password = *interpretdPassword.String
 	}
 
-	var opPath string
+	var opDir model.DataHandle
 	if regexp.MustCompile(`^\$\(.+\)$`).MatchString(opCallSpec.Ref) {
 		// attempt to process as a variable reference since its variable reference like.
 		dirValue, err := dir.Interpret(
@@ -58,9 +58,14 @@ func Interpret(
 		if err != nil {
 			return nil, fmt.Errorf("error encountered interpreting image src: %w", err)
 		}
-		opPath = *dirValue.Dir
+
+		opDir, err = fs.New().TryResolve(ctx, *dirValue.Dir)
+		if err != nil {
+			return nil, fmt.Errorf("error encountered interpreting image src: %w", err)
+		}
 	} else {
-		opHandle, err := data.Resolve(
+		var err error
+		opDir, err = data.Resolve(
 			ctx,
 			opCallSpec.Ref,
 			fs.New(parentOpPath, filepath.Dir(parentOpPath)),
@@ -69,12 +74,11 @@ func Interpret(
 		if err != nil {
 			return nil, err
 		}
-		opPath = *opHandle.Path()
 	}
 
 	opFile, err := opfile.Get(
 		ctx,
-		opPath,
+		opDir,
 	)
 	if err != nil {
 		return nil, err
@@ -84,6 +88,9 @@ func Interpret(
 	if err != nil {
 		return nil, err
 	}
+
+	// this relies on op existing locally which is currently always true since we only use fs & git as data providers
+	opPath := opDir.Ref()
 
 	opCall := &model.OpCall{
 		BaseCall: model.BaseCall{

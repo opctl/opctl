@@ -26,11 +26,22 @@ func newInstallCmd(
 
 	installCmd := cobra.Command{
 		Args: cobra.ExactArgs(1),
+		Example: `# Install the op defined at the root of the 'github.com/opspec-pkgs/uuid.v4.generate' 
+# git repository commit tagged '1.1.0' in the '.opspec/github.com/opspec-pkgs/uuid.v4.generate#1.1.0' directory
+# of the current working directory.
+opctl op install github.com/opspec-pkgs/uuid.v4.generate#1.1.0
+`,
 		Use: fmt.Sprintf(
 			"install %s",
 			opRefArgName,
 		),
-		Short: "Installs an op",
+		Short: "Install an op",
+		Long: `OP_REF can be either a 'host/repo-path#tag' or 'host/repo-path#tag/path'.
+
+If auth w/ the op source fails the CLI will (re)prompt for username &
+password. In non-interactive terminals, the CLI will note that it can't prompt due to being in a
+non-interactive terminal and exit with a non zero exit code.
+`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			opRef := args[0]
@@ -38,7 +49,7 @@ func newInstallCmd(
 			// install the whole pkg in case relative (intra pkg) refs exist
 			opRefParts := strings.Split(opRef, "#")
 			if len(opRefParts) == 1 {
-				return fmt.Errorf("%s must be a remote reference formatted as host/repo#semver", opRefArgName)
+				return fmt.Errorf("%s must be a remote reference formatted as host/path#semver", opRefArgName)
 			}
 
 			var version string

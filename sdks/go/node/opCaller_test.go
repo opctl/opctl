@@ -96,7 +96,10 @@ var _ = Context("opCaller", func() {
 			/* arrange */
 			expectedOutputName := "expectedOutputName"
 
-			providedOpPath := "testdata/opCaller"
+			providedOpPath, err := filepath.Abs("testdata/opCaller")
+			if err != nil {
+				panic(err)
+			}
 
 			providedOpCall := &model.OpCall{
 				BaseCall: model.BaseCall{
