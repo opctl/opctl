@@ -16,7 +16,7 @@ func newKillCmd() *cobra.Command {
 			"kill %s",
 			opIDArgName,
 		),
-		Short: "Kills an op",
+		Short: "Kill an op",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opID := args[0]
 

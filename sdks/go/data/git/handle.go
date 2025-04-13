@@ -92,10 +92,6 @@ func (gh handle) rListDescendants(
 	return contents, err
 }
 
-func (gh handle) Path() *string {
-	return &gh.path
-}
-
 func (gh handle) Ref() string {
 	return gh.dataRef
 }

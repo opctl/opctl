@@ -15,7 +15,7 @@ func newKillCmd(
 	killCmd := cobra.Command{
 		Args:  cobra.ExactArgs(0),
 		Use:   "kill",
-		Short: "Kills a node and any running operations",
+		Short: "Kill an opctl node and any running operations",
 		Long:  "Killing a node is non destructive. All node data including auth, caches, and operation state will be retained.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()

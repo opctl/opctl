@@ -23,7 +23,7 @@ func newCreateCmd() *cobra.Command {
 			"create %s",
 			nameArgName,
 		),
-		Short: "Creates an op",
+		Short: "Create an op",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
 

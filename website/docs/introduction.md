@@ -13,7 +13,7 @@ Ops are defined in a language called opspec (portmanteau of operation specificat
 - Portable ML (machine learning) pipelines.
 
 ## CLI
-The opctl CLI allows managing ops, nodes, events (logs), and opctl updates. See [reference docs](reference/cli/global-options.md) for full details.
+The opctl CLI allows managing ops, nodes, events (logs), and opctl updates. See [reference docs](reference/cli/index.md) for full details.
 
 ![opctl CLI](/img/opctl-cli.png)
 

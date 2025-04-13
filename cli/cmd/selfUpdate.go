@@ -18,7 +18,7 @@ func newSelfUpdateCmd(
 	return &cobra.Command{
 		Args:  cobra.MaximumNArgs(0),
 		Use:   "self-update",
-		Short: "Update opctl",
+		Short: "Update opctl to the latest non pre-release",
 		Long: `If a node is running, it will be killed in order to apply the update.
 `,
 		Version: version,

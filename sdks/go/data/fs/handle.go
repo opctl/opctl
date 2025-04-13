@@ -90,10 +90,6 @@ func (lh handle) rListDescendants(
 	return contents, err
 }
 
-func (lh handle) Path() *string {
-	return &lh.path
-}
-
 func (lh handle) Ref() string {
 	return lh.path
 }

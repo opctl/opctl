@@ -36,21 +36,21 @@ func newRunCmd(
 
 	runCmd := cobra.Command{
 		Args: cobra.ExactArgs(1),
-		Example: `# run op at ./.opspec/relative/path
-opctl run 'relative/path'
+		Example: `# Run the op defined in the '.opspec/myOp' directory of the current working directory.
+opctl run myOp
 
-# run op at /absolute/path
-opctl run '/absolute/path'
-
-# run op at root of github.com/opspec-pkgs/slack.chat.post-message git repository tag 0.1.1; pass args via -a flag
-opctl run -a apiToken="my-token" -a channelName="my-channel" -a msg="hello!" 'github.com/opspec-pkgs/slack.chat.post-message#0.1.1'
+# Run the op defined in the root directory of the 'github.com/opspec-pkgs/slack.chat.post-message' git 
+# repository commit tagged '1.1.0'. Pass arguments for 'apiToken', 'channelName', and 'msg' inputs.
+opctl run -a apiToken="my-token" -a channelName="my-channel" -a msg="hello!" github.com/opspec-pkgs/slack.chat.post-message#1.1.0
 `,
 		Use: fmt.Sprintf(
 			"run %s",
 			opRefArgName,
 		),
-		Short: "Runs an op",
-		Long: `If an opctl node isn't reachable, one will be started automatically. 
+		Short: "Run an op",
+		Long: `OP_REF can be either a 'relative/path', '/absolute/path', 'host/path/repo#tag', or 'host/path/repo#tag/path'.
+
+If an opctl node isn't reachable, one will be started automatically. 
 
 If auth w/ the op source fails the CLI will (re)prompt for username &
 password. In non-interactive terminals, the CLI will note that it can't prompt due to being in a

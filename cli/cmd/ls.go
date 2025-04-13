@@ -23,20 +23,19 @@ func newLsCmd(
 
 	return &cobra.Command{
 		Args: cobra.MaximumNArgs(1),
-		Example: `# list ops at ./.opspec
-opctl ls  
+		Example: `# List all ops defined in the '.opspec' directory of the current working directory.
+opctl ls
 
-# list ops at /absolute/path
-opctl ls '/absolute/path'
-
-# list ops at root of github.com/opctl/opctl git repository tag 0.1.24
-opctl ls 'github.com/opctl/opctl#0.1.24'
+# List all ops defined in the .opspec directory of the 'github.com/opctl/opctl' git repository commit tagged '0.1.71'.
+opctl ls github.com/opctl/opctl#0.1.71
 `,
 		Use: fmt.Sprintf(
 			"ls [%s]",
 			dirRefArgName,
 		),
-		Short:   "List operations",
+		Short: "List operations",
+		Long: `DIR_REF can be either a 'relative/path', '/absolute/path', 'host/repo-path#tag', or 'host/repo-path#tag/path'.
+`,
 		Version: version,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()

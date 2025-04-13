@@ -127,8 +127,8 @@ var _ = Context("_git", func() {
 				/* assert */
 				Expect(actualErr1).To(BeNil())
 				Expect(actualErr2).To(BeNil())
-				Expect(actualResult1.Path()).To(Equal(expectedResult.Path()))
-				Expect(actualResult2.Path()).To(Equal(expectedResult.Path()))
+				Expect(actualResult1.Ref()).To(Equal(expectedResult.Ref()))
+				Expect(actualResult2.Ref()).To(Equal(expectedResult.Ref()))
 			})
 		})
 		Context("called in parallel w/ different pkg ref", func() {
@@ -181,10 +181,10 @@ var _ = Context("_git", func() {
 
 				/* assert */
 				Expect(actualErr1).To(BeNil())
-				Expect(actualResult1.Path()).To(Equal(expectedResult1.Path()))
+				Expect(actualResult1.Ref()).To(Equal(expectedResult1.Ref()))
 
 				Expect(actualErr2).To(BeNil())
-				Expect(actualResult2.Path()).To(Equal(expectedResult2.Path()))
+				Expect(actualResult2.Ref()).To(Equal(expectedResult2.Ref()))
 			})
 		})
 	})

@@ -14,7 +14,7 @@ func (this core) StartOp(
 	ctx context.Context,
 	req model.StartOpReq,
 ) (string, error) {
-	opHandle, err := this.ResolveData(
+	opDir, err := this.ResolveData(
 		ctx,
 		req.Op.Ref,
 		req.Op.PullCreds,
@@ -31,7 +31,7 @@ func (this core) StartOp(
 
 	// construct opCallSpec
 	opCallSpec := &model.OpCallSpec{
-		Ref:     opHandle.Ref(),
+		Ref:     opDir.Ref(),
 		Inputs:  map[string]interface{}{},
 		Outputs: map[string]string{},
 	}
@@ -51,7 +51,7 @@ func (this core) StartOp(
 
 	opFile, err := opfile.Get(
 		ctx,
-		*opHandle.Path(),
+		opDir,
 	)
 	if err != nil {
 		return "", err
@@ -72,6 +72,9 @@ func (this core) StartOp(
 			cancelOp()
 		}()
 
+		// this relies on op existing locally which is currently always true since we only use fs & git as data providers
+		opPath := opDir.Ref()
+
 		this.caller.Call(
 			opCtx,
 			callID,
@@ -79,7 +82,7 @@ func (this core) StartOp(
 			&model.CallSpec{
 				Op: opCallSpec,
 			},
-			*opHandle.Path(),
+			opPath,
 			nil,
 			callID,
 		)

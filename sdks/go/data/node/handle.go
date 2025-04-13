@@ -58,10 +58,6 @@ func (nh handle) ListDescendants(
 	)
 }
 
-func (handle) Path() *string {
-	return nil
-}
-
 func (nh handle) Ref() string {
 	return nh.dataRef
 }

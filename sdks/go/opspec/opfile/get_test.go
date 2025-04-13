@@ -1,4 +1,4 @@
-package opspec
+package opfile
 
 import (
 	"context"
@@ -9,12 +9,17 @@ import (
 	"github.com/ghodss/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opctl/opctl/sdks/go/data/fs"
 )
 
 var _ = Context("Validate", func() {
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
 	Context("called w/ opspec ../../test-suite scenarios", func() {
 		It("should return result fulfilling scenario.validate.expect", func() {
-			rootPath := "../../../test-suite"
+			rootPath := "../../../../test-suite"
 
 			filepath.Walk(rootPath,
 				func(path string, info os.FileInfo, err error) error {
@@ -40,10 +45,19 @@ var _ = Context("Validate", func() {
 
 							for _, scenario := range scenarioOpFile {
 								if scenario.Validate != nil {
+									/* arrange */
+
+									providedCtx := context.Background()
+
+									opDir, err := fs.New(wd).TryResolve(providedCtx, path)
+									if err != nil {
+										panic(fmt.Errorf("error resolving %s", path))
+									}
+
 									/* act */
-									actualErr := Validate(
-										context.Background(),
-										path,
+									_, actualErr := Get(
+										providedCtx,
+										opDir,
 									)
 
 									/* assert */
@@ -63,29 +77,36 @@ var _ = Context("Validate", func() {
 	})
 	Context("opFileGetter.Get errs", func() {
 		It("should return expected result", func() {
+			/* arrange */
+			providedCtx := context.Background()
+			opDir, err := fs.New(wd).TryResolve(providedCtx, "testdata")
+			if err != nil {
+				panic(err)
+			}
+
 			/* act */
-			actualErr := Validate(
-				context.Background(),
-				"dummyOpPath",
+			_, actualErr := Get(
+				providedCtx,
+				opDir,
 			)
 
 			/* assert */
-			Expect(actualErr.Error()).To(Equal("open dummyOpPath/op.yml: no such file or directory"))
+			Expect(actualErr).To(Not(BeNil()))
 		})
 	})
 	Context("opFileGetter.Get doesn't err", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			wd, err := os.Getwd()
+			providedCtx := context.Background()
+			opDir, err := fs.New().TryResolve(providedCtx, filepath.Join(wd, "testdata/testop"))
 			if err != nil {
 				panic(err)
 			}
-			opRef := filepath.Join(wd, "testdata/testop")
 
 			/* act */
-			actualErr := Validate(
-				context.Background(),
-				opRef,
+			_, actualErr := Get(
+				providedCtx,
+				opDir,
 			)
 
 			/* assert */

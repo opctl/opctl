@@ -3,7 +3,6 @@ package node
 import (
 	"context"
 	"os"
-	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -36,7 +35,7 @@ var _ = Context("core", func() {
 
 			/* assert */
 			Expect(actualErr).To(BeNil())
-			Expect(*actualOp.Path()).To(Equal(filepath.Join(dataCachePath, providedOpRef)))
+			Expect(actualOp.Ref()).To(Equal(providedOpRef))
 		})
 	})
 })
