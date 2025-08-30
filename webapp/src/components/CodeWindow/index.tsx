@@ -64,18 +64,17 @@ export default function CodeWindow(
     ]
   )
 
-  return (
-    <ReactAce
-      style={{
-        width: '100%',
-        height: '100%'
-      }}
-      mode={modelist.getModeForPath(window.fsEntry.name).mode.replace('ace/mode/', '')}
-      theme='github'
-      //onChange={onChange}
-      name='txt-window'
-      editorProps={{ $blockScrolling: true }}
-      value={data}
-    />
-  )
-} 
+  // @ts-ignore - ReactAce class component compatibility with React 18
+  return React.createElement(ReactAce, {
+    style: {
+      width: '100%',
+      height: '100%'
+    },
+    mode: modelist.getModeForPath(window.fsEntry.name).mode.replace('ace/mode/', ''),
+    theme: 'github',
+    //onChange={onChange}
+    name: 'txt-window',
+    editorProps: { $blockScrolling: true },
+    value: data
+  })
+}

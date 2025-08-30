@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 
 // shared vendor css
-import 'react-toastify/dist/ReactToastify.min.css'
+import 'react-toastify/ReactToastify.css'
 import 'reboot.css'
 
 export default function components() {

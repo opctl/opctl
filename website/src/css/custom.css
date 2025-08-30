@@ -1,0 +1,22 @@
+/* Custom styles for Docusaurus */
+
+/* Footer centering styles */
+.footer__links {
+  text-align: center !important;
+  justify-content: center;
+}
+
+.footer__col {
+  display: inline-block !important;
+  vertical-align: top;
+  margin: 0 2rem;
+  text-align: center;
+}
+
+.footer__title {
+  text-align: center !important;
+}
+
+.footer__item {
+  text-align: center !important;
+}

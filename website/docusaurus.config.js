@@ -89,7 +89,10 @@ module.exports = {
         },
         googleAnalytics: {
           trackingID: 'UA-94109316-1',
-        }
+        },
+        theme: {
+          customCss: require.resolve('./src/css/custom.css'),
+        },
       },
     ],
   ],
