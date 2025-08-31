@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/appdataspec/sdk-golang/appdatapath"
@@ -209,13 +210,18 @@ func NewRootCmd() (*cobra.Command, error) {
 			"IP:PORT on which the API server will listen",
 		)
 
+	defaultContainerRuntime := "docker"
+	if runtime.GOOS == "darwin" {
+		defaultContainerRuntime = "appleVF"
+	}
+
 	rootCmd.
 		PersistentFlags().
 		StringVar(
 			&nodeConfig.ContainerRuntime,
 			"container-runtime",
-			"docker",
-			"Runtime for opctl containers. Can be 'docker', 'k8s', or 'qemu' (experimental)",
+			defaultContainerRuntime,
+			"Runtime for opctl containers. Can be 'docker', 'k8s', 'qemu' (experimental), or 'appleVF' (macOS only)",
 		)
 
 	rootCmd.
