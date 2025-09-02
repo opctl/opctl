@@ -1,0 +1,48 @@
+name: generateEmbeds
+description: Generate embedded files for the container runtime
+run:
+  parallelLoop:
+    range:
+      - src: Darwin-x86_64
+        dst: darwin-amd64
+        guestArch: x86_64
+      - src: Darwin-arm64
+        dst: darwin-arm64
+        guestArch: aarch64
+      - src: Linux-x86_64
+        dst: linux-amd64
+        guestArch: x86_64
+      - src: Linux-aarch64
+        dst: linux-arm64
+        guestArch: aarch64
+    vars:
+      value: $(target)
+    run:
+      if:
+        - notExists: $(../../embeds)
+      serial:
+        - op:
+            ref: github.com/opspec-pkgs/http.send#1.0.0
+            inputs:
+              method: GET
+              url: https://github.com/lima-vm/lima/releases/download/v1.2.1/lima-1.2.1-$(target.src).tar.gz
+            outputs:
+              body: $(response)
+              statusCode:
+        - container:
+            image: 
+              ref: alpine:3
+            cmd:
+              - sh
+              - -ce
+              - |
+                tar -xzf /response.tar.gz
+
+                gunzip ./share/lima/lima-guestagent.Linux-$(target.guestArch).gz
+
+                mv ./share/lima/lima-guestagent.Linux-$(target.guestArch) ./bin/limactl /dst
+            dirs:
+              /dst: $(../../embeds/$(target.dst))
+            files:
+              /response.tar.gz: $(response)
+            workDir: /root

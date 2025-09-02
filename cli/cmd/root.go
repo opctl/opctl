@@ -215,7 +215,7 @@ func NewRootCmd() (*cobra.Command, error) {
 			&nodeConfig.ContainerRuntime,
 			"container-runtime",
 			"docker",
-			"Runtime for opctl containers. Can be 'docker', 'k8s', or 'qemu' (experimental)",
+			"Runtime for opctl containers. Can be 'docker' (deprecated), 'k8s', or 'embedded'",
 		)
 
 	rootCmd.

@@ -5,40 +5,48 @@ inputs:
     string:
       constraints:
         format: semver
+  goBuildCachePath:
+    string:
+      description: Path relative to HOME dir, to use for go build cache e.g., on macOS, Library/Caches/go-build; on Linux, .cache/go-build
+      default: Library/Caches/go-build
   HOME:
     dir:
       description: Home directory of caller; used to access go modules
 run:
-  parallelLoop:
-    range:
-      - arch: amd64
-        os: darwin
-      - arch: arm64
-        os: darwin
-      - arch: amd64
-        os: linux
-      - arch: arm64
-        os: linux
-    vars:
-      value: $(target)
-    run:
-      container:
-        cmd:
-          - go
-          - build
-          - -buildvcs=false
-          - -o
-          - cli/opctl-$(target.os)-$(target.arch)
-          - ./cli
-        dirs:
-          /src: $(../../..)
-          /go/pkg: $(HOME/go/pkg)
-        envVars:
-          GOOS: $(target.os)
-          CGO_ENABLED: 0
-          GOARCH: $(target.arch)
-          GOFLAGS:
-            -tags=containers_image_openpgp
-            -ldflags=-X=github.com/opctl/opctl/cli/cmd.version=$(version)
-        image: { ref: 'golang:1.23' }
-        workDir: /src
+  serial:
+    - op:
+        ref: $(../../../sdks/go/node/containerruntime/embedded/.opspec/generateEmbeds)
+    - parallelLoop:
+        range:
+          - arch: amd64
+            os: darwin
+          - arch: arm64
+            os: darwin
+          - arch: amd64
+            os: linux
+          - arch: arm64
+            os: linux
+        vars:
+          value: $(target)
+        run:
+          container:
+            cmd:
+              - go
+              - build
+              - -buildvcs=false
+              - -o
+              - cli/opctl-$(target.os)-$(target.arch)
+              - ./cli
+            dirs:
+              /src: $(../../..)
+              /go/pkg: $(HOME/go/pkg)
+              /root/.cache/go-build: $(HOME/$(goBuildCachePath))
+            envVars:
+              GOOS: $(target.os)
+              CGO_ENABLED: 0
+              GOARCH: $(target.arch)
+              GOFLAGS:
+                -tags=containers_image_openpgp
+                -ldflags=-X=github.com/opctl/opctl/cli/cmd.version=$(version)
+            image: { ref: 'golang:1.25' }
+            workDir: /src

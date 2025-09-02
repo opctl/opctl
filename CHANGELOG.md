@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.73] - 2025-09-16
+
+### Added
+
+- Introduce embedded container runtime
+
+### Changed
+
+- Deprecate docker container runtime; use embedded runtime
+
 ## [0.1.72] - 2025-04-13
 
 ### Changed

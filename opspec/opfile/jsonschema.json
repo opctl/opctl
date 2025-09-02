@@ -654,7 +654,7 @@
             },
             {
               "title": "docker-image-ref",
-              "description": "A docker image reference as defined by [github.com/docker/distribution/reference](https://github.com/docker/distribution/tree/docker/1.13/reference)",
+              "description": "A docker image reference as defined by [github.com/distribution/distribution](https://github.com/distribution/distribution/tree/docker/1.13/reference)",
               "type": "string",
               "enum": [
                 "docker-image-ref"

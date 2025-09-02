@@ -1,6 +1,13 @@
 name: dev
 description: runs go-svc for development
 inputs:
+  goBuildCachePath:
+    string:
+      description: Path relative to HOME dir, to use for go build cache e.g., on macOS, Library/Caches/go-build; on Linux, .cache/go-build
+      default: Library/Caches/go-build
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
   MYSQL_USER:
     string:
       default: testuser
@@ -28,10 +35,13 @@ run:
           MYSQL_DATABASE:
     - container:
         image:
-          ref: 'golang:1.23'
+          ref: 'golang:1.25'
         dirs:
           # mount the source code of our app to the container
-          /src: $(../..) 
+          /src: $(../..)
+          # mount the go pkg and build cache to speed up builds
+          /go/pkg: $(HOME/go/pkg)
+          /root/.cache/go-build: $(HOME/$(goBuildCachePath))
         envVars:
           # let our code know how to connect to the DB
           MYSQL_USER:
@@ -42,9 +52,6 @@ run:
         name: run-a-go-service-api
         workDir: /src
         cmd:
-          - sh
-          - -ce
-          - |
-            go get -u github.com/cespare/reflex # get reflex to watch and hot-reload our main.go
-            sleep 30 # we'll sleep while the MySQL DB starts
-            /go/bin/reflex -g 'main.go' -s -- sh -c 'go run main.go'
+          - go
+          - run
+          - main.go

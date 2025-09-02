@@ -1,15 +1,16 @@
 name: test
 description: runs all tests
 inputs:
-  dockerSocket:
-    socket:
-      description: docker socket to use as container runtime
   githubAccessToken:
     description: accessToken for cloning github.com/opctl/test-suite-auth repo
     string:
       isSecret: true
       constraints:
         minLength: 1
+  goBuildCachePath:
+    string:
+      description: Path relative to HOME dir, to use for go build cache e.g., on macOS, Library/Caches/go-build; on Linux, .cache/go-build
+      default: Library/Caches/go-build
   HOME:
     dir:
       description: Home directory of caller; used to access go modules
@@ -24,7 +25,6 @@ run:
         - op:
             ref: $(../../cli/.opspec/test/unit)
             inputs:
-              dockerSocket:
               HOME:
         - op:
             ref: $(../../cli/.opspec/test/e2e)
@@ -53,7 +53,9 @@ run:
             test -z "\$(gofmt -d -l ./cli ./sdks/go | tee /tmp/output)" || (echo "Fix formatting issues with 'opctl run format'" && cat /tmp/output && exit 1)
         dirs:
           /src: $(../..)
+          /go/pkg: $(HOME/go/pkg)
+          /root/.cache/go-build: $(HOME/$(goBuildCachePath))
         envVars:
           GOFLAGS: -tags=containers_image_openpgp
-        image: { ref: "golang:1.23" }
+        image: { ref: "golang:1.25" }
         workDir: /src
