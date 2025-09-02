@@ -5,6 +5,10 @@ inputs:
     string:
       constraints:
         format: semver
+  goBuildCachePath:
+    string:
+      description: Path relative to HOME dir, to use for go build cache e.g., on macOS, Library/Caches/go-build; on Linux, .cache/go-build
+      default: Library/Caches/go-build
   HOME:
     dir:
       description: Home directory of caller; used to access go modules
@@ -33,6 +37,7 @@ run:
         dirs:
           /src: $(../../..)
           /go/pkg: $(HOME/go/pkg)
+          /root/.cache/go-build: $(HOME/$(goBuildCachePath))
         envVars:
           GOOS: $(target.os)
           CGO_ENABLED: 0

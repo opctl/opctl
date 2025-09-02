@@ -3,6 +3,7 @@ package node
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"runtime/debug"
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
@@ -74,6 +75,9 @@ func (this core) StartOp(
 
 		// this relies on op existing locally which is currently always true since we only use fs & git as data providers
 		opPath := opDir.Ref()
+		if !filepath.IsAbs(opPath) {
+			opPath = filepath.Join(this.dataCachePath, "ops", opPath)
+		}
 
 		this.caller.Call(
 			opCtx,

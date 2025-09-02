@@ -4,7 +4,7 @@ import (
 	"math/big"
 
 	"github.com/blang/semver"
-	"github.com/docker/distribution/reference"
+	"github.com/distribution/reference"
 )
 
 // DockerImageRefFormatChecker is a gojsonschema.FormatChecker for docker image refs

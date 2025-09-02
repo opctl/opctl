@@ -91,6 +91,9 @@ func Interpret(
 
 	// this relies on op existing locally which is currently always true since we only use fs & git as data providers
 	opPath := opDir.Ref()
+	if !filepath.IsAbs(opPath) {
+		opPath = filepath.Join(dataDirPath, "ops", opPath)
+	}
 
 	opCall := &model.OpCall{
 		BaseCall: model.BaseCall{
