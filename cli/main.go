@@ -13,7 +13,9 @@ func main() {
 		if panic := recover(); panic != nil {
 			fmt.Fprintf(
 				os.Stderr,
-				fmt.Sprintf("recovered from panic: %s\n%s", panic, string(debug.Stack())),
+				"recovered from panic: %s\n%s",
+				panic,
+				string(debug.Stack()),
 			)
 			os.Exit(1)
 		}

@@ -5,6 +5,10 @@ inputs:
     string:
       description: Go path spec to the file/files to generate from
       default: ./sdks/go/...
+  goBuildCachePath:
+    string:
+      description: Path relative to HOME dir, to use for go build cache e.g., on macOS, Library/Caches/go-build; on Linux, .cache/go-build
+      default: Library/Caches/go-build
   HOME:
     dir:
       description: Home directory of caller; used to access go modules
@@ -18,5 +22,6 @@ run:
     dirs:
       /src: $(../../../..)
       /go/pkg: $(HOME/go/pkg)
-    image: { ref: 'golang:1.23' }
+      /root/.cache/go-build: $(HOME/$(goBuildCachePath))
+    image: { ref: 'golang:1.25' }
     workDir: /src

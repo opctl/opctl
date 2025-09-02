@@ -30,7 +30,7 @@ opctl auth add github.com -u='my-username' -p='my-password'
 			"add %s",
 			resourcesArgName,
 		),
-		Short: "Add auth for an OCI image registry",
+		Short: "Add default auth used to pull ops and images",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 

@@ -89,7 +89,7 @@ run:
           MYSQL_DATABASE:
     - container:
         image:
-          ref: 'golang:1.23'
+          ref: 'golang:1.25'
         name: go-svc
         dirs:
           # mount the source code of our app to the container

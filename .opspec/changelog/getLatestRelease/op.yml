@@ -1,6 +1,10 @@
 description: Parses the latest version in CHANGELOG.md
 name: parse
 inputs:
+  goBuildCachePath:
+    string:
+      description: Path relative to HOME dir, to use for go build cache e.g., on macOS, Library/Caches/go-build; on Linux, .cache/go-build
+      default: Library/Caches/go-build
   HOME:
     dir:
       description: Home directory of caller; used to access go modules
@@ -18,13 +22,14 @@ outputs:
 run:
   container:
     image:
-      ref: golang:1.23
+      ref: golang:1.25
     cmd:
       - go
       - run
       - /main.go
     dirs:
       /go/pkg: $(HOME/go/pkg)
+      /root/.cache/go-build: $(HOME/$(goBuildCachePath))
     files:
       /go.mod:
       /go.sum:

@@ -1,15 +1,13 @@
 module github.com/opctl/opctl
 
-go 1.23.0
+go 1.25.0
 
 require (
-	github.com/abiosoft/colima v0.3.4
 	github.com/appdataspec/sdk-golang v0.0.0-20170917062448-0c0ade7a92f7
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/containers/image/v5 v5.30.1
 	github.com/dgraph-io/badger/v4 v4.1.0
 	github.com/distribution/reference v0.5.0
-	github.com/docker/distribution v2.8.3+incompatible
 	github.com/docker/docker v27.3.1+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/fatih/color v1.15.0
@@ -28,7 +26,6 @@ require (
 	github.com/onsi/ginkgo v1.16.6-0.20211014152641-f228134fe057
 	github.com/onsi/gomega v1.34.1
 	github.com/opencontainers/image-spec v1.1.0
-	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58
 	github.com/peterh/liner v1.1.0
 	github.com/rhysd/go-github-selfupdate v1.2.3
 	github.com/satori/go.uuid v1.2.0
