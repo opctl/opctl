@@ -35,6 +35,7 @@ run:
           /src: $(../../..)
           /go/pkg: $(HOME/go/pkg)
           /root/.cache/go-build: $(HOME/$(goBuildCachePath))
+        name: opctl-cli-dev.private
         sockets:
           /var/run/docker.sock: $(dockerSocket)
         workDir: /src

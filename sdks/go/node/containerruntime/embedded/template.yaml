@@ -57,13 +57,6 @@ hostResolver:
 portForwards:
 - guestSocket: "/var/run/docker.sock"
   hostSocket: "{{.Dir}}/sock/docker.sock"
-message: |
-  To run `docker` on the host (assumes docker-cli is installed), run the following commands:
-  ------
-  docker context create lima-{{.Name}} --docker "host=unix://{{.Dir}}/sock/docker.sock"
-  docker context use lima-{{.Name}}
-  docker run hello-world
-  ------
 
 images:
 # Try to use release-yyyyMMdd image if available. Note that release-yyyyMMdd will be removed after several months.
