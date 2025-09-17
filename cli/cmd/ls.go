@@ -26,8 +26,8 @@ func newLsCmd(
 		Example: `# List all ops defined in the '.opspec' directory of the current working directory.
 opctl ls
 
-# List all ops defined in the .opspec directory of the 'github.com/opctl/opctl' git repository commit tagged '0.1.71'.
-opctl ls github.com/opctl/opctl#0.1.71
+# List all ops defined in the .opspec directory of the 'github.com/opspec-pkgs/github.release.create' git repository commit tagged '3.0.0'.
+opctl ui github.com/opspec-pkgs/github.release.create#3.0.0
 `,
 		Use: fmt.Sprintf(
 			"ls [%s]",

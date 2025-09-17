@@ -26,8 +26,8 @@ func newUICmd(
 		Example: `# Open the opctl web UI to the current working directory.
 opctl ui
 
-# Open the opctl web UI to the root directory of the 'github.com/opctl/opctl' git repository commit tagged '0.1.71'.
-opctl ui github.com/opctl/opctl#0.1.71
+# Open the opctl web UI to the root directory of the 'github.com/opspec-pkgs/github.release.create' git repository commit tagged '3.0.0'.
+opctl ui github.com/opspec-pkgs/github.release.create#3.0.0
 `,
 		Use: fmt.Sprintf(
 			"ui [%s]",

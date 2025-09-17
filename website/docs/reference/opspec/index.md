@@ -55,7 +55,7 @@ Reference:
                 - [lt](op-directory/op/call/predicate.md#lt)
                 - [lte](op-directory/op/call/predicate.md#lte)
                 - [ne](op-directory/op/call/predicate.md#ne)
-                - [notExists](op-directory/op/call/predicate.md#notExists)
+                - [notExists](op-directory/op/call/predicate.md#notexists)
             - [name](op-directory/op/call/index.md#name)
             - [needs](op-directory/op/call/index.md#needs)
             > one of...
@@ -70,7 +70,6 @@ Reference:
                     - [platform](op-directory/op/call/container/image.md#platform)
                     - [pullCreds](op-directory/op/call/container/image.md#pullcreds)
                 - [name](op-directory/op/call/container/index.md#name)
-                - [ports](op-directory/op/call/container/index.md#ports)
                 - [sockets](op-directory/op/call/container/index.md#sockets)
                 - [workDir](op-directory/op/call/container/index.md#workdir)
             - [op](op-directory/op/call/op.md)

@@ -24,17 +24,16 @@ run:
         inputs:
           HOME:
     - container:
-        cmd: [/cmd.sh]
+        cmd:
+          - yarn
+          - run
+          - deploy
         dirs:
           /src: $(../../..)
         envVars:
+          GIT_USER_NAME: $(github.username)
+          GIT_USER_EMAIL: $(github.username)
           GIT_USER: $(github.username)
-          GITHUB_ACCESS_TOKEN: $(github.accessToken)
-        files:
-          /cmd.sh:
-          /root/.netrc: |
-            machine github.com
-            login $(github.username)
-            password $(github.accessToken)
+          GIT_PASS: $(github.accessToken)
         image: { ref: 'node:20' }
         workDir: /src/website
