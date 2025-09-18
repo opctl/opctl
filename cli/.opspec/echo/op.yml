@@ -1,0 +1,17 @@
+name: echo
+run:
+  container:
+    image: 
+      ref: docker.io/library/alpine:latest
+    dirs:
+      /src: $(../)
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo hello
+        sleep 1
+        echo hello2
+        sleep 1
+        echo hello3
+    workDir: /src

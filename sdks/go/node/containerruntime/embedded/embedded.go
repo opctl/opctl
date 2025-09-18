@@ -12,7 +12,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime"
-	"github.com/opctl/opctl/sdks/go/node/containerruntime/docker"
+	"github.com/opctl/opctl/sdks/go/node/containerruntime/containerd"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
 	"golang.org/x/sync/singleflight"
 )
@@ -55,7 +55,7 @@ func (cr _containerRuntime) DeleteContainerIfExists(
 		return nil
 	}
 
-	dockerCR, err := cr.getDockerContainerRuntime(ctx)
+	dockerCR, err := cr.getContainerRuntime(ctx)
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (cr _containerRuntime) Kill(
 		return nil
 	}
 
-	dockerCR, err := cr.getDockerContainerRuntime(ctx)
+	dockerCR, err := cr.getContainerRuntime(ctx)
 	if err != nil {
 		return err
 	}
@@ -107,7 +107,7 @@ func (cr _containerRuntime) RunContainer(
 	stdout io.WriteCloser,
 	stderr io.WriteCloser,
 ) (*int64, error) {
-	dockerCR, err := cr.getDockerContainerRuntime(ctx)
+	dockerCR, err := cr.getContainerRuntime(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +115,7 @@ func (cr _containerRuntime) RunContainer(
 	return dockerCR.RunContainer(ctx, req, rootCallID, eventPublisher, stdout, stderr)
 }
 
-func (cr _containerRuntime) getDockerContainerRuntime(
+func (cr _containerRuntime) getContainerRuntime(
 	ctx context.Context,
 ) (containerruntime.ContainerRuntime, error) {
 
@@ -154,16 +154,20 @@ func (cr _containerRuntime) getDockerContainerRuntime(
 			cmd := unsudo.NewCmd(ctx, cr.limaPath, args...)
 			cmd.Env = cr.getEnv()
 
-			if outBytes, err := cmd.CombinedOutput(); err != nil {
+			outBytes, err := cmd.CombinedOutput()
+			
+			if err != nil {
 				return nil, fmt.Errorf("failed to start lima instance: %w, %s", err, string(outBytes))
 			}
 
-			return docker.New(
+			fmt.Printf("Lima instance started (or already running):\n %s\n", string(outBytes))
+
+			return containerd.New(
 				ctx,
-				fmt.Sprintf("unix://%s",
+				fmt.Sprintf("/%s",
 					filepath.Join(
 						filepath.Dir(cr.limaPath),
-						"/default/sock/docker.sock",
+						"default/containerd.sock",
 					),
 				),
 			)
