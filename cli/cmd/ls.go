@@ -27,7 +27,7 @@ func newLsCmd(
 opctl ls
 
 # List all ops defined in the .opspec directory of the 'github.com/opspec-pkgs/github.release.create' git repository commit tagged '3.0.0'.
-opctl ui github.com/opspec-pkgs/github.release.create#3.0.0
+opctl ls github.com/opspec-pkgs/github.release.create#3.0.0
 `,
 		Use: fmt.Sprintf(
 			"ls [%s]",
