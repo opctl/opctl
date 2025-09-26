@@ -54,5 +54,6 @@ func writeBinary(path string, data []byte) error {
 	if err := unsudo.CreateFile(path, data); err != nil {
 		return fmt.Errorf("failed to create binary file: %w", err)
 	}
+
 	return nil
 }

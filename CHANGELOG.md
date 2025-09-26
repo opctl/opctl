@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.74] - 2025-09-26
+
+### Fixed
+
+- ls and ui command examples now reference valid ops
+- embedded container runtime now uses caller UID & GID (instead of hardcoded UID & GID)
+
 ## [0.1.73] - 2025-09-16
 
 ### Added
