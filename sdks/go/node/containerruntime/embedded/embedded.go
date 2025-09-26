@@ -7,9 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"syscall"
 
 	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -44,10 +42,7 @@ func (cr _containerRuntime) Delete(
 ) error {
 	cr.Kill(ctx)
 
-	cmd := exec.CommandContext(ctx, cr.limaPath, "delete", "default", "--tty=false")
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Credential: &syscall.Credential{Uid: 502, Gid: 20},
-	}
+	cmd := unsudo.NewCmd(ctx, cr.limaPath, "delete", "default", "--tty=false")
 	cmd.Env = cr.getEnv()
 	return cmd.Run()
 }
@@ -85,11 +80,7 @@ func (cr _containerRuntime) Kill(
 	}
 
 	// Stop the lima instance
-	cmd := exec.CommandContext(ctx, cr.limaPath, "stop", "default", "-f", "--tty=false")
-	// limactl doesn't allow running stop as root
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Credential: &syscall.Credential{Uid: 502, Gid: 20},
-	}
+	cmd := unsudo.NewCmd(ctx, cr.limaPath, "stop", "default", "-f", "--tty=false")
 	cmd.Env = cr.getEnv()
 	return cmd.Run()
 }
@@ -160,11 +151,7 @@ func (cr _containerRuntime) getDockerContainerRuntime(
 			}
 
 			// Start the VM (this will create it if it doesn't exist, or start it if it exists but is stopped)
-			cmd := exec.CommandContext(ctx, cr.limaPath, args...)
-			// limactl doesn't allow running start as root
-			cmd.SysProcAttr = &syscall.SysProcAttr{
-				Credential: &syscall.Credential{Uid: 502, Gid: 20},
-			}
+			cmd := unsudo.NewCmd(ctx, cr.limaPath, args...)
 			cmd.Env = cr.getEnv()
 
 			if outBytes, err := cmd.CombinedOutput(); err != nil {
@@ -192,11 +179,7 @@ func (cr _containerRuntime) getDockerContainerRuntime(
 
 // getInstanceStatus checks if the lima instance exists and if it's running
 func (cr _containerRuntime) getInstanceStatus(ctx context.Context) (exists bool, running bool) {
-	cmd := exec.CommandContext(ctx, cr.limaPath, "list", "--json", "default")
-	// limactl doesn't allow running list as root
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Credential: &syscall.Credential{Uid: 502, Gid: 20},
-	}
+	cmd := unsudo.NewCmd(ctx, cr.limaPath, "list", "--json", "default")
 	cmd.Env = cr.getEnv()
 	output, err := cmd.Output()
 	if err != nil {
