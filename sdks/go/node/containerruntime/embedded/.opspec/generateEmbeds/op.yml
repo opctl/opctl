@@ -25,7 +25,7 @@ run:
             ref: github.com/opspec-pkgs/http.send#1.0.0
             inputs:
               method: GET
-              url: https://github.com/lima-vm/lima/releases/download/v1.2.1/lima-1.2.1-$(target.src).tar.gz
+              url: https://github.com/lima-vm/lima/releases/download/v2.0.0-alpha.1/lima-2.0.0-alpha.1-$(target.src).tar.gz
             outputs:
               body: $(response)
               statusCode:
