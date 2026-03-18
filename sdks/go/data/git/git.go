@@ -5,10 +5,12 @@ package git
 import (
 	"context"
 	"crypto/sha1"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 
+	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/opctl/opctl/sdks/go/model"
 	"golang.org/x/sync/singleflight"
 )
@@ -57,9 +59,11 @@ func (gp _git) TryResolve(
 			// without cloning (equivalent to git ls-remote)
 			remoteHash, hashErr := resolveRemoteHash(ctx, repoRef, gp.pullCreds)
 			if hashErr != nil {
-				// can't reach remote — fall back to cache if available, else fail
-				if _, err := os.Stat(completeMarkerPath); err == nil {
-					return nil, nil
+				if errors.Is(hashErr, transport.ErrAuthenticationRequired) {
+					return nil, model.ErrDataProviderAuthentication{}
+				}
+				if errors.Is(hashErr, transport.ErrAuthorizationFailed) {
+					return nil, model.ErrDataProviderAuthorization{}
 				}
 				return nil, hashErr
 			}
@@ -77,11 +81,7 @@ func (gp _git) TryResolve(
 			os.RemoveAll(tmpPath)
 
 			if cloneErr := Clone(ctx, tmpPath, repoRef, gp.pullCreds); cloneErr != nil {
-				// clone failed — fall back to cache if available
 				os.RemoveAll(tmpPath)
-				if _, err := os.Stat(completeMarkerPath); err == nil {
-					return nil, nil
-				}
 				return nil, cloneErr
 			}
 
