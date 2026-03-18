@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -63,7 +64,7 @@ func (np nodeProvider) CreateNodeIfNotExists(
 	cmd.Stdout = os.Stdout
 
 	var stderr bytes.Buffer
-	cmd.Stderr = &stderr
+	cmd.Stderr = io.MultiWriter(os.Stderr, &stderr)
 
 	// don't inherit env; some things like jenkins track and kill processes via injecting env vars
 	cmd.Env = []string{
