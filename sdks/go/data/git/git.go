@@ -51,30 +51,48 @@ func (gp _git) TryResolve(
 	if _, err, _ := resolveSingleFlightGroup.Do(
 		repoPath,
 		func() (interface{}, error) {
-			// we'll mark complete clones in case we get interrupted
 			completeMarkerPath := filepath.Join(gp.basePath, fmt.Sprintf(".%x", sha1.Sum([]byte(repoPath))))
 
-			_, err := os.Stat(completeMarkerPath)
-			if err == nil {
-				// complete clone found
-				return nil, nil
-			} else if os.IsNotExist(err) {
-				// incomplete clone; blow it away
-				if err := os.RemoveAll(repoPath); err != nil {
-					return nil, err
+			// lightweight check: resolve the tag to a commit SHA on the remote
+			// without cloning (equivalent to git ls-remote)
+			remoteHash, hashErr := resolveRemoteHash(ctx, repoRef, gp.pullCreds)
+			if hashErr != nil {
+				// can't reach remote — fall back to cache if available, else fail
+				if _, err := os.Stat(completeMarkerPath); err == nil {
+					return nil, nil
+				}
+				return nil, hashErr
+			}
+
+			// if the cached hash matches the remote, nothing has changed
+			if cachedHash, err := os.ReadFile(completeMarkerPath); err == nil {
+				if string(cachedHash) == remoteHash {
+					return nil, nil
 				}
 			}
 
-			// attempt clone
-			if err := Clone(ctx, repoPath, repoRef, gp.pullCreds); err != nil {
-				return nil, err
+			// tag has moved (or no cache) — clone into a temp path so the
+			// existing cache is never disturbed until the new clone succeeds
+			tmpPath := repoPath + ".tmp"
+			os.RemoveAll(tmpPath)
+
+			if cloneErr := Clone(ctx, tmpPath, repoRef, gp.pullCreds); cloneErr != nil {
+				// clone failed — fall back to cache if available
+				os.RemoveAll(tmpPath)
+				if _, err := os.Stat(completeMarkerPath); err == nil {
+					return nil, nil
+				}
+				return nil, cloneErr
 			}
 
-			// mark complete
-			if err := os.WriteFile(completeMarkerPath, nil, 0755); err != nil {
+			// atomically replace the cached copy and record the new hash
+			os.RemoveAll(repoPath)
+			if err := os.Rename(tmpPath, repoPath); err != nil {
 				return nil, err
 			}
-
+			if err := os.WriteFile(completeMarkerPath, []byte(remoteHash), 0755); err != nil {
+				return nil, err
+			}
 			return nil, nil
 		},
 	); err != nil {
