@@ -3,7 +3,7 @@ name: check-for-changelog
 run:
   container:
     image:
-      ref: bitnami/git:2.45.0
+      ref: bitnami/git:latest
     cmd:
       - /bin/sh
       - -c
