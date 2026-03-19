@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.75] - 2026-03-19
+
+### Fixed
+
+- Git ops with re-pointed tags (e.g. floating `v1` tags) are now re-fetched when the remote tag points to a new commit
+
 ## [0.1.74] - 2025-09-26
 
 ### Fixed
