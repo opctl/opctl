@@ -95,8 +95,8 @@ var _ = Context("_git", func() {
 				Expect(err).To(BeNil())
 
 				// record marker mtime before second call
-				repoPath := filepath.Join(basePath, providedRef)
-				markerPath := filepath.Join(basePath, fmt.Sprintf(".%x", sha1.Sum([]byte(repoPath))))
+				repoRelPath, _ := filepath.Rel(basePath, filepath.Join(basePath, providedRef))
+				markerPath := filepath.Join(basePath, fmt.Sprintf(".%x", sha1.Sum([]byte(repoRelPath))))
 				markerInfoBefore, err := os.Stat(markerPath)
 				Expect(err).To(BeNil())
 
@@ -128,8 +128,8 @@ var _ = Context("_git", func() {
 				Expect(err).To(BeNil())
 
 				// overwrite the marker with a fake hash to simulate a re-tagged commit
-				repoPath := filepath.Join(basePath, providedRef)
-				markerPath := filepath.Join(basePath, fmt.Sprintf(".%x", sha1.Sum([]byte(repoPath))))
+				repoRelPath, _ := filepath.Rel(basePath, filepath.Join(basePath, providedRef))
+				markerPath := filepath.Join(basePath, fmt.Sprintf(".%x", sha1.Sum([]byte(repoRelPath))))
 				err = os.WriteFile(markerPath, []byte("0000000000000000000000000000000000000000"), 0755)
 				Expect(err).To(BeNil())
 
