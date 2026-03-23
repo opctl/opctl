@@ -75,11 +75,13 @@ func (gp _git) TryResolve(
 				if errors.Is(hashErr, transport.ErrAuthorizationFailed) {
 					return nil, model.ErrDataProviderAuthorization{}
 				}
-				return nil, hashErr
-			}
-
-			// if the cached hash matches the remote, nothing has changed
-			if f, err := root.Open(markerName); err == nil {
+				// remote unreachable — if a cached clone exists, use it; otherwise attempt a clone
+				if f, err := root.Open(markerName); err == nil {
+					f.Close()
+					return nil, nil
+				}
+			} else if f, err := root.Open(markerName); err == nil {
+				// if the cached hash matches the remote, nothing has changed
 				cachedHash, _ := io.ReadAll(f)
 				f.Close()
 				if string(cachedHash) == remoteHash {
@@ -87,8 +89,8 @@ func (gp _git) TryResolve(
 				}
 			}
 
-			// tag has moved (or no cache) — clone into a temp path so the
-			// existing cache is never disturbed until the new clone succeeds
+			// tag has moved, remote unreachable with no cache, or no cache yet —
+			// clone into a temp path so the existing cache is never disturbed until the new clone succeeds
 			root.RemoveAll(tmpRelPath)
 
 			if cloneErr := Clone(ctx, filepath.Join(gp.basePath, tmpRelPath), repoRef, gp.pullCreds); cloneErr != nil {
@@ -101,8 +103,13 @@ func (gp _git) TryResolve(
 			if err := root.Rename(tmpRelPath, repoRelPath); err != nil {
 				return nil, err
 			}
-			if err := root.WriteFile(markerName, []byte(remoteHash), 0600); err != nil {
-				return nil, err
+			// only write the marker when we have a confirmed remote hash;
+			// if remoteHash is empty (remote was unreachable) skip it so the
+			// next resolve will attempt the remote check again
+			if remoteHash != "" {
+				if err := root.WriteFile(markerName, []byte(remoteHash), 0600); err != nil {
+					return nil, err
+				}
 			}
 			return nil, nil
 		},
