@@ -57,6 +57,9 @@ func (gp _git) TryResolve(
 	if _, err, _ := resolveSingleFlightGroup.Do(
 		repoAbsPath,
 		func() (interface{}, error) {
+			if err := os.MkdirAll(gp.basePath, 0700); err != nil {
+				return nil, err
+			}
 			root, err := os.OpenRoot(gp.basePath)
 			if err != nil {
 				return nil, err
