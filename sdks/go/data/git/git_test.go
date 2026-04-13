@@ -2,6 +2,8 @@ package git
 
 import (
 	"context"
+	"crypto/sha1"
+	"fmt"
 	"os"
 	"path/filepath"
 	"sync"
@@ -76,6 +78,73 @@ var _ = Context("_git", func() {
 						Expect(actualError).To(BeNil())
 					})
 				})
+			})
+		})
+		Context("remote hash matches cached marker", func() {
+			It("should return handle without re-cloning", func() {
+				/* arrange */
+				providedRef := "github.com/opspec-pkgs/_.op.create#3.3.1"
+				basePath, err := os.MkdirTemp("", "")
+				if err != nil {
+					panic(err)
+				}
+				objectUnderTest := New(basePath, nil)
+
+				// first call — populates cache and writes the hash marker
+				_, err = objectUnderTest.TryResolve(context.Background(), providedRef)
+				Expect(err).To(BeNil())
+
+				// record marker mtime before second call
+				repoRelPath, _ := filepath.Rel(basePath, filepath.Join(basePath, providedRef))
+				markerPath := filepath.Join(basePath, fmt.Sprintf(".%x", sha1.Sum([]byte(repoRelPath))))
+				markerInfoBefore, err := os.Stat(markerPath)
+				Expect(err).To(BeNil())
+
+				/* act — second call with same hash should hit cache */
+				actualHandle, actualErr := objectUnderTest.TryResolve(context.Background(), providedRef)
+
+				/* assert */
+				Expect(actualErr).To(BeNil())
+				Expect(actualHandle).NotTo(BeNil())
+
+				// marker must not have been rewritten (mtime unchanged = no re-clone)
+				markerInfoAfter, err := os.Stat(markerPath)
+				Expect(err).To(BeNil())
+				Expect(markerInfoAfter.ModTime()).To(Equal(markerInfoBefore.ModTime()))
+			})
+		})
+		Context("cached marker contains stale hash (tag re-pointed)", func() {
+			It("should re-clone and update the marker", func() {
+				/* arrange */
+				providedRef := "github.com/opspec-pkgs/_.op.create#3.3.1"
+				basePath, err := os.MkdirTemp("", "")
+				if err != nil {
+					panic(err)
+				}
+				objectUnderTest := New(basePath, nil)
+
+				// first call — populates cache
+				_, err = objectUnderTest.TryResolve(context.Background(), providedRef)
+				Expect(err).To(BeNil())
+
+				// overwrite the marker with a fake hash to simulate a re-tagged commit
+				repoRelPath, _ := filepath.Rel(basePath, filepath.Join(basePath, providedRef))
+				markerPath := filepath.Join(basePath, fmt.Sprintf(".%x", sha1.Sum([]byte(repoRelPath))))
+				err = os.WriteFile(markerPath, []byte("0000000000000000000000000000000000000000"), 0755)
+				Expect(err).To(BeNil())
+
+				/* act — should detect hash mismatch and re-clone */
+				actualHandle, actualErr := objectUnderTest.TryResolve(context.Background(), providedRef)
+
+				/* assert */
+				Expect(actualErr).To(BeNil())
+				Expect(actualHandle).NotTo(BeNil())
+
+				// marker must now contain the real hash, not our fake one
+				updatedHash, err := os.ReadFile(markerPath)
+				Expect(err).To(BeNil())
+				Expect(string(updatedHash)).NotTo(Equal("0000000000000000000000000000000000000000"))
+				Expect(len(string(updatedHash))).To(Equal(40)) // SHA-1 hex length
 			})
 		})
 		Context("called in parallel w/ same pkg ref", func() {

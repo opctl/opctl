@@ -5,10 +5,13 @@ package git
 import (
 	"context"
 	"crypto/sha1"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
+	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/opctl/opctl/sdks/go/model"
 	"golang.org/x/sync/singleflight"
 )
@@ -28,6 +31,7 @@ func New(
 }
 
 type _git struct {
+	// basePath is the local directory under which cloned git repos are cached
 	basePath  string
 	pullCreds *model.Creds
 }
@@ -45,36 +49,71 @@ func (gp _git) TryResolve(
 		return nil, fmt.Errorf("%w: %w", model.ErrDataGitInvalidRef{}, err)
 	}
 
-	repoPath := repoRef.ToPath(gp.basePath)
+	repoAbsPath := repoRef.ToPath(gp.basePath)
+	repoRelPath, _ := filepath.Rel(gp.basePath, repoAbsPath)
+	tmpRelPath := repoRelPath + ".tmp"
 
 	// attempt to resolve within singleFlight.Group to ensure concurrent resolves don't race
 	if _, err, _ := resolveSingleFlightGroup.Do(
-		repoPath,
+		repoAbsPath,
 		func() (interface{}, error) {
-			// we'll mark complete clones in case we get interrupted
-			completeMarkerPath := filepath.Join(gp.basePath, fmt.Sprintf(".%x", sha1.Sum([]byte(repoPath))))
+			if err := os.MkdirAll(gp.basePath, 0700); err != nil {
+				return nil, err
+			}
+			root, err := os.OpenRoot(gp.basePath)
+			if err != nil {
+				return nil, err
+			}
+			defer root.Close()
 
-			_, err := os.Stat(completeMarkerPath)
-			if err == nil {
-				// complete clone found
-				return nil, nil
-			} else if os.IsNotExist(err) {
-				// incomplete clone; blow it away
-				if err := os.RemoveAll(repoPath); err != nil {
-					return nil, err
+			markerName := fmt.Sprintf(".%x", sha1.Sum([]byte(repoRelPath)))
+
+			// lightweight check: resolve the tag to a commit SHA on the remote
+			// without cloning (equivalent to git ls-remote)
+			remoteHash, hashErr := resolveRemoteHash(ctx, repoRef, gp.pullCreds)
+			if hashErr != nil {
+				if errors.Is(hashErr, transport.ErrAuthenticationRequired) {
+					return nil, model.ErrDataProviderAuthentication{}
+				}
+				if errors.Is(hashErr, transport.ErrAuthorizationFailed) {
+					return nil, model.ErrDataProviderAuthorization{}
+				}
+				// remote unreachable — if a cached clone exists, use it; otherwise attempt a clone
+				if f, err := root.Open(markerName); err == nil {
+					f.Close()
+					return nil, nil
+				}
+			} else if f, err := root.Open(markerName); err == nil {
+				// if the cached hash matches the remote, nothing has changed
+				cachedHash, _ := io.ReadAll(f)
+				f.Close()
+				if string(cachedHash) == remoteHash {
+					return nil, nil
 				}
 			}
 
-			// attempt clone
-			if err := Clone(ctx, repoPath, repoRef, gp.pullCreds); err != nil {
-				return nil, err
+			// tag has moved, remote unreachable with no cache, or no cache yet —
+			// clone into a temp path so the existing cache is never disturbed until the new clone succeeds
+			root.RemoveAll(tmpRelPath)
+
+			if cloneErr := Clone(ctx, filepath.Join(gp.basePath, tmpRelPath), repoRef, gp.pullCreds); cloneErr != nil {
+				root.RemoveAll(tmpRelPath)
+				return nil, cloneErr
 			}
 
-			// mark complete
-			if err := os.WriteFile(completeMarkerPath, nil, 0755); err != nil {
+			// atomically replace the cached copy and record the new hash
+			root.RemoveAll(repoRelPath)
+			if err := root.Rename(tmpRelPath, repoRelPath); err != nil {
 				return nil, err
 			}
-
+			// only write the marker when we have a confirmed remote hash;
+			// if remoteHash is empty (remote was unreachable) skip it so the
+			// next resolve will attempt the remote check again
+			if remoteHash != "" {
+				if err := root.WriteFile(markerName, []byte(remoteHash), 0600); err != nil {
+					return nil, err
+				}
+			}
 			return nil, nil
 		},
 	); err != nil {
