@@ -29,7 +29,7 @@ func deleteScutilEntries(ctx context.Context) error {
 	// List all opctl resolver keys in the Dynamic Store
 	listCmd := exec.CommandContext(ctx, "scutil")
 	listCmd.Stdin = strings.NewReader(
-		fmt.Sprintf("list %s.*/DNS\n", scutilKeyPrefix),
+		fmt.Sprintf("list %s[^/]+/DNS\n", scutilKeyPrefix),
 	)
 
 	output, err := listCmd.CombinedOutput()
