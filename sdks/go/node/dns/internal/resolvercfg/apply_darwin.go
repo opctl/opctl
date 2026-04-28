@@ -1,15 +1,22 @@
 package resolvercfg
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"os"
-	"path"
+	"os/exec"
+	"strings"
 )
 
-var resolverPrefix = "opctl_"
-var resolverDir = "/etc/resolver"
+var scutilKeyPrefix = "State:/Network/Service/opctl_"
+
+// validateScutilInput ensures a value is safe to interpolate into scutil stdin commands.
+// scutil reads commands line-by-line, so newlines would allow command injection.
+func validateScutilInput(name, value string) error {
+	if strings.ContainsAny(value, "\n\r") {
+		return fmt.Errorf("invalid %s %q: must not contain newlines", name, value)
+	}
+	return nil
+}
 
 // Apply to the current system
 func Apply(
@@ -18,54 +25,41 @@ func Apply(
 	nsIPAddress,
 	nsPort string,
 ) error {
-	var buf bytes.Buffer
-	buf.WriteString(
-		"# do not edit; managed by opctl\n",
-	)
+	for name, value := range map[string]string{
+		"domain":    domain,
+		"address":   nsIPAddress,
+		"port":      nsPort,
+	} {
+		if err := validateScutilInput(name, value); err != nil {
+			return err
+		}
+	}
 
-	buf.WriteString(
-		fmt.Sprintf(
-			"domain %s\n",
-			domain,
-		),
-	)
+	key := scutilKeyPrefix + domain + "/DNS"
 
-	buf.WriteString(
-		fmt.Sprintf(
-			"nameserver %s\n",
-			nsIPAddress,
-		),
-	)
-
+	var sb strings.Builder
+	sb.WriteString("d.init\n")
+	sb.WriteString(fmt.Sprintf("d.add ServerAddresses * %s\n", nsIPAddress))
 	if nsPort != "53" {
-		buf.WriteString(
-			fmt.Sprintf(
-				"port %s\n",
-				nsPort,
-			),
-		)
+		sb.WriteString(fmt.Sprintf("d.add ServerPort # %s\n", nsPort))
 	}
+	sb.WriteString(fmt.Sprintf("d.add SupplementalMatchDomains * %s\n", domain))
+	sb.WriteString(fmt.Sprintf("set %s\n", key))
 
-	buf.WriteString(
-		"nameserver 8.8.8.8\n",
+	cmd := exec.CommandContext(
+		ctx,
+		"scutil",
 	)
+	cmd.Stdin = strings.NewReader(sb.String())
 
-	if err := os.MkdirAll(
-		resolverDir,
-		0755,
-	); err != nil {
-		return err
+	outputBytes, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("failed to apply resolver config via scutil: %w, %s", err, string(outputBytes))
 	}
 
-	if err := os.WriteFile(
-		path.Join(
-			resolverDir,
-			resolverPrefix+domain,
-		),
-		buf.Bytes(),
-		0644,
-	); err != nil {
-		return err
+	// scutil exits 0 even on permission errors, so check output
+	if strings.Contains(string(outputBytes), "Permission denied") {
+		return fmt.Errorf("failed to apply resolver config via scutil: permission denied (run as root)")
 	}
 
 	return clearCaches(ctx)
