@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.76] - 2026-06-18
+
+### Added
+
+- Proxy env vars (`HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`, `ALL_PROXY`, and their lowercase forms) from the
+opctl node's environment are now propagated into op containers, unless the op already set them
+
 ## [0.1.75] - 2026-03-19
 
 ### Fixed
