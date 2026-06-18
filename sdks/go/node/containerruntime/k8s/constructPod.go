@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 	coreV1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -36,6 +37,19 @@ func constructPod(
 	}
 
 	for envVarName, envVarValue := range req.EnvVars {
+		container.Env = append(
+			container.Env,
+			coreV1.EnvVar{
+				Name:  envVarName,
+				Value: envVarValue,
+			},
+		)
+	}
+
+	// propagate proxy env vars from the opctl node's process environment, without
+	// overriding values the op explicitly set, so containers can reach the network
+	// on hosts whose only egress route is an HTTP/HTTPS forward proxy.
+	for envVarName, envVarValue := range containerruntime.ProxyEnvVars(req.EnvVars) {
 		container.Env = append(
 			container.Env,
 			coreV1.EnvVar{
