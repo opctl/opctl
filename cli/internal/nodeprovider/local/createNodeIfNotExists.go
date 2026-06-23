@@ -16,6 +16,7 @@ import (
 
 	"github.com/opctl/opctl/cli/internal/euid0"
 	"github.com/opctl/opctl/sdks/go/node"
+	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 )
 
 func (np nodeProvider) CreateNodeIfNotExists(
@@ -65,14 +66,7 @@ func (np nodeProvider) CreateNodeIfNotExists(
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 
-	// don't inherit env; some things like jenkins track and kill processes via injecting env vars
-	cmd.Env = []string{
-		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
-		fmt.Sprintf("PATH=%s", os.Getenv("PATH")),
-		// set by sudo; passthru so we maintain provenance for use by "unsudo"
-		fmt.Sprintf("SUDO_GID=%s", os.Getenv("SUDO_GID")),
-		fmt.Sprintf("SUDO_UID=%s", os.Getenv("SUDO_UID")),
-	}
+	cmd.Env = daemonEnv()
 
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		// own process group
@@ -117,4 +111,29 @@ func (np nodeProvider) CreateNodeIfNotExists(
 	}
 
 	return apiClientNode, nil
+}
+
+// daemonEnv builds the environment for the daemonized node process.
+//
+// We deliberately don't inherit the full env; some things (e.g. jenkins) track
+// and kill processes via injected env vars. We pass through only what the node
+// needs: HOME & PATH, the SUDO_* provenance used by "unsudo", and the proxy
+// vars so the node (and the op containers it runs, see
+// containerruntime.ProxyEnvVars) can reach the network on hosts whose only
+// egress route is an HTTP/HTTPS forward proxy (e.g. CI runners).
+func daemonEnv() []string {
+	env := []string{
+		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
+		fmt.Sprintf("PATH=%s", os.Getenv("PATH")),
+		// set by sudo; passthru so we maintain provenance for use by "unsudo"
+		fmt.Sprintf("SUDO_GID=%s", os.Getenv("SUDO_GID")),
+		fmt.Sprintf("SUDO_UID=%s", os.Getenv("SUDO_UID")),
+	}
+
+	// passing nil yields every proxy var present in this process's environment
+	for name, value := range containerruntime.ProxyEnvVars(nil) {
+		env = append(env, fmt.Sprintf("%s=%s", name, value))
+	}
+
+	return env
 }
