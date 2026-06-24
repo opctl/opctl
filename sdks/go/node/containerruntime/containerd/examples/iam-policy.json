@@ -1,0 +1,25 @@
+{
+  "Comment": "IAM policy delta for the runner service role: lets containerd/nerdctl authenticate to ECR and pull (importing upstream images on demand) from the docker-hub and quay PTC repositories in the artifact-archive prod account.",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "EcrAuth",
+      "Effect": "Allow",
+      "Action": "ecr:GetAuthorizationToken",
+      "Resource": "*"
+    },
+    {
+      "Sid": "EcrPullThroughCachePull",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchImportUpstreamImage"
+      ],
+      "Resource": [
+        "arn:aws:ecr:us-west-2:012473847565:repository/docker-hub/*",
+        "arn:aws:ecr:us-west-2:012473847565:repository/quay/*"
+      ]
+    }
+  ]
+}

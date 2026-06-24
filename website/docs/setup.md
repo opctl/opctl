@@ -139,7 +139,14 @@ import TabItem from '@theme/TabItem';
     |container runtime|dependencies|
     |--|--|
     |docker|[docker](https://docs.docker.com/get-docker/)|
+    |containerd|[containerd](https://containerd.io/) + [nerdctl](https://github.com/containerd/nerdctl) (run opctl with `--container-runtime containerd`)|
     |qemu (experimental)|[lima](https://github.com/lima-vm/lima/releases/latest)|
+
+    The `containerd` runtime drives containerd via the `nerdctl` CLI. Use it when you
+    need per-registry mirrors (e.g. to transparently redirect Docker Hub **and** Quay
+    pulls through a pull-through cache), which the Docker daemon can't do. See
+    [the containerd runtime README](https://github.com/opctl/opctl/blob/main/sdks/go/node/containerruntime/containerd/README.md)
+    for registry-mirror, auth, and proxy-bypass configuration.
 
     ## Installation
 

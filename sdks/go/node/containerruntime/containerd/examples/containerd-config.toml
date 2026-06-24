@@ -1,0 +1,6 @@
+# Snippet for /etc/containerd/config.toml — point containerd at the certs.d
+# directory that holds the per-registry hosts.toml mirror config. nerdctl reads
+# /etc/containerd/certs.d directly; this also wires it up for the CRI image
+# service. Merge into the existing config; restart containerd after changes.
+[plugins."io.containerd.grpc.v1.cri".registry]
+  config_path = "/etc/containerd/certs.d"
