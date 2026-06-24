@@ -1,0 +1,11 @@
+# /etc/containerd/certs.d/docker.io/hosts.toml
+#
+# Redirects Docker Hub pulls through the ECR pull-through cache (PTC) in the
+# artifact-archive prod account. PTC rule: docker-hub -> registry-1.docker.io.
+server = "https://registry-1.docker.io"
+
+[host."https://012473847565.dkr.ecr.us-west-2.amazonaws.com/v2/docker-hub"]
+  capabilities = ["pull", "resolve"]
+  # The PTC repo path is /v2/docker-hub/<repo>; override_path keeps containerd
+  # from appending the upstream repo path to a path that already encodes it.
+  override_path = true

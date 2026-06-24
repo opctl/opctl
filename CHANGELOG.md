@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [Unreleased]
+
+### Added
+
+- New `containerd` container runtime (`--container-runtime containerd`), which drives containerd via the
+`nerdctl` CLI. Unlike the docker runtime it supports per-registry mirrors (`hosts.toml`), letting Docker Hub
+**and** Quay pulls be transparently redirected through a pull-through cache; registry auth is resolved by
+containerd/nerdctl host config rather than per-op `pullCreds`. The default runtime is unchanged. See
+`sdks/go/node/containerruntime/containerd/README.md`.
+
 ## [0.1.76] - 2026-06-18
 
 ### Added

@@ -5,6 +5,7 @@ import (
 
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime"
+	"github.com/opctl/opctl/sdks/go/node/containerruntime/containerd"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime/docker"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime/embedded"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime/k8s"
@@ -18,6 +19,8 @@ func getContainerRuntime(
 		return k8s.New()
 	} else if nodeConfig.ContainerRuntime == "embedded" {
 		return embedded.New(ctx, nodeConfig.DataDir)
+	} else if nodeConfig.ContainerRuntime == "containerd" {
+		return containerd.New()
 	} else {
 		return docker.New(ctx, "unix:///var/run/docker.sock")
 	}

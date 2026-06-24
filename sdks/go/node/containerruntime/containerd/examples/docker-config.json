@@ -1,0 +1,6 @@
+{
+  "comment": "Install at $DOCKER_CONFIG/config.json (default ~/.docker/config.json) for the user containerd/nerdctl runs as. Requires docker-credential-ecr-login on PATH. nerdctl invokes it per-pull; it fetches a fresh ECR token via the runner's AWS credential chain, so there is nothing to rotate.",
+  "credHelpers": {
+    "012473847565.dkr.ecr.us-west-2.amazonaws.com": "ecr-login"
+  }
+}

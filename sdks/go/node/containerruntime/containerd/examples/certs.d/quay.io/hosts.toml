@@ -1,0 +1,9 @@
+# /etc/containerd/certs.d/quay.io/hosts.toml
+#
+# Redirects Quay pulls through the ECR pull-through cache (PTC) in the
+# artifact-archive prod account. PTC rule: quay -> quay.io.
+server = "https://quay.io"
+
+[host."https://012473847565.dkr.ecr.us-west-2.amazonaws.com/v2/quay"]
+  capabilities = ["pull", "resolve"]
+  override_path = true
