@@ -28,13 +28,17 @@ func Listen(
 		return err
 	}
 
-	dnsServer := miekgdns.Server{
-		Addr:    address,
-		Handler: newHandler(),
-		Net:     "udp",
-	}
+	// snapshot upstreams before RegisterName gets a chance to modify resolv.conf
+	handler := newHandler(
+		address,
+		snapshotUpstreams(
+			resolvConfPath,
+			nsIPAddress,
+			nsPort,
+		),
+	)
 
-	dnsServer.ReusePort, err = shouldReusePort(
+	reusePort, err := shouldReusePort(
 		ctx,
 		nsPort,
 	)
@@ -42,14 +46,41 @@ func Listen(
 		return err
 	}
 
-	go func() {
-		<-ctx.Done()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-		defer cancel()
+	udpServer := miekgdns.Server{
+		Addr:      address,
+		Handler:   handler,
+		Net:       "udp",
+		ReusePort: reusePort,
+	}
 
-		// little hammer
-		dnsServer.ShutdownContext(ctx)
+	// also serve TCP so clients can retry truncated responses
+	tcpServer := miekgdns.Server{
+		Addr:      address,
+		Handler:   handler,
+		Net:       "tcp",
+		ReusePort: reusePort,
+	}
+
+	errChan := make(chan error, 2)
+	go func() {
+		errChan <- udpServer.ListenAndServe()
+	}()
+	go func() {
+		errChan <- tcpServer.ListenAndServe()
 	}()
 
-	return dnsServer.ListenAndServe()
+	select {
+	case <-ctx.Done():
+		err = nil
+	case err = <-errChan:
+	}
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// little hammer
+	udpServer.ShutdownContext(shutdownCtx)
+	tcpServer.ShutdownContext(shutdownCtx)
+
+	return err
 }
