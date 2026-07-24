@@ -3,31 +3,73 @@ package dns
 import (
 	"net"
 	"strings"
+	"sync"
+	"time"
 
 	miekgDNS "github.com/miekg/dns"
 )
 
-var ipsByHostname = map[string]map[string]interface{}{}
+var (
+	ipsByHostname   = map[string]map[string]interface{}{}
+	ipsByHostnameMu sync.RWMutex
+)
 
-// New returns an opctl dns.Handler
-func newHandler() miekgDNS.Handler {
-	return &handler{}
+// upstreamTimeout bounds each upstream exchange so dead upstreams can't stall clients
+const upstreamTimeout = 2 * time.Second
+
+/*
+newHandler returns an opctl dns.Handler which authoritatively answers queries for
+names registered via RegisterName and forwards all other queries to upstreams.
+
+ownAddress is excluded from upstreams to prevent forwarding loops.
+*/
+func newHandler(
+	ownAddress string,
+	upstreams []string,
+) miekgDNS.Handler {
+	filteredUpstreams := []string{}
+	for _, upstream := range upstreams {
+		if upstream != ownAddress {
+			filteredUpstreams = append(filteredUpstreams, upstream)
+		}
+	}
+
+	return &handler{
+		upstreams: filteredUpstreams,
+	}
 }
 
-type handler struct{}
+type handler struct {
+	// immutable after construction
+	upstreams []string
+}
 
 func (hdlr *handler) ServeDNS(w miekgDNS.ResponseWriter, r *miekgDNS.Msg) {
-	msg := miekgDNS.Msg{}
-	msg.SetReply(r)
-	msg.RecursionAvailable = true
-	for _, q := range r.Question {
-		switch q.Qtype {
-		case miekgDNS.TypeA:
-			msg.Authoritative = true
-			ips := ipsByHostname[strings.TrimSuffix(q.Name, ".")]
+	if len(r.Question) == 0 {
+		msg := miekgDNS.Msg{}
+		msg.SetReply(r)
+		w.WriteMsg(&msg)
+		return
+	}
 
-			// randomize returned ip for load balancing
-			for ip := range ips {
+	q := r.Question[0]
+
+	ipsByHostnameMu.RLock()
+	ips, isKnownName := ipsByHostname[strings.TrimSuffix(q.Name, ".")]
+	ipList := make([]string, 0, len(ips))
+	// randomize returned ip for load balancing
+	for ip := range ips {
+		ipList = append(ipList, ip)
+	}
+	ipsByHostnameMu.RUnlock()
+
+	if isKnownName {
+		msg := miekgDNS.Msg{}
+		msg.SetReply(r)
+		msg.Authoritative = true
+		msg.RecursionAvailable = true
+		if q.Qtype == miekgDNS.TypeA {
+			for _, ip := range ipList {
 				msg.Answer = append(
 					msg.Answer,
 					&miekgDNS.A{
@@ -41,11 +83,64 @@ func (hdlr *handler) ServeDNS(w miekgDNS.ResponseWriter, r *miekgDNS.Msg) {
 					},
 				)
 			}
-			if len(msg.Answer) == 0 {
-				// refuse to answer (triggers clients to failover)
-				msg.SetRcode(r, 2)
+		}
+		w.WriteMsg(&msg)
+		return
+	}
+
+	if resp := hdlr.forward(r, w.RemoteAddr().Network()); resp != nil {
+		resp.Id = r.Id
+		w.WriteMsg(resp)
+		return
+	}
+
+	// not our zone & no upstream answered; refuse so clients look elsewhere
+	msg := miekgDNS.Msg{}
+	msg.SetRcode(r, miekgDNS.RcodeRefused)
+	w.WriteMsg(&msg)
+}
+
+/*
+forward relays r to the first responsive upstream and returns its response
+verbatim, or nil if no upstream responded.
+*/
+func (hdlr *handler) forward(
+	r *miekgDNS.Msg,
+	clientNet string,
+) *miekgDNS.Msg {
+	proto := "udp"
+	if strings.HasPrefix(clientNet, "tcp") {
+		proto = "tcp"
+	}
+
+	for _, upstream := range hdlr.upstreams {
+		resp, err := exchange(r, upstream, proto)
+		if err != nil {
+			continue
+		}
+
+		if proto == "udp" && resp.Truncated {
+			if tcpResp, err := exchange(r, upstream, "tcp"); err == nil {
+				resp = tcpResp
 			}
 		}
+
+		return resp
 	}
-	w.WriteMsg(&msg)
+
+	return nil
+}
+
+func exchange(
+	r *miekgDNS.Msg,
+	upstream,
+	proto string,
+) (*miekgDNS.Msg, error) {
+	client := miekgDNS.Client{
+		Net:     proto,
+		Timeout: upstreamTimeout,
+	}
+
+	resp, _, err := client.Exchange(r, upstream)
+	return resp, err
 }

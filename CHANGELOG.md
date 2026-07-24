@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [Unreleased]
+
+### Fixed
+
+- The node's DNS server now acts as a forwarding resolver: queries for names it doesn't manage
+(any qtype) are forwarded to the host's original nameservers (snapshotted at node startup) and
+relayed verbatim, instead of answering SERVFAIL for A queries and empty NOERROR for other qtypes.
+If no upstream is available or reachable it answers REFUSED
+
+### Added
+
+- The node's DNS server now also listens on TCP, so clients can retry truncated responses
+
 ## [0.1.76] - 2026-06-18
 
 ### Added

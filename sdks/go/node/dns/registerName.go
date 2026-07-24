@@ -12,12 +12,7 @@ func RegisterName(
 	name,
 	ipAddress string,
 ) error {
-	ips := ipsByHostname[name]
-	if ips == nil {
-		ipsByHostname[name] = map[string]interface{}{}
-	}
-
-	ipsByHostname[name][ipAddress] = nil
+	registerIP(name, ipAddress)
 
 	nameParts := strings.Split(name, ".")
 
@@ -27,4 +22,19 @@ func RegisterName(
 		nsIPAddress,
 		nsPort,
 	)
+}
+
+func registerIP(
+	name,
+	ipAddress string,
+) {
+	ipsByHostnameMu.Lock()
+	defer ipsByHostnameMu.Unlock()
+
+	ips := ipsByHostname[name]
+	if ips == nil {
+		ipsByHostname[name] = map[string]interface{}{}
+	}
+
+	ipsByHostname[name][ipAddress] = nil
 }
