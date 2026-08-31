@@ -68,6 +68,10 @@ func printUsageSection(
 }
 
 func NewRootCmd() (*cobra.Command, error) {
+	// the "node" & "op" subtrees define their own persistent pre-run hooks,
+	// which would otherwise shadow the root's rather than run alongside it
+	cobra.EnableTraverseRunHooks = true
+
 	cliParamSatisfier := cliparamsatisfier.New(
 		cliOutput,
 	)

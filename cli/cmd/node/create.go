@@ -40,7 +40,7 @@ func newCreateCmd(
 				return err
 			}
 
-			gotLock, err := pidfile.TryGetLock(
+			lock, gotLock, err := pidfile.TryGetLock(
 				ctx,
 				nodeConfig.DataDir,
 			)
@@ -51,6 +51,9 @@ func newCreateCmd(
 			if !gotLock {
 				return fmt.Errorf("node already running; to kill use \"sudo opctl node kill\"")
 			}
+
+			// the lock is only held while open, so hold it for as long as we run
+			defer lock.Close()
 
 			eg, ctx := errgroup.WithContext(ctx)
 

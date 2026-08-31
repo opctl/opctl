@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 
 	"github.com/shirou/gopsutil/v4/process"
 )
@@ -18,12 +17,12 @@ func TryGetProcess(
 		dirPath,
 	)
 	if err != nil {
-		if os.IsNotExist(err) {
-			// already killed or our mutex was manually removed
-			return nil, nil
-		}
-
 		return nil, fmt.Errorf("unable to read pid.lock: %w", err)
+	}
+
+	if pID <= 0 {
+		// never started, already killed, or our mutex was manually removed
+		return nil, nil
 	}
 
 	p, err := process.NewProcessWithContext(
