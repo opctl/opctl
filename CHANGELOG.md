@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.77] - 2026-08-31
+
+### Fixed
+
+- Commands no longer fail intermittently with `listen tcp 127.0.0.1:42224: bind: address already in use` (or
+`unable to read pid.lock`) when several opctl invocations race to start a node; the losing node exiting is now
+only fatal if no node is serving the API
+- The node lock is now held via `flock`, so two nodes can no longer both claim the same data dir, and a node
+which dies can't leave a stale lock behind
+- Errors from `opctl node ...` & `opctl op ...` are no longer followed by a usage dump, and `--no-color` now
+applies to both
+
 ## [0.1.76] - 2026-06-18
 
 ### Added
