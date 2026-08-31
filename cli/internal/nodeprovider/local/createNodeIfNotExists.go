@@ -73,44 +73,80 @@ func (np nodeProvider) CreateNodeIfNotExists(
 		Setpgid: true,
 	}
 
-	ctx, cancel := context.WithCancel(ctx)
-
-	var daemonErr error
+	daemonErrs := make(chan error, 1)
 	go func() {
-		daemonErr = cmd.Run()
-		defer cancel()
+		daemonErrs <- cmd.Run()
 	}()
 
-	var timeoutErr error
+	// the daemon outliving this command is the happy path, so scope the liveness
+	// request to its own context and abandon it if the daemon exits first
+	livenessCtx, cancelLiveness := context.WithCancel(ctx)
+	defer cancelLiveness()
+
+	livenessErrs := make(chan error, 1)
 	go func() {
-		timeoutErr = apiClientNode.Liveness(ctx)
-		defer cancel()
+		livenessErrs <- apiClientNode.Liveness(livenessCtx)
 	}()
 
-	<-ctx.Done()
-
-	// stop buffering Stderr
-	cmd.Stderr = os.Stderr
-
-	// handle error daemonizing
-	if _, ok := daemonErr.(*exec.ExitError); ok {
-		// handle race
-		if strings.Contains(stderr.String(), "node already running") {
-			return apiClientNode, nil
+	select {
+	case livenessErr := <-livenessErrs:
+		if livenessErr != nil {
+			// handle timeout reaching node API
+			return nil, fmt.Errorf(
+				"timeout reaching node API at %s; try re-running command",
+				np.config.APIListenAddress,
+			)
 		}
 
-		return nil, errors.New(stderr.String())
+		return apiClientNode, nil
+	case daemonErr := <-daemonErrs:
+		cancelLiveness()
+
+		// safe to read; cmd.Run waits for stderr to be fully copied
+		return handleDaemonExit(
+			ctx,
+			apiClientNode,
+			np.config.APIListenAddress,
+			daemonErr,
+			stderr.String(),
+		)
+	}
+}
+
+// handleDaemonExit resolves the outcome of a daemonized node which exited
+// before we observed the node API come up.
+//
+// Exiting isn't necessarily failure: nodes race to start whenever opctl is
+// invoked concurrently (common in CI), and the loser exits with whatever the
+// contended resource complained about; historically "node already running" from
+// the node lock, but also "address already in use" from the API or DNS
+// listener, or the container runtime's own locking. Any node serving the API
+// serves us just as well, so ask before treating the exit as fatal.
+func handleDaemonExit(
+	ctx context.Context,
+	apiClientNode node.Node,
+	apiListenAddress string,
+	daemonErr error,
+	stderr string,
+) (node.Node, error) {
+	if err := apiClientNode.Liveness(ctx); err == nil {
+		return apiClientNode, nil
 	}
 
-	// handle timeout reaching node API
-	if timeoutErr != nil {
+	stderr = strings.TrimSpace(stderr)
+	if stderr == "" {
+		if daemonErr == nil {
+			daemonErr = errors.New("node exited without error")
+		}
+
 		return nil, fmt.Errorf(
-			"timeout reaching node API at %s; try re-running command",
-			np.config.APIListenAddress,
+			"node API at %s unreachable; %w",
+			apiListenAddress,
+			daemonErr,
 		)
 	}
 
-	return apiClientNode, nil
+	return nil, errors.New(stderr)
 }
 
 // daemonEnv builds the environment for the daemonized node process.
