@@ -189,6 +189,7 @@ var _ = Context("RunContainer", func() {
 				expectedPortBindings,
 				providedReq.WorkDir,
 			)
+			expectedContainerConfig.Labels = map[string]string{"opctl.rootCallId": "rootCallID"}
 
 			expectedHostConfig := &container.HostConfig{
 				Mounts: []mount.Mount{

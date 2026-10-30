@@ -136,16 +136,20 @@ func (cr _runContainer) RunContainer(
 		isGpuSupported = false
 	}
 
+	containerConfig := constructContainerConfig(
+		req.Cmd,
+		req.EnvVars,
+		*req.Image.Ref,
+		portBindings,
+		req.WorkDir,
+	)
+	// label with the root call so external tools can find the containers of one run
+	containerConfig.Labels = map[string]string{rootCallIDLabel: rootCallID}
+
 	// create container
 	_, createErr := cr.dockerClient.ContainerCreate(
 		ctx,
-		constructContainerConfig(
-			req.Cmd,
-			req.EnvVars,
-			*req.Image.Ref,
-			portBindings,
-			req.WorkDir,
-		),
+		containerConfig,
 		constructHostConfig(
 			req.Dirs,
 			req.Files,
