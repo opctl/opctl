@@ -25,6 +25,7 @@ var _ = Context("List", func() {
 		List(
 			providedCtx,
 			providedDirHandle,
+			nil,
 		)
 
 		/* assert */
@@ -43,6 +44,7 @@ var _ = Context("List", func() {
 			_, actualErr := List(
 				context.Background(),
 				providedDirHandle,
+				nil,
 			)
 
 			/* assert */
@@ -69,6 +71,7 @@ var _ = Context("List", func() {
 					List(
 						providedCtx,
 						providedDirHandle,
+						nil,
 					)
 
 					/* assert */
@@ -97,6 +100,7 @@ var _ = Context("List", func() {
 						actualOpYmls, actualErr := List(
 							context.Background(),
 							providedDirHandle,
+							nil,
 						)
 
 						/* assert */
@@ -115,15 +119,27 @@ var _ = Describe("List Go ops", func() {
 		for _, paths := range [][]string{{"nested/op.go", "nested/op.yml"}, {"nested/op.yml", "nested/op.go"}} {
 			dir := new(modelFakes.FakeDataHandle)
 			dir.ListDescendantsReturns([]*model.DirEntry{{Path: paths[0]}, {Path: paths[1]}}, nil)
-			_, err := List(context.Background(), dir)
+			_, err := List(context.Background(), dir, nil)
 			Expect(err).To(MatchError("op dir contains both op.yml and op.go; an op must be a YAML op or a Go op, not both"))
 		}
 	})
-	It("skips Go ops until describe is supported", func() {
+
+	It("describes each Go op and propagates describe failures", func() {
 		dir := new(modelFakes.FakeDataHandle)
 		dir.ListDescendantsReturns([]*model.DirEntry{{Path: "nested/op.go"}}, nil)
-		ops, err := List(context.Background(), dir)
+		expected := &model.OpSpec{Name: "go", Description: "Go interface"}
+		ctx := context.Background()
+		ops, err := List(ctx, dir, func(actual context.Context, path string) (*model.OpSpec, error) {
+			Expect(actual).To(Equal(ctx))
+			Expect(path).To(Equal("nested"))
+			return expected, nil
+		})
 		Expect(err).NotTo(HaveOccurred())
-		Expect(ops).To(BeEmpty())
+		Expect(ops["nested"]).To(Equal(expected))
+		failure := errors.New("describe failed")
+		_, err = List(ctx, dir, func(context.Context, string) (*model.OpSpec, error) { return nil, failure })
+		Expect(errors.Is(err, failure)).To(BeTrue())
+		_, err = List(ctx, dir, nil)
+		Expect(err).To(MatchError("listing Go ops needs a node describe function"))
 	})
 })

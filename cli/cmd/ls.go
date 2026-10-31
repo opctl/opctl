@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -11,6 +12,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
+	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/spf13/cobra"
 )
@@ -79,6 +81,9 @@ opctl ls github.com/opspec-pkgs/github.release.create#3.0.0
 			opsByPath, err := opspec.List(
 				ctx,
 				dirHandle,
+				func(ctx context.Context, path string) (*model.OpSpec, error) {
+					return node.DescribeOp(ctx, model.DescribeOpReq{Op: model.StartOpReqOp{Ref: filepath.Join(dirHandle.Ref(), path)}})
+				},
 			)
 			if err != nil {
 				return err

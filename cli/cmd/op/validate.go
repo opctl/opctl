@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/opctl/opctl/sdks/go/model"
 
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
+	"github.com/opctl/opctl/sdks/go/model"
+	nodePkg "github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 	"github.com/spf13/cobra"
 )
@@ -27,8 +28,8 @@ func newValidateCmd(
 		Long: `OP_REF can be either a 'relative/path', '/absolute/path', 'host/repo-path#tag', or 'host/repo-path#tag/path'.
 
 Ensures:
-- op.yml exists
-- op.yml is syntactically valid
+- op.yml or op.go exists, without both declarations
+- YAML syntax or the Go op interface is valid
 
 If auth w/ the op source fails the CLI will (re)prompt for username &
 password. In non-interactive terminals, the CLI will note that it can't prompt due to being in a
@@ -58,17 +59,17 @@ opctl op validate github.com/opspec-pkgs/slack.chat.post-message#1.1.0
 				return err
 			}
 
-			return validateOpFile(ctx, opDirHandle)
+			return validateOpFile(ctx, opDirHandle, node)
 		},
 	}
 
 	return &validateCmd
 }
 
-func validateOpFile(ctx context.Context, opDir model.DataHandle) error {
+func validateOpFile(ctx context.Context, opDir model.DataHandle, apiNode nodePkg.Node) error {
 	_, err := opfile.Get(ctx, opDir)
 	if errors.Is(err, opfile.ErrGoOp) {
-		return fmt.Errorf("opctl op validate does not support Go ops yet")
+		_, err = apiNode.DescribeOp(ctx, model.DescribeOpReq{Op: model.StartOpReqOp{Ref: opDir.Ref()}})
 	}
 	return err
 }

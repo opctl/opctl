@@ -16,6 +16,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 	"github.com/opctl/opctl/cli/internal/opgraph"
 	"github.com/opctl/opctl/sdks/go/model"
+	nodePkg "github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
@@ -106,7 +107,7 @@ opctl node and other opctl containers by their name. Containers will be removed 
 				return err
 			}
 
-			opFile, err := getRunOpFile(ctx, opHandle)
+			opFile, isGoOp, err := getRunOpFile(ctx, opHandle, node)
 			if err != nil {
 				return err
 			}
@@ -116,16 +117,15 @@ opctl node and other opctl containers by their name. Containers will be removed 
 				return fmt.Errorf("unable to load arg file at '%v': %w", argFileFlag, err)
 			}
 
-			argsMap, err := cliParamSatisfier.Satisfy(
-				cliparamsatisfier.NewInputSourcer(
-					cliParamSatisfier.NewSliceInputSrc(argsFlag, "="),
-					ymlFileInputSrc,
-					cliParamSatisfier.NewEnvVarInputSrc(),
-					cliParamSatisfier.NewParamDefaultInputSrc(opFile.Inputs),
-					cliParamSatisfier.NewCliPromptInputSrc(opFile.Inputs),
-				),
-				opFile.Inputs,
-			)
+			argsSource := cliParamSatisfier.NewSliceInputSrc(argsFlag, "=")
+			envSource := cliParamSatisfier.NewEnvVarInputSrc()
+			defaults := cliParamSatisfier.NewParamDefaultInputSrc(opFile.Inputs)
+			prompt := cliParamSatisfier.NewCliPromptInputSrc(opFile.Inputs)
+			inputSourcer := cliparamsatisfier.NewInputSourcer(argsSource, ymlFileInputSrc, envSource, defaults, prompt)
+			if isGoOp {
+				inputSourcer = goInputSourcer{provided: cliparamsatisfier.NewInputSourcer(argsSource, ymlFileInputSrc, envSource), defaults: defaults, prompt: prompt, seen: map[string]bool{}}
+			}
+			argsMap, err := cliParamSatisfier.Satisfy(inputSourcer, opFile.Inputs)
 			if err != nil {
 				return err
 			}
@@ -296,13 +296,15 @@ opctl node and other opctl containers by their name. Containers will be removed 
 	return &runCmd
 }
 
-func getRunOpFile(ctx context.Context, opHandle model.DataHandle) (*model.OpSpec, error) {
+func getRunOpFile(ctx context.Context, opHandle model.DataHandle, apiNode nodePkg.Node) (*model.OpSpec, bool, error) {
 	isGoOp, err := opfile.IsGoOp(ctx, opHandle)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	if isGoOp {
-		return &model.OpSpec{}, nil
+		spec, err := apiNode.DescribeOp(ctx, model.DescribeOpReq{Op: model.StartOpReqOp{Ref: opHandle.Ref()}})
+		return spec, true, err
 	}
-	return opfile.Get(ctx, opHandle)
+	spec, err := opfile.Get(ctx, opHandle)
+	return spec, false, err
 }

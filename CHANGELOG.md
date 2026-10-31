@@ -8,8 +8,9 @@ accordance with
 
 ### Added
 
-- Go ops can now be authored with a dependency-free Go op SDK and run a single container call through containerized bootstrap. The SDK declares typed inputs with defaults
-  and constraints; node input resolution, outputs, validation, and listing are not supported yet.
+- Go ops can declare typed inputs with defaults and constraints, branch on public input values, and bind input handles to container environment variables, directories,
+  files, and sockets. `opctl run` prompts for Go op inputs and rejects invalid explicit values without substituting defaults; `opctl op validate` and `opctl ls` describe Go
+  op interfaces. Go op outputs and composing calls are not supported yet.
 
 ### Fixed
 

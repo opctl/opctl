@@ -11,6 +11,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/model/fakes"
+	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
 
@@ -29,29 +30,40 @@ var _ = Describe("load an op for run", func() {
 		}
 		return dir
 	}
-	It("runs a Go op without prompting and ignores unknown arguments", func() {
-		spec, err := getRunOpFile(context.Background(), handle(map[string]string{"op.go": "package main"}))
+
+	It("describes Go inputs through the node and passes them to the satisfier", func() {
+		dir := handle(map[string]string{"op.go": "package main"})
+		dir.RefReturns("/ops/go")
+		api := new(nodeFakes.FakeNode)
+		api.DescribeOpReturns(&model.OpSpec{Inputs: map[string]*model.ParamSpec{"env": {String: &model.StringParamSpec{Default: "dev"}}}}, nil)
+		spec, _, err := getRunOpFile(context.Background(), dir, api)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(spec.Inputs).To(BeEmpty())
+		_, req := api.DescribeOpArgsForCall(0)
+		Expect(req.Op.Ref).To(Equal("/ops/go"))
 		satisfier := cliparamsatisfier.New(nil)
-		args, err := satisfier.Satisfy(cliparamsatisfier.NewInputSourcer(satisfier.NewSliceInputSrc([]string{"ignored=value"}, "="), satisfier.NewCliPromptInputSrc(spec.Inputs)), spec.Inputs)
+		args, err := satisfier.Satisfy(cliparamsatisfier.NewInputSourcer(satisfier.NewSliceInputSrc([]string{"env=prod"}, "=")), spec.Inputs)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(args).To(BeEmpty())
+		Expect(*args["env"].String).To(Equal("prod"))
+		failure := errors.New("invalid Go interface")
+		api.DescribeOpReturns(nil, failure)
+		_, _, err = getRunOpFile(context.Background(), dir, api)
+		Expect(err).To(Equal(failure))
 	})
+
 	It("retains the YAML op's inputs and defaults", func() {
-		spec, err := getRunOpFile(context.Background(), handle(map[string]string{"op.yml": "name: yaml\ninputs:\n  greeting:\n    string: {default: hello}\n"}))
+		spec, _, err := getRunOpFile(context.Background(), handle(map[string]string{"op.yml": "name: yaml\ninputs:\n  greeting:\n    string: {default: hello}\n"}), nil)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(spec.Inputs["greeting"].String.Default).To(Equal("hello"))
 	})
 	It("rejects both declarations before considering YAML validity", func() {
-		_, err := getRunOpFile(context.Background(), handle(map[string]string{"op.go": "package main", "op.yml": "invalid"}))
+		_, _, err := getRunOpFile(context.Background(), handle(map[string]string{"op.go": "package main", "op.yml": "invalid"}), nil)
 		Expect(err).To(Equal(opfile.ErrBothOpFiles))
 	})
 	It("keeps the original YAML read error when no declaration is readable", func() {
 		dir := new(fakes.FakeDataHandle)
 		failure := errors.New("remote error")
 		dir.GetContentReturns(nil, failure)
-		_, err := getRunOpFile(context.Background(), dir)
+		_, _, err := getRunOpFile(context.Background(), dir, nil)
 		Expect(err).To(Equal(failure))
 	})
 })

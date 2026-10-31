@@ -10,16 +10,17 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/model/fakes"
+	nodeFakes "github.com/opctl/opctl/sdks/go/node/fakes"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
 
 var _ = Describe("validate an op declaration", func() {
-	It("rejects Go ops explicitly, both declarations as ambiguous, and accepts YAML ops", func() {
+	It("describes Go ops, rejects ambiguous declarations, and accepts YAML ops", func() {
 		for _, tc := range []struct {
 			files map[string]string
 			want  error
 		}{
-			{map[string]string{"op.go": "package main"}, errors.New("opctl op validate does not support Go ops yet")},
+			{map[string]string{"op.go": "package main"}, nil},
 			{map[string]string{"op.go": "package main", "op.yml": "name: both"}, opfile.ErrBothOpFiles},
 			{map[string]string{"op.yml": "name: yaml"}, nil},
 		} {
@@ -34,7 +35,17 @@ var _ = Describe("validate an op declaration", func() {
 					io.Closer
 				}{strings.NewReader(text), io.NopCloser(strings.NewReader(""))}, nil
 			}
-			err := validateOpFile(context.Background(), dir)
+			api := new(nodeFakes.FakeNode)
+			api.DescribeOpReturns(&model.OpSpec{Name: "go"}, nil)
+			err := validateOpFile(context.Background(), dir, api)
+			if len(tc.files) == 1 && tc.files["op.go"] != "" {
+				Expect(api.DescribeOpCallCount()).To(Equal(1))
+				failure := errors.New("unknown opctl tag key minimun")
+				api.DescribeOpReturns(nil, failure)
+				Expect(validateOpFile(context.Background(), dir, api)).To(Equal(failure))
+			} else {
+				Expect(api.DescribeOpCallCount()).To(Equal(0))
+			}
 			if tc.want == nil {
 				Expect(err).NotTo(HaveOccurred())
 			} else {

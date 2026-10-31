@@ -10,11 +10,11 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
 
-// List YAML ops recursively within a directory, returning op files by path.
-// Go ops are skipped until describe is supported.
+// List ops recursively within a directory, describing Go ops through the node.
 func List(
 	ctx context.Context,
 	dirHandle model.DataHandle,
+	describe func(context.Context, string) (*model.OpSpec, error),
 ) (map[string]*model.OpSpec, error) {
 
 	contents, err := dirHandle.ListDescendants(ctx)
@@ -34,6 +34,17 @@ func List(
 
 	opsByPath := map[string]*model.OpSpec{}
 	for _, content := range contents {
+		if filepath.Base(content.Path) == "op.go" {
+			if describe == nil {
+				return nil, fmt.Errorf("listing Go ops needs a node describe function")
+			}
+			path := filepath.Dir(content.Path)
+			spec, err := describe(ctx, path)
+			if err != nil {
+				return nil, fmt.Errorf("error describing %s: %w", path, err)
+			}
+			opsByPath[path] = spec
+		}
 		if filepath.Base(content.Path) == opfile.FileName {
 
 			opFileReader, err := dirHandle.GetContent(ctx, content.Path)
