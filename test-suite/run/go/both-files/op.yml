@@ -1,0 +1,5 @@
+name: both-files
+run:
+  container:
+    image: {ref: "alpine:3"}
+    cmd: ["true"]

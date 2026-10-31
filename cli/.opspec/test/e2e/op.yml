@@ -49,6 +49,7 @@ run:
                       - -ce
                       - /cmd.sh
                     dirs:
+                      /repo: $(../../../..)
                       /test: $(../../../../test-suite/$(entry.path))
                     envVars:
                       # help differentiate test harness from test output by configuring system under test to not color output

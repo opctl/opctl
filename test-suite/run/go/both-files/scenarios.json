@@ -1,0 +1,13 @@
+[
+  {
+    "call": {
+      "scope": {},
+      "expect": "failure"
+    }
+  },
+  {
+    "validate": {
+      "expect": "failure"
+    }
+  }
+]
