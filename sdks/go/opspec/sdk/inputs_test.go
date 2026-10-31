@@ -73,6 +73,12 @@ func TestInvalidInputDeclarations(t *testing.T) {
 		describe func() ([]byte, error)
 	}{
 		{"not struct", Describe[string]},
+		{"pointer handle", Describe[struct {
+			X *String `opctl:"x"`
+		}]},
+		{"wrapped handle", Describe[struct {
+			X wrappedString `opctl:"x"`
+		}]},
 		{"no tag", Describe[struct{ X String }]},
 		{"unexported", Describe[struct {
 			x String `opctl:"x"`
@@ -117,8 +123,12 @@ func TestInvalidInputDeclarations(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			if _, err := tc.describe(); err == nil {
+			_, err := tc.describe()
+			if err == nil {
 				t.Fatal("invalid declaration accepted")
+			}
+			if tc.name == "duplicate constraint" && !strings.Contains(err.Error(), "duplicate constraint minimum") {
+				t.Fatal(err)
 			}
 		})
 	}
@@ -192,3 +202,5 @@ func TestConstraintTags(t *testing.T) {
 		}
 	}
 }
+
+type wrappedString struct{ String }

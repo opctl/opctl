@@ -30,8 +30,8 @@ func inputSpecs[I any]() (map[string]paramSpec, []inputField, error) {
 			return nil, nil, fmt.Errorf("input field %s must be exported", field.Name)
 		}
 		handle, ok := reflect.Zero(field.Type).Interface().(inputHandle)
-		if !ok {
-			return nil, nil, fmt.Errorf("input field %s must be an opctl handle", field.Name)
+		if !ok || field.Type.Kind() == reflect.Pointer || reflect.TypeOf(handle.bind(inputValue{})) != field.Type {
+			return nil, nil, fmt.Errorf("input field %s must be an opctl handle value", field.Name)
 		}
 		tag, err := parseTag(field.Tag.Get("opctl"))
 		if err != nil {
