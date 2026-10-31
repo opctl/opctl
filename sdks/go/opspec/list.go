@@ -21,6 +21,16 @@ func List(
 		return nil, err
 	}
 
+	paths := map[string]bool{}
+	for _, content := range contents {
+		paths[filepath.Clean(content.Path)] = true
+	}
+	for path := range paths {
+		if filepath.Base(path) == opfile.FileName && paths[filepath.Join(filepath.Dir(path), "op.go")] {
+			return nil, opfile.ErrBothOpFiles
+		}
+	}
+
 	opsByPath := map[string]*model.OpSpec{}
 	for _, content := range contents {
 		if filepath.Base(content.Path) == opfile.FileName {

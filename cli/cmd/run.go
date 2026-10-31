@@ -3,7 +3,6 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -106,22 +105,7 @@ opctl node and other opctl containers by their name. Containers will be removed 
 				return err
 			}
 
-			opFileReader, err := opHandle.GetContent(
-				ctx,
-				opfile.FileName,
-			)
-			if err != nil {
-				return err
-			}
-
-			opFileBytes, err := io.ReadAll(opFileReader)
-			if err != nil {
-				return err
-			}
-
-			opFile, err := opfile.Unmarshal(
-				opFileBytes,
-			)
+			opFile, err := opfile.Get(ctx, opHandle)
 			if err != nil {
 				return err
 			}

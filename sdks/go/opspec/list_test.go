@@ -109,3 +109,21 @@ var _ = Context("List", func() {
 		})
 	})
 })
+
+var _ = Describe("List Go ops", func() {
+	It("rejects both op declarations in one directory regardless of listing order", func() {
+		for _, paths := range [][]string{{"nested/op.go", "nested/op.yml"}, {"nested/op.yml", "nested/op.go"}} {
+			dir := new(modelFakes.FakeDataHandle)
+			dir.ListDescendantsReturns([]*model.DirEntry{{Path: paths[0]}, {Path: paths[1]}}, nil)
+			_, err := List(context.Background(), dir)
+			Expect(err).To(MatchError("op dir contains both op.yml and op.go; an op must be a YAML op or a Go op, not both"))
+		}
+	})
+	It("skips Go ops until describe is supported", func() {
+		dir := new(modelFakes.FakeDataHandle)
+		dir.ListDescendantsReturns([]*model.DirEntry{{Path: "nested/op.go"}}, nil)
+		ops, err := List(context.Background(), dir)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(ops).To(BeEmpty())
+	})
+})

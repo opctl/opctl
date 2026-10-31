@@ -1,0 +1,4 @@
+name: both
+run:
+  container:
+    image: {ref: alpine:3}
