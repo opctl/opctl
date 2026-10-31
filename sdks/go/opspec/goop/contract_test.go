@@ -2,13 +2,14 @@ package goop
 
 import (
 	"encoding/json"
+	"os"
+	"path/filepath"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	containerInterpreter "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
-	"os"
-	"path/filepath"
 )
 
 var _ = Describe("Go op bootstrap contract", func() {

@@ -3,13 +3,14 @@ package docker
 import (
 	"context"
 	"errors"
+	"io"
+
 	"github.com/docker/docker/api/types/container"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 	. "github.com/opctl/opctl/sdks/go/node/containerruntime/docker/internal/fakes"
-	"io"
 )
 
 var _ = Describe("bootstrap output separation", func() {

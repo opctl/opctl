@@ -3,13 +3,14 @@ package node
 import (
 	"context"
 	"errors"
+	"os"
+	"path/filepath"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/internal/fakes"
 	containerInterpreter "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container"
-	"os"
-	"path/filepath"
 )
 
 var _ = Describe("Go op bootstrapper", func() {

@@ -2,11 +2,12 @@ package goop
 
 import (
 	"fmt"
-	"github.com/opctl/opctl/sdks/go/model"
-	"golang.org/x/mod/modfile"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/opctl/opctl/sdks/go/model"
+	"golang.org/x/mod/modfile"
 )
 
 // ModuleRoot finds the nearest go.mod in the op dir or its parents.

@@ -1,9 +1,13 @@
 package cmd
 
 import (
+	"testing"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"testing"
 )
 
-func Test(t *testing.T) { RegisterFailHandler(Fail); RunSpecs(t, "cli/cmd") }
+func Test(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "cli/cmd")
+}

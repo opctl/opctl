@@ -4,6 +4,7 @@ package goop
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )

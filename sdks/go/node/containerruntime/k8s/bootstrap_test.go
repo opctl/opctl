@@ -2,10 +2,11 @@ package k8s
 
 import (
 	"context"
+	"io"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime"
-	"io"
 )
 
 type discardCloser struct{ io.Writer }

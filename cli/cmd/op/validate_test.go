@@ -3,13 +3,14 @@ package op
 import (
 	"context"
 	"errors"
+	"io"
+	"strings"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/model/fakes"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
-	"io"
-	"strings"
 )
 
 var _ = Describe("validate an op declaration", func() {

@@ -3,14 +3,15 @@ package cmd
 import (
 	"context"
 	"errors"
+	"io"
+	"strings"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/model/fakes"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
-	"io"
-	"strings"
 )
 
 var _ = Describe("load an op for run", func() {

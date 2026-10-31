@@ -3,10 +3,11 @@ package node
 import (
 	"context"
 	"fmt"
+	"io"
+
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
-	"io"
 )
 
 //counterfeiter:generate -o internal/fakes/pubSub.go ./pubsub PubSub

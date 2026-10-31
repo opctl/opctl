@@ -3,6 +3,9 @@ package node
 import (
 	"bytes"
 	"context"
+	"io"
+	"strings"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -10,8 +13,6 @@ import (
 	runtimeFakes "github.com/opctl/opctl/sdks/go/node/containerruntime/fakes"
 	"github.com/opctl/opctl/sdks/go/node/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
-	"io"
-	"strings"
 )
 
 var _ = Describe("container stdout capture", func() {
