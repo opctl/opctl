@@ -2,6 +2,7 @@ module.exports = {
   docs: [
     "introduction",
     "setup",
+    "cache-dirs-in-ci",
     {
       type: "category",
       label: "Training",

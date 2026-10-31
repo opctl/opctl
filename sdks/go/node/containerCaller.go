@@ -4,8 +4,11 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"path/filepath"
+	"strings"
 	"time"
 
+	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
@@ -31,10 +34,12 @@ func newContainerCaller(
 	containerRuntime containerruntime.ContainerRuntime,
 	pubSub pubsub.PubSub,
 	stateStore stateStore,
+	dataDirPath string,
 ) containerCaller {
 
 	return _containerCaller{
 		containerRuntime: containerRuntime,
+		dataDirPath:      dataDirPath,
 		pubSub:           pubSub,
 		stateStore:       stateStore,
 	}
@@ -43,6 +48,7 @@ func newContainerCaller(
 
 type _containerCaller struct {
 	containerRuntime containerruntime.ContainerRuntime
+	dataDirPath      string
 	pubSub           pubsub.PubSub
 	stateStore       stateStore
 }
@@ -107,6 +113,30 @@ func (cc _containerCaller) Call(
 	if logChanErr := <-logChan; err == nil {
 		// non-destructively set err
 		err = logChanErr
+	}
+
+	if unsudo.IsSudo() {
+		cacheRootPath := filepath.Join(cc.dataDirPath, "caches") + string(filepath.Separator)
+		chowned := map[string]struct{}{}
+		for _, hostPath := range containerCall.Dirs {
+			hostPath = filepath.Clean(hostPath)
+			if _, ok := chowned[hostPath]; ok || !strings.HasPrefix(hostPath, cacheRootPath) {
+				continue
+			}
+			chowned[hostPath] = struct{}{}
+			// container-written files are typically root-owned; hand them back so the sudo user (e.g. CI) can read them
+			if chownErr := unsudo.ChownTree(hostPath); chownErr != nil {
+				cc.pubSub.Publish(model.Event{
+					Timestamp: time.Now().UTC(),
+					ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenTo{
+						Data:        []byte(fmt.Sprintf("warning: unable to restore cache dir ownership for %q: %v\n", hostPath, chownErr)),
+						ContainerID: containerCall.ContainerID,
+						OpRef:       containerCall.OpPath,
+						RootCallID:  rootCallID,
+					},
+				})
+			}
+		}
 	}
 
 	return outputs, err

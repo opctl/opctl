@@ -17,3 +17,8 @@ func getSudoGID() int {
 	}
 	return gid
 }
+
+// IsSudo reports whether the process is privileged via sudo, i.e. has a sudo user to restore ownership to
+func IsSudo() bool {
+	return os.Geteuid() == 0 && tryGetEnvInt("SUDO_UID") != nil
+}
