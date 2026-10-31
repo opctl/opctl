@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [Unreleased]
+
+### Added
+
+- Go ops can now be authored with a dependency-free Go op SDK and run a single container call through containerized bootstrap. Go op inputs, outputs, validation, and
+  listing are not supported yet.
+
 ## [0.1.76] - 2026-06-18
 
 ### Added

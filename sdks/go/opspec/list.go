@@ -10,7 +10,8 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
 
-// List ops recursively within a directory, returning discovered op files by path.
+// List YAML ops recursively within a directory, returning op files by path.
+// Go ops are skipped until describe is supported.
 func List(
 	ctx context.Context,
 	dirHandle model.DataHandle,

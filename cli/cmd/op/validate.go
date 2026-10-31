@@ -1,7 +1,10 @@
 package op
 
 import (
+	"context"
+	"errors"
 	"fmt"
+	"github.com/opctl/opctl/sdks/go/model"
 
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
@@ -55,14 +58,17 @@ opctl op validate github.com/opspec-pkgs/slack.chat.post-message#1.1.0
 				return err
 			}
 
-			_, err = opfile.Get(
-				ctx,
-				opDirHandle,
-			)
-
-			return err
+			return validateOpFile(ctx, opDirHandle)
 		},
 	}
 
 	return &validateCmd
+}
+
+func validateOpFile(ctx context.Context, opDir model.DataHandle) error {
+	_, err := opfile.Get(ctx, opDir)
+	if errors.Is(err, opfile.ErrGoOp) {
+		return fmt.Errorf("opctl op validate does not support Go ops yet")
+	}
+	return err
 }

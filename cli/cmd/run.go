@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -105,7 +106,7 @@ opctl node and other opctl containers by their name. Containers will be removed 
 				return err
 			}
 
-			opFile, err := opfile.Get(ctx, opHandle)
+			opFile, err := getRunOpFile(ctx, opHandle)
 			if err != nil {
 				return err
 			}
@@ -293,4 +294,15 @@ opctl node and other opctl containers by their name. Containers will be removed 
 	runCmd.Flags().BoolVarP(&noProgressFlag, noProgressFlagName, "", !term.IsTerminal(int(os.Stdout.Fd())), "Disable live call graph for the op")
 
 	return &runCmd
+}
+
+func getRunOpFile(ctx context.Context, opHandle model.DataHandle) (*model.OpSpec, error) {
+	isGoOp, err := opfile.IsGoOp(ctx, opHandle)
+	if err != nil {
+		return nil, err
+	}
+	if isGoOp {
+		return &model.OpSpec{}, nil
+	}
+	return opfile.Get(ctx, opHandle)
 }
