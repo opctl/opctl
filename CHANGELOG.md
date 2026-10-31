@@ -8,8 +8,8 @@ accordance with
 
 ### Added
 
-- Go ops can now be authored with a dependency-free Go op SDK and run a single container call through containerized bootstrap. Go op inputs, outputs, validation, and
-  listing are not supported yet.
+- Go ops can now be authored with a dependency-free Go op SDK and run a single container call through containerized bootstrap. The SDK declares typed inputs with defaults
+  and constraints; node input resolution, outputs, validation, and listing are not supported yet.
 
 ## [0.1.76] - 2026-06-18
 

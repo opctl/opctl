@@ -1,0 +1,1 @@
+{"contractVersion":1,"opspecSchema":1,"opspec":{"name":"inputs","run":{"container":{"image":{"ref":"alpine:3"},"cmd":["echo","prod"],"envVars":{"COUNT":"$(count)","TOKEN":"$(token)","WANT_PROD":"$(wantProd)"},"dirs":{"/src":"$(src)"},"files":{"/config":"$(config)"}}}}}

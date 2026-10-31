@@ -14,8 +14,9 @@ type response struct {
 }
 
 type opSpec struct {
-	Name string    `json:"name"`
-	Run  *callSpec `json:"run,omitempty"`
+	Name   string               `json:"name"`
+	Inputs map[string]paramSpec `json:"inputs,omitempty"`
+	Run    *callSpec            `json:"run,omitempty"`
 }
 
 type callSpec struct {
@@ -23,25 +24,54 @@ type callSpec struct {
 }
 
 // Plan builds a Go op's op graph and returns its bootstrap response as JSON.
-func Plan(fn func() Call) ([]byte, error) { return emit("plan", fn) }
+func Plan[I any](fn func(I) Call, inputs map[string]any) ([]byte, error) {
+	return emit("plan", fn, inputs)
+}
 
-func emit(phase string, fn func() Call) ([]byte, error) {
+// Describe returns the op interface without calling the plan function.
+func Describe[I any]() ([]byte, error) { return emit[I]("describe", nil, nil) }
+
+func emit[I any](phase string, fn func(I) Call, values map[string]any) (data []byte, err error) {
+	defer func() {
+		if failure := recover(); failure != nil {
+			if input, ok := failure.(inputError); ok {
+				data = nil
+				err = input.error
+			} else {
+				panic(failure)
+			}
+		}
+	}()
+	inputs, fields, err := inputSpecs[I]()
+	if err != nil {
+		return nil, err
+	}
 	cwd, err := os.Getwd()
 	if err != nil {
 		return nil, err
 	}
 	spec := opSpec{Name: filepath.Base(cwd)}
+	if phase == "describe" {
+		spec.Inputs = inputs
+	}
 	if phase == "plan" {
 		if fn == nil {
 			return nil, errors.New("Go op plan needs a function returning a container call")
 		}
-		call := fn()
+		in, err := bindInputs[I](fields, values)
+		if err != nil {
+			return nil, err
+		}
+		call := fn(in)
+		if call.err != nil {
+			return nil, call.err
+		}
 		if call.container.Image.Ref == "" {
 			return nil, errors.New("Go op plan must return a container call with an image")
 		}
 		spec.Run = &callSpec{Container: &call.container}
 	}
-	data, err := json.Marshal(response{ContractVersion: 1, OpspecSchema: 1, Opspec: spec})
+	data, err = json.Marshal(response{ContractVersion: 1, OpspecSchema: 1, Opspec: spec})
 	if err != nil {
 		return nil, err
 	}

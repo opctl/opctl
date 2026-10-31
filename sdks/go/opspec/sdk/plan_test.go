@@ -36,7 +36,7 @@ func TestPlan(t *testing.T) {
 		t.Fatal(err)
 	}
 	helloDir(t)
-	actual, err := Plan(func() Call { return Container("alpine:3").Cmd("echo", "hello").Env("A", "b").WorkDir("/") })
+	actual, err := Plan(func(struct{}) Call { return Container("alpine:3").Cmd("echo", "hello").Env("A", "b").WorkDir("/") }, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,7 +46,7 @@ func TestPlan(t *testing.T) {
 }
 
 func TestPlanRejectsMissingCall(t *testing.T) {
-	if _, err := Plan(func() Call { return Call{} }); err == nil {
+	if _, err := Plan(func(struct{}) Call { return Call{} }, nil); err == nil {
 		t.Fatal("missing container call accepted")
 	}
 }
@@ -54,7 +54,7 @@ func TestPlanRejectsMissingCall(t *testing.T) {
 func TestContainerCallsCanBeReused(t *testing.T) {
 	base := Container("alpine:3").Env("A", "b")
 	_ = base.Env("A", "changed")
-	data, err := Plan(func() Call { return base })
+	data, err := Plan(func(struct{}) Call { return base }, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -68,7 +68,7 @@ func TestMainHelper(t *testing.T) {
 		return
 	}
 	os.Args = []string{"hello", os.Getenv("OPCTL_SDK_TEST_PHASE")}
-	Main(func() Call { return Container("alpine:3").Cmd("echo", "hello").Env("A", "b").WorkDir("/") })
+	Main(func(struct{}) Call { return Container("alpine:3").Cmd("echo", "hello").Env("A", "b").WorkDir("/") })
 	os.Exit(0)
 }
 
@@ -81,7 +81,7 @@ func TestMainContract(t *testing.T) {
 		{"contract version", "plan", `{"contractVersion":2,"phase":"plan","opspecSchema":{"min":1,"max":1}}`, "contract version"},
 		{"schema version", "plan", `{"contractVersion":1,"phase":"plan","opspecSchema":{"min":2,"max":2}}`, "upgrade opctl"},
 		{"invalid JSON", "plan", `{`, "request"},
-		{"inputs", "plan", `{"contractVersion":1,"phase":"plan","opspecSchema":{"min":1,"max":1},"inputs":{"A":"b"}}`, "not supported yet"},
+		{"inputs", "plan", `{"contractVersion":1,"phase":"plan","opspecSchema":{"min":1,"max":1},"inputs":{"A":"b"}}`, "unknown input"},
 		{"known outputs", "plan", `{"contractVersion":1,"phase":"plan","opspecSchema":{"min":1,"max":1},"knownOutputs":{"A":"b"}}`, "not supported yet"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
