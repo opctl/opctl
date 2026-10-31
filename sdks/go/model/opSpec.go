@@ -26,6 +26,8 @@ type CallSpec struct {
 
 // ContainerCallSpec is a spec for calling a container
 type ContainerCallSpec struct {
+	// Caches entries name cache dirs to mount
+	Caches map[string]interface{} `json:"caches,omitempty"`
 	// Cmd entries will be interpreted to strings
 	Cmd interface{} `json:"cmd,omitempty"`
 	// Dirs entries will be interpreted to dirs

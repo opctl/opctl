@@ -20,6 +20,21 @@ var _ = Context("Unmarshal", func() {
 		})
 	})
 	Context("Validator.Validate doesn't return errors", func() {
+		It("should unmarshal literal cache names", func() {
+			actualOpFile, err := Unmarshal([]byte(`
+name: cache-example
+run:
+  container:
+    image: { ref: golang:1.23 }
+    caches:
+      /go/pkg/mod: gomod
+`))
+
+			Expect(err).To(BeNil())
+			Expect(actualOpFile.Run.Container.Caches).To(Equal(map[string]interface{}{
+				"/go/pkg/mod": "gomod",
+			}))
+		})
 
 		It("should return expected opFile", func() {
 

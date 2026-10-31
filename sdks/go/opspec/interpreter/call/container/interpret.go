@@ -1,10 +1,13 @@
 package container
 
 import (
+	"fmt"
+	"path"
 	"path/filepath"
 
 	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/caches"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/cmd"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/dirs"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/envvars"
@@ -99,6 +102,25 @@ func Interpret(
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	// interpret caches
+	cacheDirs, err := caches.Interpret(
+		containerCallSpec.Caches,
+		dataDirPath,
+	)
+	if err != nil {
+		return nil, err
+	}
+	declaredDirs := map[string]struct{}{}
+	for containerPath := range containerCall.Dirs {
+		declaredDirs[path.Clean(containerPath)] = struct{}{}
+	}
+	for containerPath, hostPath := range cacheDirs {
+		if _, exists := declaredDirs[containerPath]; exists {
+			return nil, fmt.Errorf("unable to bind cache dir %q: container path is also declared in dirs", containerPath)
+		}
+		containerCall.Dirs[containerPath] = hostPath
 	}
 
 	// interpret name as string

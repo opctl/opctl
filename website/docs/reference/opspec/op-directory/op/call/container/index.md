@@ -9,6 +9,7 @@ An object defining a container call.
 - must have
   - [image](#image)
 - may have
+  - [caches](#caches)
   - [cmd](#cmd)
   - [dirs](#dirs)
   - [envVars](#envvars)
@@ -19,6 +20,10 @@ An object defining a container call.
 
 ### image
 An [image [object]](image.md) defining the container image run by the call.
+
+### caches
+
+A [caches [object]](caches.md) mapping absolute container paths to cache names. The node keeps each cache dir's contents between runs.
 
 ### cmd
 An [array](../../../../types/array.md) [initializer](../../../../types/array.md#initialization) or [variable-reference [string]](../../variable-reference.md) defining the path (from [workDir](#workdir)) of the binary to call and it's arguments.

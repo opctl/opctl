@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [Unreleased]
+
+### Added
+
+- Container calls can declare named cache dirs with `caches` to keep contents between runs on the node
+
 ## [0.1.76] - 2026-06-18
 
 ### Added
