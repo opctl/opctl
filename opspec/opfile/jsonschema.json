@@ -858,6 +858,10 @@
                 "^([a-zA-Z]:)?/[-_.\\/a-zA-Z0-9]+$": {
                   "oneOf": [
                     {
+                      "description": "Cache name derived from the image repository without tag or digest plus the cleaned container path, sanitized to ASCII letters, digits, ., _, and - with hyphen runs collapsed and trimmed; requires an image ref",
+                      "type": "null"
+                    },
+                    {
                       "description": "String expression evaluating to a cache name shared by calls on the node",
                       "type": "string"
                     }

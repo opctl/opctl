@@ -10,9 +10,19 @@ import (
 )
 
 var _ = Context("Validate caches", func() {
+	It("should accept a shorthand cache name", func() {
+		Expect(Validate([]byte(`
+name: cache-example
+run:
+  container:
+    image: { ref: node:22 }
+    caches:
+      /root/.npm:
+`))).To(BeEmpty())
+	})
+
 	for _, caches := range []map[string]interface{}{
 		{"relative/path": "gomod"},
-		{"/cache": nil},
 		{"/cache": 42},
 		{"/cache": true},
 		{"/cache": []interface{}{}},

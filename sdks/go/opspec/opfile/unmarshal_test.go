@@ -20,6 +20,22 @@ var _ = Context("Unmarshal", func() {
 		})
 	})
 	Context("Validator.Validate doesn't return errors", func() {
+		It("should unmarshal a shorthand cache name as nil", func() {
+			actualOpFile, err := Unmarshal([]byte(`
+name: cache-example
+run:
+  container:
+    image: { ref: node:22 }
+    caches:
+      /root/.npm:
+`))
+
+			Expect(err).To(BeNil())
+			Expect(actualOpFile.Run.Container.Caches).To(Equal(map[string]interface{}{
+				"/root/.npm": nil,
+			}))
+		})
+
 		It("should unmarshal literal and expression cache names", func() {
 			actualOpFile, err := Unmarshal([]byte(`
 name: cache-example

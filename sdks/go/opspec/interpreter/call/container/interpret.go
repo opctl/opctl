@@ -108,6 +108,7 @@ func Interpret(
 	cacheDirs, err := caches.Interpret(
 		scope,
 		containerCallSpec.Caches,
+		containerCall.Image.Ref,
 		dataDirPath,
 	)
 	if err != nil {

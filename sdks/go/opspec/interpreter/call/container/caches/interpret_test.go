@@ -3,6 +3,7 @@ package caches
 import (
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
@@ -11,6 +12,90 @@ import (
 )
 
 var _ = Context("Interpret", func() {
+	digest := "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+	for _, test := range []struct {
+		description   string
+		imageRef      string
+		containerPath string
+		name          string
+	}{
+		{"plain image", "node", "/root/.npm", "node-root-.npm"},
+		{"tag", "node:22", "/root/.npm", "node-root-.npm"},
+		{"digest", "docker.io/library/node@" + digest, "/root/.npm", "node-root-.npm"},
+		{"tag and digest", "node:22@" + digest, "/root/.npm", "node-root-.npm"},
+		{"registry with port", "localhost:5000/x/y:tag", "/c", "localhost-5000-x-y-c"},
+		{"nested repository", "ghcr.io/org/tool:1", "/cache", "ghcr.io-org-tool-cache"},
+		{"uppercase ref", "GHCR.IO/Org/Tool:TAG", "/cache", "ghcr.io-org-tool-cache"},
+		{"nested path", "golang:1.23", "/go/pkg/mod", "golang-go-pkg-mod"},
+		{"cleaned path with trailing slash", "golang:1.23", "/go//pkg/./cache/../mod/", "golang-go-pkg-mod"},
+		{"consecutive separators", "org/my--tool:1", "/Go_mod.v1---/cache", "org-my-tool-Go_mod.v1-cache"},
+		{"trailing hyphens", "node:22", "/cache---/---", "node-cache"},
+	} {
+		It(fmt.Sprintf("should derive a cache name for %s", test.description), func() {
+			/* arrange */
+			dataDirPath := filepath.Join(GinkgoT().TempDir(), "data")
+			hostPath := filepath.Join(dataDirPath, "caches", test.name)
+
+			/* act */
+			actualDirs, err := Interpret(
+				nil,
+				map[string]interface{}{test.containerPath: nil},
+				&test.imageRef,
+				dataDirPath,
+			)
+
+			/* assert */
+			Expect(err).To(BeNil())
+			Expect(actualDirs).To(Equal(map[string]string{path.Clean(test.containerPath): hostPath}))
+			Expect(hostPath).To(BeADirectory())
+		})
+	}
+
+	It("should require an explicit cache name when the image has no ref", func() {
+		dataDirPath := GinkgoT().TempDir()
+		actualDirs, err := Interpret(
+			nil,
+			map[string]interface{}{"/root/.npm": nil},
+			nil,
+			dataDirPath,
+		)
+
+		Expect(err).To(MatchError(`unable to bind cache dir "/root/.npm": image has no ref; give an explicit cache name for this container path`))
+		Expect(actualDirs).To(BeNil())
+		Expect(filepath.Join(dataDirPath, "caches")).NotTo(BeAnExistingFile())
+	})
+
+	for _, imageRef := range []string{digest, "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"} {
+		It(fmt.Sprintf("should require an explicit cache name for image ID %q", imageRef), func() {
+			dataDirPath := GinkgoT().TempDir()
+			actualDirs, err := Interpret(
+				nil,
+				map[string]interface{}{"/cache": nil},
+				&imageRef,
+				dataDirPath,
+			)
+
+			Expect(err).To(MatchError(`unable to bind cache dir "/cache": image ref has no repository; give an explicit cache name for this container path`))
+			Expect(actualDirs).To(BeNil())
+			Expect(filepath.Join(dataDirPath, "caches")).NotTo(BeAnExistingFile())
+		})
+	}
+
+	It("should return image ref parsing errors before creating a cache dir", func() {
+		dataDirPath := GinkgoT().TempDir()
+		imageRef := "not a ref"
+		actualDirs, err := Interpret(
+			nil,
+			map[string]interface{}{"/cache": nil},
+			&imageRef,
+			dataDirPath,
+		)
+
+		Expect(err).To(MatchError(`unable to bind cache dir "/cache": unable to derive cache name from image ref: invalid reference format`))
+		Expect(actualDirs).To(BeNil())
+		Expect(filepath.Join(dataDirPath, "caches")).NotTo(BeAnExistingFile())
+	})
+
 	It("should create and mount a cache dir and its parents", func() {
 		/* arrange */
 		dataDirPath := filepath.Join(GinkgoT().TempDir(), "data")
@@ -20,6 +105,7 @@ var _ = Context("Interpret", func() {
 		actualDirs, err := Interpret(
 			nil,
 			map[string]interface{}{"/go/pkg/mod": "Go-mod_v1.2"},
+			nil,
 			dataDirPath,
 		)
 
@@ -35,6 +121,7 @@ var _ = Context("Interpret", func() {
 		firstDirs, err := Interpret(
 			nil,
 			map[string]interface{}{"/first": "shared"},
+			nil,
 			dataDirPath,
 		)
 		Expect(err).To(BeNil())
@@ -45,6 +132,7 @@ var _ = Context("Interpret", func() {
 		actualDirs, err := Interpret(
 			nil,
 			map[string]interface{}{"/second": "shared"},
+			nil,
 			dataDirPath,
 		)
 
@@ -71,6 +159,7 @@ var _ = Context("Interpret", func() {
 			actualDirs, err := Interpret(
 				map[string]*model.Value{"lockHash": {String: &lockHash}},
 				map[string]interface{}{"/root/.npm": expression},
+				nil,
 				dataDirPath,
 			)
 
@@ -87,6 +176,7 @@ var _ = Context("Interpret", func() {
 			actualDirs, err := Interpret(
 				map[string]*model.Value{"name": {String: &name}},
 				map[string]interface{}{"/cache": "$(name)"},
+				nil,
 				dataDirPath,
 			)
 
@@ -109,6 +199,7 @@ var _ = Context("Interpret", func() {
 		actualDirs, err := Interpret(
 			map[string]*model.Value{"lockHash": {File: &lockHashPath}},
 			map[string]interface{}{"/root/.npm": "npm-$(lockHash)"},
+			nil,
 			dataDirPath,
 		)
 
@@ -124,6 +215,7 @@ var _ = Context("Interpret", func() {
 			actualDirs, err := Interpret(
 				nil,
 				map[string]interface{}{"/cache": expression},
+				nil,
 				dataDirPath,
 			)
 
@@ -141,6 +233,7 @@ var _ = Context("Interpret", func() {
 			actualDirs, err := Interpret(
 				nil,
 				map[string]interface{}{"/cache": name},
+				nil,
 				dataDirPath,
 			)
 
@@ -152,11 +245,12 @@ var _ = Context("Interpret", func() {
 		})
 	}
 
-	for _, value := range []interface{}{nil, 42, true, []interface{}{}, map[string]interface{}{}} {
+	for _, value := range []interface{}{42, true, []interface{}{}, map[string]interface{}{}} {
 		It(fmt.Sprintf("should reject a cache name of type %T", value), func() {
 			actualDirs, err := Interpret(
 				nil,
 				map[string]interface{}{"/cache": value},
+				nil,
 				GinkgoT().TempDir(),
 			)
 
@@ -172,6 +266,7 @@ var _ = Context("Interpret", func() {
 		actualDirs, err := Interpret(
 			nil,
 			map[string]interface{}{"/cache": "gomod"},
+			nil,
 			dataDirPath,
 		)
 
@@ -184,6 +279,7 @@ var _ = Context("Interpret", func() {
 		actualDirs, err := Interpret(
 			nil,
 			map[string]interface{}{"/.": "gomod"},
+			nil,
 			GinkgoT().TempDir(),
 		)
 
@@ -195,6 +291,7 @@ var _ = Context("Interpret", func() {
 		actualDirs, err := Interpret(
 			nil,
 			map[string]interface{}{"/cache": "a", "/cache/": "b"},
+			nil,
 			GinkgoT().TempDir(),
 		)
 

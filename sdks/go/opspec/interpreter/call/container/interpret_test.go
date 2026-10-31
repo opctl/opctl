@@ -75,6 +75,64 @@ var _ = Context("Interpret", func() {
 	})
 
 	Context("caches", func() {
+		It("should derive cache names from the interpreted image ref", func() {
+			/* arrange */
+			dataDirPath := GinkgoT().TempDir()
+			imageRef := "node:22"
+			hostPath := filepath.Join(dataDirPath, "caches", "node-root-.npm")
+
+			/* act */
+			actualCall, err := Interpret(
+				map[string]*model.Value{"imageRef": {String: &imageRef}},
+				&model.ContainerCallSpec{
+					Image:  &model.ContainerCallImageSpec{Ref: "$(imageRef)"},
+					Caches: map[string]interface{}{"/root/.npm": nil},
+				},
+				"containerID",
+				"opPath",
+				dataDirPath,
+			)
+
+			/* assert */
+			Expect(err).To(BeNil())
+			Expect(actualCall.Dirs).To(Equal(map[string]string{"/root/.npm": hostPath}))
+			Expect(hostPath).To(BeADirectory())
+		})
+
+		for _, name := range []interface{}{nil, "npm"} {
+			It(fmt.Sprintf("should interpret cache name %v with an image src", name), func() {
+				/* arrange */
+				dataDirPath := GinkgoT().TempDir()
+				imageDir := GinkgoT().TempDir()
+
+				/* act */
+				actualCall, err := Interpret(
+					map[string]*model.Value{"imageDir": {Dir: &imageDir}},
+					&model.ContainerCallSpec{
+						Image:  &model.ContainerCallImageSpec{Ref: "$(imageDir)"},
+						Caches: map[string]interface{}{"/root/.npm": name},
+					},
+					"containerID",
+					"opPath",
+					dataDirPath,
+				)
+
+				/* assert */
+				if name == nil {
+					Expect(err).To(MatchError(`unable to bind cache dir "/root/.npm": image has no ref; give an explicit cache name for this container path`))
+					Expect(actualCall).To(BeNil())
+					Expect(filepath.Join(dataDirPath, "caches")).NotTo(BeAnExistingFile())
+				} else {
+					Expect(err).To(BeNil())
+					Expect(actualCall.Image.Ref).To(BeNil())
+					Expect(actualCall.Image.Src.Dir).To(Equal(&imageDir))
+					hostPath := filepath.Join(dataDirPath, "caches", "npm")
+					Expect(actualCall.Dirs).To(Equal(map[string]string{"/root/.npm": hostPath}))
+					Expect(hostPath).To(BeADirectory())
+				}
+			})
+		}
+
 		It("should merge cache dirs with dirs", func() {
 			/* arrange */
 			dataDirPath := GinkgoT().TempDir()

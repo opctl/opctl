@@ -9,11 +9,22 @@ run:
   container:
     image: { ref: golang:1.23 }
     caches:
-      /root/.cache/go-build: go-build
+      /root/.cache/go-build:
       /go/pkg/mod: gomod
 ```
 
-Each value must be a string literal or [string expression](../../../../types/string.md#initialization), such as `npm-$(lockHash)`, evaluated in the call's scope. The resulting cache name must be non-empty and may contain only ASCII letters, digits, `.`, `_`, and `-`. The names `.` and `..` are invalid. A container path cannot appear in both `dirs` and `caches`.
+Leave a value empty, or use `null`, to derive the cache name from the interpreted image reference and container path. The node lowercases the image reference, drops its tag and digest, and uses its familiar repository name, so `docker.io/library/node` becomes `node`. It appends the cleaned container path, replaces characters outside `[A-Za-z0-9._-]` with `-`, collapses runs of `-`, and trims leading and trailing `-`.
+
+| Image reference | Container path | Derived cache name |
+| --- | --- | --- |
+| `node:22` | `/root/.npm` | `node-root-.npm` |
+| `golang:1.23` | `/go/pkg/mod/` | `golang-go-pkg-mod` |
+| `ghcr.io/org/tool:1` | `/cache` | `ghcr.io-org-tool-cache` |
+| `localhost:5000/x/y:tag` | `/c` | `localhost-5000-x-y-c` |
+
+Tags and digests of the same repository share a cache at the same container path. Different image repositories usually get different cache names, but sanitizing can make distinct repository and path pairs share one; give an explicit name when that matters. Give images the same explicit name to share a cache across images. Images loaded from an OCI image directory and bare image IDs have no repository reference and require an explicit cache name.
+
+An explicit value can be a string literal or [string expression](../../../../types/string.md#initialization), such as `npm-$(lockHash)`, evaluated in the call's scope. Every cache name, including a derived name, must be non-empty and may contain only ASCII letters, digits, `.`, `_`, and `-`. The names `.` and `..` are invalid. A container path cannot appear in both `dirs` and `caches`.
 
 Opspec has no hash function. Compute a lockfile hash in a prior call, then use it in the cache name. This example writes the hash to a file bound to `lockHash`, which the next call reads through string interpolation. The example assumes `op.yml` lives at `.opspec/npm-install/` in the project. Remove the trailing newline so it does not become part of the name.
 

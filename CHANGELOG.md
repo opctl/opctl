@@ -8,7 +8,7 @@ accordance with
 
 ### Added
 
-- Container calls can declare named cache dirs with `caches` to keep contents between runs on the node; names can use expressions such as `npm-$(lockHash)`
+- Container calls can declare named cache dirs with `caches` to keep contents between runs on the node; names can use expressions such as `npm-$(lockHash)` or default to the image repository plus container path
 
 ## [0.1.76] - 2026-06-18
 
