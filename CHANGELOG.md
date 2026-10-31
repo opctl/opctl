@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [Unreleased]
+
+### Added
+
+- Op containers are labeled `opctl.rootCallId` with the ID of the root op call they run in, so tools outside opctl
+can find the containers of one run (e.g. to attach them to a network of their own)
+
 ## [0.1.76] - 2026-06-18
 
 ### Added
