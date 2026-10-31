@@ -16,7 +16,8 @@ import (
 
 //counterfeiter:generate -o internal/fakes/bootstrapper.go . bootstrapper
 type bootstrapper interface {
-	Plan(ctx context.Context, opCall *model.OpCall, rootCallID string) (*model.OpSpec, error)
+	Describe(ctx context.Context, opCall *model.OpCall, rootCallID string) (*model.OpSpec, error)
+	Plan(ctx context.Context, opCall *model.OpCall, rootCallID string, inputs map[string]interface{}) (*model.OpSpec, error)
 }
 
 func newBootstrapper(caller caller, dataDirPath string) bootstrapper {
@@ -28,8 +29,22 @@ type _bootstrapper struct {
 	dataDirPath string
 }
 
-func (bootstrap _bootstrapper) Plan(ctx context.Context, opCall *model.OpCall, rootCallID string) (*model.OpSpec, error) {
-	spec, mountRoot, err := goop.ContainerSpec(opCall.OpPath, "plan")
+func (bootstrap _bootstrapper) Describe(ctx context.Context, opCall *model.OpCall, rootCallID string) (*model.OpSpec, error) {
+	data, err := bootstrap.run(ctx, opCall, rootCallID, "describe", nil)
+	if err != nil {
+		return nil, err
+	}
+	return goop.ParseDescribe(data)
+}
+func (bootstrap _bootstrapper) Plan(ctx context.Context, opCall *model.OpCall, rootCallID string, inputs map[string]interface{}) (*model.OpSpec, error) {
+	data, err := bootstrap.run(ctx, opCall, rootCallID, "plan", inputs)
+	if err != nil {
+		return nil, err
+	}
+	return goop.ParsePlan(data)
+}
+func (bootstrap _bootstrapper) run(ctx context.Context, opCall *model.OpCall, rootCallID, phase string, inputs map[string]interface{}) ([]byte, error) {
+	spec, mountRoot, err := goop.ContainerSpec(opCall.OpPath, phase)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +57,7 @@ func (bootstrap _bootstrapper) Plan(ctx context.Context, opCall *model.OpCall, r
 		return nil, err
 	}
 	defer os.RemoveAll(scratch)
-	request, err := json.Marshal(goop.NewRequest("plan", nil))
+	request, err := json.Marshal(goop.NewRequest(phase, inputs))
 	if err != nil {
 		return nil, err
 	}
@@ -52,10 +67,17 @@ func (bootstrap _bootstrapper) Plan(ctx context.Context, opCall *model.OpCall, r
 	}
 	scope := map[string]*model.Value{"module": {Dir: &mountRoot}, "request": {File: &requestPath}}
 	var stdout bytes.Buffer
-	name := "bootstrap plan"
-	_, err = bootstrap.caller.Call(withStdoutCapture(ctx, &stdout), id, scope, &model.CallSpec{Container: spec, Name: &name}, opCall.OpPath, &opCall.OpID, rootCallID)
-	if err != nil {
-		return nil, fmt.Errorf("Go op bootstrap plan: %w", err)
+	name := "bootstrap " + phase
+	var parent *string
+	if opCall.OpID != "" {
+		parent = &opCall.OpID
 	}
-	return goop.ParsePlan(stdout.Bytes())
+	if rootCallID == "" {
+		rootCallID = id
+	}
+	_, err = bootstrap.caller.Call(withStdoutCapture(ctx, &stdout), id, scope, &model.CallSpec{Container: spec, Name: &name}, opCall.OpPath, parent, rootCallID)
+	if err != nil {
+		return nil, fmt.Errorf("Go op bootstrap %s: %w", phase, err)
+	}
+	return stdout.Bytes(), nil
 }

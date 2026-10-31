@@ -8,6 +8,8 @@ import (
 	"github.com/opctl/opctl/sdks/go/data/fs"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
+	"github.com/opctl/opctl/sdks/go/opspec/goop"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
@@ -21,6 +23,7 @@ type opCaller interface {
 		parentCallID *string,
 		rootCallID string,
 		opCallSpec *model.OpCallSpec,
+		scope map[string]*model.Value,
 	) (
 		map[string]*model.Value,
 		error,
@@ -50,6 +53,7 @@ func (oc _opCaller) Call(
 	parentCallID *string,
 	rootCallID string,
 	opCallSpec *model.OpCallSpec,
+	scope map[string]*model.Value,
 ) (
 	map[string]*model.Value,
 	error,
@@ -66,11 +70,27 @@ func (oc _opCaller) Call(
 			return outboundScope, err
 		}
 		if isGoOp {
-			plan, err := oc.bootstrapper.Plan(ctx, opCall, rootCallID)
+			desc, err := oc.bootstrapper.Describe(ctx, opCall, rootCallID)
+			if err != nil {
+				return outboundScope, err
+			}
+			// Keep the published CallStarted snapshot free of resolved inputs.
+			resolved := *opCall
+			opCall = &resolved
+			opCall.Inputs, err = inputs.Interpret(opCallSpec.Inputs, desc.Inputs, opCall.OpPath, scope, filepath.Join(oc.dataDirPath, "dcg", opCall.OpID))
+			if err != nil {
+				return outboundScope, err
+			}
+			public, err := goop.PlanInputs(desc.Inputs, opCall.Inputs)
+			if err != nil {
+				return outboundScope, err
+			}
+			plan, err := oc.bootstrapper.Plan(ctx, opCall, rootCallID, public)
 			if err != nil {
 				return outboundScope, err
 			}
 			childSpec = plan.Run
+			ctx = withPrivateGoInputs(ctx, desc.Inputs)
 		}
 	}
 

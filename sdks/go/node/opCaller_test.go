@@ -73,6 +73,7 @@ var _ = Context("opCaller", func() {
 				nil,
 				providedRootCallID,
 				&model.OpCallSpec{},
+				nil,
 			)
 
 			/* assert */
@@ -143,6 +144,7 @@ var _ = Context("opCaller", func() {
 				nil,
 				"rootCallID",
 				providedOpCallSpec,
+				nil,
 			)
 
 			/* assert */

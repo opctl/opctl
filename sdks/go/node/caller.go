@@ -118,8 +118,8 @@ func (clr _caller) Call(
 
 		event := model.Event{
 			CallEnded: &model.CallEnded{
-				Call:    *call,
-				Outputs: outputs,
+				Call:    callForEvent(ctx, call, callSpec),
+				Outputs: outputsForEvent(ctx, outputs),
 				Ref:     opPath,
 			},
 			Timestamp: time.Now().UTC(),
@@ -176,7 +176,7 @@ func (clr _caller) Call(
 		model.Event{
 			Timestamp: callStartTime,
 			CallStarted: &model.CallStarted{
-				Call: *call,
+				Call: callForEvent(ctx, call, callSpec),
 				Ref:  opPath,
 			},
 		},
@@ -227,6 +227,7 @@ func (clr _caller) Call(
 			parentCallID,
 			rootCallID,
 			callSpec.Op,
+			scope,
 		)
 	case callSpec.Parallel != nil:
 		outputs, err = clr.parallelCaller.Call(

@@ -81,7 +81,8 @@ func Interpret(
 		ctx,
 		opDir,
 	)
-	if errors.Is(err, opfile.ErrGoOp) {
+	isGoOp := errors.Is(err, opfile.ErrGoOp)
+	if isGoOp {
 		opFile = &model.OpSpec{}
 	} else if err != nil {
 		return nil, err
@@ -107,6 +108,9 @@ func Interpret(
 		OpID:              opID,
 	}
 
+	if isGoOp {
+		return opCall, nil
+	}
 	opCall.Inputs, err = inputs.Interpret(
 		opCallSpec.Inputs,
 		opFile.Inputs,

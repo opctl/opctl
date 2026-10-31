@@ -42,7 +42,7 @@ var _ = Describe("Go op bootstrapper", func() {
 			requestPath = *scope["request"].File
 			request, err := os.ReadFile(requestPath)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(request).To(MatchJSON(`{"contractVersion":1,"phase":"plan","opspecSchema":{"min":1,"max":1},"inputs":{},"knownOutputs":{}}`))
+			Expect(request).To(MatchJSON(`{"contractVersion":1,"phase":"plan","opspecSchema":{"min":1,"max":1},"inputs":{"env":"dev"},"knownOutputs":{}}`))
 			interpreted, err := containerInterpreter.Interpret(scope, spec.Container, id, path, dataDir)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(interpreted.Files["/opctl/request.json"]).To(Equal(requestPath))
@@ -54,7 +54,7 @@ var _ = Describe("Go op bootstrapper", func() {
 			Expect(err).NotTo(HaveOccurred())
 			return nil, nil
 		}
-		plan, err := newBootstrapper(caller, dataDir).Plan(context.Background(), opCall, "root")
+		plan, err := newBootstrapper(caller, dataDir).Plan(context.Background(), opCall, "root", map[string]interface{}{"env": "dev"})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(plan.Name).To(Equal("hello"))
 		Expect(caller.CallCallCount()).To(Equal(1))
@@ -74,7 +74,7 @@ var _ = Describe("Go op bootstrapper", func() {
 				Expect(err).NotTo(HaveOccurred())
 				return nil, result.err
 			}
-			_, err := newBootstrapper(caller, dataDir).Plan(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: opDir}, OpID: "op"}, "root")
+			_, err := newBootstrapper(caller, dataDir).Plan(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: opDir}, OpID: "op"}, "root", nil)
 			Expect(err).To(HaveOccurred())
 			Expect(request).NotTo(BeAnExistingFile())
 			if result.err != nil {
@@ -85,8 +85,29 @@ var _ = Describe("Go op bootstrapper", func() {
 	It("fails before making a call when the module cannot be prepared", func() {
 		Expect(os.Remove(filepath.Join(opDir, "go.mod"))).To(Succeed())
 		caller := new(fakes.FakeCaller)
-		_, err := newBootstrapper(caller, dataDir).Plan(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: opDir}}, "root")
+		_, err := newBootstrapper(caller, dataDir).Plan(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: opDir}}, "root", nil)
 		Expect(err).To(HaveOccurred())
 		Expect(caller.CallCallCount()).To(Equal(0))
 	})
+	It("nests describe under the op without input values", func() {
+		caller := new(fakes.FakeCaller)
+		caller.CallStub = func(ctx context.Context, id string, scope map[string]*model.Value, spec *model.CallSpec, path string, parent *string, rootID string) (map[string]*model.Value, error) {
+			Expect(*parent).To(Equal("op"))
+			Expect(rootID).To(Equal("root"))
+			Expect(*spec.Name).To(Equal("bootstrap describe"))
+			Expect(spec.Container.Cmd).To(Equal([]interface{}{"go", "run", ".", "describe"}))
+			request, err := os.ReadFile(*scope["request"].File)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(request).To(MatchJSON(`{"contractVersion":1,"phase":"describe","opspecSchema":{"min":1,"max":1},"inputs":{},"knownOutputs":{}}`))
+			data, err := os.ReadFile("../opspec/sdk/testdata/describe.inputs.json")
+			Expect(err).NotTo(HaveOccurred())
+			_, err = stdoutCaptureFrom(ctx).Write(data)
+			Expect(err).NotTo(HaveOccurred())
+			return nil, nil
+		}
+		spec, err := newBootstrapper(caller, dataDir).Describe(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: opDir}, OpID: "op"}, "root")
+		Expect(err).NotTo(HaveOccurred())
+		Expect(spec.Inputs["token"].String.IsSecret).To(BeTrue())
+	})
+
 })

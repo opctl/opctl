@@ -9,10 +9,30 @@ import (
 )
 
 type FakeBootstrapper struct {
-	PlanStub        func(context.Context, *model.OpCall, string) (*model.OpSpec, error)
+	DescribeStub        func(context.Context, *model.OpCall, string) (*model.OpSpec, error)
+	describeMutex       sync.RWMutex
+	describeArgsForCall []struct {
+		arg1 context.Context
+		arg2 *model.OpCall
+		arg3 string
+	}
+	describeReturns struct {
+		result1 *model.OpSpec
+		result2 error
+	}
+	describeReturnsOnCall map[int]struct {
+		result1 *model.OpSpec
+		result2 error
+	}
+	PlanStub        func(context.Context, *model.OpCall, string, map[string]interface{}) (*model.OpSpec, error)
 	planMutex       sync.RWMutex
-	planArgsForCall []FakeBootstrapperPlanArgs
-	planReturns     struct {
+	planArgsForCall []struct {
+		arg1 context.Context
+		arg2 *model.OpCall
+		arg3 string
+		arg4 map[string]interface{}
+	}
+	planReturns struct {
 		result1 *model.OpSpec
 		result2 error
 	}
@@ -21,27 +41,90 @@ type FakeBootstrapper struct {
 		result2 error
 	}
 	invocations      map[string][][]interface{}
-	callOrder        []string
 	invocationsMutex sync.RWMutex
 }
 
-// FakeBootstrapperPlanArgs holds the arguments of one call to Plan.
-type FakeBootstrapperPlanArgs struct {
-	Arg1 context.Context
-	Arg2 *model.OpCall
-	Arg3 string
-}
-
-func (fake *FakeBootstrapper) Plan(arg1 context.Context, arg2 *model.OpCall, arg3 string) (*model.OpSpec, error) {
-	fake.planMutex.Lock()
-	ret, specificReturn := fake.planReturnsOnCall[len(fake.planArgsForCall)]
-	fake.planArgsForCall = append(fake.planArgsForCall, FakeBootstrapperPlanArgs{arg1, arg2, arg3})
-	stub := fake.PlanStub
-	fakeReturns := fake.planReturns
-	fake.recordInvocation("Plan", []interface{}{arg1, arg2, arg3})
-	fake.planMutex.Unlock()
+func (fake *FakeBootstrapper) Describe(arg1 context.Context, arg2 *model.OpCall, arg3 string) (*model.OpSpec, error) {
+	fake.describeMutex.Lock()
+	ret, specificReturn := fake.describeReturnsOnCall[len(fake.describeArgsForCall)]
+	fake.describeArgsForCall = append(fake.describeArgsForCall, struct {
+		arg1 context.Context
+		arg2 *model.OpCall
+		arg3 string
+	}{arg1, arg2, arg3})
+	stub := fake.DescribeStub
+	fakeReturns := fake.describeReturns
+	fake.recordInvocation("Describe", []interface{}{arg1, arg2, arg3})
+	fake.describeMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2, arg3)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeBootstrapper) DescribeCallCount() int {
+	fake.describeMutex.RLock()
+	defer fake.describeMutex.RUnlock()
+	return len(fake.describeArgsForCall)
+}
+
+func (fake *FakeBootstrapper) DescribeCalls(stub func(context.Context, *model.OpCall, string) (*model.OpSpec, error)) {
+	fake.describeMutex.Lock()
+	defer fake.describeMutex.Unlock()
+	fake.DescribeStub = stub
+}
+
+func (fake *FakeBootstrapper) DescribeArgsForCall(i int) (context.Context, *model.OpCall, string) {
+	fake.describeMutex.RLock()
+	defer fake.describeMutex.RUnlock()
+	argsForCall := fake.describeArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+}
+
+func (fake *FakeBootstrapper) DescribeReturns(result1 *model.OpSpec, result2 error) {
+	fake.describeMutex.Lock()
+	defer fake.describeMutex.Unlock()
+	fake.DescribeStub = nil
+	fake.describeReturns = struct {
+		result1 *model.OpSpec
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeBootstrapper) DescribeReturnsOnCall(i int, result1 *model.OpSpec, result2 error) {
+	fake.describeMutex.Lock()
+	defer fake.describeMutex.Unlock()
+	fake.DescribeStub = nil
+	if fake.describeReturnsOnCall == nil {
+		fake.describeReturnsOnCall = make(map[int]struct {
+			result1 *model.OpSpec
+			result2 error
+		})
+	}
+	fake.describeReturnsOnCall[i] = struct {
+		result1 *model.OpSpec
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeBootstrapper) Plan(arg1 context.Context, arg2 *model.OpCall, arg3 string, arg4 map[string]interface{}) (*model.OpSpec, error) {
+	fake.planMutex.Lock()
+	ret, specificReturn := fake.planReturnsOnCall[len(fake.planArgsForCall)]
+	fake.planArgsForCall = append(fake.planArgsForCall, struct {
+		arg1 context.Context
+		arg2 *model.OpCall
+		arg3 string
+		arg4 map[string]interface{}
+	}{arg1, arg2, arg3, arg4})
+	stub := fake.PlanStub
+	fakeReturns := fake.planReturns
+	fake.recordInvocation("Plan", []interface{}{arg1, arg2, arg3, arg4})
+	fake.planMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -55,25 +138,17 @@ func (fake *FakeBootstrapper) PlanCallCount() int {
 	return len(fake.planArgsForCall)
 }
 
-func (fake *FakeBootstrapper) PlanCalls(stub func(context.Context, *model.OpCall, string) (*model.OpSpec, error)) {
+func (fake *FakeBootstrapper) PlanCalls(stub func(context.Context, *model.OpCall, string, map[string]interface{}) (*model.OpSpec, error)) {
 	fake.planMutex.Lock()
 	defer fake.planMutex.Unlock()
 	fake.PlanStub = stub
 }
 
-func (fake *FakeBootstrapper) PlanArgsForCall(i int) (context.Context, *model.OpCall, string) {
+func (fake *FakeBootstrapper) PlanArgsForCall(i int) (context.Context, *model.OpCall, string, map[string]interface{}) {
 	fake.planMutex.RLock()
 	defer fake.planMutex.RUnlock()
 	argsForCall := fake.planArgsForCall[i]
-	return argsForCall.Arg1, argsForCall.Arg2, argsForCall.Arg3
-}
-
-func (fake *FakeBootstrapper) PlanArgs() []FakeBootstrapperPlanArgs {
-	fake.planMutex.RLock()
-	defer fake.planMutex.RUnlock()
-	args := make([]FakeBootstrapperPlanArgs, len(fake.planArgsForCall))
-	copy(args, fake.planArgsForCall)
-	return args
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
 }
 
 func (fake *FakeBootstrapper) PlanReturns(result1 *model.OpSpec, result2 error) {
@@ -105,6 +180,10 @@ func (fake *FakeBootstrapper) PlanReturnsOnCall(i int, result1 *model.OpSpec, re
 func (fake *FakeBootstrapper) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.describeMutex.RLock()
+	defer fake.describeMutex.RUnlock()
+	fake.planMutex.RLock()
+	defer fake.planMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value
@@ -112,18 +191,9 @@ func (fake *FakeBootstrapper) Invocations() map[string][][]interface{} {
 	return copiedInvocations
 }
 
-func (fake *FakeBootstrapper) CallOrder() []string {
-	fake.invocationsMutex.RLock()
-	defer fake.invocationsMutex.RUnlock()
-	order := make([]string, len(fake.callOrder))
-	copy(order, fake.callOrder)
-	return order
-}
-
 func (fake *FakeBootstrapper) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
-	fake.callOrder = append(fake.callOrder, key)
 	if fake.invocations == nil {
 		fake.invocations = map[string][][]interface{}{}
 	}
