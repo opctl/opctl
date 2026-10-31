@@ -53,7 +53,10 @@ func GoVersion(moduleRoot string) (string, error) {
 
 // ContainerSpec prepares a plan bootstrap and returns the host dir to bind as
 // the module scope value. Local replace targets retain their host paths.
-func ContainerSpec(opDir string) (*model.ContainerCallSpec, string, error) {
+func ContainerSpec(opDir, phase string) (*model.ContainerCallSpec, string, error) {
+	if phase != "plan" && phase != "describe" {
+		return nil, "", fmt.Errorf("unsupported bootstrap phase %q", phase)
+	}
 	opDir, err := filepath.Abs(opDir)
 	if err != nil {
 		return nil, "", err
@@ -95,7 +98,7 @@ func ContainerSpec(opDir string) (*model.ContainerCallSpec, string, error) {
 	}
 	return &model.ContainerCallSpec{
 		Image:   &model.ContainerCallImageSpec{Ref: "golang:" + version},
-		Cmd:     []interface{}{"go", "run", ".", "plan"},
+		Cmd:     []interface{}{"go", "run", ".", phase},
 		Dirs:    map[string]interface{}{mountRoot: "$(module)"},
 		Files:   map[string]interface{}{"/opctl/request.json": "$(request)"},
 		EnvVars: map[string]interface{}{"GOFLAGS": "-mod=readonly", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "OPCTL_BOOTSTRAP_REQUEST": "/opctl/request.json"},

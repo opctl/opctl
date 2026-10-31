@@ -31,13 +31,15 @@ type Response struct {
 	Opspec          json.RawMessage `json:"opspec"`
 }
 
-// NewRequest requests a plan without inputs or known outputs.
-func NewRequest() Request {
-	return Request{ContractVersion: 1, Phase: "plan", OpspecSchema: SchemaRange{Min: 1, Max: opfile.SchemaVersion}, Inputs: map[string]interface{}{}, KnownOutputs: map[string]interface{}{}}
+// NewRequest requests a bootstrap phase with public scalar or structured inputs.
+func NewRequest(phase string, inputs map[string]interface{}) Request {
+	if inputs == nil {
+		inputs = map[string]interface{}{}
+	}
+	return Request{ContractVersion: 1, Phase: phase, OpspecSchema: SchemaRange{Min: 1, Max: opfile.SchemaVersion}, Inputs: inputs, KnownOutputs: map[string]interface{}{}}
 }
 
-// ParseResponse validates a single bootstrap response using the op file schema.
-func ParseResponse(data []byte) (*model.OpSpec, error) {
+func parseResponse(data []byte) (*model.OpSpec, error) {
 	var response Response
 	if err := json.Unmarshal(data, &response); err != nil {
 		return nil, fmt.Errorf("decode Go op bootstrap response: %w", err)
@@ -52,11 +54,55 @@ func ParseResponse(data []byte) (*model.OpSpec, error) {
 	if err != nil {
 		return nil, err
 	}
+	return spec, nil
+}
+
+// ParseDescribe validates an interface without a run graph or outputs.
+func ParseDescribe(data []byte) (*model.OpSpec, error) {
+	spec, err := parseResponse(data)
+	if err != nil {
+		return nil, err
+	}
+	if spec.Run != nil || len(spec.Outputs) != 0 {
+		return nil, fmt.Errorf("Go op describe must not include run or outputs")
+	}
+	return spec, nil
+}
+
+// ParsePlan validates a run graph without input or output declarations.
+func ParsePlan(data []byte) (*model.OpSpec, error) {
+	spec, err := parseResponse(data)
+	if err != nil {
+		return nil, err
+	}
 	if len(spec.Inputs) != 0 || len(spec.Outputs) != 0 {
-		return nil, fmt.Errorf("Go op inputs and outputs are not supported yet")
+		return nil, fmt.Errorf("Go op plan must not include inputs or outputs")
 	}
 	if spec.Run == nil {
 		return nil, fmt.Errorf("Go op plan must include a run call")
 	}
 	return spec, nil
+}
+
+// PlanInputs keeps secrets and filesystem values out of bootstrap requests.
+func PlanInputs(params map[string]*model.ParamSpec, values map[string]*model.Value) (map[string]interface{}, error) {
+	inputs := map[string]interface{}{}
+	for name, param := range params {
+		if param == nil {
+			return nil, fmt.Errorf("input %q has no declaration", name)
+		}
+		if param.Dir != nil || param.File != nil || param.Socket != nil || (param.String != nil && param.String.IsSecret) || (param.Number != nil && param.Number.IsSecret) || (param.Array != nil && param.Array.IsSecret) || (param.Object != nil && param.Object.IsSecret) {
+			continue
+		}
+		value := values[name]
+		if value == nil {
+			return nil, fmt.Errorf("missing resolved input %q", name)
+		}
+		unboxed, err := value.Unbox()
+		if err != nil {
+			return nil, fmt.Errorf("unable to unbox input %q", name)
+		}
+		inputs[name] = unboxed
+	}
+	return inputs, nil
 }

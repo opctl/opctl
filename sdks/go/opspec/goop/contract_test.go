@@ -14,14 +14,14 @@ import (
 
 var _ = Describe("Go op bootstrap contract", func() {
 	It("requests plan with the supported schema and empty inputs and known outputs", func() {
-		data, err := json.Marshal(NewRequest())
+		data, err := json.Marshal(NewRequest("plan", nil))
 		Expect(err).NotTo(HaveOccurred())
 		Expect(data).To(MatchJSON(`{"contractVersion":1,"phase":"plan","opspecSchema":{"min":1,"max":1},"inputs":{},"knownOutputs":{}}`))
 	})
 	It("reads the SDK's golden plan through the existing op file schema", func() {
 		data, err := os.ReadFile("../sdk/testdata/plan.hello.json")
 		Expect(err).NotTo(HaveOccurred())
-		spec, err := ParseResponse(data)
+		spec, err := ParsePlan(data)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(spec.Name).To(Equal("hello"))
 		Expect(spec.Run.Container.Image.Ref).To(Equal("alpine:3"))
@@ -31,10 +31,10 @@ var _ = Describe("Go op bootstrap contract", func() {
 		for _, data := range []string{
 			`{`, `{} {}`, `{"contractVersion":2,"opspecSchema":1}`, `{"contractVersion":1,"opspecSchema":0}`, `{"contractVersion":1,"opspecSchema":2}`,
 		} {
-			_, err := ParseResponse([]byte(data))
+			_, err := ParsePlan([]byte(data))
 			Expect(err).To(HaveOccurred(), data)
 		}
-		_, err := ParseResponse([]byte(`{"contractVersion":1,"opspecSchema":2}`))
+		_, err := ParsePlan([]byte(`{"contractVersion":1,"opspecSchema":2}`))
 		Expect(err.Error()).To(ContainSubstring("Go op requires opspec schema 2; upgrade opctl"))
 	})
 	It("preserves op file validation errors", func() {
@@ -42,14 +42,14 @@ var _ = Describe("Go op bootstrap contract", func() {
 		_, expected := opfile.Unmarshal(invalid)
 		data, err := json.Marshal(Response{ContractVersion: 1, OpspecSchema: 1, Opspec: invalid})
 		Expect(err).NotTo(HaveOccurred())
-		_, err = ParseResponse(data)
+		_, err = ParsePlan(data)
 		Expect(err).To(MatchError(expected))
 	})
 	It("rejects plan responses without a run and unsupported inputs or outputs", func() {
 		for _, spec := range []string{`{"name":"hello"}`, `{"name":"hello","inputs":{"a":{"string":{}}},"run":{"container":{"image":{"ref":"alpine:3"}}}}`, `{"name":"hello","outputs":{"a":{"string":{}}},"run":{"container":{"image":{"ref":"alpine:3"}}}}`} {
 			data, err := json.Marshal(Response{ContractVersion: 1, OpspecSchema: 1, Opspec: json.RawMessage(spec)})
 			Expect(err).NotTo(HaveOccurred())
-			_, err = ParseResponse(data)
+			_, err = ParsePlan(data)
 			Expect(err).To(HaveOccurred())
 		}
 	})
@@ -75,7 +75,7 @@ var _ = Describe("Go op module and container spec", func() {
 		version, err := GoVersion(module)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(version).To(Equal("1.25.0"))
-		spec, mount, err := ContainerSpec(opDir)
+		spec, mount, err := ContainerSpec(opDir, "plan")
 		Expect(err).NotTo(HaveOccurred())
 		Expect(mount).To(Equal(module))
 		Expect(spec.Image.Ref).To(Equal("golang:1.25.0"))
@@ -88,10 +88,10 @@ var _ = Describe("Go op module and container spec", func() {
 	It("mounts the common ancestor of all local replace targets", func() {
 		module := filepath.Join(root, "app", "ops", "hello")
 		write(filepath.Join(module, "go.mod"), "module hello\ngo 1.21\nreplace example.com/sdk => ../../../sdk\nreplace example.com/other => "+filepath.Join(root, "shared")+"\nreplace example.com/remote => example.com/remote v1.0.0\n")
-		_, mount, err := ContainerSpec(module)
+		_, mount, err := ContainerSpec(module, "plan")
 		Expect(err).NotTo(HaveOccurred())
 		Expect(mount).To(Equal(root))
-		spec, _, err := ContainerSpec(module)
+		spec, _, err := ContainerSpec(module, "plan")
 		Expect(err).NotTo(HaveOccurred())
 		Expect(spec.WorkDir).To(Equal(module))
 		Expect(spec.Dirs).To(Equal(map[string]interface{}{root: "$(module)"}))
@@ -107,15 +107,60 @@ var _ = Describe("Go op module and container spec", func() {
 		Expect(err).To(MatchError("Go op needs a go.mod in the op dir or a parent"))
 		for _, text := range []string{"module hello\n", "not a module file"} {
 			write(filepath.Join(root, "go.mod"), text)
-			_, _, err := ContainerSpec(root)
+			_, _, err := ContainerSpec(root, "plan")
 			Expect(err).To(HaveOccurred())
 		}
 	})
 	It("rejects paths that would interpolate in a container working directory", func() {
 		path := filepath.Join(root, "$(secret)")
 		write(filepath.Join(path, "go.mod"), "module hello\ngo 1.21\n")
-		_, _, err := ContainerSpec(path)
+		_, _, err := ContainerSpec(path, "plan")
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(ContainSubstring("$("))
+	})
+})
+
+var _ = Describe("Go op interfaces and public plan inputs", func() {
+	It("parses the SDK's typed input interface and plan independently", func() {
+		data, err := os.ReadFile("../sdk/testdata/describe.inputs.json")
+		Expect(err).NotTo(HaveOccurred())
+		spec, err := ParseDescribe(data)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(spec.Inputs["token"].String.IsSecret).To(BeTrue())
+		Expect(spec.Inputs["count"].Number.Default).To(BeNumerically("==", 2))
+		_, err = ParsePlan(data)
+		Expect(err).To(HaveOccurred())
+		data, err = os.ReadFile("../sdk/testdata/plan.inputs.json")
+		Expect(err).NotTo(HaveOccurred())
+		_, err = ParsePlan(data)
+		Expect(err).NotTo(HaveOccurred())
+		_, err = ParseDescribe(data)
+		Expect(err).To(HaveOccurred())
+	})
+	It("keeps secret and filesystem values out of plan requests", func() {
+		text := "private"
+		number := float64(3)
+		object := map[string]interface{}{"nested": model.Value{Number: &number}}
+		params := map[string]*model.ParamSpec{
+			"token": {String: &model.StringParamSpec{IsSecret: true}}, "dir": {Dir: &model.DirParamSpec{}}, "file": {File: &model.FileParamSpec{}}, "socket": {Socket: &model.SocketParamSpec{}},
+			"number": {Number: &model.NumberParamSpec{}}, "object": {Object: &model.ObjectParamSpec{}}, "secretNumber": {Number: &model.NumberParamSpec{IsSecret: true}}, "secretArray": {Array: &model.ArrayParamSpec{IsSecret: true}}, "secretObject": {Object: &model.ObjectParamSpec{IsSecret: true}},
+		}
+		values := map[string]*model.Value{"token": {String: &text}, "dir": {Dir: &text}, "file": {File: &text}, "socket": {Socket: &text}, "number": {Number: &number}, "object": {Object: &object}}
+		public, err := PlanInputs(params, values)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(public).To(Equal(map[string]interface{}{"number": number, "object": map[string]interface{}{"nested": number}}))
+		_, err = PlanInputs(map[string]*model.ParamSpec{"missing": {String: &model.StringParamSpec{}}}, nil)
+		Expect(err).To(HaveOccurred())
+		_, err = PlanInputs(map[string]*model.ParamSpec{"bad": {String: &model.StringParamSpec{}}}, map[string]*model.Value{"bad": {}})
+		Expect(err).To(HaveOccurred())
+		Expect(err.Error()).NotTo(ContainSubstring("private"))
+	})
+	It("rejects run and outputs in describe", func() {
+		for _, spec := range []string{`{"run":{"container":{"image":{"ref":"alpine"}}}}`, `{"outputs":{"x":{"string":{}}}}`} {
+			data, err := json.Marshal(Response{ContractVersion: 1, OpspecSchema: 1, Opspec: json.RawMessage(spec)})
+			Expect(err).NotTo(HaveOccurred())
+			_, err = ParseDescribe(data)
+			Expect(err).To(HaveOccurred())
+		}
 	})
 })

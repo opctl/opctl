@@ -29,7 +29,7 @@ type _bootstrapper struct {
 }
 
 func (bootstrap _bootstrapper) Plan(ctx context.Context, opCall *model.OpCall, rootCallID string) (*model.OpSpec, error) {
-	spec, mountRoot, err := goop.ContainerSpec(opCall.OpPath)
+	spec, mountRoot, err := goop.ContainerSpec(opCall.OpPath, "plan")
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (bootstrap _bootstrapper) Plan(ctx context.Context, opCall *model.OpCall, r
 		return nil, err
 	}
 	defer os.RemoveAll(scratch)
-	request, err := json.Marshal(goop.NewRequest())
+	request, err := json.Marshal(goop.NewRequest("plan", nil))
 	if err != nil {
 		return nil, err
 	}
@@ -57,5 +57,5 @@ func (bootstrap _bootstrapper) Plan(ctx context.Context, opCall *model.OpCall, r
 	if err != nil {
 		return nil, fmt.Errorf("Go op bootstrap plan: %w", err)
 	}
-	return goop.ParseResponse(stdout.Bytes())
+	return goop.ParsePlan(stdout.Bytes())
 }
