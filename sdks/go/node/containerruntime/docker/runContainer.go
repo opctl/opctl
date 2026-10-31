@@ -9,6 +9,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	dockerClientPkg "github.com/docker/docker/client"
+	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 	"github.com/opctl/opctl/sdks/go/node/dns"
@@ -138,20 +139,17 @@ func (cr _runContainer) RunContainer(
 	}
 
 	config := constructContainerConfig(req.Cmd, req.EnvVars, *req.Image.Ref, portBindings, req.WorkDir)
-	if containerruntime.SeparateOutputFrom(ctx) {
+	separateOutput := containerruntime.SeparateOutputFrom(ctx)
+	hostConfig := constructHostConfig(req.Dirs, req.Files, req.Sockets, portBindings, isGpuSupported)
+	if separateOutput {
 		config.Tty = false
+		hostConfig.LogConfig = container.LogConfig{Type: "none"}
 	}
 	// create container
 	_, createErr := cr.dockerClient.ContainerCreate(
 		ctx,
 		config,
-		constructHostConfig(
-			req.Dirs,
-			req.Files,
-			req.Sockets,
-			portBindings,
-			isGpuSupported,
-		),
+		hostConfig,
 		networkingConfig,
 		// platform requires API v1.41 so set to nil to avoid version errors
 		nil,
@@ -167,6 +165,21 @@ func (cr _runContainer) RunContainer(
 		}
 	}
 
+	var copyOutput func() error
+	if separateOutput {
+		attached, err := cr.dockerClient.ContainerAttach(ctx, dockerContainerName, container.AttachOptions{Stream: true, Stdout: true, Stderr: true})
+		if err != nil {
+			return nil, err
+		}
+		defer attached.Close()
+		stopClose := context.AfterFunc(ctx, attached.Close)
+		defer stopClose()
+		copyOutput = func() error {
+			_, err := stdcopy.StdCopy(stdout, stderr, attached.Reader)
+			return err
+		}
+	}
+
 	// start container
 	if err := cr.dockerClient.ContainerStart(
 		ctx,
@@ -178,24 +191,30 @@ func (cr _runContainer) RunContainer(
 
 	eg, ctx := errgroup.WithContext(ctx)
 
-	eg.Go(
-		func() error {
-			return cr.containerStdErrStreamer.Stream(
-				ctx,
-				dockerContainerName,
-				stderr,
-			)
-		},
-	)
-	eg.Go(
-		func() error {
-			return cr.containerStdOutStreamer.Stream(
-				ctx,
-				dockerContainerName,
-				stdout,
-			)
-		},
-	)
+	if separateOutput {
+		eg.Go(copyOutput)
+	} else {
+
+		eg.Go(
+			func() error {
+				return cr.containerStdErrStreamer.Stream(
+					ctx,
+					dockerContainerName,
+					stderr,
+				)
+			},
+		)
+		eg.Go(
+			func() error {
+				return cr.containerStdOutStreamer.Stream(
+					ctx,
+					dockerContainerName,
+					stdout,
+				)
+			},
+		)
+
+	}
 
 	if req.Name != nil {
 		containerJSON, err := cr.dockerClient.ContainerInspect(ctx, dockerContainerName)

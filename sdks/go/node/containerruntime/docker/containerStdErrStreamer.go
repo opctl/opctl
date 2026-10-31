@@ -6,8 +6,6 @@ import (
 
 	"github.com/docker/docker/api/types/container"
 	dockerClientPkg "github.com/docker/docker/client"
-	"github.com/docker/docker/pkg/stdcopy"
-	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 )
 
 func newContainerStdErrStreamer(
@@ -39,11 +37,8 @@ func (cses _containerStdErrStreamer) Stream(
 		return err
 	}
 
-	if containerruntime.SeparateOutputFrom(ctx) {
-		_, err = stdcopy.StdCopy(io.Discard, dst, src)
-	} else {
-		_, err = io.Copy(dst, src)
-	}
+	_, err = io.Copy(dst, src)
+
 	src.Close()
 	return err
 }

@@ -5,7 +5,12 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net"
 	"os"
+	"strings"
+
+	"github.com/docker/docker/pkg/stdcopy"
+	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 
 	"github.com/dgraph-io/badger/v4"
 	"github.com/docker/docker/api/types"
@@ -39,6 +44,40 @@ var _ = Context("RunContainer", func() {
 	}
 
 	pubSub := pubsub.New(db)
+	It("attaches bootstrap streams before start without persisting logs", func() {
+		client := new(FakeCommonAPIClient)
+		client.ContainerWaitReturns(closedContainerWaitOkBodyChan, nil)
+		client.ImagePullReturns(io.NopCloser(strings.NewReader("")), nil)
+		reader, writer := net.Pipe()
+		defer reader.Close()
+		defer writer.Close()
+		client.ContainerAttachReturns(types.NewHijackedResponse(reader, ""), nil)
+		client.ContainerStartStub = func(_ context.Context, name string, _ container.StartOptions) error {
+			if name == "opctl_bootstrap" {
+				Expect(client.ContainerAttachCallCount()).To(Equal(1))
+				go func() {
+					defer writer.Close()
+					stdcopy.NewStdWriter(writer, stdcopy.Stdout).Write([]byte("private plan"))
+					stdcopy.NewStdWriter(writer, stdcopy.Stderr).Write([]byte("diagnostic"))
+				}()
+			}
+			return nil
+		}
+		out, errOut := new(bytes.Buffer), new(bytes.Buffer)
+		runtime := _runContainer{dockerClient: client}
+		imageRef := "golang:1.25"
+		_, err := runtime.RunContainer(containerruntime.WithSeparateOutput(context.Background()), &model.ContainerCall{ContainerID: "bootstrap", Image: &model.ContainerCallImage{Ref: &imageRef}}, "root", pubSub, nopWriteCloser{out}, nopWriteCloser{errOut})
+		Expect(err).NotTo(HaveOccurred())
+		_, config, host, _, _, _ := client.ContainerCreateArgsForCall(1)
+		Expect(config.Tty).To(BeFalse())
+		Expect(host.LogConfig.Type).To(Equal("none"))
+		_, name, options := client.ContainerAttachArgsForCall(0)
+		Expect(name).To(Equal("opctl_bootstrap"))
+		Expect(options).To(Equal(container.AttachOptions{Stream: true, Stdout: true, Stderr: true}))
+		Expect(client.ContainerLogsCallCount()).To(Equal(0))
+		Expect(out.String()).To(Equal("private plan"))
+		Expect(errOut.String()).To(Equal("diagnostic"))
+	})
 
 	It("should call dockerClient.ContainerRemove w/ expected args", func() {
 		/* arrange */
