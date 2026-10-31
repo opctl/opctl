@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import getFsEntryData from '../../queries/getFsEntryData'
-import jsYaml from 'js-yaml'
+import getOp from '../../queries/getOp'
 import HasCall, { OpCall } from '../HasCall'
 import brandColors from '../../brandColors'
 import AddCallPopper from '../AddCallPopper'
@@ -35,11 +34,7 @@ export default function CallHasOp(
     () => {
       const load = async () => {
         try {
-          setOp(
-            jsYaml.safeLoad(
-              await getFsEntryData(path.join(opRef, 'op.yml'))
-            )
-          )
+          setOp(await getOp(opRef))
         } catch (err) {
           const errAsError = err as Error
           if (errAsError.message.includes('authentication')) {
@@ -62,6 +57,15 @@ export default function CallHasOp(
 
   if (!op) {
     return null
+  }
+
+  if (!op.run) {
+    return (
+      <div style={{ padding: '1rem' }}>
+        <strong>{op.name}</strong>
+        {op.description && <p>{op.description}</p>}
+      </div>
+    )
   }
 
   return (

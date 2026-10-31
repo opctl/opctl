@@ -14,7 +14,7 @@ export default function Window(
   }: Props
 ) {
   if (
-    path.basename(window.fsEntry.path) === 'op.yml'
+    ['op.yml', 'op.go'].includes(path.basename(window.fsEntry.path))
   ) {
     return (
       <OpWindow
