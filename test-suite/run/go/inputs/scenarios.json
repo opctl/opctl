@@ -1,0 +1,114 @@
+[
+  {
+    "name": "defaults",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/inputs",
+      "scope": {
+        "token": "s3cret",
+        "wantProd": false
+      },
+      "expect": "success"
+    }
+  },
+  {
+    "name": "prod control flow",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/inputs",
+      "scope": {
+        "token": "s3cret",
+        "wantProd": true,
+        "env": "prod",
+        "count": 3
+      },
+      "expect": "success"
+    }
+  },
+  {
+    "name": "enum",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/inputs",
+      "scope": {
+        "token": "s3cret",
+        "wantProd": false,
+        "env": "staging"
+      },
+      "expect": "failure"
+    }
+  },
+  {
+    "name": "maximum",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/inputs",
+      "scope": {
+        "token": "s3cret",
+        "wantProd": false,
+        "count": 9
+      },
+      "expect": "failure"
+    }
+  },
+  {
+    "name": "required secret",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/inputs",
+      "scope": {
+        "wantProd": false
+      },
+      "expect": "failure"
+    }
+  },
+  {
+    "name": "container negative control",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/inputs",
+      "scope": {
+        "token": "wrong",
+        "wantProd": false
+      },
+      "expect": "failure"
+    }
+  },
+  {
+    "name": "typed array items",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/inputs",
+      "scope": {
+        "token": "s3cret",
+        "wantProd": false,
+        "names": [
+          1
+        ]
+      },
+      "expect": "failure"
+    }
+  },
+  {
+    "name": "typed struct properties",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/inputs",
+      "scope": {
+        "token": "s3cret",
+        "wantProd": false,
+        "options": {
+          "mode": "safe",
+          "retry": "wrong"
+        }
+      },
+      "expect": "failure"
+    }
+  },
+  {
+    "name": "typed map properties",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/inputs",
+      "scope": {
+        "token": "s3cret",
+        "wantProd": false,
+        "labels": {
+          "limit": "wrong"
+        }
+      },
+      "expect": "failure"
+    }
+  }
+]
