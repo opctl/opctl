@@ -51,7 +51,7 @@ func GoVersion(moduleRoot string) (string, error) {
 }
 
 // ContainerSpec prepares a plan bootstrap and returns the host dir to bind as
-// the module scope value. Local replace targets share the /src mount.
+// the module scope value. Local replace targets retain their host paths.
 func ContainerSpec(opDir string) (*model.ContainerCallSpec, string, error) {
 	opDir, err := filepath.Abs(opDir)
 	if err != nil {
@@ -92,16 +92,12 @@ func ContainerSpec(opDir string) (*model.ContainerCallSpec, string, error) {
 			mountRoot = filepath.Dir(mountRoot)
 		}
 	}
-	rel, err := filepath.Rel(mountRoot, opDir)
-	if err != nil {
-		return nil, "", err
-	}
 	return &model.ContainerCallSpec{
 		Image:   &model.ContainerCallImageSpec{Ref: "golang:" + version},
 		Cmd:     []interface{}{"go", "run", ".", "plan"},
-		Dirs:    map[string]interface{}{"/src": "$(module)"},
+		Dirs:    map[string]interface{}{mountRoot: "$(module)"},
 		Files:   map[string]interface{}{"/opctl/request.json": "$(request)"},
 		EnvVars: map[string]interface{}{"GOFLAGS": "-mod=readonly", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "OPCTL_BOOTSTRAP_REQUEST": "/opctl/request.json"},
-		WorkDir: filepath.ToSlash(filepath.Join("/src", rel)),
+		WorkDir: filepath.ToSlash(opDir),
 	}, mountRoot, nil
 }

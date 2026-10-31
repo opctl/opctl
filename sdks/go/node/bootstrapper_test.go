@@ -45,7 +45,7 @@ var _ = Describe("Go op bootstrapper", func() {
 			interpreted, err := containerInterpreter.Interpret(scope, spec.Container, id, path, dataDir)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(interpreted.Files["/opctl/request.json"]).To(Equal(requestPath))
-			Expect(interpreted.Dirs["/src"]).To(Equal(opDir))
+			Expect(interpreted.Dirs[opDir]).To(Equal(opDir))
 			Expect(interpreted.Cmd).To(Equal([]string{"go", "run", ".", "plan"}))
 			capture := stdoutCaptureFrom(ctx)
 			Expect(capture).NotTo(BeNil())

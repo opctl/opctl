@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opctl/opctl/sdks/go/model"
+	containerInterpreter "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 	"os"
 	"path/filepath"
@@ -77,9 +79,9 @@ var _ = Describe("Go op module and container spec", func() {
 		Expect(mount).To(Equal(module))
 		Expect(spec.Image.Ref).To(Equal("golang:1.25.0"))
 		Expect(spec.Cmd).To(Equal([]interface{}{"go", "run", ".", "plan"}))
-		Expect(spec.Dirs["/src"]).To(Equal("$(module)"))
+		Expect(spec.Dirs[module]).To(Equal("$(module)"))
 		Expect(spec.Files["/opctl/request.json"]).To(Equal("$(request)"))
-		Expect(spec.WorkDir).To(Equal("/src/ops/hello"))
+		Expect(spec.WorkDir).To(Equal(opDir))
 		Expect(spec.EnvVars).To(Equal(map[string]interface{}{"GOFLAGS": "-mod=readonly", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "OPCTL_BOOTSTRAP_REQUEST": "/opctl/request.json"}))
 	})
 	It("mounts the common ancestor of all local replace targets", func() {
@@ -90,7 +92,14 @@ var _ = Describe("Go op module and container spec", func() {
 		Expect(mount).To(Equal(root))
 		spec, _, err := ContainerSpec(module)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(spec.WorkDir).To(Equal("/src/app/ops/hello"))
+		Expect(spec.WorkDir).To(Equal(module))
+		Expect(spec.Dirs).To(Equal(map[string]interface{}{root: "$(module)"}))
+		requestPath := filepath.Join(root, "request.json")
+		write(requestPath, "{}")
+		actual, err := containerInterpreter.Interpret(map[string]*model.Value{"module": {Dir: &mount}, "request": {File: &requestPath}}, spec, "bootstrap", module, root)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(actual.Dirs[root]).To(Equal(root))
+		Expect(actual.WorkDir).To(Equal(module))
 	})
 	It("reports a missing module or Go directive and malformed module files", func() {
 		_, err := ModuleRoot(root)
