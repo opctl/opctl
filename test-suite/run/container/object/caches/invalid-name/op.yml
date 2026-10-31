@@ -1,0 +1,11 @@
+name: run/container/object/caches/invalid-name
+inputs:
+  cacheName:
+    string:
+      default: ../escape
+run:
+  container:
+    image: { ref: alpine:3 }
+    caches:
+      /cache: $(cacheName)
+    cmd: [sh, -ce, exit 0]

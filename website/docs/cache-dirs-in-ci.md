@@ -61,4 +61,6 @@ Cache dirs start with mode `0700`, owned by the sudo user or the node's effectiv
 
 ## Kubernetes
 
-Cache dirs live under the node's data dir on Kubernetes too. They persist across node or pod replacement only if the volume backing the data dir persists. An ephemeral data-dir volume loses the cache when it is removed.
+The Kubernetes runtime requires `/root/opctl` as the node's data dir, backed by the `opctl` PersistentVolumeClaim shared with its container pods. Cache dirs mount as `caches/<name>` subPaths of that volume. They persist across node or pod replacement only if the volume and its contents persist. An ephemeral data-dir volume loses the cache when it is removed.
+
+The example deployment in `sdks/go/node/containerruntime/k8s/resources.yaml` clears `/root/opctl/**` before starting the node. Remove that cleanup from your deployment to keep cache dirs across node restarts, even with a persistent volume.

@@ -1,0 +1,22 @@
+name: run/container/object/caches/shared
+run:
+  serial:
+    - container:
+        image: { ref: alpine:3 }
+        caches:
+          /writer: test-suite-cache-dirs-shared
+        cmd:
+          - sh
+          - -ce
+          - echo cache-contents > /writer/contents
+    - container:
+        image: { ref: alpine:3 }
+        caches:
+          /reader: test-suite-cache-dirs-shared
+        cmd:
+          - sh
+          - -ce
+          - |
+            grep -qx cache-contents /reader/contents
+            # remove so a later run on a reused node can't pass on stale contents
+            rm /reader/contents
