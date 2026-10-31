@@ -15,9 +15,21 @@ import (
 type stdoutCaptureKey struct{}
 
 type stdoutCapture struct {
-	writer io.Writer
-	size   int
-	err    error
+	writer      io.Writer
+	size        int
+	err         error
+	diagnostics bootstrapDiagnostics
+}
+
+type bootstrapDiagnostics []byte
+
+func (capture *bootstrapDiagnostics) Write(data []byte) (int, error) {
+	n := len(data)
+	if remaining := 64*1024 - len(*capture); len(data) > remaining {
+		data = data[:remaining]
+	}
+	*capture = append(*capture, data...)
+	return n, nil
 }
 
 func withStdoutCapture(ctx context.Context, writer io.Writer) context.Context {

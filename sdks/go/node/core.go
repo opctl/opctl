@@ -106,6 +106,7 @@ func New(
 	}()
 
 	return core{
+		bootstrapper:     newBootstrapper(caller, dataDirPath),
 		caller:           caller,
 		containerRuntime: containerRuntime,
 		dataCachePath:    filepath.Join(dataDirPath, "ops"),
@@ -120,6 +121,7 @@ func New(
 
 // core is an Node that supports running ops directly on the host
 type core struct {
+	bootstrapper     bootstrapper
 	caller           caller
 	containerRuntime containerruntime.ContainerRuntime
 	dataCachePath    string

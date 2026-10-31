@@ -7,6 +7,7 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/internal/urlpath"
 	"github.com/opctl/opctl/sdks/go/node"
+	"github.com/opctl/opctl/sdks/go/node/api/handler/ops/describes"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/ops/kills"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/ops/starts"
 )
@@ -24,14 +25,16 @@ func NewHandler(
 	node node.Node,
 ) Handler {
 	return _handler{
-		startsHandler: starts.NewHandler(node),
-		killsHandler:  kills.NewHandler(node),
+		startsHandler:    starts.NewHandler(node),
+		describesHandler: describes.NewHandler(node),
+		killsHandler:     kills.NewHandler(node),
 	}
 }
 
 type _handler struct {
-	startsHandler starts.Handler
-	killsHandler  kills.Handler
+	startsHandler    starts.Handler
+	describesHandler describes.Handler
+	killsHandler     kills.Handler
 }
 
 func (hdlr _handler) Handle(
@@ -45,6 +48,8 @@ func (hdlr _handler) Handle(
 	}
 
 	switch pathSegment {
+	case "describes":
+		hdlr.describesHandler.Handle(httpResp, httpReq)
 	case "kills":
 		hdlr.killsHandler.Handle(
 			httpResp,

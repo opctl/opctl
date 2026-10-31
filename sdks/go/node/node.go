@@ -12,6 +12,9 @@ import (
 
 // Node is the main structure to run and interact with ops
 type Node interface {
+	// DescribeOp returns an op declaration without running its op graph.
+	DescribeOp(ctx context.Context, req model.DescribeOpReq) (*model.OpSpec, error)
+
 	// AddAuth records authentication within the core
 	AddAuth(
 		ctx context.Context,

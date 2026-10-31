@@ -32,9 +32,11 @@ var _ = Describe("container stdout capture", func() {
 			return nil, nil
 		}
 		cc := newContainerCaller(runtime, events, nil)
-		_, err := cc.Call(withStdoutCapture(context.Background(), &captured), &model.ContainerCall{Image: &model.ContainerCallImage{}}, nil, &model.ContainerCallSpec{}, "root")
+		ctx := withStdoutCapture(context.Background(), &captured)
+		_, err := cc.Call(ctx, &model.ContainerCall{Image: &model.ContainerCallImage{}}, nil, &model.ContainerCallSpec{}, "root")
 		Expect(err).NotTo(HaveOccurred())
 		Expect(captured.String()).To(Equal("private plan\n"))
+		Expect(string(stdoutCaptureFrom(ctx).diagnostics)).To(Equal("compile diagnostic\n"))
 		var diagnostics []byte
 		for i := 0; i < events.PublishCallCount(); i++ {
 			event := events.PublishArgsForCall(i)
@@ -45,6 +47,18 @@ var _ = Describe("container stdout capture", func() {
 		}
 		Expect(string(diagnostics)).To(ContainSubstring("compile diagnostic"))
 		Expect(string(diagnostics)).To(ContainSubstring("pull progress"))
+	})
+	It("bounds captured stderr without interrupting diagnostic streaming", func() {
+		var captured bootstrapDiagnostics
+		data := strings.Repeat("x", 70*1024)
+		n, err := io.WriteString(&captured, data)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(n).To(Equal(len(data)))
+		Expect(captured).To(HaveLen(64 * 1024))
+		n, err = io.WriteString(&captured, "more")
+		Expect(err).NotTo(HaveOccurred())
+		Expect(n).To(Equal(4))
+		Expect(captured).To(HaveLen(64 * 1024))
 	})
 	It("continues to publish stdout for ordinary container calls", func() {
 		runtime := new(runtimeFakes.FakeContainerRuntime)

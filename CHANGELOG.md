@@ -11,6 +11,10 @@ accordance with
 - Go ops can now be authored with a dependency-free Go op SDK and run a single container call through containerized bootstrap. The SDK declares typed inputs with defaults
   and constraints; node input resolution, outputs, validation, and listing are not supported yet.
 
+### Fixed
+
+- Go bootstrap failures return compiler and declaration diagnostics to describe clients, including `opctl op validate`.
+
 ## [0.1.76] - 2026-06-18
 
 ### Added

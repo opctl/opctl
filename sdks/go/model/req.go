@@ -48,3 +48,8 @@ type StartOpReqOp struct {
 	Ref       string
 	PullCreds *Creds `json:"pullCreds,omitempty"`
 }
+
+// DescribeOpReq requests an op's interface without planning or executing it.
+type DescribeOpReq struct {
+	Op StartOpReqOp `json:"op"`
+}

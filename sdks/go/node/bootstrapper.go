@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/internal/unsudo"
@@ -75,8 +76,12 @@ func (bootstrap _bootstrapper) run(ctx context.Context, opCall *model.OpCall, ro
 	if rootCallID == "" {
 		rootCallID = id
 	}
-	_, err = bootstrap.caller.Call(withStdoutCapture(ctx, &stdout), id, scope, &model.CallSpec{Container: spec, Name: &name}, opCall.OpPath, parent, rootCallID)
+	ctx = withStdoutCapture(ctx, &stdout)
+	_, err = bootstrap.caller.Call(ctx, id, scope, &model.CallSpec{Container: spec, Name: &name}, opCall.OpPath, parent, rootCallID)
 	if err != nil {
+		if diagnostic := strings.TrimSpace(string(stdoutCaptureFrom(ctx).diagnostics)); diagnostic != "" {
+			return nil, fmt.Errorf("Go op bootstrap %s: %w\n%s", phase, err, diagnostic)
+		}
 		return nil, fmt.Errorf("Go op bootstrap %s: %w", phase, err)
 	}
 	return stdout.Bytes(), nil

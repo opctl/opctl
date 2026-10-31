@@ -89,6 +89,23 @@ var _ = Describe("Go op bootstrapper", func() {
 		Expect(err).To(HaveOccurred())
 		Expect(caller.CallCallCount()).To(Equal(0))
 	})
+	It("returns stderr diagnostics on bootstrap failure without exposing stdout", func() {
+		caller := new(fakes.FakeCaller)
+		failure := errors.New("nonzero container exit code: 1")
+		caller.CallStub = func(ctx context.Context, _ string, _ map[string]*model.Value, _ *model.CallSpec, _ string, _ *string, _ string) (map[string]*model.Value, error) {
+			capture := stdoutCaptureFrom(ctx)
+			_, err := capture.Write([]byte("private plan output"))
+			Expect(err).NotTo(HaveOccurred())
+			_, err = capture.diagnostics.Write([]byte("input field X: unknown opctl tag key minimun\n"))
+			Expect(err).NotTo(HaveOccurred())
+			return nil, failure
+		}
+		_, err := newBootstrapper(caller, dataDir).Describe(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: opDir}}, "")
+		Expect(err).To(HaveOccurred())
+		Expect(err.Error()).To(ContainSubstring("unknown opctl tag key minimun"))
+		Expect(err.Error()).NotTo(ContainSubstring("private plan output"))
+		Expect(errors.Is(err, failure)).To(BeTrue())
+	})
 	It("nests describe under the op without input values", func() {
 		caller := new(fakes.FakeCaller)
 		caller.CallStub = func(ctx context.Context, id string, scope map[string]*model.Value, spec *model.CallSpec, path string, parent *string, rootID string) (map[string]*model.Value, error) {

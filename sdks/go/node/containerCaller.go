@@ -86,10 +86,12 @@ func (cc _containerCaller) Call(
 	)
 
 	var stdout io.WriteCloser = logStdOutPW
+	var stderr io.WriteCloser = logStdErrPW
 	var eventPublisher pubsub.EventPublisher = cc.pubSub
 	capture := stdoutCaptureFrom(ctx)
 	if capture != nil {
 		stdout = teeCloser{Writer: capture, Closer: logStdOutPW}
+		stderr = teeCloser{Writer: io.MultiWriter(logStdErrPW, &capture.diagnostics), Closer: logStdErrPW}
 		eventPublisher = bootstrapEventPublisher{cc.pubSub}
 	}
 
@@ -99,7 +101,7 @@ func (cc _containerCaller) Call(
 		rootCallID,
 		eventPublisher,
 		stdout,
-		logStdErrPW,
+		stderr,
 	)
 
 	if err == nil && capture != nil {

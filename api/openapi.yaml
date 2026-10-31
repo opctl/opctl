@@ -92,6 +92,39 @@ paths:
           description: HTTP/1.1 ["OK" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.1)
         "500":
           $ref: "#/components/responses/internalServerError"
+  /ops/describes:
+    post:
+      summary: Describe a YAML or Go op without executing its op graph
+      tags:
+        - ops
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [op]
+              properties:
+                op:
+                  $ref: "#/components/schemas/startOpReqOp"
+      responses:
+        "200":
+          description: The op declaration. Go ops return their interface without a run graph.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/forbidden"
+        "404":
+          $ref: "#/components/responses/notFound"
+        "500":
+          $ref: "#/components/responses/internalServerError"
   /ops/starts:
     post:
       summary: Starts an op
