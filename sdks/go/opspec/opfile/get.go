@@ -9,7 +9,7 @@ import (
 )
 
 // ErrGoOp signals that a Go op needs bootstrap instead of YAML decoding.
-var ErrGoOp = errors.New("Go ops are not supported yet")
+var ErrGoOp = errors.New("op is a Go op; its declaration needs bootstrap")
 
 // ErrBothOpFiles signals an ambiguous op declaration.
 var ErrBothOpFiles = errors.New("op dir contains both op.yml and op.go; an op must be a YAML op or a Go op, not both")
