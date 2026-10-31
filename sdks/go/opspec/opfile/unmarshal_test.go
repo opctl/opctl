@@ -20,7 +20,7 @@ var _ = Context("Unmarshal", func() {
 		})
 	})
 	Context("Validator.Validate doesn't return errors", func() {
-		It("should unmarshal literal cache names", func() {
+		It("should unmarshal literal and expression cache names", func() {
 			actualOpFile, err := Unmarshal([]byte(`
 name: cache-example
 run:
@@ -28,11 +28,15 @@ run:
     image: { ref: golang:1.23 }
     caches:
       /go/pkg/mod: gomod
+      /root/.npm: npm-$(lockHash)
+      /cache: $(cacheName)
 `))
 
 			Expect(err).To(BeNil())
 			Expect(actualOpFile.Run.Container.Caches).To(Equal(map[string]interface{}{
 				"/go/pkg/mod": "gomod",
+				"/root/.npm":  "npm-$(lockHash)",
+				"/cache":      "$(cacheName)",
 			}))
 		})
 

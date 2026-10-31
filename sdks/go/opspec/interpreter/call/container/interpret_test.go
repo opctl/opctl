@@ -79,14 +79,18 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			dataDirPath := GinkgoT().TempDir()
 			dirPath := GinkgoT().TempDir()
+			lockHash := "abc123"
 
 			/* act */
 			actualCall, err := Interpret(
-				map[string]*model.Value{"dir": {Dir: &dirPath}},
+				map[string]*model.Value{
+					"dir":      {Dir: &dirPath},
+					"lockHash": {String: &lockHash},
+				},
 				&model.ContainerCallSpec{
 					Image:  &model.ContainerCallImageSpec{Ref: "ref"},
 					Dirs:   map[string]interface{}{"/work": "$(dir)"},
-					Caches: map[string]interface{}{"/go/pkg/mod": "gomod"},
+					Caches: map[string]interface{}{"/go/pkg/mod": "gomod-$(lockHash)"},
 				},
 				"containerID",
 				"opPath",
@@ -97,7 +101,7 @@ var _ = Context("Interpret", func() {
 			Expect(err).To(BeNil())
 			Expect(actualCall.Dirs).To(Equal(map[string]string{
 				"/work":       dirPath,
-				"/go/pkg/mod": filepath.Join(dataDirPath, "caches", "gomod"),
+				"/go/pkg/mod": filepath.Join(dataDirPath, "caches", "gomod-abc123"),
 			}))
 		})
 

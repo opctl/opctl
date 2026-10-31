@@ -14,6 +14,8 @@ var _ = Context("Validate caches", func() {
 		{"relative/path": "gomod"},
 		{"/cache": nil},
 		{"/cache": 42},
+		{"/cache": true},
+		{"/cache": []interface{}{}},
 		{"/cache": map[string]interface{}{}},
 	} {
 		It(fmt.Sprintf("should reject %v", caches), func() {

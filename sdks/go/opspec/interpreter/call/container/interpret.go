@@ -106,6 +106,7 @@ func Interpret(
 
 	// interpret caches
 	cacheDirs, err := caches.Interpret(
+		scope,
 		containerCallSpec.Caches,
 		dataDirPath,
 	)
