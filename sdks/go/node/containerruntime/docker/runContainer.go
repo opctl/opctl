@@ -10,6 +10,7 @@ import (
 	"github.com/docker/docker/api/types/network"
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 	"github.com/opctl/opctl/sdks/go/node/dns"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
 	"golang.org/x/sync/errgroup"
@@ -136,16 +137,14 @@ func (cr _runContainer) RunContainer(
 		isGpuSupported = false
 	}
 
+	config := constructContainerConfig(req.Cmd, req.EnvVars, *req.Image.Ref, portBindings, req.WorkDir)
+	if containerruntime.SeparateOutputFrom(ctx) {
+		config.Tty = false
+	}
 	// create container
 	_, createErr := cr.dockerClient.ContainerCreate(
 		ctx,
-		constructContainerConfig(
-			req.Cmd,
-			req.EnvVars,
-			*req.Image.Ref,
-			portBindings,
-			req.WorkDir,
-		),
+		config,
 		constructHostConfig(
 			req.Dirs,
 			req.Files,

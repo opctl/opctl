@@ -80,6 +80,10 @@ func (cr _containerRuntime) RunContainer(
 	defer stdout.Close()
 	defer stderr.Close()
 
+	if containerruntime.SeparateOutputFrom(ctx) {
+		return nil, fmt.Errorf("Go op bootstrap is not supported yet with the Kubernetes container runtime")
+	}
+
 	pod, err := constructPod(req)
 	if err != nil {
 		return nil, err

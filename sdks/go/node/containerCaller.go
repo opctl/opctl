@@ -85,14 +85,26 @@ func (cc _containerCaller) Call(
 		containerCall,
 	)
 
+	var stdout io.WriteCloser = logStdOutPW
+	var eventPublisher pubsub.EventPublisher = cc.pubSub
+	capture := stdoutCaptureFrom(ctx)
+	if capture != nil {
+		stdout = teeCloser{Writer: capture, Closer: logStdOutPW}
+		eventPublisher = bootstrapEventPublisher{cc.pubSub}
+	}
+
 	rawExitCode, err := cc.containerRuntime.RunContainer(
 		ctx,
 		containerCall,
 		rootCallID,
-		cc.pubSub,
-		logStdOutPW,
+		eventPublisher,
+		stdout,
 		logStdErrPW,
 	)
+
+	if err == nil && capture != nil {
+		err = capture.err
+	}
 
 	// @TODO: handle no exit code
 	if rawExitCode != nil {
