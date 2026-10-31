@@ -76,11 +76,11 @@ var _ = Describe("Go op module and container spec", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(mount).To(Equal(module))
 		Expect(spec.Image.Ref).To(Equal("golang:1.25.0"))
-		Expect(spec.Cmd).To(Equal([]string{"go", "run", ".", "plan"}))
+		Expect(spec.Cmd).To(Equal([]interface{}{"go", "run", ".", "plan"}))
 		Expect(spec.Dirs["/src"]).To(Equal("$(module)"))
 		Expect(spec.Files["/opctl/request.json"]).To(Equal("$(request)"))
 		Expect(spec.WorkDir).To(Equal("/src/ops/hello"))
-		Expect(spec.EnvVars).To(Equal(map[string]string{"GOFLAGS": "-mod=readonly", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "OPCTL_BOOTSTRAP_REQUEST": "/opctl/request.json"}))
+		Expect(spec.EnvVars).To(Equal(map[string]interface{}{"GOFLAGS": "-mod=readonly", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "OPCTL_BOOTSTRAP_REQUEST": "/opctl/request.json"}))
 	})
 	It("mounts the common ancestor of all local replace targets", func() {
 		module := filepath.Join(root, "app", "ops", "hello")

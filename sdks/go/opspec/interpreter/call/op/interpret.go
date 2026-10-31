@@ -2,6 +2,7 @@ package op
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"path/filepath"
 	"regexp"
@@ -80,7 +81,9 @@ func Interpret(
 		ctx,
 		opDir,
 	)
-	if err != nil {
+	if errors.Is(err, opfile.ErrGoOp) {
+		opFile = &model.OpSpec{}
+	} else if err != nil {
 		return nil, err
 	}
 

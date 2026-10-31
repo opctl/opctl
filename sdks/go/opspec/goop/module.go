@@ -98,10 +98,10 @@ func ContainerSpec(opDir string) (*model.ContainerCallSpec, string, error) {
 	}
 	return &model.ContainerCallSpec{
 		Image:   &model.ContainerCallImageSpec{Ref: "golang:" + version},
-		Cmd:     []string{"go", "run", ".", "plan"},
+		Cmd:     []interface{}{"go", "run", ".", "plan"},
 		Dirs:    map[string]interface{}{"/src": "$(module)"},
 		Files:   map[string]interface{}{"/opctl/request.json": "$(request)"},
-		EnvVars: map[string]string{"GOFLAGS": "-mod=readonly", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "OPCTL_BOOTSTRAP_REQUEST": "/opctl/request.json"},
+		EnvVars: map[string]interface{}{"GOFLAGS": "-mod=readonly", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "OPCTL_BOOTSTRAP_REQUEST": "/opctl/request.json"},
 		WorkDir: filepath.ToSlash(filepath.Join("/src", rel)),
 	}, mountRoot, nil
 }

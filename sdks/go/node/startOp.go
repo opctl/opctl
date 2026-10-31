@@ -2,6 +2,7 @@ package node
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"path/filepath"
 	"runtime/debug"
@@ -54,7 +55,9 @@ func (this core) StartOp(
 		ctx,
 		opDir,
 	)
-	if err != nil {
+	if errors.Is(err, opfile.ErrGoOp) {
+		opFile = &model.OpSpec{}
+	} else if err != nil {
 		return "", err
 	}
 	for name := range opFile.Outputs {

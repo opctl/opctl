@@ -74,3 +74,17 @@ var _ = Context("Interpret", func() {
 		Expect(actualBytes).To(Equal(expectedBytes))
 	})
 })
+
+var _ = Describe("Interpret a Go op", func() {
+	It("defers the op graph to bootstrap with no inputs", func() {
+		dir, err := os.MkdirTemp("", "go-op-")
+		Expect(err).NotTo(HaveOccurred())
+		defer os.RemoveAll(dir)
+		Expect(os.WriteFile(path.Join(dir, "op.go"), []byte("package main"), 0600)).To(Succeed())
+		call, err := Interpret(context.Background(), nil, &model.OpCallSpec{Ref: dir}, "op", dir, dir)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(call.ChildCallCallSpec).To(BeNil())
+		Expect(call.ChildCallID).To(HaveLen(32))
+		Expect(call.Inputs).To(BeEmpty())
+	})
+})

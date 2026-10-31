@@ -32,14 +32,16 @@ func newOpCaller(
 	dataDirPath string,
 ) opCaller {
 	return _opCaller{
-		caller:      caller,
-		dataDirPath: dataDirPath,
+		caller:       caller,
+		bootstrapper: newBootstrapper(caller, dataDirPath),
+		dataDirPath:  dataDirPath,
 	}
 }
 
 type _opCaller struct {
-	caller      caller
-	dataDirPath string
+	bootstrapper bootstrapper
+	caller       caller
+	dataDirPath  string
 }
 
 func (oc _opCaller) Call(
@@ -54,6 +56,23 @@ func (oc _opCaller) Call(
 ) {
 	var err error
 	outboundScope := map[string]*model.Value{}
+
+	opDir, resolveErr := fs.New(filepath.Join(oc.dataDirPath, "ops")).TryResolve(ctx, opCall.OpPath)
+	var isGoOp bool
+	childSpec := opCall.ChildCallCallSpec
+	if resolveErr == nil {
+		isGoOp, err = opfile.IsGoOp(ctx, opDir)
+		if err != nil {
+			return outboundScope, err
+		}
+		if isGoOp {
+			plan, err := oc.bootstrapper.Plan(ctx, opCall, rootCallID)
+			if err != nil {
+				return outboundScope, err
+			}
+			childSpec = plan.Run
+		}
+	}
 
 	// form scope for op call by combining defined inputs & op dir
 	opCallScope := map[string]*model.Value{}
@@ -79,7 +98,7 @@ func (oc _opCaller) Call(
 		ctx,
 		opCall.ChildCallID,
 		opCallScope,
-		opCall.ChildCallCallSpec,
+		childSpec,
 		opCall.OpPath,
 		&opCall.OpID,
 		rootCallID,
@@ -88,19 +107,18 @@ func (oc _opCaller) Call(
 		return outboundScope, err
 	}
 
-	opDir, err := fs.New(filepath.Join(oc.dataDirPath, "ops")).TryResolve(ctx, opCall.OpPath)
-	if err != nil {
-		return nil, err
+	// Preserve the YAML op's child-call error precedence when resolution fails.
+	if resolveErr != nil {
+		return nil, resolveErr
+	}
+	opFile := &model.OpSpec{}
+	if !isGoOp {
+		opFile, err = opfile.Get(ctx, opDir)
+		if err != nil {
+			return outboundScope, err
+		}
 	}
 
-	var opFile *model.OpSpec
-	opFile, err = opfile.Get(
-		ctx,
-		opDir,
-	)
-	if err != nil {
-		return outboundScope, err
-	}
 	opOutputs, err = outputs.Interpret(
 		opOutputs,
 		opFile.Outputs,
