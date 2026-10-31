@@ -31,7 +31,7 @@ func ensureNetworkDetached(
 		outputBytes, err := cmd.CombinedOutput()
 
 		if err != nil {
-			fmt.Errorf("Failed to delete %s: %w, %s", tunName, err, string(outputBytes))
+			return fmt.Errorf("Failed to delete %s: %w, %s", tunName, err, string(outputBytes))
 		}
 	}
 
