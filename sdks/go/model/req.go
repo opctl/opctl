@@ -40,6 +40,11 @@ type KillOpReq struct {
 type StartOpReq struct {
 	// map of args keyed by input name
 	Args map[string]*Value `json:"args,omitempty"`
+	// CleanScratch removes the call's scratch (dcg/<callID> for every call in its tree, which holds its
+	// file and dir mounts and outputs) as soon as the root call ends. Set it only when nothing reads
+	// the outputs' data afterwards, as the CLI's run does; a caller that fetches a file or dir output
+	// through the API after the call ends must leave it unset.
+	CleanScratch bool `json:"cleanScratch,omitempty"`
 	// Op details the op to start
 	Op StartOpReqOp `json:"op,omitempty"`
 }

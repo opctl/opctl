@@ -23,6 +23,7 @@ var _ = Context("core", func() {
 				context.Background(),
 				new(FakeContainerRuntime),
 				dataDir,
+				0,
 			)
 
 			Expect(actualErr).To(BeNil())

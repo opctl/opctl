@@ -1,0 +1,11 @@
+name: slow
+description: Holds a secret file mount until killed.
+inputs:
+  secret:
+    string: {isSecret: true}
+run:
+  container:
+    image: {ref: 'alpine:3.20'}
+    cmd: [sleep, '300']
+    files:
+      /secret: $(secret)

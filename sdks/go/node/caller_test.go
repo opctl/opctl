@@ -39,6 +39,7 @@ var _ = Context("caller", func() {
 					"dummyDataDir",
 					pubSub,
 					newStateStore(context.Background(), db, pubSub),
+					nil,
 				),
 			).To(Not(BeNil()))
 		})

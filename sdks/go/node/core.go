@@ -19,11 +19,16 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
 )
 
-// New returns a new LocalCore initialized with the given options
+// scratchSweepInterval is how often, at most, ended roots are checked against the scratch TTL.
+const scratchSweepInterval = time.Minute
+
+// New returns a new LocalCore initialized with the given options. scratchTTL is how long a root
+// call's scratch is kept after it ends when its caller didn't ask for it to be cleaned; 0 keeps it.
 func New(
 	ctx context.Context,
 	containerRuntime containerruntime.ContainerRuntime,
 	dataDirPath string,
+	scratchTTL time.Duration,
 ) (Core, error) {
 
 	eventDbPath := path.Join(dataDirPath, "dcg", "events")
@@ -59,6 +64,11 @@ func New(
 
 	pubSub := pubsub.New(db)
 
+	// No call runs yet, so roots left unended by a previous node are orphans.
+	scratch := newScratch(dataDirPath, scratchTTL)
+	scratch.sweep(time.Now())
+	go scratch.sweepEvery(ctx.Done(), min(scratchSweepInterval, scratchTTL))
+
 	stateStore := newStateStore(
 		ctx,
 		db,
@@ -74,6 +84,7 @@ func New(
 		dataDirPath,
 		pubSub,
 		stateStore,
+		scratch,
 	)
 
 	go func() {
@@ -114,6 +125,7 @@ func New(
 			dataDirPath,
 		),
 		pubSub:     pubSub,
+		scratch:    scratch,
 		stateStore: stateStore,
 	}, nil
 }
@@ -125,6 +137,7 @@ type core struct {
 	dataCachePath    string
 	opCaller         opCaller
 	pubSub           pubsub.PubSub
+	scratch          *scratch
 	stateStore       stateStore
 }
 
