@@ -57,6 +57,8 @@ func (np nodeProvider) CreateNodeIfNotExists(
 		np.config.DataDir,
 		"--dns-listen-address",
 		np.config.DNSListenAddress,
+		"--scratch-ttl",
+		np.config.ScratchTTL.String(),
 		"node",
 		"create",
 	)

@@ -62,6 +62,8 @@ func (this core) StartOp(
 		opCallSpec.Outputs[name] = ""
 	}
 
+	this.scratch.begin(callID, req.CleanScratch)
+
 	opCtx, cancelOp := context.WithCancel(ctx)
 	go func() {
 		defer func() {
@@ -71,6 +73,9 @@ func (this core) StartOp(
 			}
 
 			cancelOp()
+
+			// after the whole tree has ended, killed and failed calls included
+			this.scratch.end(callID)
 		}()
 
 		// this relies on op existing locally which is currently always true since we only use fs & git as data providers

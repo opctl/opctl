@@ -92,6 +92,7 @@ var _ = Context("core", func() {
 						dbDir,
 						pubSub,
 						stateStore,
+						nil,
 					)
 
 					objectUnderTest := _parallelLoopCaller{
@@ -185,6 +186,7 @@ var _ = Context("core", func() {
 						dbDir,
 						pubSub,
 						stateStore,
+						nil,
 					),
 					pubSub: pubSub,
 				}

@@ -238,6 +238,15 @@ func NewRootCmd() (*cobra.Command, error) {
 
 	rootCmd.
 		PersistentFlags().
+		DurationVar(
+			&nodeConfig.ScratchTTL,
+			"scratch-ttl",
+			0,
+			"How long the node keeps a finished op's scratch (its file and dir mounts and outputs) when the op's caller didn't ask for it to be cleaned; 0 keeps it. opctl run always cleans its own",
+		)
+
+	rootCmd.
+		PersistentFlags().
 		BoolVar(
 			&noColor,
 			"no-color",

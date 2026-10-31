@@ -33,11 +33,13 @@ func newCaller(
 	dataDirPath string,
 	pubSub pubsub.PubSub,
 	stateStore stateStore,
+	scratch *scratch,
 ) caller {
 	instance := &_caller{
 		containerCaller: containerCaller,
 		dataDirPath:     dataDirPath,
 		pubSub:          pubSub,
+		scratch:         scratch,
 		stateStore:      stateStore,
 	}
 
@@ -76,6 +78,7 @@ type _caller struct {
 	parallelCaller     parallelCaller
 	parallelLoopCaller parallelLoopCaller
 	pubSub             pubsub.PubSub
+	scratch            *scratch
 	serialCaller       serialCaller
 	serialLoopCaller   serialLoopCaller
 	stateStore         stateStore
@@ -105,6 +108,9 @@ func (clr _caller) Call(
 		// if context done NOOP
 		return nil, nil
 	}
+
+	// before interpreting, which creates the call's scratch
+	clr.scratch.track(rootCallID, id)
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs

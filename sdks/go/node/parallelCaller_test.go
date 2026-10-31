@@ -62,6 +62,7 @@ var _ = Context("core", func() {
 							dbDir,
 							pubSub,
 							stateStore,
+							nil,
 						),
 						pubSub: pubSub,
 					}
@@ -161,6 +162,7 @@ var _ = Context("core", func() {
 						dbDir,
 						pubSub,
 						stateStore,
+						nil,
 					),
 					pubSub: pubSub,
 				}

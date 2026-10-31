@@ -68,6 +68,7 @@ func newCreateCmd(
 						ctx,
 						*containerRuntime,
 						dataDir.Path(),
+						nodeConfig.ScratchTTL,
 					)
 					if err != nil {
 						return err

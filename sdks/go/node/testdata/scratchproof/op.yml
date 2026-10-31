@@ -1,0 +1,25 @@
+name: scratchproof
+description: Passes a secret through files and a dir, and reads one step's file output in the next.
+inputs:
+  secret:
+    string: {isSecret: true}
+outputs:
+  out:
+    dir: {}
+run:
+  serial:
+    - container:
+        image: {ref: 'alpine:3.20'}
+        cmd: [sh, -c, 'cat /secret > /copy && cp /secret /out/secret.txt']
+        files:
+          /secret: $(secret)
+          /copy: $(copied)
+        dirs:
+          /out: $(out)
+    - container:
+        image: {ref: 'alpine:3.20'}
+        cmd: [sh, -c, 'grep -qx "$EXPECT" /copied']
+        envVars:
+          EXPECT: $(secret)
+        files:
+          /copied: $(copied)

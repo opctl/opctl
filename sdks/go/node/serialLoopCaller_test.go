@@ -126,6 +126,7 @@ var _ = Context("core", func() {
 							dbDir,
 							pubSub,
 							stateStore,
+							nil,
 						)
 
 						objectUnderTest := _serialLoopCaller{
@@ -219,6 +220,7 @@ var _ = Context("core", func() {
 							dbDir,
 							pubSub,
 							stateStore,
+							nil,
 						),
 						pubSub: pubSub,
 					}
