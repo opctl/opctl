@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [Unreleased]
+
+### Fixed
+
+- A call's scratch (`dcg/<call>`), which holds every `files:` and `dirs:` mount and every value bound from them, secrets
+included, is no longer kept forever: `opctl run` removes its run's scratch when the run ends, including on failure or
+kill, and the node sweeps scratch left by runs that never ended. API and SDK callers keep today's behaviour unless they
+set `cleanScratch` when starting an op, or the node runs with `--scratch-ttl` (`OPCTL_SCRATCH_TTL`), which removes an
+ended run's scratch once the TTL passes. A running run's scratch is never touched.
+
 ## [0.1.76] - 2026-06-18
 
 ### Added

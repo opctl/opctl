@@ -173,6 +173,8 @@ opctl node and other opctl containers by their name. Containers will be removed 
 				ctx,
 				model.StartOpReq{
 					Args: argsMap,
+					// the CLI reads no output data after the run, so its scratch can go when it ends
+					CleanScratch: true,
 					Op: model.StartOpReqOp{
 						Ref: opHandle.Ref(),
 					},
