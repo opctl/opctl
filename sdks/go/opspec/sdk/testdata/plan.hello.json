@@ -1,0 +1,1 @@
+{"contractVersion":1,"opspecSchema":1,"opspec":{"name":"hello","run":{"container":{"image":{"ref":"alpine:3"},"cmd":["echo","hello"],"envVars":{"A":"b"},"workDir":"/"}}}}

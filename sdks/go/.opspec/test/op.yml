@@ -11,12 +11,9 @@ inputs:
 run:
   container:
     cmd:
-      - go
-      - test
-      - ./sdks/go/...
-      - -buildvcs=false
-      - -covermode=atomic
-      - -coverprofile=coverage.out
+      - sh
+      - -ce
+      - go test ./sdks/go/... -buildvcs=false -covermode=atomic -coverprofile=coverage.out && cd sdks/go/opspec/sdk && go test ./...
     dirs:
       /src: $(../../../..)
       /go/pkg: $(HOME/go/pkg)
