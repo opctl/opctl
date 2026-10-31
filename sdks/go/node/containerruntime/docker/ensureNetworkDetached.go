@@ -28,11 +28,8 @@ func ensureNetworkDetached(
 
 		cmd := exec.Command("ip", "link", "delete", tunName)
 
-		outputBytes, err := cmd.CombinedOutput()
-
-		if err != nil {
-			return fmt.Errorf("Failed to delete %s: %w, %s", tunName, err, string(outputBytes))
-		}
+		// Best effort: macOS may have no ip command or matching tun interface.
+		_, _ = cmd.CombinedOutput()
 	}
 
 	return nil
