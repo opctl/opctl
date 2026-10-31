@@ -52,6 +52,8 @@ run:
 
 The node stores each cache dir at `<data-dir>/caches/<name>`. The cache root is `<data-dir>/caches`. Contents persist between runs on the node, but are never guaranteed. An empty or partial cache dir must always be a valid starting point. Failed or killed calls keep whatever they wrote.
 
+Use `opctl run --no-cache <op>` for a cold run. The run starts every cache dir empty in scratch space under `<data-dir>/nocache/<run id>`, shared by cache name across the run's calls, including calls in nested ops, loops, and parallel groups, and removed when the run ends. The run leaves the cache root untouched. Other concurrent runs on the node keep using their caches. Op and image caching still applies.
+
 Cache dirs are created with mode `0700`, owned by the user and group who ran sudo, or the node's effective user and group otherwise. An image running as a different non-root `USER` may be unable to write them, as with existing scratch dirs.
 
 After every container call, including failed or killed calls, a node run with sudo recursively restores that call's cache dir ownership to `SUDO_UID` and `SUDO_GID`. A node run as root without sudo leaves ownership unchanged. It does not follow symlinks. Ownership errors produce warnings in the call's stderr without changing its result. An unprivileged node also leaves ownership unchanged, so container-written files may remain root-owned. See [reuse cache dirs in CI](../../../../../../cache-dirs-in-ci.md) for save and restore steps, including the manual ownership fix.

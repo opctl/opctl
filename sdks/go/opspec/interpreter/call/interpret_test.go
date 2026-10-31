@@ -63,6 +63,7 @@ var _ = Context("Interpret", func() {
 			}
 
 			expectedContainer, err := container.Interpret(
+				context.Background(),
 				providedScope,
 				&containerSpec,
 				providedID,
@@ -275,6 +276,7 @@ var _ = Context("Interpret", func() {
 			}
 
 			expectedContainer, err := container.Interpret(
+				context.Background(),
 				providedScope,
 				&containerSpec,
 				providedID,

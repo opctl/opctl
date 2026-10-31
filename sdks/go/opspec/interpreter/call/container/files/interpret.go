@@ -2,6 +2,7 @@ package files
 
 import (
 	"fmt"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -44,7 +45,7 @@ fileLoop:
 		}
 
 		// copy cached files to ensure can't be mutated
-		containerCallFiles[callSpecContainerFilePath] = filepath.Join(scratchDirPath, callSpecContainerFilePath)
+		containerCallFiles[callSpecContainerFilePath] = filepath.Join(scratchDirPath, path.Clean("/"+callSpecContainerFilePath))
 
 		if err := unsudo.CloneFile(
 			*fileValue.File,

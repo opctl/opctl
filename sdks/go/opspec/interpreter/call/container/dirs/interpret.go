@@ -2,6 +2,7 @@ package dirs
 
 import (
 	"fmt"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -44,7 +45,7 @@ dirLoop:
 		}
 
 		// copy cached files to ensure can't be mutated
-		containerCallDirs[callSpecContainerDirPath] = filepath.Join(scratchDirPath, callSpecContainerDirPath)
+		containerCallDirs[callSpecContainerDirPath] = filepath.Join(scratchDirPath, path.Clean("/"+callSpecContainerDirPath))
 
 		if err := unsudo.CloneDir(
 			*dirValue.Dir,

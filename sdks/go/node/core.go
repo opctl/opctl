@@ -110,6 +110,7 @@ func New(
 		caller:           caller,
 		containerRuntime: containerRuntime,
 		dataCachePath:    filepath.Join(dataDirPath, "ops"),
+		dataDirPath:      dataDirPath,
 		opCaller: newOpCaller(
 			caller,
 			dataDirPath,
@@ -124,6 +125,7 @@ type core struct {
 	caller           caller
 	containerRuntime containerruntime.ContainerRuntime
 	dataCachePath    string
+	dataDirPath      string
 	opCaller         opCaller
 	pubSub           pubsub.PubSub
 	stateStore       stateStore

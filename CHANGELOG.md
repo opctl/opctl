@@ -8,6 +8,7 @@ accordance with
 
 ### Added
 
+- `opctl run --no-cache` starts every cache dir in the run empty, including nested calls, without changing the cache root (restart a running node after upgrading so it honours the flag)
 - Container calls can declare named cache dirs with `caches` to keep contents between runs on the node; names can use expressions such as `npm-$(lockHash)` or default to the image repository plus container path
 - Nodes run with sudo restore cache dir ownership to the sudo user after every container call, with a CI guide for saving and restoring the cache root
 

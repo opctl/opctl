@@ -12,6 +12,68 @@ import (
 )
 
 var _ = Context("Interpret", func() {
+	It("should mount fresh scratch cache dirs without creating the cache root", func() {
+		dataDirPath := GinkgoT().TempDir()
+		for _, callID := range []string{"first", "second"} {
+			noCacheRootPath := filepath.Join(dataDirPath, "nocache", callID)
+			actualDirs, err := Interpret(
+				nil,
+				map[string]interface{}{"/cache": "shared"},
+				nil,
+				dataDirPath,
+				noCacheRootPath,
+			)
+
+			Expect(err).To(BeNil())
+			hostPath := filepath.Join(noCacheRootPath, "shared")
+			Expect(actualDirs).To(Equal(map[string]string{"/cache": hostPath}))
+			entries, err := os.ReadDir(hostPath)
+			Expect(err).To(BeNil())
+			Expect(entries).To(BeEmpty())
+			Expect(os.WriteFile(filepath.Join(hostPath, "contents"), []byte("scratch"), 0600)).To(Succeed())
+			Expect(filepath.Join(dataDirPath, "caches")).NotTo(BeAnExistingFile())
+		}
+	})
+
+	It("should leave existing cache contents untouched during a cold run", func() {
+		dataDirPath := GinkgoT().TempDir()
+		warmDirs, err := Interpret(nil, map[string]interface{}{"/cache": "shared"}, nil, dataDirPath, "")
+		Expect(err).To(BeNil())
+		cacheFilePath := filepath.Join(warmDirs["/cache"], "contents")
+		Expect(os.WriteFile(cacheFilePath, []byte("cached"), 0600)).To(Succeed())
+
+		coldDirs, err := Interpret(nil, map[string]interface{}{"/cache": "shared"}, nil, dataDirPath, filepath.Join(dataDirPath, "nocache", "call"))
+
+		Expect(err).To(BeNil())
+		entries, err := os.ReadDir(coldDirs["/cache"])
+		Expect(err).To(BeNil())
+		Expect(entries).To(BeEmpty())
+		Expect(os.WriteFile(filepath.Join(coldDirs["/cache"], "contents"), []byte("cold"), 0600)).To(Succeed())
+		contents, err := os.ReadFile(cacheFilePath)
+		Expect(err).To(BeNil())
+		Expect(string(contents)).To(Equal("cached"))
+	})
+
+	It("should still validate interpreted cache names during a cold run", func() {
+		dataDirPath := GinkgoT().TempDir()
+		noCacheRootPath := filepath.Join(dataDirPath, "nocache", "call")
+		invalidName := "../escape"
+
+		actualDirs, err := Interpret(
+			map[string]*model.Value{"name": {String: &invalidName}},
+			map[string]interface{}{"/cache": "$(name)"},
+			nil,
+			dataDirPath,
+			noCacheRootPath,
+		)
+
+		Expect(err).To(HaveOccurred())
+		Expect(err.Error()).To(ContainSubstring(`invalid cache name "../escape"`))
+		Expect(actualDirs).To(BeNil())
+		Expect(filepath.Join(dataDirPath, "caches")).NotTo(BeAnExistingFile())
+		Expect(noCacheRootPath).NotTo(BeAnExistingFile())
+	})
+
 	digest := "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 	for _, test := range []struct {
 		description   string
@@ -42,6 +104,7 @@ var _ = Context("Interpret", func() {
 				map[string]interface{}{test.containerPath: nil},
 				&test.imageRef,
 				dataDirPath,
+				"",
 			)
 
 			/* assert */
@@ -58,6 +121,7 @@ var _ = Context("Interpret", func() {
 			map[string]interface{}{"/root/.npm": nil},
 			nil,
 			dataDirPath,
+			"",
 		)
 
 		Expect(err).To(MatchError(`unable to bind cache dir "/root/.npm": image has no ref; give an explicit cache name for this container path`))
@@ -73,6 +137,7 @@ var _ = Context("Interpret", func() {
 				map[string]interface{}{"/cache": nil},
 				&imageRef,
 				dataDirPath,
+				"",
 			)
 
 			Expect(err).To(MatchError(`unable to bind cache dir "/cache": image ref has no repository; give an explicit cache name for this container path`))
@@ -89,6 +154,7 @@ var _ = Context("Interpret", func() {
 			map[string]interface{}{"/cache": nil},
 			&imageRef,
 			dataDirPath,
+			"",
 		)
 
 		Expect(err).To(MatchError(`unable to bind cache dir "/cache": unable to derive cache name from image ref: invalid reference format`))
@@ -107,6 +173,7 @@ var _ = Context("Interpret", func() {
 			map[string]interface{}{"/go/pkg/mod": "Go-mod_v1.2"},
 			nil,
 			dataDirPath,
+			"",
 		)
 
 		/* assert */
@@ -123,6 +190,7 @@ var _ = Context("Interpret", func() {
 			map[string]interface{}{"/first": "shared"},
 			nil,
 			dataDirPath,
+			"",
 		)
 		Expect(err).To(BeNil())
 		cacheFilePath := filepath.Join(firstDirs["/first"], "contents")
@@ -134,6 +202,7 @@ var _ = Context("Interpret", func() {
 			map[string]interface{}{"/second": "shared"},
 			nil,
 			dataDirPath,
+			"",
 		)
 
 		/* assert */
@@ -161,6 +230,7 @@ var _ = Context("Interpret", func() {
 				map[string]interface{}{"/root/.npm": expression},
 				nil,
 				dataDirPath,
+				"",
 			)
 
 			/* assert */
@@ -178,6 +248,7 @@ var _ = Context("Interpret", func() {
 				map[string]interface{}{"/cache": "$(name)"},
 				nil,
 				dataDirPath,
+				"",
 			)
 
 			Expect(err).To(HaveOccurred())
@@ -201,6 +272,7 @@ var _ = Context("Interpret", func() {
 			map[string]interface{}{"/root/.npm": "npm-$(lockHash)"},
 			nil,
 			dataDirPath,
+			"",
 		)
 
 		/* assert */
@@ -217,6 +289,7 @@ var _ = Context("Interpret", func() {
 				map[string]interface{}{"/cache": expression},
 				nil,
 				dataDirPath,
+				"",
 			)
 
 			Expect(err).To(HaveOccurred())
@@ -235,6 +308,7 @@ var _ = Context("Interpret", func() {
 				map[string]interface{}{"/cache": name},
 				nil,
 				dataDirPath,
+				"",
 			)
 
 			Expect(err).To(HaveOccurred())
@@ -252,6 +326,7 @@ var _ = Context("Interpret", func() {
 				map[string]interface{}{"/cache": value},
 				nil,
 				GinkgoT().TempDir(),
+				"",
 			)
 
 			Expect(err).To(MatchError(`unable to bind cache dir "/cache": cache name must be a string expression`))
@@ -268,6 +343,7 @@ var _ = Context("Interpret", func() {
 			map[string]interface{}{"/cache": "gomod"},
 			nil,
 			dataDirPath,
+			"",
 		)
 
 		Expect(err).To(HaveOccurred())
@@ -281,6 +357,7 @@ var _ = Context("Interpret", func() {
 			map[string]interface{}{"/.": "gomod"},
 			nil,
 			GinkgoT().TempDir(),
+			"",
 		)
 
 		Expect(err).To(MatchError(`unable to bind cache dir "/.": container path must not be /`))
@@ -293,6 +370,7 @@ var _ = Context("Interpret", func() {
 			map[string]interface{}{"/cache": "a", "/cache/": "b"},
 			nil,
 			GinkgoT().TempDir(),
+			"",
 		)
 
 		Expect(err).To(HaveOccurred())

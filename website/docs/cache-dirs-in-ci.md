@@ -6,6 +6,8 @@ Container calls can declare [cache dirs](reference/opspec/op-directory/op/call/c
 
 The cache root is `<data-dir>/caches`. The default data dir is `$HOME/opctl` on Linux, `$HOME/Library/Application Support/opctl` on macOS, and `%LOCALAPPDATA%\opctl` on Windows. Pass `--data-dir <path>` or set `OPCTL_DATA_DIR` to relocate it. Use the same data dir for the node and the cache steps.
 
+To check that an op works with empty cache dirs, run `opctl run --no-cache <op>`. Cache dirs start empty in scratch space shared by cache name across the run, including nested ops, loops, and parallel groups, and are removed when the run ends. It leaves the cache root untouched, so other concurrent runs can keep using their caches. Op and image caching still applies.
+
 ## GitHub Actions
 
 This workflow assumes `opctl` is installed and the repository has an `npm-install` op at `.opspec/npm-install/op.yml` that declares an npm cache dir, as in the [cache dirs example](reference/opspec/op-directory/op/call/container/caches.md). The runner also needs a container runtime supported by opctl.

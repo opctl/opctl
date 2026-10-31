@@ -65,6 +65,7 @@ func Interpret(
 	switch {
 	case callSpec.Container != nil:
 		call.Container, err = container.Interpret(
+			ctx,
 			scope,
 			callSpec.Container,
 			id,

@@ -2,6 +2,7 @@ package node
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/dgraph-io/badger/v4"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opctl/opctl/sdks/go/internal/runcontext"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
@@ -28,6 +30,125 @@ var _ = Context("core", func() {
 	}
 
 	Context("StartOp", func() {
+		It("should propagate no-cache through nested ops, serial, parallel, and loops without affecting concurrent runs", func() {
+			dataDirPath := GinkgoT().TempDir()
+			opPath := GinkgoT().TempDir()
+			nestedOpPath := filepath.Join(opPath, "nested")
+			Expect(os.Mkdir(nestedOpPath, 0700)).To(Succeed())
+			Expect(os.WriteFile(filepath.Join(nestedOpPath, "op.yml"), []byte(`name: nested
+run:
+  parallel:
+    - container:
+        image: { ref: node:22 }
+        caches: { /cache: shared }
+    - container:
+        image: { ref: node:22 }
+        caches: { /cache: shared }
+`), 0600)).To(Succeed())
+			Expect(os.WriteFile(filepath.Join(opPath, "op.yml"), []byte(fmt.Sprintf(`name: cache-run
+run:
+  serial:
+    - container:
+        image: { ref: node:22 }
+        caches: { /cache: shared }
+    - op: { ref: %q }
+    - serialLoop:
+        range: [0, 1]
+        run:
+          container:
+            image: { ref: node:22 }
+            caches: { /cache: shared }
+    - parallelLoop:
+        range: [0, 1]
+        run:
+          container:
+            image: { ref: node:22 }
+            caches: { /cache: shared }
+`, nestedOpPath)), 0600)).To(Succeed())
+
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+			pubSub := pubsub.New(db)
+			stateStore := newStateStore(ctx, db, pubSub)
+			coldCalls := make(chan *model.ContainerCall, 7)
+			warmCalls := make(chan *model.ContainerCall, 7)
+			releaseCold := make(chan struct{})
+			fakeContainerCaller := new(FakeContainerCaller)
+			fakeContainerCaller.CallStub = func(ctx context.Context, call *model.ContainerCall, scope map[string]*model.Value, spec *model.ContainerCallSpec, rootID string) (map[string]*model.Value, error) {
+				if runcontext.NoCacheRoot(ctx) != "" {
+					coldCalls <- call
+					select {
+					case <-releaseCold:
+					case <-ctx.Done():
+						return nil, ctx.Err()
+					}
+				} else {
+					warmCalls <- call
+				}
+				return map[string]*model.Value{}, nil
+			}
+			objectUnderTest := core{
+				caller:        newCaller(fakeContainerCaller, dataDirPath, pubSub, stateStore),
+				dataCachePath: filepath.Join(dataDirPath, "ops"),
+				dataDirPath:   dataDirPath,
+				pubSub:        pubSub,
+				stateStore:    stateStore,
+			}
+			waitForEnd := func(rootID string) {
+				events, err := pubSub.Subscribe(ctx, model.EventFilter{Roots: []string{rootID}})
+				Expect(err).To(BeNil())
+				for {
+					var event model.Event
+					Eventually(events, 5*time.Second).Should(Receive(&event))
+					if event.CallEnded != nil && event.CallEnded.Call.ID == rootID {
+						Expect(event.CallEnded.Outcome).To(Equal(model.OpOutcomeSucceeded), "%+v", event.CallEnded.Error)
+						return
+					}
+				}
+			}
+
+			coldID, err := objectUnderTest.StartOp(ctx, model.StartOpReq{
+				NoCache: true,
+				Op:      model.StartOpReqOp{Ref: opPath},
+			})
+			Expect(err).To(BeNil())
+			var firstColdCall *model.ContainerCall
+			Eventually(coldCalls).Should(Receive(&firstColdCall))
+			Expect(filepath.Join(dataDirPath, "caches")).NotTo(BeAnExistingFile())
+
+			// Complete a normal run while the cold run is still in its first container.
+			warmID, err := objectUnderTest.StartOp(ctx, model.StartOpReq{Op: model.StartOpReqOp{Ref: opPath}})
+			Expect(err).To(BeNil())
+			waitForEnd(warmID)
+			cachePath := filepath.Join(dataDirPath, "caches", "shared")
+			for i := 0; i < 7; i++ {
+				var call *model.ContainerCall
+				Eventually(warmCalls).Should(Receive(&call))
+				Expect(call.Dirs["/cache"]).To(Equal(cachePath))
+			}
+			cacheFilePath := filepath.Join(cachePath, "contents")
+			Expect(os.WriteFile(cacheFilePath, []byte("warm"), 0600)).To(Succeed())
+
+			coldRootPath := filepath.Join(dataDirPath, "nocache", coldID)
+			entries, err := os.ReadDir(firstColdCall.Dirs["/cache"])
+			Expect(err).To(BeNil())
+			Expect(entries).To(BeEmpty())
+			close(releaseCold)
+			waitForEnd(coldID)
+			for i := 0; i < 7; i++ {
+				call := firstColdCall
+				if i > 0 {
+					Eventually(coldCalls).Should(Receive(&call))
+				}
+				// a cold run shares one empty dir per cache name, like the cache root
+				Expect(call.Dirs["/cache"]).To(Equal(filepath.Join(coldRootPath, "shared")))
+			}
+			Eventually(coldRootPath).ShouldNot(BeAnExistingFile())
+			contents, err := os.ReadFile(cacheFilePath)
+			Expect(err).To(BeNil())
+			Expect(string(contents)).To(Equal("warm"))
+		})
+
 		Context("data.Resolve errs", func() {
 			It("should return expected result", func() {
 				/* arrange */

@@ -66,6 +66,7 @@ var _ = Context("containerCaller", func() {
 				secondCachePath := filepath.Join(cacheRootPath, "gomod")
 				unmountedCachePath := filepath.Join(cacheRootPath, "unmounted")
 				siblingPath := filepath.Join(dataDirPath, "caches-other", "dir")
+				scratchCachePath := filepath.Join(dataDirPath, "nocache", "rootCallID", "npm")
 				outsidePath := cacheRootPath + string(filepath.Separator) + "../outside"
 				missingPath := filepath.Join(cacheRootPath, "missing")
 				GinkgoT().Setenv("SUDO_UID", "1234")
@@ -84,7 +85,7 @@ var _ = Context("containerCaller", func() {
 				) (*int64, error) {
 					defer stdOut.Close()
 					defer stdErr.Close()
-					for _, dirPath := range []string{cachePath, secondCachePath, unmountedCachePath, siblingPath, outsidePath} {
+					for _, dirPath := range []string{cachePath, secondCachePath, unmountedCachePath, siblingPath, outsidePath, scratchCachePath} {
 						Expect(os.MkdirAll(filepath.Join(dirPath, "nested"), 0700)).To(Succeed())
 						Expect(os.WriteFile(filepath.Join(dirPath, "nested", "file"), nil, 0600)).To(Succeed())
 					}
@@ -110,6 +111,7 @@ var _ = Context("containerCaller", func() {
 							"/sibling":    siblingPath,
 							"/outside":    outsidePath,
 							"/missing":    missingPath,
+							"/cold":       scratchCachePath,
 						},
 					},
 					nil,
@@ -122,7 +124,7 @@ var _ = Context("containerCaller", func() {
 				} else {
 					Expect(actualErr).To(MatchError(testCase.expectedErr))
 				}
-				for _, dirPath := range []string{cachePath, secondCachePath, unmountedCachePath, siblingPath, outsidePath} {
+				for _, dirPath := range []string{cachePath, secondCachePath, unmountedCachePath, siblingPath, outsidePath, scratchCachePath} {
 					uid, gid := os.Geteuid(), os.Getegid()
 					if uid == 0 && (dirPath == cachePath || dirPath == secondCachePath) {
 						uid, gid = 1234, 2345

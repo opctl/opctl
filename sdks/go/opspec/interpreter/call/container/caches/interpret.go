@@ -24,6 +24,8 @@ func Interpret(
 	containerCallSpecCaches map[string]interface{},
 	imageRef *string,
 	dataDirPath string,
+	// noCacheRootPath, if set, replaces the cache root for a --no-cache run
+	noCacheRootPath string,
 ) (map[string]string, error) {
 	containerCallDirs := map[string]string{}
 	for specContainerPath, value := range containerCallSpecCaches {
@@ -72,6 +74,9 @@ func Interpret(
 		}
 
 		hostPath := filepath.Join(dataDirPath, "caches", name)
+		if noCacheRootPath != "" {
+			hostPath = filepath.Join(noCacheRootPath, name)
+		}
 		if err := unsudo.CreateDir(hostPath); err != nil {
 			return nil, fmt.Errorf("unable to bind cache dir %q to %q: %w", containerPath, name, err)
 		}

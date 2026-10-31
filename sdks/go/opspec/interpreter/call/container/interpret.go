@@ -1,10 +1,12 @@
 package container
 
 import (
+	"context"
 	"fmt"
 	"path"
 	"path/filepath"
 
+	"github.com/opctl/opctl/sdks/go/internal/runcontext"
 	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/caches"
@@ -19,6 +21,7 @@ import (
 
 // Interpret a container
 func Interpret(
+	ctx context.Context,
 	scope map[string]*model.Value,
 	containerCallSpec *model.ContainerCallSpec,
 	containerID string,
@@ -110,6 +113,7 @@ func Interpret(
 		containerCallSpec.Caches,
 		containerCall.Image.Ref,
 		dataDirPath,
+		runcontext.NoCacheRoot(ctx),
 	)
 	if err != nil {
 		return nil, err

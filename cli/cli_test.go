@@ -286,6 +286,16 @@ testdata/ls/op1	A single line description
 	})
 
 	Context("run", func() {
+		Context("with --no-cache", func() {
+			It("should accept the flag", func() {
+				command := exec.Command(pathToOpctl, "run", "--no-cache", "./testdata/zeroArgs")
+				session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+
+				Expect(err).NotTo(HaveOccurred())
+				Eventually(session, 10).Should(gexec.Exit(0))
+			})
+		})
+
 		Context("with two args", func() {
 			It("should not err", func() {
 				/* arrange */

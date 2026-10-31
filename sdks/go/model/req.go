@@ -40,6 +40,8 @@ type KillOpReq struct {
 type StartOpReq struct {
 	// map of args keyed by input name
 	Args map[string]*Value `json:"args,omitempty"`
+	// NoCache mounts fresh scratch dirs instead of persistent cache dirs for this run.
+	NoCache bool `json:"noCache,omitempty"`
 	// Op details the op to start
 	Op StartOpReqOp `json:"op,omitempty"`
 }

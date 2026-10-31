@@ -3,9 +3,11 @@ package node
 import (
 	"context"
 	"fmt"
+	"os"
 	"path/filepath"
 	"runtime/debug"
 
+	"github.com/opctl/opctl/sdks/go/internal/runcontext"
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
@@ -63,8 +65,18 @@ func (this core) StartOp(
 	}
 
 	opCtx, cancelOp := context.WithCancel(ctx)
+	noCacheRootPath := ""
+	if req.NoCache {
+		// shared by every call in this run, like the cache root, and removed when the run ends
+		noCacheRootPath = filepath.Join(this.dataDirPath, "nocache", callID)
+		opCtx = runcontext.WithNoCacheRoot(opCtx, noCacheRootPath)
+	}
 	go func() {
 		defer func() {
+			if noCacheRootPath != "" {
+				os.RemoveAll(noCacheRootPath)
+			}
+
 			if panic := recover(); panic != nil {
 				// recover from panics; treat as errors
 				fmt.Printf("recovered from panic: %s\n%s\n", panic, string(debug.Stack()))

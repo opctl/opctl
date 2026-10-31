@@ -27,11 +27,13 @@ func newRunCmd(
 ) *cobra.Command {
 	argsFlagName := "args"
 	argFileFlagName := "arg-file"
+	noCacheFlagName := "no-cache"
 	noProgressFlagName := "no-progress"
 	opRefArgName := "OP_REF"
 
 	argsFlag := []string{}
 	argFileFlag := ""
+	noCacheFlag := false
 	noProgressFlag := false
 
 	runCmd := cobra.Command{
@@ -70,6 +72,10 @@ to being in a non-interactive terminal and exit with a non zero exit code.
 If provided args don't meet input constraints, the CLI will (re)prompt until a valid arg is obtained.
 
 All ops &/or images pulled will be cached.
+
+Use --no-cache for a cold run. Every cache dir in this run, including nested op calls,
+starts empty in scratch space that is removed when the run ends. The cache root is left
+untouched, and concurrent runs keep using their caches. Op and image caching still applies.
 
 Pulling any updates to referenced images will be attempted prior to container creation. If pulling 
 an updated image fails, graceful fallback to the cached image will occur.
@@ -172,7 +178,8 @@ opctl node and other opctl containers by their name. Containers will be removed 
 			rootCallID, err := node.StartOp(
 				ctx,
 				model.StartOpReq{
-					Args: argsMap,
+					Args:    argsMap,
+					NoCache: noCacheFlag,
 					Op: model.StartOpReqOp{
 						Ref: opHandle.Ref(),
 					},
@@ -306,6 +313,7 @@ opctl node and other opctl containers by their name. Containers will be removed 
 
 	runCmd.Flags().StringArrayVarP(&argsFlag, argsFlagName, "a", []string{}, "Explicitly pass args to the op")
 	runCmd.Flags().StringVarP(&argFileFlag, argFileFlagName, "", filepath.Join(model.DotOpspecDirName, "args.yml"), "Read in a file of args in yml format")
+	runCmd.Flags().BoolVarP(&noCacheFlag, noCacheFlagName, "", false, "Use fresh scratch dirs for cache dirs in this run")
 	runCmd.Flags().BoolVarP(&noProgressFlag, noProgressFlagName, "", !term.IsTerminal(int(os.Stdout.Fd())), "Disable live call graph for the op")
 
 	return &runCmd

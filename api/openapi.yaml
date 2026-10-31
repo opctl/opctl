@@ -403,6 +403,9 @@ components:
       properties:
         args:
           $ref: "#/components/schemas/startOpReqArgs"
+        noCache:
+          type: boolean
+          description: Mount fresh scratch dirs instead of persistent cache dirs for this run, including nested calls. Leaves the cache root untouched.
         op:
           $ref: "#/components/schemas/startOpReqOp"
     value:
