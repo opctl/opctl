@@ -1,0 +1,1 @@
+{"contractVersion":1,"opspecSchema":1,"opspec":{"name":"greeter","description":"Greets the caller.\n\nRuns echo in alpine:\n\n\tsh -ce 'echo hello'","inputs":{"who":{"string":{"default":"world"}}}}}

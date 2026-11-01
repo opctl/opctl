@@ -57,6 +57,9 @@ accordance with
 
 ### Added
 
+- Go ops take their description from the package doc comment, rendered as markdown. `opctl.Op` overrides the name or description in `Main`, `MainWithOutputs`, `Describe`,
+  and `DescribeWithOutputs`.
+
 - Nodes retain one schema range across API describes and nested Go calls. Describe memo keys include the contract and range; executable cache keys stay independent of
   negotiation.
 

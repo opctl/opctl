@@ -17,10 +17,11 @@ type response struct {
 }
 
 type opSpec struct {
-	Name    string               `json:"name"`
-	Inputs  map[string]paramSpec `json:"inputs,omitempty"`
-	Outputs map[string]paramSpec `json:"outputs,omitempty"`
-	Run     *callSpec            `json:"run,omitempty"`
+	Name        string               `json:"name"`
+	Description string               `json:"description,omitempty"`
+	Inputs      map[string]paramSpec `json:"inputs,omitempty"`
+	Outputs     map[string]paramSpec `json:"outputs,omitempty"`
+	Run         *callSpec            `json:"run,omitempty"`
 }
 
 type callSpec struct {
@@ -36,14 +37,19 @@ func Plan[I any](fn func(I) Call, inputs map[string]any) ([]byte, error) {
 }
 
 // Describe returns the op interface without calling the plan function.
-func Describe[I any]() ([]byte, error) { return emit[I, struct{}]("describe", nil, nil) }
+// Pass the same Op as Main to describe the same name and description.
+func Describe[I any](op ...Op) ([]byte, error) { return emit[I, struct{}]("describe", nil, nil, op...) }
 
-func emit[I, O any](phase string, fn func(I) (Call, O), values map[string]any) ([]byte, error) {
-	return emitForRange(phase, fn, values, schemaRange{minSchemaVersion, schemaVersion})
+func emit[I, O any](phase string, fn func(I) (Call, O), values map[string]any, op ...Op) ([]byte, error) {
+	return emitForRange(phase, fn, values, schemaRange{minSchemaVersion, schemaVersion}, op...)
 }
 
-func emitForRange[I, O any](phase string, fn func(I) (Call, O), values map[string]any, schema schemaRange) (data []byte, err error) {
+func emitForRange[I, O any](phase string, fn func(I) (Call, O), values map[string]any, schema schemaRange, op ...Op) (data []byte, err error) {
 	if _, err := commonSchema(schema); err != nil {
+		return nil, err
+	}
+	meta, err := overrides(op)
+	if err != nil {
 		return nil, err
 	}
 	planMu.Lock()
@@ -72,9 +78,18 @@ func emitForRange[I, O any](phase string, fn func(I) (Call, O), values map[strin
 		return nil, err
 	}
 	spec := opSpec{Name: filepath.Base(cwd)}
+	if meta.Name != "" {
+		spec.Name = meta.Name
+	}
 	if phase == "describe" {
 		spec.Inputs = inputs
 		spec.Outputs = outputs
+		spec.Description = meta.Description
+		if spec.Description == "" {
+			if spec.Description, err = packageDoc(); err != nil {
+				return nil, err
+			}
+		}
 	}
 	if phase == "plan" {
 		if fn == nil {
@@ -137,7 +152,9 @@ func PlanWithOutputs[I, O any](fn func(I) (Call, O), inputs map[string]any) ([]b
 }
 
 // DescribeWithOutputs returns input and output declarations without building the graph.
-func DescribeWithOutputs[I, O any]() ([]byte, error) { return emit[I, O]("describe", nil, nil) }
+func DescribeWithOutputs[I, O any](op ...Op) ([]byte, error) {
+	return emit[I, O]("describe", nil, nil, op...)
+}
 func withoutOutputs[I any](fn func(I) Call) func(I) (Call, struct{}) {
 	if fn == nil {
 		return nil

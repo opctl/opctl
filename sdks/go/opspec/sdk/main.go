@@ -16,22 +16,23 @@ type request struct {
 
 // Main serves the describe or plan bootstrap phase requested by opctl.
 // Diagnostics go to stderr; stdout contains only the JSON response.
-func Main[I any](fn func(I) Call) {
-	if err := run(fn); err != nil {
+// Pass an Op to override the name or description.
+func Main[I any](fn func(I) Call, op ...Op) {
+	if err := run(fn, op...); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
 // MainWithOutputs serves describe and plan for an op with tagged output handles.
-func MainWithOutputs[I, O any](fn func(I) (Call, O)) {
-	if err := runWithOutputs(fn); err != nil {
+func MainWithOutputs[I, O any](fn func(I) (Call, O), op ...Op) {
+	if err := runWithOutputs(fn, op...); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
-func run[I any](fn func(I) Call) error { return runWithOutputs(withoutOutputs(fn)) }
-func runWithOutputs[I, O any](fn func(I) (Call, O)) error {
+func run[I any](fn func(I) Call, op ...Op) error { return runWithOutputs(withoutOutputs(fn), op...) }
+func runWithOutputs[I, O any](fn func(I) (Call, O), op ...Op) error {
 	if len(os.Args) != 2 {
 		return fmt.Errorf("expected bootstrap phase: describe or plan")
 	}
@@ -66,7 +67,7 @@ func runWithOutputs[I, O any](fn func(I) (Call, O)) error {
 	if len(req.KnownOutputs) != 0 {
 		return fmt.Errorf("Go op known outputs are not supported yet")
 	}
-	response, err := emitForRange(phase, fn, req.Inputs, req.OpspecSchema)
+	response, err := emitForRange(phase, fn, req.Inputs, req.OpspecSchema, op...)
 	if err != nil {
 		return err
 	}

@@ -22,6 +22,8 @@ func main() {
 }
 ```
 
+A Go op's name is its directory name, and its description is the package doc comment, rendered as markdown. Build constraints apply, so a file tagged `//go:build ignore` doesn't contribute its comment. To override either, pass `opctl.Op{Name: "deploy", Description: "Deploys the API."}` as the last argument to `Main`, `MainWithOutputs`, `Describe`, or `DescribeWithOutputs`. Empty fields keep the default. Go ops have no `version` field; version them with git tags.
+
 `String`, `Number`, and `Boolean` handles expose their resolved input through `Value()`. `Array[T].Value()` returns `[]T`; `Object[T].Value()` returns the struct or string-keyed map `T`. The SDK derives item and property schemas from Go types and uses `json` tags for property names. `[]any` and `map[string]any` allow untyped values. Recursive types, pointers, and embedded struct fields are rejected.
 
 Every input field must be exported, use a handle type, and have a unique `opctl` tag name containing letters, numbers, `-`, or `_`. The `opctl_` prefix is reserved for generated handles. Tags accept `description`, `default`, and `secret`. Boolean inputs cannot be secret; sockets cannot have defaults. Single-quoted tag values can contain commas and escape single quotes or backslashes.

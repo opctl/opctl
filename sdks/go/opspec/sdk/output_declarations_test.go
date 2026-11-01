@@ -85,7 +85,7 @@ func TestOutputDeclarations(t *testing.T) {
 	}
 }
 func TestInvalidOutputDeclarations(t *testing.T) {
-	for _, describe := range []func() ([]byte, error){
+	for _, describe := range []func(...Op) ([]byte, error){
 		DescribeWithOutputs[struct{}, int],
 		DescribeWithOutputs[struct{}, struct {
 			X int `opctl:"x"`

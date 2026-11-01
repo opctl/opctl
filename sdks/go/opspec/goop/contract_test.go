@@ -189,6 +189,15 @@ var _ = Describe("Go op interfaces and public plan inputs", func() {
 		_, err = ParseDescribe(data)
 		Expect(err).To(HaveOccurred())
 	})
+	It("parses the description the SDK derives from the package doc comment", func() {
+		data, err := os.ReadFile("../sdk/testdata/describe.metadata.json")
+		Expect(err).NotTo(HaveOccurred())
+		spec, err := ParseDescribe(data)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(spec.Name).To(Equal("greeter"))
+		Expect(spec.Description).To(Equal("Greets the caller.\n\nRuns echo in alpine:\n\n\tsh -ce 'echo hello'"))
+		Expect(spec.Inputs).To(HaveKey("who"))
+	})
 	It("keeps secret and filesystem values out of plan requests", func() {
 		text := "private"
 		number := float64(3)

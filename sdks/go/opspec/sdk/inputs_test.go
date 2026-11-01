@@ -70,7 +70,7 @@ func TestTypedInputs(t *testing.T) {
 func TestInvalidInputDeclarations(t *testing.T) {
 	cases := []struct {
 		name     string
-		describe func() ([]byte, error)
+		describe func(...Op) ([]byte, error)
 	}{
 		{"not struct", Describe[string]},
 		{"pointer handle", Describe[struct {
@@ -208,7 +208,7 @@ type wrappedString struct{ String }
 func TestConstraintsCannotReplaceDerivedSchema(t *testing.T) {
 	for _, tc := range []struct {
 		key      string
-		describe func() ([]byte, error)
+		describe func(...Op) ([]byte, error)
 	}{
 		{"items", Describe[struct {
 			X Array[string] `opctl:"x,constraints='{\"items\":{\"type\":\"number\"}}'"`
