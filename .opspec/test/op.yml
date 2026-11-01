@@ -44,18 +44,23 @@ run:
     # js SDK tests
     - op:
         ref: $(../../sdks/js/.opspec/test)
-    # check go fmt has been run
+    # check Go helper dirs (skipped by ./...) and formatting
     - container:
         cmd:
           - sh
           - -ce
           - |
+            # Go's recursive patterns also skip packages containing only test files.
+            go vet ./cli/.opspec/test/e2e/... ./.opspec/... ./.opspec/release/tag-go-sdk
+            go test ./cli/.opspec/test/e2e/... ./.opspec/... ./.opspec/release/tag-go-sdk
+            (cd .opspec/changelog/getLatestRelease && go vet ./... && go test ./...)
             test -z "\$(gofmt -d -l ./cli ./sdks/go | tee /tmp/output)" || (echo "Fix formatting issues with 'opctl run format'" && cat /tmp/output && exit 1)
         dirs:
           /src: $(../..)
           /go/pkg: $(HOME/go/pkg)
           /root/.cache/go-build: $(HOME/$(goBuildCachePath))
         envVars:
-          GOFLAGS: -tags=containers_image_openpgp
+          CGO_ENABLED: '0'
+          GOFLAGS: -tags=containers_image_openpgp -buildvcs=false
         image: { ref: "golang:1.25" }
         workDir: /src
