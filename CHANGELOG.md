@@ -23,6 +23,8 @@ accordance with
     to upgrade to.
 - Container calls, in YAML and Go ops, can bind `stdout` and `stderr` to strings, return named values in a JSON outputs file at `$OPCTL_OUTPUTS`, and declare typed
   `outputParams` that opctl validates when the container exits.
+- Each opctl release also tags the Go op SDK as `sdks/go/opspec/sdk/vX.Y.Z` on the release commit. That release's `opctl op create --go` requires the matching SDK
+  version and writes its `go.sum`.
 - CLI end-to-end scenarios can assert exact public completion outputs with `expectOutputs`, and scaffold and run a Go op with `createGo`.
 
 ### Changed

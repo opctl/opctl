@@ -50,11 +50,22 @@ run:
     - if:
         - eq: [$(alreadyPublished), false]
       serial:
+      # tag the Go op SDK in lockstep, so the CLI can scaffold Go ops that require it
+      - op:
+          ref: $(./tag-go-sdk)
+          inputs:
+            githubAccessToken: $(github.accessToken)
+            version: $(latestRelease.version)
+          outputs:
+            sdkSum:
+            sdkGoModSum:
       - op:
           ref: $(../compile)
           inputs:
             HOME:
             version: $(latestRelease.version)
+            sdkSum:
+            sdkGoModSum:
       - parallel:
           - op:
               ref: $(./to-ghcr)

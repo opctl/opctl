@@ -1,0 +1,45 @@
+name: tag-go-sdk
+description: tags the Go op SDK at the release commit and reads its go.sum hashes from the Go module proxy
+inputs:
+  githubAccessToken:
+    description: Access token for creating the tag on github
+    string:
+      isSecret: true
+  version:
+    description: opctl version being released, without the v prefix
+    string:
+      constraints:
+        format: semver
+outputs:
+  sdkSum:
+    file:
+      description: go.sum hash of the Go op SDK module at the new tag
+  sdkGoModSum:
+    file:
+      description: go.sum hash of the Go op SDK go.mod at the new tag
+run:
+  serial:
+    - op:
+        ref: github.com/opspec-pkgs/git.repo.resolve-commit#1.0.2
+        inputs:
+          dotGitDir: $(../../../.git)
+        outputs:
+          commit:
+    - container:
+        image: { ref: ghcr.io/linuxcontainers/alpine:3.20 }
+        cmd: [sh, -ce, 'apk add --no-cache curl > /dev/null && sh /tag.sh']
+        envVars:
+          githubAccessToken:
+          version:
+          commit:
+        files:
+          /tag.sh:
+    - container:
+        image: { ref: 'golang:1.25' }
+        cmd: [sh, /sums.sh]
+        envVars:
+          version:
+        files:
+          /sums.sh:
+          /sdkSum: $(sdkSum)
+          /sdkGoModSum: $(sdkGoModSum)

@@ -51,4 +51,12 @@ var _ = Describe("create an op", func() {
 		Expect(string(data)).To(HaveSuffix("require github.com/opctl/opctl/sdks/go/opspec/sdk v0.1.77\n"))
 		Expect(filepath.Join(parent, "hello", "go.sum")).To(BeAnExistingFile())
 	})
+
+	It("links the SDK release and its sums in the compile op", func() {
+		data, err := os.ReadFile("../../.opspec/compile/op.yml")
+		Expect(err).NotTo(HaveOccurred())
+		for _, link := range []string{"sdkVersion=v$(version)", "sdkSum=$(sdkSum)", "sdkGoModSum=$(sdkGoModSum)"} {
+			Expect(string(data)).To(ContainSubstring("-X=github.com/opctl/opctl/cli/cmd/op." + link))
+		}
+	})
 })

@@ -66,7 +66,7 @@ opctl ls path/to/op
 - `opctl ls` lists Go ops with their descriptions.
 - The UI shows a Go op's name and description when you open its `op.go`. Its op graph appears when the op runs.
 
-`opctl op create --go [-p PATH] [-d DESCRIPTION] NAME` creates `NAME/op.go` and `NAME/go.mod`, with one input and a container call. The description becomes the package doc comment, and `NAME` must be a valid Go module path. The command writes nothing if the directory already contains `op.yml`, `op.go`, `go.mod`, or `go.sum`. When the opctl build links a published Go op SDK release, the scaffold requires that release and writes its `go.sum`. Otherwise it requires version `v0.0.0`, and opctl prints a reminder to add a `replace` directive for `github.com/opctl/opctl/sdks/go/opspec/sdk` that points to a checkout of opctl.
+`opctl op create --go [-p PATH] [-d DESCRIPTION] NAME` creates `NAME/op.go` and `NAME/go.mod`, with one input and a container call. The description becomes the package doc comment, and `NAME` must be a valid Go module path. The command writes nothing if the directory already contains `op.yml`, `op.go`, `go.mod`, or `go.sum`. Each opctl release also tags the Go op SDK as `sdks/go/opspec/sdk/vX.Y.Z` on the same commit. A release build of opctl requires that SDK version in the scaffold and writes its `go.sum`. Otherwise it requires version `v0.0.0`, and opctl prints a reminder to add a `replace` directive for `github.com/opctl/opctl/sdks/go/opspec/sdk` that points to a checkout of opctl.
 
 ## Schema negotiation
 

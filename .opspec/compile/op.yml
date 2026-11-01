@@ -8,6 +8,14 @@ inputs:
   HOME:
     dir:
       description: Home directory of caller; used to access go modules
+  sdkSum:
+    string:
+      description: go.sum hash of the Go op SDK release matching version; empty for builds without a published SDK
+      default: ''
+  sdkGoModSum:
+    string:
+      description: go.sum hash of the Go op SDK release's go.mod; empty for builds without a published SDK
+      default: ''
 run:
   serial:
     - op:
@@ -17,3 +25,5 @@ run:
         inputs:
           HOME:
           version:
+          sdkSum:
+          sdkGoModSum:

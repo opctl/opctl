@@ -12,6 +12,14 @@ inputs:
   HOME:
     dir:
       description: Home directory of caller; used to access go modules
+  sdkSum:
+    string:
+      description: go.sum hash of the Go op SDK release matching version; empty for builds without a published SDK
+      default: ''
+  sdkGoModSum:
+    string:
+      description: go.sum hash of the Go op SDK release's go.mod; empty for builds without a published SDK
+      default: ''
 run:
   serial:
     - op:
@@ -34,6 +42,8 @@ run:
               - go
               - build
               - -buildvcs=false
+              # opctl op create --go requires the SDK release linked here once its sums are known
+              - -ldflags=-X=github.com/opctl/opctl/cli/cmd.version=$(version) -X=github.com/opctl/opctl/cli/cmd/op.sdkVersion=v$(version) -X=github.com/opctl/opctl/cli/cmd/op.sdkSum=$(sdkSum) -X=github.com/opctl/opctl/cli/cmd/op.sdkGoModSum=$(sdkGoModSum)
               - -o
               - cli/opctl-$(target.os)-$(target.arch)
               - ./cli
@@ -45,8 +55,6 @@ run:
               GOOS: $(target.os)
               CGO_ENABLED: 0
               GOARCH: $(target.arch)
-              GOFLAGS:
-                -tags=containers_image_openpgp
-                -ldflags=-X=github.com/opctl/opctl/cli/cmd.version=$(version)
+              GOFLAGS: -tags=containers_image_openpgp
             image: { ref: 'golang:1.25' }
             workDir: /src
