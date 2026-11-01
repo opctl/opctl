@@ -26,7 +26,7 @@ Tags and digests of the same repository share a cache at the same container path
 
 An explicit value can be a string literal or [string expression](../../../../types/string.md#initialization), such as `npm-$(lockHash)`, evaluated in the call's scope. Every cache name, including a derived name, must be non-empty and may contain only ASCII letters, digits, `.`, `_`, and `-`. The names `.` and `..` are invalid. A container path cannot appear in both `caches` and `dirs` or `files`.
 
-Opspec has no hash function. Compute a lockfile hash in a prior call, then use it in the cache name. This example writes the hash to a file bound to `lockHash`, which the next call reads through string interpolation. The example assumes `op.yml` lives at `.opspec/npm-install/` in the project. Remove the trailing newline so it does not become part of the name.
+Opspec has no hash function. Compute a lockfile hash in a prior call, then use it in the cache name when contents must not be shared across lockfile versions. This example writes the hash to a file bound to `lockHash`, which the next call reads through string interpolation. The example assumes `op.yml` lives at `.opspec/npm-install/` in the project. Remove the trailing newline so it does not become part of the name.
 
 ```yaml
 name: npm-install
@@ -50,6 +50,8 @@ run:
         cmd: [npm, ci]
 ```
 
+Each distinct name is a separate cache dir that the node never evicts, so a hash-keyed name leaves a full cache behind every time the hash changes. Prefer a stable name, such as `npm`, for caches that tolerate mixed contents, like npm's content-addressed cache. Reserve hash-keyed names for caches that must not be shared across versions, and prune old dirs yourself.
+
 The node stores each cache dir at `<data-dir>/caches/<name>`. The cache root is `<data-dir>/caches`. Contents persist between runs on the node, but are never guaranteed. An empty or partial cache dir must always be a valid starting point. Failed or killed calls keep whatever they wrote.
 
 With the embedded runtime, Lima shares the host's home directory with the VM at the same path and with write access. The default data dir is under that share, so cache dirs and `--no-cache` dirs are visible to Docker in the VM. Keep a custom `--data-dir` under the home directory too. Docker in the VM can't see other host paths, apart from Lima's own `/tmp/lima` share.
@@ -62,7 +64,7 @@ Cache dirs are created with mode `0700`, owned by the user and group who ran sud
 
 After every container call, including failed or killed calls, a node run with sudo recursively restores that call's cache dir ownership to `SUDO_UID` and `SUDO_GID`. A node run as root without sudo leaves ownership unchanged. It does not follow symlinks. Ownership errors produce warnings in the call's stderr without changing its result. An unprivileged node also leaves ownership unchanged, so container-written files may remain root-owned. See [reuse cache dirs in CI](../../../../../../cache-dirs-in-ci.md) for save and restore steps, including the manual ownership fix.
 
-Cache names are global per node. Calls using the same name share contents across ops, even when they mount the cache dir at different container paths.
+Cache names are global per node. Calls using the same name share contents across ops, even when they mount the cache dir at different container paths. On case-insensitive filesystems (the macOS and Windows defaults), names that differ only by case share one cache dir.
 
 Concurrent calls share the directory without locking. Tools that are not safe to run concurrently, such as apt, may corrupt their cache contents.
 

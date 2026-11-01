@@ -10,7 +10,7 @@ To check that an op works with empty cache dirs, run `opctl run --no-cache <op>`
 
 ## GitHub Actions
 
-This workflow assumes `opctl` is installed and the repository has an `npm-install` op at `.opspec/npm-install/op.yml` that declares an npm cache dir, as in the [cache dirs example](reference/opspec/op-directory/op/call/container/caches.md). The runner also needs a container runtime supported by opctl.
+This workflow assumes `opctl` is installed and the repository has an `npm-install` op at `.opspec/npm-install/op.yml` that declares an npm cache dir with a stable [cache name](reference/opspec/op-directory/op/call/container/caches.md), e.g. `caches: { /root/.npm: npm }`. Put the lockfile hash in the CI cache key, not the cache name. With a lockfile-keyed name such as `npm-$(lockHash)`, a fallback restore brings back only the old name's dir, so the op starts cold anyway. Each lockfile change also adds another full cache to the saved root, because nothing evicts old dirs. The runner also needs a container runtime supported by opctl.
 
 ```yaml
 name: Install dependencies
@@ -51,7 +51,7 @@ jobs:
           key: ${{ steps.cache.outputs.cache-primary-key }}
 ```
 
-The key changes when a lockfile changes. The restore prefix allows a job to start with an older cache when there is no exact match. GitHub Actions caches are immutable, so this workflow saves only when the exact key was not restored, and only after a successful run so a partial cache isn't locked in under that key.
+The key changes when a lockfile changes. The restore prefix lets a job start with an older cache when there is no exact match; with a stable cache name the op reuses it and the tool refreshes what changed. Old entries accumulate, so delete the CI cache occasionally if it grows too large. GitHub Actions caches are immutable, so this workflow saves only when the exact key was not restored, and only after a successful run so a partial cache isn't locked in under that key.
 
 Containers commonly write root-owned files. When the node runs with sudo, it recursively restores each call's cache dirs to `SUDO_UID` and `SUDO_GID` after the container finishes, including failed or killed calls. A root node without those variables leaves ownership unchanged. Cleanup warnings appear in the call's stderr and do not change its outcome.
 
