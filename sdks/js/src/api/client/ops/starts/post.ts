@@ -17,13 +17,15 @@ export default async function post(
             username: string
             password: string
         } | null | undefined
-    }
+    },
+    noCache?: boolean
 ): Promise<string> {
     return nodeFetch(`${apiBaseUrl}/ops/starts`, {
         method: 'POST',
         body: JSON.stringify({
             args,
-            op
+            op,
+            ...(noCache ? { noCache: true } : {})
         })
     })
         .then(_assertStatusSuccessful)

@@ -38,7 +38,32 @@ describe('opStart', () => {
     )
 
     /* assert */
-    scope.isDone()
+    expect(scope.isDone()).toBe(true)
+  })
+  it.each([undefined, false])('omits noCache when %s', async (noCache) => {
+    const args = {}
+    const op = { ref: 'ref' }
+    const scope = nock(providedNetRef)
+      .post('/ops/starts', {
+        args,
+        op
+      })
+      .reply(200, 'opId')
+
+    expect(await objectUnderTest(providedNetRef, args, op, noCache)).toEqual('opId')
+    expect(scope.isDone()).toBe(true)
+  })
+  it('sends noCache when true', async () => {
+    const scope = nock(providedNetRef)
+      .post('/ops/starts', {
+        args: {},
+        op: { ref: 'ref' },
+        noCache: true
+      })
+      .reply(200, 'opId')
+
+    expect(await objectUnderTest(providedNetRef, {}, { ref: 'ref' }, true)).toEqual('opId')
+    expect(scope.isDone()).toBe(true)
   })
   describe('response is 300', () => {
     it('returns expected result', async () => {
