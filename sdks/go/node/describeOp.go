@@ -30,6 +30,9 @@ func (c core) DescribeOp(ctx context.Context, req model.DescribeOpReq) (*model.O
 		if fetched, ok := dir.(interface{ RepositoryRoot() string }); ok {
 			op.RepositoryRoot = fetched.RepositoryRoot()
 		}
+		if source, ok := dir.(interface{ SourceResource() string }); ok {
+			op.BootstrapSource, op.BootstrapCreds = source.SourceResource(), req.Op.PullCreds
+		}
 		return c.bootstrapper.Describe(ctx, op, "")
 	}
 	if err != nil {

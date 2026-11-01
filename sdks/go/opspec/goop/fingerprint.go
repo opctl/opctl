@@ -18,7 +18,7 @@ type Toolchain struct{ ID, OS, Arch, Variant string }
 // RecipeVersion changes whenever the launcher or fixed compilation recipe changes.
 const RecipeVersion = "v1"
 const BuildFlags = "-mod=readonly -buildvcs=false -trimpath"
-const BuildEnvironment = "GOWORK=off GOENV=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=linux GOPROXY=off GOSUMDB=off GOAMD64=v1"
+const BuildEnvironment = "GOWORK=off GOENV=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=linux GOPROXY=off GONOPROXY=none GOAMD64=v1"
 
 func record(h hash.Hash, fields ...string) {
 	var length [8]byte

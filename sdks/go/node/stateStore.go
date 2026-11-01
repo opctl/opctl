@@ -28,6 +28,8 @@ type stateStore interface {
 
 	// TryGetCreds returns creds for a ref if any exist
 	TryGetAuth(resource string) *model.Auth
+
+	AuthSnapshot() ([]model.Auth, error)
 }
 
 func newStateStore(
@@ -211,4 +213,24 @@ func (ss *_stateStore) TryGetAuth(
 	})
 
 	return auth
+}
+
+// AuthSnapshot reads existing records in memory without publishing another event.
+func (ss *_stateStore) AuthSnapshot() ([]model.Auth, error) {
+	auths := []model.Auth{}
+	err := ss.db.View(func(txn *badger.Txn) error {
+		opts := badger.DefaultIteratorOptions
+		iterator := txn.NewIterator(opts)
+		defer iterator.Close()
+		prefix := []byte(ss.authsByResourcesKeyPrefix)
+		for iterator.Seek(prefix); iterator.ValidForPrefix(prefix); iterator.Next() {
+			var auth model.Auth
+			if err := iterator.Item().Value(func(data []byte) error { return json.Unmarshal(data, &auth) }); err != nil {
+				return err
+			}
+			auths = append(auths, auth)
+		}
+		return nil
+	})
+	return auths, err
 }

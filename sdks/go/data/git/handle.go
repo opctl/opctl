@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/opctl/opctl/sdks/go/model"
 )
@@ -101,3 +102,6 @@ func (gh handle) Ref() string {
 
 // RepositoryRoot identifies the full fetched tree independently of its op subdir.
 func (gh handle) RepositoryRoot() string { return gh.repositoryRoot }
+
+// SourceResource identifies the fetched repository namespace before its version/op suffix.
+func (gh handle) SourceResource() string { return strings.SplitN(gh.dataRef, "#", 2)[0] }

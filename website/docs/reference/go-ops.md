@@ -46,9 +46,9 @@ opctl ls path/to/op
 
 The CLI prompts for missing inputs, applies defaults, and checks constraints. Invalid explicit Go input values prompt again or fail in a non-interactive terminal; they do not fall back to defaults. Secret prompts are masked. Directory and file defaults such as `$(./testdata)` resolve relative to the op directory. `opctl op validate` checks the declared interface without invoking the plan function. `opctl ls` includes Go ops and their descriptions. Opening `op.go` in the webapp shows its described name and description; its run graph is built when the op runs.
 
-The node bootstraps describe and plan in containers using the Go version in the nearest `go.mod`. It resolves the selected image to an immutable local image identity before running bootstrap. Cached versioned images support offline execution. The module root and each external local `replace` target mount read-only, separately at their host paths, including absolute replacements. Replacements inside the module use the module mount. Separate mounts and module roots cannot follow host symlinks. Missing local replacement targets are not mounted; Go reports an error if the build needs them. Mounts that hide required bootstrap image directories are rejected. Bootstrap cannot write its source mounts or remount them writable. It builds the entire op package, so an op in a subdirectory can import its application module's packages and embedded assets. Docker must support recursive read-only binds. Bootstrap calls appear beneath the op call. Bootstrap stdout is captured in memory, with Docker logging disabled, and is never published as log events. Bootstrap failures return up to 64 KiB of stderr diagnostics to the client. Describe is also available through `POST /api/ops/describes` with `{"op":{"ref":"path/to/op"}}`. Invalid declarations, including missing or malformed `go.mod` files and invalid mount paths, bootstrap program exits, and response parse failures return HTTP 400; runtime and context failures return HTTP 500. This classification applies to bootstrap; YAML container calls retain their existing exit-code errors.
+The node bootstraps describe and plan in containers using the Go version in the nearest `go.mod`. It resolves the selected image to an immutable local image identity before running bootstrap. Cached versioned images support offline execution. The module root and each external local `replace` target mount read-only, separately at their host paths, including absolute replacements. Replacements inside the module use the module mount. Separate mounts and module roots cannot follow host symlinks. Missing local replacement targets are not mounted; Go reports an error if the build needs them. Mounts that hide required bootstrap image directories are rejected. Bootstrap cannot write its source mounts or remount them writable. It builds the entire op package, so an op in a subdirectory can import its application module's packages and embedded assets. Docker must support recursive read-only binds. Bootstrap calls appear beneath the op call. Bootstrap stdout is captured in memory, with Docker logging disabled, and is never published as log events. Compiler and declaration failures return up to 64 KiB of stderr diagnostics to the client. Credentialed dependency downloads return controlled errors, with their raw diagnostics suppressed. Describe is also available through `POST /api/ops/describes` with `{"op":{"ref":"path/to/op"}}`. Invalid declarations, including missing or malformed `go.mod` files and invalid mount paths, bootstrap program exits, and response parse failures return HTTP 400; runtime and context failures return HTTP 500. This classification applies to bootstrap; YAML container calls retain their existing exit-code errors.
 
-Describe and plan compile separately for each request. No compiled-program cache is available yet.
+Describe and plan use the same cached executable. Describe can use the in-memory memo; plan executes for every request.
 
 ```go
 func checks() opctl.Call {
@@ -139,15 +139,13 @@ symlinks that escape it. The node carries the resolved repository root through
 nested local calls; it does not infer the boundary from `#` or a `.git` folder.
 Local ops retain their existing parent-module and replacement behavior. A git
 fetch includes the tagged repository tree, including helpers and in-repo SDK
-replacements, but does not fetch a developer's sibling checkouts. Private Go
-dependency downloads and compiled-program caching remain separate work.
+replacements, but does not fetch a developer's sibling checkouts.
 
 Public Go outputs reach API clients as the boxed `CallEnded.Outputs` map on the
 root op completion event. `opctl run` forwards this event to its output module
 and prints the usual status. It does not print a new output format. Secret
 outputs and sensitive aliases are omitted from public events. Dir and file
 outputs refer to paths on the node, rather than downloaded client files.
-
 
 Bootstrap shares Go's module cache at `<dataDir>/go/mod` and build cache at
 `<dataDir>/go/build` across ops and Go versions. It drops to the mount owner's
@@ -162,7 +160,6 @@ stop the node and delete `<dataDir>/go/mod`. Caches belong to one node/data-dir
 owner. With embedded, the data directory must already have a Lima share at the
 same absolute path. Custom unshared paths require configuring that share first.
 
-
 Compiled programs live in `<dataDir>/go/programs/v1`, keyed by source content,
 local replacements, op package, Go directive, immutable image identity, and build
 settings. Dirty and untracked files, embedded assets, and SDK replacement edits
@@ -176,9 +173,54 @@ Programs use a 1 GiB soft LRU limit; active calls keep their executables leased.
 An oversized executable is available only for its current call. To force all
 programs to rebuild, stop the node and remove `<dataDir>/go/programs`.
 
-
 Successful describe responses are memoised only in node memory, with a 64 MiB /
 128-entry LRU bound. Each caller receives a freshly parsed declaration. A hit
 emits `bootstrap describe (cached)` lifecycle events without starting a
 container. Restarting the node retains compiled executables and clears describe
 memoisation. Errors and plans are never memoised.
+
+The Docker Linux cache proof, with images prepared and empty node Go caches,
+measured 16.014 s cold and 2.971 s warm, a 5.39x improvement. Bootstrap took
+14.146 s cold, including 12.304 s building, and 1.317 s warm with no build.
+Source hashing took 3.321 ms. The warm run kept the executable checksum and
+mtime, skipped describe execution, and planned again with a different input.
+These fixture measurements are not a speed guarantee for other modules.
+
+Private Go modules use existing `opctl auth add` HTTPS username/password records.
+Use concrete resources such as `github.com`, `github.com/acme`, or
+`https://git.example.com/team/repo`. Bootstrap derives `GOPRIVATE` from these
+scopes, keeps public proxy/checksum verification enabled during download, and
+uses the longest matching host/repository path for Git credentials. Host and path
+boundaries prevent an auth for `github.com/acme/repo` from matching
+`github.com.evil` or `github.com/acme/repository`. Image tags, versions, wildcards,
+SSH resources, and non-host resources do not configure module auth.
+
+Explicit pull credentials for a fetched Go op override stored credentials only
+within that source repository's namespace. A local op cannot infer a remote scope
+from pull credentials; add an auth record for its private dependencies. Other and
+transitive private modules use their own matching records. Image pull credentials
+are kept separate from module credentials.
+
+The node prepares credentials in memory and sends a bounded archive through
+attached stdin into container tmpfs. Its Git helper preserves literal spaces,
+quotes, dollar signs, and backslashes; line breaks and NUL are rejected. Only
+host-wide credentials representable by older Go netrc readers are used for HTTP
+discovery. Whitespace, quoted, and escaped credentials still work through the Git
+helper. Authenticated vanity discovery with repository-only credentials is not
+supported on Go 1.21; bootstrap reports that limit without widening the scope.
+SSH and newer `GOAUTH` authentication are outside this implementation.
+
+Downloads finish before compilation. Bootstrap then deletes the helper, netrc,
+Git config, archive, and download diagnostics from tmpfs, resets its home, and
+compiles with module network fallback disabled. Describe and plan receive only
+the read-only program/source mounts and their request. No protocol response or
+additional credential copy is stored in the node caches, call events, Docker logs,
+or Git origin URLs. The existing `AuthAdded` event/auth store already persists the
+original credentials; this feature does not change that store.
+
+Revoking or rotating credentials does not erase downloaded source or compiled
+code or invalidate an executable. If code retention must end, stop the node and
+remove `<dataDir>/go`, including its module, build, and program caches. These
+caches are private to one data-dir owner, not an authorization boundary between
+users. Docker Linux has integration coverage; embedded requires a same-path Lima
+share and still needs a macOS smoke test for UID mapping and read-only behavior.

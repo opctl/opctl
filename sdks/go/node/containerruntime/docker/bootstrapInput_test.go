@@ -87,3 +87,26 @@ func TestPrivateInputLimit(t *testing.T) {
 		}
 	}
 }
+
+func TestPrivateBootstrapCancellationAndCleanup(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	client := new(fakes.FakeCommonAPIClient)
+	reader, peer := net.Pipe()
+	defer peer.Close()
+	client.ContainerAttachReturns(types.NewHijackedResponse(reader, ""), nil)
+	client.ContainerStartStub = func(context.Context, string, container.StartOptions) error { cancel(); return nil }
+	wait := make(chan container.WaitResponse)
+	close(wait)
+	client.ContainerWaitReturns(wait, nil)
+	input, writer := io.Pipe()
+	defer writer.Close()
+	image := "sha256:prepared"
+	_, err := (_runContainer{dockerClient: client}).RunContainer(containerruntime.WithBootstrapInput(ctx, input), &model.ContainerCall{Image: &model.ContainerCallImage{Ref: &image, Prepared: true}}, "root", discardEvents{}, nopWriteCloser{io.Discard}, nopWriteCloser{io.Discard})
+	if err == nil {
+		t.Fatal("cancelled delivery succeeded")
+	}
+	if client.ContainerRemoveCallCount() != 1 {
+		t.Fatal("cancelled private container was not removed")
+	}
+}

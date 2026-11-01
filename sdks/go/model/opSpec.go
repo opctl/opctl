@@ -60,6 +60,8 @@ type LoopVarsSpec struct {
 
 // OpCallSpec is a spec for calling an op
 type OpCallSpec struct {
+	BootstrapSource string `json:"-"`
+	BootstrapCreds  *Creds `json:"-"`
 	// Ref represents a references to an op; will be interpolated
 	Ref string `json:"ref"`
 	// PullCreds represent creds for pulling the op from a provider

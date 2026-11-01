@@ -53,8 +53,26 @@ func (bootstrap _bootstrapper) buildProgram(ctx context.Context, op *model.OpCal
 	env := spec.EnvVars.(map[string]interface{})
 	delete(env, "OPCTL_BOOTSTRAP_REQUEST")
 	env["GOARCH"], env["GOAMD64"] = image.Arch, "v1"
+	auths := []model.Auth{}
+	if bootstrap.cache.stateStore != nil {
+		var err error
+		auths, err = bootstrap.cache.stateStore.AuthSnapshot()
+		if err != nil {
+			return err
+		}
+	}
+	auth, err := prepareBootstrapAuth(auths, op.BootstrapSource, op.BootstrapCreds)
+	if err != nil {
+		return err
+	}
+	if auth.private != "" {
+		env["GOPRIVATE"], env["GONOPROXY"], env["GONOSUMDB"] = auth.private, auth.private, auth.private
+	}
+	if len(auth.archive) > 0 {
+		ctx = containerruntime.WithBootstrapInput(ctx, bytes.NewReader(auth.archive))
+	}
 	spec.Cmd = []interface{}{"sh", "-ce", "go version > /opctl/build/go-version; go build " + goop.BuildFlags + " -o /opctl/build/program ."}
-	_, err := bootstrap.invokeProgram(ctx, op, root, "bootstrap build", spec, source.ModuleRoot, true, nil)
+	_, err = bootstrap.invokeProgram(ctx, op, root, "bootstrap build", spec, source.ModuleRoot, true, nil)
 	return err
 }
 

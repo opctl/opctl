@@ -56,6 +56,9 @@ func (this core) StartOp(
 		opDir,
 	)
 	if errors.Is(err, opfile.ErrGoOp) {
+		if source, ok := opDir.(interface{ SourceResource() string }); ok {
+			opCallSpec.BootstrapSource, opCallSpec.BootstrapCreds = source.SourceResource(), req.Op.PullCreds
+		}
 		opFile = &model.OpSpec{}
 	} else if err != nil {
 		return "", err

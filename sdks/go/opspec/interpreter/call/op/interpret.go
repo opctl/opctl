@@ -121,6 +121,12 @@ func Interpret(
 	}
 
 	if isGoOp {
+		if source, ok := opDir.(interface{ SourceResource() string }); ok {
+			opCall.BootstrapSource, opCall.BootstrapCreds = source.SourceResource(), pkgPullCreds
+		}
+		if opCallSpec.BootstrapSource != "" {
+			opCall.BootstrapSource, opCall.BootstrapCreds = opCallSpec.BootstrapSource, opCallSpec.BootstrapCreds
+		}
 		return opCall, nil
 	}
 	protected := map[string]bool{}
