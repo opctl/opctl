@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -47,8 +48,12 @@ func TestCacheEntryRequiresMatchingMetadata(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(root, "program"), []byte("executable"), 0700); err != nil {
 		t.Fatal(err)
 	}
+	launcher := []byte("launcher executable")
+	if err := os.WriteFile(filepath.Join(root, "launcher"), launcher, 0700); err != nil {
+		t.Fatal(err)
+	}
 	for _, key := range []string{"different-key", "program-key"} {
-		metadata := []byte(fmt.Sprintf(`{"Key":%q}`, key))
+		metadata := []byte(fmt.Sprintf(`{"Key":%q,"LauncherChecksum":"%x","LauncherSize":%d}`, key, sha256.Sum256(launcher), len(launcher)))
 		if err := os.WriteFile(filepath.Join(root, "metadata.json"), metadata, 0600); err != nil {
 			t.Fatal(err)
 		}
@@ -56,5 +61,38 @@ func TestCacheEntryRequiresMatchingMetadata(t *testing.T) {
 		if (err == nil) != (key == "program-key") {
 			t.Fatalf("key %s: %v", key, err)
 		}
+	}
+}
+
+func TestCacheEntryValidatesLauncher(t *testing.T) {
+	for _, kind := range []string{"valid", "missing", "corrupt", "not-executable", "unexpected-file"} {
+		t.Run(kind, func(t *testing.T) {
+			data := t.TempDir()
+			root := filepath.Join(data, "go", "programs", "v1", "key")
+			if err := os.MkdirAll(root, 0700); err != nil {
+				t.Fatal(err)
+			}
+			launcher := []byte("launcher executable")
+			files := map[string][]byte{"program": []byte("op executable"), "launcher": launcher, "metadata.json": []byte(fmt.Sprintf(`{"Key":"key","LauncherChecksum":"%x","LauncherSize":%d}`, sha256.Sum256(launcher), len(launcher)))}
+			for name, content := range files {
+				if err := os.WriteFile(filepath.Join(root, name), content, 0700); err != nil {
+					t.Fatal(err)
+				}
+			}
+			switch kind {
+			case "missing":
+				os.Remove(filepath.Join(root, "launcher"))
+			case "corrupt":
+				os.WriteFile(filepath.Join(root, "launcher"), []byte("corrupt launcher"), 0700)
+			case "not-executable":
+				os.Chmod(filepath.Join(root, "launcher"), 0600)
+			case "unexpected-file":
+				os.WriteFile(filepath.Join(root, "sidecar"), nil, 0600)
+			}
+			_, _, err := entry(data)
+			if (err == nil) != (kind == "valid") {
+				t.Fatalf("%s: %v", kind, err)
+			}
+		})
 	}
 }

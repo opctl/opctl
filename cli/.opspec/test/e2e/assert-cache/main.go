@@ -89,8 +89,8 @@ func entry(data string) (executable, map[string]interface{}, error) {
 	if err != nil {
 		return executable{}, nil, err
 	}
-	if len(files) != 2 {
-		return executable{}, nil, fmt.Errorf("cache retained files beyond executable and metadata")
+	if len(files) != 3 {
+		return executable{}, nil, fmt.Errorf("cache retained files beyond program, launcher, and metadata")
 	}
 	path := filepath.Join(root, "program")
 	binary, err := os.ReadFile(path)
@@ -112,6 +112,22 @@ func entry(data string) (executable, map[string]interface{}, error) {
 	}
 	if metadata["Key"] != entries[0].Name() {
 		return executable{}, nil, fmt.Errorf("cache metadata key does not match its program entry")
+	}
+	launcherPath := filepath.Join(root, "launcher")
+	launcherInfo, err := os.Lstat(launcherPath)
+	if err != nil {
+		return executable{}, nil, err
+	}
+	if !launcherInfo.Mode().IsRegular() || launcherInfo.Mode().Perm()&0111 == 0 {
+		return executable{}, nil, fmt.Errorf("cache launcher must be a regular executable")
+	}
+	launcher, err := os.ReadFile(launcherPath)
+	if err != nil {
+		return executable{}, nil, err
+	}
+	launcherSum := sha256.Sum256(launcher)
+	if metadata["LauncherChecksum"] != hex.EncodeToString(launcherSum[:]) || metadata["LauncherSize"] != float64(launcherInfo.Size()) {
+		return executable{}, nil, fmt.Errorf("cache launcher does not match metadata")
 	}
 	return executable{path, hex.EncodeToString(sum[:]), info.ModTime()}, metadata, nil
 }
