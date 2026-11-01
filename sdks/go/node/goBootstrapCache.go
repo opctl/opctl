@@ -25,16 +25,19 @@ import (
 
 // goBootstrapCache is shared by API describes and all op callers in this node.
 type goBootstrapCache struct {
-	runtime    containerruntime.ContainerRuntime
-	stateStore stateStore
-	pubSub     pubsub.PubSub
-	once       sync.Once
-	initErr    error
-	directory  string
-	mu         sync.Mutex
-	locks      map[string]*bootstrapLock
-	leases     map[string]int
-	budget     int64
+	describes     map[string]describeMemo
+	describeBytes int
+	describeClock uint64
+	runtime       containerruntime.ContainerRuntime
+	stateStore    stateStore
+	pubSub        pubsub.PubSub
+	once          sync.Once
+	initErr       error
+	directory     string
+	mu            sync.Mutex
+	locks         map[string]*bootstrapLock
+	leases        map[string]int
+	budget        int64
 }
 type bootstrapLock struct {
 	token chan struct{}

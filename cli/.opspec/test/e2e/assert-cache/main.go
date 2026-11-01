@@ -34,7 +34,7 @@ func checkCacheEvents(events []model.Event, warm bool) error {
 	if warm {
 		wantBuilds = 0
 	}
-	if counts["bootstrap build"] != wantBuilds || counts["bootstrap describe"] != 2 || counts["bootstrap plan"] != 1 {
+	if counts["bootstrap build"] != wantBuilds || counts["bootstrap describe"] != map[bool]int{false: 1, true: 0}[warm] || counts["bootstrap describe (cached)"] != map[bool]int{false: 1, true: 2}[warm] || counts["bootstrap plan"] != 1 {
 		return fmt.Errorf("unexpected bootstrap counts: %v", counts)
 	}
 	for _, event := range events {
@@ -216,7 +216,7 @@ func run() error {
 		return err
 	}
 	fmt.Printf("HASH duration=%s key=%s\n", time.Since(start), key)
-	fmt.Println("PASS: one cold build, zero warm builds, stable executable, fresh plans with changed inputs")
+	fmt.Println("PASS: one cold build, zero warm builds, stable executable, memoised describe, fresh plans with changed inputs")
 	return nil
 }
 func main() {

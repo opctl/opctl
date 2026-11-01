@@ -8,6 +8,8 @@ accordance with
 
 ### Added
 
+- Go describe responses are memoised in node memory by executable key, shared across API and run calls, with cached lifecycle events. Plans always execute.
+
 - Go ops build one cached executable per module content and immutable toolchain. Warm runs execute it without recompiling; plans still run for every invocation.
 
 - Go ops share node-owned module and build caches. Bootstrap runs as the cache owner with isolated Go settings and scratch home.

@@ -175,3 +175,10 @@ or a failed build never publishes an entry.
 Programs use a 1 GiB soft LRU limit; active calls keep their executables leased.
 An oversized executable is available only for its current call. To force all
 programs to rebuild, stop the node and remove `<dataDir>/go/programs`.
+
+
+Successful describe responses are memoised only in node memory, with a 64 MiB /
+128-entry LRU bound. Each caller receives a freshly parsed declaration. A hit
+emits `bootstrap describe (cached)` lifecycle events without starting a
+container. Restarting the node retains compiled executables and clears describe
+memoisation. Errors and plans are never memoised.

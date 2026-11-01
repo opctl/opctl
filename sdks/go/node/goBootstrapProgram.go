@@ -36,7 +36,13 @@ func (bootstrap _bootstrapper) runCached(ctx context.Context, op *model.OpCall, 
 	spec.Files["/opctl/program"] = model.Value{File: &executable}
 	spec.ReadOnlyMounts["/opctl/program"] = true
 	spec.Cmd = []interface{}{"sh", "/opctl/launcher", "/opctl/program", phase}
-	return bootstrap.invokeProgram(ctx, op, root, "bootstrap "+phase, spec, program.source.ModuleRoot, false, goop.NewRequest(phase, inputs))
+	invoke := func() ([]byte, error) {
+		return bootstrap.invokeProgram(ctx, op, root, "bootstrap "+phase, spec, program.source.ModuleRoot, false, goop.NewRequest(phase, inputs))
+	}
+	if phase == "describe" {
+		return bootstrap.describeCached(ctx, op, root, program, invoke)
+	}
+	return invoke()
 }
 
 func (bootstrap _bootstrapper) buildProgram(ctx context.Context, op *model.OpCall, root string, source *goop.Source, image *containerruntime.ImageIdentity, staging string) error {
