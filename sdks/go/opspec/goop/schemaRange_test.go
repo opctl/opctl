@@ -1,7 +1,10 @@
 package goop
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/opctl/opctl/sdks/go/opspec"
+	"os"
 	"strings"
 	"testing"
 
@@ -67,6 +70,52 @@ func TestBootstrapFeatureLabels(t *testing.T) {
 		if _, err := ParsePlan(data); err == nil {
 			t.Fatalf("invalid field accepted: %s", field)
 		}
+	}
+}
+
+func TestSharedNegotiatedSchemaFixtures(t *testing.T) {
+	for version := 1; version <= 4; version++ {
+		root := fmt.Sprintf("../sdk/testdata/schema-versions/v%d/", version)
+		data, err := os.ReadFile(root + "request.json")
+		if err != nil {
+			t.Fatal(err)
+		}
+		var req Request
+		if err := json.Unmarshal(data, &req); err != nil {
+			t.Fatal(err)
+		}
+		data, err = os.ReadFile(root + "describe.json")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := ParseDescribeForRange(data, req.OpspecSchema); err != nil {
+			t.Fatalf("v%d describe: %v", version, err)
+		}
+		data, err = os.ReadFile(root + "plan.json")
+		if err != nil {
+			t.Fatal(err)
+		}
+		plan, err := ParsePlanForRange(data, req.OpspecSchema)
+		if err != nil {
+			t.Fatalf("v%d plan: %v", version, err)
+		}
+		if needed := opspec.MinimumSchema(plan.Run); needed != version {
+			t.Fatalf("v%d fixture only exercises schema %d", version, needed)
+		}
+		if version > 1 {
+			if _, err := ParsePlanForRange(data, SchemaRange{1, version - 1}); err == nil {
+				t.Fatal("response outside request accepted")
+			}
+		}
+	}
+	// Contract-1 op output bindings remain readable at schema 1.
+	data, err := os.ReadFile("../sdk/testdata/plan.outputs.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	plan, err := ParsePlanForRange(data, SchemaRange{1, 1})
+	if err != nil || plan.OutputBindings["echoed"] != "$(text)" {
+		t.Fatalf("schema-1 output bindings: %v", err)
 	}
 }
 

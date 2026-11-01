@@ -18,7 +18,7 @@ func streamGraph() Call {
 func TestStreamGolden(t *testing.T) {
 	fixturePath, _ := filepath.Abs("testdata/plan.streams.json")
 	helloDir(t)
-	data, err := Plan(func(struct{}) Call { return streamGraph() }, nil)
+	data, err := planAtSchema(func(struct{}) Call { return streamGraph() }, nil, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -29,7 +29,7 @@ func TestStreamGolden(t *testing.T) {
 	if string(data) != string(expected) {
 		t.Fatalf("stream fixture mismatch: %s", data)
 	}
-	again, err := Plan(func(struct{}) Call { return streamGraph() }, nil)
+	again, err := planAtSchema(func(struct{}) Call { return streamGraph() }, nil, 2)
 	if err != nil || string(data) != string(again) {
 		t.Fatal("unstable plan", err)
 	}
@@ -132,7 +132,7 @@ func TestStreamSchemaRequests(t *testing.T) {
 		phase    string
 		min, max int
 		bad      bool
-	}{{"plan", 1, 1, true}, {"plan", 1, 2, false}, {"plan", 2, 2, false}, {"plan", 3, 3, true}, {"describe", 1, 1, false}, {"describe", 2, 2, true}} {
+	}{{"plan", 1, 1, true}, {"plan", 1, 2, false}, {"plan", 2, 2, false}, {"plan", 3, 3, false}, {"describe", 1, 1, false}, {"describe", 2, 2, false}} {
 		t.Run(fmt.Sprintf("%s-%d-%d", tc.phase, tc.min, tc.max), func(t *testing.T) {
 			request := fmt.Sprintf(`{"contractVersion":1,"phase":%q,"opspecSchema":{"min":%d,"max":%d},"inputs":{},"knownOutputs":{}}`, tc.phase, tc.min, tc.max)
 			path := filepath.Join(t.TempDir(), "request.json")

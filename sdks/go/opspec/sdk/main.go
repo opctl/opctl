@@ -7,14 +7,11 @@ import (
 )
 
 type request struct {
-	ContractVersion int    `json:"contractVersion"`
-	Phase           string `json:"phase"`
-	OpspecSchema    struct {
-		Min int `json:"min"`
-		Max int `json:"max"`
-	} `json:"opspecSchema"`
-	Inputs       map[string]any             `json:"inputs"`
-	KnownOutputs map[string]json.RawMessage `json:"knownOutputs"`
+	ContractVersion *int                       `json:"contractVersion"`
+	Phase           string                     `json:"phase"`
+	OpspecSchema    schemaRange                `json:"opspecSchema"`
+	Inputs          map[string]any             `json:"inputs"`
+	KnownOutputs    map[string]json.RawMessage `json:"knownOutputs"`
 }
 
 // Main serves the describe or plan bootstrap phase requested by opctl.
@@ -50,14 +47,18 @@ func runWithOutputs[I, O any](fn func(I) (Call, O)) error {
 	if err := json.Unmarshal(data, &req); err != nil {
 		return fmt.Errorf("decode bootstrap request: %w", err)
 	}
-	if req.ContractVersion != 1 {
-		return fmt.Errorf("unsupported bootstrap contract version %d", req.ContractVersion)
+	contractVersion := 0
+	if req.ContractVersion != nil {
+		contractVersion = *req.ContractVersion
+	}
+	if contractVersion != 1 {
+		return fmt.Errorf("unsupported bootstrap contract version %d", contractVersion)
 	}
 	if req.Phase != phase {
 		return fmt.Errorf("bootstrap request phase %q differs from argv phase %q", req.Phase, phase)
 	}
-	if req.OpspecSchema.Min < 1 || req.OpspecSchema.Max < 1 || req.OpspecSchema.Min > req.OpspecSchema.Max {
-		return fmt.Errorf("invalid opspec schema range")
+	if _, err := commonSchema(req.OpspecSchema); err != nil {
+		return err
 	}
 	if phase == "describe" && len(req.Inputs) != 0 {
 		return fmt.Errorf("describe does not accept input values")
@@ -65,21 +66,9 @@ func runWithOutputs[I, O any](fn func(I) (Call, O)) error {
 	if len(req.KnownOutputs) != 0 {
 		return fmt.Errorf("Go op known outputs are not supported yet")
 	}
-	response, err := emit(phase, fn, req.Inputs)
+	response, err := emitForRange(phase, fn, req.Inputs, req.OpspecSchema)
 	if err != nil {
 		return err
-	}
-	var envelope struct {
-		OpspecSchema int `json:"opspecSchema"`
-	}
-	if err := json.Unmarshal(response, &envelope); err != nil {
-		return err
-	}
-	if needed := envelope.OpspecSchema; needed < req.OpspecSchema.Min || needed > req.OpspecSchema.Max {
-		if needed == 4 && req.OpspecSchema.Max < 4 {
-			return fmt.Errorf("this op uses typed container outputs (opspec >= 4); upgrade opctl to a version supporting opspec 4")
-		}
-		return fmt.Errorf("Go op requires opspec schema %d for its call features; upgrade opctl to a version supporting it", needed)
 	}
 	_, err = os.Stdout.Write(response)
 	return err

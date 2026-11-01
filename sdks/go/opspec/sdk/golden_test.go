@@ -32,11 +32,11 @@ func TestInputsGolden(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer os.Chdir(previous)
-	describe, err := Describe[goldenInputs]()
+	describe, err := emitForRange[goldenInputs, struct{}]("describe", nil, nil, schemaRange{1, 1})
 	if err != nil {
 		t.Fatal(err)
 	}
-	plan, err := Plan(goldenCall, map[string]any{"env": "prod", "count": 3, "wantProd": true})
+	plan, err := planAtSchema(goldenCall, map[string]any{"env": "prod", "count": 3, "wantProd": true}, 1)
 	if err != nil {
 		t.Fatal(err)
 	}

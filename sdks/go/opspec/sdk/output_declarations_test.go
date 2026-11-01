@@ -27,11 +27,11 @@ func TestOutputContractFixtures(t *testing.T) {
 		fixtures[name] = data
 	}
 	helloDir(t)
-	desc, err := DescribeWithOutputs[outputInputs, outputValues]()
+	desc, err := emitForRange[outputInputs, outputValues]("describe", nil, nil, schemaRange{1, 1})
 	if err != nil {
 		t.Fatal(err)
 	}
-	plan, err := PlanWithOutputs(func(in outputInputs) (Call, outputValues) { return Container("alpine"), outputValues{Echoed: in.Text} }, map[string]any{"text": "public"})
+	plan, err := emitForRange("plan", func(in outputInputs) (Call, outputValues) { return Container("alpine"), outputValues{Echoed: in.Text} }, map[string]any{"text": "public"}, schemaRange{1, 1})
 	if err != nil {
 		t.Fatal(err)
 	}

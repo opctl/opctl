@@ -235,7 +235,7 @@ return opctl.Serial(producer,
         Cmd("sh", "-ce", `test "$VERSION" = v1.2.3`))
 ```
 
-`Stderr()` has the same two-return convention. Handles cannot be read with `Value()` during plan. Producers must be visible before consumers: serial calls accumulate results, parallel siblings cannot consume each other's results, and results become visible after a parallel group. Captures follow the [shared stream rules](opspec/op-directory/op/call/container/index.md#stdout-and-stderr), including secret declarations and the 1 MiB limit. Stream graphs require opspec schema 2; graphs without new fields remain schema 1 and byte-identical. An incompatible node fails before the SDK emits its response.
+`Stderr()` has the same two-return convention. Handles cannot be read with `Value()` during plan. Producers must be visible before consumers: serial calls accumulate results, parallel siblings cannot consume each other's results, and results become visible after a parallel group. Captures follow the [shared stream rules](opspec/op-directory/op/call/container/index.md#stdout-and-stderr), including secret declarations and the 1 MiB limit. Stream bindings require opspec schema 2. The SDK selects the newest shared schema and rejects incompatible graphs before emitting a response.
 
 Request named [outputs file](opspec/op-directory/op/call/container/outputs.md) members with `ContainerOutput[T]`:
 
@@ -248,7 +248,7 @@ producer, count := opctl.ContainerOutput[opctl.Number](producer, "count")
 
 Supported handle kinds are String, Number, Boolean, Array, and Object. Repeated requests on the updated builder reuse a member's binding; a different instantiated handle type for the same member is a plan error. Branch from an unbound builder for independent producers. Keep returned producers in the graph and consume handles only after their producers are visible. `Value()` remains unavailable during plan. Export handles through `MainWithOutputs` to return them to a caller.
 
-`T` expresses the author's expected use in Go. It does not install strict runtime type declarations. Bindings validate presence and supported JSON data; ordinary consumer coercions still apply. `outputParams` is reserved and not accepted. Named-result graphs require opspec schema 3. No-feature graphs remain schema 1.
+`T` expresses the author's expected use in Go. It does not install strict runtime type declarations. Bindings validate presence and supported JSON data; ordinary consumer coercions still apply. Use `Outputs[T]` below for strict runtime declarations. Named-result graphs require opspec schema 3.
 
 Fetched Go ops and their in-repository local replacements remain part of the source fingerprint under the node's `ops` directory. The fingerprint excludes writable node state in `go`, `dcg`, `call`, and `vms`.
 
@@ -294,3 +294,26 @@ The node validates exact JSON kinds and constraints before publishing any member
 Repeated access to the same member and handle type reuses its handle. You can add a declaration after `ContainerOutput[T]`; identical repeated declarations are allowed, conflicting declarations fail. Builders remain independent copies. The returned handles follow the same serial/parallel visibility rules as other call results, and `Value()` cannot read them during plan.
 
 Describe reflects public output declarations supplied to `MainWithOutputs`, without running the plan function. Internal `Outputs[T]` declarations are checked during plan. Typed container graphs require opspec schema 4 and fail clearly when the node's maximum is older. Captured stdout/stderr remain independent String handles.
+
+## Schema negotiation
+
+Describe and plan each receive the node's supported opspec schema range. The dependency-free Go op SDK supports schemas 1 through 4 and emits the newest version both support. A baseline graph emits schema 1 for a `[1,1]` node and schema 4 for a `[1,4]` node. Its calls, mounts, escaped literals, and output aliases stay the same. Missing, null, non-integer, and reversed request ranges fail without a response. The node also rejects null envelope versions, including after duplicate fields. The node continues to read older schemas and checks every response against the range it requested.
+
+| Required schema | Graph syntax |
+| --- | --- |
+| 1 | Existing calls, groups, mounts, op inputs and outputs |
+| 2 | Container stdout/stderr bindings |
+| 3 | Container outputs-file member bindings |
+| 4 | Typed container output declarations and their validation/secrecy guarantees |
+
+The SDK inspects the graph selected for the resolved inputs. Unused builders do not require newer syntax. It builds the graph once and never drops used features to fit an older node. For example, typed container outputs against a node supporting only schemas 1 through 3 fail with:
+
+```text
+this op uses typed container outputs (opspec >= 4); upgrade opctl to a version supporting opspec 4
+```
+
+Outputs-file bindings below schema 3 report `this op uses container outputs file (opspec >= 3); upgrade opctl to a version supporting opspec 3`. Stream bindings below schema 2 report `this op uses container stdout/stderr bindings (opspec >= 2); upgrade opctl to a version supporting opspec 2`. These errors include a graph path, omit input/result values, and prevent user calls from starting. If a node requires schemas newer than the SDK supports, the error instead says `upgrade the Go op SDK` and includes both ranges. Schema integers are independent of legacy YAML opspec versions; minimum opctl release numbers have not yet been assigned.
+
+Describe checks the interface independently and never invokes the plan function. `opctl op validate` can therefore succeed while `opctl run` rejects an input-dependent graph that requires a newer schema. `Plan`, `PlanWithOutputs`, `Describe`, and `DescribeWithOutputs` use the SDK's complete range by default. Describe memoisation includes the program identity, bootstrap contract, and requested range. Compiled executables do not depend on the range. Plans and compatibility failures are never cached.
+
+Schema 1 includes the existing bootstrap-contract-1 `outputBindings` extension. Early intermediate nodes that lack that extension may reject described Go outputs even though they read schema 1 syntax. Schema negotiation does not add missing bootstrap contract extensions to those nodes. Direct YAML ops keep their existing behavior.

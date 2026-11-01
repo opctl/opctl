@@ -57,6 +57,10 @@ accordance with
 
 ### Added
 
+- Go bootstrap selects the newest shared opspec schema in describe and plan, down-levels baseline graphs, and rejects newer features before user calls start. Null schema
+  ranges and envelope versions are rejected even after duplicate integer fields. Typed outputs on an older node report `this op uses typed container outputs (opspec >= 4);
+  upgrade opctl to a version supporting opspec 4`. Nodes requiring newer schemas report `upgrade the Go op SDK`.
+
 - Go ops can declare container outputs with `Outputs[T]`, using tagged handle structs for required JSON members, constraints, and secrets.
 
 - YAML containers can declare required `outputParams` for exact JSON types and constraints. Declared secrets stay private through renamed bindings; typed output graphs

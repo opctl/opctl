@@ -26,7 +26,7 @@ func TestComposeGolden(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer os.Chdir(previous)
-	actual, err := Plan(composeCall, nil)
+	actual, err := planAtSchema(composeCall, nil, 1)
 	if err != nil {
 		t.Fatal(err)
 	}

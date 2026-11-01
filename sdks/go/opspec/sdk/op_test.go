@@ -59,7 +59,7 @@ func TestCallOpGolden(t *testing.T) {
 	if err := json.Unmarshal(data, &actual); err != nil {
 		t.Fatal(err)
 	}
-	if string(data) != "{\"contractVersion\":1,\"opspecSchema\":1,\"opspec\":{\"name\":\"hello\",\"run\":{\"op\":{\"ref\":\"./yaml\",\"inputs\":{\"label\":\"from-go\"}}}}}\n" {
+	if string(data) != "{\"contractVersion\":1,\"opspecSchema\":4,\"opspec\":{\"name\":\"hello\",\"run\":{\"op\":{\"ref\":\"./yaml\",\"inputs\":{\"label\":\"from-go\"}}}}}\n" {
 		t.Fatalf("%s", data)
 	}
 }

@@ -61,7 +61,7 @@ func TestTypedContainerOutputDeclarations(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if strings.Contains(string(desc), "outputParams") || !strings.Contains(string(desc), `"opspecSchema":1`) {
+	if strings.Contains(string(desc), "outputParams") || !strings.Contains(string(desc), `"opspecSchema":4`) {
 		t.Fatal("describe acquired a graph feature")
 	}
 }

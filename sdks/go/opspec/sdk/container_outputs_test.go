@@ -21,7 +21,7 @@ func namedGraph() Call {
 func TestContainerOutputGolden(t *testing.T) {
 	fixture, _ := filepath.Abs("testdata/plan.container-outputs.json")
 	helloDir(t)
-	data, err := Plan(func(struct{}) Call { return namedGraph() }, nil)
+	data, err := planAtSchema(func(struct{}) Call { return namedGraph() }, nil, 3)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -124,7 +124,7 @@ func TestContainerOutputSchemaRequests(t *testing.T) {
 		command.Stderr = &stderr
 		out, err := command.Output()
 		if max < 3 {
-			if err == nil || len(out) != 0 || !strings.Contains(stderr.String(), "schema 3") {
+			if err == nil || len(out) != 0 || !strings.Contains(stderr.String(), "opspec 3") {
 				t.Fatalf("unsupported named schema: %s %s %v", out, stderr.String(), err)
 			}
 		} else if err != nil || !strings.Contains(string(out), `"opspecSchema":3`) {

@@ -36,7 +36,7 @@ func TestPlan(t *testing.T) {
 		t.Fatal(err)
 	}
 	helloDir(t)
-	actual, err := Plan(func(struct{}) Call { return Container("alpine:3").Cmd("echo", "hello").Env("A", "b").WorkDir("/") }, nil)
+	actual, err := planAtSchema(func(struct{}) Call { return Container("alpine:3").Cmd("echo", "hello").Env("A", "b").WorkDir("/") }, nil, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -79,7 +79,7 @@ func TestMainContract(t *testing.T) {
 		{"unknown phase", "other", `{"contractVersion":1,"phase":"other","opspecSchema":{"min":1,"max":1}}`, "unsupported bootstrap phase"},
 		{"phase mismatch", "plan", `{"contractVersion":1,"phase":"describe","opspecSchema":{"min":1,"max":1}}`, "phase"},
 		{"contract version", "plan", `{"contractVersion":2,"phase":"plan","opspecSchema":{"min":1,"max":1}}`, "contract version"},
-		{"schema version", "plan", `{"contractVersion":1,"phase":"plan","opspecSchema":{"min":2,"max":2}}`, "upgrade opctl"},
+		{"schema version", "plan", `{"contractVersion":1,"phase":"plan","opspecSchema":{"min":5,"max":6}}`, "upgrade the Go op SDK"},
 		{"invalid JSON", "plan", `{`, "request"},
 		{"inputs", "plan", `{"contractVersion":1,"phase":"plan","opspecSchema":{"min":1,"max":1},"inputs":{"A":"b"}}`, "unknown input"},
 		{"known outputs", "plan", `{"contractVersion":1,"phase":"plan","opspecSchema":{"min":1,"max":1},"knownOutputs":{"A":"b"}}`, "not supported yet"},
@@ -133,4 +133,8 @@ func TestContainerCallImplementsCall(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "image") {
 		t.Fatalf("missing image: %v", err)
 	}
+}
+
+func planAtSchema[I any](fn func(I) Call, inputs map[string]any, version int) ([]byte, error) {
+	return emitForRange("plan", withoutOutputs(fn), inputs, schemaRange{1, version})
 }

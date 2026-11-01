@@ -38,7 +38,14 @@ func Plan[I any](fn func(I) Call, inputs map[string]any) ([]byte, error) {
 // Describe returns the op interface without calling the plan function.
 func Describe[I any]() ([]byte, error) { return emit[I, struct{}]("describe", nil, nil) }
 
-func emit[I, O any](phase string, fn func(I) (Call, O), values map[string]any) (data []byte, err error) {
+func emit[I, O any](phase string, fn func(I) (Call, O), values map[string]any) ([]byte, error) {
+	return emitForRange(phase, fn, values, schemaRange{minSchemaVersion, schemaVersion})
+}
+
+func emitForRange[I, O any](phase string, fn func(I) (Call, O), values map[string]any, schema schemaRange) (data []byte, err error) {
+	if _, err := commonSchema(schema); err != nil {
+		return nil, err
+	}
 	planMu.Lock()
 	defer planMu.Unlock()
 	defer func() {
@@ -113,7 +120,11 @@ func emit[I, O any](phase string, fn func(I) (Call, O), values map[string]any) (
 			bindings[field.name] = ref
 		}
 	}
-	data, err = json.Marshal(response{ContractVersion: 1, OpspecSchema: minimumSchema(spec.Run), Opspec: spec, OutputBindings: bindings})
+	version, err := selectSchema(schema, spec.Run)
+	if err != nil {
+		return nil, err
+	}
+	data, err = json.Marshal(response{ContractVersion: 1, OpspecSchema: version, Opspec: spec, OutputBindings: bindings})
 	if err != nil {
 		return nil, err
 	}
@@ -132,9 +143,4 @@ func withoutOutputs[I any](fn func(I) Call) func(I) (Call, struct{}) {
 		return nil
 	}
 	return func(in I) (Call, struct{}) { return fn(in), struct{}{} }
-}
-
-func minimumSchema(call *callSpec) int {
-	version, _ := schemaRequirement(call, "run")
-	return version
 }
