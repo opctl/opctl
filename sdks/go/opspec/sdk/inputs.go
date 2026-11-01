@@ -265,6 +265,9 @@ func param(kind string, typ reflect.Type, tag map[string]string) (paramSpec, err
 				err = fmt.Errorf("constraints must be a JSON object")
 			}
 			for k, v := range nested {
+				if _, ok := constraints[k]; ok {
+					return nil, fmt.Errorf("duplicate constraint %s", k)
+				}
 				constraints[k] = v
 			}
 		default:

@@ -30,6 +30,8 @@ String constraints include `enum`, `format`, `pattern`, `minLength`, and `maxLen
 
 Use `EnvFrom` to bind handles, `Dir` and `File` to mount inputs, and `Socket` to bind a socket. Secret input values cannot be read during plan. Directory, file, and socket handles have no `Value()` method. Bootstrap receives only non-secret scalar and structured values; filesystem inputs remain handles. Literal strings escape `$` so input text cannot introduce scope references.
 
+The `constraints` tag can add JSON schema keywords but cannot replace keywords derived from the Go input type.
+
 `Describe[Inputs]()` returns the interface without invoking the plan function. `Plan(fn, inputs)` builds the graph in process with already resolved public input values. No-input ops use `func(struct{}) opctl.Call`. Use `Serial(calls...)` to run calls in order and `Parallel(calls...)` to run them concurrently. Helpers are plain Go functions returning calls. Go loops can build a slice of calls to pass to either group. Empty groups are dropped from their parent; an empty root graph is an error.
 
 Run a Go op with the same arguments as a YAML op:

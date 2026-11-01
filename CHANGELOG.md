@@ -15,6 +15,8 @@ accordance with
 
 ### Fixed
 
+- Go input constraints reject attempts to replace schemas derived from array item and object property types.
+
 - Go bootstrap mounts the module root and local replacements separately and rejects destinations that hide required image directories.
 
 - Go bootstrap failures return compiler and declaration diagnostics to describe clients, including `opctl op validate`.

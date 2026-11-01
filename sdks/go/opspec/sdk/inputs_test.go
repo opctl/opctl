@@ -181,8 +181,8 @@ func TestConstraintTags(t *testing.T) {
 		"string":  `x,description='A,b',default=ok,enum=ok|yes,format=email,pattern='.{1,3}',minLength=1,maxLength=3`,
 		"number":  `x,default=2,enum=1|2,format=integer,minimum=1,maximum=3,multipleOf=1`,
 		"boolean": `x,default=false`,
-		"array":   `x,default='[1,2]',minItems=1,maxItems=3,uniqueItems=true,constraints='{"items":{"type":"number"}}'`,
-		"object":  `x,default='{"a":1}',minProperties=1,maxProperties=3,required=a,constraints='{"properties":{"a":{"type":"number"}},"additionalProperties":false}'`,
+		"array":   `x,default='[1,2]',minItems=1,maxItems=3,uniqueItems=true,constraints='{"additionalItems":false}'`,
+		"object":  `x,default='{"a":1}',minProperties=1,maxProperties=3,required=a,constraints='{"properties":{"a":{"type":"number"}}}'`,
 		"dir":     `x,default=$(./src),secret`, "file": `x,default=$(./config),secret`, "socket": `x,secret`,
 	} {
 		tags, err := parseTag(tag)
@@ -204,3 +204,27 @@ func TestConstraintTags(t *testing.T) {
 }
 
 type wrappedString struct{ String }
+
+func TestConstraintsCannotReplaceDerivedSchema(t *testing.T) {
+	for _, tc := range []struct {
+		key      string
+		describe func() ([]byte, error)
+	}{
+		{"items", Describe[struct {
+			X Array[string] `opctl:"x,constraints='{\"items\":{\"type\":\"number\"}}'"`
+		}]},
+		{"properties", Describe[struct {
+			X Object[testOptions] `opctl:"x,constraints='{\"properties\":{}}'"`
+		}]},
+		{"additionalProperties", Describe[struct {
+			X Object[map[string]int] `opctl:"x,constraints='{\"additionalProperties\":false}'"`
+		}]},
+	} {
+		t.Run(tc.key, func(t *testing.T) {
+			_, err := tc.describe()
+			if err == nil || !strings.Contains(err.Error(), "duplicate constraint "+tc.key) {
+				t.Fatalf("expected duplicate constraint %s, got %v", tc.key, err)
+			}
+		})
+	}
+}
