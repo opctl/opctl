@@ -32,6 +32,10 @@ accordance with
 - The `run-a-go-service` example's `dev` op is a Go op that calls the YAML `mysql` op. Its `MYSQL_HOST` default is now the `mysql` op's container name,
   `run-a-go-service-mysql`, so the service can reach the database.
 
+### Fixed
+
+- YAML ops keep their existing event outputs and error messages for defaulted secret inputs and outputs. Go ops and container result calls still redact secrets.
+
 ## [0.1.76] - 2026-06-18
 
 ### Added

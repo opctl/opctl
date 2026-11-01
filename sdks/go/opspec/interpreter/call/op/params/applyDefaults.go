@@ -1,8 +1,6 @@
 package params
 
 import (
-	"fmt"
-	"github.com/opctl/opctl/sdks/go/opspec/interpreter/sensitivity"
 	"path/filepath"
 	"strings"
 
@@ -58,9 +56,6 @@ func ApplyDefaults(
 					paramValue.Array.Default,
 				)
 				if err != nil {
-					if sensitivity.Secret(paramValue) {
-						return nil, fmt.Errorf("sensitive parameter %q failed default interpretation", paramName)
-					}
 					return nil, err
 				}
 
@@ -71,9 +66,6 @@ func ApplyDefaults(
 					paramValue.Boolean.Default,
 				)
 				if err != nil {
-					if sensitivity.Secret(paramValue) {
-						return nil, fmt.Errorf("sensitive parameter %q failed default interpretation", paramName)
-					}
 					return nil, err
 				}
 
@@ -93,9 +85,6 @@ func ApplyDefaults(
 					false,
 				)
 				if err != nil {
-					if sensitivity.Secret(paramValue) {
-						return nil, fmt.Errorf("sensitive parameter %q failed default interpretation", paramName)
-					}
 					return nil, err
 				}
 
@@ -115,9 +104,6 @@ func ApplyDefaults(
 					false,
 				)
 				if err != nil {
-					if sensitivity.Secret(paramValue) {
-						return nil, fmt.Errorf("sensitive parameter %q failed default interpretation", paramName)
-					}
 					return nil, err
 				}
 
@@ -128,9 +114,6 @@ func ApplyDefaults(
 					paramValue.Number.Default,
 				)
 				if err != nil {
-					if sensitivity.Secret(paramValue) {
-						return nil, fmt.Errorf("sensitive parameter %q failed default interpretation", paramName)
-					}
 					return nil, err
 				}
 
@@ -141,9 +124,6 @@ func ApplyDefaults(
 					paramValue.Object.Default,
 				)
 				if err != nil {
-					if sensitivity.Secret(paramValue) {
-						return nil, fmt.Errorf("sensitive parameter %q failed default interpretation", paramName)
-					}
 					return nil, err
 				}
 
@@ -154,9 +134,6 @@ func ApplyDefaults(
 					paramValue.String.Default,
 				)
 				if err != nil {
-					if sensitivity.Secret(paramValue) {
-						return nil, fmt.Errorf("sensitive parameter %q failed default interpretation", paramName)
-					}
 					return nil, err
 				}
 
@@ -165,10 +142,5 @@ func ApplyDefaults(
 		}
 	}
 
-	for name, value := range argsWithDefaults {
-		if _, supplied := args[name]; !supplied {
-			argsWithDefaults[name] = sensitivity.Mark(value, sensitivity.Secret(params[name]))
-		}
-	}
 	return argsWithDefaults, nil
 }

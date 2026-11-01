@@ -14,6 +14,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/goop"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/sensitivity"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
@@ -235,6 +236,20 @@ func (oc _opCaller) Call(
 			protected[name] = sensitivity.Mark(value, secretParam(opFile.Outputs[name]))
 		}
 		opOutputs = protected
+	}
+	if isGoOp || privateResultsActive(ctx) {
+		for name, param := range opFile.Outputs {
+			if !secretParam(param) {
+				continue
+			}
+			opOutputs, err = params.ApplyDefaults(opOutputs, map[string]*model.ParamSpec{name: param}, opCall.OpPath, filepath.Join(oc.dataDirPath, "call", opCall.OpID))
+			if err != nil {
+				return outboundScope, fmt.Errorf("sensitive parameter %q failed default interpretation", name)
+			}
+			if value, ok := opOutputs[name]; ok {
+				opOutputs[name] = sensitivity.Mark(value, true)
+			}
+		}
 	}
 	opOutputs, err = outputs.Interpret(
 		opOutputs,

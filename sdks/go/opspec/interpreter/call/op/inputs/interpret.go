@@ -67,7 +67,17 @@ func Interpret(
 -`, messageBuffer.String())
 	}
 
-	// 2) apply defaults
+	// 2) apply protected defaults before the legacy path so their errors stay private.
+	for name, param := range inputParams {
+		if !protected[name] {
+			continue
+		}
+		var err error
+		interpretedArgs, err = params.ApplyDefaults(interpretedArgs, map[string]*model.ParamSpec{name: param}, opPath, opScratchDir)
+		if err != nil {
+			return nil, fmt.Errorf("unable to interpret input defaults: sensitive parameter %q failed default interpretation", name)
+		}
+	}
 	argsWithDefaults, err := params.ApplyDefaults(interpretedArgs, inputParams, opPath, opScratchDir)
 	if err != nil {
 		return nil, fmt.Errorf("unable to interpret input defaults: %w", err)
