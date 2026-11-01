@@ -8,6 +8,8 @@ accordance with
 
 ### Fixed
 
+- Public op-output errors retain their original diagnostic when another output is secret. Sensitive validation errors remain sanitized per parameter.
+
 - Secret values stay out of call events when YAML containers use implicit env, dir, or file bindings, or bare socket bindings.
 
 - Go bootstrap fails clearly on Docker API versions below 1.44, which cannot enforce recursive read-only source mounts.

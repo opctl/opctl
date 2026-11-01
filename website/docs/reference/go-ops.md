@@ -257,3 +257,5 @@ The compiled-program key includes the launcher bytes, build command, and build e
 Go bootstrap requires a negotiated Docker API version of at least 1.44 to enforce recursive read-only source mounts. Older daemons fail before a bootstrap container starts.
 
 Secret handles remain private when passed to YAML containers through shorthand bindings such as `envVars: {renamed: }`, implicit dir/file bindings, and bare socket references.
+
+Output validation reports the failing parameter. A separate secret output does not hide errors in public outputs or misspelled output bindings.

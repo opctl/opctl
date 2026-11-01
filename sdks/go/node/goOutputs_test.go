@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -67,6 +68,52 @@ var _ = Describe("Go output collection", func() {
 			}
 		}
 	})
+	It("sanitizes only the failing secret default", func() {
+		for _, constraint := range []bool{false, true} {
+			bootstrap := newGoBootstrap()
+			param := &model.ParamSpec{Number: &model.NumberParamSpec{IsSecret: true, Default: "private-invalid-default"}}
+			if constraint {
+				param = &model.ParamSpec{String: &model.StringParamSpec{IsSecret: true, Default: "private-invalid-default", Constraints: model.Constraints{"enum": []interface{}{"allowed"}}}}
+			}
+			bootstrap.DescribeReturns(&model.OpSpec{Outputs: map[string]*model.ParamSpec{"private": param}}, nil)
+			bootstrap.PlanReturns(&goop.Plan{OpSpec: &model.OpSpec{Run: &model.CallSpec{Container: &model.ContainerCallSpec{}}}}, nil)
+			_, err := (_opCaller{caller: new(fakes.FakeCaller), bootstrapper: bootstrap, dataDirPath: dir}).Call(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: dir}, OpID: "root"}, nil, "root", &model.OpCallSpec{}, nil)
+			Expect(err).To(HaveOccurred())
+			Expect(strings.Contains(err.Error(), "private-invalid-default")).To(BeFalse())
+			Expect(err.Error()).To(ContainSubstring("private"))
+		}
+	})
+
+	It("preserves public output errors when another output is secret", func() {
+		for _, unknown := range []bool{false, true} {
+			bootstrap := newGoBootstrap()
+			child := new(fakes.FakeCaller)
+			bootstrap.DescribeReturns(&model.OpSpec{Outputs: map[string]*model.ParamSpec{
+				"private": {String: &model.StringParamSpec{IsSecret: true}},
+				"count":   {Number: &model.NumberParamSpec{}},
+			}}, nil)
+			bootstrap.PlanReturns(&goop.Plan{OpSpec: &model.OpSpec{Run: &model.CallSpec{Container: &model.ContainerCallSpec{}}}, OutputBindings: map[string]string{"private": "$(secret)", "count": "$(count)"}}, nil)
+			secret, bad := "private-output", "not-a-number"
+			number := 3.0
+			count := &model.Value{String: &bad}
+			requested := map[string]string{"count": "$(count)"}
+			if unknown {
+				count = &model.Value{Number: &number}
+				requested["typo"] = "$(typo)"
+			}
+			child.CallReturns(map[string]*model.Value{"secret": {String: &secret}, "count": count}, nil)
+			parent := "parent"
+			_, err := (_opCaller{caller: child, bootstrapper: bootstrap, dataDirPath: dir}).Call(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: dir}, OpID: "op"}, &parent, "root", &model.OpCallSpec{Outputs: requested}, nil)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).NotTo(ContainSubstring("sensitive output"))
+			if unknown {
+				Expect(err.Error()).To(ContainSubstring("unknown output 'typo'"))
+			} else {
+				Expect(err.Error()).To(ContainSubstring("count"))
+			}
+		}
+	})
+
 	It("exports only requested nested outputs and rejects sensitive values bound to public Go inputs", func() {
 		bootstrap := newGoBootstrap()
 		child := new(fakes.FakeCaller)

@@ -243,14 +243,6 @@ func (oc _opCaller) Call(
 
 	// filter op outboundScope to bound call outboundScope
 	if err != nil {
-		if privateResultsActive(ctx) {
-			for name, param := range opFile.Outputs {
-				value := opOutputs[name]
-				if secretParam(param) || (value != nil && value.Sensitive) {
-					return outboundScope, fmt.Errorf("sensitive output %q failed validation", name)
-				}
-			}
-		}
 		return outboundScope, err
 	}
 	for boundName, boundValue := range effectiveOutputs {
