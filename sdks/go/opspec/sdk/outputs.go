@@ -58,7 +58,7 @@ func outputCreationSite() string {
 		internal := false
 		if filepath.Dir(frame.File) == filepath.Dir(source) {
 			switch filepath.Base(frame.File) {
-			case "outputs.go", "container.go", "op.go", "container_outputs.go":
+			case "outputs.go", "container.go", "op.go", "container_outputs.go", "typed_outputs.go":
 				internal = true
 			}
 		}

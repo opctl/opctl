@@ -263,3 +263,34 @@ Output validation reports the failing parameter. A separate secret output does n
 Existing YAML ops retain their completion-output and input-diagnostic behavior. Go outputs and opted-in container results publish new values only after successful validation.
 
 A failed public Go output binding reports its underlying reference error. Sensitive bindings report the output name without reference details.
+
+## Typed container outputs
+
+Use `Outputs[T](container)` to declare required outputs-file members and return their handles. Keep the returned container in the graph:
+
+```go
+type BuildResults struct {
+    Count opctl.Number `opctl:"count,minimum=1,format=integer"`
+    Ready opctl.Boolean `opctl:"ready"`
+    Tags opctl.Array[string] `opctl:"tags,minItems=1"`
+    Metadata opctl.Object[struct {
+        Revision string `json:"revision"`
+    }] `opctl:"metadata,required=revision"`
+}
+
+producer, out := opctl.Outputs[BuildResults](
+    opctl.Container("alpine:3").Cmd("sh", "-ce",
+        `printf '%s' '{"count":3,"ready":true,"tags":["linux"],"metadata":{"revision":"abc123"}}' > "$OPCTL_OUTPUTS"`),
+)
+consumer := opctl.Container("alpine:3").EnvFrom("COUNT", out.Count).
+    Cmd("sh", "-ce", `test "$COUNT" = 3`)
+return opctl.Serial(producer, consumer)
+```
+
+T must be a nonempty struct of exported concrete String, Number, Boolean, Array, or Object handle values. Tags use the same names, descriptions, constraints, and supported `secret` flag as input tags. Pointer fields, embedded wrappers, raw Go values, defaults, duplicate or reserved names, and Dir/File/Socket handles are rejected. Use existing mount/socket bindings for filesystem kinds.
+
+The node validates exact JSON kinds and constraints before publishing any member. A missing key or Number represented by a JSON string fails the producer, so later consumers do not run. Array and Object declarations derive nested schemas from their Go type and `json` field names. `secret` protects runtime values through renamed bindings and public events; applications must still avoid printing them.
+
+Repeated access to the same member and handle type reuses its handle. You can add a declaration after `ContainerOutput[T]`; identical repeated declarations are allowed, conflicting declarations fail. Builders remain independent copies. The returned handles follow the same serial/parallel visibility rules as other call results, and `Value()` cannot read them during plan.
+
+Describe reflects public output declarations supplied to `MainWithOutputs`, without running the plan function. Internal `Outputs[T]` declarations are checked during plan. Typed container graphs require opspec schema 4 and fail clearly when the node's maximum is older. Captured stdout/stderr remain independent String handles.

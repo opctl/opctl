@@ -21,18 +21,19 @@ type ContainerCall struct {
 type bindingKey struct{ kind, name string }
 
 type containerSpec struct {
-	Outputs     map[string]string `json:"outputs,omitempty"`
-	outputTypes map[string]reflect.Type
-	Stdout      string `json:"stdout,omitempty"`
-	Stderr      string `json:"stderr,omitempty"`
-	rawBindings map[bindingKey]bool
-	Image       imageSpec         `json:"image"`
-	Cmd         []string          `json:"cmd,omitempty"`
-	EnvVars     map[string]string `json:"envVars,omitempty"`
-	WorkDir     string            `json:"workDir,omitempty"`
-	Dirs        map[string]string `json:"dirs,omitempty"`
-	Files       map[string]string `json:"files,omitempty"`
-	Sockets     map[string]string `json:"sockets,omitempty"`
+	OutputParams map[string]paramSpec `json:"outputParams,omitempty"`
+	Outputs      map[string]string    `json:"outputs,omitempty"`
+	outputTypes  map[string]reflect.Type
+	Stdout       string `json:"stdout,omitempty"`
+	Stderr       string `json:"stderr,omitempty"`
+	rawBindings  map[bindingKey]bool
+	Image        imageSpec         `json:"image"`
+	Cmd          []string          `json:"cmd,omitempty"`
+	EnvVars      map[string]string `json:"envVars,omitempty"`
+	WorkDir      string            `json:"workDir,omitempty"`
+	Dirs         map[string]string `json:"dirs,omitempty"`
+	Files        map[string]string `json:"files,omitempty"`
+	Sockets      map[string]string `json:"sockets,omitempty"`
 }
 type imageSpec struct {
 	Ref string `json:"ref"`

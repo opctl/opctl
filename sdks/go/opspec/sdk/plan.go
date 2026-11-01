@@ -145,6 +145,9 @@ func minimumSchema(call *callSpec) int {
 	if call.Container != nil && len(call.Container.Outputs) > 0 {
 		version = 3
 	}
+	if call.Container != nil && len(call.Container.OutputParams) > 0 {
+		version = 4
+	}
 	for _, group := range [][]*callSpec{call.Serial, call.Parallel} {
 		for _, child := range group {
 			if needed := minimumSchema(child); needed > version {

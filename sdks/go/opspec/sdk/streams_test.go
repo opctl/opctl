@@ -117,6 +117,9 @@ func TestStreamMainHelper(t *testing.T) {
 	}
 	os.Args = []string{"hello", os.Getenv("OPCTL_STREAM_PHASE")}
 	Main(func(struct{}) Call {
+		if os.Getenv("OPCTL_TYPED_HELPER") == "1" {
+			return typedFixtureGraph()
+		}
 		if os.Getenv("OPCTL_NAMED_HELPER") == "1" {
 			return namedGraph()
 		}

@@ -76,6 +76,9 @@ func runWithOutputs[I, O any](fn func(I) (Call, O)) error {
 		return err
 	}
 	if needed := envelope.OpspecSchema; needed < req.OpspecSchema.Min || needed > req.OpspecSchema.Max {
+		if needed == 4 && req.OpspecSchema.Max < 4 {
+			return fmt.Errorf("this op uses typed container outputs (opspec >= 4); upgrade opctl to a version supporting opspec 4")
+		}
 		return fmt.Errorf("Go op requires opspec schema %d for its call features; upgrade opctl to a version supporting it", needed)
 	}
 	_, err = os.Stdout.Write(response)

@@ -52,6 +52,8 @@ accordance with
 
 ### Added
 
+- Go ops can declare container outputs with `Outputs[T]`, using tagged handle structs for required JSON members, constraints, and secrets.
+
 - YAML containers can declare required `outputParams` for exact JSON types and constraints. Declared secrets stay private through renamed bindings; typed output graphs
   require opspec schema 4.
 
