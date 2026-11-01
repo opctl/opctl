@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/opctl/opctl/sdks/go/internal/runcontext"
 	"github.com/opctl/opctl/sdks/go/internal/unsudo"
@@ -107,6 +108,16 @@ func Interpret(
 		return nil, err
 	}
 
+	// interpret sockets
+	containerCall.Sockets, err = sockets.Interpret(
+		scope,
+		containerCallSpec.Sockets,
+		scratchDirPath,
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	// interpret caches
 	cacheDirs, err := caches.Interpret(
 		scope,
@@ -118,16 +129,22 @@ func Interpret(
 	if err != nil {
 		return nil, err
 	}
-	declaredDirs := map[string]struct{}{}
+	declaredMounts := map[string]struct{}{}
 	for containerPath := range containerCall.Dirs {
-		declaredDirs[path.Clean(containerPath)] = struct{}{}
+		declaredMounts[path.Clean(containerPath)] = struct{}{}
 	}
 	for containerPath := range containerCall.Files {
-		declaredDirs[path.Clean(containerPath)] = struct{}{}
+		declaredMounts[path.Clean(containerPath)] = struct{}{}
+	}
+	for containerPath, hostAddress := range containerCall.Sockets {
+		// Match the unix socket bind mounts in docker.constructHostConfig.
+		if strings.ContainsAny(hostAddress, `/\`) {
+			declaredMounts[path.Clean(containerPath)] = struct{}{}
+		}
 	}
 	for containerPath, hostPath := range cacheDirs {
-		if _, exists := declaredDirs[containerPath]; exists {
-			return nil, fmt.Errorf("unable to bind cache dir %q: container path is also declared in dirs or files", containerPath)
+		if _, exists := declaredMounts[containerPath]; exists {
+			return nil, fmt.Errorf("unable to bind cache dir %q: container path is also declared in dirs, files or sockets", containerPath)
 		}
 		containerCall.Dirs[containerPath] = hostPath
 	}
@@ -157,13 +174,6 @@ func Interpret(
 		containerCall.WorkDir = *containerCallWorkDir.String
 	}
 
-	// interpret sockets
-	containerCall.Sockets, err = sockets.Interpret(
-		scope,
-		containerCallSpec.Sockets,
-		scratchDirPath,
-	)
-
-	return containerCall, err
+	return containerCall, nil
 
 }

@@ -229,7 +229,7 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(err).To(MatchError(`unable to bind cache dir "/cache": container path is also declared in dirs or files`))
+			Expect(err).To(MatchError(`unable to bind cache dir "/cache": container path is also declared in dirs, files or sockets`))
 			Expect(actualCall).To(BeNil())
 		})
 
@@ -253,7 +253,50 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(err).To(MatchError(`unable to bind cache dir "/cache": container path is also declared in dirs or files`))
+			Expect(err).To(MatchError(`unable to bind cache dir "/cache": container path is also declared in dirs, files or sockets`))
+			Expect(actualCall).To(BeNil())
+		})
+
+		for _, hostAddress := range []string{"/host/socket", `C:\host\socket`, "127.0.0.1:1234"} {
+			It(fmt.Sprintf("should check socket/cache clashes for host address %s", hostAddress), func() {
+				actualCall, err := Interpret(
+					context.Background(),
+					map[string]*model.Value{"socket": {Socket: &hostAddress}},
+					&model.ContainerCallSpec{
+						Image:   &model.ContainerCallImageSpec{Ref: "ref"},
+						Sockets: map[string]string{"/cache/nested/..": "$(socket)"},
+						Caches:  map[string]interface{}{"/cache/": "gomod"},
+					},
+					"containerID",
+					"opPath",
+					GinkgoT().TempDir(),
+				)
+
+				if hostAddress == "127.0.0.1:1234" {
+					Expect(err).To(BeNil())
+					Expect(actualCall.Sockets).To(HaveKeyWithValue("/cache/nested/..", hostAddress))
+				} else {
+					Expect(err).To(MatchError(`unable to bind cache dir "/cache": container path is also declared in dirs, files or sockets`))
+					Expect(actualCall).To(BeNil())
+				}
+			})
+		}
+
+		It("should reject a cache path used by an output Unix socket", func() {
+			actualCall, err := Interpret(
+				context.Background(),
+				nil,
+				&model.ContainerCallSpec{
+					Image:   &model.ContainerCallImageSpec{Ref: "ref"},
+					Sockets: map[string]string{"/cache": "output"},
+					Caches:  map[string]interface{}{"/cache/": "gomod"},
+				},
+				"containerID",
+				"opPath",
+				GinkgoT().TempDir(),
+			)
+
+			Expect(err).To(MatchError(`unable to bind cache dir "/cache": container path is also declared in dirs, files or sockets`))
 			Expect(actualCall).To(BeNil())
 		})
 
