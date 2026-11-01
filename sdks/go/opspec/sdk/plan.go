@@ -34,6 +34,8 @@ func Plan[I any](fn func(I) Call, inputs map[string]any) ([]byte, error) {
 func Describe[I any]() ([]byte, error) { return emit[I]("describe", nil, nil) }
 
 func emit[I any](phase string, fn func(I) Call, values map[string]any) (data []byte, err error) {
+	planMu.Lock()
+	defer planMu.Unlock()
 	defer func() {
 		if failure := recover(); failure != nil {
 			if input, ok := failure.(inputError); ok {
@@ -64,6 +66,8 @@ func emit[I any](phase string, fn func(I) Call, values map[string]any) (data []b
 		if err != nil {
 			return nil, err
 		}
+		activePlan = &outputPlan{handles: map[string]outputSite{}}
+		defer func() { activePlan = nil }()
 		call := fn(in)
 		if call == nil {
 			return nil, errors.New("Go op plan must return a call")
@@ -74,6 +78,9 @@ func emit[I any](phase string, fn func(I) Call, values map[string]any) (data []b
 		}
 		if spec.Run == nil {
 			return nil, errors.New("op graph has no calls")
+		}
+		if err := activePlan.validate(spec.Run); err != nil {
+			return nil, err
 		}
 	}
 	data, err = json.Marshal(response{ContractVersion: 1, OpspecSchema: 1, Opspec: spec})

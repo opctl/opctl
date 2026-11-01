@@ -24,7 +24,7 @@ func main() {
 
 `String`, `Number`, and `Boolean` handles expose their resolved input through `Value()`. `Array[T].Value()` returns `[]T`; `Object[T].Value()` returns the struct or string-keyed map `T`. The SDK derives item and property schemas from Go types and uses `json` tags for property names. `[]any` and `map[string]any` allow untyped values. Recursive types, pointers, and embedded struct fields are rejected.
 
-Every input field must be exported, use a handle type, and have a unique `opctl` tag name containing letters, numbers, `-`, or `_`. Tags accept `description`, `default`, and `secret`. Boolean inputs cannot be secret; sockets cannot have defaults. Single-quoted tag values can contain commas and escape single quotes or backslashes.
+Every input field must be exported, use a handle type, and have a unique `opctl` tag name containing letters, numbers, `-`, or `_`. The `opctl_` prefix is reserved for generated handles. Tags accept `description`, `default`, and `secret`. Boolean inputs cannot be secret; sockets cannot have defaults. Single-quoted tag values can contain commas and escape single quotes or backslashes.
 
 String constraints include `enum`, `format`, `pattern`, `minLength`, and `maxLength`. Number constraints include `enum`, `format=integer`, `minimum`, `maximum`, and `multipleOf`. Arrays accept `minItems`, `maxItems`, and `uniqueItems`. Objects accept `minProperties`, `maxProperties`, and `required=a|b`. Use `constraints='<JSON object>'` for nested JSON Schema constraints. Duplicate keys and unknown tag keys are errors.
 
@@ -55,3 +55,16 @@ func checks() opctl.Call {
     return opctl.Serial(opctl.Parallel(calls...), opctl.Container("alpine:3").Cmd("echo", "done"))
 }
 ```
+
+`NewDir()` and `NewFile()` create output handles inside the function passed to `Main` or `Plan`. The first container to mount a handle produces it; later serial calls mount the same directory or file. Parallel children start with the same incoming scope, and their outputs become visible after the group. Plan rejects a handle produced by parallel siblings, or read by `EnvFrom` before an earlier call mounts it.
+
+```go
+out := opctl.NewDir()
+build := opctl.Container("alpine:3").Cmd("sh", "-ce", "echo hello > /out/result.txt").Dir("/out", out)
+check := opctl.Container("alpine:3").Cmd("cat", "/in/result.txt").Dir("/in", out)
+return opctl.Serial(build, check)
+```
+
+Mounts are shared and mutable. Parallel consumers may mount an already visible handle, but their writes need coordination. Prefer directory outputs over file outputs: tools that replace a file by renaming a temporary file cannot replace a bind-mounted file. Writing a mounted file in place, for example with shell `>`, works.
+
+Build the graph deterministically in one goroutine, and sort map keys before iterating over them. Generated names are stable for repeated plans with the same handle creation order. Create handles inside the plan function, including inside helpers and Go loops.

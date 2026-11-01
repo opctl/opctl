@@ -10,8 +10,8 @@ accordance with
 
 - Go ops can declare typed inputs with defaults and constraints, branch on public input values, and bind input handles to container environment variables, directories,
   files, and sockets. `opctl run` prompts for Go op inputs and rejects invalid explicit values without substituting defaults; `opctl op validate` and `opctl ls` describe Go
-  op interfaces. The webapp opens `op.go` and shows its described name and description. Go ops can compose calls in serial and parallel. Go op outputs are not supported
-  yet.
+  op interfaces. The webapp opens `op.go` and shows its described name and description. Go ops can compose calls in serial and parallel and pass output directories and
+  files between calls. Go op outputs are not supported yet.
 
 ### Fixed
 

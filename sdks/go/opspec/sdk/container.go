@@ -49,17 +49,19 @@ func (c ContainerCall) Env(name, value string) ContainerCall {
 	return c.binding(name, escapeLiteral(value), "env")
 }
 
-// EnvFrom binds an input to an environment variable.
+// EnvFrom binds a handle to an environment variable.
 func (c ContainerCall) EnvFrom(name string, value Handle) ContainerCall {
 	return c.bindHandle(name, value, "env")
 }
 
-// Dir mounts a directory input at a container path.
+// Dir mounts a directory handle at a container path. The first mount of a
+// NewDir handle produces it; later calls share the same mutable directory.
 func (c ContainerCall) Dir(path string, value Dir) ContainerCall {
 	return c.bindHandle(path, value, "dir")
 }
 
-// File mounts a file input at a container path.
+// File mounts a file handle at a container path. Prefer NewDir outputs for
+// tools that replace their output files by rename.
 func (c ContainerCall) File(path string, value File) ContainerCall {
 	return c.bindHandle(path, value, "file")
 }

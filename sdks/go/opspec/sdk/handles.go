@@ -6,7 +6,7 @@ import (
 	"reflect"
 )
 
-// Handle is a typed input binding in an op graph.
+// Handle is a typed input or output binding in an op graph.
 type Handle interface{ handle() string }
 type inputHandle interface {
 	Handle
@@ -17,10 +17,14 @@ type inputValue struct {
 	name   string
 	value  json.RawMessage
 	secret bool
+	err    error
 }
 type inputError struct{ error }
 
 func (v inputValue) handle() string {
+	if v.err != nil {
+		panic(inputError{v.err})
+	}
 	if v.name == "" {
 		panic(inputError{fmt.Errorf("handle is not bound to an input")})
 	}
@@ -77,13 +81,13 @@ func (Object[T]) inputType() (string, reflect.Type) {
 func (Object[T]) bind(v inputValue) Handle { return Object[T]{v} }
 func (v Object[T]) Value() T               { return readValue[T](v.inputValue) }
 
-// Dir is a directory input handle. Its contents cannot be read during plan.
+// Dir is a directory handle. Its contents cannot be read during plan.
 type Dir struct{ inputValue }
 
 func (Dir) inputType() (string, reflect.Type) { return "dir", nil }
 func (Dir) bind(v inputValue) Handle          { return Dir{v} }
 
-// File is a file input handle. Its contents cannot be read during plan.
+// File is a file handle. Its contents cannot be read during plan.
 type File struct{ inputValue }
 
 func (File) inputType() (string, reflect.Type) { return "file", nil }

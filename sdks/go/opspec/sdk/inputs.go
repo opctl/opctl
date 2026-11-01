@@ -38,6 +38,9 @@ func inputSpecs[I any]() (map[string]paramSpec, []inputField, error) {
 			return nil, nil, fmt.Errorf("input field %s: %w", field.Name, err)
 		}
 		name := tag["name"]
+		if strings.HasPrefix(name, "opctl_") {
+			return nil, nil, fmt.Errorf("input %q: prefix opctl_ is reserved for generated handles", name)
+		}
 		delete(tag, "name")
 		if _, ok := specs[name]; ok {
 			return nil, nil, fmt.Errorf("duplicate input %q", name)
