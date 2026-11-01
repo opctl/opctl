@@ -20,6 +20,9 @@ type Rendered struct {
 	Stubs  map[string][]byte
 }
 type renderer struct {
+	stubCalls               map[string]*convertedStub
+	fallbacks               map[string]string
+	handleTypes             map[*binding]string
 	a                       *Analysis
 	options                 RenderOptions
 	names                   map[string]bool
@@ -39,6 +42,9 @@ func Render(a *Analysis, options RenderOptions) (*Rendered, error) {
 	r := &renderer{a: a, options: options, names: map[string]bool{}, expr: map[*binding]string{}, used: map[*binding]bool{}, declared: map[*binding]bool{}, predecl: map[*binding]bool{}, imports: map[string]string{}, stubs: map[string][]byte{}}
 	for _, name := range []string{"opctl", "plan", "in", "main", "Inputs", "Outputs", "strconv", "maps", "slices"} {
 		r.names[name] = true
+	}
+	if err := r.prepareStubs(); err != nil {
+		return nil, err
 	}
 	fields := fieldNames(keys(a.Spec.Inputs), true)
 	for name, b := range a.inputs {
@@ -322,6 +328,12 @@ func (r *renderer) container(g *graph, out *strings.Builder) (string, error) {
 	return call, nil
 }
 func (r *renderer) op(g *graph, out *strings.Builder) (string, error) {
+	if stub := r.stubCalls[g.Path]; stub != nil {
+		return r.stubOp(g, out, stub)
+	}
+	if reason := r.fallbacks[g.Path]; reason != "" {
+		out.WriteString(comment("CallOp, not a stub: " + reason + "."))
+	}
 	c := g.Spec.Op
 	p := g.Path + ".op"
 	ref := r.a.refs[g.Path]

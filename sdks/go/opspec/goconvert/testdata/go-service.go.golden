@@ -1,0 +1,47 @@
+// runs go-svc for development
+package main
+
+import (
+	opctl "github.com/opctl/opctl/sdks/go/opspec/sdk"
+	"ops.local/test/opctlgen/mysql" //opctl:op ../mysql
+)
+
+type Inputs struct {
+	GoBuildCachePath opctl.String `opctl:"goBuildCachePath,description='Path relative to HOME dir, to use for go build cache e.g., on macOS, Library/Caches/go-build; on Linux, .cache/go-build',default=Library/Caches/go-build"`
+	Home             opctl.Dir    `opctl:"HOME,description=Home directory of caller; used to access go modules"`
+	MysqlUser        opctl.String `opctl:"MYSQL_USER,description=username for MySQL user to create,default=testuser"`
+	MysqlPassword    opctl.String `opctl:"MYSQL_PASSWORD,description=password for MySQL user to create,default=testpassword"`
+	MysqlDatabase    opctl.String `opctl:"MYSQL_DATABASE,description=Database to create,default=testapp"`
+	MysqlHost        opctl.String `opctl:"MYSQL_HOST,default=mysql"`
+}
+
+func plan(in Inputs) opctl.Call {
+	mysqlCall, _ := mysql.Call(mysql.Inputs{
+		// we pass the relevant inputs through to the mysql op
+		MYSQLUSER:     in.MysqlUser,
+		MYSQLPASSWORD: in.MysqlPassword,
+		MYSQLHOST:     in.MysqlHost,
+		MYSQLDATABASE: in.MysqlDatabase,
+	})
+	golang := opctl.Container("golang:1.25").
+		// mount the source code of our app to the container
+		Dir("/src", opctl.OpDir("../..")).
+		// mount the go pkg and build cache to speed up builds
+		Dir("/go/pkg", in.Home.Dir("go/pkg")).
+		// TODO(opctl op convert): nested reference kept as RawRef to match op.yml exactly; use Dir.Dir or Dir.File when every subpath is relative and contains no .. elements.
+		Dir("/root/.cache/go-build", opctl.RawRef[opctl.Dir]("$(HOME/$(goBuildCachePath))")).
+		// let our code know how to connect to the DB
+		EnvFrom("MYSQL_USER", in.MysqlUser).
+		EnvFrom("MYSQL_PASSWORD", in.MysqlPassword).
+		EnvFrom("MYSQL_HOST", in.MysqlHost).
+		EnvFrom("MYSQL_DATABASE", in.MysqlDatabase).
+		// this sets an opctl DNS A record so the containers available via this name.
+		Name("run-a-go-service-api").
+		WorkDir("/src").
+		Cmd("go", "run", "main.go")
+	return opctl.Parallel(mysqlCall,
+		golang)
+
+}
+
+func main() { opctl.Main(plan) }

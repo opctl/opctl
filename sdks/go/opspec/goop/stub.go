@@ -216,30 +216,14 @@ func RenderStub(use StubUse, spec *model.OpSpec) ([]byte, error) {
 	if spec == nil {
 		return nil, fmt.Errorf("op stub %s: missing interface", use.Name)
 	}
-	r := stubRenderer{types: map[string]*stubType{}}
+	r, err := newStubRenderer(spec)
+	if err != nil {
+		return nil, fmt.Errorf("op stub %s: %w", use.Name, err)
+	}
 	groups := []struct {
 		name   string
 		params map[string]*model.ParamSpec
 	}{{"Inputs", spec.Inputs}, {"Outputs", spec.Outputs}}
-	for _, group := range groups {
-		for _, key := range sortedStubKeys(group.params) {
-			kind, fields := stubParam(group.params[key])
-			if kind == "" {
-				return nil, fmt.Errorf("op stub %s: parameter %q has no type", use.Name, key)
-			}
-			r.collect(paramSchema(kind, fields), group.name+stubName(key), stubPath(group.name, key))
-		}
-	}
-	counts := map[string]int{"Inputs": 1, "Outputs": 1, "Call": 1}
-	for _, node := range r.types {
-		counts[node.base]++
-	}
-	for _, node := range r.types {
-		node.name = node.base
-		if counts[node.base] > 1 {
-			node.name += "_" + stubHash(node.path)
-		}
-	}
 	ref := use.Ref
 	if use.Local {
 		ref = use.ModuleRef
@@ -341,3 +325,58 @@ func RenderStub(use StubUse, spec *model.OpSpec) ([]byte, error) {
 	}
 	return formatted, nil
 }
+
+func newStubRenderer(spec *model.OpSpec) (stubRenderer, error) {
+	r := stubRenderer{types: map[string]*stubType{}}
+	groups := []struct {
+		name   string
+		params map[string]*model.ParamSpec
+	}{{"Inputs", spec.Inputs}, {"Outputs", spec.Outputs}}
+	for _, group := range groups {
+		for _, key := range sortedStubKeys(group.params) {
+			kind, fields := stubParam(group.params[key])
+			if kind == "" {
+				return r, fmt.Errorf("parameter %q has no type", key)
+			}
+			r.collect(paramSchema(kind, fields), group.name+stubName(key), stubPath(group.name, key))
+		}
+	}
+	counts := map[string]int{"Inputs": 1, "Outputs": 1, "Call": 1}
+	for _, node := range r.types {
+		counts[node.base]++
+	}
+	for _, node := range r.types {
+		node.name = node.base
+		if counts[node.base] > 1 {
+			node.name += "_" + stubHash(node.path)
+		}
+	}
+	return r, nil
+}
+
+// StubHandleTypes returns exactly the handle types used by RenderStub.
+func StubHandleTypes(spec *model.OpSpec) (map[string]string, map[string]string, error) {
+	if spec == nil {
+		return nil, nil, fmt.Errorf("missing interface")
+	}
+	r, err := newStubRenderer(spec)
+	if err != nil {
+		return nil, nil, err
+	}
+	inputs, outputs := map[string]string{}, map[string]string{}
+	for name, param := range spec.Inputs {
+		inputs[name] = r.handleType(param, stubPath("Inputs", name))
+	}
+	for name, param := range spec.Outputs {
+		outputs[name] = r.handleType(param, stubPath("Outputs", name))
+	}
+	return inputs, outputs, nil
+}
+
+// StubFieldNames returns the field names used by RenderStub.
+func StubFieldNames(params map[string]*model.ParamSpec) map[string]string {
+	return stubNames(sortedStubKeys(params))
+}
+
+// ValidStubName reports whether a name can own a generated op stub package.
+func ValidStubName(name string) bool { return validStubName(name) }
