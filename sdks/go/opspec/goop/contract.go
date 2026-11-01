@@ -157,6 +157,18 @@ func ParsePlanForRange(data []byte, schema SchemaRange) (*Plan, error) {
 	return &Plan{OpSpec: spec, OutputBindings: response.OutputBindings}, nil
 }
 
+// PlanParams keeps only non-secret value parameters that bootstrap can read.
+func PlanParams(params map[string]*model.ParamSpec) map[string]*model.ParamSpec {
+	out := map[string]*model.ParamSpec{}
+	for name, param := range params {
+		if param == nil || param.Dir != nil || param.File != nil || param.Socket != nil || (param.String != nil && param.String.IsSecret) || (param.Number != nil && param.Number.IsSecret) || (param.Array != nil && param.Array.IsSecret) || (param.Object != nil && param.Object.IsSecret) {
+			continue
+		}
+		out[name] = param
+	}
+	return out
+}
+
 // PlanInputs keeps secrets and filesystem values out of bootstrap requests.
 func PlanInputs(params map[string]*model.ParamSpec, values map[string]*model.Value) (map[string]interface{}, error) {
 	inputs := map[string]interface{}{}

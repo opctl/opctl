@@ -2,6 +2,7 @@ package urltemplates
 
 /* resources */
 const (
+	Ops_Plans            = "/ops/plans"
 	Ops_Describes        = "/ops/describes"
 	Auths_Adds    string = "/auths/adds"
 	Data_Ref      string = "/data/{ref}"

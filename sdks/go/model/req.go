@@ -53,3 +53,15 @@ type StartOpReqOp struct {
 type DescribeOpReq struct {
 	Op StartOpReqOp `json:"op"`
 }
+
+// PlanOpReq requests an op graph without executing its calls.
+type PlanOpReq struct {
+	Args map[string]*Value `json:"args,omitempty"`
+	Op   StartOpReqOp      `json:"op"`
+}
+
+// OpPlan is an op interface and the graph planned for one set of inputs.
+type OpPlan struct {
+	*OpSpec
+	OutputBindings map[string]string `json:"outputBindings,omitempty"`
+}

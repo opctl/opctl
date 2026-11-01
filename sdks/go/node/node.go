@@ -15,6 +15,9 @@ type Node interface {
 	// DescribeOp returns an op declaration without running its op graph.
 	DescribeOp(ctx context.Context, req model.DescribeOpReq) (*model.OpSpec, error)
 
+	// PlanOp obtains an op graph without executing its calls.
+	PlanOp(ctx context.Context, req model.PlanOpReq) (*model.OpPlan, error)
+
 	// AddAuth records authentication within the core
 	AddAuth(
 		ctx context.Context,

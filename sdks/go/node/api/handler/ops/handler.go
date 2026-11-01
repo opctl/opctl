@@ -9,6 +9,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/ops/describes"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/ops/kills"
+	"github.com/opctl/opctl/sdks/go/node/api/handler/ops/plans"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/ops/starts"
 )
 
@@ -27,6 +28,7 @@ func NewHandler(
 	return _handler{
 		startsHandler:    starts.NewHandler(node),
 		describesHandler: describes.NewHandler(node),
+		plansHandler:     plans.NewHandler(node),
 		killsHandler:     kills.NewHandler(node),
 	}
 }
@@ -34,6 +36,7 @@ func NewHandler(
 type _handler struct {
 	startsHandler    starts.Handler
 	describesHandler describes.Handler
+	plansHandler     plans.Handler
 	killsHandler     kills.Handler
 }
 
@@ -48,6 +51,8 @@ func (hdlr _handler) Handle(
 	}
 
 	switch pathSegment {
+	case "plans":
+		hdlr.plansHandler.Handle(httpResp, httpReq)
 	case "describes":
 		hdlr.describesHandler.Handle(httpResp, httpReq)
 	case "kills":

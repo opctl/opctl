@@ -101,6 +101,20 @@ type FakeCore struct {
 	livenessReturnsOnCall map[int]struct {
 		result1 error
 	}
+	PlanOpStub        func(context.Context, model.PlanOpReq) (*model.OpPlan, error)
+	planOpMutex       sync.RWMutex
+	planOpArgsForCall []struct {
+		arg1 context.Context
+		arg2 model.PlanOpReq
+	}
+	planOpReturns struct {
+		result1 *model.OpPlan
+		result2 error
+	}
+	planOpReturnsOnCall map[int]struct {
+		result1 *model.OpPlan
+		result2 error
+	}
 	ResolveDataStub        func(context.Context, string, *model.Creds) (model.DataHandle, error)
 	resolveDataMutex       sync.RWMutex
 	resolveDataArgsForCall []struct {
@@ -579,6 +593,71 @@ func (fake *FakeCore) LivenessReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
+func (fake *FakeCore) PlanOp(arg1 context.Context, arg2 model.PlanOpReq) (*model.OpPlan, error) {
+	fake.planOpMutex.Lock()
+	ret, specificReturn := fake.planOpReturnsOnCall[len(fake.planOpArgsForCall)]
+	fake.planOpArgsForCall = append(fake.planOpArgsForCall, struct {
+		arg1 context.Context
+		arg2 model.PlanOpReq
+	}{arg1, arg2})
+	stub := fake.PlanOpStub
+	fakeReturns := fake.planOpReturns
+	fake.recordInvocation("PlanOp", []interface{}{arg1, arg2})
+	fake.planOpMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeCore) PlanOpCallCount() int {
+	fake.planOpMutex.RLock()
+	defer fake.planOpMutex.RUnlock()
+	return len(fake.planOpArgsForCall)
+}
+
+func (fake *FakeCore) PlanOpCalls(stub func(context.Context, model.PlanOpReq) (*model.OpPlan, error)) {
+	fake.planOpMutex.Lock()
+	defer fake.planOpMutex.Unlock()
+	fake.PlanOpStub = stub
+}
+
+func (fake *FakeCore) PlanOpArgsForCall(i int) (context.Context, model.PlanOpReq) {
+	fake.planOpMutex.RLock()
+	defer fake.planOpMutex.RUnlock()
+	argsForCall := fake.planOpArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeCore) PlanOpReturns(result1 *model.OpPlan, result2 error) {
+	fake.planOpMutex.Lock()
+	defer fake.planOpMutex.Unlock()
+	fake.PlanOpStub = nil
+	fake.planOpReturns = struct {
+		result1 *model.OpPlan
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeCore) PlanOpReturnsOnCall(i int, result1 *model.OpPlan, result2 error) {
+	fake.planOpMutex.Lock()
+	defer fake.planOpMutex.Unlock()
+	fake.PlanOpStub = nil
+	if fake.planOpReturnsOnCall == nil {
+		fake.planOpReturnsOnCall = make(map[int]struct {
+			result1 *model.OpPlan
+			result2 error
+		})
+	}
+	fake.planOpReturnsOnCall[i] = struct {
+		result1 *model.OpPlan
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeCore) ResolveData(arg1 context.Context, arg2 string, arg3 *model.Creds) (model.DataHandle, error) {
 	fake.resolveDataMutex.Lock()
 	ret, specificReturn := fake.resolveDataReturnsOnCall[len(fake.resolveDataArgsForCall)]
@@ -713,24 +792,6 @@ func (fake *FakeCore) StartOpReturnsOnCall(i int, result1 string, result2 error)
 func (fake *FakeCore) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.addAuthMutex.RLock()
-	defer fake.addAuthMutex.RUnlock()
-	fake.describeOpMutex.RLock()
-	defer fake.describeOpMutex.RUnlock()
-	fake.getDataMutex.RLock()
-	defer fake.getDataMutex.RUnlock()
-	fake.getEventStreamMutex.RLock()
-	defer fake.getEventStreamMutex.RUnlock()
-	fake.killOpMutex.RLock()
-	defer fake.killOpMutex.RUnlock()
-	fake.listDescendantsMutex.RLock()
-	defer fake.listDescendantsMutex.RUnlock()
-	fake.livenessMutex.RLock()
-	defer fake.livenessMutex.RUnlock()
-	fake.resolveDataMutex.RLock()
-	defer fake.resolveDataMutex.RUnlock()
-	fake.startOpMutex.RLock()
-	defer fake.startOpMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value
