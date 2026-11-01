@@ -1,0 +1,26 @@
+name: typed-generated-secret
+outputs:
+  token: {string: {}}
+  metadata: {object: {}}
+run:
+  serial:
+    - container:
+        image: {ref: alpine:3}
+        outputs: {token: $(token), metadata: $(metadata)}
+        outputParams:
+          token: {string: {isSecret: true}}
+          metadata:
+            object:
+              isSecret: true
+              constraints:
+                properties: {revision: {type: string, enum: [allowed]}}
+                required: [revision]
+        cmd:
+          - sh
+          - -ce
+          - |
+            token=`printf '%032d' 42`
+            printf '{"token":"%s","metadata":{"revision":"%s"}}' "$token" "$token" > "$OPCTL_OUTPUTS"
+    - container:
+        image: {ref: alpine:3}
+        cmd: [sh, -ce, 'exit 99']

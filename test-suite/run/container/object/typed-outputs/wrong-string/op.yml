@@ -1,0 +1,49 @@
+name: typed-outputs-wrong-string
+outputs:
+  version: {string: {}}
+  buildCount: {number: {}}
+  ready: {boolean: {}}
+  targets: {array: {}}
+  metadata: {object: {}}
+  stream: {string: {}}
+  diagnostic: {string: {}}
+  memberStdout: {number: {}}
+run:
+  serial:
+    - container:
+        image: {ref: alpine:3}
+        stdout: $(stream)
+        stderr: $(diagnostic)
+        outputs:
+          version: $(version)
+          count: $(buildCount)
+          ready: $(ready)
+          targets: $(targets)
+          metadata: $(metadata)
+          stdout: $(memberStdout)
+        outputParams:
+          version: {string: {}}
+          count: {number: {constraints: {minimum: 1, format: integer}}}
+          ready: {boolean: {}}
+          targets: {array: {constraints: {items: {type: string}, minItems: 1}}}
+          metadata: {object: {constraints: {properties: {revision: {type: string}}, required: [revision]}}}
+          stdout: {number: {}}
+        cmd:
+          - sh
+          - -ce
+          - |
+            printf 'v1.2.3\n'
+            printf 'diagnostic\n' >&2
+            printf '%s' '{"version":3,"count":3,"ready":true,"targets":["linux"],"metadata":{"revision":"abc123"},"stdout":7}' > "$OPCTL_OUTPUTS"
+    - container:
+        image: {ref: alpine:3}
+        envVars:
+          VERSION: $(version)
+          COUNT: $(buildCount)
+          READY: $(ready)
+          TARGETS: $(targets)
+          METADATA: $(metadata)
+          STREAM: $(stream)
+          DIAGNOSTIC: $(diagnostic)
+          MEMBER_STDOUT: $(memberStdout)
+        cmd: [sh, -ce, 'test "$VERSION" = v1.2.3 && test "$COUNT" = 3 && test "$READY" = true && test "$TARGETS" = ''["linux"]'' && test "$METADATA" = ''{"revision":"abc123"}'' && test "$STREAM" = v1.2.3 && test "$DIAGNOSTIC" = diagnostic && test "$MEMBER_STDOUT" = 7']

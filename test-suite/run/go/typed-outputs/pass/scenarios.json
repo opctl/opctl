@@ -1,0 +1,30 @@
+[
+  {
+    "call": {
+      "opRef": "/repo/test-suite/run/go/typed-outputs/pass",
+      "scope": {},
+      "expect": "success",
+      "expectOutputs": {
+        "version": {
+          "string": "v1.2.3"
+        },
+        "count": {
+          "number": 3
+        },
+        "ready": {
+          "boolean": true
+        },
+        "targets": {
+          "array": [
+            "linux"
+          ]
+        },
+        "metadata": {
+          "object": {
+            "revision": "abc123"
+          }
+        }
+      }
+    }
+  }
+]

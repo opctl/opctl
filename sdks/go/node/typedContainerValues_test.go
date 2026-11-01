@@ -19,7 +19,7 @@ func TestCollectedContainerDeclarations(t *testing.T) {
 		name, data, failure string
 		declarations        map[string]*model.ParamSpec
 	}{
-		{"renamed", `{"count":3,"stdout":"member"}`, "", map[string]*model.ParamSpec{"count": {Number: &model.NumberParamSpec{}}}},
+		{"renamed", `{"count":3,"stdout":7}`, "", map[string]*model.ParamSpec{"count": {Number: &model.NumberParamSpec{}}, "stdout": {Number: &model.NumberParamSpec{}}}},
 		{"wrong kind", `{"count":"3"}`, `expected number, received string`, map[string]*model.ParamSpec{"count": {Number: &model.NumberParamSpec{}}}},
 		{"missing unbound", `{"count":3}`, `"unbound": required output is missing`, map[string]*model.ParamSpec{"unbound": {String: &model.StringParamSpec{}}}},
 		{"wrong unbound", `{"count":3,"unbound":false}`, `"unbound": expected string, received boolean`, map[string]*model.ParamSpec{"unbound": {String: &model.StringParamSpec{}}}},
@@ -39,6 +39,9 @@ func TestCollectedContainerDeclarations(t *testing.T) {
 			}
 			call := &model.ContainerCall{Image: &model.ContainerCallImage{Prepared: true}, OutputsFile: output}
 			spec := &model.ContainerCallSpec{Stdout: "$(stream)", Outputs: map[string]string{"count": "$(renamed)"}}
+			if tc.name == "renamed" {
+				spec.Outputs["stdout"] = "$(member)"
+			}
 			caller := _containerCaller{containerRuntime: runtime, pubSub: new(nodeFakes.FakePubSub)}
 			result, err := caller.callWithResults(context.Background(), call, nil, spec, "root", tc.declarations)
 			if tc.failure != "" {
@@ -55,7 +58,7 @@ func TestCollectedContainerDeclarations(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				if result["renamed"].Number == nil || *result["renamed"].Number != 3 || result["stream"].String == nil || *result["stream"].String != "3" {
+				if result["renamed"].Number == nil || *result["renamed"].Number != 3 || result["stream"].String == nil || *result["stream"].String != "3" || result["member"].Number == nil || *result["member"].Number != 7 {
 					t.Fatal("boxed kinds or renamed values changed")
 				}
 			}
