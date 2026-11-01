@@ -75,9 +75,10 @@ opctl ls path/to/op
 - `opctl ls` lists Go ops with their descriptions.
 - The UI shows a Go op's name and description when you open its `op.go`. Its op graph appears when the op runs.
 
-`opctl op create --go [-p PATH] [-d DESCRIPTION] NAME` creates `NAME/op.go` and `NAME/go.mod`, with one input and a container call. The description becomes the
+`opctl op create --go [-p PATH] [-d DESCRIPTION] NAME` creates `NAME/op.go`, `NAME/go.mod`, and a `.gitignore` containing `/opctlgen/`, with one input and a container call.
+The description becomes the
 package doc comment, and `NAME` must be a valid Go module path. The generated module path is `ops.local/NAME`, so op names such as `fmt` don't collide with the
-standard library. The command writes nothing if the directory already contains `op.yml`, `op.go`, `go.mod`, or `go.sum`. A release build of opctl requires its
+standard library. The command writes nothing if the directory already contains `op.yml`, `op.go`, `go.mod`, `go.sum`, or `.gitignore`. A release build of opctl requires its
 matching Go op SDK version in the scaffold and writes its `go.sum`. Otherwise it requires version `v0.0.0`, and opctl prints a reminder to add a `replace`
 directive for `github.com/opctl/opctl/sdks/go/opspec/sdk` that points it at `sdks/go/opspec/sdk` in an opctl checkout.
 

@@ -44,6 +44,7 @@ func plan(in Inputs) opctl.Call {
 func main() { opctl.Main(plan) }
 `))
 		Expect(read(filepath.Join(path, "go.mod"))).To(Equal("module ops.local/hello\n\ngo " + goDirective() + "\n\nrequire github.com/opctl/opctl/sdks/go/opspec/sdk v0.0.0\n"))
+		Expect(read(filepath.Join(path, ".gitignore"))).To(Equal("/opctlgen/\n"))
 		Expect(filepath.Join(path, "go.sum")).NotTo(BeAnExistingFile())
 		Expect(filepath.Join(path, "op.yml")).NotTo(BeAnExistingFile())
 	})
@@ -91,7 +92,7 @@ func main() { opctl.Main(plan) }
 	})
 
 	It("never overwrites an existing op or module file", func() {
-		for _, existing := range []string{"op.yml", "op.go", "go.mod", "go.sum"} {
+		for _, existing := range []string{"op.yml", "op.go", "go.mod", "go.sum", ".gitignore"} {
 			path := filepath.Join(parent, existing)
 			Expect(os.MkdirAll(path, 0700)).To(Succeed())
 			Expect(os.WriteFile(filepath.Join(path, existing), []byte("keep"), 0600)).To(Succeed())

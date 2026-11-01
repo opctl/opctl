@@ -8,6 +8,8 @@ accordance with
 
 ### Added
 
+- Go op scaffolds git-ignore `/opctlgen/` and preserve an existing `.gitignore` by refusing to overwrite it.
+
 - Go ops can call local or git-ref YAML and Go ops through typed op stubs, generated just in time from the callee's current interface.
 - `opctl op gen [OP_REF...]` refreshes git-ignored editor stubs in `opctlgen/`. Running or validating a local Go op refreshes its whole module and warns on errors.
 

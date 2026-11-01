@@ -63,13 +63,14 @@ func CreateGo(path, name, description string, sdk GoSDK) error {
 	}
 	files := []struct{ name, content string }{
 		{"op.go", opGo},
+		{".gitignore", "/opctlgen/\n"},
 		{"go.mod", fmt.Sprintf("module ops.local/%s\n\ngo %s\n\nrequire %s %s\n", name, goDirective(), goSDKModule, version)},
 	}
 	if sdk.Published() {
 		files = append(files, struct{ name, content string }{"go.sum", fmt.Sprintf("%s %s %s\n%s %s/go.mod %s\n", goSDKModule, version, sdk.Sum, goSDKModule, version, sdk.GoModSum)})
 	}
 
-	for _, existing := range []string{opfile.FileName, "op.go", "go.mod", "go.sum"} {
+	for _, existing := range []string{opfile.FileName, "op.go", "go.mod", "go.sum", ".gitignore"} {
 		if _, err := os.Lstat(filepath.Join(path, existing)); err == nil {
 			return fmt.Errorf("%s already exists in %s", existing, path)
 		} else if !errors.Is(err, fs.ErrNotExist) {
