@@ -42,4 +42,31 @@ var _ = Describe("scenario runner output assertions", func() {
 			Expect(os.RemoveAll(dir)).To(Succeed())
 		}
 	})
+	It("scaffolds a Go op with the in-repo SDK and runs it", func() {
+		runner, err := filepath.Abs("../cmd.sh")
+		Expect(err).NotTo(HaveOccurred())
+		dir, err := os.MkdirTemp("", "scenario-runner-")
+		Expect(err).NotTo(HaveOccurred())
+		defer os.RemoveAll(dir)
+		write := func(name, text string) {
+			Expect(os.WriteFile(filepath.Join(dir, name), []byte(text), 0700)).To(Succeed())
+		}
+		write("dockerd", "#!/bin/sh\nexit 0\n")
+		write("opctl", `#!/bin/sh
+echo "$@" >> "$OPCTL_CALLS"
+if [ "$1" = op ]; then mkdir -p "$5/$8" && echo "module $8" > "$5/$8/go.mod"; fi
+exit 0
+`)
+		command := exec.Command("sh", runner)
+		command.Env = append(os.Environ(), "PATH="+dir+":"+os.Getenv("PATH"), "authAddGithub=false", "expect=success", "op=op/create/go", "createGo=hello", "createParent="+dir, "sdkPath=/sdk", "OPCTL_CALLS="+filepath.Join(dir, "calls"), "expectedOutputsPath="+filepath.Join(dir, "none.json"))
+		output, err := command.CombinedOutput()
+		Expect(err).NotTo(HaveOccurred(), string(output))
+		calls, err := os.ReadFile(filepath.Join(dir, "calls"))
+		Expect(err).NotTo(HaveOccurred())
+		Expect(string(calls)).To(ContainSubstring("op create --go -p " + dir + " -d Greets the caller. hello\n"))
+		Expect(string(calls)).To(HaveSuffix("run --no-progress --arg-file /args.yml " + dir + "/hello\n"))
+		goMod, err := os.ReadFile(filepath.Join(dir, "hello", "go.mod"))
+		Expect(err).NotTo(HaveOccurred())
+		Expect(string(goMod)).To(Equal("module hello\n\nreplace github.com/opctl/opctl/sdks/go/opspec/sdk => /sdk\n"))
+	})
 })

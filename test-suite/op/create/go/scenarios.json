@@ -1,0 +1,9 @@
+[
+  {
+    "call": {
+      "createGo": "hello",
+      "scope": {},
+      "expect": "success"
+    }
+  }
+]

@@ -57,6 +57,8 @@ accordance with
 
 ### Added
 
+- `opctl op create --go` scaffolds a Go op in its own module. It never overwrites existing op or module files. `opctl op create` without `--go` is unchanged.
+
 - Go container calls can set a name for opctl DNS with `ContainerCall.Name`.
 
 - Go ops can bind paths in their source with `OpDir` and `OpFile`, and paths beneath input or op directories with `Dir.Dir` and `Dir.File`, without `RawRef`.

@@ -38,6 +38,8 @@ The `constraints` tag can add JSON schema keywords but cannot replace keywords d
 
 `Describe[Inputs]()` returns the interface without invoking the plan function. `Plan(fn, inputs)` builds the graph in process with already resolved public input values. No-input ops use `func(struct{}) opctl.Call`. Use `Serial(calls...)` to run calls in order and `Parallel(calls...)` to run them concurrently. Helpers are plain Go functions returning calls. Go loops can build a slice of calls to pass to either group. Empty groups are dropped from their parent; an empty root graph is an error.
 
+`opctl op create --go [-p PATH] [-d DESCRIPTION] NAME` creates `NAME/op.go` and `NAME/go.mod`, with one input and a container call. The description becomes the package doc comment. `NAME` must be a valid Go module path. The command fails without writing anything if the directory already contains `op.yml`, `op.go`, `go.mod`, or `go.sum`. Until the Go op SDK is published, the generated `go.mod` requires version `v0.0.0`; add a `replace` directive for `github.com/opctl/opctl/sdks/go/opspec/sdk` that points to a checkout of the SDK.
+
 Run a Go op with the same arguments as a YAML op:
 
 ```sh

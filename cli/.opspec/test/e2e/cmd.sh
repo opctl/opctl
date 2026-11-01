@@ -20,6 +20,14 @@ fi
 
 exec <&-
 
+if [ -n "$createGo" ]; then
+  createParent="${createParent:-/tmp}"
+  opctl op create --go -p "$createParent" -d 'Greets the caller.' "$createGo" || exit 1
+  # The e2e CLI is a development build, so the scaffold needs the in-repo SDK.
+  printf '\nreplace github.com/opctl/opctl/sdks/go/opspec/sdk => %s\n' "${sdkPath:-/repo/sdks/go/opspec/sdk}" >> "$createParent/$createGo/go.mod"
+  opRef="$createParent/$createGo"
+fi
+
 opRef="${opRef:-/test}"
 
 echo "op: $op"

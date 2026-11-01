@@ -32,6 +32,10 @@
                   "success"
                 ]
               },
+              "createGo": {
+                "type": "string",
+                "description": "Scaffold a Go op with this name using opctl op create --go and run it with the in-repo SDK"
+              },
               "cacheProof": {
                 "type": "boolean",
                 "description": "Run the parent-module Go fixture twice on one node and verify the executable cache"

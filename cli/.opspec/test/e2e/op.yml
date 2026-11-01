@@ -53,6 +53,7 @@ run:
                         expectOutputs: ''
                         authAddGithub: false
                         cacheProof: false
+                        createGo: ''
                       override:  $(scenario.call)
                     outputs:
                       result: $(call)
@@ -73,6 +74,7 @@ run:
                       expect: $(call.expect)
                       authAddGithub: $(call.authAddGithub)
                       cacheProof: $(call.cacheProof)
+                      createGo: $(call.createGo)
                       githubAccessToken:
                     files:
                       /args.yml: $(call.scope)
