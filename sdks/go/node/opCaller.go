@@ -221,7 +221,10 @@ func (oc _opCaller) Call(
 		for _, name := range names {
 			value, bindErr := reference.Interpret(outputBindings[name], final, nil)
 			if bindErr != nil {
-				return outboundScope, fmt.Errorf("unable to bind Go output %q", name)
+				if secretParam(desc.Outputs[name]) || sensitivity.References(outputBindings[name], final) {
+					return outboundScope, fmt.Errorf("unable to bind Go output %q", name)
+				}
+				return outboundScope, fmt.Errorf("unable to bind Go output %q: %w", name, bindErr)
 			}
 			bound[name] = sensitivity.Mark(value, secretParam(desc.Outputs[name]) || sensitivity.References(outputBindings[name], final))
 		}

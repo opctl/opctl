@@ -261,3 +261,5 @@ Secret handles remain private when passed to YAML containers through shorthand b
 Output validation reports the failing parameter. A separate secret output does not hide errors in public outputs or misspelled output bindings.
 
 Existing YAML ops retain their completion-output and input-diagnostic behavior. Go outputs and opted-in container results publish new values only after successful validation.
+
+A failed public Go output binding reports its underlying reference error. Sensitive bindings report the output name without reference details.

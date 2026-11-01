@@ -8,6 +8,8 @@ accordance with
 
 ### Fixed
 
+- Public Go output-binding failures include their underlying reference error. Sensitive bindings keep the value-free diagnostic.
+
 - Legacy YAML ops retain bound outputs in failed completion events and print input interpretation diagnostics as before. Sensitive diagnostics stay private.
 
 - Public op-output errors retain their original diagnostic when another output is secret. Sensitive validation errors remain sanitized per parameter.
