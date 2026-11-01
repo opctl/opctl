@@ -185,6 +185,55 @@ func runNegotiationMain(t *testing.T, data, phase string, feature int) ([]byte, 
 	return out, stderr.String(), err
 }
 
+func TestNegotiationPreservesOutputAliases(t *testing.T) {
+	var baseline []byte
+	for version := 1; version <= 4; version++ {
+		data, err := emitForRange("plan", func(in outputInputs) (Call, outputValues) {
+			return Container("alpine:3").Cmd("echo", in.Text.Value()), outputValues{Echoed: in.Text}
+		}, map[string]any{"text": "literal $(outputParams)"}, schemaRange{1, version})
+		if err != nil {
+			t.Fatal(err)
+		}
+		var envelope map[string]json.RawMessage
+		if err := json.Unmarshal(data, &envelope); err != nil {
+			t.Fatal(err)
+		}
+		if !bytes.Contains(envelope["outputBindings"], []byte(`"echoed":"$(text)"`)) {
+			t.Fatal("output alias lost")
+		}
+		delete(envelope, "opspecSchema")
+		body, _ := json.Marshal(envelope)
+		if baseline != nil && !bytes.Equal(baseline, body) {
+			t.Fatal("negotiation changed aliases or escaping")
+		}
+		baseline = body
+	}
+	for _, emit := range []func() ([]byte, error){
+		func() ([]byte, error) { return Describe[struct{}]() },
+		func() ([]byte, error) { return DescribeWithOutputs[outputInputs, outputValues]() },
+		func() ([]byte, error) {
+			return PlanWithOutputs(func(in outputInputs) (Call, outputValues) { return Container("alpine"), outputValues{Echoed: in.Text} }, map[string]any{"text": "public"})
+		},
+	} {
+		data, err := emit()
+		if err != nil || !bytes.Contains(data, []byte(`"opspecSchema":4`)) {
+			t.Fatalf("helper must use newest shared schema: %v", err)
+		}
+	}
+}
+
+func TestNegotiationReportsHighestFeatureAtStablePath(t *testing.T) {
+	typed := &callSpec{Container: &containerSpec{Outputs: map[string]string{"n": "$(n)"}, OutputParams: map[string]paramSpec{"n": {"number": map[string]any{}}}}}
+	graph := &callSpec{Serial: []*callSpec{{Container: &containerSpec{Stdout: "$(s)", Cmd: []string{"never include command values in errors"}}}, {Parallel: []*callSpec{typed, typed}}}}
+	for i := 0; i < 3; i++ {
+		_, err := selectSchema(schemaRange{1, 3}, graph)
+		want := "this op uses typed container outputs (opspec >= 4); upgrade opctl to a version supporting opspec 4 (at run.serial[1].parallel[0].container.outputParams)"
+		if err == nil || err.Error() != want {
+			t.Fatalf("unstable or value-bearing error: %v", err)
+		}
+	}
+}
+
 func TestNullBootstrapVersionsDoNotReuseEarlierFields(t *testing.T) {
 	for _, data := range []string{
 		`{"contractVersion":1,"contractVersion":null,"phase":"plan","opspecSchema":{"min":1,"max":4}}`,

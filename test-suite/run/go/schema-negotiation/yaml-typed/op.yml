@@ -1,0 +1,7 @@
+name: typed-output YAML parent
+outputs:
+  count: {number: {}}
+run:
+  op:
+    ref: ../typed
+    outputs: {count: $(count)}
