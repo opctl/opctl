@@ -58,7 +58,7 @@ This becomes useful for readability if the script we're running in a container i
 Note that while we could have also built a custom docker image that contains that script and ran it, that's not a recommended practice. While the op remains portable with that approach, it is less transparent and harder to maintain, since we would have the extra step of building and pushing that image whenever we make a change to the script. Instead, we usually opt for the leanest Docker image that fulfills our use case, and include any scripts or binaries we need in the op directory.
 
 #### dev
-The `dev` op is a [Go op](reference/go-ops.md): its directory holds `op.go` and a `go.mod` instead of an op file.
+The `dev` op is a [Go op](training/authoring-ops-in-go.md): its directory holds `op.go` and a `go.mod` instead of an op file.
 
 ```go
 // Runs the example API with a seeded MySQL database for development.

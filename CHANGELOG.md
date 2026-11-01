@@ -6,122 +6,29 @@ accordance with
 
 ## [Unreleased]
 
-### Fixed
+### Added
 
-- Container outputs mount only `values.json`, so root-owned subdirectories cannot block cleanup by a non-root node. Writers must write directly to the file; renaming over
-  its mount is unsupported.
-
-- Parallel calls protect private completion values without mutating a callee-owned result map.
-
-- Public Go output-binding failures include their underlying reference error. Sensitive bindings keep the value-free diagnostic.
-
-- Legacy YAML ops retain bound outputs in failed completion events and print input interpretation diagnostics as before. Sensitive diagnostics stay private.
-
-- Public op-output errors retain their original diagnostic when another output is secret. Sensitive validation errors remain sanitized per parameter.
-
-- Secret values stay out of call events when YAML containers use implicit env, dir, or file bindings, or bare socket bindings.
-
-- Go bootstrap fails clearly on Docker API versions below 1.44, which cannot enforce recursive read-only source mounts.
-
-- The compiled Go bootstrap cache hashes the launcher, build command, and actual build environment, so recipe changes invalidate cached programs.
-
-- Go ops fetched into the node cache can bootstrap and use local replacements within their fetched repository. Only writable node state is excluded from their source
-  fingerprint.
-
-- Unused missing local Go replacements no longer create invalid mounts. Fetched replacements remain bounded to their repository, including missing paths beneath symlinked
-  parents.
-
-- YAML container calls retain their existing nonzero-exit error when the runtime also returns an error.
-
-- Separate Go replacement mounts reject host symlinks; replacements inside the module use its existing mount.
-
-- Go describe classifies missing or malformed module files and invalid bootstrap mounts as declaration errors.
-
-- Failed interpretation of sensitive Go graph bindings reports binding names without exposing resolved values. Event snapshots also keep sensitive names, image credentials,
-  and dynamic environments private.
-
-- Git-fetched Go ops cannot bootstrap with a module or local replacement outside their fetched repository, including through symlinks. Local ops retain their existing
-  module mounts.
-
-- Go graph groups and loops retain private runtime results while omitting secret values from public completion events.
-
-- Describing Go ops reports runtime and context failures as HTTP 500 while keeping declaration, bootstrap exit, and response parse failures as HTTP 400.
-
-- Go input schemas require unsigned array items and object properties to be nonnegative integers.
-
-- Go input constraints reject attempts to replace schemas derived from array item and object property types.
-
-- Go bootstrap mounts the module root and local replacements separately and rejects destinations that hide required image directories.
-
-- Go bootstrap failures return compiler and declaration diagnostics to describe clients, including `opctl op validate`.
+- Go ops: an op can be declared by a Go program that builds an op graph with the dependency-free Go op SDK, `github.com/opctl/opctl/sdks/go/opspec/sdk`.
+  See [Authoring ops in Go](https://opctl.io/docs/training/authoring-ops-in-go).
+  - Inputs and outputs are tagged structs of typed handles, with descriptions, defaults, constraints, and secrets. The description comes from the package doc comment,
+    and `opctl.Op` overrides the name or description.
+  - Container calls, op calls by local or git ref, and `Serial` and `Parallel` groups compose with plain Go control flow and helper functions.
+  - Handles pass values between calls: `NewDir`, `NewFile`, `OpDir`, `OpFile`, dir subpaths, `OpOutput`, `Stdout`, `Stderr`, `ContainerOutput`, and `Outputs`. `RawRef`
+    is an escape hatch for other opspec references.
+  - Go ops and YAML ops call each other, with inputs and outputs.
+  - `opctl run`, `opctl op validate`, `opctl ls`, the UI, and `POST /api/ops/describes` support Go ops. `opctl op create --go` scaffolds one.
+  - Bootstrap compiles each op once and caches the program, shares Go module and build caches, mounts source read-only, and downloads private modules with existing
+    auths. With Docker, it needs Docker API version 1.44 or later.
+  - The Go op SDK emits the newest opspec schema the node can read. A graph that needs a newer schema fails before its calls start, naming the feature and the version
+    to upgrade to.
+- Container calls, in YAML and Go ops, can bind `stdout` and `stderr` to strings, return named values in a JSON outputs file at `$OPCTL_OUTPUTS`, and declare typed
+  `outputParams` that opctl validates when the container exits.
+- CLI end-to-end scenarios can assert exact public completion outputs with `expectOutputs`, and scaffold and run a Go op with `createGo`.
 
 ### Changed
 
 - The `run-a-go-service` example's `dev` op is a Go op that calls the YAML `mysql` op. Its `MYSQL_HOST` default is now the `mysql` op's container name,
   `run-a-go-service-mysql`, so the service can reach the database.
-
-### Added
-
-- `opctl op create --go` scaffolds a Go op in its own module. It never overwrites existing op or module files. `opctl op create` without `--go` is unchanged.
-
-- Go container calls can set a name for opctl DNS with `ContainerCall.Name`.
-
-- Go ops can bind paths in their source with `OpDir` and `OpFile`, and paths beneath input or op directories with `Dir.Dir` and `Dir.File`, without `RawRef`.
-
-- Go ops take their description from the package doc comment, rendered as markdown. `opctl.Op` overrides the name or description in `Main`, `MainWithOutputs`, `Describe`,
-  and `DescribeWithOutputs`.
-
-- Nodes retain one schema range across API describes and nested Go calls. Describe memo keys include the contract and range; executable cache keys stay independent of
-  negotiation.
-
-- Go bootstrap selects the newest shared opspec schema in describe and plan, down-levels baseline graphs, and rejects newer features before user calls start. Null schema
-  ranges and envelope versions are rejected even after duplicate integer fields. Typed outputs on an older node report `this op uses typed container outputs (opspec >= 4);
-  upgrade opctl to a version supporting opspec 4`. Nodes requiring newer schemas report `upgrade the Go op SDK`.
-
-- Go ops can declare container outputs with `Outputs[T]`, using tagged handle structs for required JSON members, constraints, and secrets.
-
-- YAML containers can declare required `outputParams` for exact JSON types and constraints. Declared secrets stay private through renamed bindings; typed output graphs
-  require opspec schema 4.
-
-- Go container calls expose named JSON results with `ContainerOutput[T]` for String, Number, Boolean, Array, and Object handles. Named-result graphs require opspec schema
-  3.
-
-- Go container builders expose two-return `Stdout()` and `Stderr()` String handles with explicit producers, graph visibility checks, and minimum-schema negotiation.
-
-- Container calls can request named values through an opt-in JSON outputs file at `$OPCTL_OUTPUTS`, with atomic collection, private bindings, and strict size and format
-  checks.
-
-- Container calls can bind `stdout` and `stderr` to String values in YAML, with separate streams, bounded capture, and private secret targets.
-
-- Private Go modules use existing HTTPS auth records and repository-scoped explicit pull credentials. Credentials reach download containers only on stdin into tmpfs and are
-  removed before compilation; describe and plan receive none.
-
-- Go describe responses are memoised in node memory by executable key, shared across API and run calls, with cached lifecycle events. Plans always execute.
-
-- Go ops build one cached executable per module content and immutable toolchain. Warm runs execute it without recompiling; plans still run for every invocation.
-
-- Go ops share node-owned module and build caches. Bootstrap runs as the cache owner with isolated Go settings and scratch home.
-
-- Go bootstrap resolves and runs an immutable Linux toolchain image, reusing cached images offline without redundant phase pulls.
-
-- Go bootstrap binds source and replacement roots read-only and can import app packages from a parent module without copying fetched source.
-
-- CLI end-to-end scenarios can assert exact boxed public completion outputs with `expectOutputs`, including empty maps and secret omission.
-
-- Go ops declare tagged output structs with `MainWithOutputs`, `PlanWithOutputs`, and `DescribeWithOutputs`. Outputs can bind input, op, or container handles, or use an
-  authored default.
-
-- The node collects declared Go outputs through runtime reference bindings, validates them, and includes public root outputs in ordinary completion events.
-
-- Go op calls can request named outputs as typed handles with `OpOutput[T]`. Plan checks reject missing producers and invalid serial or parallel visibility.
-
-- Go ops can call local and git-ref ops with literal or handle inputs and optional pull credentials. Secret bindings remain private across op calls and group or loop
-  results.
-
-- Go ops can declare typed inputs with defaults and constraints, branch on public input values, and bind input handles to container environment variables, directories,
-  files, and sockets. `opctl run` prompts for Go op inputs and rejects invalid explicit values without substituting defaults; `opctl op validate` and `opctl ls` describe Go
-  op interfaces. The webapp opens `op.go` and shows its described name and description. Go ops can compose calls in serial and parallel and pass output directories and
-  files between calls. `RawRef` provides an unchecked escape hatch for whole opspec references.
 
 ## [0.1.76] - 2026-06-18
 
