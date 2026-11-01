@@ -57,7 +57,7 @@ func (a *Analysis) value(raw any, path, position, kind string, scope map[string]
 		if !planReadable(b) || ref.Suffix != "" || ref.Nested {
 			readable = false
 		}
-		if position == "literal" && b.Source == "loop" && b.Scalar == "any" {
+		if (position == "literal" || position == "handle" && kind == "string") && b.Source == "loop" && b.Scalar == "any" {
 			a.refuse(path, "untyped loop item in a string position; add items: {type: string|number|boolean} to the array input")
 		}
 	}

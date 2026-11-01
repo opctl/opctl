@@ -37,7 +37,7 @@ func Render(a *Analysis, options RenderOptions) (*Rendered, error) {
 		return nil, fmt.Errorf("op can't be converted: %s", a.Refusals[0])
 	}
 	r := &renderer{a: a, options: options, names: map[string]bool{}, expr: map[*binding]string{}, used: map[*binding]bool{}, declared: map[*binding]bool{}, predecl: map[*binding]bool{}, imports: map[string]string{}, stubs: map[string][]byte{}}
-	for _, name := range []string{"opctl", "plan", "in", "main", "Inputs", "Outputs"} {
+	for _, name := range []string{"opctl", "plan", "in", "main", "Inputs", "Outputs", "strconv", "maps", "slices"} {
 		r.names[name] = true
 	}
 	fields := fieldNames(keys(a.Spec.Inputs), true)
@@ -52,7 +52,7 @@ func Render(a *Analysis, options RenderOptions) (*Rendered, error) {
 		}
 	}
 	for name := range a.Spec.Outputs {
-		if b := a.final[name]; b != nil {
+		for b := a.final[name]; b != nil; b = b.Fallback {
 			r.used[b] = true
 			if b.Branch != "" {
 				r.predecl[b] = true
@@ -110,7 +110,11 @@ func (r *renderer) variable(raw string) string {
 	return name
 }
 func (r *renderer) call(g *graph, out *strings.Builder) (string, error) {
-	if g == nil || g.Fold != nil && !*g.Fold {
+	if g == nil {
+		return "", nil
+	}
+	if g.Fold != nil && !*g.Fold {
+		out.WriteString(comment("Constant predicate folded to false."))
 		return "", nil
 	}
 	out.WriteString(r.a.comments(g.Path))
@@ -121,7 +125,7 @@ func (r *renderer) call(g *graph, out *strings.Builder) (string, error) {
 		out.WriteString(comment("Constant predicate folded to true."))
 	}
 	if len(g.Condition) > 0 && g.Fold == nil {
-		return "", fmt.Errorf("input branches aren't rendered yet")
+		return r.conditional(g, out)
 	}
 	switch g.Kind {
 	case "container":
@@ -151,7 +155,7 @@ func (r *renderer) call(g *graph, out *strings.Builder) (string, error) {
 		}
 		return "opctl." + name + "(" + strings.Join(children, ",\n") + ")", nil
 	case "serialLoop", "parallelLoop":
-		return "", fmt.Errorf("input loops aren't rendered yet")
+		return r.loop(g, out)
 	}
 	return "", nil
 }
@@ -454,6 +458,9 @@ func (r *renderer) value(v *boundValue) (string, error) {
 		b := v.Refs[0].Binding
 		expression := r.expr[b]
 		if b.Source == "loop" {
+			if b.Scalar == "any" {
+				return expression, nil
+			}
 			switch b.Kind {
 			case "number":
 				expression = "opctl.NumberOf(float64(" + expression + "))"

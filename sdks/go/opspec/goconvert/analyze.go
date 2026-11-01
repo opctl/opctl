@@ -50,6 +50,7 @@ type Analysis struct {
 	loopInputs map[string]string
 }
 type binding struct {
+	Fallback                                                   *binding
 	Name, Kind, Type, Source, Path, Loop, Branch, Expr, Scalar string
 	Param                                                      *model.ParamSpec
 	ID                                                         int

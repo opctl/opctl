@@ -1,0 +1,54 @@
+package main
+
+import (
+	opctl "github.com/opctl/opctl/sdks/go/opspec/sdk"
+)
+
+type Inputs struct {
+	Env     opctl.String        `opctl:"env,default=dev"`
+	Count   opctl.Number        `opctl:"count,default=2"`
+	Regions opctl.Array[string] `opctl:"regions,default='[\"east\",\"west\"]'"`
+}
+
+type Outputs struct {
+	Echo opctl.String `opctl:"echo,default=none"`
+}
+
+func plan(in Inputs) (opctl.Call, Outputs) {
+	var echo2 opctl.String
+	alpine := opctl.Container("alpine")
+	alpine, echo := alpine.Stdout()
+	calls := []opctl.Call{}
+	echo2 = echo
+	if (in.Env.Value() == "prod") && (in.Count.Value() > 1) {
+		alpine2 := opctl.Container("alpine")
+		alpine2, echo2 = alpine2.Stdout()
+		calls = append(calls, alpine2)
+	}
+	scratch := opctl.NewDir()
+	calls2 := []opctl.Call{}
+	for i, region := range in.Regions.Value() {
+		alpine3 := opctl.Container("alpine").
+			Dir("/scratch", scratch).
+			EnvFrom("REGION", opctl.StringOf(region)).
+			EnvFrom("INDEX", opctl.NumberOf(float64(i)))
+		calls2 = append(calls2, alpine3)
+	}
+	calls3 := []opctl.Call{}
+	for _, name := range []string{"a", "b"} {
+		fresh := opctl.NewDir()
+		alpine4 := opctl.Container("alpine").
+			Dir("/scratch", fresh).
+			EnvFrom("NAME", opctl.StringOf(name))
+		calls3 = append(calls3, alpine4)
+	}
+	return opctl.Serial(alpine,
+			opctl.Serial(calls...),
+			opctl.Serial(calls2...),
+			opctl.Parallel(calls3...)), Outputs{
+			Echo: echo2,
+		}
+
+}
+
+func main() { opctl.MainWithOutputs(plan, opctl.Op{Name: "control"}) }

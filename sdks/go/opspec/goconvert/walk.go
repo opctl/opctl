@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates"
+	"strconv"
 	"strings"
 )
 
@@ -44,6 +45,18 @@ func (a *Analysis) walk(c *model.CallSpec, path string, scope map[string]*bindin
 					v := a.value(x, fmt.Sprintf("%s[%d]", ppath, j), "predicate", "string", scope, state)
 					if len(v.Refs) > 0 {
 						constant = false
+					}
+					if kind != "eq" && kind != "ne" {
+						for _, ref := range v.Refs {
+							if ref.Binding != nil && ref.Binding.Kind != "number" {
+								a.refuse(ppath, "ordered predicates need number inputs or numeric literals")
+							}
+						}
+						if len(v.Refs) == 0 {
+							if _, err := strconv.ParseFloat(rawText(x), 64); err != nil {
+								a.refuse(ppath, "ordered predicates need numeric literals")
+							}
+						}
 					}
 				}
 			}
@@ -153,6 +166,13 @@ func (a *Analysis) walk(c *model.CallSpec, path string, scope map[string]*bindin
 					}
 				} else if rangeKind == "object" {
 					scalar = "any"
+					if p := b.Param; p != nil && p.Object != nil {
+						if schema, ok := p.Object.Constraints["additionalProperties"].(map[string]any); ok && len(schema) == 1 {
+							if typed := scalarType(schema["type"]); typed != "" {
+								scalar = typed
+							}
+						}
+					}
 				}
 			}
 		}
@@ -169,6 +189,19 @@ func (a *Analysis) walk(c *model.CallSpec, path string, scope map[string]*bindin
 				empty = len(r) == 0
 			case map[string]any:
 				empty = len(r) == 0
+			}
+			if g.Range.Whole && len(g.Range.Refs) > 0 {
+				if b := g.Range.Refs[0].Binding; b != nil && b.Param != nil {
+					_, body := paramParts(b.Param)
+					constraints, _ := body["constraints"].(map[string]any)
+					key := "minItems"
+					if b.Kind == "object" {
+						key = "minProperties"
+					}
+					if minimum, ok := constraints[key].(float64); ok && minimum >= 1 {
+						empty = false
+					}
+				}
 			}
 			if empty {
 				a.refuse(lp, "a root loop can plan an empty op graph")
@@ -247,7 +280,19 @@ func literalRange(v any) (string, string) {
 		}
 		return "array", scalar
 	case map[string]any:
-		return "object", "any"
+		scalar := ""
+		for _, key := range keys(v) {
+			k := literalScalar(v[key])
+			if scalar == "" {
+				scalar = k
+			} else if scalar != k {
+				scalar = "any"
+			}
+		}
+		if scalar == "" {
+			scalar = "any"
+		}
+		return "object", scalar
 	case float64:
 		return "number", "int"
 	}
@@ -427,6 +472,21 @@ func (a *Analysis) producer(ref, fallback, kind, path string, scope map[string]*
 		a.refuse(path, "output binding starts with the reserved opctl_ prefix")
 	}
 	b := a.newBinding(name, kind, "produced", path, state)
+	if state.branch != "" {
+		b.Fallback = scope[name]
+	}
 	scope[name] = b
 	a.produced[path] = append(a.produced[path], b)
+}
+
+func literalScalar(v any) string {
+	switch v.(type) {
+	case string:
+		return "string"
+	case float64:
+		return "float64"
+	case bool:
+		return "bool"
+	}
+	return "any"
 }
