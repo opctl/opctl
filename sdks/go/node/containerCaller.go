@@ -37,7 +37,7 @@ func newContainerCaller(
 	dataDirPath string,
 ) containerCaller {
 
-	return _containerCaller{
+	return &_containerCaller{
 		containerRuntime: containerRuntime,
 		dataDirPath:      dataDirPath,
 		pubSub:           pubSub,
@@ -47,13 +47,14 @@ func newContainerCaller(
 }
 
 type _containerCaller struct {
+	cacheDirLocks    cacheDirLocks
 	containerRuntime containerruntime.ContainerRuntime
 	dataDirPath      string
 	pubSub           pubsub.PubSub
 	stateStore       stateStore
 }
 
-func (cc _containerCaller) Call(
+func (cc *_containerCaller) Call(
 	ctx context.Context,
 	containerCall *model.ContainerCall,
 	inboundScope map[string]*model.Value,
@@ -65,6 +66,23 @@ func (cc _containerCaller) Call(
 ) {
 	outputs := map[string]*model.Value{}
 	var exitCode int64
+
+	release, err := cc.cacheDirLocks.acquire(ctx, containerCall.LockedCacheDirs, func(hostPath string) {
+		cc.pubSub.Publish(model.Event{
+			Timestamp: time.Now().UTC(),
+			ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenTo{
+				Data:        []byte(fmt.Sprintf("waiting for locked cache dir %s\n", filepath.Base(hostPath))),
+				ContainerID: containerCall.ContainerID,
+				OpRef:       containerCall.OpPath,
+				RootCallID:  rootCallID,
+			},
+		})
+	})
+	if err != nil {
+		return outputs, err
+	}
+	// Keep locks through log draining and the post-call cache permission walk.
+	defer release()
 
 	if containerCall.Image.Ref != nil && containerCall.Image.PullCreds == nil {
 		if auth := cc.stateStore.TryGetAuth(*containerCall.Image.Ref); auth != nil {
@@ -140,7 +158,7 @@ func (cc _containerCaller) Call(
 	return outputs, err
 }
 
-func (this _containerCaller) interpretLogs(
+func (this *_containerCaller) interpretLogs(
 	stdOutReader io.Reader,
 	stdErrReader io.Reader,
 	containerCall *model.ContainerCall,
@@ -201,7 +219,7 @@ func (this _containerCaller) interpretLogs(
 	return nil
 }
 
-func (this _containerCaller) interpretOutputs(
+func (this *_containerCaller) interpretOutputs(
 	containerCallSpec *model.ContainerCallSpec,
 	containerCall *model.ContainerCall,
 ) map[string]*model.Value {

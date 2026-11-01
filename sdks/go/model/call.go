@@ -38,6 +38,8 @@ type ContainerCall struct {
 	Cmd         []string `json:"cmd"`
 	// format: containerPath => hostPath
 	Dirs map[string]string `json:"dirs"`
+	// Host paths of cache dirs requiring exclusive use for this call.
+	LockedCacheDirs []string `json:"lockedCacheDirs,omitempty"`
 	// format: name => value
 	EnvVars map[string]string `json:"envVars"`
 	// format: containerPath => hostPath

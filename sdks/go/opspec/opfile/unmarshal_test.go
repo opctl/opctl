@@ -20,6 +20,31 @@ var _ = Context("Unmarshal", func() {
 		})
 	})
 	Context("Validator.Validate doesn't return errors", func() {
+		It("should validate and unmarshal cache objects with optional names and sharing", func() {
+			actualOpFile, err := Unmarshal([]byte(`
+name: cache-example
+run:
+  container:
+    image: { ref: debian:stable }
+    caches:
+      /var/cache/apt: { name: apt, sharing: locked }
+      /derived: { sharing: locked }
+      /null: { name: null, sharing: shared }
+      /default: {}
+      /expression: { name: apt-$(lockHash) }
+      /reference: { name: $(cacheName) }
+`))
+			Expect(err).NotTo(HaveOccurred())
+			Expect(actualOpFile.Run.Container.Caches).To(Equal(map[string]interface{}{
+				"/var/cache/apt": map[string]interface{}{"name": "apt", "sharing": "locked"},
+				"/derived":       map[string]interface{}{"sharing": "locked"},
+				"/null":          map[string]interface{}{"name": nil, "sharing": "shared"},
+				"/default":       map[string]interface{}{},
+				"/expression":    map[string]interface{}{"name": "apt-$(lockHash)"},
+				"/reference":     map[string]interface{}{"name": "$(cacheName)"},
+			}))
+		})
+
 		It("should unmarshal a shorthand cache name as nil", func() {
 			actualOpFile, err := Unmarshal([]byte(`
 name: cache-example

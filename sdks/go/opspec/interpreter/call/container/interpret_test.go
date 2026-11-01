@@ -79,6 +79,33 @@ var _ = Context("Interpret", func() {
 	})
 
 	Context("caches", func() {
+		for _, cold := range []bool{false, true} {
+			It(fmt.Sprintf("should carry locked cache host paths to the call with no-cache=%t", cold), func() {
+				dataDirPath := GinkgoT().TempDir()
+				ctx := context.Background()
+				cacheRoot := filepath.Join(dataDirPath, "caches")
+				if cold {
+					cacheRoot = filepath.Join(dataDirPath, "nocache", "run")
+					ctx = runcontext.WithNoCacheRoot(ctx, cacheRoot)
+				}
+				call, err := Interpret(ctx, nil, &model.ContainerCallSpec{
+					Image: &model.ContainerCallImageSpec{Ref: "debian:stable"},
+					Caches: map[string]interface{}{
+						"/var/cache/apt": map[string]interface{}{"name": "apt", "sharing": "locked"},
+						"/derived":       map[string]interface{}{"sharing": "locked"},
+						"/shared":        map[string]interface{}{"name": "shared", "sharing": "shared"},
+					},
+				}, "containerID", "opPath", dataDirPath)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(call.LockedCacheDirs).To(ConsistOf(filepath.Join(cacheRoot, "apt"), filepath.Join(cacheRoot, "debian-derived")))
+				Expect(call.Dirs).To(Equal(map[string]string{
+					"/var/cache/apt": filepath.Join(cacheRoot, "apt"),
+					"/derived":       filepath.Join(cacheRoot, "debian-derived"),
+					"/shared":        filepath.Join(cacheRoot, "shared"),
+				}))
+			})
+		}
+
 		for _, containerPath := range []string{"/caches", "/../caches"} {
 			It(fmt.Sprintf("should isolate cold cache dirs from dirs and files scratch entries at %s", containerPath), func() {
 				dataDirPath := GinkgoT().TempDir()

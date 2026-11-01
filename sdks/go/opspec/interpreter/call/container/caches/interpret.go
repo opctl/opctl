@@ -42,46 +42,64 @@ func Interpret(
 	dataDirPath string,
 	// noCacheRootPath, if set, replaces the cache root for a --no-cache run
 	noCacheRootPath string,
-) (map[string]string, error) {
+) (map[string]string, []string, error) {
 	containerCallDirs := map[string]string{}
+	var lockedHostPaths []string
 	for specContainerPath, value := range containerCallSpecCaches {
 		// clean so equivalent spellings (e.g. trailing slash) collide instead of failing late in the runtime
 		containerPath := path.Clean(specContainerPath)
 		if containerPath == "/" {
-			return nil, fmt.Errorf("unable to bind cache dir %q: container path must not be /", specContainerPath)
+			return nil, nil, fmt.Errorf("unable to bind cache dir %q: container path must not be /", specContainerPath)
 		}
 		if _, exists := containerCallDirs[containerPath]; exists {
-			return nil, fmt.Errorf("unable to bind cache dir %q: container path is declared more than once", specContainerPath)
+			return nil, nil, fmt.Errorf("unable to bind cache dir %q: container path is declared more than once", specContainerPath)
+		}
+
+		sharing := "shared"
+		if options, ok := value.(map[string]interface{}); ok {
+			for key := range options {
+				if key != "name" && key != "sharing" {
+					return nil, nil, fmt.Errorf("unable to bind cache dir %q: unknown cache option %q", containerPath, key)
+				}
+			}
+			if mode, exists := options["sharing"]; exists {
+				var ok bool
+				sharing, ok = mode.(string)
+				if !ok || (sharing != "shared" && sharing != "locked") {
+					return nil, nil, fmt.Errorf("unable to bind cache dir %q: sharing must be shared or locked", containerPath)
+				}
+			}
+			value = options["name"]
 		}
 
 		var name string
 		if value == nil {
 			if imageRef == nil {
-				return nil, fmt.Errorf("unable to bind cache dir %q: image has no ref; give an explicit cache name for this container path", containerPath)
+				return nil, nil, fmt.Errorf("unable to bind cache dir %q: image has no ref; give an explicit cache name for this container path", containerPath)
 			}
 			parsedRef, err := reference.ParseAnyReference(strings.ToLower(*imageRef))
 			if err != nil {
-				return nil, fmt.Errorf("unable to bind cache dir %q: unable to derive cache name from image ref: %w", containerPath, err)
+				return nil, nil, fmt.Errorf("unable to bind cache dir %q: unable to derive cache name from image ref: %w", containerPath, err)
 			}
 			namedRef, ok := parsedRef.(reference.Named)
 			if !ok {
-				return nil, fmt.Errorf("unable to bind cache dir %q: image ref has no repository; give an explicit cache name for this container path", containerPath)
+				return nil, nil, fmt.Errorf("unable to bind cache dir %q: image ref has no repository; give an explicit cache name for this container path", containerPath)
 			}
 			name = strings.Trim(cacheNameSeparatorPattern.ReplaceAllString(reference.FamiliarName(namedRef)+containerPath, "-"), "-")
 		} else {
 			nameExpression, ok := value.(string)
 			if !ok {
-				return nil, fmt.Errorf("unable to bind cache dir %q: cache name must be a string expression", containerPath)
+				return nil, nil, fmt.Errorf("unable to bind cache dir %q: cache name must be a string expression", containerPath)
 			}
 
 			nameValue, err := str.Interpret(scope, nameExpression)
 			if err != nil {
-				return nil, fmt.Errorf("unable to bind cache dir %q: %w", containerPath, err)
+				return nil, nil, fmt.Errorf("unable to bind cache dir %q: %w", containerPath, err)
 			}
 			name = *nameValue.String
 		}
 		if err := ValidateName(name); err != nil {
-			return nil, fmt.Errorf("unable to bind cache dir %q: %w", containerPath, err)
+			return nil, nil, fmt.Errorf("unable to bind cache dir %q: %w", containerPath, err)
 		}
 
 		hostPath := filepath.Join(dataDirPath, "caches", name)
@@ -89,22 +107,25 @@ func Interpret(
 			hostPath = filepath.Join(noCacheRootPath, name)
 		}
 		if err := unsudo.CreateDir(hostPath); err != nil {
-			return nil, fmt.Errorf("unable to bind cache dir %q to %q: %w", containerPath, name, err)
+			return nil, nil, fmt.Errorf("unable to bind cache dir %q to %q: %w", containerPath, name, err)
 		}
 		info, err := os.Lstat(hostPath)
 		if err != nil {
-			return nil, fmt.Errorf("unable to bind cache dir %q to %q: %w", containerPath, name, err)
+			return nil, nil, fmt.Errorf("unable to bind cache dir %q to %q: %w", containerPath, name, err)
 		}
 		if !info.IsDir() {
-			return nil, fmt.Errorf("unable to bind cache dir %q to %q: mount source %q must be a real directory", containerPath, name, hostPath)
+			return nil, nil, fmt.Errorf("unable to bind cache dir %q to %q: mount source %q must be a real directory", containerPath, name, hostPath)
 		}
 		// Best effort: an unprivileged node cannot chmod another user's cache dir.
 		if info.Mode().Perm() != 0777 {
 			if err := os.Chmod(hostPath, info.Mode()|0777); err != nil && !errors.Is(err, fs.ErrPermission) {
-				return nil, fmt.Errorf("unable to bind cache dir %q to %q: %w", containerPath, name, err)
+				return nil, nil, fmt.Errorf("unable to bind cache dir %q to %q: %w", containerPath, name, err)
 			}
 		}
 		containerCallDirs[containerPath] = hostPath
+		if sharing == "locked" {
+			lockedHostPaths = append(lockedHostPaths, hostPath)
+		}
 	}
-	return containerCallDirs, nil
+	return containerCallDirs, lockedHostPaths, nil
 }

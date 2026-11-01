@@ -119,7 +119,7 @@ func Interpret(
 	}
 
 	// interpret caches
-	cacheDirs, err := caches.Interpret(
+	cacheDirs, lockedCacheDirs, err := caches.Interpret(
 		scope,
 		containerCallSpec.Caches,
 		containerCall.Image.Ref,
@@ -129,6 +129,7 @@ func Interpret(
 	if err != nil {
 		return nil, err
 	}
+	containerCall.LockedCacheDirs = lockedCacheDirs
 	declaredMounts := map[string]struct{}{}
 	for containerPath := range containerCall.Dirs {
 		declaredMounts[path.Clean(containerPath)] = struct{}{}

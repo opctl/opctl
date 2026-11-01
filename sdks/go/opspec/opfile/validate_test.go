@@ -26,7 +26,11 @@ run:
 		{"/cache": 42},
 		{"/cache": true},
 		{"/cache": []interface{}{}},
-		{"/cache": map[string]interface{}{}},
+		{"/cache": map[string]interface{}{"unknown": "locked"}},
+		{"/cache": map[string]interface{}{"sharing": "private"}},
+		{"/cache": map[string]interface{}{"sharing": nil}},
+		{"/cache": map[string]interface{}{"sharing": true}},
+		{"/cache": map[string]interface{}{"name": 42}},
 	} {
 		It(fmt.Sprintf("should reject %v", caches), func() {
 			providedBytes, err := yaml.Marshal(model.OpSpec{

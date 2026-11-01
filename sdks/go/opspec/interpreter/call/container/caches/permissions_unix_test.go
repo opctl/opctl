@@ -40,7 +40,7 @@ var _ = Context("cache dir permissions", func() {
 				before, err := os.Stat(targetPath)
 				Expect(err).NotTo(HaveOccurred())
 
-				dirs, err := Interpret(nil, map[string]interface{}{"/cache": "shared"}, nil, dataDirPath, noCacheRootPath)
+				dirs, _, err := Interpret(nil, map[string]interface{}{"/cache": "shared"}, nil, dataDirPath, noCacheRootPath)
 
 				Expect(err).To(MatchError(ContainSubstring("must be a real directory")))
 				Expect(dirs).To(BeNil())
@@ -59,7 +59,7 @@ var _ = Context("cache dir permissions", func() {
 			previousUmask := syscall.Umask(0077)
 			defer syscall.Umask(previousUmask)
 
-			dirs, err := Interpret(nil, map[string]interface{}{"/cache": "shared"}, nil, dataDirPath, noCacheRootPath)
+			dirs, _, err := Interpret(nil, map[string]interface{}{"/cache": "shared"}, nil, dataDirPath, noCacheRootPath)
 
 			Expect(err).NotTo(HaveOccurred())
 			info, err := os.Stat(dirs["/cache"])
@@ -87,7 +87,7 @@ var _ = Context("cache dir permissions", func() {
 				before, err := os.Stat(hostPath)
 				Expect(err).NotTo(HaveOccurred())
 
-				dirs, err := Interpret(nil, map[string]interface{}{"/cache": "shared"}, nil, dataDirPath, noCacheRootPath)
+				dirs, _, err := Interpret(nil, map[string]interface{}{"/cache": "shared"}, nil, dataDirPath, noCacheRootPath)
 
 				Expect(err).NotTo(HaveOccurred())
 				Expect(dirs["/cache"]).To(Equal(hostPath))
@@ -125,7 +125,7 @@ func TestInterpretCacheDirUnprivileged(t *testing.T) {
 				if err := os.Chmod(hostPath, 0777); !errors.Is(err, syscall.EPERM) {
 					t.Fatalf("expected EPERM for another user's directory, got %v", err)
 				}
-				dirs, err := Interpret(nil, map[string]interface{}{"/cache": name}, nil, dataDirPath, noCacheRootPath)
+				dirs, _, err := Interpret(nil, map[string]interface{}{"/cache": name}, nil, dataDirPath, noCacheRootPath)
 				if err != nil {
 					t.Fatalf("another user's cache directory should still bind: %v", err)
 				}

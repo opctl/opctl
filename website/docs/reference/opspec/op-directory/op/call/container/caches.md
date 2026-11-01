@@ -2,7 +2,7 @@
 title: Caches [object]
 ---
 
-An object mapping absolute container paths to cache names.
+An object mapping absolute container paths to cache names and sharing options.
 
 ```yaml
 run:
@@ -68,7 +68,23 @@ After every container call, including failed or killed calls, a node run with su
 
 Cache names are global per node. Calls using the same name share contents across ops, even when they mount the cache dir at different container paths. On case-insensitive filesystems (the macOS and Windows defaults), names that differ only by case share one cache dir.
 
-Concurrent calls share the directory without locking. Tools that are not safe to run concurrently, such as apt, may corrupt their cache contents.
+Cache dirs use `sharing: shared` by default. For tools that cannot safely share a cache concurrently, such as apt, use the object form with `sharing: locked`:
+
+```yaml
+run:
+  container:
+    image: { ref: debian:stable }
+    caches:
+      /var/cache/apt: { name: apt, sharing: locked }
+      /var/lib/apt: { name: apt-lists, sharing: locked }
+    cmd: [apt-get, update]
+```
+
+The optional `name` accepts the same string literals and expressions as the string form. Omitting it or setting it to `null` derives the name from the image repository and container path. `sharing` accepts only `shared` and `locked`; omitted `sharing` means `shared`. Other object keys are rejected.
+
+Calls with `sharing: locked` wait for other locked calls using the same cache dir on the node. The lock lasts through the whole container run and the node's permission and ownership cleanup, including after failure or kill. Shared calls neither wait for nor block locked calls, so every call using a concurrency-sensitive cache should opt into locking. A waiting call reports the cache name in stderr and can be killed. Calls locking several caches acquire them in a consistent order. If one call mounts the same cache more than once with different `sharing` values, it locks. On case-insensitive filesystems, locking follows the exact spelling of the name, so give every locked user the same spelling.
+
+Locking also applies within a `--no-cache` run. Its scratch dirs have separate locks from the warm cache and other cold runs.
 
 Deleting a cache dir or the cache root is always safe when no call is using it. Later calls recreate the directories as needed.
 
