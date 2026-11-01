@@ -1,0 +1,1 @@
+{"contractVersion":1,"opspecSchema":1,"opspec":{"name":"hello","run":{"container":{"image":{"ref":"golang:1.25"},"name":"run-a-go-service-api","cmd":["go","run","main.go"]}}}}

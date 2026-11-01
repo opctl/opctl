@@ -208,6 +208,13 @@ var _ = Describe("Go op interfaces and public plan inputs", func() {
 		}))
 		Expect(spec.Run.Container.Files).To(Equal(map[string]interface{}{"/config.yml": "$(src/config/app.yml)", "/expected.txt": "$(./expected.txt)"}))
 	})
+	It("parses container names from the SDK's plan", func() {
+		data, err := os.ReadFile("../sdk/testdata/plan.container-name.json")
+		Expect(err).NotTo(HaveOccurred())
+		spec, err := ParsePlan(data)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(*spec.Run.Container.Name).To(Equal("run-a-go-service-api"))
+	})
 	It("keeps secret and filesystem values out of plan requests", func() {
 		text := "private"
 		number := float64(3)

@@ -57,6 +57,8 @@ accordance with
 
 ### Added
 
+- Go container calls can set a name for opctl DNS with `ContainerCall.Name`.
+
 - Go ops can bind paths in their source with `OpDir` and `OpFile`, and paths beneath input or op directories with `Dir.Dir` and `Dir.File`, without `RawRef`.
 
 - Go ops take their description from the package doc comment, rendered as markdown. `opctl.Op` overrides the name or description in `Main`, `MainWithOutputs`, `Describe`,

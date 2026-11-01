@@ -28,6 +28,7 @@ type containerSpec struct {
 	Stderr       string `json:"stderr,omitempty"`
 	rawBindings  map[bindingKey]bool
 	Image        imageSpec         `json:"image"`
+	Name         string            `json:"name,omitempty"`
 	Cmd          []string          `json:"cmd,omitempty"`
 	EnvVars      map[string]string `json:"envVars,omitempty"`
 	WorkDir      string            `json:"workDir,omitempty"`
@@ -78,6 +79,13 @@ func (c ContainerCall) File(path string, value File) ContainerCall {
 // Socket binds a socket input to a container address.
 func (c ContainerCall) Socket(address string, value Socket) ContainerCall {
 	return c.bindHandle(address, value, "socket")
+}
+
+// Name sets the container's literal name. Other opctl containers and the
+// host reach it by this name through opctl DNS.
+func (c ContainerCall) Name(name string) ContainerCall {
+	c.container.Name = escapeLiteral(name)
+	return c
 }
 
 // WorkDir sets the container's literal working directory.
