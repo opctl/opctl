@@ -30,15 +30,13 @@ accordance with
 ### Changed
 
 - Go op SDK releases with major versions 2 and later fail before tagging until the SDK module path includes the required `/vN` suffix.
-- After a Go op or container result call activates private results, a YAML op whose output validation fails returns no partial outputs,
-  even in an unrelated subtree of the same root run. Private-result activation is currently shared across the root run.
 - The `run-a-go-service` example's `dev` op is a Go op that calls the YAML `mysql` op. Its `MYSQL_HOST` default is now the `mysql` op's container name,
   `run-a-go-service-mysql`, so the service can reach the database.
 
 ### Fixed
 
+- Failed YAML ops keep their bound outputs when Go ops or container results occur only in unrelated subtrees.
 - Private Go module bootstrap reads credentials with a Go launcher and bounds download diagnostics in tmpfs files.
-
 - Go op authoring docs clarify setup, SDK module replacements, handle visibility, container DNS names, and CLI metadata display.
 - Release retries reuse an existing Go op SDK tag and its sums when the SDK contents match. Changed SDK contents require a new CHANGELOG version.
 - Go op scaffolds use `ops.local/NAME` module paths, so names such as `fmt` build without colliding with the Go standard library.

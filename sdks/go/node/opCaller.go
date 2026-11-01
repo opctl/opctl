@@ -65,6 +65,7 @@ func (oc _opCaller) Call(
 	map[string]*model.Value,
 	error,
 ) {
+	ctx = withResultSubtree(ctx)
 	if opCall.RepositoryRoot != "" {
 		ctx = goopctx.WithRepositoryRoot(ctx, opCall.RepositoryRoot)
 	}
@@ -86,6 +87,7 @@ func (oc _opCaller) Call(
 			return outboundScope, err
 		}
 		if isGoOp {
+			activateResultSubtree(ctx)
 			var session *goBootstrapSession
 			ctx, session = withGoBootstrapSession(ctx, opCall.OpPath)
 			defer session.close()
@@ -141,6 +143,9 @@ func (oc _opCaller) Call(
 		}
 	}
 
+	if opspec.HasContainerResults(childSpec) {
+		activateResultSubtree(ctx)
+	}
 	if !isGoOp {
 		destinations := outputDestinations(ctx, opCall.OutputParams, effectiveOutputs, scope)
 		ctx = withOutputIntent(ctx, destinations)
@@ -259,8 +264,8 @@ func (oc _opCaller) Call(
 		filepath.Join(oc.dataDirPath, "call", opCall.OpID),
 	)
 
-	// Preserve legacy failed YAML bindings; private/new-result paths remain atomic.
-	if err != nil && (isGoOp || privateResultsActive(ctx)) {
+	// Preserve legacy failed YAML bindings unless this subtree uses new results.
+	if err != nil && (isGoOp || resultSubtreeActive(ctx)) {
 		return outboundScope, err
 	}
 	for boundName, boundValue := range effectiveOutputs {

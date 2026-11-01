@@ -3,6 +3,7 @@ package node
 import (
 	"context"
 	"sync"
+	"sync/atomic"
 
 	"github.com/opctl/opctl/sdks/go/model"
 )
@@ -76,4 +77,28 @@ func privateResultsActive(ctx context.Context) bool {
 		return results.active
 	}
 	return false
+}
+
+type resultSubtreeKey struct{}
+type resultSubtree struct {
+	parent *resultSubtree
+	active atomic.Bool
+}
+
+func withResultSubtree(ctx context.Context) context.Context {
+	parent, _ := ctx.Value(resultSubtreeKey{}).(*resultSubtree)
+	return context.WithValue(ctx, resultSubtreeKey{}, &resultSubtree{parent: parent})
+}
+
+// Activation reaches ancestor ops, but never a sibling op.
+func activateResultSubtree(ctx context.Context) {
+	subtree, _ := ctx.Value(resultSubtreeKey{}).(*resultSubtree)
+	for ; subtree != nil; subtree = subtree.parent {
+		subtree.active.Store(true)
+	}
+}
+
+func resultSubtreeActive(ctx context.Context) bool {
+	subtree, _ := ctx.Value(resultSubtreeKey{}).(*resultSubtree)
+	return subtree != nil && subtree.active.Load()
 }

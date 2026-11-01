@@ -102,6 +102,7 @@ func (clr _caller) Call(
 ) {
 	ctx = withPrivateCompletions(ctx)
 	if opspec.HasContainerResults(callSpec) {
+		activateResultSubtree(ctx)
 		activatePrivateResults(ctx)
 	}
 	if privateResultsActive(ctx) {
@@ -212,6 +213,7 @@ func (clr _caller) Call(
 	}
 
 	if call.Op != nil && (call.Op.IsGoOp || opspec.HasContainerResults(call.Op.ChildCallCallSpec)) {
+		activateResultSubtree(ctx)
 		activatePrivateResults(ctx)
 		ctx = goopctx.WithActive(ctx)
 	}
