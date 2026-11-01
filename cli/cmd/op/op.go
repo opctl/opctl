@@ -34,6 +34,7 @@ func NewOpCmd(
 	opCmd.AddCommand(
 		newCreateCmd(),
 		newGenCmd(),
+		newPlanCmd(cliParamSatisfier),
 	)
 	opCmd.AddCommand(
 		newInstallCmd(

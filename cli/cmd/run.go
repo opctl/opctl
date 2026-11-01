@@ -124,7 +124,7 @@ opctl node and other opctl containers by their name. Containers will be removed 
 			prompt := cliParamSatisfier.NewCliPromptInputSrc(opFile.Inputs)
 			inputSourcer := cliparamsatisfier.NewInputSourcer(argsSource, ymlFileInputSrc, envSource, defaults, prompt)
 			if isGoOp {
-				inputSourcer = goInputSourcer{provided: cliparamsatisfier.NewInputSourcer(argsSource, ymlFileInputSrc, envSource), defaults: defaults, prompt: prompt, seen: map[string]bool{}}
+				inputSourcer = cliparamsatisfier.NewGoInputSourcer(cliparamsatisfier.NewInputSourcer(argsSource, ymlFileInputSrc, envSource), defaults, prompt)
 			}
 			argsMap, err := cliParamSatisfier.Satisfy(inputSourcer, opFile.Inputs)
 			if err != nil {
