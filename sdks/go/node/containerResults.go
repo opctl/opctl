@@ -79,6 +79,9 @@ func readContainerOutputs(path string) (map[string]*model.Value, error) {
 }
 
 func parseContainerOutputs(data []byte) (map[string]*model.Value, error) {
+	if len(data) == 0 {
+		return nil, fmt.Errorf("outputs file is empty; write one JSON object to $OPCTL_OUTPUTS")
+	}
 	if len(data) > containerResultLimit {
 		return nil, fmt.Errorf("outputs file exceeds 1 MiB")
 	}

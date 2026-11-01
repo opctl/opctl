@@ -73,6 +73,8 @@ var _ = Describe("container outputs file", func() {
 				Expect(err.Error()).NotTo(ContainSubstring("secret-marker"))
 				if failed {
 					Expect(err).To(MatchError("primary runtime error"))
+				} else if data == "" {
+					Expect(err).To(MatchError("outputs file is empty; write one JSON object to $OPCTL_OUTPUTS"))
 				}
 				_, err = os.Stat(filepath.Dir(call.OutputsFile))
 				Expect(os.IsNotExist(err)).To(BeTrue())

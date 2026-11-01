@@ -36,6 +36,7 @@ accordance with
 
 ### Fixed
 
+- Empty container outputs files report how to write the required JSON object to `$OPCTL_OUTPUTS`.
 - Runtime validation rejects container output defaults written as `null`, matching the op file schema.
 - Go op bootstrap ignores node data stored inside a local source repository when computing its compiled-program cache key.
 - YAML ops keep their existing event outputs and error messages for defaulted secret inputs and outputs. Go ops and container result calls still redact secrets.
