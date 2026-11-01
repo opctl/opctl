@@ -43,6 +43,10 @@
               "expectMessage": {
                 "type": "string",
                 "description": "Literal text required in the opctl run diagnostics"
+              },
+              "stubProof": {
+                "type": "boolean",
+                "description": "Verify typed op calls, warm caching, host stub refresh, and interface-triggered caller rebuilds"
               }
             },
             "required": [

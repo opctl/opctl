@@ -1,0 +1,304 @@
+// assert-stubs checks JIT rebuilds and host refresh against one isolated node.
+package main
+
+import (
+	"context"
+	"fmt"
+	"io/fs"
+	"net/url"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+	"time"
+
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/api/client"
+	"golang.org/x/mod/modfile"
+)
+
+func checkBuilds(events []model.Event, caller string, wantCaller, wantCallee int) error {
+	callee := filepath.Join(filepath.Dir(caller), "gogreet")
+	counts := map[string]int{}
+	for _, event := range events {
+		if start := event.CallStarted; start != nil && start.Call.Name != nil && *start.Call.Name == "bootstrap build" {
+			counts[filepath.Clean(start.Ref)]++
+		}
+	}
+	if counts[caller] != wantCaller {
+		return fmt.Errorf("caller builds: got %d, want %d (%v)", counts[caller], wantCaller, counts)
+	}
+	if wantCallee >= 0 && counts[callee] != wantCallee || wantCallee < 0 && counts[callee] > 1 {
+		return fmt.Errorf("unexpected Go callee builds: %v", counts)
+	}
+	for path := range counts {
+		if path != caller && path != callee {
+			return fmt.Errorf("unexpected bootstrap build: %s", path)
+		}
+	}
+	return nil
+}
+func copyFixture(source, target string) error {
+	err := filepath.WalkDir(source, func(path string, entry fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() && entry.Name() == "opctlgen" {
+			return filepath.SkipDir
+		}
+		rel, err := filepath.Rel(source, path)
+		if err != nil {
+			return err
+		}
+		dest := filepath.Join(target, rel)
+		if entry.IsDir() {
+			return os.MkdirAll(dest, 0755)
+		}
+		if entry.Type()&os.ModeSymlink != 0 {
+			return fmt.Errorf("fixture symlink %s", path)
+		}
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		return os.WriteFile(dest, data, 0644)
+	})
+	if err != nil {
+		return err
+	}
+	path := filepath.Join(target, "go.mod")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	module, err := modfile.Parse(path, data, nil)
+	if err != nil {
+		return err
+	}
+	for _, replacement := range module.Replace {
+		if replacement.Old.Path != "github.com/opctl/opctl/sdks/go/opspec/sdk" {
+			continue
+		}
+		sdk := replacement.New.Path
+		if !filepath.IsAbs(sdk) {
+			sdk = filepath.Join(source, sdk)
+		}
+		if err := module.AddReplace(replacement.Old.Path, replacement.Old.Version, sdk, ""); err != nil {
+			return err
+		}
+	}
+	data, err = module.Format()
+	if err != nil {
+		return err
+	}
+	if err := os.WriteFile(path, data, 0644); err != nil {
+		return err
+	}
+	// Keep the first run cold even when this node has seen another fixture copy.
+	return os.WriteFile(filepath.Join(target, ".opctl-stub-proof"), []byte(target), 0644)
+}
+func addOptional(path string) error {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	text := string(data)
+	if !strings.Contains(text, "inputs:\n") {
+		return fmt.Errorf("fixture has no inputs")
+	}
+	return os.WriteFile(path, []byte(strings.Replace(text, "inputs:\n", "inputs:\n  optionalAdded: {string: {default: added}}\n", 1)), 0644)
+}
+func removeLabel(path string) error {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	lines := strings.Split(string(data), "\n")
+	kept := []string{}
+	removed := false
+	for _, line := range lines {
+		if strings.HasPrefix(line, "  label:") {
+			removed = true
+			continue
+		}
+		kept = append(kept, line)
+	}
+	if !removed {
+		return fmt.Errorf("fixture has no label input")
+	}
+	return os.WriteFile(path, []byte(strings.Join(kept, "\n")), 0644)
+}
+func collect(base url.URL, since time.Time, caller string) ([]model.Event, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	stream, err := client.New(base, nil).GetEventStream(ctx, &model.GetEventStreamReq{Filter: model.EventFilter{Since: &since}})
+	if err != nil {
+		return nil, err
+	}
+	// The command has finished. Drain its replayed events, including builds that
+	// failed during the API describe before a root op could start.
+	quiet := time.NewTimer(500 * time.Millisecond)
+	defer quiet.Stop()
+	events := []model.Event{}
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-quiet.C:
+			return events, nil
+		case event, ok := <-stream:
+			if !ok {
+				return nil, fmt.Errorf("event stream ended")
+			}
+			if event.Timestamp.Before(since) {
+				continue
+			}
+			ref := ""
+			if event.CallStarted != nil {
+				ref = event.CallStarted.Ref
+			}
+			if event.CallEnded != nil {
+				ref = event.CallEnded.Ref
+			}
+			if ref != caller && ref != filepath.Join(filepath.Dir(caller), "gogreet") {
+				continue
+			}
+			events = append(events, event)
+			if !quiet.Stop() {
+				select {
+				case <-quiet.C:
+				default:
+				}
+			}
+			quiet.Reset(500 * time.Millisecond)
+		}
+	}
+}
+func verifyHost(root string, added bool) error {
+	for _, name := range []string{"yaml", "gogreet", "merge"} {
+		data, err := os.ReadFile(filepath.Join(root, "opctlgen", name, "stub.go"))
+		if err != nil {
+			return err
+		}
+		if !strings.HasPrefix(string(data), "// Code generated by opctl ") {
+			return fmt.Errorf("%s has no generated header", name)
+		}
+		if added && name == "yaml" && !strings.Contains(string(data), "OptionalAdded") {
+			return fmt.Errorf("host yaml stub was not refreshed")
+		}
+	}
+	ignore, err := os.ReadFile(filepath.Join(root, "opctlgen/.gitignore"))
+	if err != nil {
+		return err
+	}
+	if string(ignore) != "*\n" {
+		return fmt.Errorf("opctlgen must ignore itself")
+	}
+	return nil
+}
+func verifyParents(events []model.Event, caller string) error {
+	rootID := ""
+	for _, event := range events {
+		if start := event.CallStarted; start != nil && start.Ref == caller && start.Call.Op != nil && start.Call.ParentID == nil {
+			rootID = start.Call.ID
+			break
+		}
+	}
+	for _, event := range events {
+		start := event.CallStarted
+		if start != nil && start.Ref == filepath.Join(filepath.Dir(caller), "gogreet") && start.Call.Name != nil && strings.HasPrefix(*start.Call.Name, "bootstrap describe") && start.Call.ParentID != nil && *start.Call.ParentID == rootID && start.Call.RootID == rootID {
+			return nil
+		}
+	}
+	return fmt.Errorf("no callee describe event was parented under the caller op")
+}
+func run() error {
+	if len(os.Args) < 3 || len(os.Args) > 4 {
+		return fmt.Errorf("usage: assert-stubs CALLER ARG_FILE [API_URL]")
+	}
+	sourceCaller, err := filepath.Abs(os.Args[1])
+	if err != nil {
+		return err
+	}
+	root, err := os.MkdirTemp("", "stubs-proof-")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(root)
+	if err := copyFixture(filepath.Dir(sourceCaller), root); err != nil {
+		return err
+	}
+	caller := filepath.Join(root, "caller")
+	yaml := filepath.Join(root, "yaml/op.yml")
+	api := "http://127.0.0.1:42224/api"
+	if len(os.Args) == 4 {
+		api = os.Args[3]
+	}
+	base, err := url.Parse(api)
+	if err != nil {
+		return err
+	}
+	binary := os.Getenv("OPCTL_BINARY")
+	if binary == "" {
+		binary = "opctl"
+	}
+	for index, stage := range []string{"cold", "warm", "changed", "removed"} {
+		if stage == "changed" {
+			if err := addOptional(yaml); err != nil {
+				return err
+			}
+		}
+		if stage == "removed" {
+			if err := removeLabel(yaml); err != nil {
+				return err
+			}
+		}
+		since := time.Now().UTC()
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Minute)
+		command := exec.CommandContext(ctx, binary, "run", "--no-progress", "--arg-file", os.Args[2], caller)
+		output, runErr := command.CombinedOutput()
+		cancel()
+		fmt.Print(string(output))
+		if stage == "removed" {
+			if runErr == nil || !strings.Contains(string(output), "unknown field Label") || !strings.Contains(string(output), "yaml (../yaml)") {
+				return fmt.Errorf("removed input did not fail clearly: %v", runErr)
+			}
+			if strings.Contains(string(output), "opctlgen/yaml is out of date") {
+				return fmt.Errorf("run did not refresh the host stub before bootstrap")
+			}
+		} else if runErr != nil {
+			return fmt.Errorf("%s run failed: %w", stage, runErr)
+		}
+		events, err := collect(*base, since, caller)
+		if err != nil {
+			return err
+		}
+		wantCaller, wantCallee := 1, -1
+		if index == 0 {
+			wantCallee = 1
+		}
+		if stage == "warm" {
+			wantCaller, wantCallee = 0, 0
+		}
+		if err := checkBuilds(events, caller, wantCaller, wantCallee); err != nil {
+			return fmt.Errorf("%s: %w", stage, err)
+		}
+		if stage != "removed" {
+			if err := verifyHost(root, stage == "changed"); err != nil {
+				return err
+			}
+			if err := verifyParents(events, caller); err != nil {
+				return err
+			}
+		}
+		fmt.Printf("PASS %s: caller builds=%d; host stubs refreshed\n", stage, wantCaller)
+	}
+	fmt.Println("PASS: cold and warm typed calls, interface-triggered caller rebuild, host refresh, and removed-input compiler diagnostics")
+	return nil
+}
+func main() {
+	if err := run(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}

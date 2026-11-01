@@ -26,3 +26,11 @@ bytes/mtime, and fresh plans with changed public inputs, and prints timings.
 Use `call.expectMessage` to require a literal substring in `opctl run` output,
 including expected failures. The runner saves the exit status before checking
 the captured diagnostics.
+
+The typed-call fixture uses `call.stubProof: true`. Its driver copies the fixture
+to a writable temporary directory, verifies a cold build and a warm run without
+builds, adds an optional YAML input, and removes a required one. It asserts one
+caller rebuild after each interface edit and refreshed host stubs. The shared
+module fingerprint may also rebuild the Go callee.
+Each fixture copy includes a unique source marker so repeated proofs against the
+same node still begin with a cold build.

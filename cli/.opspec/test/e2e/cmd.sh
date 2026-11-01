@@ -4,6 +4,10 @@ if [ "${cacheProof:-false}" = true ]; then
   export OPCTL_DATA_DIR=/tmp/opctl-cache-proof
 fi
 
+if [ "${stubProof:-false}" = true ]; then
+  export OPCTL_DATA_DIR=/tmp/opctl-stubs-proof
+fi
+
 echo "starting docker daemon as background process"
 nohup dockerd \
   --host=unix:///var/run/docker.sock \
@@ -33,6 +37,9 @@ opRef="${opRef:-/test}"
 echo "op: $op"
 if [ "${cacheProof:-false}" = true ]; then
   exec "${assertCachePath:-/assert-cache}" "$opRef" /args.yml
+fi
+if [ "${stubProof:-false}" = true ]; then
+  exec "${assertStubsPath:-/assert-stubs}" "$opRef" /args.yml
 fi
 runOutput=$(mktemp "${TMPDIR:-/tmp}/opctl-run.XXXXXX") || exit 1
 trap 'rm -f "$runOutput"' EXIT
