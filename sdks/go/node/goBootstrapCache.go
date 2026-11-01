@@ -1,17 +1,416 @@
 package node
 
 import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"sort"
+	"strings"
+	"sync"
+	"time"
+
+	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
+	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime"
+	"github.com/opctl/opctl/sdks/go/node/pubsub"
+	"github.com/opctl/opctl/sdks/go/opspec/goop"
 )
 
 // goBootstrapCache is shared by API describes and all op callers in this node.
 type goBootstrapCache struct {
 	runtime    containerruntime.ContainerRuntime
 	stateStore stateStore
+	pubSub     pubsub.PubSub
+	once       sync.Once
+	initErr    error
+	directory  string
+	mu         sync.Mutex
+	locks      map[string]*bootstrapLock
+	leases     map[string]int
+	budget     int64
+}
+type bootstrapLock struct {
+	token chan struct{}
+	users int
+}
+type goProgram struct {
+	key, path string
+	source    *goop.Source
+	image     *containerruntime.ImageIdentity
+	metadata  programMetadata
+	ephemeral bool
+}
+type programMetadata struct {
+	Recipe, Key, ImageID, OS, Arch, Variant, GoVersion, Checksum string
+	Size                                                         int64
+	Created, LastUsed                                            time.Time
 }
 
-// Registry diagnostics may contain credentials. Bootstrap reports controlled errors.
 type discardBootstrapEvents struct{}
 
 func (discardBootstrapEvents) Publish(model.Event) {}
+
+func (cache *goBootstrapCache) initialize(dataDir string) error {
+	cache.once.Do(func() {
+		cache.directory = filepath.Join(dataDir, "go", "programs", goop.RecipeVersion)
+		cache.initErr = unsudo.CreateDir(cache.directory)
+		if cache.initErr != nil {
+			return
+		}
+		entries, err := os.ReadDir(cache.directory)
+		if err != nil {
+			cache.initErr = err
+			return
+		}
+		for _, entry := range entries {
+			if strings.HasPrefix(entry.Name(), ".tmp-") {
+				if err := os.RemoveAll(filepath.Join(cache.directory, entry.Name())); err != nil {
+					cache.initErr = err
+					return
+				}
+			}
+		}
+	})
+	return cache.initErr
+}
+func (cache *goBootstrapCache) acquire(ctx context.Context, key string) (func(), error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	cache.mu.Lock()
+	if cache.locks == nil {
+		cache.locks = map[string]*bootstrapLock{}
+	}
+	lock := cache.locks[key]
+	if lock == nil {
+		lock = &bootstrapLock{token: make(chan struct{}, 1)}
+		cache.locks[key] = lock
+	}
+	lock.users++
+	cache.mu.Unlock()
+	drop := func() {
+		cache.mu.Lock()
+		defer cache.mu.Unlock()
+		lock.users--
+		if lock.users == 0 {
+			delete(cache.locks, key)
+		}
+	}
+	select {
+	case lock.token <- struct{}{}:
+		return func() { <-lock.token; drop() }, nil
+	case <-ctx.Done():
+		drop()
+		return nil, ctx.Err()
+	}
+}
+func (cache *goBootstrapCache) limit() int64 {
+	if cache.budget > 0 {
+		return cache.budget
+	}
+	return 1 << 30
+}
+func (cache *goBootstrapCache) lease(program *goProgram) func() {
+	cache.mu.Lock()
+	if cache.leases == nil {
+		cache.leases = map[string]int{}
+	}
+	cache.leases[program.path]++
+	cache.mu.Unlock()
+	return func() {
+		cache.mu.Lock()
+		defer cache.mu.Unlock()
+		cache.leases[program.path]--
+		if cache.leases[program.path] == 0 {
+			delete(cache.leases, program.path)
+			if program.ephemeral {
+				os.RemoveAll(program.path)
+			}
+		}
+	}
+}
+func executableChecksum(path string) (string, int64, error) {
+	info, err := os.Lstat(path)
+	if err != nil {
+		return "", 0, err
+	}
+	if !info.Mode().IsRegular() || info.Mode().Perm()&0111 == 0 {
+		return "", 0, errInvalidProgram
+	}
+	file, err := os.Open(path)
+	if err != nil {
+		return "", 0, err
+	}
+	defer file.Close()
+	sum := sha256.New()
+	if _, err := io.Copy(sum, file); err != nil {
+		return "", 0, err
+	}
+	return hex.EncodeToString(sum.Sum(nil)), info.Size(), nil
+}
+
+var errInvalidProgram = errors.New("invalid cached Go program")
+
+func readProgram(path, key string, image *containerruntime.ImageIdentity) (programMetadata, error) {
+	var metadata programMetadata
+	info, err := os.Lstat(filepath.Join(path, "metadata.json"))
+	if err != nil {
+		return metadata, err
+	}
+	if !info.Mode().IsRegular() || info.Size() > 64*1024 {
+		return metadata, errInvalidProgram
+	}
+	data, err := os.ReadFile(filepath.Join(path, "metadata.json"))
+	if err != nil {
+		return metadata, err
+	}
+	if json.Unmarshal(data, &metadata) != nil || metadata.Key != key || metadata.Recipe != goop.RecipeVersion || metadata.ImageID != image.ID || metadata.OS != image.OS || metadata.Arch != image.Arch || metadata.Variant != image.Variant {
+		return metadata, errInvalidProgram
+	}
+	checksum, size, err := executableChecksum(filepath.Join(path, "program"))
+	if err != nil {
+		return metadata, err
+	}
+	if checksum != metadata.Checksum || size != metadata.Size {
+		return metadata, errInvalidProgram
+	}
+	return metadata, nil
+}
+func writeProgramMetadata(path string, metadata programMetadata) error {
+	data, err := json.Marshal(metadata)
+	if err != nil {
+		return err
+	}
+	temporary := filepath.Join(path, ".metadata.tmp")
+	if err := unsudo.CreateFile(temporary, data); err != nil {
+		return err
+	}
+	if err := os.Chmod(temporary, 0600); err != nil {
+		return err
+	}
+	return os.Rename(temporary, filepath.Join(path, "metadata.json"))
+}
+func (cache *goBootstrapCache) prune() error {
+	cache.mu.Lock()
+	defer cache.mu.Unlock()
+	entries, err := os.ReadDir(cache.directory)
+	if err != nil {
+		return err
+	}
+	type candidate struct {
+		path string
+		size int64
+		used time.Time
+	}
+	candidates := []candidate{}
+	var total int64
+	for _, entry := range entries {
+		if len(entry.Name()) != 64 || !entry.IsDir() {
+			continue
+		}
+		path := filepath.Join(cache.directory, entry.Name())
+		data, err := os.ReadFile(filepath.Join(path, "metadata.json"))
+		if os.IsNotExist(err) {
+			continue
+		}
+		if err != nil {
+			return err
+		}
+		var metadata programMetadata
+		if json.Unmarshal(data, &metadata) != nil {
+			continue
+		}
+		total += metadata.Size
+		if cache.leases[path] == 0 {
+			candidates = append(candidates, candidate{path, metadata.Size, metadata.LastUsed})
+		}
+	}
+	sort.Slice(candidates, func(i, j int) bool { return candidates[i].used.Before(candidates[j].used) })
+	for _, candidate := range candidates {
+		if total <= cache.limit() {
+			break
+		}
+		if err := os.RemoveAll(candidate.path); err != nil {
+			return err
+		}
+		total -= candidate.size
+	}
+	return nil
+}
+
+func (cache *goBootstrapCache) prepare(ctx context.Context, bootstrap _bootstrapper, op *model.OpCall, root string) (*goProgram, func(), error) {
+	if err := ctx.Err(); err != nil {
+		return nil, nil, err
+	}
+	if err := cache.initialize(bootstrap.dataDirPath); err != nil {
+		return nil, nil, err
+	}
+	for attempt := 0; attempt < 2; attempt++ {
+		source, err := goop.Discover(op.OpPath, op.RepositoryRoot)
+		if err != nil {
+			return nil, nil, &OpDeclarationError{Err: err}
+		}
+		ref := "golang:" + source.GoVersion
+		imageRequest := &model.ContainerCallImage{Ref: &ref}
+		if cache.stateStore != nil {
+			if auth := cache.stateStore.TryGetAuth(ref); auth != nil {
+				imageRequest.PullCreds = &auth.Creds
+			}
+		}
+		image, err := cache.runtime.ResolveImage(ctx, imageRequest, root, discardBootstrapEvents{})
+		if err != nil {
+			return nil, nil, err
+		}
+		toolchain := goop.Toolchain{ID: image.ID, OS: image.OS, Arch: image.Arch, Variant: image.Variant}
+		key, err := source.Fingerprint(ctx, bootstrap.dataDirPath, toolchain)
+		if ctx.Err() != nil {
+			return nil, nil, ctx.Err()
+		}
+		if err != nil {
+			return nil, nil, &OpDeclarationError{Err: err}
+		}
+		unlock, err := cache.acquire(ctx, key)
+		if err != nil {
+			return nil, nil, err
+		}
+		program, release, retry, err := cache.prepareLocked(ctx, bootstrap, op, root, source, image, key, toolchain)
+		unlock()
+		if err != nil {
+			return nil, nil, err
+		}
+		if retry {
+			continue
+		}
+		if err := cache.prune(); err != nil {
+			release()
+			return nil, nil, err
+		}
+		return program, release, nil
+	}
+	return nil, nil, &OpDeclarationError{Err: fmt.Errorf("Go op source changed repeatedly during bootstrap; retry with stable sources")}
+}
+func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _bootstrapper, op *model.OpCall, root string, source *goop.Source, image *containerruntime.ImageIdentity, key string, toolchain goop.Toolchain) (*goProgram, func(), bool, error) {
+	// Discover again after waiting: go.mod edits may have changed the replacement set.
+	current, err := goop.Discover(op.OpPath, op.RepositoryRoot)
+	if err != nil {
+		return nil, nil, false, &OpDeclarationError{Err: err}
+	}
+	fresh, err := current.Fingerprint(ctx, bootstrap.dataDirPath, toolchain)
+	if err != nil {
+		return nil, nil, false, err
+	}
+	if fresh != key {
+		return nil, nil, true, nil
+	}
+	path := filepath.Join(cache.directory, key)
+	guard := cache.lease(&goProgram{path: path})
+	metadata, err := readProgram(path, key, image)
+	if err == nil {
+		program := &goProgram{key: key, path: path, source: source, image: image, metadata: metadata}
+		release := guard
+		metadata.LastUsed = time.Now().UTC()
+		if err := writeProgramMetadata(path, metadata); err != nil {
+			release()
+			return nil, nil, false, err
+		}
+		return program, release, false, nil
+	}
+	guard()
+	if !os.IsNotExist(err) && !errors.Is(err, errInvalidProgram) {
+		return nil, nil, false, err
+	}
+	cache.mu.Lock()
+	leased := cache.leases[path] > 0
+	cache.mu.Unlock()
+	if leased {
+		return nil, nil, false, fmt.Errorf("cached Go program became corrupt during an active call")
+	}
+	if err := os.RemoveAll(path); err != nil {
+		return nil, nil, false, err
+	}
+	id, err := uniquestring.Construct()
+	if err != nil {
+		return nil, nil, false, err
+	}
+	staging := filepath.Join(cache.directory, ".tmp-"+key+"-"+id)
+	if err := unsudo.CreateDir(staging); err != nil {
+		return nil, nil, false, err
+	}
+	keep := false
+	defer func() {
+		if !keep {
+			os.RemoveAll(staging)
+		}
+	}()
+	if err := bootstrap.buildProgram(ctx, op, root, source, image, staging); err != nil {
+		return nil, nil, false, err
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, nil, false, err
+	}
+	current, err = goop.Discover(op.OpPath, op.RepositoryRoot)
+	if err != nil {
+		return nil, nil, false, err
+	}
+	fresh, err = current.Fingerprint(ctx, bootstrap.dataDirPath, toolchain)
+	if err != nil {
+		return nil, nil, false, err
+	}
+	if fresh != key {
+		return nil, nil, true, nil
+	}
+	checksum, size, err := executableChecksum(filepath.Join(staging, "program"))
+	if err != nil {
+		return nil, nil, false, fmt.Errorf("validate built Go program: %w", err)
+	}
+	version, err := os.ReadFile(filepath.Join(staging, "go-version"))
+	if err != nil {
+		return nil, nil, false, err
+	}
+	if len(version) > 1024 {
+		return nil, nil, false, fmt.Errorf("invalid Go version diagnostic")
+	}
+	if err := os.Remove(filepath.Join(staging, "go-version")); err != nil {
+		return nil, nil, false, err
+	}
+	now := time.Now().UTC()
+	metadata = programMetadata{Recipe: goop.RecipeVersion, Key: key, ImageID: image.ID, OS: image.OS, Arch: image.Arch, Variant: image.Variant, GoVersion: strings.TrimSpace(string(version)), Checksum: checksum, Size: size, Created: now, LastUsed: now}
+	if err := writeProgramMetadata(staging, metadata); err != nil {
+		return nil, nil, false, err
+	}
+	program := &goProgram{key: key, path: staging, source: source, image: image, metadata: metadata, ephemeral: size > cache.limit()}
+	cache.mu.Lock()
+	if !program.ephemeral {
+		if err := os.Rename(staging, path); err != nil {
+			cache.mu.Unlock()
+			return nil, nil, false, err
+		}
+		program.path = path
+	}
+	if cache.leases == nil {
+		cache.leases = map[string]int{}
+	}
+	cache.leases[program.path]++
+	cache.mu.Unlock()
+	keep = true
+	release := func() {
+		cache.mu.Lock()
+		defer cache.mu.Unlock()
+		cache.leases[program.path]--
+		if cache.leases[program.path] == 0 {
+			delete(cache.leases, program.path)
+			if program.ephemeral {
+				os.RemoveAll(program.path)
+			}
+		}
+	}
+
+	return program, release, false, nil
+}

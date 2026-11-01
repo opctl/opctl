@@ -1,1 +1,11 @@
-[{"name":"imports app package and embedded asset through parent module","call":{"opRef":"/repo/test-suite/run/go/module-root/ops/check","scope":{},"expect":"success"}}]
+[
+  {
+    "name": "imports app package and embedded asset through parent module",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/module-root/ops/check",
+      "scope": {},
+      "expect": "success",
+      "cacheProof": true
+    }
+  }
+]

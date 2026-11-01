@@ -54,27 +54,15 @@ func (bootstrap _bootstrapper) Plan(ctx context.Context, opCall *model.OpCall, r
 	return goop.ParsePlan(data)
 }
 func (bootstrap _bootstrapper) run(ctx context.Context, opCall *model.OpCall, rootCallID, phase string, inputs map[string]interface{}) ([]byte, error) {
+	if bootstrap.cache != nil {
+		return bootstrap.runCached(ctx, opCall, rootCallID, phase, inputs)
+	}
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
 	spec, mountRoot, err := goop.ContainerSpecInRepository(opCall.OpPath, phase, opCall.RepositoryRoot)
 	if err != nil {
 		return nil, &OpDeclarationError{Err: err}
-	}
-	if bootstrap.cache != nil {
-		ref := spec.Image.Ref
-		image := &model.ContainerCallImage{Ref: &ref}
-		if bootstrap.cache.stateStore != nil {
-			if auth := bootstrap.cache.stateStore.TryGetAuth(ref); auth != nil {
-				image.PullCreds = &auth.Creds
-			}
-		}
-		identity, err := bootstrap.cache.runtime.ResolveImage(ctx, image, rootCallID, discardBootstrapEvents{})
-		if err != nil {
-			return nil, err
-		}
-		spec.Image.Ref, spec.Image.Prepared = identity.Ref, true
-		spec.EnvVars.(map[string]interface{})["GOARCH"] = identity.Arch
 	}
 	id, err := uniquestring.Construct()
 	if err != nil {
@@ -97,11 +85,6 @@ func (bootstrap _bootstrapper) run(ctx context.Context, opCall *model.OpCall, ro
 		return nil, err
 	}
 	scope := map[string]*model.Value{"module": {Dir: &mountRoot}, "request": {File: &requestPath}}
-	if bootstrap.cache != nil {
-		if err := prepareGoCaches(spec, scope, bootstrap.dataDirPath, scratch); err != nil {
-			return nil, err
-		}
-	}
 	var stdout bytes.Buffer
 	name := "bootstrap " + phase
 	var parent *string

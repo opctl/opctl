@@ -65,7 +65,7 @@ func New(
 		pubSub,
 	)
 
-	goCache := &goBootstrapCache{runtime: containerRuntime, stateStore: stateStore}
+	goCache := &goBootstrapCache{runtime: containerRuntime, stateStore: stateStore, pubSub: pubSub}
 	caller := newCaller(
 		newContainerCaller(
 			containerRuntime,

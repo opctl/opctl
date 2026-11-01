@@ -8,6 +8,8 @@ accordance with
 
 ### Added
 
+- Go ops build one cached executable per module content and immutable toolchain. Warm runs execute it without recompiling; plans still run for every invocation.
+
 - Go ops share node-owned module and build caches. Bootstrap runs as the cache owner with isolated Go settings and scratch home.
 
 - Go bootstrap resolves and runs an immutable Linux toolchain image, reusing cached images offline without redundant phase pulls.

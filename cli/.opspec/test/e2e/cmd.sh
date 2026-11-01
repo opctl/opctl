@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
 
+if [ "${cacheProof:-false}" = true ]; then
+  export OPCTL_DATA_DIR=/tmp/opctl-cache-proof
+fi
+
 echo "starting docker daemon as background process"
 nohup dockerd \
   --host=unix:///var/run/docker.sock \
@@ -19,6 +23,9 @@ exec <&-
 opRef="${opRef:-/test}"
 
 echo "op: $op"
+if [ "${cacheProof:-false}" = true ]; then
+  exec "${assertCachePath:-/assert-cache}" "$opRef" /args.yml
+fi
 opctl run --no-progress --arg-file /args.yml "$opRef"
 runStatus=$?
 

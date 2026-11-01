@@ -31,6 +31,10 @@
                   "failure",
                   "success"
                 ]
+              },
+              "cacheProof": {
+                "type": "boolean",
+                "description": "Run the parent-module Go fixture twice on one node and verify the executable cache"
               }
             },
             "required": [

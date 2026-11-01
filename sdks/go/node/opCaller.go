@@ -85,6 +85,9 @@ func (oc _opCaller) Call(
 			return outboundScope, err
 		}
 		if isGoOp {
+			var session *goBootstrapSession
+			ctx, session = withGoBootstrapSession(ctx, opCall.OpPath)
+			defer session.close()
 			desc, err = oc.bootstrapper.Describe(ctx, opCall, rootCallID)
 			if err != nil {
 				return outboundScope, err

@@ -20,7 +20,7 @@ run:
         envVars:
           CGO_ENABLED: '0'
           GOFLAGS: '-tags=containers_image_openpgp -buildvcs=false'
-        cmd: [go, build, -o, /out/assert-outputs, ./cli/.opspec/test/e2e/assert-outputs]
+        cmd: [sh, -ce, "go build -o /out/assert-outputs ./cli/.opspec/test/e2e/assert-outputs; go build -o /out/assert-cache ./cli/.opspec/test/e2e/assert-cache"]
     - op:
         ref: github.com/opspec-pkgs/dir.list-contents#1.1.0
         inputs:
@@ -52,6 +52,7 @@ run:
                         opRef: ''
                         expectOutputs: ''
                         authAddGithub: false
+                        cacheProof: false
                       override:  $(scenario.call)
                     outputs:
                       result: $(call)
@@ -71,11 +72,13 @@ run:
                       op: $(entry.path)
                       expect: $(call.expect)
                       authAddGithub: $(call.authAddGithub)
+                      cacheProof: $(call.cacheProof)
                       githubAccessToken:
                     files:
                       /args.yml: $(call.scope)
                       /expected-outputs.json: $(call.expectOutputs)
                       /assert-outputs: $(outputAssertions/assert-outputs)
+                      /assert-cache: $(outputAssertions/assert-cache)
                       /cmd.sh:
                       /usr/local/bin/opctl: $(../../../opctl-linux-amd64)
                     image:

@@ -89,6 +89,11 @@ func ContainerSpecInRepository(opDir, phase, repositoryRoot string) (*model.Cont
 	if err != nil {
 		return nil, "", err
 	}
+	return source.ContainerSpec(phase), source.ModuleRoot, nil
+}
+
+// ContainerSpec binds this prepared source identity without rediscovering a changed module.
+func (source *Source) ContainerSpec(phase string) *model.ContainerCallSpec {
 	root, version := source.ModuleRoot, source.GoVersion
 	dirs := map[string]interface{}{}
 	for _, target := range source.Roots {
@@ -111,7 +116,7 @@ func ContainerSpecInRepository(opDir, phase, repositoryRoot string) (*model.Cont
 		Files:          map[string]interface{}{"/opctl/request.json": "$(request)"},
 		EnvVars:        map[string]interface{}{"GOFLAGS": "-mod=readonly", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "OPCTL_BOOTSTRAP_REQUEST": "/opctl/request.json"},
 		WorkDir:        filepath.ToSlash(source.OpDir),
-	}, root, nil
+	}
 }
 
 func inRepository(root, path string) error {

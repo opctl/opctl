@@ -161,3 +161,17 @@ The module cache retains downloaded source and can grow over time. To remove it,
 stop the node and delete `<dataDir>/go/mod`. Caches belong to one node/data-dir
 owner. With embedded, the data directory must already have a Lima share at the
 same absolute path. Custom unshared paths require configuring that share first.
+
+
+Compiled programs live in `<dataDir>/go/programs/v1`, keyed by source content,
+local replacements, op package, Go directive, immutable image identity, and build
+settings. Dirty and untracked files, embedded assets, and SDK replacement edits
+invalidate the key; mtime changes alone do not. Escaping source symlinks and
+special files fail with a path-specific error. The cache stores only executables
+and diagnostic metadata, never describe or plan responses. Every plan executes
+again with its own public inputs. Concurrent callers share a build; cancellation
+or a failed build never publishes an entry.
+
+Programs use a 1 GiB soft LRU limit; active calls keep their executables leased.
+An oversized executable is available only for its current call. To force all
+programs to rebuild, stop the node and remove `<dataDir>/go/programs`.
