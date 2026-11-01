@@ -119,15 +119,17 @@ func (oc _opCaller) Call(
 			}
 			outputBindings = plan.OutputBindings
 			childSpec = plan.Run
+			destinations := outputDestinations(ctx, desc.Outputs, effectiveOutputs, scope)
 			ctx = withPrivateGoInputs(ctx, desc.Inputs)
 			// Output declarations protect their producer before execution.
 			sources := map[string]*model.ParamSpec{}
 			for name, expr := range outputBindings {
-				if secretParam(desc.Outputs[name]) {
-					sources[opspec.RefToName(expr)] = desc.Outputs[name]
+				if secretParam(destinations[name]) {
+					sources[opspec.RefToName(expr)] = destinations[name]
 				}
 			}
 			ctx = withProtectedSources(ctx, sources)
+			ctx = withOutputIntent(ctx, sources)
 			if parentCallID == nil && opCall.OpID == rootCallID {
 				for name := range desc.Outputs {
 					if _, exists := effectiveOutputs[name]; !exists {
@@ -138,10 +140,14 @@ func (oc _opCaller) Call(
 		}
 	}
 
-	if !isGoOp && privateResultsActive(ctx) {
-		ctx = withPrivateGoInputs(ctx, nil)
-		ctx = withRuntimeScope(ctx, opCall.Inputs)
-		ctx = withProtectedSources(ctx, opCall.OutputParams)
+	if !isGoOp {
+		destinations := outputDestinations(ctx, opCall.OutputParams, effectiveOutputs, scope)
+		ctx = withOutputIntent(ctx, destinations)
+		if privateResultsActive(ctx) {
+			ctx = withPrivateGoInputs(ctx, nil)
+			ctx = withRuntimeScope(ctx, opCall.Inputs)
+			ctx = withProtectedSources(ctx, destinations)
+		}
 	}
 
 	// form scope for op call by combining defined inputs & op dir

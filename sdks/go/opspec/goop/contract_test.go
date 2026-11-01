@@ -16,7 +16,7 @@ var _ = Describe("Go op bootstrap contract", func() {
 	It("requests plan with the supported schema and empty inputs and known outputs", func() {
 		data, err := json.Marshal(NewRequest("plan", nil))
 		Expect(err).NotTo(HaveOccurred())
-		Expect(data).To(MatchJSON(`{"contractVersion":1,"phase":"plan","opspecSchema":{"min":1,"max":1},"inputs":{},"knownOutputs":{}}`))
+		Expect(data).To(MatchJSON(`{"contractVersion":1,"phase":"plan","opspecSchema":{"min":1,"max":2},"inputs":{},"knownOutputs":{}}`))
 	})
 	It("reads the SDK's golden plan through the existing op file schema", func() {
 		data, err := os.ReadFile("../sdk/testdata/plan.hello.json")
@@ -42,13 +42,13 @@ var _ = Describe("Go op bootstrap contract", func() {
 	})
 	It("rejects incompatible versions and malformed responses", func() {
 		for _, data := range []string{
-			`{`, `{} {}`, `{"contractVersion":2,"opspecSchema":1}`, `{"contractVersion":1,"opspecSchema":0}`, `{"contractVersion":1,"opspecSchema":2}`,
+			`{`, `{} {}`, `{"contractVersion":2,"opspecSchema":1}`, `{"contractVersion":1,"opspecSchema":0}`, `{"contractVersion":1,"opspecSchema":999}`,
 		} {
 			_, err := ParsePlan([]byte(data))
 			Expect(err).To(HaveOccurred(), data)
 		}
-		_, err := ParsePlan([]byte(`{"contractVersion":1,"opspecSchema":2}`))
-		Expect(err.Error()).To(ContainSubstring("Go op requires opspec schema 2; upgrade opctl"))
+		_, err := ParsePlan([]byte(`{"contractVersion":1,"opspecSchema":999}`))
+		Expect(err.Error()).To(ContainSubstring("Go op requires opspec schema 999; upgrade opctl"))
 	})
 	It("preserves op file validation errors", func() {
 		invalid := json.RawMessage(`{"name":"hello","run":{"container":{}}}`)

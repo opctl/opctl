@@ -3,6 +3,10 @@
   "title": "Opctl opspec op",
   "description": "Defines an op",
   "definitions": {
+    "containerOutputBinding": {
+      "type": "string",
+      "pattern": "^\\$\\([-_a-zA-Z0-9]+\\)$"
+    },
     "arrayConstraints": {
       "title": "arrayConstraints",
       "type": "object",
@@ -851,6 +855,8 @@
         "container": {
           "type": "object",
           "properties": {
+            "stdout": {"$ref": "#/definitions/containerOutputBinding"},
+            "stderr": {"$ref": "#/definitions/containerOutputBinding"},
             "cmd": {
               "description": "Expression coercible to array of strings used as the command run by a container; overrides any set at the image level",
               "$ref": "#/definitions/arrayExpression"

@@ -13,6 +13,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/internal/goopctx"
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/sensitivity"
@@ -115,10 +116,8 @@ func Interpret(
 	if fetched, ok := opDir.(interface{ RepositoryRoot() string }); ok {
 		opCall.RepositoryRoot = fetched.RepositoryRoot()
 	}
-	if goopctx.Active(ctx) {
-		opCall.InputParams = opFile.Inputs
-		opCall.OutputParams = opFile.Outputs
-	}
+	opCall.InputParams = opFile.Inputs
+	opCall.OutputParams = opFile.Outputs
 
 	if isGoOp {
 		if source, ok := opDir.(interface{ SourceResource() string }); ok {
@@ -130,7 +129,7 @@ func Interpret(
 		return opCall, nil
 	}
 	protected := map[string]bool{}
-	if goopctx.Active(ctx) {
+	if goopctx.Active(ctx) || opspec.HasContainerResults(opFile.Run) {
 		protected = sensitivity.Inputs(opCallSpec.Inputs, opFile.Inputs, scope)
 	}
 	opCall.Inputs, err = inputs.Interpret(

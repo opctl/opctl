@@ -15,6 +15,7 @@ An object defining a container call.
   - [files](#files)
   - [name](#name)
   - [sockets](#sockets)
+  - [stdout and stderr](#stdout-and-stderr)
   - [workDir](#workdir)
 
 ### image
@@ -60,3 +61,24 @@ An object for which each key is an absolute path in the container and and each v
 A [string initializer](../../../../types/string.md#initialization) defining absolute path from which [cmd](#cmd) will be executed.
 
 > defining workDir overrides any defined by the image
+
+### stdout and stderr
+
+Bind a process stream to a String using a whole scope reference, for example `stdout: $(version)` or `stderr: $(diagnostic)`. The target must contain only letters, digits, underscores, or hyphens. A new target cannot duplicate another output or mount binding in the same call.
+
+Each bound stream accepts at most 1 MiB of valid UTF-8. Capture strips exactly one final LF or CRLF and preserves other whitespace. The call publishes values only after successful execution and collection. Overflow cancels the container and fails the call. Public log events retain the original bytes; a stream bound to a declared secret output or sensitive target produces no log events and remains available to later calls through private runtime results. Authors must declare derived secrets. Unbound application logs are still public.
+
+Docker supports separate streams. Embedded forwards the same request to Docker, but its mount and UID behavior needs a macOS smoke test. Kubernetes rejects stream bindings explicitly. Calls without stream bindings keep their existing stream and TTY behavior.
+
+```yaml
+run:
+  serial:
+    - container:
+        image: {ref: alpine:3}
+        cmd: [sh, -ce, "printf 'v1.2.3\\n'"]
+        stdout: $(version)
+    - container:
+        image: {ref: alpine:3}
+        envVars: {VERSION: $(version)}
+        cmd: [sh, -ce, 'test "$VERSION" = v1.2.3']
+```

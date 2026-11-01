@@ -1,0 +1,12 @@
+name: streams
+run:
+  serial:
+    - container:
+        image: {ref: alpine:3}
+        cmd: [sh, -ce, "printf 'v1.2.3\\n'; printf 'diagnostic\\n' >&2"]
+        stdout: $(version)
+        stderr: $(diagnostic)
+    - container:
+        image: {ref: alpine:3}
+        envVars: {VERSION: $(version), DIAGNOSTIC: $(diagnostic)}
+        cmd: [sh, -ce, 'test "$VERSION" = v1.2.3 && test "$DIAGNOSTIC" = diagnostic']

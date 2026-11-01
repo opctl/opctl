@@ -63,7 +63,7 @@ var _ = Describe("DescribeOp error classification", func() {
 		{name: "classifies forbidden mounts as a declaration error", module: stringPtr("module hello\ngo 1.21\nreplace example.com/lib => /usr\n"), declaration: true},
 		{name: "classifies bootstrap program exits as declaration errors", exit: 1, declaration: true},
 		{name: "classifies bootstrap JSON parse failures as declaration errors", data: "not JSON", declaration: true},
-		{name: "classifies bootstrap contract failures as declaration errors", data: `{"contractVersion":1,"opspecSchema":2}`, declaration: true},
+		{name: "classifies bootstrap contract failures as declaration errors", data: `{"contractVersion":1,"opspecSchema":999}`, declaration: true},
 		{name: "preserves runtime failures", failure: errors.New("Docker unavailable")},
 		{name: "preserves runtime failures even with a nonzero exit", failure: errors.New("wait failed"), exit: 1},
 		{name: "preserves context cancellation errors", failure: context.Canceled},

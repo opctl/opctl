@@ -224,3 +224,5 @@ remove `<dataDir>/go`, including its module, build, and program caches. These
 caches are private to one data-dir owner, not an authorization boundary between
 users. Docker Linux has integration coverage; embedded requires a same-path Lima
 share and still needs a macOS smoke test for UID mapping and read-only behavior.
+
+Container graphs share YAML stdout/stderr bindings and privacy rules. The Go SDK accessors arrive separately; the host reads schema 1 graphs and schema 2 stream bindings.

@@ -10,6 +10,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/internal/goopctx"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
+	"github.com/opctl/opctl/sdks/go/opspec"
 	callpkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/call"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/sensitivity"
 )
@@ -99,8 +100,14 @@ func (clr _caller) Call(
 	error,
 ) {
 	ctx = withPrivateCompletions(ctx)
+	if opspec.HasContainerResults(callSpec) {
+		activatePrivateResults(ctx)
+	}
 	if privateResultsActive(ctx) {
 		ctx = goopctx.WithActive(ctx)
+		if outputIntent(ctx) != nil {
+			ctx = withProtectedSources(ctx, outputIntent(ctx))
+		}
 	}
 	if id == rootCallID {
 		defer clearPrivateCompletions(ctx)
@@ -200,8 +207,9 @@ func (clr _caller) Call(
 		return nil, err
 	}
 
-	if call.Op != nil && call.Op.IsGoOp {
+	if call.Op != nil && (call.Op.IsGoOp || opspec.HasContainerResults(call.Op.ChildCallCallSpec)) {
 		activatePrivateResults(ctx)
+		ctx = goopctx.WithActive(ctx)
 	}
 
 	if call.If != nil && !*call.If {

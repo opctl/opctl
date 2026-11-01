@@ -23,6 +23,10 @@ func Interpret(
 	dataDirPath string,
 ) (*model.ContainerCall, error) {
 
+	if err := validateResultBindings(containerCallSpec); err != nil {
+		return nil, err
+	}
+
 	containerCall := &model.ContainerCall{
 		BaseCall: model.BaseCall{
 			OpPath: opPath,

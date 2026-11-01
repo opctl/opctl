@@ -8,6 +8,8 @@ accordance with
 
 ### Added
 
+- Container calls can bind `stdout` and `stderr` to String values in YAML, with separate streams, bounded capture, and private secret targets.
+
 - Private Go modules use existing HTTPS auth records and repository-scoped explicit pull credentials. Credentials reach download containers only on stdin into tmpfs and are
   removed before compilation; describe and plan receive none.
 

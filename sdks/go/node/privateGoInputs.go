@@ -25,8 +25,16 @@ func withPrivateGoInputs(ctx context.Context, params map[string]*model.ParamSpec
 	return context.WithValue(ctx, privateGoInputsKey{}, names)
 }
 
-func callForEvent(ctx context.Context, call *model.Call, spec *model.CallSpec) model.Call {
-	snapshot := *call
+func callForEvent(ctx context.Context, call *model.Call, spec *model.CallSpec) (snapshot model.Call) {
+	snapshot = *call
+	defer func() {
+		if snapshot.Op != nil {
+			op := *snapshot.Op
+			op.InputParams = nil
+			op.OutputParams = nil
+			snapshot.Op = &op
+		}
+	}()
 	names, _ := ctx.Value(privateGoInputsKey{}).([]string)
 	if privateResultsActive(ctx) {
 		if spec != nil && spec.Name != nil && sensitiveExpression(ctx, *spec.Name) {

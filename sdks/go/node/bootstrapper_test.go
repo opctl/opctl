@@ -42,7 +42,7 @@ var _ = Describe("Go op bootstrapper", func() {
 			requestPath = *scope["request"].File
 			request, err := os.ReadFile(requestPath)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(request).To(MatchJSON(`{"contractVersion":1,"phase":"plan","opspecSchema":{"min":1,"max":1},"inputs":{"env":"dev"},"knownOutputs":{}}`))
+			Expect(request).To(MatchJSON(`{"contractVersion":1,"phase":"plan","opspecSchema":{"min":1,"max":2},"inputs":{"env":"dev"},"knownOutputs":{}}`))
 			interpreted, err := containerInterpreter.Interpret(scope, spec.Container, id, path, dataDir)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(interpreted.Files["/opctl/request.json"]).To(Equal(requestPath))
@@ -115,7 +115,7 @@ var _ = Describe("Go op bootstrapper", func() {
 			Expect(spec.Container.Cmd).To(Equal([]interface{}{"go", "run", ".", "describe"}))
 			request, err := os.ReadFile(*scope["request"].File)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(request).To(MatchJSON(`{"contractVersion":1,"phase":"describe","opspecSchema":{"min":1,"max":1},"inputs":{},"knownOutputs":{}}`))
+			Expect(request).To(MatchJSON(`{"contractVersion":1,"phase":"describe","opspecSchema":{"min":1,"max":2},"inputs":{},"knownOutputs":{}}`))
 			data, err := os.ReadFile("../opspec/sdk/testdata/describe.inputs.json")
 			Expect(err).NotTo(HaveOccurred())
 			_, err = stdoutCaptureFrom(ctx).Write(data)
