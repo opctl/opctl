@@ -208,7 +208,7 @@ func (a *Analysis) index(n *yaml.Node, path string) {
 	switch n.Kind {
 	case yaml.MappingNode:
 		for i := 0; i+1 < len(n.Content); i += 2 {
-			key := n.Content[i].Value
+			key := sourceKey(n.Content[i])
 			p := key
 			if path != "" {
 				p = path + "." + key
@@ -461,4 +461,17 @@ func keys[V any](m map[string]V) []string {
 	}
 	sort.Strings(out)
 	return out
+}
+
+// opfile uses YAML 1.1 key coercion; yaml.v3 retains these unquoted words as strings.
+func sourceKey(n *yaml.Node) string {
+	if n.Style == 0 {
+		switch strings.ToLower(n.Value) {
+		case "y", "yes", "on":
+			return "true"
+		case "n", "no", "off":
+			return "false"
+		}
+	}
+	return n.Value
 }
