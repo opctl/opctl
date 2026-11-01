@@ -127,3 +127,26 @@ func TestRenderStubPreservesUnusualObjectKeys(t *testing.T) {
 		})
 	}
 }
+
+func TestRenderStubOmitsSecretConstraints(t *testing.T) {
+	spec := &model.OpSpec{Inputs: map[string]*model.ParamSpec{
+		"token": {String: &model.StringParamSpec{IsSecret: true, Default: "secret-default", Constraints: model.Constraints{
+			"enum": []string{"secret-enum"}, "const": "secret-const", "pattern": "secret-pattern",
+		}}},
+		"public": {String: &model.StringParamSpec{Constraints: model.Constraints{"pattern": "public-pattern"}}},
+	}}
+	data, err := RenderStub(StubUse{Name: "greet", Ref: "repo#v1"}, spec)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, secret := range []string{"secret-default", "secret-enum", "secret-const", "secret-pattern"} {
+		if bytes.Contains(data, []byte(secret)) {
+			t.Fatalf("secret constraint or default leaked: %s", data)
+		}
+	}
+	for _, doc := range []string{"Has a default. Secret.", "public-pattern"} {
+		if !bytes.Contains(data, []byte(doc)) {
+			t.Fatalf("missing public documentation: %s", data)
+		}
+	}
+}

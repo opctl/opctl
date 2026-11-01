@@ -19,7 +19,6 @@ type Inputs struct {
 	// Src is input "src". Default: "$(./testdata/src)".
 	Src opctl.Dir
 	// Token is input "token". Required. Secret.
-	// Constraints: {"minLength":1}
 	Token opctl.String
 	// WantProd is input "wantProd". Required.
 	WantProd opctl.Boolean

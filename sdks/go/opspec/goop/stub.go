@@ -278,7 +278,7 @@ func RenderStub(use StubUse, spec *model.OpSpec) ([]byte, error) {
 			} else if text, ok := fields["description"].(string); ok {
 				doc += "\n" + text
 			}
-			if constraints, ok := fields["constraints"]; ok {
+			if constraints, ok := fields["constraints"]; ok && fields["isSecret"] != true {
 				data, _ := json.Marshal(constraints)
 				doc += "\nConstraints: " + string(data)
 			}
