@@ -130,13 +130,18 @@ func ContainerSpecInRepository(opDir, phase, repositoryRoot string) (*model.Cont
 		}
 		dirs[target] = model.Value{Dir: &target}
 	}
+	readOnly := map[string]bool{"/opctl/request.json": true}
+	for destination := range dirs {
+		readOnly[destination] = true
+	}
 	return &model.ContainerCallSpec{
-		Image:   &model.ContainerCallImageSpec{Ref: "golang:" + version},
-		Cmd:     []interface{}{"go", "run", ".", phase},
-		Dirs:    dirs,
-		Files:   map[string]interface{}{"/opctl/request.json": "$(request)"},
-		EnvVars: map[string]interface{}{"GOFLAGS": "-mod=readonly", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "OPCTL_BOOTSTRAP_REQUEST": "/opctl/request.json"},
-		WorkDir: filepath.ToSlash(opDir),
+		ReadOnlyMounts: readOnly,
+		Image:          &model.ContainerCallImageSpec{Ref: "golang:" + version},
+		Cmd:            []interface{}{"go", "run", ".", phase},
+		Dirs:           dirs,
+		Files:          map[string]interface{}{"/opctl/request.json": "$(request)"},
+		EnvVars:        map[string]interface{}{"GOFLAGS": "-mod=readonly", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "OPCTL_BOOTSTRAP_REQUEST": "/opctl/request.json"},
+		WorkDir:        filepath.ToSlash(opDir),
 	}, root, nil
 }
 

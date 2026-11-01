@@ -24,7 +24,7 @@ var _ = Describe("fetched Go module bounds", func() {
 		Expect(os.MkdirAll(repo, 0700)).To(Succeed())
 	})
 	AfterEach(func() { os.RemoveAll(data) })
-	It("copies cached parent modules and in-repo replacements while preserving mount destinations and workdir", func() {
+	It("binds cached parent modules and replacements read-only without source copies", func() {
 		for _, nested := range []bool{false, true} {
 			module := repo
 			op := filepath.Join(repo, "ops", "hello")
@@ -52,20 +52,18 @@ var _ = Describe("fetched Go module bounds", func() {
 				call, err := containerInterpreter.Interpret(map[string]*model.Value{"module": {Dir: &mount}, "request": {File: &request}}, spec, "cached-"+phase, op, data)
 				Expect(err).NotTo(HaveOccurred())
 				copied := call.Dirs[module]
-				Expect(copied).NotTo(Equal(module))
+				Expect(copied).To(Equal(module))
+				Expect(call.ReadOnlyMounts[module]).To(BeTrue())
 				Expect(call.WorkDir).To(Equal(op))
 				Expect(copied).To(BeADirectory())
 				Expect(filepath.Join(copied, "helper", "helper.go")).To(BeAnExistingFile())
 				Expect(filepath.Join(copied, "go.mod")).To(BeAnExistingFile())
-				write(filepath.Join(copied, "helper", "helper.go"), "mutated")
-				original, err := os.ReadFile(filepath.Join(module, "helper", "helper.go"))
-				Expect(err).NotTo(HaveOccurred())
-				Expect(string(original)).To(ContainSubstring("package helper"))
 				if nested {
 					Expect(spec.Dirs).To(HaveLen(2))
 					sdk := filepath.Join(repo, "sdk")
 					Expect(call.Dirs).To(HaveKey(sdk))
-					Expect(call.Dirs[sdk]).NotTo(Equal(sdk))
+					Expect(call.Dirs[sdk]).To(Equal(sdk))
+					Expect(call.ReadOnlyMounts[sdk]).To(BeTrue())
 					Expect(filepath.Join(call.Dirs[sdk], "sdk.go")).To(BeAnExistingFile())
 				}
 			}

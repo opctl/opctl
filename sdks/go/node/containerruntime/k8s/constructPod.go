@@ -66,6 +66,7 @@ func constructPod(
 			coreV1.VolumeMount{
 				Name:      "opctl",
 				MountPath: containerPath,
+				ReadOnly:  req.ReadOnlyMounts[containerPath],
 				SubPath:   strings.TrimPrefix(hostPath, pathPrefix),
 			},
 		)
@@ -77,6 +78,7 @@ func constructPod(
 			coreV1.VolumeMount{
 				Name:      "opctl",
 				MountPath: containerPath,
+				ReadOnly:  req.ReadOnlyMounts[containerPath],
 				SubPath:   strings.TrimPrefix(hostPath, pathPrefix),
 			},
 		)

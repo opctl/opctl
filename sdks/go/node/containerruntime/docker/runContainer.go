@@ -132,16 +132,16 @@ func (cr _runContainer) RunContainer(
 		}
 	}
 
-	isGpuSupported, err := isGpuSupported(ctx, cr.dockerClient, req.Image.PullCreds)
-	if nil != err {
-		// Failure to determine GPU support just really means no, GPU is not supported.
-		isGpuSupported = false
+	separateOutput := containerruntime.SeparateOutputFrom(ctx)
+	gpuSupported := false
+	if !separateOutput {
+		gpuSupported, _ = isGpuSupported(ctx, cr.dockerClient, req.Image.PullCreds)
 	}
 
 	config := constructContainerConfig(req.Cmd, req.EnvVars, *req.Image.Ref, portBindings, req.WorkDir)
-	separateOutput := containerruntime.SeparateOutputFrom(ctx)
-	hostConfig := constructHostConfig(req.Dirs, req.Files, req.Sockets, portBindings, isGpuSupported)
+	hostConfig := constructHostConfig(req.Dirs, req.Files, req.Sockets, portBindings, gpuSupported, req.ReadOnlyMounts)
 	if separateOutput {
+		hostConfig.Privileged = false
 		config.Tty = false
 		hostConfig.LogConfig = container.LogConfig{Type: "none"}
 	}

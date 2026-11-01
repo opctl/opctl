@@ -68,7 +68,9 @@ var _ = Context("RunContainer", func() {
 		imageRef := "golang:1.25"
 		_, err := runtime.RunContainer(containerruntime.WithSeparateOutput(context.Background()), &model.ContainerCall{ContainerID: "bootstrap", Image: &model.ContainerCallImage{Ref: &imageRef}}, "root", pubSub, nopWriteCloser{out}, nopWriteCloser{errOut})
 		Expect(err).NotTo(HaveOccurred())
-		_, config, host, _, _, _ := client.ContainerCreateArgsForCall(1)
+		_, config, host, _, _, _ := client.ContainerCreateArgsForCall(0)
+		Expect(client.ContainerCreateCallCount()).To(Equal(1))
+		Expect(host.Privileged).To(BeFalse())
 		Expect(config.Tty).To(BeFalse())
 		Expect(host.LogConfig.Type).To(Equal("none"))
 		_, name, options := client.ContainerAttachArgsForCall(0)

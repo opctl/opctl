@@ -99,3 +99,15 @@ var _ = Context("constructHostConfig", func() {
 		Expect(actualHostConfig).To(Equal(expectedHostConfig))
 	})
 })
+
+var _ = Describe("bootstrap read-only binds", func() {
+	It("requires recursive protection for directories and leaves YAML defaults writable", func() {
+		host := constructHostConfig(map[string]string{"/src": "/host/src", "/cache": "/host/cache"}, map[string]string{"/request": "/host/request"}, nil, nil, false, map[string]bool{"/src": true, "/request": true})
+		for _, binding := range host.Mounts {
+			Expect(binding.ReadOnly).To(Equal(binding.Target != "/cache"))
+			if binding.Target == "/src" {
+				Expect(binding.BindOptions.ReadOnlyForceRecursive).To(BeTrue())
+			}
+		}
+	})
+})

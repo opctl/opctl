@@ -14,6 +14,7 @@ func constructHostConfig(
 	containerCallSockets map[string]string,
 	portBindings nat.PortMap,
 	isGpuSupported bool,
+	readOnly ...map[string]bool,
 ) *container.HostConfig {
 	hostConfig := &container.HostConfig{
 		PortBindings: portBindings,
@@ -41,6 +42,7 @@ func constructHostConfig(
 				Source:      hostFilePath,
 				Target:      containerFilePath,
 				Consistency: mount.ConsistencyCached,
+				ReadOnly:    len(readOnly) > 0 && readOnly[0][containerFilePath],
 			},
 		)
 	}
@@ -52,6 +54,7 @@ func constructHostConfig(
 				Source:      hostDirPath,
 				Target:      containerDirPath,
 				Consistency: mount.ConsistencyCached,
+				ReadOnly:    len(readOnly) > 0 && readOnly[0][containerDirPath],
 			},
 		)
 	}
@@ -70,5 +73,12 @@ func constructHostConfig(
 		}
 	}
 
+	for i := range hostConfig.Mounts {
+		if hostConfig.Mounts[i].ReadOnly {
+			if _, isDir := containerCallDirs[hostConfig.Mounts[i].Target]; isDir {
+				hostConfig.Mounts[i].BindOptions = &mount.BindOptions{ReadOnlyForceRecursive: true}
+			}
+		}
+	}
 	return hostConfig
 }

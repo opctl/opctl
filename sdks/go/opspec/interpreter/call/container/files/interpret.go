@@ -17,6 +17,7 @@ func Interpret(
 	containerCallSpecFiles map[string]interface{},
 	scratchDirPath string,
 	dataCachePath string,
+	readOnly ...map[string]bool,
 ) (map[string]string, error) {
 	containerCallFiles := map[string]string{}
 fileLoop:
@@ -37,7 +38,7 @@ fileLoop:
 			return nil, fmt.Errorf("unable to bind file %v to %v: %w", callSpecContainerFilePath, fileExpression, err)
 		}
 
-		if !strings.HasPrefix(*fileValue.File, dataCachePath) {
+		if (len(readOnly) > 0 && readOnly[0][callSpecContainerFilePath]) || !strings.HasPrefix(*fileValue.File, dataCachePath) {
 			// bound to non dataCachePath
 			containerCallFiles[callSpecContainerFilePath] = *fileValue.File
 			continue fileLoop

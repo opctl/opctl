@@ -27,13 +27,14 @@ func Interpret(
 		BaseCall: model.BaseCall{
 			OpPath: opPath,
 		},
-		Dirs:        map[string]string{},
-		EnvVars:     map[string]string{},
-		Files:       map[string]string{},
-		Sockets:     map[string]string{},
-		WorkDir:     containerCallSpec.WorkDir,
-		ContainerID: containerID,
-		Ports:       containerCallSpec.Ports,
+		ReadOnlyMounts: containerCallSpec.ReadOnlyMounts,
+		Dirs:           map[string]string{},
+		EnvVars:        map[string]string{},
+		Files:          map[string]string{},
+		Sockets:        map[string]string{},
+		WorkDir:        containerCallSpec.WorkDir,
+		ContainerID:    containerID,
+		Ports:          containerCallSpec.Ports,
 	}
 
 	// construct dcg container path
@@ -66,6 +67,7 @@ func Interpret(
 		containerCallSpec.Dirs,
 		scratchDirPath,
 		dataCachePath,
+		containerCallSpec.ReadOnlyMounts,
 	)
 	if err != nil {
 		return nil, err
@@ -86,6 +88,7 @@ func Interpret(
 		containerCallSpec.Files,
 		scratchDirPath,
 		dataCachePath,
+		containerCallSpec.ReadOnlyMounts,
 	)
 	if err != nil {
 		return nil, err
