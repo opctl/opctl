@@ -12,7 +12,7 @@ var _ = Describe("outputs file interpretation", func() {
 		dir, err := os.MkdirTemp("", "outputs-interpret-")
 		Expect(err).NotTo(HaveOccurred())
 		defer os.RemoveAll(dir)
-		scope := map[string]*model.Value{}
+		scope := map[string]*model.Value{"mount": {Dir: &dir}, "socket": {Socket: &dir}}
 		spec := &model.ContainerCallSpec{Image: &model.ContainerCallImageSpec{Ref: "alpine"}, Outputs: map[string]string{"version": "$(v)"}}
 		call, err := Interpret(scope, spec, "id", "op", dir)
 		Expect(err).NotTo(HaveOccurred())
@@ -26,10 +26,16 @@ var _ = Describe("outputs file interpretation", func() {
 		Expect(err).To(MatchError(ContainSubstring("OPCTL_OUTPUTS")))
 		spec.EnvVars = nil
 		for _, path := range []string{"/", "/opctl", "/opctl/outputs", "/opctl/outputs/child", "/tmp/../opctl/outputs"} {
-			spec.Dirs = map[string]interface{}{path: map[string]interface{}{}}
+			spec.Dirs = map[string]interface{}{path: "$(mount)"}
 			_, err = Interpret(scope, spec, "id", "op", dir)
-			Expect(err).To(HaveOccurred(), path)
+			Expect(err).To(MatchError(ContainSubstring("overlaps reserved")), path)
 		}
+		spec.Dirs = nil
+		spec.Sockets = map[string]string{"/opctl/outputs/child": "$(socket)"}
+		_, err = Interpret(scope, spec, "id", "op", dir)
+		Expect(err).To(MatchError(ContainSubstring("overlaps reserved")))
+		spec.Sockets = nil
+
 		spec.Dirs = nil
 		spec.Stdout = "$(v)"
 		_, err = Interpret(scope, spec, "id", "op", dir)

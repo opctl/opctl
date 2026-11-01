@@ -46,6 +46,20 @@ var _ = Describe("container result collectors", func() {
 		_, err = b.value()
 		Expect(err).To(MatchError(ContainSubstring("stdout exceeds 1 MiB")))
 	})
+	It("bounds stderr independently and retains exact bytes below the cap", func() {
+		out := newResultStream("stdout", func() {})
+		stderr := newResultStream("stderr", func() {})
+		_, err := stderr.Write([]byte(strings.Repeat("e", containerResultLimit)))
+		Expect(err).NotTo(HaveOccurred())
+		_, err = out.Write([]byte("public"))
+		Expect(err).NotTo(HaveOccurred())
+		_, err = stderr.Write([]byte("x"))
+		Expect(err).To(MatchError(ContainSubstring("stderr exceeds 1 MiB")))
+		value, err := out.value()
+		Expect(err).NotTo(HaveOccurred())
+		Expect(*value.String).To(Equal("public"))
+	})
+
 	It("parses native JSON without evaluating references", func() {
 		result, err := parseContainerOutputs([]byte(`{"s":"$(token)\n","n":3,"b":true,"a":["$(literal)",{}],"o":{"$(key)":"value"}}`))
 		Expect(err).NotTo(HaveOccurred())

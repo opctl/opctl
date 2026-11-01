@@ -90,6 +90,13 @@ func TestStreamCopyReuseAndRead(t *testing.T) {
 		t.Fatal("accepted accessor outside plan")
 	}
 }
+func TestCallResultCreationSite(t *testing.T) {
+	_, err := Plan(func(struct{}) Call { _, v := Container("x").Stdout(); return Container("x").EnvFrom("V", v) }, nil)
+	if err == nil || !strings.Contains(err.Error(), "streams_test.go:") {
+		t.Fatalf("diagnostic lost author creation site: %v", err)
+	}
+}
+
 func TestStreamExportVisibility(t *testing.T) {
 	type Outputs struct {
 		Version String `opctl:"version,secret"`
@@ -141,12 +148,5 @@ func TestStreamSchemaRequests(t *testing.T) {
 				t.Fatalf("unsupported schema emitted a response: %s %s", out, stderr.String())
 			}
 		})
-	}
-}
-
-func TestCallResultCreationSite(t *testing.T) {
-	_, err := Plan(func(struct{}) Call { _, v := Container("x").Stdout(); return Container("x").EnvFrom("V", v) }, nil)
-	if err == nil || !strings.Contains(err.Error(), "streams_test.go:") {
-		t.Fatalf("diagnostic lost author creation site: %v", err)
 	}
 }

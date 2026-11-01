@@ -1,0 +1,11 @@
+name: stderr-only
+run:
+  serial:
+    - container:
+        image: {ref: alpine:3}
+        cmd: [sh, -ce, "printf 'unbound stdout\\n'; printf 'v1.2.3\\n' >&2"]
+        stderr: $(version)
+    - container:
+        image: {ref: alpine:3}
+        envVars: {VERSION: $(version)}
+        cmd: [sh, -ce, 'test "$VERSION" = v1.2.3']

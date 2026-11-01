@@ -1,0 +1,11 @@
+name: stdout-only
+run:
+  serial:
+    - container:
+        image: {ref: alpine:3}
+        cmd: [sh, -ce, "printf 'v1.2.3\\n'; printf 'unbound diagnostic\\n' >&2"]
+        stdout: $(version)
+    - container:
+        image: {ref: alpine:3}
+        envVars: {VERSION: $(version)}
+        cmd: [sh, -ce, 'test "$VERSION" = v1.2.3']

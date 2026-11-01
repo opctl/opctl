@@ -1,0 +1,1 @@
+[{"call": {"opRef": "/repo/test-suite/run/container/object/streams/stdout-only", "scope": {}, "expect": "success"}}]

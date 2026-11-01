@@ -1,0 +1,10 @@
+name: stream-overflow
+run:
+  serial:
+    - container:
+        image: {ref: alpine:3}
+        cmd: [sh, -ce, 'head -c 1048577 /dev/zero']
+        stdout: $(version)
+    - container:
+        image: {ref: alpine:3}
+        cmd: [sh, -ce, 'echo CONSUMER_SHOULD_NOT_RUN; exit 99']

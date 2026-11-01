@@ -72,6 +72,41 @@ var _ = Describe("container stream bindings", func() {
 		Expect(result).To(BeNil())
 		Expect(err).To(MatchError(ContainSubstring("stdout exceeds 1 MiB")))
 	})
+	It("does not cap an unbound stream", func() {
+		runtime := new(runtimefakes.FakeContainerRuntime)
+		bus := new(fakes.FakePubSub)
+		runtime.RunContainerStub = func(_ context.Context, _ *model.ContainerCall, _ string, _ pubsub.EventPublisher, out, stderr io.WriteCloser) (*int64, error) {
+			defer out.Close()
+			defer stderr.Close()
+			out.Write([]byte("v\n"))
+			_, err := stderr.Write([]byte(strings.Repeat("e", containerResultLimit+1)))
+			return nil, err
+		}
+		result, err := newContainerCaller(runtime, bus, &_stateStore{}).Call(context.Background(), &model.ContainerCall{Image: &model.ContainerCallImage{}}, nil, &model.ContainerCallSpec{Stdout: "$(v)"}, "root")
+		Expect(err).NotTo(HaveOccurred())
+		Expect(*result["v"].String).To(Equal("v"))
+		size := 0
+		for i := 0; i < bus.PublishCallCount(); i++ {
+			if event := bus.PublishArgsForCall(i); event.ContainerStdErrWrittenTo != nil {
+				size += len(event.ContainerStdErrWrittenTo.Data)
+			}
+		}
+		Expect(size).To(Equal(containerResultLimit + 1))
+	})
+
+	It("preserves primary runtime failures before UTF-8 normalization", func() {
+		runtime := new(runtimefakes.FakeContainerRuntime)
+		runtime.RunContainerStub = func(_ context.Context, _ *model.ContainerCall, _ string, _ pubsub.EventPublisher, out, stderr io.WriteCloser) (*int64, error) {
+			defer out.Close()
+			defer stderr.Close()
+			out.Write([]byte{255})
+			return nil, errors.New("primary runtime failure")
+		}
+		result, err := newContainerCaller(runtime, new(fakes.FakePubSub), &_stateStore{}).Call(context.Background(), &model.ContainerCall{Image: &model.ContainerCallImage{}}, nil, &model.ContainerCallSpec{Stdout: "$(v)"}, "root")
+		Expect(result).To(BeNil())
+		Expect(err).To(MatchError("primary runtime failure"))
+	})
+
 	It("closes logging pipes after runtime start failure and rejects bootstrap result bindings", func() {
 		runtime := new(runtimefakes.FakeContainerRuntime)
 		runtime.RunContainerReturns(nil, errors.New("start failed"))
