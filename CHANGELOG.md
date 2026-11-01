@@ -9,6 +9,7 @@ accordance with
 ### Added
 
 - Go op literal handles: `StringOf`, `NumberOf`, `BooleanOf`, `ArrayOf`, and `ObjectOf` snapshot values for op inputs, environment variables, and plan control flow.
+- The Go op SDK provides `StubCall` for generated op stubs, with module-relative local refs and required-input checks during plan.
 
 - Go ops: an op can be declared by a Go program that builds an op graph with the dependency-free Go op SDK, `github.com/opctl/opctl/sdks/go/opspec/sdk`.
   See [Authoring ops in Go](https://opctl.io/docs/training/authoring-ops-in-go).

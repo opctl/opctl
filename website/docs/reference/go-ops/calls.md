@@ -2,6 +2,8 @@
 title: Calls
 ---
 
+Generated op stubs use `StubCall` to resolve local refs relative to the caller's module and check required inputs during plan. Hand-written calls use `CallOp`.
+
 A plan function returns one call, the root of the op graph. Calls are container calls, op calls, and groups. Builders return independent copies, so a call can
 be the base of several others.
 
