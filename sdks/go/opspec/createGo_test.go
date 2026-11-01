@@ -4,6 +4,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
+	"syscall"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -118,6 +120,39 @@ func main() { opctl.Main(plan) }
 			"go1.25.3": "1.25", "go1.26": "1.26", "go1.26rc1": "1.26", "devel go1.27-abc": "1.25", "": "1.25",
 		} {
 			Expect(goDirectiveFor(version)).To(Equal(expected), version)
+		}
+	})
+
+	It("hands what it creates to the user who ran sudo", func() {
+		// A non-root user may only chgrp to its own groups, so a supplementary group proves the hand-off happened.
+		gid := -1
+		groups, err := os.Getgroups()
+		Expect(err).NotTo(HaveOccurred())
+		for _, group := range groups {
+			if group != os.Getegid() {
+				gid = group
+				break
+			}
+		}
+		if gid == -1 {
+			Skip("needs a supplementary group")
+		}
+		GinkgoT().Setenv("SUDO_UID", strconv.Itoa(os.Geteuid()))
+		GinkgoT().Setenv("SUDO_GID", strconv.Itoa(gid))
+
+		goOp := filepath.Join(parent, ".opspec", "hello")
+		Expect(CreateGo(goOp, "hello", "", GoSDK{})).To(Succeed())
+		yamlOp := filepath.Join(parent, "yaml", "greet")
+		Expect(Create(yamlOp, "greet", "")).To(Succeed())
+
+		for _, path := range []string{
+			filepath.Join(parent, ".opspec"), goOp,
+			filepath.Join(goOp, "op.go"), filepath.Join(goOp, "go.mod"), filepath.Join(goOp, ".gitignore"),
+			filepath.Join(parent, "yaml"), yamlOp, filepath.Join(yamlOp, "op.yml"),
+		} {
+			info, err := os.Lstat(path)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(int(info.Sys().(*syscall.Stat_t).Gid)).To(Equal(gid), path)
 		}
 	})
 })

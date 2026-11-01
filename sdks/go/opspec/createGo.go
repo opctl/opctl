@@ -10,6 +10,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 	"golang.org/x/mod/module"
 )
@@ -77,7 +78,7 @@ func CreateGo(path, name, description string, sdk GoSDK) error {
 			return err
 		}
 	}
-	if err := os.MkdirAll(path, 0777); err != nil {
+	if err := mkdirAll(path); err != nil {
 		return err
 	}
 	for i, file := range files {
@@ -100,7 +101,10 @@ func writeNew(path, content string) error {
 		file.Close()
 		return err
 	}
-	return file.Close()
+	if err := file.Close(); err != nil {
+		return err
+	}
+	return unsudo.Chown(path)
 }
 
 // goDirective follows the toolchain that built opctl, which selects the bootstrap image.
