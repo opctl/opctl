@@ -15,6 +15,8 @@ accordance with
 
 ### Fixed
 
+- Go input schemas require unsigned array items and object properties to be nonnegative integers.
+
 - Go input constraints reject attempts to replace schemas derived from array item and object property types.
 
 - Go bootstrap mounts the module root and local replacements separately and rejects destinations that hide required image directories.

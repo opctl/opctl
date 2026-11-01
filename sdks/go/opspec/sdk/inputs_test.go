@@ -228,3 +228,45 @@ func TestConstraintsCannotReplaceDerivedSchema(t *testing.T) {
 		})
 	}
 }
+
+func TestUnsignedInputSchemas(t *testing.T) {
+	type inputs struct {
+		Native Array[uint]   `opctl:"native"`
+		U8     Array[uint8]  `opctl:"u8"`
+		U16    Array[uint16] `opctl:"u16"`
+		U32    Array[uint32] `opctl:"u32"`
+		U64    Array[uint64] `opctl:"u64"`
+		Nested Object[struct {
+			Count  uint64            `json:"count"`
+			Items  []uint8           `json:"items"`
+			Labels map[string]uint16 `json:"labels"`
+			Signed int               `json:"signed"`
+		}] `opctl:"nested"`
+	}
+	data, err := Describe[inputs]()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var result response
+	if err := json.Unmarshal(data, &result); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"native", "u8", "u16", "u32", "u64"} {
+		body := result.Opspec.Inputs[name]["array"].(map[string]any)
+		constraints := body["constraints"].(map[string]any)
+		item := constraints["items"].(map[string]any)
+		if !reflect.DeepEqual(item, map[string]any{"type": "integer", "minimum": float64(0)}) {
+			t.Errorf("%s: expected unsigned integer schema, got %v", name, item)
+		}
+	}
+	for _, schema := range []string{
+		`"count":{"minimum":0,"type":"integer"}`,
+		`"items":{"items":{"minimum":0,"type":"integer"},"type":"array"}`,
+		`"labels":{"additionalProperties":{"minimum":0,"type":"integer"},"type":"object"}`,
+		`"signed":{"type":"integer"}`,
+	} {
+		if !strings.Contains(string(data), schema) {
+			t.Errorf("missing nested schema %s: %s", schema, data)
+		}
+	}
+}

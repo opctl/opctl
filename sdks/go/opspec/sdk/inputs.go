@@ -308,8 +308,11 @@ func typeSchema(typ reflect.Type, visiting map[reflect.Type]bool) (map[string]an
 		schema["type"] = "string"
 	case reflect.Bool:
 		schema["type"] = "boolean"
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		schema["type"] = "integer"
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		schema["type"] = "integer"
+		schema["minimum"] = 0
 	case reflect.Float32, reflect.Float64:
 		schema["type"] = "number"
 	case reflect.Slice:
