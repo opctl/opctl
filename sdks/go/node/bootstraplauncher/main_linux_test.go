@@ -112,7 +112,7 @@ func TestDiagnosticCaptureIsBounded(t *testing.T) {
 }
 
 func TestAuthRequiresTmpfs(t *testing.T) {
-	if err := requireTmpfs(t.TempDir()); err == nil || err.Error() != "Go bootstrap auth requires tmpfs" {
+	if err := requireTmpfs("/proc"); err == nil || err.Error() != "Go bootstrap auth requires tmpfs" {
 		t.Fatalf("got %v", err)
 	}
 }
