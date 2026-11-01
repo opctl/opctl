@@ -229,7 +229,31 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			Expect(err).To(MatchError(`unable to bind cache dir "/cache": container path is also declared in dirs`))
+			Expect(err).To(MatchError(`unable to bind cache dir "/cache": container path is also declared in dirs or files`))
+			Expect(actualCall).To(BeNil())
+		})
+
+		It("should reject a container path declared in both files and caches", func() {
+			/* arrange */
+			filePath := filepath.Join(GinkgoT().TempDir(), "file")
+			Expect(os.WriteFile(filePath, nil, 0600)).To(Succeed())
+
+			/* act */
+			actualCall, err := Interpret(
+				context.Background(),
+				map[string]*model.Value{"file": {File: &filePath}},
+				&model.ContainerCallSpec{
+					Image:  &model.ContainerCallImageSpec{Ref: "ref"},
+					Files:  map[string]interface{}{"/cache": "$(file)"},
+					Caches: map[string]interface{}{"/cache": "gomod"},
+				},
+				"containerID",
+				"opPath",
+				GinkgoT().TempDir(),
+			)
+
+			/* assert */
+			Expect(err).To(MatchError(`unable to bind cache dir "/cache": container path is also declared in dirs or files`))
 			Expect(actualCall).To(BeNil())
 		})
 

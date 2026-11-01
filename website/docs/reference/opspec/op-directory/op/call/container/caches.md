@@ -24,7 +24,7 @@ Leave a value empty, or use `null`, to derive the cache name from the interprete
 
 Tags and digests of the same repository share a cache at the same container path. Different image repositories usually get different cache names, but sanitizing can make distinct repository and path pairs share one; give an explicit name when that matters. Give images the same explicit name to share a cache across images. Images loaded from an OCI image directory and bare image IDs have no repository reference and require an explicit cache name.
 
-An explicit value can be a string literal or [string expression](../../../../types/string.md#initialization), such as `npm-$(lockHash)`, evaluated in the call's scope. Every cache name, including a derived name, must be non-empty and may contain only ASCII letters, digits, `.`, `_`, and `-`. The names `.` and `..` are invalid. A container path cannot appear in both `dirs` and `caches`.
+An explicit value can be a string literal or [string expression](../../../../types/string.md#initialization), such as `npm-$(lockHash)`, evaluated in the call's scope. Every cache name, including a derived name, must be non-empty and may contain only ASCII letters, digits, `.`, `_`, and `-`. The names `.` and `..` are invalid. A container path cannot appear in both `caches` and `dirs` or `files`.
 
 Opspec has no hash function. Compute a lockfile hash in a prior call, then use it in the cache name. This example writes the hash to a file bound to `lockHash`, which the next call reads through string interpolation. The example assumes `op.yml` lives at `.opspec/npm-install/` in the project. Remove the trailing newline so it does not become part of the name.
 
@@ -56,7 +56,7 @@ With the embedded runtime, Lima shares the host's home directory with the VM at 
 
 On Kubernetes, the data dir must be `/root/opctl` on the `opctl` PersistentVolumeClaim; cache and `--no-cache` dirs mount as subPaths of it. See [Kubernetes CI guidance](../../../../../../cache-dirs-in-ci.md#kubernetes).
 
-Use `opctl run --no-cache <op>` for a cold run. The run starts every cache dir empty in scratch space under `<data-dir>/nocache/<run id>`, shared by cache name across the run's calls, including calls in nested ops, loops, and parallel groups, and removed when the run ends. A node that can't remove them (for example, root-owned files on a node run without sudo, or a killed run) leaves them until it next starts. The run leaves the cache root untouched. Other concurrent runs on the node keep using their caches. Op and image caching still applies.
+Use `opctl run --no-cache <op>` for a cold run. The run starts every cache dir empty in scratch space under `<data-dir>/nocache/<run id>`, shared by cache name across the run's calls, including calls in nested ops, loops, and parallel groups, and removed when the run ends. A killed run's leftovers are swept when the node next starts. A node run without sudo can't remove root-owned files that containers wrote, so those stay until you remove them, e.g. `sudo rm -rf <data-dir>/nocache`. The run leaves the cache root untouched. Other concurrent runs on the node keep using their caches. Op and image caching still applies.
 
 Cache dirs are created with mode `0700`, owned by the user and group who ran sudo, or the node's effective user and group otherwise. An image running as a different non-root `USER` may be unable to write them, as with existing scratch dirs.
 

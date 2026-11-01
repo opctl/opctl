@@ -122,9 +122,12 @@ func Interpret(
 	for containerPath := range containerCall.Dirs {
 		declaredDirs[path.Clean(containerPath)] = struct{}{}
 	}
+	for containerPath := range containerCall.Files {
+		declaredDirs[path.Clean(containerPath)] = struct{}{}
+	}
 	for containerPath, hostPath := range cacheDirs {
 		if _, exists := declaredDirs[containerPath]; exists {
-			return nil, fmt.Errorf("unable to bind cache dir %q: container path is also declared in dirs", containerPath)
+			return nil, fmt.Errorf("unable to bind cache dir %q: container path is also declared in dirs or files", containerPath)
 		}
 		containerCall.Dirs[containerPath] = hostPath
 	}
