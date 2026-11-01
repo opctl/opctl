@@ -1,0 +1,15 @@
+[
+  {
+    "name": "root Go completion exposes boxed public outputs and omits secret aliases",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/interop/root-outputs",
+      "scope": {},
+      "expect": "success",
+      "expectOutputs": {
+        "echoed": {"string": "from-cli"},
+        "count": {"number": 7},
+        "fallback": {"string": "from-default"}
+      }
+    }
+  }
+]

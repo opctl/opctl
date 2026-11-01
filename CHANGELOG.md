@@ -8,6 +8,8 @@ accordance with
 
 ### Added
 
+- CLI end-to-end scenarios can assert exact boxed public completion outputs with `expectOutputs`, including empty maps and secret omission.
+
 - Go ops declare tagged output structs with `MainWithOutputs`, `PlanWithOutputs`, and `DescribeWithOutputs`. Outputs can bind input, op, or container handles, or use an
   authored default.
 

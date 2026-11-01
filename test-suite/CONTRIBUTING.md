@@ -5,5 +5,16 @@ maintenance/discoverability
 
 Each scenario is an op.
 
-Ops containing a scenarios.yml file implement one or more test
+Ops containing a scenarios.json file implement one or more test
 scenarios (see [scenarios.schema.json](scenarios.schema.json) for schema)
+Call scenarios use `scenarios.json`. Add `call.expectOutputs` to check the exact
+boxed public output map on the root op's completion event, for example:
+
+```json
+"expectOutputs": {"echoed": {"string": "hello"}, "count": {"number": 7}}
+```
+
+An empty object asserts that there are no public outputs. Omit the property to
+check only the CLI exit status. Output assertions run after an expected successful
+CLI call. Use an absolute `/repo/...` local `opRef` so the observer can match its
+resolved path and Go ops can find their parent module.

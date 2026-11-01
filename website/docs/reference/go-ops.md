@@ -141,3 +141,9 @@ Local ops retain their existing parent-module and replacement behavior. A git
 fetch includes the tagged repository tree, including helpers and in-repo SDK
 replacements, but does not fetch a developer's sibling checkouts. Private Go
 dependency downloads and compiled-program caching remain separate work.
+
+Public Go outputs reach API clients as the boxed `CallEnded.Outputs` map on the
+root op completion event. `opctl run` forwards this event to its output module
+and prints the usual status. It does not print a new output format. Secret
+outputs and sensitive aliases are omitted from public events. Dir and file
+outputs refer to paths on the node, rather than downloaded client files.

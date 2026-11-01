@@ -10,7 +10,7 @@ nohup dockerd \
 # and is use solely for this purpose
 opctl auth add docker.io -u 3hhyyicl1mzqsr6tggmg -p '%7Oe^4#fGGwc96rGcV&4'
 
-if [[ $authAddGithub == "true" ]]; then
+if [ "$authAddGithub" = "true" ]; then
   opctl auth add github.com -u " " -p $githubAccessToken
 fi
 
@@ -19,12 +19,17 @@ exec <&-
 opRef="${opRef:-/test}"
 
 echo "op: $op"
-blah=$(opctl run --no-progress --arg-file /args.yml $opRef)
+opctl run --no-progress --arg-file /args.yml "$opRef"
+runStatus=$?
 
 case "$expect" in
   success)
-    if [ $? -eq 0 ]; then
+    if [ "$runStatus" -eq 0 ]; then
       echo "expected $expect and got success"
+      expectedOutputsPath="${expectedOutputsPath:-/expected-outputs.json}"
+      if [ -s "$expectedOutputsPath" ]; then
+        "${assertOutputsPath:-/assert-outputs}" "$expectedOutputsPath" "$opRef" || exit 1
+      fi
       exit 0
     else
       echo "expected $expect but got failure"
@@ -32,7 +37,7 @@ case "$expect" in
     fi
     ;;
   failure)
-    if [ $? -eq 0 ]; then
+    if [ "$runStatus" -eq 0 ]; then
       echo "expected $expect but got success"
       exit 1
     else
@@ -41,3 +46,6 @@ case "$expect" in
     fi
     ;;
 esac
+
+echo "unknown expected outcome: $expect"
+exit 1

@@ -8,6 +8,8 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opctl/opctl/cli/internal/clioutput"
+	outputFakes "github.com/opctl/opctl/cli/internal/clioutput/fakes"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/model/fakes"
@@ -65,5 +67,35 @@ var _ = Describe("load an op for run", func() {
 		dir.GetContentReturns(nil, failure)
 		_, _, err := getRunOpFile(context.Background(), dir, nil)
 		Expect(err).To(Equal(failure))
+	})
+})
+
+var _ = Describe("run completion reporting", func() {
+	It("forwards the exact completion outputs and handles only its root outcome", func() {
+		output := new(outputFakes.FakeCliOutput)
+		text := "from-cli"
+		outputs := map[string]*model.Value{"echoed": {String: &text}}
+		event := model.Event{CallEnded: &model.CallEnded{Call: model.Call{ID: "root", RootID: "root"}, Outcome: model.OpOutcomeSucceeded, Outputs: outputs}}
+		done, err := reportRunEvent(output, &event, "root")
+		Expect(done).To(BeTrue())
+		Expect(err).NotTo(HaveOccurred())
+		Expect(output.EventCallCount()).To(Equal(1))
+		Expect(output.EventArgsForCall(0)).To(BeIdenticalTo(&event))
+		Expect(output.EventArgsForCall(0).CallEnded.Outputs).To(Equal(outputs))
+		event.CallEnded.Call.ID = "child"
+		event.CallEnded.Outcome = model.OpOutcomeFailed
+		done, err = reportRunEvent(output, &event, "root")
+		Expect(done).To(BeFalse())
+		Expect(err).NotTo(HaveOccurred())
+		event.CallEnded.Call.ID = "root"
+		for _, tc := range []struct {
+			outcome string
+			code    int
+		}{{model.OpOutcomeFailed, 1}, {model.OpOutcomeKilled, 137}} {
+			event.CallEnded.Outcome = tc.outcome
+			done, err = reportRunEvent(output, &event, "root")
+			Expect(done).To(BeTrue())
+			Expect(err).To(Equal(clioutput.RunError{ExitCode: tc.code}))
+		}
 	})
 })

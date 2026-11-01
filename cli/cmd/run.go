@@ -267,18 +267,8 @@ opctl node and other opctl containers by their name. Containers will be removed 
 						cliOutput.Error(fmt.Sprintf("%v", err))
 					}
 
-					cliOutput.Event(&event)
-					if event.CallEnded != nil {
-						if event.CallEnded.Call.ID == rootCallID {
-							switch event.CallEnded.Outcome {
-							case model.OpOutcomeSucceeded:
-								return nil
-							case model.OpOutcomeKilled:
-								return clioutput.RunError{ExitCode: 137}
-							default:
-								return clioutput.RunError{ExitCode: 1}
-							}
-						}
+					if done, err := reportRunEvent(cliOutput, &event, rootCallID); done {
+						return err
 					}
 					displayGraph()
 				case <-animationFrame:
@@ -307,4 +297,20 @@ func getRunOpFile(ctx context.Context, opHandle model.DataHandle, apiNode nodePk
 	}
 	spec, err := opfile.Get(ctx, opHandle)
 	return spec, false, err
+}
+
+// reportRunEvent forwards each event before handling the root's terminal outcome.
+func reportRunEvent(output clioutput.CliOutput, event *model.Event, rootID string) (bool, error) {
+	output.Event(event)
+	if event.CallEnded == nil || event.CallEnded.Call.ID != rootID {
+		return false, nil
+	}
+	switch event.CallEnded.Outcome {
+	case model.OpOutcomeSucceeded:
+		return true, nil
+	case model.OpOutcomeKilled:
+		return true, clioutput.RunError{ExitCode: 137}
+	default:
+		return true, clioutput.RunError{ExitCode: 1}
+	}
 }

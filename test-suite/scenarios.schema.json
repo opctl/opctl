@@ -16,6 +16,10 @@
               "authAddGithub": {
                 "type": "boolean"
               },
+              "expectOutputs": {
+                "description": "Exact boxed public root completion outputs",
+                "type": "object"
+              },
               "opRef": {
                 "type": "string"
               },

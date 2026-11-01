@@ -9,6 +9,18 @@ inputs:
         minLength: 1
 run:
   serial:
+    - name: buildOutputAssertions
+      container:
+        image:
+          ref: golang:1.25
+        dirs:
+          /src: $(../../../..)
+          /out: $(outputAssertions)
+        workDir: /src
+        envVars:
+          CGO_ENABLED: '0'
+          GOFLAGS: '-tags=containers_image_openpgp -buildvcs=false'
+        cmd: [go, build, -o, /out/assert-outputs, ./cli/.opspec/test/e2e/assert-outputs]
     - op:
         ref: github.com/opspec-pkgs/dir.list-contents#1.1.0
         inputs:
@@ -38,6 +50,7 @@ run:
                     inputs:
                       default:
                         opRef: ''
+                        expectOutputs: ''
                         authAddGithub: false
                       override:  $(scenario.call)
                     outputs:
@@ -61,6 +74,8 @@ run:
                       githubAccessToken:
                     files:
                       /args.yml: $(call.scope)
+                      /expected-outputs.json: $(call.expectOutputs)
+                      /assert-outputs: $(outputAssertions/assert-outputs)
                       /cmd.sh:
                       /usr/local/bin/opctl: $(../../../opctl-linux-amd64)
                     image:
