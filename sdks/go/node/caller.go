@@ -3,6 +3,7 @@ package node
 import (
 	"context"
 	"fmt"
+	"maps"
 	"runtime/debug"
 	"sort"
 	"time"
@@ -318,5 +319,7 @@ func (clr _caller) Call(
 		err = fmt.Errorf("invalid call graph '%+v'", callSpec)
 	}
 
+	// Deferred sensitivity marking must not mutate a callee's shared result map.
+	outputs = maps.Clone(outputs)
 	return outputs, err
 }

@@ -15,6 +15,26 @@ import (
 )
 
 var _ = Describe("private Go graph completions", func() {
+	It("keeps protected results separate from the callee's returned map", func() {
+		dir, err := os.MkdirTemp("", "private-result-copy-")
+		Expect(err).NotTo(HaveOccurred())
+		defer os.RemoveAll(dir)
+		db, err := badger.Open(badger.DefaultOptions("").WithInMemory(true).WithLogger(nil))
+		Expect(err).NotTo(HaveOccurred())
+		defer db.Close()
+		bus := pubsub.New(db)
+		runtime := new(fakes.FakeContainerCaller)
+		token := "private-result-copy"
+		shared := map[string]*model.Value{"token": {String: &token}}
+		runtime.CallReturns(shared, nil)
+		ctx := withProtectedSources(context.Background(), map[string]*model.ParamSpec{"token": {String: &model.StringParamSpec{IsSecret: true}}})
+		caller := newCaller(runtime, dir, bus, &_stateStore{}, &goBootstrapCache{})
+		result, err := caller.Call(ctx, "root", nil, &model.CallSpec{Container: &model.ContainerCallSpec{Image: &model.ContainerCallImageSpec{Ref: "alpine"}}}, dir, nil, "root")
+		Expect(err).NotTo(HaveOccurred())
+		Expect(result["token"].Sensitive).To(BeTrue())
+		Expect(shared["token"].Sensitive).To(BeFalse())
+	})
+
 	It("retains runtime values through every group and loop without publishing them", func() {
 		dir, err := os.MkdirTemp("", "private-completion-")
 		Expect(err).NotTo(HaveOccurred())

@@ -8,6 +8,8 @@ accordance with
 
 ### Fixed
 
+- Parallel calls protect private completion values without mutating a callee-owned result map.
+
 - Public Go output-binding failures include their underlying reference error. Sensitive bindings keep the value-free diagnostic.
 
 - Legacy YAML ops retain bound outputs in failed completion events and print input interpretation diagnostics as before. Sensitive diagnostics stay private.
