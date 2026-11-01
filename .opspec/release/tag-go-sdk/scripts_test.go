@@ -46,12 +46,13 @@ JSON
 `
 
 var _ = Describe("tagging the Go op SDK", func() {
-	var dir, diffStatus, fetchStatus string
+	var dir, diffStatus, fetchStatus, releaseVersion string
 	BeforeEach(func() {
 		var err error
 		dir, err = os.MkdirTemp("", "tag-go-sdk-")
 		Expect(err).NotTo(HaveOccurred())
 		diffStatus, fetchStatus = "1", "0"
+		releaseVersion = "0.1.77"
 		Expect(os.WriteFile(filepath.Join(dir, "git"), []byte(fakeGit), 0700)).To(Succeed())
 		Expect(os.WriteFile(filepath.Join(dir, "curl"), []byte(fakeCurl), 0700)).To(Succeed())
 		Expect(os.WriteFile(filepath.Join(dir, "go"), []byte(fakeGo), 0700)).To(Succeed())
@@ -63,7 +64,7 @@ var _ = Describe("tagging the Go op SDK", func() {
 		cmd := exec.Command("sh", path)
 		cmd.Env = append(os.Environ(), "PATH="+dir+":"+os.Getenv("PATH"), "CALLS="+filepath.Join(dir, "calls"), "FAKE_STATUS="+status, "FAKE_BODY="+body,
 			"FAKE_DIFF_STATUS="+diffStatus, "FAKE_FETCH_STATUS="+fetchStatus,
-			"version=0.1.77", "commit="+commit, "githubAccessToken=token", "outDir="+dir, "TMPDIR="+dir)
+			"version="+releaseVersion, "commit="+commit, "githubAccessToken=token", "outDir="+dir, "TMPDIR="+dir)
 		output, err := cmd.CombinedOutput()
 		calls, _ := os.ReadFile(filepath.Join(dir, "calls"))
 		return string(output), string(calls), err
@@ -75,6 +76,24 @@ var _ = Describe("tagging the Go op SDK", func() {
 		Expect(calls).To(ContainSubstring("https://api.github.com/repos/opctl/opctl/git/ref/tags/sdks/go/opspec/sdk/v0.1.77"))
 		Expect(calls).To(ContainSubstring(`-X POST`))
 		Expect(calls).To(ContainSubstring(`{"ref":"refs/tags/sdks/go/opspec/sdk/v0.1.77","sha":"` + commit + `"}`))
+	})
+
+	It("rejects major versions two and later before contacting any service", func() {
+		for _, version := range []string{"2.0.0", "3.1.0-rc.1", "10.0.0"} {
+			releaseVersion = version
+			Expect(os.RemoveAll(filepath.Join(dir, "calls"))).To(Succeed())
+			output, calls, err := run("tag.sh", "404", `{"message":"Not Found"}`)
+			Expect(err).To(HaveOccurred(), version)
+			Expect(output).To(ContainSubstring("update the SDK module path before releasing"))
+			Expect(calls).To(BeEmpty())
+		}
+	})
+
+	It("allows major version one without a module path suffix", func() {
+		releaseVersion = "1.0.0"
+		output, calls, err := run("tag.sh", "404", `{"message":"Not Found"}`)
+		Expect(err).NotTo(HaveOccurred(), output)
+		Expect(calls).To(ContainSubstring(`{"ref":"refs/tags/sdks/go/opspec/sdk/v1.0.0","sha":"` + commit + `"}`))
 	})
 
 	It("keeps a tag that already points at the release commit", func() {

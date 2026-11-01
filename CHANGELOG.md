@@ -29,6 +29,7 @@ accordance with
 
 ### Changed
 
+- Go op SDK releases with major versions 2 and later fail before tagging until the SDK module path includes the required `/vN` suffix.
 - After a Go op or container result call activates private results, a YAML op whose output validation fails returns no partial outputs,
   even in an unrelated subtree of the same root run. Private-result activation is currently shared across the root run.
 - The `run-a-go-service` example's `dev` op is a Go op that calls the YAML `mysql` op. Its `MYSQL_HOST` default is now the `mysql` op's container name,

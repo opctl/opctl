@@ -3,6 +3,15 @@
 # SDK contents match. Published Go module versions must remain immutable.
 set -eu
 
+# Go modules at v2 and later need a matching /vN module path.
+case "${version%%.*}" in
+  0|1) ;;
+  *)
+    echo "Go op SDK v$version requires a /v${version%%.*} module path; update the SDK module path before releasing" >&2
+    exit 1
+    ;;
+esac
+
 tag="sdks/go/opspec/sdk/v$version"
 api=https://api.github.com/repos/opctl/opctl/git
 auth="Authorization: Bearer $githubAccessToken"
