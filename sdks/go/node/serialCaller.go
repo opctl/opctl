@@ -71,6 +71,7 @@ func (sc _serialCaller) Call(
 			Since: &eventFilterSince,
 		},
 	)
+	watchChildCallEnded := newChildCallEndedWatcher(eventChannel)
 
 	for _, callSpecCall := range callSpecSerialCall {
 
@@ -81,6 +82,7 @@ func (sc _serialCaller) Call(
 			return nil, err
 		}
 
+		childCallEndedChannel := watchChildCallEnded(childCallID)
 		sc.caller.Call(
 			ctx,
 			childCallID,
@@ -91,19 +93,14 @@ func (sc _serialCaller) Call(
 			rootCallID,
 		)
 
-	eventLoop:
-		for event := range eventChannel {
+		if callEnded := <-childCallEndedChannel; callEnded != nil {
+			if callEnded.Error != nil {
+				// end on any error
+				return nil, errors.New(callEnded.Error.Message)
+			}
 			// merge child outboundScope w/ outboundScope, child outboundScope having precedence
-			switch {
-			case event.CallEnded != nil && event.CallEnded.Call.ID == childCallID:
-				if event.CallEnded.Error != nil {
-					// end on any error
-					return nil, errors.New(event.CallEnded.Error.Message)
-				}
-				for name, value := range event.CallEnded.Outputs {
-					outputs[name] = value
-				}
-				break eventLoop
+			for name, value := range callEnded.Outputs {
+				outputs[name] = value
 			}
 		}
 
