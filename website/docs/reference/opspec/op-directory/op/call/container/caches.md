@@ -52,7 +52,7 @@ run:
 
 The node stores each cache dir at `<data-dir>/caches/<name>`. The cache root is `<data-dir>/caches`. Contents persist between runs on the node, but are never guaranteed. An empty or partial cache dir must always be a valid starting point. Failed or killed calls keep whatever they wrote.
 
-With the embedded runtime, Lima shares the host's home directory with the VM at the same path and with write access. The default data dir is under that share, so cache dirs and `--no-cache` dirs are visible to Docker in the VM. Keep a custom `--data-dir` under the home directory too. Paths outside the home directory aren't visible to Docker in the VM.
+With the embedded runtime, Lima shares the host's home directory with the VM at the same path and with write access. The default data dir is under that share, so cache dirs and `--no-cache` dirs are visible to Docker in the VM. Keep a custom `--data-dir` under the home directory too. Docker in the VM can't see other host paths, apart from Lima's own `/tmp/lima` share.
 
 On Kubernetes, the data dir must be `/root/opctl` on the `opctl` PersistentVolumeClaim; cache and `--no-cache` dirs mount as subPaths of it. See [Kubernetes CI guidance](../../../../../../cache-dirs-in-ci.md#kubernetes).
 
