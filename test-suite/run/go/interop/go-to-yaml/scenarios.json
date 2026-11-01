@@ -1,0 +1,62 @@
+[
+  {
+    "name": "normal",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/interop/go-to-yaml",
+      "scope": {
+        "mode": "normal"
+      },
+      "expect": "success"
+    }
+  },
+  {
+    "name": "empty",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/interop/go-to-yaml",
+      "scope": {
+        "mode": "empty"
+      },
+      "expect": "success"
+    }
+  },
+  {
+    "name": "unknown-input",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/interop/go-to-yaml",
+      "scope": {
+        "mode": "unknown-input"
+      },
+      "expect": "failure"
+    }
+  },
+  {
+    "name": "unknown-output",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/interop/go-to-yaml",
+      "scope": {
+        "mode": "unknown-output"
+      },
+      "expect": "failure"
+    }
+  },
+  {
+    "name": "parallel",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/interop/go-to-yaml",
+      "scope": {
+        "mode": "parallel"
+      },
+      "expect": "failure"
+    }
+  },
+  {
+    "name": "incompatible",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/interop/go-to-yaml",
+      "scope": {
+        "mode": "incompatible"
+      },
+      "expect": "failure"
+    }
+  }
+]

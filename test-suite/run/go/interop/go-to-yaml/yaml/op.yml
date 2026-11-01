@@ -1,0 +1,25 @@
+name: yaml-callee
+inputs:
+  src: {dir: {}}
+  label: {string: {}}
+  payload: {object: {}}
+outputs:
+  artifact: {dir: {}}
+  label: {string: {}}
+run:
+  serial:
+    - container:
+        image: {ref: 'alpine:3'}
+        dirs:
+          /src: $(src)
+          /out: $(artifact)
+        envVars:
+          LABEL: $(label)
+          PAYLOAD: $(payload)
+        cmd:
+          - sh
+          - -ce
+          - |
+            cp /src/marker /out/marker
+            printf "%s" "$LABEL" > /out/label
+            test "$PAYLOAD" = '{"\$key":"\$(not-a-ref)"}'

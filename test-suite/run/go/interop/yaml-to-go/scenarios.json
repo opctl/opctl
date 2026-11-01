@@ -1,0 +1,30 @@
+[
+  {
+    "name": "container root",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/interop/yaml-to-go",
+      "scope": {},
+      "expect": "success"
+    }
+  },
+  {
+    "name": "op root",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/interop/yaml-to-go",
+      "scope": {
+        "kind": "op"
+      },
+      "expect": "success"
+    }
+  },
+  {
+    "name": "constraint",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/interop/yaml-to-go",
+      "scope": {
+        "text": "xx"
+      },
+      "expect": "failure"
+    }
+  }
+]

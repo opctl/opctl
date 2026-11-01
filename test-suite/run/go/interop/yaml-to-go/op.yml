@@ -1,0 +1,26 @@
+name: yaml-caller
+inputs:
+  src: {dir: {default: $(./src)}}
+  text: {string: {default: from-yaml}}
+  kind: {string: {default: container}}
+run:
+  serial:
+    - op:
+        ref: ./go
+        inputs:
+          src:
+          text:
+          kind:
+        outputs:
+          artifact: $(built)
+          echoed: $(message)
+          source: $(original)
+    - container:
+        image: {ref: 'alpine:3'}
+        dirs:
+          /built: $(built)
+          /source: $(original)
+        envVars:
+          ECHOED: $(message)
+          EXPECTED: $(text)
+        cmd: [sh, -ce, 'cmp /built/marker /source/marker; test "$ECHOED" = "$EXPECTED"']

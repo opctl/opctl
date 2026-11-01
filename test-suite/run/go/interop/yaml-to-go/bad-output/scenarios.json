@@ -1,0 +1,10 @@
+[
+  {
+    "name": "unknown Go output",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/interop/yaml-to-go/bad-output",
+      "scope": {},
+      "expect": "failure"
+    }
+  }
+]

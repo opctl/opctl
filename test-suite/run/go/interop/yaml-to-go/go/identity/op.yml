@@ -1,0 +1,14 @@
+name: identity
+inputs:
+  src: {dir: {}}
+  text: {string: {}}
+outputs:
+  src: {dir: {}}
+  text: {string: {}}
+run:
+  serial:
+    - container:
+        image: {ref: 'alpine:3'}
+        dirs:
+          /src: $(src)
+        cmd: [test, -f, /src/marker]

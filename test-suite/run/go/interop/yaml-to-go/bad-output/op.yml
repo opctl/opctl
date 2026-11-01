@@ -1,0 +1,9 @@
+name: unknown-go-output
+run:
+  op:
+    ref: ../go
+    inputs:
+      text: from-yaml
+      src: $(../src)
+    outputs:
+      missing: $(missing)
