@@ -10,6 +10,11 @@ func Scan(expr string, literal func(string) error, reference func(string) error)
 	return scan(expr, literal, reference, false)
 }
 
+// ScanBody scans the inside of a reference, where backslashes are literal.
+func ScanBody(expr string, literal, reference func(string) error) error {
+	return scan(expr, literal, reference, true)
+}
+
 func scan(expr string, literal func(string) error, reference func(string) error, inside bool) error {
 	var text strings.Builder
 	flush := func() error {

@@ -3,6 +3,7 @@ module github.com/opctl/opctl
 go 1.25.0
 
 require (
+	github.com/opctl/opctl/sdks/go/opspec/sdk v0.0.0
 	github.com/appdataspec/sdk-golang v0.0.0-20170917062448-0c0ade7a92f7
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/containers/image/v5 v5.30.1
@@ -206,3 +207,5 @@ require (
 )
 
 replace github.com/onsi/gomega => github.com/onsi/gomega v1.16.0
+
+replace github.com/opctl/opctl/sdks/go/opspec/sdk => ./sdks/go/opspec/sdk

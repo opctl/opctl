@@ -5,117 +5,49 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
+	"github.com/opctl/opctl/sdks/go/opspec/sdk/refscan"
+	"strings"
 )
 
 const (
-	escaper   = '\\'
-	operator  = '$'
-	refOpener = '('
-	refCloser = ')'
-	RefStart  = string(operator) + string(refOpener)
-	RefEnd    = string(refCloser)
+	RefStart = "$("
+	RefEnd   = ")"
 )
 
-// Interpolate interpolates the provided expression
-// similar: https://github.com/kubernetes/kubernetes/blob/5066a67caaf8638c7473d4bd228037d0c270c546/third_party/forked/golang/expansion/expand.go#L1
-func Interpolate(
-	expression string,
-	scope map[string]*model.Value,
-) (string, error) {
-	refBuffer := []byte{}
-	i := 0
-	escapesCount := 0
-
-	for i < len(expression) {
-		switch expression[i] {
-		case escaper:
-			escapesCount++
-		case operator:
-			isEscaped := escapesCount%2 != 0
-			for escapesCount > 0 {
-				if escapesCount%2 == 0 {
-					refBuffer = append(refBuffer, escaper)
-				}
-				escapesCount--
-			}
-			if isEscaped {
-				refBuffer = append(refBuffer, expression[i])
-				break
-			}
-
-			result, consumed, err := tryDeRef(expression[i+1:], scope)
-			if err != nil {
-				return "", err
-			}
-			refBuffer = append(refBuffer, result...)
-			i += consumed
-		default:
-			for escapesCount > 0 {
-				refBuffer = append(refBuffer, escaper)
-				escapesCount--
-			}
-
-			refBuffer = append(refBuffer, expression[i])
-		}
-
-		// always increment loop counter
-		i++
-	}
-
-	for escapesCount > 0 {
-		refBuffer = append(refBuffer, escaper)
-		escapesCount--
-	}
-
-	return string(refBuffer), nil
+// Scan visits unescaped literal text and whole references, preserving nested references.
+func Scan(expr string, onLiteral, onRef func(string) error) error {
+	return refscan.Scan(expr, onLiteral, onRef)
 }
 
-// tryDeRef tries to de reference from possibleRef.
-// It's assumed possibleRef doesn't contain an initial operator.
-//
-// returns the interpreted value (if any), number of bytes consumed, and any err
-func tryDeRef(
-	possibleRef string,
-	scope map[string]*model.Value,
-) (string, int, error) {
-	refBuffer := []byte{}
-	i := 0
+// Interpolate resolves opspec references using the shared interpolation scanner.
+func Interpolate(expression string, scope map[string]*model.Value) (string, error) {
+	return interpolate(expression, scope, false)
+}
 
-	for i < len(possibleRef) {
-		if i == 0 && possibleRef[i] != refOpener {
-			return string(operator), 0, nil
-		}
-
-		switch possibleRef[i] {
-		case refCloser:
-			if len(refBuffer) > 0 && refOpener == refBuffer[0] {
-				value, err := reference.Interpret(opspec.NameToRef(string(refBuffer[1:])), scope, nil)
-				if err != nil {
-					return "", 0, err
-				}
-
-				valueAsString, err := coerce.ToString(value)
-				if err != nil {
-					return "", 0, err
-				}
-
-				return *valueAsString.String, i + 1, err
-			}
-			refBuffer = append(refBuffer, possibleRef[i])
-		case operator:
-			result, consumed, err := tryDeRef(possibleRef[i+1:], scope)
-			if err != nil {
-				return "", 0, err
-			}
-			refBuffer = append(refBuffer, result...)
-			i += consumed
-		default:
-			refBuffer = append(refBuffer, possibleRef[i])
-		}
-
-		// always increment loop counter
-		i++
+func interpolate(expression string, scope map[string]*model.Value, inside bool) (string, error) {
+	var out strings.Builder
+	scan := refscan.Scan
+	if inside {
+		scan = refscan.ScanBody
 	}
-
-	return "$" + string(refBuffer), len(possibleRef), nil
+	err := scan(expression, func(s string) error { out.WriteString(s); return nil }, func(ref string) error {
+		body, err := interpolate(ref[2:len(ref)-1], scope, true)
+		if err != nil {
+			return err
+		}
+		v, err := reference.Interpret(opspec.NameToRef(body), scope, nil)
+		if err != nil {
+			return err
+		}
+		text, err := coerce.ToString(v)
+		if err != nil {
+			return err
+		}
+		out.WriteString(*text.String)
+		return nil
+	})
+	if err != nil {
+		return "", err
+	}
+	return out.String(), nil
 }
