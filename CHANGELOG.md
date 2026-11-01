@@ -55,6 +55,11 @@ accordance with
 
 - Go bootstrap failures return compiler and declaration diagnostics to describe clients, including `opctl op validate`.
 
+### Changed
+
+- The `run-a-go-service` example's `dev` op is a Go op that calls the YAML `mysql` op. Its `MYSQL_HOST` default is now the `mysql` op's container name,
+  `run-a-go-service-mysql`, so the service can reach the database.
+
 ### Added
 
 - `opctl op create --go` scaffolds a Go op in its own module. It never overwrites existing op or module files. `opctl op create` without `--go` is unchanged.

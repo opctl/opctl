@@ -65,3 +65,27 @@ var _ = Context("CreateGo bootstrap", func() {
 		Expect(planned.Run.Container.EnvVars).To(Equal(map[string]interface{}{"WHO": "$(who)"}))
 	})
 })
+
+var _ = Context("run-a-go-service example", func() {
+	It("describes and plans its Go dev op, which calls the YAML mysql op", func() {
+		described, planned := bootstrapLocally("../../../examples/run-a-go-service/.opspec/dev", map[string]interface{}{
+			"goBuildCachePath": "Library/Caches/go-build", "MYSQL_USER": "testuser", "MYSQL_PASSWORD": "testpassword", "MYSQL_DATABASE": "testapp", "MYSQL_HOST": "run-a-go-service-mysql",
+		})
+
+		Expect(described.Name).To(Equal("dev"))
+		Expect(described.Description).To(Equal("Runs the example API with a seeded MySQL database for development."))
+		Expect(described.Inputs).To(HaveKey("HOME"))
+		Expect(described.Inputs["HOME"].Dir).NotTo(BeNil())
+		Expect(described.Inputs["MYSQL_HOST"].String.Default).To(Equal("run-a-go-service-mysql"))
+
+		calls := *planned.Run.Parallel
+		Expect(calls).To(HaveLen(2))
+		Expect(calls[0].Op.Ref).To(Equal("../mysql"))
+		Expect(calls[0].Op.Inputs).To(HaveKeyWithValue("MYSQL_HOST", "$(MYSQL_HOST)"))
+		api := calls[1].Container
+		Expect(*api.Name).To(Equal("run-a-go-service-api"))
+		Expect(api.Dirs).To(Equal(map[string]interface{}{
+			"/src": "$(../..)", "/go/pkg": "$(HOME/go/pkg)", "/root/.cache/go-build": "$(HOME/Library/Caches/go-build)",
+		}))
+	})
+})
