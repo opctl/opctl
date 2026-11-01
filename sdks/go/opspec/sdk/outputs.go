@@ -146,7 +146,11 @@ func (p *outputPlan) walk(call *callSpec, path string, visible map[string]bool, 
 				producers[name] = location
 			}
 		}
-		for _, ref := range []string{ctr.Stdout, ctr.Stderr} {
+		refs := []string{ctr.Stdout, ctr.Stderr}
+		for _, key := range sortedBindings(ctr.Outputs) {
+			refs = append(refs, ctr.Outputs[key])
+		}
+		for _, ref := range refs {
 			if ref == "" {
 				continue
 			}

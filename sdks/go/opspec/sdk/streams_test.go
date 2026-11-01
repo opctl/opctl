@@ -109,7 +109,12 @@ func TestStreamMainHelper(t *testing.T) {
 		return
 	}
 	os.Args = []string{"hello", os.Getenv("OPCTL_STREAM_PHASE")}
-	Main(func(struct{}) Call { return streamGraph() })
+	Main(func(struct{}) Call {
+		if os.Getenv("OPCTL_NAMED_HELPER") == "1" {
+			return namedGraph()
+		}
+		return streamGraph()
+	})
 	os.Exit(0)
 }
 func TestStreamSchemaRequests(t *testing.T) {

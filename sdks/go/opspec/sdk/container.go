@@ -3,6 +3,7 @@ package sdk
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 )
 
@@ -20,6 +21,8 @@ type ContainerCall struct {
 type bindingKey struct{ kind, name string }
 
 type containerSpec struct {
+	Outputs     map[string]string `json:"outputs,omitempty"`
+	outputTypes map[string]reflect.Type
 	Stdout      string `json:"stdout,omitempty"`
 	Stderr      string `json:"stderr,omitempty"`
 	rawBindings map[bindingKey]bool

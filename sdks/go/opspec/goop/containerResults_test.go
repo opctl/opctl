@@ -17,3 +17,15 @@ var _ = Describe("container stream contract", func() {
 		Expect(producer.Stderr).To(Equal("$(opctl_string_2)"))
 	})
 })
+
+var _ = Describe("named container output contract", func() {
+	It("accepts all five kinds in the shared SDK fixture", func() {
+		data, err := os.ReadFile("../sdk/testdata/plan.container-outputs.json")
+		Expect(err).NotTo(HaveOccurred())
+		plan, err := ParsePlan(data)
+		Expect(err).NotTo(HaveOccurred())
+		producer := (*plan.Run.Serial)[0].Container
+		Expect(producer.Outputs).To(HaveLen(5))
+		Expect(producer.Outputs).To(HaveKeyWithValue("count", "$(opctl_number_2)"))
+	})
+})

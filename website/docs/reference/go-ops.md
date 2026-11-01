@@ -237,4 +237,15 @@ return opctl.Serial(producer,
 
 `Stderr()` has the same two-return convention. Handles cannot be read with `Value()` during plan. Producers must be visible before consumers: serial calls accumulate results, parallel siblings cannot consume each other's results, and results become visible after a parallel group. Captures follow the [shared stream rules](opspec/op-directory/op/call/container/index.md#stdout-and-stderr), including secret declarations and the 1 MiB limit. Stream graphs require opspec schema 2; graphs without new fields remain schema 1 and byte-identical. An incompatible node fails before the SDK emits its response.
 
-The host also reads schema 3 container `outputs` bindings. The [outputs file protocol](opspec/op-directory/op/call/container/outputs.md) applies equally to YAML and Go graphs; it does not add typed container declarations yet.
+Request named [outputs file](opspec/op-directory/op/call/container/outputs.md) members with `ContainerOutput[T]`:
+
+```go
+producer := opctl.Container("alpine:3").Cmd("sh", "-ce",
+    `printf '%s' '{"version":"v1.2.3","count":3}' > "$OPCTL_OUTPUTS"`)
+producer, version := opctl.ContainerOutput[opctl.String](producer, "version")
+producer, count := opctl.ContainerOutput[opctl.Number](producer, "count")
+```
+
+Supported handle kinds are String, Number, Boolean, Array, and Object. Repeated requests on the updated builder reuse a member's binding; a different instantiated handle type for the same member is a plan error. Branch from an unbound builder for independent producers. Keep returned producers in the graph and consume handles only after their producers are visible. `Value()` remains unavailable during plan. Export handles through `MainWithOutputs` to return them to a caller.
+
+`T` expresses the author's expected use in Go. It does not install strict runtime type declarations. Slice 6 validates presence and supported JSON data; ordinary consumer coercions still apply. `outputParams` is reserved and not accepted. Named-result graphs require opspec schema 3. No-feature graphs remain schema 1.
