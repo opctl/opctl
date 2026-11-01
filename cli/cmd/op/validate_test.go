@@ -37,12 +37,12 @@ var _ = Describe("validate an op declaration", func() {
 			}
 			api := new(nodeFakes.FakeNode)
 			api.DescribeOpReturns(&model.OpSpec{Name: "go"}, nil)
-			err := validateOpFile(context.Background(), dir, api)
+			err := validateOpFile(context.Background(), dir, api, "")
 			if len(tc.files) == 1 && tc.files["op.go"] != "" {
 				Expect(api.DescribeOpCallCount()).To(Equal(1))
 				failure := errors.New("unknown opctl tag key minimun")
 				api.DescribeOpReturns(nil, failure)
-				Expect(validateOpFile(context.Background(), dir, api)).To(Equal(failure))
+				Expect(validateOpFile(context.Background(), dir, api, "")).To(Equal(failure))
 			} else {
 				Expect(api.DescribeOpCallCount()).To(Equal(0))
 			}

@@ -33,6 +33,7 @@ func NewOpCmd(
 
 	opCmd.AddCommand(
 		newCreateCmd(),
+		newGenCmd(),
 	)
 	opCmd.AddCommand(
 		newInstallCmd(
@@ -45,6 +46,7 @@ func NewOpCmd(
 	opCmd.AddCommand(
 		newValidateCmd(
 			cliParamSatisfier,
+			nodeConfig,
 		),
 	)
 

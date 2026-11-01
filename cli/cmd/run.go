@@ -15,6 +15,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
 	"github.com/opctl/opctl/cli/internal/opgraph"
+	"github.com/opctl/opctl/cli/internal/opstubs"
 	"github.com/opctl/opctl/sdks/go/model"
 	nodePkg "github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
@@ -107,7 +108,7 @@ opctl node and other opctl containers by their name. Containers will be removed 
 				return err
 			}
 
-			opFile, isGoOp, err := getRunOpFile(ctx, opHandle, node)
+			opFile, isGoOp, err := getRunOpFile(ctx, opHandle, node, nodeConfig.DataDir)
 			if err != nil {
 				return err
 			}
@@ -286,12 +287,13 @@ opctl node and other opctl containers by their name. Containers will be removed 
 	return &runCmd
 }
 
-func getRunOpFile(ctx context.Context, opHandle model.DataHandle, apiNode nodePkg.Node) (*model.OpSpec, bool, error) {
+func getRunOpFile(ctx context.Context, opHandle model.DataHandle, apiNode nodePkg.Node, dataDir string) (*model.OpSpec, bool, error) {
 	isGoOp, err := opfile.IsGoOp(ctx, opHandle)
 	if err != nil {
 		return nil, false, err
 	}
 	if isGoOp {
+		opstubs.WarnRefresh(ctx, opHandle.Ref(), apiNode, dataDir, os.Stderr)
 		spec, err := apiNode.DescribeOp(ctx, model.DescribeOpReq{Op: model.StartOpReqOp{Ref: opHandle.Ref()}})
 		return spec, true, err
 	}

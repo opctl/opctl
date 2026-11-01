@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
+	"github.com/opctl/opctl/cli/internal/opstubs"
+	"os"
 
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
@@ -15,6 +18,7 @@ import (
 
 func newValidateCmd(
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier,
+	nodeConfig *local.NodeConfig,
 ) *cobra.Command {
 	opRefArgName := "OP_REF"
 
@@ -59,16 +63,17 @@ opctl op validate github.com/opspec-pkgs/slack.chat.post-message#1.1.0
 				return err
 			}
 
-			return validateOpFile(ctx, opDirHandle, node)
+			return validateOpFile(ctx, opDirHandle, node, nodeConfig.DataDir)
 		},
 	}
 
 	return &validateCmd
 }
 
-func validateOpFile(ctx context.Context, opDir model.DataHandle, apiNode nodePkg.Node) error {
+func validateOpFile(ctx context.Context, opDir model.DataHandle, apiNode nodePkg.Node, dataDir string) error {
 	_, err := opfile.Get(ctx, opDir)
 	if errors.Is(err, opfile.ErrGoOp) {
+		opstubs.WarnRefresh(ctx, opDir.Ref(), apiNode, dataDir, os.Stderr)
 		_, err = apiNode.DescribeOp(ctx, model.DescribeOpReq{Op: model.StartOpReqOp{Ref: opDir.Ref()}})
 	}
 	return err

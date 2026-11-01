@@ -9,6 +9,14 @@ execution code and do not affect the cache key. Go-to-Go stub cycles fail with a
 Bootstrap is how opctl obtains a Go op's declaration: it compiles the program and runs its [describe and plan phases](index.md#describe-and-plan) in containers
 it manages. Bootstrap appears in the event stream and the UI as calls beneath the op call: `bootstrap build`, `bootstrap describe`, and `bootstrap plan`.
 
+## Editor stubs
+
+`opctl op gen [OP_REF...]` refreshes every declared op stub in each local op's module. With no refs, it finds modules containing Go ops under `./.opspec`.
+It writes successful stubs even if another declaration fails, and exits with an error on any failure. `opctl run` and `opctl op validate` refresh local Go
+modules too, with a warning on failure. Git-fetched sources are never refreshed on the host.
+
+`opctlgen/.gitignore` contains `*`. Refresh refuses symlinks and files without the generated header, and removes stale packages only when every file is generated.
+
 ## Go version and image
 
 The `go` directive in the nearest `go.mod`, found by walking up from the op directory, selects the `golang:<version>` image. opctl resolves the image to an

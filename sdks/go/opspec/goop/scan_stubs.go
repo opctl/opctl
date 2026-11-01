@@ -1,6 +1,7 @@
 package goop
 
 import (
+	"errors"
 	"fmt"
 	"go/parser"
 	"go/scanner"
@@ -75,10 +76,12 @@ func ScanModuleStubs(moduleRoot string) ([]StubUse, error) {
 }
 func (scan *stubScanner) uses(imports []stubImport) ([]StubUse, error) {
 	uses := map[string]StubUse{}
+	var failures []error
 	for _, imported := range imports {
 		use, ok := scan.declarations[imported.name]
 		if !ok {
-			return nil, fmt.Errorf("%s: no ref is declared for op stub %q; add //opctl:op <ref> after the import, e.g. //opctl:op ../%s", imported.site, imported.name, imported.name)
+			failures = append(failures, fmt.Errorf("%s: no ref is declared for op stub %q; add //opctl:op <ref> after the import, e.g. //opctl:op ../%s", imported.site, imported.name, imported.name))
+			continue
 		}
 		uses[use.Name] = use
 	}
@@ -86,7 +89,7 @@ func (scan *stubScanner) uses(imports []stubImport) ([]StubUse, error) {
 	for _, name := range sortedStubKeys(uses) {
 		result = append(result, uses[name])
 	}
-	return result, nil
+	return result, errors.Join(failures...)
 }
 func scanStubModule(source *Source) (*stubScanner, error) {
 	module, err := readModule(source.ModuleRoot)
