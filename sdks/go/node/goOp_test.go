@@ -10,6 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/internal/fakes"
+	"github.com/opctl/opctl/sdks/go/opspec/goop"
 )
 
 var _ = Describe("Go op calls", func() {
@@ -25,7 +26,7 @@ var _ = Describe("Go op calls", func() {
 		caller := new(fakes.FakeCaller)
 		bootstrap := newGoBootstrap()
 		plan := &model.OpSpec{Run: &model.CallSpec{Container: &model.ContainerCallSpec{Image: &model.ContainerCallImageSpec{Ref: "alpine:3"}}}}
-		bootstrap.PlanReturns(plan, nil)
+		bootstrap.PlanReturns(&goop.Plan{OpSpec: plan}, nil)
 		opCall := &model.OpCall{BaseCall: model.BaseCall{OpPath: dir}, OpID: "op", ChildCallID: "child"}
 		_, err := (_opCaller{caller: caller, bootstrapper: bootstrap}).Call(context.Background(), opCall, nil, "root", &model.OpCallSpec{}, nil)
 		Expect(err).NotTo(HaveOccurred())
@@ -73,7 +74,7 @@ var _ = Describe("Go op calls", func() {
 		bootstrap := new(fakes.FakeBootstrapper)
 		defaults := &model.OpSpec{Inputs: map[string]*model.ParamSpec{"env": {String: &model.StringParamSpec{Default: "dev"}}, "token": {String: &model.StringParamSpec{IsSecret: true}}}}
 		bootstrap.DescribeReturns(defaults, nil)
-		bootstrap.PlanReturns(&model.OpSpec{Run: &model.CallSpec{Container: &model.ContainerCallSpec{Image: &model.ContainerCallImageSpec{Ref: "alpine"}}}}, nil)
+		bootstrap.PlanReturns(&goop.Plan{OpSpec: &model.OpSpec{Run: &model.CallSpec{Container: &model.ContainerCallSpec{Image: &model.ContainerCallImageSpec{Ref: "alpine"}}}}}, nil)
 		secret := "private-token"
 		original := &model.OpCall{BaseCall: model.BaseCall{OpPath: dir}, OpID: "op", ChildCallID: "child"}
 		_, err := (_opCaller{caller: caller, bootstrapper: bootstrap, dataDirPath: dir}).Call(context.Background(), original, nil, "root", &model.OpCallSpec{Inputs: map[string]interface{}{"token": ""}}, map[string]*model.Value{"token": {String: &secret}})

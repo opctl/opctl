@@ -47,14 +47,16 @@ type DirEntry struct {
 
 // Value represents a typed value
 type Value struct {
-	Array   *[]interface{}          `json:"array,omitempty"`
-	Boolean *bool                   `json:"boolean,omitempty"`
-	Dir     *string                 `json:"dir,omitempty"`
-	File    *string                 `json:"file,omitempty"`
-	Number  *float64                `json:"number,omitempty"`
-	Object  *map[string]interface{} `json:"object,omitempty"`
-	Socket  *string                 `json:"socket,omitempty"`
-	String  *string                 `json:"string,omitempty"`
+	// Sensitive is runtime-only metadata for private Go graph values.
+	Sensitive bool                    `json:"-"`
+	Array     *[]interface{}          `json:"array,omitempty"`
+	Boolean   *bool                   `json:"boolean,omitempty"`
+	Dir       *string                 `json:"dir,omitempty"`
+	File      *string                 `json:"file,omitempty"`
+	Number    *float64                `json:"number,omitempty"`
+	Object    *map[string]interface{} `json:"object,omitempty"`
+	Socket    *string                 `json:"socket,omitempty"`
+	String    *string                 `json:"string,omitempty"`
 }
 
 // Unbox unboxes a Value into a native go type
@@ -103,4 +105,28 @@ func (value Value) Unbox() (interface{}, error) {
 		return *value.String, nil
 	}
 	return nil, fmt.Errorf("unable to unbox value '%+v'", value)
+}
+
+// Format keeps runtime privacy metadata out of diagnostics and preserves Value's
+// existing public formatting. Sensitive values must never be formatted as data.
+func (value *Value) Format(state fmt.State, verb rune) {
+	if value != nil && value.Sensitive {
+		fmt.Fprint(state, "[sensitive value]")
+		return
+	}
+	type publicValue struct {
+		Array   *[]interface{}
+		Boolean *bool
+		Dir     *string
+		File    *string
+		Number  *float64
+		Object  *map[string]interface{}
+		Socket  *string
+		String  *string
+	}
+	var public *publicValue
+	if value != nil {
+		public = &publicValue{value.Array, value.Boolean, value.Dir, value.File, value.Number, value.Object, value.Socket, value.String}
+	}
+	fmt.Fprintf(state, fmt.FormatString(state, verb), public)
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs/input"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/sensitivity"
 )
 
 // Interpret interprets inputs via the provided inputArgs, inputParams, and scope;
@@ -17,7 +18,12 @@ func Interpret(
 	opPath string,
 	scope map[string]*model.Value,
 	opScratchDir string,
+	privacy ...map[string]bool,
 ) (map[string]*model.Value, error) {
+	protected := map[string]bool{}
+	if len(privacy) > 0 {
+		protected = privacy[0]
+	}
 	interpretedArgs := map[string]*model.Value{}
 
 	// 1) interpret
@@ -32,9 +38,15 @@ func Interpret(
 			opScratchDir,
 		)
 		if err != nil {
-			fmt.Println(argName, err.Error())
+			if protected[argName] {
+				err = fmt.Errorf("sensitive input %q failed interpretation", argName)
+			}
 			paramErrMap[argName] = err
 		}
+	}
+
+	for name, value := range interpretedArgs {
+		interpretedArgs[name] = sensitivity.Mark(value, protected[name])
 	}
 
 	if len(paramErrMap) > 0 {
@@ -59,6 +71,9 @@ func Interpret(
 		return nil, fmt.Errorf("unable to interpret input defaults: %w", err)
 	}
 
+	for name, value := range argsWithDefaults {
+		argsWithDefaults[name] = sensitivity.Mark(value, protected[name])
+	}
 	// 3) validate
 	return argsWithDefaults, params.Validate(argsWithDefaults, inputParams)
 }

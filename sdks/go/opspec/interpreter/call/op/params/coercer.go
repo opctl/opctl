@@ -6,6 +6,7 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/sensitivity"
 )
 
 // Coerce args to satisfy params
@@ -51,6 +52,12 @@ paramLoop:
 			err = fmt.Errorf("unable to coerce arg: param was unexpected type %+v", paramValue)
 		}
 
+		if value != nil && value.Sensitive {
+			coercedValues[paramName] = sensitivity.Mark(coercedValues[paramName], true)
+			if err != nil {
+				err = fmt.Errorf("sensitive parameter %q failed coercion", paramName)
+			}
+		}
 		if err != nil {
 			paramErrMap[paramName] = err
 		}

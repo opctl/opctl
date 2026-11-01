@@ -18,7 +18,7 @@ import (
 //counterfeiter:generate -o internal/fakes/bootstrapper.go . bootstrapper
 type bootstrapper interface {
 	Describe(ctx context.Context, opCall *model.OpCall, rootCallID string) (*model.OpSpec, error)
-	Plan(ctx context.Context, opCall *model.OpCall, rootCallID string, inputs map[string]interface{}) (*model.OpSpec, error)
+	Plan(ctx context.Context, opCall *model.OpCall, rootCallID string, inputs map[string]interface{}) (*goop.Plan, error)
 }
 
 func newBootstrapper(caller caller, dataDirPath string) bootstrapper {
@@ -41,7 +41,7 @@ func (bootstrap _bootstrapper) Describe(ctx context.Context, opCall *model.OpCal
 	}
 	return spec, nil
 }
-func (bootstrap _bootstrapper) Plan(ctx context.Context, opCall *model.OpCall, rootCallID string, inputs map[string]interface{}) (*model.OpSpec, error) {
+func (bootstrap _bootstrapper) Plan(ctx context.Context, opCall *model.OpCall, rootCallID string, inputs map[string]interface{}) (*goop.Plan, error) {
 	data, err := bootstrap.run(ctx, opCall, rootCallID, "plan", inputs)
 	if err != nil {
 		return nil, err
@@ -85,6 +85,7 @@ func (bootstrap _bootstrapper) run(ctx context.Context, opCall *model.OpCall, ro
 	}
 	ctx = withStdoutCapture(ctx, &stdout)
 	_, err = bootstrap.caller.Call(ctx, id, scope, &model.CallSpec{Container: spec, Name: &name}, opCall.OpPath, parent, rootCallID)
+	releaseCompletion(ctx, id)
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}

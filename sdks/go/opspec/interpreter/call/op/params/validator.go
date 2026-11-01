@@ -17,6 +17,9 @@ func Validate(
 	paramErrMap := map[string][]error{}
 	for paramName, paramValue := range params {
 		errs := param.Validate(values[paramName], paramValue)
+		if len(errs) > 0 && values[paramName] != nil && values[paramName].Sensitive {
+			errs = []error{fmt.Errorf("sensitive parameter %q failed validation", paramName)}
+		}
 		if len(errs) > 0 {
 			paramErrMap[paramName] = errs
 		}

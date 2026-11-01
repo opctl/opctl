@@ -72,6 +72,8 @@ func (lpr _serialLoopCaller) Call(
 		return nil, err
 	}
 
+	outboundScope = protectLoopScope(outboundScope, inboundScope, callSpecSerialLoop.Range, callSpecSerialLoop.Vars)
+
 	// interpret initial iteration of the loop
 	callSerialLoop, err = serialloop.Interpret(
 		callSpecSerialLoop,
@@ -141,6 +143,8 @@ func (lpr _serialLoopCaller) Call(
 		if err != nil {
 			return nil, err
 		}
+
+		outboundScope = protectLoopScope(outboundScope, inboundScope, callSpecSerialLoop.Range, callSpecSerialLoop.Vars)
 
 		// interpret next iteration of the loop
 		callSerialLoop, err = serialloop.Interpret(

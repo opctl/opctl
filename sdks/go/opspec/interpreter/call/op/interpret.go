@@ -15,6 +15,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/sensitivity"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/str"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
@@ -118,12 +119,17 @@ func Interpret(
 	if isGoOp {
 		return opCall, nil
 	}
+	protected := map[string]bool{}
+	if goopctx.Active(ctx) {
+		protected = sensitivity.Inputs(opCallSpec.Inputs, opFile.Inputs, scope)
+	}
 	opCall.Inputs, err = inputs.Interpret(
 		opCallSpec.Inputs,
 		opFile.Inputs,
 		opPath,
 		scope,
 		scratchDirPath,
+		protected,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("unable to interpret call to %v: %w", opCallSpec.Ref, err)

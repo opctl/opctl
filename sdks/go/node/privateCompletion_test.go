@@ -25,7 +25,7 @@ var _ = Describe("private Go graph completions", func() {
 		bus := pubsub.New(db)
 		runtime := new(fakes.FakeContainerCaller)
 		token := "completion-private-token"
-		runtime.CallReturns(map[string]*model.Value{"token": {String: &token}}, nil)
+		runtime.CallReturns(map[string]*model.Value{"token": {String: &token, Sensitive: true}}, nil)
 		leaf := &model.CallSpec{Container: &model.ContainerCallSpec{Image: &model.ContainerCallImageSpec{Ref: "alpine"}, EnvVars: map[string]interface{}{"TOKEN": "$(seed)"}}}
 		list := []*model.CallSpec{leaf, leaf}
 		cases := []*model.CallSpec{

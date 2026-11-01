@@ -1,0 +1,1 @@
+{"contractVersion":1,"opspecSchema":1,"opspec":{"name":"hello","inputs":{"text":{"string":{}}},"outputs":{"echoed":{"string":{}},"fallback":{"string":{"default":"default"}}}}}

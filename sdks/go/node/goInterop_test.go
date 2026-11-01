@@ -13,7 +13,7 @@ import (
 )
 
 var _ = Describe("Go op interop", func() {
-	It("guards secret YAML inputs before publishing a resolved call or running it", func() {
+	It("keeps renamed secret YAML inputs private while passing runtime values", func() {
 		dir, err := os.MkdirTemp("", "go-interop-")
 		Expect(err).NotTo(HaveOccurred())
 		defer os.RemoveAll(dir)
@@ -27,8 +27,11 @@ var _ = Describe("Go op interop", func() {
 		token := "interop-private-token"
 		ctx := withPrivateGoInputs(context.Background(), map[string]*model.ParamSpec{"token": {String: &model.StringParamSpec{IsSecret: true}}})
 		_, err = clr.Call(ctx, "child", map[string]*model.Value{"token": {String: &token}}, &model.CallSpec{Op: &model.OpCallSpec{Ref: dir, PullCreds: &model.CredsSpec{}, Inputs: map[string]interface{}{"renamed": "$(token)"}}}, dir, nil, "root")
-		Expect(err).To(MatchError(ContainSubstring("secret interop")))
-		Expect(op.CallCallCount()).To(BeZero())
+		Expect(err).NotTo(HaveOccurred())
+		Expect(op.CallCallCount()).To(Equal(1))
+		_, actual, _, _, _, _ := op.CallArgsForCall(0)
+		Expect(*actual.Inputs["renamed"].String).To(Equal(token))
+		Expect(actual.Inputs["renamed"].Sensitive).To(BeTrue())
 		for i := 0; i < bus.PublishCallCount(); i++ {
 			data, err := json.Marshal(bus.PublishArgsForCall(i))
 			Expect(err).NotTo(HaveOccurred())

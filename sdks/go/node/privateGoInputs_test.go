@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"strings"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -37,7 +38,7 @@ var _ = Describe("private Go input event bindings", func() {
 		runtime := new(fakes.FakeContainerCaller)
 		caller := _caller{pubSub: publisher, containerCaller: runtime, dataDirPath: dir}
 		secret := "private-token"
-		runtime.CallReturns(map[string]*model.Value{"token": {String: &secret}}, nil)
+		runtime.CallReturns(map[string]*model.Value{"token": {String: &secret, Sensitive: true}}, nil)
 		ctx := withPrivateGoInputs(context.Background(), map[string]*model.ParamSpec{"token": {String: &model.StringParamSpec{IsSecret: true}}})
 		returned, err := caller.Call(ctx, "child", map[string]*model.Value{"token": {String: &secret}}, &model.CallSpec{Container: &model.ContainerCallSpec{Image: &model.ContainerCallImageSpec{Ref: "alpine"}, EnvVars: map[string]interface{}{"TOKEN": "$(token)"}}}, dir, nil, "root")
 		Expect(err).NotTo(HaveOccurred())
@@ -53,4 +54,59 @@ var _ = Describe("private Go input event bindings", func() {
 		}
 	})
 
+})
+
+var _ = Describe("sensitive interpretation failures", func() {
+	It("keeps sensitive command and credential conversion errors private while preserving YAML diagnostics", func() {
+		dir, err := os.MkdirTemp("", "private-error-")
+		Expect(err).NotTo(HaveOccurred())
+		defer os.RemoveAll(dir)
+		secret := "/private-interpretation-path"
+		specs := []*model.CallSpec{
+			{Container: &model.ContainerCallSpec{Image: &model.ContainerCallImageSpec{Ref: "alpine"}, Cmd: []interface{}{"$(source)"}}},
+			{Op: &model.OpCallSpec{Ref: "./callee", PullCreds: &model.CredsSpec{Username: "user", Password: "$(source)"}}},
+		}
+		for _, private := range []bool{true, false} {
+			for _, spec := range specs {
+				bus := new(fakes.FakePubSub)
+				runtime := new(fakes.FakeContainerCaller)
+				clr := _caller{pubSub: bus, containerCaller: runtime, dataDirPath: dir, stateStore: &_stateStore{}}
+				ctx := context.Background()
+				if private {
+					ctx = withPrivateGoInputs(ctx, map[string]*model.ParamSpec{"source": {Dir: &model.DirParamSpec{IsSecret: true}}})
+				}
+				_, err := clr.Call(ctx, "child", map[string]*model.Value{"source": {Dir: &secret}}, spec, "/op", nil, "root")
+				Expect(err).To(HaveOccurred())
+				Expect(strings.Contains(err.Error(), secret)).To(Equal(!private))
+				if private {
+					Expect(err.Error()).To(ContainSubstring(`sensitive bindings ["source"]`))
+				}
+				Expect(runtime.CallCallCount()).To(BeZero())
+				Expect(bus.PublishCallCount()).To(Equal(1))
+				encoded, marshalErr := json.Marshal(bus.PublishArgsForCall(0))
+				Expect(marshalErr).NotTo(HaveOccurred())
+				Expect(strings.Contains(string(encoded), secret)).To(Equal(!private))
+			}
+		}
+	})
+})
+
+var _ = Describe("private interpreted call metadata", func() {
+	It("keeps resolved names, image credentials, and dynamic environments out of snapshots", func() {
+		token := "metadata-private-token"
+		expression := "$(token)"
+		ctx := withPrivateGoInputs(context.Background(), map[string]*model.ParamSpec{"token": {String: &model.StringParamSpec{IsSecret: true}}})
+		call := &model.Call{Name: &token, Container: &model.ContainerCall{Name: &token, Image: &model.ContainerCallImage{Ref: &token, PullCreds: &model.Creds{Username: "user", Password: token}}, EnvVars: map[string]string{"TOKEN": token}}}
+		spec := &model.CallSpec{Name: &expression, Container: &model.ContainerCallSpec{Name: &expression, Image: &model.ContainerCallImageSpec{Ref: expression}, EnvVars: expression}}
+		encoded, err := json.Marshal(callForEvent(ctx, call, spec))
+		Expect(err).NotTo(HaveOccurred())
+		Expect(strings.Contains(string(encoded), token)).To(BeFalse())
+		Expect(*call.Name).To(Equal(token))
+		Expect(call.Container.Image.PullCreds.Password).To(Equal(token))
+		spec.Container.EnvVars = map[string]interface{}{expression: "public"}
+		call.Container.EnvVars = map[string]string{token: "public"}
+		encoded, err = json.Marshal(callForEvent(ctx, call, spec))
+		Expect(err).NotTo(HaveOccurred())
+		Expect(strings.Contains(string(encoded), token)).To(BeFalse())
+	})
 })

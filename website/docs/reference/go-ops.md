@@ -85,8 +85,10 @@ literals, including nested arrays and string-keyed maps. Literal dollar signs
 are escaped, and an explicit empty string stays empty.
 
 `PullCreds(username, password)` accepts literal strings or `String` handles.
-Without it, the node uses stored auths. Secret interop is temporarily rejected
-before execution while private output collection is being added.
+Without it, the node uses stored auths. Secret bindings stay in runtime memory. Public call events omit their values,
+including renamed outputs and values carried through groups or YAML loops. A
+sensitive value passed into a Go scalar or structured input requires the
+`secret` tag on that input.
 
 Use `call, value := OpOutput[opctl.Dir](call, "artifact")` to request a named
 output. Keep the returned call in the graph. Other supported handles include
@@ -96,3 +98,9 @@ producer visibility, including nested input handles and pull credentials.
 Result values cannot be read during plan. The callee validates its outputs at
 execution; the accessor does not describe or fetch the callee, and existing
 opspec coercions still apply.
+
+The node validates described Go outputs against runtime bindings before it runs
+the graph, then resolves those bindings from the completed graph scope. Root Go
+calls export every declared output in their completion event. Nested calls
+export the names requested by their caller. Defaults fill omitted bindings;
+output declarations never turn missing runtime references into fresh mounts.

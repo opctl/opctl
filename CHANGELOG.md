@@ -8,9 +8,12 @@ accordance with
 
 ### Added
 
+- The node collects declared Go outputs through runtime reference bindings, validates them, and includes public root outputs in ordinary completion events.
+
 - Go op calls can request named outputs as typed handles with `OpOutput[T]`. Plan checks reject missing producers and invalid serial or parallel visibility.
 
-- Go ops can call local and git-ref ops with literal or handle inputs and optional pull credentials. Secret interop is guarded until private output collection is available.
+- Go ops can call local and git-ref ops with literal or handle inputs and optional pull credentials. Secret bindings remain private across op calls and group or loop
+  results.
 
 - Go ops can declare typed inputs with defaults and constraints, branch on public input values, and bind input handles to container environment variables, directories,
   files, and sockets. `opctl run` prompts for Go op inputs and rejects invalid explicit values without substituting defaults; `opctl op validate` and `opctl ls` describe Go
@@ -18,6 +21,9 @@ accordance with
   files between calls. `RawRef` provides an unchecked escape hatch for whole opspec references. Go op outputs are not supported yet.
 
 ### Fixed
+
+- Failed interpretation of sensitive Go graph bindings reports binding names without exposing resolved values. Event snapshots also keep sensitive names, image credentials,
+  and dynamic environments private.
 
 - Go graph groups and loops retain private runtime results while omitting secret values from public completion events.
 

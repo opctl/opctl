@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/goop"
 )
 
 type FakeBootstrapper struct {
@@ -24,7 +25,7 @@ type FakeBootstrapper struct {
 		result1 *model.OpSpec
 		result2 error
 	}
-	PlanStub        func(context.Context, *model.OpCall, string, map[string]interface{}) (*model.OpSpec, error)
+	PlanStub        func(context.Context, *model.OpCall, string, map[string]interface{}) (*goop.Plan, error)
 	planMutex       sync.RWMutex
 	planArgsForCall []struct {
 		arg1 context.Context
@@ -33,11 +34,11 @@ type FakeBootstrapper struct {
 		arg4 map[string]interface{}
 	}
 	planReturns struct {
-		result1 *model.OpSpec
+		result1 *goop.Plan
 		result2 error
 	}
 	planReturnsOnCall map[int]struct {
-		result1 *model.OpSpec
+		result1 *goop.Plan
 		result2 error
 	}
 	invocations      map[string][][]interface{}
@@ -110,7 +111,7 @@ func (fake *FakeBootstrapper) DescribeReturnsOnCall(i int, result1 *model.OpSpec
 	}{result1, result2}
 }
 
-func (fake *FakeBootstrapper) Plan(arg1 context.Context, arg2 *model.OpCall, arg3 string, arg4 map[string]interface{}) (*model.OpSpec, error) {
+func (fake *FakeBootstrapper) Plan(arg1 context.Context, arg2 *model.OpCall, arg3 string, arg4 map[string]interface{}) (*goop.Plan, error) {
 	fake.planMutex.Lock()
 	ret, specificReturn := fake.planReturnsOnCall[len(fake.planArgsForCall)]
 	fake.planArgsForCall = append(fake.planArgsForCall, struct {
@@ -138,7 +139,7 @@ func (fake *FakeBootstrapper) PlanCallCount() int {
 	return len(fake.planArgsForCall)
 }
 
-func (fake *FakeBootstrapper) PlanCalls(stub func(context.Context, *model.OpCall, string, map[string]interface{}) (*model.OpSpec, error)) {
+func (fake *FakeBootstrapper) PlanCalls(stub func(context.Context, *model.OpCall, string, map[string]interface{}) (*goop.Plan, error)) {
 	fake.planMutex.Lock()
 	defer fake.planMutex.Unlock()
 	fake.PlanStub = stub
@@ -151,28 +152,28 @@ func (fake *FakeBootstrapper) PlanArgsForCall(i int) (context.Context, *model.Op
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
 }
 
-func (fake *FakeBootstrapper) PlanReturns(result1 *model.OpSpec, result2 error) {
+func (fake *FakeBootstrapper) PlanReturns(result1 *goop.Plan, result2 error) {
 	fake.planMutex.Lock()
 	defer fake.planMutex.Unlock()
 	fake.PlanStub = nil
 	fake.planReturns = struct {
-		result1 *model.OpSpec
+		result1 *goop.Plan
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeBootstrapper) PlanReturnsOnCall(i int, result1 *model.OpSpec, result2 error) {
+func (fake *FakeBootstrapper) PlanReturnsOnCall(i int, result1 *goop.Plan, result2 error) {
 	fake.planMutex.Lock()
 	defer fake.planMutex.Unlock()
 	fake.PlanStub = nil
 	if fake.planReturnsOnCall == nil {
 		fake.planReturnsOnCall = make(map[int]struct {
-			result1 *model.OpSpec
+			result1 *goop.Plan
 			result2 error
 		})
 	}
 	fake.planReturnsOnCall[i] = struct {
-		result1 *model.OpSpec
+		result1 *goop.Plan
 		result2 error
 	}{result1, result2}
 }

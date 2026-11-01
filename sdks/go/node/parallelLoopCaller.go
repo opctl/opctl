@@ -86,6 +86,8 @@ func (plpr _parallelLoopCaller) Call(
 			return nil, scopeErr
 		}
 
+		childCallScope = protectLoopScope(childCallScope, inboundScope, callSpecParallelLoop.Range, callSpecParallelLoop.Vars)
+
 		// interpret iteration of the loop
 		callParallelLoop, interpretErr := parallelloop.Interpret(
 			callSpecParallelLoop,
@@ -145,6 +147,12 @@ func (plpr _parallelLoopCaller) Call(
 	var isChildErred = false
 	childCallOutputsByIndex := map[int]map[string]*model.Value{}
 	outputs := inboundScope
+	if privateResultsActive(parentCtx) {
+		outputs = map[string]*model.Value{}
+		for name, value := range inboundScope {
+			outputs[name] = value
+		}
+	}
 
 eventLoop:
 	for event := range eventChannel {
@@ -180,6 +188,9 @@ eventLoop:
 		}
 	}
 
+	if privateResultsActive(parentCtx) && callSpecParallelLoop.Vars == nil {
+		return outputs, nil
+	}
 	return loop.DeScope(
 		inboundScope,
 		callSpecParallelLoop.Range,

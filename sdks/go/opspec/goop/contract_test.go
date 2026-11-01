@@ -184,8 +184,8 @@ var _ = Describe("Go op interfaces and public plan inputs", func() {
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).NotTo(ContainSubstring("private"))
 	})
-	It("rejects run and outputs in describe", func() {
-		for _, spec := range []string{`{"run":{"container":{"image":{"ref":"alpine"}}}}`, `{"outputs":{"x":{"string":{}}}}`} {
+	It("rejects run in describe", func() {
+		for _, spec := range []string{`{"run":{"container":{"image":{"ref":"alpine"}}}}`} {
 			data, err := json.Marshal(Response{ContractVersion: 1, OpspecSchema: 1, Opspec: json.RawMessage(spec)})
 			Expect(err).NotTo(HaveOccurred())
 			_, err = ParseDescribe(data)
@@ -211,5 +211,39 @@ var _ = Describe("Go op output call contract", func() {
 		spec, err := ParsePlan(data)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(spec.Run.Op.Outputs).To(Equal(map[string]string{"artifact": "$(opctl_dir_1)", "label": "$(opctl_string_2)"}))
+	})
+})
+
+var _ = Describe("Go output binding contract", func() {
+	It("accepts output declarations and plan bindings separately", func() {
+		desc, err := ParseDescribe([]byte(`{"contractVersion":1,"opspecSchema":1,"opspec":{"name":"hello","outputs":{"out":{"string":{}}}}}`))
+		Expect(err).NotTo(HaveOccurred())
+		Expect(desc.Outputs).To(HaveKey("out"))
+		plan, err := ParsePlan([]byte(`{"contractVersion":1,"opspecSchema":1,"opspec":{"name":"hello","run":{"op":{"ref":"./yaml"}}},"outputBindings":{"out":"$(opctl_string_1)"}}`))
+		Expect(err).NotTo(HaveOccurred())
+		Expect(plan.OutputBindings).To(HaveKeyWithValue("out", "$(opctl_string_1)"))
+		Expect(plan.ValidateOutputs(desc.Outputs)).To(Succeed())
+	})
+	It("rejects malformed bindings and declarations in the wrong phase", func() {
+		for _, bindings := range []string{`{"bad/name":"$(x)"}`, `{"opctl_private":"$(x)"}`, `{"out":"literal"}`, `{"out":"$(x) trailing"}`, `{"out":null}`} {
+			_, err := ParsePlan([]byte(`{"contractVersion":1,"opspecSchema":1,"opspec":{"name":"hello","run":{"op":{"ref":"x"}}},"outputBindings":` + bindings + `}`))
+			Expect(err).To(HaveOccurred(), bindings)
+		}
+		_, err := ParseDescribe([]byte(`{"contractVersion":1,"opspecSchema":1,"opspec":{"name":"hello"},"outputBindings":{"out":"$(x)"}}`))
+		Expect(err).To(HaveOccurred())
+	})
+})
+
+var _ = Describe("Go output fixtures", func() {
+	It("accepts the shared output declaration and binding fixtures", func() {
+		data, err := os.ReadFile("../sdk/testdata/describe.outputs.json")
+		Expect(err).NotTo(HaveOccurred())
+		desc, err := ParseDescribe(data)
+		Expect(err).NotTo(HaveOccurred())
+		data, err = os.ReadFile("../sdk/testdata/plan.outputs.json")
+		Expect(err).NotTo(HaveOccurred())
+		plan, err := ParsePlan(data)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(plan.ValidateOutputs(desc.Outputs)).To(Succeed())
 	})
 })

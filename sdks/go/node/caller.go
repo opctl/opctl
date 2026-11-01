@@ -4,11 +4,14 @@ import (
 	"context"
 	"fmt"
 	"runtime/debug"
+	"sort"
 	"time"
 
+	"github.com/opctl/opctl/sdks/go/internal/goopctx"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
 	callpkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/call"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/sensitivity"
 )
 
 //counterfeiter:generate -o internal/fakes/caller.go . caller
@@ -94,9 +97,14 @@ func (clr _caller) Call(
 	error,
 ) {
 	ctx = withPrivateCompletions(ctx)
+	if privateResultsActive(ctx) {
+		ctx = goopctx.WithActive(ctx)
+	}
 	if id == rootCallID {
 		defer clearPrivateCompletions(ctx)
 	}
+	scope = privateScope(ctx, scope)
+	ctx = withRuntimeScope(ctx, scope)
 	callCtx, cancelCall := context.WithCancel(ctx)
 	defer cancelCall()
 	var err error
@@ -120,6 +128,7 @@ func (clr _caller) Call(
 			}
 		}
 
+		protectProduced(ctx, outputs)
 		recordPrivateCompletion(ctx, id, outputs)
 		event := model.Event{
 			CallEnded: &model.CallEnded{
@@ -174,16 +183,23 @@ func (clr _caller) Call(
 		clr.dataDirPath,
 	)
 	if err != nil {
+		if privateResultsActive(ctx) {
+			names := []string{}
+			for name, value := range scope {
+				if sensitivity.References(callSpec, map[string]*model.Value{name: value}) {
+					names = append(names, name)
+				}
+			}
+			if len(names) > 0 {
+				sort.Strings(names)
+				err = fmt.Errorf("unable to interpret call using sensitive bindings %q", names)
+			}
+		}
 		return nil, err
 	}
 
 	if call.Op != nil && call.Op.IsGoOp {
 		activatePrivateResults(ctx)
-	}
-	if call.Op != nil {
-		if err = guardSecretInterop(ctx, call.Op, callSpec.Op); err != nil {
-			return nil, err
-		}
 	}
 
 	if call.If != nil && !*call.If {
