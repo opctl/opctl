@@ -39,36 +39,79 @@ type Response struct {
 
 // NewRequest requests a bootstrap phase with public scalar or structured inputs.
 func NewRequest(phase string, inputs map[string]interface{}) Request {
+	request, _ := NewRequestForRange(phase, inputs, SupportedSchemas())
+	return request
+}
+
+// SupportedSchemas returns all schema readers provided by this node.
+func SupportedSchemas() SchemaRange {
+	return SchemaRange{Min: opfile.MinSchemaVersion, Max: opfile.SchemaVersion}
+}
+
+// Validate checks that a host range advertises only implemented readers.
+func (schema SchemaRange) Validate() error {
+	if schema.Min < opfile.MinSchemaVersion || schema.Max < schema.Min || schema.Max > opfile.SchemaVersion {
+		return fmt.Errorf("invalid Go bootstrap opspec schema range [%d,%d]; supported range is [%d,%d]", schema.Min, schema.Max, opfile.MinSchemaVersion, opfile.SchemaVersion)
+	}
+	return nil
+}
+
+// NewRequestForRange requests a phase using an explicit subset of the node's readers.
+func NewRequestForRange(phase string, inputs map[string]interface{}, schema SchemaRange) (Request, error) {
+	if err := schema.Validate(); err != nil {
+		return Request{}, err
+	}
 	if inputs == nil {
 		inputs = map[string]interface{}{}
 	}
-	return Request{ContractVersion: 1, Phase: phase, OpspecSchema: SchemaRange{Min: 1, Max: opfile.SchemaVersion}, Inputs: inputs, KnownOutputs: map[string]interface{}{}}
+	return Request{ContractVersion: 1, Phase: phase, OpspecSchema: schema, Inputs: inputs, KnownOutputs: map[string]interface{}{}}, nil
 }
 
-func parseResponse(data []byte) (*model.OpSpec, error) {
-	var response Response
+func parseResponse(data []byte, schema SchemaRange) (*model.OpSpec, error) {
+	if err := schema.Validate(); err != nil {
+		return nil, err
+	}
+	var response struct {
+		ContractVersion *int            `json:"contractVersion"`
+		OpspecSchema    *int            `json:"opspecSchema"`
+		Opspec          json.RawMessage `json:"opspec"`
+	}
 	if err := json.Unmarshal(data, &response); err != nil {
 		return nil, fmt.Errorf("decode Go op bootstrap response: %w", err)
 	}
-	if response.ContractVersion != 1 {
-		return nil, fmt.Errorf("unsupported Go op bootstrap contract version %d", response.ContractVersion)
+	if response.ContractVersion == nil {
+		return nil, fmt.Errorf("missing or null Go op bootstrap contract version")
 	}
-	if response.OpspecSchema < 1 || response.OpspecSchema > opfile.SchemaVersion {
-		return nil, fmt.Errorf("Go op requires opspec schema %d; upgrade opctl to a version supporting it", response.OpspecSchema)
+	if *response.ContractVersion != 1 {
+		return nil, fmt.Errorf("unsupported Go op bootstrap contract version %d", *response.ContractVersion)
+	}
+	if response.OpspecSchema == nil {
+		return nil, fmt.Errorf("missing or null Go op bootstrap schema version")
+	}
+	if *response.OpspecSchema < opfile.MinSchemaVersion || *response.OpspecSchema > opfile.SchemaVersion {
+		return nil, fmt.Errorf("Go op requires opspec schema %d; upgrade opctl to a version supporting it", *response.OpspecSchema)
+	}
+	if *response.OpspecSchema < schema.Min || *response.OpspecSchema > schema.Max {
+		return nil, fmt.Errorf("Go op response schema %d is outside requested opspec schema range [%d,%d]", *response.OpspecSchema, schema.Min, schema.Max)
 	}
 	spec, err := opfile.Unmarshal(response.Opspec)
 	if err != nil {
 		return nil, err
 	}
-	if needed := opspec.MinimumSchema(spec.Run); needed > response.OpspecSchema {
-		return nil, fmt.Errorf("Go op graph requires opspec schema %d but response declares schema %d", needed, response.OpspecSchema)
+	if needed, field := opspec.SchemaRequirement(spec.Run); needed > *response.OpspecSchema {
+		return nil, fmt.Errorf("Go op graph field %s requires opspec schema %d but response declares schema %d", field, needed, *response.OpspecSchema)
 	}
 	return spec, nil
 }
 
 // ParseDescribe validates an interface without a run graph or runtime bindings.
 func ParseDescribe(data []byte) (*model.OpSpec, error) {
-	spec, err := parseResponse(data)
+	return ParseDescribeForRange(data, SupportedSchemas())
+}
+
+// ParseDescribeForRange checks the response against the range sent to the program.
+func ParseDescribeForRange(data []byte, schema SchemaRange) (*model.OpSpec, error) {
+	spec, err := parseResponse(data, schema)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +127,12 @@ func ParseDescribe(data []byte) (*model.OpSpec, error) {
 
 // ParsePlan validates a run graph without input or output declarations.
 func ParsePlan(data []byte) (*Plan, error) {
-	spec, err := parseResponse(data)
+	return ParsePlanForRange(data, SupportedSchemas())
+}
+
+// ParsePlanForRange checks the response against the range sent to the program.
+func ParsePlanForRange(data []byte, schema SchemaRange) (*Plan, error) {
+	spec, err := parseResponse(data, schema)
 	if err != nil {
 		return nil, err
 	}
