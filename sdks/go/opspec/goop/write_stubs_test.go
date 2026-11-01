@@ -91,3 +91,30 @@ func TestWriteStubsLeavesStubFreeModuleUntouched(t *testing.T) {
 		t.Fatalf("created opctlgen without stubs: %v", err)
 	}
 }
+
+func TestWriteStubsIgnoresDotfiles(t *testing.T) {
+	root := t.TempDir()
+	generated := []byte(GeneratedStubHeader + "ref. DO NOT EDIT.\npackage greet\n")
+	if err := WriteStubs(root, map[string][]byte{"greet": generated}); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{".DS_Store", ".stub-leftover", "greet/.DS_Store", "greet/.stub-leftover"} {
+		if err := os.WriteFile(filepath.Join(root, "opctlgen", name), []byte("unrelated"), 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := WriteStubs(root, map[string][]byte{"greet": generated}); err != nil {
+		t.Fatal(err)
+	}
+	if err := WriteStubs(root, nil); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(root, "opctlgen/greet/stub.go")); !os.IsNotExist(err) {
+		t.Fatalf("stale stub retained: %v", err)
+	}
+	for _, name := range []string{".DS_Store", ".stub-leftover"} {
+		if data, err := os.ReadFile(filepath.Join(root, "opctlgen", name)); err != nil || string(data) != "unrelated" {
+			t.Fatalf("changed dotfile %s: %q %v", name, data, err)
+		}
+	}
+}

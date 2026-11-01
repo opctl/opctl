@@ -60,7 +60,7 @@ func WriteStubs(moduleRoot string, files map[string][]byte) error {
 		return errors.Join(append(failures, err)...)
 	}
 	for _, entry := range entries {
-		if entry.Name() == ".gitignore" {
+		if strings.HasPrefix(entry.Name(), ".") {
 			continue
 		}
 		if _, needed := files[entry.Name()]; needed {
@@ -75,7 +75,7 @@ func WriteStubs(moduleRoot string, files map[string][]byte) error {
 			if err != nil {
 				return err
 			}
-			if entry.IsDir() {
+			if entry.IsDir() || strings.HasPrefix(entry.Name(), ".") {
 				return nil
 			}
 			if entry.Type()&os.ModeSymlink != 0 {

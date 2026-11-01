@@ -243,6 +243,13 @@ func run() error {
 		binary = "opctl"
 	}
 	for index, stage := range []string{"cold", "warm", "changed", "removed"} {
+		if stage == "warm" {
+			for _, name := range []string{".DS_Store", "yaml/.stub-leftover"} {
+				if err := os.WriteFile(filepath.Join(root, "opctlgen", name), []byte("unrelated"), 0644); err != nil {
+					return err
+				}
+			}
+		}
 		if stage == "changed" {
 			if err := addOptional(yaml); err != nil {
 				return err
@@ -259,6 +266,9 @@ func run() error {
 		output, runErr := command.CombinedOutput()
 		cancel()
 		fmt.Print(string(output))
+		if strings.Contains(string(output), "leaving user file") {
+			return fmt.Errorf("host refresh rejected an unrelated dotfile")
+		}
 		if stage == "removed" {
 			if runErr == nil || !strings.Contains(string(output), "unknown field Label") || !strings.Contains(string(output), "yaml (../yaml)") {
 				return fmt.Errorf("removed input did not fail clearly: %v", runErr)
