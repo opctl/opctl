@@ -50,10 +50,17 @@ var _ = Describe("DescribeOp error classification", func() {
 	for _, tc := range []struct {
 		name                                    string
 		data                                    string
+		module                                  *string
+		opSuffix                                string
 		exit                                    int64
 		failure                                 error
 		cancelBefore, cancelDuring, declaration bool
 	}{
+		{name: "classifies missing go.mod as a declaration error", module: stringPtr(""), declaration: true},
+		{name: "classifies missing go directive as a declaration error", module: stringPtr("module hello\n"), declaration: true},
+		{name: "classifies malformed go.mod as a declaration error", module: stringPtr("not a module file"), declaration: true},
+		{name: "classifies interpolated paths as a declaration error", opSuffix: "$(path)", declaration: true},
+		{name: "classifies forbidden mounts as a declaration error", module: stringPtr("module hello\ngo 1.21\nreplace example.com/lib => /usr\n"), declaration: true},
 		{name: "classifies bootstrap program exits as declaration errors", exit: 1, declaration: true},
 		{name: "classifies bootstrap JSON parse failures as declaration errors", data: "not JSON", declaration: true},
 		{name: "classifies bootstrap contract failures as declaration errors", data: `{"contractVersion":1,"opspecSchema":2}`, declaration: true},
@@ -69,8 +76,18 @@ var _ = Describe("DescribeOp error classification", func() {
 			root, err := os.MkdirTemp("", "describe-error-")
 			Expect(err).NotTo(HaveOccurred())
 			defer os.RemoveAll(root)
+			if tc.opSuffix != "" {
+				root = filepath.Join(root, tc.opSuffix)
+				Expect(os.MkdirAll(root, 0700)).To(Succeed())
+			}
 			Expect(os.WriteFile(filepath.Join(root, "op.go"), []byte("package main"), 0600)).To(Succeed())
-			Expect(os.WriteFile(filepath.Join(root, "go.mod"), []byte("module hello\ngo 1.21\n"), 0600)).To(Succeed())
+			module := "module hello\ngo 1.21\n"
+			if tc.module != nil {
+				module = *tc.module
+			}
+			if module != "" {
+				Expect(os.WriteFile(filepath.Join(root, "go.mod"), []byte(module), 0600)).To(Succeed())
+			}
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 			runtime := new(runtimeFakes.FakeContainerRuntime)
@@ -106,3 +123,5 @@ var _ = Describe("DescribeOp error classification", func() {
 		})
 	}
 })
+
+func stringPtr(value string) *string { return &value }
