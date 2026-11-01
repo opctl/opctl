@@ -10,6 +10,16 @@ import (
 )
 
 const commit = "0123456789abcdef0123456789abcdef01234567"
+const taggedCommit = "fedcba9876543210fedcba9876543210fedcba98"
+
+// fakeGit never contacts a repository or creates a tag.
+const fakeGit = `#!/bin/sh
+echo "$@" >> "$CALLS"
+case " $* " in
+  *" fetch "*) exit "$FAKE_FETCH_STATUS" ;;
+  *" diff "*) exit "$FAKE_DIFF_STATUS" ;;
+esac
+`
 
 // fakeCurl answers the tag lookup with FAKE_STATUS and FAKE_BODY and records each call.
 const fakeCurl = `#!/bin/sh
@@ -36,11 +46,13 @@ JSON
 `
 
 var _ = Describe("tagging the Go op SDK", func() {
-	var dir string
+	var dir, diffStatus, fetchStatus string
 	BeforeEach(func() {
 		var err error
 		dir, err = os.MkdirTemp("", "tag-go-sdk-")
 		Expect(err).NotTo(HaveOccurred())
+		diffStatus, fetchStatus = "1", "0"
+		Expect(os.WriteFile(filepath.Join(dir, "git"), []byte(fakeGit), 0700)).To(Succeed())
 		Expect(os.WriteFile(filepath.Join(dir, "curl"), []byte(fakeCurl), 0700)).To(Succeed())
 		Expect(os.WriteFile(filepath.Join(dir, "go"), []byte(fakeGo), 0700)).To(Succeed())
 	})
@@ -50,6 +62,7 @@ var _ = Describe("tagging the Go op SDK", func() {
 		Expect(err).NotTo(HaveOccurred())
 		cmd := exec.Command("sh", path)
 		cmd.Env = append(os.Environ(), "PATH="+dir+":"+os.Getenv("PATH"), "CALLS="+filepath.Join(dir, "calls"), "FAKE_STATUS="+status, "FAKE_BODY="+body,
+			"FAKE_DIFF_STATUS="+diffStatus, "FAKE_FETCH_STATUS="+fetchStatus,
 			"version=0.1.77", "commit="+commit, "githubAccessToken=token", "outDir="+dir, "TMPDIR="+dir)
 		output, err := cmd.CombinedOutput()
 		calls, _ := os.ReadFile(filepath.Join(dir, "calls"))
@@ -68,6 +81,45 @@ var _ = Describe("tagging the Go op SDK", func() {
 		output, calls, err := run("tag.sh", "200", `{"ref":"refs/tags/sdks/go/opspec/sdk/v0.1.77","object":{"sha": "`+commit+`","type":"commit"}}`)
 		Expect(err).NotTo(HaveOccurred(), output)
 		Expect(calls).NotTo(ContainSubstring("POST"))
+		Expect(calls).NotTo(ContainSubstring("fetch"))
+	})
+
+	It("reuses an existing tag and its sums when the SDK contents match", func() {
+		diffStatus = "0"
+		output, calls, err := run("tag.sh", "200", `{"object":{"sha":"`+taggedCommit+`","type":"commit"}}`)
+		Expect(err).NotTo(HaveOccurred(), output)
+		Expect(calls).NotTo(ContainSubstring("POST"))
+		Expect(calls).To(ContainSubstring("fetch --quiet --depth=1 --no-tags https://github.com/opctl/opctl " + taggedCommit + " " + commit))
+		Expect(calls).To(ContainSubstring("diff --quiet " + taggedCommit + " " + commit + " -- sdks/go/opspec/sdk"))
+		output, calls, err = run("sums.sh", "", "")
+		Expect(err).NotTo(HaveOccurred(), output)
+		Expect(calls).To(ContainSubstring("mod download -json github.com/opctl/opctl/sdks/go/opspec/sdk@v0.1.77"))
+		data, err := os.ReadFile(filepath.Join(dir, "sdkSum"))
+		Expect(err).NotTo(HaveOccurred())
+		Expect(string(data)).To(Equal("h1:zip+sum/abc="))
+		data, err = os.ReadFile(filepath.Join(dir, "sdkGoModSum"))
+		Expect(err).NotTo(HaveOccurred())
+		Expect(string(data)).To(Equal("h1:mod+sum/def="))
+	})
+
+	It("requires a new version when an existing tag has different SDK contents", func() {
+		output, calls, err := run("tag.sh", "200", `{"object":{"sha":"`+taggedCommit+`","type":"commit"}}`)
+		Expect(err).To(HaveOccurred())
+		Expect(output).To(ContainSubstring("already exists at " + taggedCommit + "; bump the CHANGELOG version to release again"))
+		Expect(calls).NotTo(ContainSubstring("POST"))
+	})
+
+	It("fails safely when the SDK commits cannot be fetched or compared", func() {
+		for _, fetch := range []string{"0", "1"} {
+			fetchStatus, diffStatus = fetch, "2"
+			Expect(os.RemoveAll(filepath.Join(dir, "calls"))).To(Succeed())
+			output, calls, err := run("tag.sh", "200", `{"object":{"sha":"`+taggedCommit+`","type":"commit"}}`)
+			Expect(err).To(HaveOccurred(), output)
+			Expect(calls).NotTo(ContainSubstring("POST"))
+			if fetch == "1" {
+				Expect(calls).NotTo(ContainSubstring("diff --quiet"))
+			}
+		}
 	})
 
 	It("fails when the tag points elsewhere or can't be read", func() {

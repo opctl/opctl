@@ -27,7 +27,7 @@ run:
           commit:
     - container:
         image: { ref: ghcr.io/linuxcontainers/alpine:3.20 }
-        cmd: [sh, -ce, 'apk add --no-cache curl > /dev/null && sh /tag.sh']
+        cmd: [sh, -ce, 'apk add --no-cache curl git > /dev/null && sh /tag.sh']
         envVars:
           githubAccessToken:
           version:
