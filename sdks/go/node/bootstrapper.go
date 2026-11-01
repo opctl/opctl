@@ -64,14 +64,17 @@ func (bootstrap _bootstrapper) run(ctx context.Context, opCall *model.OpCall, ro
 	if bootstrap.cache != nil {
 		ref := spec.Image.Ref
 		image := &model.ContainerCallImage{Ref: &ref}
-		if auth := bootstrap.cache.stateStore.TryGetAuth(ref); auth != nil {
-			image.PullCreds = &auth.Creds
+		if bootstrap.cache.stateStore != nil {
+			if auth := bootstrap.cache.stateStore.TryGetAuth(ref); auth != nil {
+				image.PullCreds = &auth.Creds
+			}
 		}
 		identity, err := bootstrap.cache.runtime.ResolveImage(ctx, image, rootCallID, discardBootstrapEvents{})
 		if err != nil {
 			return nil, err
 		}
 		spec.Image.Ref, spec.Image.Prepared = identity.Ref, true
+		spec.EnvVars.(map[string]interface{})["GOARCH"] = identity.Arch
 	}
 	id, err := uniquestring.Construct()
 	if err != nil {
@@ -87,10 +90,18 @@ func (bootstrap _bootstrapper) run(ctx context.Context, opCall *model.OpCall, ro
 		return nil, err
 	}
 	requestPath := filepath.Join(scratch, "request.json")
-	if err := os.WriteFile(requestPath, request, 0600); err != nil {
+	if err := unsudo.CreateFile(requestPath, request); err != nil {
+		return nil, err
+	}
+	if err := os.Chmod(requestPath, 0600); err != nil {
 		return nil, err
 	}
 	scope := map[string]*model.Value{"module": {Dir: &mountRoot}, "request": {File: &requestPath}}
+	if bootstrap.cache != nil {
+		if err := prepareGoCaches(spec, scope, bootstrap.dataDirPath, scratch); err != nil {
+			return nil, err
+		}
+	}
 	var stdout bytes.Buffer
 	name := "bootstrap " + phase
 	var parent *string

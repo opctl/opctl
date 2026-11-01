@@ -8,6 +8,8 @@ accordance with
 
 ### Added
 
+- Go ops share node-owned module and build caches. Bootstrap runs as the cache owner with isolated Go settings and scratch home.
+
 - Go bootstrap resolves and runs an immutable Linux toolchain image, reusing cached images offline without redundant phase pulls.
 
 - Go bootstrap binds source and replacement roots read-only and can import app packages from a parent module without copying fetched source.

@@ -1,0 +1,47 @@
+package node
+
+import (
+	_ "embed"
+	"os"
+	"path/filepath"
+
+	"github.com/opctl/opctl/sdks/go/internal/unsudo"
+	"github.com/opctl/opctl/sdks/go/model"
+)
+
+//go:embed goBootstrapLauncher.sh
+var goBootstrapLauncher []byte
+
+func prepareGoCaches(spec *model.ContainerCallSpec, scope map[string]*model.Value, dataDir, scratch string) error {
+	for destination, name := range map[string]string{"/opctl/mod": "mod", "/opctl/cache": "build"} {
+		path := filepath.Join(dataDir, "go", name)
+		if err := unsudo.CreateDir(path); err != nil {
+			return err
+		}
+		spec.Dirs[destination] = model.Value{Dir: &path}
+	}
+	env := spec.EnvVars.(map[string]interface{})
+	for name, value := range map[string]string{"GOMODCACHE": "/opctl/mod", "GOCACHE": "/opctl/cache", "GOWORK": "off", "GOENV": "off", "GOOS": "linux", "GOFLAGS": "-mod=readonly -buildvcs=false -trimpath"} {
+		env[name] = value
+	}
+	if err := prepareGoLauncher(spec, scope, scratch); err != nil {
+		return err
+	}
+	command := []interface{}{"sh", "/opctl/launcher"}
+	spec.Cmd = append(command, spec.Cmd.([]interface{})...)
+	return nil
+}
+
+func prepareGoLauncher(spec *model.ContainerCallSpec, scope map[string]*model.Value, scratch string) error {
+	path := filepath.Join(scratch, "launcher.sh")
+	if err := unsudo.CreateFile(path, goBootstrapLauncher); err != nil {
+		return err
+	}
+	if err := os.Chmod(path, 0600); err != nil {
+		return err
+	}
+	scope["launcher"] = &model.Value{File: &path}
+	spec.Files["/opctl/launcher"] = "$(launcher)"
+	spec.ReadOnlyMounts["/opctl/launcher"] = true
+	return nil
+}

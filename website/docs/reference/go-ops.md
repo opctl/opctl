@@ -147,3 +147,17 @@ root op completion event. `opctl run` forwards this event to its output module
 and prints the usual status. It does not print a new output format. Secret
 outputs and sensitive aliases are omitted from public events. Dir and file
 outputs refer to paths on the node, rather than downloaded client files.
+
+
+Bootstrap shares Go's module cache at `<dataDir>/go/mod` and build cache at
+`<dataDir>/go/build` across ops and Go versions. It drops to the mount owner's
+UID/GID before invoking Go, with a temporary home and `GOWORK=off`, `GOENV=off`,
+`GOTOOLCHAIN=local`, and `CGO_ENABLED=0`. Compilation uses
+`-mod=readonly -buildvcs=false -trimpath`; update `go.mod` and `go.sum` outside
+bootstrap when Go reports dependency-maintenance errors. An ancestor `go.work`
+and ambient build flags do not affect bootstrap.
+
+The module cache retains downloaded source and can grow over time. To remove it,
+stop the node and delete `<dataDir>/go/mod`. Caches belong to one node/data-dir
+owner. With embedded, the data directory must already have a Lima share at the
+same absolute path. Custom unshared paths require configuring that share first.
