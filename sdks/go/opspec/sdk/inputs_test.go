@@ -23,6 +23,36 @@ type testOptions struct {
 	Counts []int  `json:"counts"`
 }
 
+func TestUntypedHandleSchemas(t *testing.T) {
+	data, err := Describe[struct {
+		Array       Array[any]             `opctl:"array"`
+		Object      Object[map[string]any] `opctl:"object"`
+		Constrained Array[any]             `opctl:"constrained,constraints='{\"items\":{\"type\":\"string\"}}'"`
+	}]()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var response struct {
+		Opspec struct{ Inputs map[string]map[string]any }
+	}
+	if err := json.Unmarshal(data, &response); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"array", "object"} {
+		if strings.Contains(string(mustJSON(response.Opspec.Inputs[name])), "constraints") {
+			t.Fatalf("empty schema in %s", data)
+		}
+	}
+	if got := string(mustJSON(response.Opspec.Inputs)); got != `{"array":{"array":{}},"constrained":{"array":{"constraints":{"items":{"type":"string"}}}},"object":{"object":{}}}` {
+		t.Fatalf("describe = %s", got)
+	}
+	if !strings.Contains(string(data), `"items":{"type":"string"}`) {
+		t.Fatal(string(data))
+	}
+}
+
+func mustJSON(value any) []byte { data, _ := json.Marshal(value); return data }
+
 func TestTypedInputs(t *testing.T) {
 	data, err := Describe[testInputs]()
 	if err != nil {

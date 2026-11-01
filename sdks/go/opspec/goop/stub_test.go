@@ -10,6 +10,22 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
+func TestUntypedArrayStubRoundTrip(t *testing.T) {
+	use := StubUse{Name: "items", Ref: "../items"}
+	render := func(constraints model.Constraints) []byte {
+		data, err := RenderStub(use, &model.OpSpec{Inputs: map[string]*model.ParamSpec{"items": {Array: &model.ArrayParamSpec{Constraints: constraints}}}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return data
+	}
+	without := render(nil)
+	with := render(model.Constraints{"items": map[string]any{}})
+	if !bytes.Contains(with, []byte("Items opctl.Array[any]")) || !bytes.Contains(without, []byte("Items opctl.Array[any]")) {
+		t.Fatalf("untyped stub changed: %s\n%s", without, with)
+	}
+}
+
 func TestRenderStub(t *testing.T) {
 	var spec model.OpSpec
 	if err := json.Unmarshal([]byte(`{"description":"Greets someone.\n//go:generate evil\u0000", "inputs": {

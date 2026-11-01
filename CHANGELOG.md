@@ -35,6 +35,7 @@ accordance with
 
 ### Changed
 
+- Untyped Go op array and object handles omit empty type schemas, so their tags can supply `items` or `additionalProperties` constraints.
 - Go op SDK releases with major versions 2 and later fail before tagging until the SDK module path includes the required `/vN` suffix.
 - The `run-a-go-service` example's `dev` op is a Go op that calls the YAML `mysql` op. Its `MYSQL_HOST` default is now the `mysql` op's container name,
   `run-a-go-service-mysql`, so the service can reach the database.

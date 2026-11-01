@@ -187,6 +187,11 @@ func param(kind string, typ reflect.Type, tag map[string]string) (paramSpec, err
 			return nil, fmt.Errorf("%s handle needs a Go %s type", kind, kind)
 		}
 		delete(schema, "type")
+		for _, key := range []string{"items", "additionalProperties"} {
+			if child, ok := schema[key].(map[string]any); ok && len(child) == 0 {
+				delete(schema, key)
+			}
+		}
 		constraints = schema
 	}
 	flat := map[string]any{}
