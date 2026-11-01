@@ -8,6 +8,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime"
@@ -149,21 +150,36 @@ func TestGitFetchedBootstrapCache(t *testing.T) {
 }
 func TestBootstrapCacheWaiterCancellation(t *testing.T) {
 	_, cache, _, _ := cachedBootstrapFixture(t)
-	owner, err := cache.acquire(context.Background(), "key")
+	owner, _, err := cache.acquire(context.Background(), "key")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer owner()
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	if _, err := cache.acquire(ctx, "key"); !errors.Is(err, context.Canceled) {
+	if _, _, err := cache.acquire(ctx, "key"); !errors.Is(err, context.Canceled) {
 		t.Fatalf("cancelled waiter: %v", err)
 	}
-	other, err := cache.acquire(context.Background(), "different")
+	other, _, err := cache.acquire(context.Background(), "different")
 	if err != nil {
 		t.Fatal(err)
 	}
 	other()
+}
+
+func TestBootstrapCacheReportsWaiting(t *testing.T) {
+	cache := &goBootstrapCache{}
+	release, waited, err := cache.acquire(context.Background(), "key")
+	if err != nil || waited {
+		t.Fatalf("uncontended acquire: waited=%v, err=%v", waited, err)
+	}
+	defer release()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	defer cancel()
+	_, waited, err = cache.acquire(ctx, "key")
+	if !waited || !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("contended acquire: waited=%v, err=%v", waited, err)
+	}
 }
 func TestBootstrapProgramLeasesAndOversize(t *testing.T) {
 	bootstrap, cache, op, builds := cachedBootstrapFixture(t)

@@ -83,9 +83,9 @@ func (cache *goBootstrapCache) initialize(dataDir string) error {
 	})
 	return cache.initErr
 }
-func (cache *goBootstrapCache) acquire(ctx context.Context, key string) (func(), error) {
+func (cache *goBootstrapCache) acquire(ctx context.Context, key string) (func(), bool, error) {
 	if err := ctx.Err(); err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	cache.mu.Lock()
 	if cache.locks == nil {
@@ -108,10 +108,15 @@ func (cache *goBootstrapCache) acquire(ctx context.Context, key string) (func(),
 	}
 	select {
 	case lock.token <- struct{}{}:
-		return func() { <-lock.token; drop() }, nil
+		return func() { <-lock.token; drop() }, false, nil
+	default:
+	}
+	select {
+	case lock.token <- struct{}{}:
+		return func() { <-lock.token; drop() }, true, nil
 	case <-ctx.Done():
 		drop()
-		return nil, ctx.Err()
+		return nil, true, ctx.Err()
 	}
 }
 func (cache *goBootstrapCache) limit() int64 {
@@ -284,11 +289,11 @@ func (cache *goBootstrapCache) prepare(ctx context.Context, bootstrap _bootstrap
 		if err != nil {
 			return nil, nil, &OpDeclarationError{Err: err}
 		}
-		unlock, err := cache.acquire(ctx, key)
+		unlock, waited, err := cache.acquire(ctx, key)
 		if err != nil {
 			return nil, nil, err
 		}
-		program, release, retry, err := cache.prepareLocked(ctx, bootstrap, op, root, source, image, key, toolchain, recipe, buildSpec, auth)
+		program, release, retry, err := cache.prepareLocked(ctx, bootstrap, op, root, source, image, key, toolchain, recipe, buildSpec, auth, waited)
 		unlock()
 		if err != nil {
 			return nil, nil, err
@@ -304,18 +309,15 @@ func (cache *goBootstrapCache) prepare(ctx context.Context, bootstrap _bootstrap
 	}
 	return nil, nil, &OpDeclarationError{Err: fmt.Errorf("Go op source changed repeatedly during bootstrap; retry with stable sources")}
 }
-func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _bootstrapper, op *model.OpCall, root string, source *goop.Source, image *containerruntime.ImageIdentity, key string, toolchain goop.Toolchain, recipe goop.BuildRecipe, buildSpec *model.ContainerCallSpec, auth bootstrapAuth) (*goProgram, func(), bool, error) {
-	// Discover again after waiting: go.mod edits may have changed the replacement set.
-	current, err := goop.Discover(op.OpPath, op.RepositoryRoot)
-	if err != nil {
-		return nil, nil, false, &OpDeclarationError{Err: err}
-	}
-	fresh, err := current.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain, recipe)
-	if err != nil {
-		return nil, nil, false, err
-	}
-	if fresh != key {
-		return nil, nil, true, nil
+func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _bootstrapper, op *model.OpCall, root string, source *goop.Source, image *containerruntime.ImageIdentity, key string, toolchain goop.Toolchain, recipe goop.BuildRecipe, buildSpec *model.ContainerCallSpec, auth bootstrapAuth, waited bool) (*goProgram, func(), bool, error) {
+	if waited {
+		fresh, err := source.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain, recipe)
+		if err != nil {
+			return nil, nil, false, err
+		}
+		if fresh != key {
+			return nil, nil, true, nil
+		}
 	}
 	path := filepath.Join(cache.directory, key)
 	guard := cache.lease(&goProgram{path: path})
@@ -363,11 +365,7 @@ func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _boo
 	if err := ctx.Err(); err != nil {
 		return nil, nil, false, err
 	}
-	current, err = goop.Discover(op.OpPath, op.RepositoryRoot)
-	if err != nil {
-		return nil, nil, false, err
-	}
-	fresh, err = current.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain, recipe)
+	fresh, err := source.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain, recipe)
 	if err != nil {
 		return nil, nil, false, err
 	}
@@ -394,31 +392,17 @@ func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _boo
 		return nil, nil, false, err
 	}
 	program := &goProgram{key: key, path: staging, source: source, image: image, metadata: metadata, ephemeral: size > cache.limit()}
-	cache.mu.Lock()
 	if !program.ephemeral {
-		if err := os.Rename(staging, path); err != nil {
-			cache.mu.Unlock()
-			return nil, nil, false, err
-		}
 		program.path = path
 	}
-	if cache.leases == nil {
-		cache.leases = map[string]int{}
-	}
-	cache.leases[program.path]++
-	cache.mu.Unlock()
-	keep = true
-	release := func() {
-		cache.mu.Lock()
-		defer cache.mu.Unlock()
-		cache.leases[program.path]--
-		if cache.leases[program.path] == 0 {
-			delete(cache.leases, program.path)
-			if program.ephemeral {
-				os.RemoveAll(program.path)
-			}
+	release := cache.lease(program)
+	if !program.ephemeral {
+		if err := os.Rename(staging, path); err != nil {
+			release()
+			return nil, nil, false, err
 		}
 	}
+	keep = true
 
 	return program, release, false, nil
 }

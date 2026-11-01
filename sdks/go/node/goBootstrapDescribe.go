@@ -53,7 +53,7 @@ func (cache *goBootstrapCache) rememberDescribe(key string, data []byte) {
 	}
 }
 func (bootstrap _bootstrapper) describeCached(ctx context.Context, op *model.OpCall, root string, program *goProgram, invoke func() ([]byte, error)) ([]byte, error) {
-	unlock, err := bootstrap.cache.acquire(ctx, "describe:"+program.key)
+	unlock, _, err := bootstrap.cache.acquire(ctx, "describe:"+program.key)
 	if err != nil {
 		return nil, err
 	}
