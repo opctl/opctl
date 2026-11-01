@@ -3,6 +3,7 @@ package node
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -166,5 +167,43 @@ func TestSharedDescribeParentsGoCallee(t *testing.T) {
 	_, call, rootID := fake.DescribeArgsForCall(0)
 	if call.OpID != "caller" || rootID != "root" {
 		t.Fatalf("%+v %s", call, rootID)
+	}
+}
+
+func TestBootstrapStubBuildHintsMatchDiagnostics(t *testing.T) {
+	for _, tc := range []struct {
+		diagnostic string
+		changed    bool
+	}{
+		{"./op.go:7: undefined: misspelledHelper", false},
+		{"go: module download failed", false},
+		{"./op.go:7: unknown field Gone in struct literal of type greet.Inputs", false},
+		{"./opctlgen/greet/stub.go:8: undefined: opctl.StubCall", true},
+		{`./op.go:7: cannot use value as "hello/opctlgen/greet".Inputs`, true},
+	} {
+		t.Run(tc.diagnostic, func(t *testing.T) {
+			b, _, op, _ := cachedBootstrapFixture(t)
+			if err := os.WriteFile(filepath.Join(op.OpPath, "op.go"), []byte("package main\nimport _ \"hello/opctlgen/greet\" //opctl:op ./yaml\n"), 0644); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.Mkdir(filepath.Join(op.OpPath, "yaml"), 0755); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(op.OpPath, "yaml/op.yml"), []byte("name: greet\nrun: {serial: []}\n"), 0644); err != nil {
+				t.Fatal(err)
+			}
+			caller := b.(_bootstrapper).caller.(*fakes.FakeCaller)
+			caller.CallStub = func(ctx context.Context, _ string, _ map[string]*model.Value, _ *model.CallSpec, _ string, _ *string, _ string) (map[string]*model.Value, error) {
+				_, _ = stdoutCaptureFrom(ctx).diagnostics.Write([]byte(tc.diagnostic))
+				return nil, errors.New("build failed")
+			}
+			_, err := b.Describe(context.Background(), op, "root")
+			if err == nil || !strings.Contains(err.Error(), tc.diagnostic) {
+				t.Fatalf("%v", err)
+			}
+			if strings.Contains(err.Error(), "these ops no longer declare") != tc.changed {
+				t.Fatalf("misleading build hint: %v", err)
+			}
+		})
 	}
 }

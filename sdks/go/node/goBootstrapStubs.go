@@ -163,7 +163,11 @@ func (set goStubSet) hint(moduleRoot, diagnostic string) string {
 		}
 		names = append(names, name)
 	}
-	hint := "op stubs were generated from the current interfaces of: " + strings.Join(names, ", ") + ". The op's code uses inputs or outputs these ops no longer declare. Run \"opctl op gen\" to update opctlgen/ for your editor."
+	hint := "op stubs were generated from the current interfaces of: " + strings.Join(names, ", ") + "."
+	if strings.Contains(filepath.ToSlash(diagnostic), "opctlgen/") {
+		hint += " The op's code uses inputs or outputs these ops no longer declare."
+	}
+	hint += " Run \"opctl op gen\" to update opctlgen/ for your editor."
 	if strings.Contains(diagnostic, "undefined: opctl.StubCall") {
 		hint += " Op stubs need Go op SDK >= this opctl release's SDK; update the SDK requirement in go.mod."
 	}
