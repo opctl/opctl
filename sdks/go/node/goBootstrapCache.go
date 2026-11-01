@@ -272,7 +272,7 @@ func (cache *goBootstrapCache) prepare(ctx context.Context, bootstrap _bootstrap
 			return nil, nil, err
 		}
 		toolchain := goop.Toolchain{ID: image.ID, OS: image.OS, Arch: image.Arch, Variant: image.Variant}
-		key, err := source.Fingerprint(ctx, bootstrap.dataDirPath, toolchain)
+		key, err := source.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain)
 		if ctx.Err() != nil {
 			return nil, nil, ctx.Err()
 		}
@@ -305,7 +305,7 @@ func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _boo
 	if err != nil {
 		return nil, nil, false, &OpDeclarationError{Err: err}
 	}
-	fresh, err := current.Fingerprint(ctx, bootstrap.dataDirPath, toolchain)
+	fresh, err := current.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain)
 	if err != nil {
 		return nil, nil, false, err
 	}
@@ -362,7 +362,7 @@ func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _boo
 	if err != nil {
 		return nil, nil, false, err
 	}
-	fresh, err = current.Fingerprint(ctx, bootstrap.dataDirPath, toolchain)
+	fresh, err = current.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain)
 	if err != nil {
 		return nil, nil, false, err
 	}
@@ -416,4 +416,12 @@ func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _boo
 	}
 
 	return program, release, false, nil
+}
+
+func bootstrapWritablePaths(dataDir string) []string {
+	paths := []string{}
+	for _, name := range []string{"go", "dcg", "call", "vms"} {
+		paths = append(paths, filepath.Join(dataDir, name))
+	}
+	return paths
 }

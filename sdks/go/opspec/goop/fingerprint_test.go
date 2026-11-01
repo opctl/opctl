@@ -34,7 +34,7 @@ func TestSourceFingerprint(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		key, err := source.Fingerprint(context.Background(), data, toolchain)
+		key, err := source.Fingerprint(context.Background(), []string{data}, toolchain)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -101,7 +101,7 @@ func TestSourceFingerprint(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err = source.Fingerprint(context.Background(), data, image); err == nil {
+	if _, err = source.Fingerprint(context.Background(), []string{data}, image); err == nil {
 		t.Fatal("escaping symlink accepted")
 	}
 	if err := os.Remove(filepath.Join(app, "escape")); err != nil {
@@ -110,7 +110,7 @@ func TestSourceFingerprint(t *testing.T) {
 	if err := os.Symlink(".", filepath.Join(app, "cycle")); err != nil {
 		t.Fatal(err)
 	}
-	if _, err = source.Fingerprint(context.Background(), data, image); err == nil {
+	if _, err = source.Fingerprint(context.Background(), []string{data}, image); err == nil {
 		t.Fatal("source cycle accepted")
 	}
 }

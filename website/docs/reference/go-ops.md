@@ -249,3 +249,5 @@ producer, count := opctl.ContainerOutput[opctl.Number](producer, "count")
 Supported handle kinds are String, Number, Boolean, Array, and Object. Repeated requests on the updated builder reuse a member's binding; a different instantiated handle type for the same member is a plan error. Branch from an unbound builder for independent producers. Keep returned producers in the graph and consume handles only after their producers are visible. `Value()` remains unavailable during plan. Export handles through `MainWithOutputs` to return them to a caller.
 
 `T` expresses the author's expected use in Go. It does not install strict runtime type declarations. Bindings validate presence and supported JSON data; ordinary consumer coercions still apply. `outputParams` is reserved and not accepted. Named-result graphs require opspec schema 3. No-feature graphs remain schema 1.
+
+Fetched Go ops and their in-repository local replacements remain part of the source fingerprint under the node's `ops` directory. The fingerprint excludes writable node state in `go`, `dcg`, `call`, and `vms`.

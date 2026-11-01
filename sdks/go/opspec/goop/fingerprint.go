@@ -30,7 +30,7 @@ func record(h hash.Hash, fields ...string) {
 }
 
 // Fingerprint streams source content; it never reads the mutable Go caches or input values.
-func (source *Source) Fingerprint(ctx context.Context, excluded string, image Toolchain) (string, error) {
+func (source *Source) Fingerprint(ctx context.Context, excluded []string, image Toolchain) (string, error) {
 	roots := []string{}
 	for _, root := range source.Roots {
 		resolved, err := filepath.EvalSymlinks(root)
@@ -39,19 +39,20 @@ func (source *Source) Fingerprint(ctx context.Context, excluded string, image To
 		}
 		roots = append(roots, resolved)
 	}
-	if excluded != "" {
-		var err error
-		excluded, err = canonicalPath(excluded)
+	resolvedExclusions := make([]string, 0, len(excluded))
+	for _, path := range excluded {
+		resolved, err := canonicalPath(path)
 		if err != nil {
 			return "", err
 		}
-	}
-	for _, replace := range source.Replacements {
-		if excluded != "" && within(excluded, replace.Root) {
-			return "", fmt.Errorf("Go op replacement %q uses excluded node data directory %q", replace.Root, excluded)
+		resolvedExclusions = append(resolvedExclusions, resolved)
+		for _, replace := range source.Replacements {
+			if within(resolved, replace.Root) {
+				return "", fmt.Errorf("Go op replacement %q uses excluded node cache %q", replace.Root, resolved)
+			}
 		}
 	}
-	walker := sourceHasher{ctx: ctx, roots: roots, excluded: excluded, active: map[string]bool{}, done: map[string]string{}}
+	walker := sourceHasher{ctx: ctx, roots: roots, excluded: resolvedExclusions, active: map[string]bool{}, done: map[string]string{}}
 	main, err := walker.digest(source.ModuleRoot)
 	if err != nil {
 		return "", err
@@ -81,7 +82,7 @@ func (source *Source) Fingerprint(ctx context.Context, excluded string, image To
 type sourceHasher struct {
 	ctx      context.Context
 	roots    []string
-	excluded string
+	excluded []string
 	active   map[string]bool
 	done     map[string]string
 }
@@ -91,8 +92,10 @@ func (walker *sourceHasher) digest(path string) (string, error) {
 		return "", err
 	}
 	path = filepath.Clean(path)
-	if walker.excluded != "" && within(walker.excluded, path) {
-		return "", fmt.Errorf("Go op source %q enters excluded node cache", path)
+	for _, excluded := range walker.excluded {
+		if within(excluded, path) {
+			return "", fmt.Errorf("Go op source %q enters excluded node cache", path)
+		}
 	}
 	if walker.active[path] {
 		return "", fmt.Errorf("Go op source symlink cycle at %q", path)
@@ -138,13 +141,16 @@ func (walker *sourceHasher) digest(path string) (string, error) {
 		if err != nil {
 			return "", err
 		}
+	children:
 		for _, entry := range entries {
 			if entry.Name() == ".git" || entry.Name() == ".hg" || entry.Name() == ".svn" {
 				continue
 			}
 			child := filepath.Join(path, entry.Name())
-			if walker.excluded != "" && within(walker.excluded, child) {
-				continue
+			for _, excluded := range walker.excluded {
+				if within(path, excluded) && within(excluded, child) {
+					continue children
+				}
 			}
 			digest, err := walker.digest(child)
 			if err != nil {

@@ -116,6 +116,37 @@ func TestCompiledBootstrapCache(t *testing.T) {
 		t.Fatal("source change reused program")
 	}
 }
+
+func TestGitFetchedBootstrapCache(t *testing.T) {
+	bootstrap, _, op, builds := cachedBootstrapFixture(t)
+	data := bootstrap.(_bootstrapper).dataDirPath
+	repository := filepath.Join(data, "ops", "example.com", "repo", "v1")
+	fetchedOp := filepath.Join(repository, "ops", "hello")
+	if err := os.MkdirAll(fetchedOp, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Rename(filepath.Join(op.OpPath, "go.mod"), filepath.Join(repository, "go.mod")); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(repository, "go.mod"), []byte("module hello\ngo 1.21\nreplace example.com/helper => ./helper\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Mkdir(filepath.Join(repository, "helper"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(repository, "helper", "go.mod"), []byte("module example.com/helper\ngo 1.21\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	op.OpPath, op.RepositoryRoot = fetchedOp, repository
+	for i := 0; i < 2; i++ {
+		if _, err := bootstrap.Plan(context.Background(), op, "", nil); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if builds.Load() != 1 {
+		t.Fatalf("fetched op built %d times", builds.Load())
+	}
+}
 func TestBootstrapCacheWaiterCancellation(t *testing.T) {
 	_, cache, _, _ := cachedBootstrapFixture(t)
 	owner, err := cache.acquire(context.Background(), "key")

@@ -6,6 +6,38 @@ accordance with
 
 ## [Unreleased]
 
+### Fixed
+
+- Go ops fetched into the node cache can bootstrap and use local replacements within their fetched repository. Only writable node state is excluded from their source
+  fingerprint.
+
+- Unused missing local Go replacements no longer create invalid mounts. Fetched replacements remain bounded to their repository, including missing paths beneath symlinked
+  parents.
+
+- YAML container calls retain their existing nonzero-exit error when the runtime also returns an error.
+
+- Separate Go replacement mounts reject host symlinks; replacements inside the module use its existing mount.
+
+- Go describe classifies missing or malformed module files and invalid bootstrap mounts as declaration errors.
+
+- Failed interpretation of sensitive Go graph bindings reports binding names without exposing resolved values. Event snapshots also keep sensitive names, image credentials,
+  and dynamic environments private.
+
+- Git-fetched Go ops cannot bootstrap with a module or local replacement outside their fetched repository, including through symlinks. Local ops retain their existing
+  module mounts.
+
+- Go graph groups and loops retain private runtime results while omitting secret values from public completion events.
+
+- Describing Go ops reports runtime and context failures as HTTP 500 while keeping declaration, bootstrap exit, and response parse failures as HTTP 400.
+
+- Go input schemas require unsigned array items and object properties to be nonnegative integers.
+
+- Go input constraints reject attempts to replace schemas derived from array item and object property types.
+
+- Go bootstrap mounts the module root and local replacements separately and rejects destinations that hide required image directories.
+
+- Go bootstrap failures return compiler and declaration diagnostics to describe clients, including `opctl op validate`.
+
 ### Added
 
 - Go container calls expose named JSON results with `ContainerOutput[T]` for String, Number, Boolean, Array, and Object handles. Named-result graphs require opspec schema
@@ -47,35 +79,6 @@ accordance with
   files, and sockets. `opctl run` prompts for Go op inputs and rejects invalid explicit values without substituting defaults; `opctl op validate` and `opctl ls` describe Go
   op interfaces. The webapp opens `op.go` and shows its described name and description. Go ops can compose calls in serial and parallel and pass output directories and
   files between calls. `RawRef` provides an unchecked escape hatch for whole opspec references.
-
-### Fixed
-
-- Unused missing local Go replacements no longer create invalid mounts. Fetched replacements remain bounded to their repository, including missing paths beneath symlinked
-  parents.
-
-- YAML container calls retain their existing nonzero-exit error when the runtime also returns an error.
-
-- Separate Go replacement mounts reject host symlinks; replacements inside the module use its existing mount.
-
-- Go describe classifies missing or malformed module files and invalid bootstrap mounts as declaration errors.
-
-- Failed interpretation of sensitive Go graph bindings reports binding names without exposing resolved values. Event snapshots also keep sensitive names, image credentials,
-  and dynamic environments private.
-
-- Git-fetched Go ops cannot bootstrap with a module or local replacement outside their fetched repository, including through symlinks. Local ops retain their existing
-  module mounts.
-
-- Go graph groups and loops retain private runtime results while omitting secret values from public completion events.
-
-- Describing Go ops reports runtime and context failures as HTTP 500 while keeping declaration, bootstrap exit, and response parse failures as HTTP 400.
-
-- Go input schemas require unsigned array items and object properties to be nonnegative integers.
-
-- Go input constraints reject attempts to replace schemas derived from array item and object property types.
-
-- Go bootstrap mounts the module root and local replacements separately and rejects destinations that hide required image directories.
-
-- Go bootstrap failures return compiler and declaration diagnostics to describe clients, including `opctl op validate`.
 
 ## [0.1.76] - 2026-06-18
 

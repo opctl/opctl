@@ -211,7 +211,7 @@ func run() error {
 	}
 	image := goop.Toolchain{ID: metadata["ImageID"].(string), OS: metadata["OS"].(string), Arch: metadata["Arch"].(string), Variant: metadata["Variant"].(string)}
 	start := time.Now()
-	key, err := source.Fingerprint(context.Background(), data, image)
+	key, err := source.Fingerprint(context.Background(), []string{data}, image)
 	if err != nil {
 		return err
 	}
