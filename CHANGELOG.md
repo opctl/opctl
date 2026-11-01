@@ -8,16 +8,11 @@ accordance with
 
 ### Added
 
-- The Go op authoring guide and op stub reference explain typed op calls, import comments, literal handles, generation, and interface-change diagnostics.
-
 - Go op scaffolds git-ignore `/opctlgen/` and preserve an existing `.gitignore` by refusing to overwrite it.
-
 - Go ops can call local or git-ref YAML and Go ops through typed op stubs, generated just in time from the callee's current interface.
 - `opctl op gen [OP_REF...]` refreshes git-ignored editor stubs in `opctlgen/`. Running or validating a local Go op refreshes its whole module and warns on errors.
-
 - Go op literal handles: `StringOf`, `NumberOf`, `BooleanOf`, `ArrayOf`, and `ObjectOf` snapshot values for op inputs, environment variables, and plan control flow.
 - The Go op SDK provides `StubCall` for generated op stubs, with module-relative local refs and required-input checks during plan.
-
 - Go ops: an op can be declared by a Go program that builds an op graph with the dependency-free Go op SDK, `github.com/opctl/opctl/sdks/go/opspec/sdk`.
   See [Authoring ops in Go](https://opctl.io/docs/training/authoring-ops-in-go).
   - Inputs and outputs are tagged structs of typed handles, with descriptions, defaults, constraints, and secrets. The description comes from the package doc comment,
