@@ -2,7 +2,7 @@ name: run/container/object/caches/shared
 run:
   serial:
     - container:
-        image: { ref: alpine:3 }
+        image: { ref: ghcr.io/linuxcontainers/alpine }
         caches:
           /writer: test-suite-cache-dirs-shared
         cmd:
@@ -10,7 +10,7 @@ run:
           - -ce
           - echo cache-contents > /writer/contents
     - container:
-        image: { ref: alpine:3 }
+        image: { ref: ghcr.io/linuxcontainers/alpine }
         caches:
           /reader: test-suite-cache-dirs-shared
         cmd:
