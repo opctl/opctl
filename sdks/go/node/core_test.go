@@ -35,6 +35,8 @@ var _ = Context("core", func() {
 			dataDir := GinkgoT().TempDir()
 			leftoverPath := filepath.Join(dataDir, "nocache", "run", "npm")
 			Expect(os.MkdirAll(leftoverPath, 0700)).To(Succeed())
+			cachePath := filepath.Join(dataDir, "caches", "npm")
+			Expect(os.MkdirAll(cachePath, 0700)).To(Succeed())
 
 			/* act */
 			_, actualErr := New(
@@ -46,6 +48,7 @@ var _ = Context("core", func() {
 			/* assert */
 			Expect(actualErr).To(BeNil())
 			Expect(filepath.Join(dataDir, "nocache")).NotTo(BeAnExistingFile())
+			Expect(cachePath).To(BeADirectory())
 		})
 	})
 })

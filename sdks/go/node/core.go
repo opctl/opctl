@@ -27,11 +27,6 @@ func New(
 	dataDirPath string,
 ) (Core, error) {
 
-	// sweep --no-cache dirs left by runs that didn't finish cleaning up
-	if err := os.RemoveAll(filepath.Join(dataDirPath, "nocache")); err != nil {
-		fmt.Printf("unable to remove leftover --no-cache dirs: %v\n", err)
-	}
-
 	eventDbPath := path.Join(dataDirPath, "dcg", "events")
 	if err := unsudo.CreateDir(eventDbPath); err != nil {
 		return nil, err
@@ -61,6 +56,11 @@ func New(
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	// sweep --no-cache dirs left by runs that didn't finish cleaning up; after badger.Open so its exclusive lock stops a second node from deleting a live run's dirs
+	if err := os.RemoveAll(filepath.Join(dataDirPath, "nocache")); err != nil {
+		fmt.Printf("unable to remove leftover --no-cache dirs: %v\n", err)
 	}
 
 	pubSub := pubsub.New(db)
