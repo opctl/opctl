@@ -10,6 +10,7 @@ import (
 
 // Source describes the nearest module and the main module's effective local replacements.
 type Source struct {
+	RepositoryRoot                              string
 	ModuleRoot, OpDir, Package, Name, GoVersion string
 	Roots                                       []string
 	Replacements                                []Replacement
@@ -109,6 +110,7 @@ func Discover(opDir, repositoryRoot string) (*Source, error) {
 		}
 	}
 	source.Roots = roots
+	source.RepositoryRoot = repositoryRoot
 	return source, nil
 }
 
