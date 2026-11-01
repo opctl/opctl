@@ -56,7 +56,7 @@ With the embedded runtime, Lima shares the host's home directory with the VM at 
 
 On Kubernetes, the data dir must be `/root/opctl` on the `opctl` PersistentVolumeClaim; cache and `--no-cache` dirs mount as subPaths of it. See [Kubernetes CI guidance](../../../../../../cache-dirs-in-ci.md#kubernetes).
 
-Use `opctl run --no-cache <op>` for a cold run. The run starts every cache dir empty in scratch space under `<data-dir>/nocache/<run id>`, shared by cache name across the run's calls, including calls in nested ops, loops, and parallel groups, and removed when the run ends. The run leaves the cache root untouched. Other concurrent runs on the node keep using their caches. Op and image caching still applies.
+Use `opctl run --no-cache <op>` for a cold run. The run starts every cache dir empty in scratch space under `<data-dir>/nocache/<run id>`, shared by cache name across the run's calls, including calls in nested ops, loops, and parallel groups, and removed when the run ends. A node that can't remove them (for example, root-owned files on a node run without sudo, or a killed run) leaves them until it next starts. The run leaves the cache root untouched. Other concurrent runs on the node keep using their caches. Op and image caching still applies.
 
 Cache dirs are created with mode `0700`, owned by the user and group who ran sudo, or the node's effective user and group otherwise. An image running as a different non-root `USER` may be unable to write them, as with existing scratch dirs.
 
