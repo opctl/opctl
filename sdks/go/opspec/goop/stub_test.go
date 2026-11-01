@@ -108,3 +108,22 @@ func TestRenderSharedDescribe(t *testing.T) {
 		}
 	}
 }
+
+func TestRenderStubPreservesUnusualObjectKeys(t *testing.T) {
+	for _, key := range []string{"", "-", "a,b", "a\"b", "a\\b", "a'b", "a\tb", "a\ufeffb"} {
+		t.Run(key, func(t *testing.T) {
+			object := map[string]any{"type": "object", "properties": map[string]any{key: map[string]any{"type": "string"}}, "additionalProperties": map[string]any{"type": "string"}}
+			spec := &model.OpSpec{Inputs: map[string]*model.ParamSpec{
+				"value":  {Object: &model.ObjectParamSpec{Constraints: model.Constraints{"properties": object["properties"], "additionalProperties": object["additionalProperties"]}}},
+				"nested": {Object: &model.ObjectParamSpec{Constraints: model.Constraints{"properties": map[string]any{"child": object}}}},
+			}}
+			data, err := RenderStub(StubUse{Name: "greet", Ref: "repo#v1"}, spec)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !strings.Contains(string(data), "Value opctl.Object[map[string]any]") || !strings.Contains(string(data), "Child map[string]any") {
+				t.Fatalf("object keys would be changed by JSON tags: %s", data)
+			}
+		})
+	}
+}

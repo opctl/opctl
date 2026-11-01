@@ -113,6 +113,21 @@ func stubSchemaSupported(schema map[string]any) bool {
 func stubPath(parent, key string) string {
 	return parent + "/" + strings.ReplaceAll(strings.ReplaceAll(key, "~", "~0"), "/", "~1")
 }
+func stubJSONProperties(properties map[string]any) bool {
+	for key := range properties {
+		if key == "" || key == "-" {
+			return false
+		}
+		for _, char := range key {
+			// Match encoding/json's tag-name rules, excluding the comma separator.
+			if !unicode.IsLetter(char) && !unicode.IsDigit(char) && !strings.ContainsRune("!#$%&()*+-./:;<=>?@[]^_{|}~ ", char) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func (r *stubRenderer) collect(schema map[string]any, base, path string) {
 	if !stubSchemaSupported(schema) {
 		return
@@ -123,6 +138,9 @@ func (r *stubRenderer) collect(schema map[string]any, base, path string) {
 		r.collect(item, base+"Item", stubPath(path, "items"))
 	case "object":
 		if props, ok := schema["properties"].(map[string]any); ok {
+			if !stubJSONProperties(props) {
+				return
+			}
 			r.types[path] = &stubType{base: base, path: path, schema: schema}
 			for _, key := range sortedStubKeys(props) {
 				child, _ := props[key].(map[string]any)
@@ -153,6 +171,9 @@ func (r *stubRenderer) valueType(schema map[string]any, path string) string {
 	case "object":
 		if node := r.types[path]; node != nil {
 			return node.name
+		}
+		if _, ok := schema["properties"].(map[string]any); ok {
+			return "map[string]any"
 		}
 		child, _ := schema["additionalProperties"].(map[string]any)
 		return "map[string]" + r.valueType(child, stubPath(path, "additionalProperties"))
