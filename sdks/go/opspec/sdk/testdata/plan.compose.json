@@ -1,0 +1,1 @@
+{"contractVersion":1,"opspecSchema":1,"opspec":{"name":"compose","run":{"serial":[{"parallel":[{"container":{"image":{"ref":"alpine:3"},"cmd":["echo","a"]}},{"container":{"image":{"ref":"alpine:3"},"cmd":["echo","b"]}}]},{"container":{"image":{"ref":"alpine:3"},"cmd":["echo","done"]}}]}}}

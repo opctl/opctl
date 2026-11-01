@@ -20,7 +20,9 @@ type opSpec struct {
 }
 
 type callSpec struct {
-	Container *containerSpec `json:"container"`
+	Container *containerSpec `json:"container,omitempty"`
+	Serial    []*callSpec    `json:"serial,omitempty"`
+	Parallel  []*callSpec    `json:"parallel,omitempty"`
 }
 
 // Plan builds a Go op's op graph and returns its bootstrap response as JSON.
@@ -56,7 +58,7 @@ func emit[I any](phase string, fn func(I) Call, values map[string]any) (data []b
 	}
 	if phase == "plan" {
 		if fn == nil {
-			return nil, errors.New("Go op plan needs a function returning a container call")
+			return nil, errors.New("Go op plan needs a function returning a call")
 		}
 		in, err := bindInputs[I](fields, values)
 		if err != nil {
@@ -69,6 +71,9 @@ func emit[I any](phase string, fn func(I) Call, values map[string]any) (data []b
 		spec.Run, err = call.render()
 		if err != nil {
 			return nil, err
+		}
+		if spec.Run == nil {
+			return nil, errors.New("op graph has no calls")
 		}
 	}
 	data, err = json.Marshal(response{ContractVersion: 1, OpspecSchema: 1, Opspec: spec})

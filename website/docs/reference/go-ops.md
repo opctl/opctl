@@ -30,7 +30,7 @@ String constraints include `enum`, `format`, `pattern`, `minLength`, and `maxLen
 
 Use `EnvFrom` to bind handles, `Dir` and `File` to mount inputs, and `Socket` to bind a socket. Secret input values cannot be read during plan. Directory, file, and socket handles have no `Value()` method. Bootstrap receives only non-secret scalar and structured values; filesystem inputs remain handles. Literal strings escape `$` so input text cannot introduce scope references.
 
-`Describe[Inputs]()` returns the interface without invoking the plan function. `Plan(fn, inputs)` builds the graph in process with already resolved public input values. No-input ops use `func(struct{}) opctl.Call`. Each graph currently contains one container call.
+`Describe[Inputs]()` returns the interface without invoking the plan function. `Plan(fn, inputs)` builds the graph in process with already resolved public input values. No-input ops use `func(struct{}) opctl.Call`. Use `Serial(calls...)` to run calls in order and `Parallel(calls...)` to run them concurrently. Helpers are plain Go functions returning calls. Go loops can build a slice of calls to pass to either group. Empty groups are dropped from their parent; an empty root graph is an error.
 
 Run a Go op with the same arguments as a YAML op:
 
@@ -44,4 +44,14 @@ The CLI prompts for missing inputs, applies defaults, and checks constraints. In
 
 The node bootstraps describe and plan in containers using the Go version in the nearest `go.mod`. Local `replace` targets share a mount that preserves host paths, including absolute replacements. Bootstrap calls appear beneath the op call. Bootstrap stdout is captured in memory, with Docker logging disabled, and is never published as log events. Bootstrap failures return up to 64 KiB of stderr diagnostics to the client. Describe is also available through `POST /api/ops/describes` with `{"op":{"ref":"path/to/op"}}`.
 
-Describe and plan compile separately for each request. No compiled-program cache is available yet. Go ops currently support one container call and no outputs.
+Describe and plan compile separately for each request. No compiled-program cache is available yet. Go ops do not yet declare op outputs.
+
+```go
+func checks() opctl.Call {
+    var calls []opctl.Call
+    for _, name := range []string{"lint", "test"} {
+        calls = append(calls, opctl.Container("alpine:3").Cmd("echo", name))
+    }
+    return opctl.Serial(opctl.Parallel(calls...), opctl.Container("alpine:3").Cmd("echo", "done"))
+}
+```

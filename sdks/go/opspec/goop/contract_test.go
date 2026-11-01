@@ -27,6 +27,19 @@ var _ = Describe("Go op bootstrap contract", func() {
 		Expect(spec.Run.Container.Image.Ref).To(Equal("alpine:3"))
 		Expect(spec.Run.Container.Cmd).To(Equal([]interface{}{"echo", "hello"}))
 	})
+	It("reads serial and parallel calls from the SDK's composed plan", func() {
+		data, err := os.ReadFile("../sdk/testdata/plan.compose.json")
+		Expect(err).NotTo(HaveOccurred())
+		spec, err := ParsePlan(data)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(spec.Name).To(Equal("compose"))
+		Expect(spec.Run.Serial).NotTo(BeNil())
+		Expect(*spec.Run.Serial).To(HaveLen(2))
+		Expect((*spec.Run.Serial)[0].Parallel).NotTo(BeNil())
+		Expect(*(*spec.Run.Serial)[0].Parallel).To(HaveLen(2))
+		Expect((*(*spec.Run.Serial)[0].Parallel)[1].Container.Cmd).To(Equal([]interface{}{"echo", "b"}))
+		Expect((*spec.Run.Serial)[1].Container.Cmd).To(Equal([]interface{}{"echo", "done"}))
+	})
 	It("rejects incompatible versions and malformed responses", func() {
 		for _, data := range []string{
 			`{`, `{} {}`, `{"contractVersion":2,"opspecSchema":1}`, `{"contractVersion":1,"opspecSchema":0}`, `{"contractVersion":1,"opspecSchema":2}`,
