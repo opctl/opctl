@@ -74,6 +74,14 @@ func (oc _opCaller) Call(
 			if err != nil {
 				return outboundScope, err
 			}
+			if parentCallID != nil {
+				guarded := *opCall
+				guarded.InputParams = desc.Inputs
+				guarded.OutputParams = desc.Outputs
+				if err := guardSecretInterop(ctx, &guarded, opCallSpec); err != nil {
+					return outboundScope, err
+				}
+			}
 			// Keep the published CallStarted snapshot free of resolved inputs.
 			resolved := *opCall
 			opCall = &resolved
@@ -98,6 +106,10 @@ func (oc _opCaller) Call(
 	opCallScope := map[string]*model.Value{}
 	for varName, varData := range opCall.Inputs {
 		opCallScope[varName] = varData
+	}
+	if isGoOp {
+		empty := ""
+		opCallScope["opctl_empty_string"] = &model.Value{String: &empty}
 	}
 	// add deprecated absolute path to scope
 	opCallScope["/"] = &model.Value{

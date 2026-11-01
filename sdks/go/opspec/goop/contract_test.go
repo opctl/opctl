@@ -193,3 +193,13 @@ var _ = Describe("Go op interfaces and public plan inputs", func() {
 		}
 	})
 })
+
+var _ = Describe("Go op call contract", func() {
+	It("parses SDK op calls with the existing opspec schema", func() {
+		data, err := os.ReadFile("../sdk/testdata/plan.op-call.json")
+		Expect(err).NotTo(HaveOccurred())
+		spec, err := ParsePlan(data)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(spec.Run.Op.Ref).To(Equal("./yaml"))
+	})
+})

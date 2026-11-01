@@ -74,3 +74,16 @@ Mounts are shared and mutable. Parallel consumers may mount an already visible h
 Build the graph deterministically in one goroutine, and sort map keys before iterating over them. Generated names are stable for repeated plans with the same handle creation order. Create handles inside the plan function, including inside helpers and Go loops.
 
 Use `RawRef[opctl.File]("$(./expected.txt)")` or `RawRef[opctl.Dir]("$(./scripts)")` for op-directory paths. `RawRef[T]` accepts only a whole `$(...)` reference and emits its inner text verbatim, including nested references. It works with any handle type, but bypasses visibility checks and has no readable plan-time value. Building a raw reference from input text can inject references into the graph. Prefer typed handles when they can express the binding. Literal commands, environment values, working directories, and image strings continue to escape `$`.
+
+## Calling ops by ref
+
+`CallOp("./yaml").Inputs(map[string]any{"label": in.Label})` builds an op call.
+Refs resolve from the caller's op directory. Git refs keep the existing
+`repo#tag/path` spelling. `Inputs` snapshots and replaces the supplied arguments;
+omitted arguments use the callee's defaults. Values can be handles or JSON
+literals, including nested arrays and string-keyed maps. Literal dollar signs
+are escaped, and an explicit empty string stays empty.
+
+`PullCreds(username, password)` accepts literal strings or `String` handles.
+Without it, the node uses stored auths. Secret interop is temporarily rejected
+before execution while private output collection is being added.

@@ -8,6 +8,8 @@ accordance with
 
 ### Added
 
+- Go ops can call local and git-ref ops with literal or handle inputs and optional pull credentials. Secret interop is guarded until private output collection is available.
+
 - Go ops can declare typed inputs with defaults and constraints, branch on public input values, and bind input handles to container environment variables, directories,
   files, and sockets. `opctl run` prompts for Go op inputs and rejects invalid explicit values without substituting defaults; `opctl op validate` and `opctl ls` describe Go
   op interfaces. The webapp opens `op.go` and shows its described name and description. Go ops can compose calls in serial and parallel and pass output directories and

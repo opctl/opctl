@@ -20,6 +20,7 @@ type opSpec struct {
 }
 
 type callSpec struct {
+	Op        *opCallSpec    `json:"op,omitempty"`
 	Container *containerSpec `json:"container,omitempty"`
 	Serial    []*callSpec    `json:"serial,omitempty"`
 	Parallel  []*callSpec    `json:"parallel,omitempty"`

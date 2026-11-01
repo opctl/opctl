@@ -1,0 +1,1 @@
+{"contractVersion":1,"opspecSchema":1,"opspec":{"name":"hello","run":{"op":{"ref":"./yaml","inputs":{"label":"from-go"}}}}}

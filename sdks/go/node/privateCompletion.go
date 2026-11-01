@@ -68,3 +68,12 @@ func clearPrivateCompletions(ctx context.Context) {
 		clear(results.results)
 	}
 }
+
+func privateResultsActive(ctx context.Context) bool {
+	if results := privateResults(ctx); results != nil {
+		results.Lock()
+		defer results.Unlock()
+		return results.active
+	}
+	return false
+}

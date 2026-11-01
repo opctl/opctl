@@ -152,6 +152,10 @@ func (clr _caller) Call(
 
 	if callSpec.Op != nil && callSpec.Op.PullCreds == nil {
 		if auth := clr.stateStore.TryGetAuth(callSpec.Op.Ref); auth != nil {
+			copiedSpec := *callSpec
+			copiedOp := *callSpec.Op
+			copiedSpec.Op = &copiedOp
+			callSpec = &copiedSpec
 			callSpec.Op.PullCreds = &model.CredsSpec{
 				Username: auth.Username,
 				Password: auth.Password,
@@ -171,6 +175,15 @@ func (clr _caller) Call(
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	if call.Op != nil && call.Op.IsGoOp {
+		activatePrivateResults(ctx)
+	}
+	if call.Op != nil {
+		if err = guardSecretInterop(ctx, call.Op, callSpec.Op); err != nil {
+			return nil, err
+		}
 	}
 
 	if call.If != nil && !*call.If {

@@ -10,6 +10,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/data/fs"
 	"github.com/opctl/opctl/sdks/go/data/git"
+	"github.com/opctl/opctl/sdks/go/internal/goopctx"
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs"
@@ -100,12 +101,18 @@ func Interpret(
 	}
 
 	opCall := &model.OpCall{
+		IsGoOp: isGoOp,
 		BaseCall: model.BaseCall{
 			OpPath: opPath,
 		},
 		ChildCallID:       childCallID,
 		ChildCallCallSpec: opFile.Run,
 		OpID:              opID,
+	}
+
+	if goopctx.Active(ctx) {
+		opCall.InputParams = opFile.Inputs
+		opCall.OutputParams = opFile.Outputs
 	}
 
 	if isGoOp {
