@@ -46,6 +46,22 @@ type FakeContainerRuntime struct {
 	killReturnsOnCall map[int]struct {
 		result1 error
 	}
+	ResolveImageStub        func(context.Context, *model.ContainerCallImage, string, pubsub.EventPublisher) (*containerruntime.ImageIdentity, error)
+	resolveImageMutex       sync.RWMutex
+	resolveImageArgsForCall []struct {
+		arg1 context.Context
+		arg2 *model.ContainerCallImage
+		arg3 string
+		arg4 pubsub.EventPublisher
+	}
+	resolveImageReturns struct {
+		result1 *containerruntime.ImageIdentity
+		result2 error
+	}
+	resolveImageReturnsOnCall map[int]struct {
+		result1 *containerruntime.ImageIdentity
+		result2 error
+	}
 	RunContainerStub        func(context.Context, *model.ContainerCall, string, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) (*int64, error)
 	runContainerMutex       sync.RWMutex
 	runContainerArgsForCall []struct {
@@ -74,15 +90,16 @@ func (fake *FakeContainerRuntime) Delete(arg1 context.Context) error {
 	fake.deleteArgsForCall = append(fake.deleteArgsForCall, struct {
 		arg1 context.Context
 	}{arg1})
+	stub := fake.DeleteStub
+	fakeReturns := fake.deleteReturns
 	fake.recordInvocation("Delete", []interface{}{arg1})
 	fake.deleteMutex.Unlock()
-	if fake.DeleteStub != nil {
-		return fake.DeleteStub(arg1)
+	if stub != nil {
+		return stub(arg1)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	fakeReturns := fake.deleteReturns
 	return fakeReturns.result1
 }
 
@@ -135,15 +152,16 @@ func (fake *FakeContainerRuntime) DeleteContainerIfExists(arg1 context.Context, 
 		arg1 context.Context
 		arg2 string
 	}{arg1, arg2})
+	stub := fake.DeleteContainerIfExistsStub
+	fakeReturns := fake.deleteContainerIfExistsReturns
 	fake.recordInvocation("DeleteContainerIfExists", []interface{}{arg1, arg2})
 	fake.deleteContainerIfExistsMutex.Unlock()
-	if fake.DeleteContainerIfExistsStub != nil {
-		return fake.DeleteContainerIfExistsStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	fakeReturns := fake.deleteContainerIfExistsReturns
 	return fakeReturns.result1
 }
 
@@ -195,15 +213,16 @@ func (fake *FakeContainerRuntime) Kill(arg1 context.Context) error {
 	fake.killArgsForCall = append(fake.killArgsForCall, struct {
 		arg1 context.Context
 	}{arg1})
+	stub := fake.KillStub
+	fakeReturns := fake.killReturns
 	fake.recordInvocation("Kill", []interface{}{arg1})
 	fake.killMutex.Unlock()
-	if fake.KillStub != nil {
-		return fake.KillStub(arg1)
+	if stub != nil {
+		return stub(arg1)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	fakeReturns := fake.killReturns
 	return fakeReturns.result1
 }
 
@@ -249,6 +268,73 @@ func (fake *FakeContainerRuntime) KillReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
+func (fake *FakeContainerRuntime) ResolveImage(arg1 context.Context, arg2 *model.ContainerCallImage, arg3 string, arg4 pubsub.EventPublisher) (*containerruntime.ImageIdentity, error) {
+	fake.resolveImageMutex.Lock()
+	ret, specificReturn := fake.resolveImageReturnsOnCall[len(fake.resolveImageArgsForCall)]
+	fake.resolveImageArgsForCall = append(fake.resolveImageArgsForCall, struct {
+		arg1 context.Context
+		arg2 *model.ContainerCallImage
+		arg3 string
+		arg4 pubsub.EventPublisher
+	}{arg1, arg2, arg3, arg4})
+	stub := fake.ResolveImageStub
+	fakeReturns := fake.resolveImageReturns
+	fake.recordInvocation("ResolveImage", []interface{}{arg1, arg2, arg3, arg4})
+	fake.resolveImageMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeContainerRuntime) ResolveImageCallCount() int {
+	fake.resolveImageMutex.RLock()
+	defer fake.resolveImageMutex.RUnlock()
+	return len(fake.resolveImageArgsForCall)
+}
+
+func (fake *FakeContainerRuntime) ResolveImageCalls(stub func(context.Context, *model.ContainerCallImage, string, pubsub.EventPublisher) (*containerruntime.ImageIdentity, error)) {
+	fake.resolveImageMutex.Lock()
+	defer fake.resolveImageMutex.Unlock()
+	fake.ResolveImageStub = stub
+}
+
+func (fake *FakeContainerRuntime) ResolveImageArgsForCall(i int) (context.Context, *model.ContainerCallImage, string, pubsub.EventPublisher) {
+	fake.resolveImageMutex.RLock()
+	defer fake.resolveImageMutex.RUnlock()
+	argsForCall := fake.resolveImageArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
+}
+
+func (fake *FakeContainerRuntime) ResolveImageReturns(result1 *containerruntime.ImageIdentity, result2 error) {
+	fake.resolveImageMutex.Lock()
+	defer fake.resolveImageMutex.Unlock()
+	fake.ResolveImageStub = nil
+	fake.resolveImageReturns = struct {
+		result1 *containerruntime.ImageIdentity
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeContainerRuntime) ResolveImageReturnsOnCall(i int, result1 *containerruntime.ImageIdentity, result2 error) {
+	fake.resolveImageMutex.Lock()
+	defer fake.resolveImageMutex.Unlock()
+	fake.ResolveImageStub = nil
+	if fake.resolveImageReturnsOnCall == nil {
+		fake.resolveImageReturnsOnCall = make(map[int]struct {
+			result1 *containerruntime.ImageIdentity
+			result2 error
+		})
+	}
+	fake.resolveImageReturnsOnCall[i] = struct {
+		result1 *containerruntime.ImageIdentity
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeContainerRuntime) RunContainer(arg1 context.Context, arg2 *model.ContainerCall, arg3 string, arg4 pubsub.EventPublisher, arg5 io.WriteCloser, arg6 io.WriteCloser) (*int64, error) {
 	fake.runContainerMutex.Lock()
 	ret, specificReturn := fake.runContainerReturnsOnCall[len(fake.runContainerArgsForCall)]
@@ -260,15 +346,16 @@ func (fake *FakeContainerRuntime) RunContainer(arg1 context.Context, arg2 *model
 		arg5 io.WriteCloser
 		arg6 io.WriteCloser
 	}{arg1, arg2, arg3, arg4, arg5, arg6})
+	stub := fake.RunContainerStub
+	fakeReturns := fake.runContainerReturns
 	fake.recordInvocation("RunContainer", []interface{}{arg1, arg2, arg3, arg4, arg5, arg6})
 	fake.runContainerMutex.Unlock()
-	if fake.RunContainerStub != nil {
-		return fake.RunContainerStub(arg1, arg2, arg3, arg4, arg5, arg6)
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4, arg5, arg6)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.runContainerReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -326,6 +413,8 @@ func (fake *FakeContainerRuntime) Invocations() map[string][][]interface{} {
 	defer fake.deleteContainerIfExistsMutex.RUnlock()
 	fake.killMutex.RLock()
 	defer fake.killMutex.RUnlock()
+	fake.resolveImageMutex.RLock()
+	defer fake.resolveImageMutex.RUnlock()
 	fake.runContainerMutex.RLock()
 	defer fake.runContainerMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

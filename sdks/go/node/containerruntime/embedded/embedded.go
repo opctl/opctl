@@ -219,3 +219,11 @@ func (cr _containerRuntime) ensureTemplate(templatePath string) error {
 
 	return nil
 }
+
+func (cr _containerRuntime) ResolveImage(ctx context.Context, image *model.ContainerCallImage, root string, events pubsub.EventPublisher) (*containerruntime.ImageIdentity, error) {
+	runtime, err := cr.getDockerContainerRuntime(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return runtime.ResolveImage(ctx, image, root, events)
+}

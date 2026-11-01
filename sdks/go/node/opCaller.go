@@ -38,10 +38,11 @@ type opCaller interface {
 func newOpCaller(
 	caller caller,
 	dataDirPath string,
+	caches ...*goBootstrapCache,
 ) opCaller {
 	return _opCaller{
 		caller:       caller,
-		bootstrapper: newBootstrapper(caller, dataDirPath),
+		bootstrapper: newBootstrapper(caller, dataDirPath, caches...),
 		dataDirPath:  dataDirPath,
 	}
 }

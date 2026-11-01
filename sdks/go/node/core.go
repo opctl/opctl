@@ -65,6 +65,7 @@ func New(
 		pubSub,
 	)
 
+	goCache := &goBootstrapCache{runtime: containerRuntime, stateStore: stateStore}
 	caller := newCaller(
 		newContainerCaller(
 			containerRuntime,
@@ -74,6 +75,7 @@ func New(
 		dataDirPath,
 		pubSub,
 		stateStore,
+		goCache,
 	)
 
 	go func() {
@@ -106,13 +108,14 @@ func New(
 	}()
 
 	return core{
-		bootstrapper:     newBootstrapper(caller, dataDirPath),
+		bootstrapper:     newBootstrapper(caller, dataDirPath, goCache),
 		caller:           caller,
 		containerRuntime: containerRuntime,
 		dataCachePath:    filepath.Join(dataDirPath, "ops"),
 		opCaller: newOpCaller(
 			caller,
 			dataDirPath,
+			goCache,
 		),
 		pubSub:     pubSub,
 		stateStore: stateStore,

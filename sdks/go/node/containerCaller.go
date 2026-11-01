@@ -60,7 +60,7 @@ func (cc _containerCaller) Call(
 	outputs := map[string]*model.Value{}
 	var exitCode int64
 
-	if containerCall.Image.Ref != nil && containerCall.Image.PullCreds == nil {
+	if !containerCall.Image.Prepared && containerCall.Image.Ref != nil && containerCall.Image.PullCreds == nil {
 		if auth := cc.stateStore.TryGetAuth(*containerCall.Image.Ref); auth != nil {
 			containerCall.Image.PullCreds = &auth.Creds
 		}

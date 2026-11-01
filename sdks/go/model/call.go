@@ -53,6 +53,7 @@ type ContainerCall struct {
 
 // ContainerCallImage is the image used when calling a container
 type ContainerCallImage struct {
+	Prepared  bool              `json:"-"`
 	Platform  *OCIImagePlatform `json:"platform,omitempty"`
 	PullCreds *Creds            `json:"pullCreds,omitempty"`
 	Ref       *string           `json:"ref"`

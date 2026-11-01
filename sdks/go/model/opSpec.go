@@ -45,6 +45,7 @@ type ContainerCallSpec struct {
 
 // ContainerCallImageSpec is a spec for the image when calling a container
 type ContainerCallImageSpec struct {
+	Prepared  bool                  `json:"-"`
 	Platform  *OCIImagePlatformSpec `json:"platform,omitempty"`
 	PullCreds *CredsSpec            `json:"pullCreds,omitempty"`
 	Ref       string                `json:"ref"`

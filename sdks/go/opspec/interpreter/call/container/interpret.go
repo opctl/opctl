@@ -104,6 +104,8 @@ func Interpret(
 		return nil, err
 	}
 
+	containerCall.Image.Prepared = containerCallSpec.Image.Prepared
+
 	// interpret name as string
 	if containerCallSpec.Name != nil {
 		containerCallName, err := str.Interpret(

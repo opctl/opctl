@@ -21,11 +21,16 @@ type bootstrapper interface {
 	Plan(ctx context.Context, opCall *model.OpCall, rootCallID string, inputs map[string]interface{}) (*goop.Plan, error)
 }
 
-func newBootstrapper(caller caller, dataDirPath string) bootstrapper {
-	return _bootstrapper{caller: caller, dataDirPath: dataDirPath}
+func newBootstrapper(caller caller, dataDirPath string, caches ...*goBootstrapCache) bootstrapper {
+	bootstrap := _bootstrapper{caller: caller, dataDirPath: dataDirPath}
+	if len(caches) > 0 {
+		bootstrap.cache = caches[0]
+	}
+	return bootstrap
 }
 
 type _bootstrapper struct {
+	cache       *goBootstrapCache
 	caller      caller
 	dataDirPath string
 }
@@ -55,6 +60,18 @@ func (bootstrap _bootstrapper) run(ctx context.Context, opCall *model.OpCall, ro
 	spec, mountRoot, err := goop.ContainerSpecInRepository(opCall.OpPath, phase, opCall.RepositoryRoot)
 	if err != nil {
 		return nil, &OpDeclarationError{Err: err}
+	}
+	if bootstrap.cache != nil {
+		ref := spec.Image.Ref
+		image := &model.ContainerCallImage{Ref: &ref}
+		if auth := bootstrap.cache.stateStore.TryGetAuth(ref); auth != nil {
+			image.PullCreds = &auth.Creds
+		}
+		identity, err := bootstrap.cache.runtime.ResolveImage(ctx, image, rootCallID, discardBootstrapEvents{})
+		if err != nil {
+			return nil, err
+		}
+		spec.Image.Ref, spec.Image.Prepared = identity.Ref, true
 	}
 	id, err := uniquestring.Construct()
 	if err != nil {

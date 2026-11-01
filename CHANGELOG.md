@@ -8,6 +8,8 @@ accordance with
 
 ### Added
 
+- Go bootstrap resolves and runs an immutable Linux toolchain image, reusing cached images offline without redundant phase pulls.
+
 - Go bootstrap binds source and replacement roots read-only and can import app packages from a parent module without copying fetched source.
 
 - CLI end-to-end scenarios can assert exact boxed public completion outputs with `expectOutputs`, including empty maps and secret omission.

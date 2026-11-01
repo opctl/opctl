@@ -16,6 +16,8 @@ import (
 //
 //counterfeiter:generate -o fakes/containerRuntime.go . ContainerRuntime
 type ContainerRuntime interface {
+	ResolveImage(context.Context, *model.ContainerCallImage, string, pubsub.EventPublisher) (*ImageIdentity, error)
+
 	// Delete deletes opctl managed resources from the container runtime
 	Delete(
 		ctx context.Context,
@@ -42,4 +44,9 @@ type ContainerRuntime interface {
 		stdout io.WriteCloser,
 		stderr io.WriteCloser,
 	) (*int64, error)
+}
+
+// ImageIdentity pins bootstrap to an inspectable Linux image and target.
+type ImageIdentity struct {
+	Ref, ID, OS, Arch, Variant string
 }

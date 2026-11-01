@@ -102,7 +102,7 @@ func (cr _runContainer) RunContainer(
 			imageRef,
 			req.Image.Src,
 		)
-	} else {
+	} else if !req.Image.Prepared {
 		imageErr = pullImage(
 			ctx,
 			req,

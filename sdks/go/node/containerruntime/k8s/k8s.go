@@ -181,3 +181,7 @@ func (cr _containerRuntime) RunContainer(
 
 	return nil, err
 }
+
+func (cr _containerRuntime) ResolveImage(context.Context, *model.ContainerCallImage, string, pubsub.EventPublisher) (*containerruntime.ImageIdentity, error) {
+	return nil, fmt.Errorf("Go op bootstrap is not supported yet with the Kubernetes container runtime")
+}

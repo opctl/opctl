@@ -65,12 +65,14 @@ var _ = Context("RunContainer", func() {
 		}
 		out, errOut := new(bytes.Buffer), new(bytes.Buffer)
 		runtime := _runContainer{dockerClient: client}
-		imageRef := "golang:1.25"
-		_, err := runtime.RunContainer(containerruntime.WithSeparateOutput(context.Background()), &model.ContainerCall{ContainerID: "bootstrap", Image: &model.ContainerCallImage{Ref: &imageRef}}, "root", pubSub, nopWriteCloser{out}, nopWriteCloser{errOut})
+		imageRef := "sha256:prepared"
+		_, err := runtime.RunContainer(containerruntime.WithSeparateOutput(context.Background()), &model.ContainerCall{ContainerID: "bootstrap", Image: &model.ContainerCallImage{Ref: &imageRef, Prepared: true}}, "root", pubSub, nopWriteCloser{out}, nopWriteCloser{errOut})
 		Expect(err).NotTo(HaveOccurred())
 		_, config, host, _, _, _ := client.ContainerCreateArgsForCall(0)
 		Expect(client.ContainerCreateCallCount()).To(Equal(1))
 		Expect(host.Privileged).To(BeFalse())
+		Expect(config.Image).To(Equal(imageRef))
+		Expect(client.ImagePullCallCount()).To(Equal(0))
 		Expect(config.Tty).To(BeFalse())
 		Expect(host.LogConfig.Type).To(Equal("none"))
 		_, name, options := client.ContainerAttachArgsForCall(0)
