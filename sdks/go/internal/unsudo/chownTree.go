@@ -2,20 +2,36 @@ package unsudo
 
 import (
 	"errors"
+	"fmt"
 	"io/fs"
 	"os"
 )
 
-// ChownTree to the user & group who ran sudo, without following symlinks.
+// RestoreCacheTree adds a+rwX and, only under sudo, restores ownership.
 // Resolution is confined to fsPath so a concurrently swapped symlink can't redirect the walk.
-func ChownTree(fsPath string) error {
+func RestoreCacheTree(fsPath string) error {
+	info, err := os.Lstat(fsPath)
+	if err != nil {
+		return err
+	}
+	if !info.IsDir() {
+		return fmt.Errorf("cache path %q must be a real directory", fsPath)
+	}
 	root, err := os.OpenRoot(fsPath)
 	if err != nil {
 		return err
 	}
 	defer root.Close()
+	openedInfo, err := root.Stat(".")
+	if err != nil {
+		return err
+	}
+	if !os.SameFile(info, openedInfo) {
+		return fmt.Errorf("cache path %q changed while opening its root", fsPath)
+	}
 
 	uid, gid := getSudoUID(), getSudoGID()
+	chown := IsSudo()
 	var errs []error
 	walkErr := fs.WalkDir(
 		root.FS(),
@@ -24,14 +40,27 @@ func ChownTree(fsPath string) error {
 			if err == nil {
 				var info fs.FileInfo
 				info, err = entry.Info()
-				if err == nil && !isOwnedBy(info, uid, gid) {
-					err = root.Lchown(entryPath, uid, gid)
+				if err == nil {
+					if chown && !isOwnedBy(info, uid, gid) {
+						if chownErr := root.Lchown(entryPath, uid, gid); chownErr != nil && !errors.Is(chownErr, fs.ErrNotExist) {
+							errs = append(errs, chownErr)
+						}
+					}
+					err = makeCacheEntryWritable(root, entryPath, info)
 				}
 			}
 			// entries may vanish under calls sharing the cache dir
-			if err != nil && !errors.Is(err, fs.ErrNotExist) {
-				errs = append(errs, err)
+			if err == nil || errors.Is(err, fs.ErrNotExist) {
+				return nil
 			}
+			// an unprivileged node can't read or adjust what other users (e.g. root containers) wrote; skip it silently
+			if errors.Is(err, fs.ErrPermission) && os.Geteuid() != 0 {
+				if entry != nil && entry.IsDir() {
+					return fs.SkipDir
+				}
+				return nil
+			}
+			errs = append(errs, err)
 			return nil
 		},
 	)

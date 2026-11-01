@@ -1,7 +1,10 @@
 package caches
 
 import (
+	"errors"
 	"fmt"
+	"io/fs"
+	"os"
 	"path"
 	"path/filepath"
 	"regexp"
@@ -79,6 +82,19 @@ func Interpret(
 		}
 		if err := unsudo.CreateDir(hostPath); err != nil {
 			return nil, fmt.Errorf("unable to bind cache dir %q to %q: %w", containerPath, name, err)
+		}
+		info, err := os.Lstat(hostPath)
+		if err != nil {
+			return nil, fmt.Errorf("unable to bind cache dir %q to %q: %w", containerPath, name, err)
+		}
+		if !info.IsDir() {
+			return nil, fmt.Errorf("unable to bind cache dir %q to %q: mount source %q must be a real directory", containerPath, name, hostPath)
+		}
+		// Best effort: an unprivileged node cannot chmod another user's cache dir.
+		if info.Mode().Perm() != 0777 {
+			if err := os.Chmod(hostPath, info.Mode()|0777); err != nil && !errors.Is(err, fs.ErrPermission) {
+				return nil, fmt.Errorf("unable to bind cache dir %q to %q: %w", containerPath, name, err)
+			}
 		}
 		containerCallDirs[containerPath] = hostPath
 	}

@@ -115,27 +115,25 @@ func (cc _containerCaller) Call(
 		err = logChanErr
 	}
 
-	if unsudo.IsSudo() {
-		cacheRootPath := filepath.Join(cc.dataDirPath, "caches") + string(filepath.Separator)
-		chowned := map[string]struct{}{}
-		for _, hostPath := range containerCall.Dirs {
-			hostPath = filepath.Clean(hostPath)
-			if _, ok := chowned[hostPath]; ok || !strings.HasPrefix(hostPath, cacheRootPath) {
-				continue
-			}
-			chowned[hostPath] = struct{}{}
-			// container-written files are typically root-owned; hand them back so the sudo user (e.g. CI) can read them
-			if chownErr := unsudo.ChownTree(hostPath); chownErr != nil {
-				cc.pubSub.Publish(model.Event{
-					Timestamp: time.Now().UTC(),
-					ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenTo{
-						Data:        []byte(fmt.Sprintf("warning: unable to restore cache dir ownership for %q: %v\n", hostPath, chownErr)),
-						ContainerID: containerCall.ContainerID,
-						OpRef:       containerCall.OpPath,
-						RootCallID:  rootCallID,
-					},
-				})
-			}
+	cacheRootPath := filepath.Join(cc.dataDirPath, "caches") + string(filepath.Separator)
+	noCacheRootPath := filepath.Join(cc.dataDirPath, "nocache") + string(filepath.Separator)
+	restored := map[string]struct{}{}
+	for _, hostPath := range containerCall.Dirs {
+		hostPath = filepath.Clean(hostPath)
+		if _, ok := restored[hostPath]; ok || (!strings.HasPrefix(hostPath, cacheRootPath) && !strings.HasPrefix(hostPath, noCacheRootPath)) {
+			continue
+		}
+		restored[hostPath] = struct{}{}
+		if restoreErr := unsudo.RestoreCacheTree(hostPath); restoreErr != nil {
+			cc.pubSub.Publish(model.Event{
+				Timestamp: time.Now().UTC(),
+				ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenTo{
+					Data:        []byte(fmt.Sprintf("warning: unable to restore cache dir permissions for %q: %v\n", hostPath, restoreErr)),
+					ContainerID: containerCall.ContainerID,
+					OpRef:       containerCall.OpPath,
+					RootCallID:  rootCallID,
+				},
+			})
 		}
 	}
 

@@ -59,7 +59,7 @@ var _ = Context("containerCaller", func() {
 			{name: "runtime error", runtimeErr: errors.New("runtime failed"), expectedErr: "runtime failed"},
 			{name: "kill", runtimeErr: context.Canceled, kill: true, expectedErr: context.Canceled.Error()},
 		} {
-			It("should restore only mounted cache dirs after "+testCase.name+" when privileged", func() {
+			It("should restore only mounted cache and nocache dirs after "+testCase.name+" when privileged", func() {
 				dataDirPath := GinkgoT().TempDir()
 				cacheRootPath := filepath.Join(dataDirPath, "caches")
 				cachePath := filepath.Join(cacheRootPath, "npm")
@@ -126,7 +126,7 @@ var _ = Context("containerCaller", func() {
 				}
 				for _, dirPath := range []string{cachePath, secondCachePath, unmountedCachePath, siblingPath, outsidePath, scratchCachePath} {
 					uid, gid := os.Geteuid(), os.Getegid()
-					if uid == 0 && (dirPath == cachePath || dirPath == secondCachePath) {
+					if uid == 0 && (dirPath == cachePath || dirPath == secondCachePath || dirPath == scratchCachePath) {
 						uid, gid = 1234, 2345
 					}
 					for _, entryPath := range []string{dirPath, filepath.Join(dirPath, "nested"), filepath.Join(dirPath, "nested", "file")} {
@@ -135,6 +135,17 @@ var _ = Context("containerCaller", func() {
 						stat := info.Sys().(*syscall.Stat_t)
 						Expect(stat.Uid).To(Equal(uint32(uid)), entryPath)
 						Expect(stat.Gid).To(Equal(uint32(gid)), entryPath)
+						mode := os.FileMode(0700)
+						if info.Mode().IsRegular() {
+							mode = 0600
+						}
+						if dirPath == cachePath || dirPath == secondCachePath || dirPath == scratchCachePath {
+							mode = 0777
+							if info.Mode().IsRegular() {
+								mode = 0666
+							}
+						}
+						Expect(info.Mode().Perm()).To(Equal(mode), entryPath)
 					}
 				}
 
@@ -142,20 +153,66 @@ var _ = Context("containerCaller", func() {
 				defer eventCancel()
 				events, err := pubSub.Subscribe(eventCtx, model.EventFilter{Roots: []string{rootCallID}})
 				Expect(err).To(BeNil())
-				if os.Geteuid() == 0 {
-					var event model.Event
-					Eventually(events).Should(Receive(&event))
-					Expect(event.Timestamp).NotTo(BeZero())
-					Expect(event.ContainerStdErrWrittenTo).NotTo(BeNil())
-					Expect(string(event.ContainerStdErrWrittenTo.Data)).To(ContainSubstring("unable to restore cache dir ownership"))
-					Expect(string(event.ContainerStdErrWrittenTo.Data)).To(ContainSubstring(missingPath))
-					Expect(event.ContainerStdErrWrittenTo.ContainerID).To(Equal("containerID"))
-					Expect(event.ContainerStdErrWrittenTo.OpRef).To(Equal("opPath"))
-					Expect(event.ContainerStdErrWrittenTo.RootCallID).To(Equal(rootCallID))
-				}
+				var event model.Event
+				Eventually(events).Should(Receive(&event))
+				Expect(event.Timestamp).NotTo(BeZero())
+				Expect(event.ContainerStdErrWrittenTo).NotTo(BeNil())
+				Expect(string(event.ContainerStdErrWrittenTo.Data)).To(ContainSubstring("unable to restore cache dir permissions"))
+				Expect(string(event.ContainerStdErrWrittenTo.Data)).To(ContainSubstring(missingPath))
+				Expect(event.ContainerStdErrWrittenTo.ContainerID).To(Equal("containerID"))
+				Expect(event.ContainerStdErrWrittenTo.OpRef).To(Equal("opPath"))
+				Expect(event.ContainerStdErrWrittenTo.RootCallID).To(Equal(rootCallID))
 				Consistently(events).ShouldNot(Receive())
 			})
 		}
+
+		It("should make cache and nocache trees writable without sudo and leave ownership alone", func() {
+			GinkgoT().Setenv("SUDO_UID", "")
+			GinkgoT().Setenv("SUDO_GID", "")
+			dataDirPath := GinkgoT().TempDir()
+			cachePath := filepath.Join(dataDirPath, "caches", "shared")
+			coldPath := filepath.Join(dataDirPath, "nocache", "run", "shared")
+			uid, gid := os.Geteuid(), os.Getegid()
+			if uid == 0 {
+				uid, gid = 1234, 2345
+			}
+			fakeContainerRuntime := new(FakeContainerRuntime)
+			fakeContainerRuntime.RunContainerStub = func(
+				ctx context.Context,
+				req *model.ContainerCall,
+				rootCallID string,
+				eventPublisher pubsub.EventPublisher,
+				stdOut io.WriteCloser,
+				stdErr io.WriteCloser,
+			) (*int64, error) {
+				defer stdOut.Close()
+				defer stdErr.Close()
+				for _, path := range []string{cachePath, coldPath} {
+					Expect(os.MkdirAll(path, 0700)).To(Succeed())
+					file := filepath.Join(path, "file")
+					Expect(os.WriteFile(file, nil, 0600)).To(Succeed())
+					if os.Geteuid() == 0 {
+						Expect(os.Chown(file, uid, gid)).To(Succeed())
+					}
+				}
+				return nil, nil
+			}
+			pubSub := pubsub.New(db)
+			caller := newContainerCaller(fakeContainerRuntime, pubSub, nil, dataDirPath)
+			_, err := caller.Call(context.Background(), &model.ContainerCall{
+				Image: &model.ContainerCallImage{},
+				Dirs:  map[string]string{"/cache": cachePath, "/cold": coldPath},
+			}, nil, &model.ContainerCallSpec{}, "cache-permissions-without-sudo")
+			Expect(err).NotTo(HaveOccurred())
+			for _, path := range []string{cachePath, coldPath} {
+				info, err := os.Stat(filepath.Join(path, "file"))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(info.Mode().Perm()).To(Equal(os.FileMode(0666)))
+				stat := info.Sys().(*syscall.Stat_t)
+				Expect(stat.Uid).To(Equal(uint32(uid)))
+				Expect(stat.Gid).To(Equal(uint32(gid)))
+			}
+		})
 
 		It("should call containerRuntime.RunContainer w/ expected args", func() {
 			/* arrange */

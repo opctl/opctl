@@ -55,9 +55,11 @@ The key changes when a lockfile changes. The restore prefix lets a job start wit
 
 Containers commonly write root-owned files. When the node runs with sudo, it recursively restores each call's cache dirs to `SUDO_UID` and `SUDO_GID` after the container finishes, including failed or killed calls. A root node without those variables leaves ownership unchanged. Cleanup warnings appear in the call's stderr and do not change its outcome.
 
-A node running without sudo cannot change ownership of files written by another user. Run `sudo chown -R "$(id -u):$(id -g)" <cache root>` before saving in that case. GitHub-hosted Linux runners have passwordless sudo. The workflow runs this step even after a failed op, before the explicit save step.
+An unprivileged node cannot change ownership of files written by another user. Run `sudo chown -R "$(id -u):$(id -g)" <cache root>` before saving in that case. GitHub-hosted Linux runners have passwordless sudo. The workflow runs this step even after a failed op, before the explicit save step.
 
-Cache dirs start with mode `0700`, owned by the sudo user or the node's effective user. An image that runs as a different non-root `USER` may be unable to write them, as with scratch dirs. Restoring ownership after a call does not change these permissions.
+Cache dirs, including `--no-cache` dirs, start with mode `0777`. After each call, the node makes them and their contents writable by all users with `a+rwX`, so images running as different users can share a cache. Files lose their setuid and setgid bits during this permission update. An unprivileged node cannot adjust entries owned by other users, such as files written by root containers.
+
+Parent dirs created under the data dir stay `0700`, so other host users normally cannot reach caches. More open existing parents can expose them, for example with a custom `--data-dir` under `/tmp` or the workspace. Any container mounting the same cache name can read and modify it, whatever its user. Don't put secrets in cache dirs.
 
 ## Kubernetes
 
