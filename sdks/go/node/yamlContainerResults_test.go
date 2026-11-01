@@ -21,7 +21,7 @@ import (
 )
 
 var _ = Describe("YAML container output privacy", func() {
-	for _, mode := range []string{"stream", "outputs file"} {
+	for _, mode := range []string{"stream", "outputs file", "declared outputs file"} {
 		mode := mode
 		It("protects renamed secret "+mode+" producers beneath a YAML parent", func() {
 			dir, err := os.MkdirTemp("", "yaml-capture-")
@@ -38,8 +38,11 @@ run:
     cmd: [generate]
     stdout: $(source)
 `
-			if mode == "outputs file" {
+			if mode != "stream" {
 				declaration = strings.ReplaceAll(declaration, "stdout: $(source)", "outputs: {source: $(source)}")
+			}
+			if mode == "declared outputs file" {
+				declaration += "    outputParams: {source: {string: {isSecret: true}}}\n"
 			}
 			Expect(os.WriteFile(filepath.Join(child, "op.yml"), []byte(declaration), 0600)).To(Succeed())
 			Expect(os.WriteFile(filepath.Join(dir, "op.yml"), []byte(`name: parent
@@ -60,6 +63,12 @@ run:
             cmd: [check]
             envVars: {TOKEN: $(token)}
 `), 0600)).To(Succeed())
+			if mode == "declared outputs file" {
+				parentPath := filepath.Join(dir, "op.yml")
+				data, err := os.ReadFile(parentPath)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(os.WriteFile(parentPath, []byte(strings.ReplaceAll(string(data), "{string: {isSecret: true}}", "{string: {}}")), 0600)).To(Succeed())
+			}
 			db, err := badger.Open(badger.DefaultOptions("").WithInMemory(true).WithLogger(nil))
 			Expect(err).NotTo(HaveOccurred())
 			defer db.Close()
@@ -71,7 +80,7 @@ run:
 				defer out.Close()
 				defer stderr.Close()
 				if call.Cmd[0] == "generate" {
-					if mode == "outputs file" {
+					if mode != "stream" {
 						data, _ := json.Marshal(map[string]string{"source": marker})
 						if err := os.WriteFile(call.OutputsFile, data, 0600); err != nil {
 							return nil, err

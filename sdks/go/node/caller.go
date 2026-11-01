@@ -112,6 +112,9 @@ func (clr _caller) Call(
 	if id == rootCallID {
 		defer clearPrivateCompletions(ctx)
 	}
+	if callSpec != nil && callSpec.Container != nil && callSpec.Container.OutputParams != nil {
+		ctx = withDeclaredContainerOutputs(ctx, callSpec.Container)
+	}
 	scope = privateScope(ctx, scope)
 	ctx = withRuntimeScope(ctx, scope)
 	callCtx, cancelCall := context.WithCancel(ctx)

@@ -52,6 +52,9 @@ accordance with
 
 ### Added
 
+- YAML containers can declare required `outputParams` for exact JSON types and constraints. Declared secrets stay private through renamed bindings; typed output graphs
+  require opspec schema 4.
+
 - Go container calls expose named JSON results with `ContainerOutput[T]` for String, Number, Boolean, Array, and Object handles. Named-result graphs require opspec schema
   3.
 

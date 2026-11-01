@@ -5,6 +5,7 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/internal/unsudo"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/cmd"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/dirs"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/envvars"
@@ -23,6 +24,9 @@ func Interpret(
 	dataDirPath string,
 ) (*model.ContainerCall, error) {
 
+	if err := opspec.ValidateContainerOutputParams(containerCallSpec.OutputParams, containerCallSpec.Outputs); err != nil {
+		return nil, err
+	}
 	if err := validateResultBindings(containerCallSpec); err != nil {
 		return nil, err
 	}

@@ -58,7 +58,7 @@ func (cc _containerCaller) Call(
 	error,
 ) {
 	if containerCallSpec.Stdout != "" || containerCallSpec.Stderr != "" || len(containerCallSpec.Outputs) > 0 {
-		return cc.callWithResults(ctx, containerCall, inboundScope, containerCallSpec, rootCallID, nil)
+		return cc.callWithResults(ctx, containerCall, inboundScope, containerCallSpec, rootCallID, containerCallSpec.OutputParams)
 	}
 	outputs := map[string]*model.Value{}
 	var exitCode int64

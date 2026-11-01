@@ -77,3 +77,21 @@ func TestExactConstraintsAndPrivateErrors(t *testing.T) {
 		}
 	}
 }
+
+func TestExactNestedConstraintLocation(t *testing.T) {
+	object := map[string]interface{}{"metadata": map[string]interface{}{"revision": 3}}
+	values := map[string]*model.Value{"result": {Object: &object}}
+	declarations := map[string]*model.ParamSpec{"result": {Object: &model.ObjectParamSpec{Constraints: model.Constraints{
+		"properties": map[string]interface{}{"metadata": map[string]interface{}{
+			"properties": map[string]interface{}{"revision": map[string]interface{}{"type": "string"}},
+		}},
+	}}}}
+	err := Validate(values, declarations, ValidationOptions{ExactTypes: true})
+	if err == nil || !strings.Contains(err.Error(), "metadata.revision") {
+		t.Fatalf("nested constraint location missing: %v", err)
+	}
+	legacy := Validate(values, declarations)
+	if legacy == nil || strings.Contains(legacy.Error(), "metadata.revision") {
+		t.Fatalf("legacy constraint diagnostic changed: %v", legacy)
+	}
+}

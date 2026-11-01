@@ -16,7 +16,7 @@ var _ = Describe("Go op bootstrap contract", func() {
 	It("requests plan with the supported schema and empty inputs and known outputs", func() {
 		data, err := json.Marshal(NewRequest("plan", nil))
 		Expect(err).NotTo(HaveOccurred())
-		Expect(data).To(MatchJSON(`{"contractVersion":1,"phase":"plan","opspecSchema":{"min":1,"max":3},"inputs":{},"knownOutputs":{}}`))
+		Expect(data).To(MatchJSON(`{"contractVersion":1,"phase":"plan","opspecSchema":{"min":1,"max":4},"inputs":{},"knownOutputs":{}}`))
 	})
 	It("reads the SDK's golden plan through the existing op file schema", func() {
 		data, err := os.ReadFile("../sdk/testdata/plan.hello.json")

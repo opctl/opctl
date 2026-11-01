@@ -1,0 +1,38 @@
+[
+  {
+    "call": {
+      "scope": {},
+      "expect": "success",
+      "expectOutputs": {
+        "version": {
+          "string": "v1.2.3"
+        },
+        "buildCount": {
+          "number": 3
+        },
+        "ready": {
+          "boolean": true
+        },
+        "targets": {
+          "array": [
+            "linux"
+          ]
+        },
+        "metadata": {
+          "object": {
+            "revision": "abc123"
+          }
+        },
+        "stream": {
+          "string": "v1.2.3"
+        },
+        "diagnostic": {
+          "string": "diagnostic"
+        },
+        "memberStdout": {
+          "number": 7
+        }
+      }
+    }
+  }
+]

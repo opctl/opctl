@@ -40,7 +40,7 @@ func Validate(
 
 	switch {
 	case param.Array != nil:
-		return array.Validate(value, param.Array.Constraints)
+		return array.Validate(value, param.Array.Constraints, exact...)
 	case param.Boolean != nil:
 		return boolean.Validate(value)
 	case param.Dir != nil:
@@ -52,7 +52,7 @@ func Validate(
 	case param.String != nil:
 		return str.Validate(value, param.String.Constraints)
 	case param.Object != nil:
-		return object.Validate(value, param.Object.Constraints)
+		return object.Validate(value, param.Object.Constraints, exact...)
 	case param.Socket != nil:
 		return socket.Validate(value)
 	default:

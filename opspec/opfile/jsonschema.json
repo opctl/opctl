@@ -854,7 +854,35 @@
       "properties": {
         "container": {
           "type": "object",
+          "dependencies": {"outputParams": ["outputs"]},
           "properties": {
+            "outputParams": {
+              "allOf": [
+                {"$ref": "#/definitions/params"},
+                {
+                  "type": "object",
+                  "minProperties": 1,
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "^[-_a-zA-Z0-9]+$": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "description": {"type": "string"},
+                        "dir": false,
+                        "file": false,
+                        "socket": false,
+                        "string": {"type": "object", "not": {"required": ["default"]}},
+                        "number": {"type": "object", "not": {"required": ["default"]}},
+                        "boolean": {"type": "object", "not": {"required": ["default"]}},
+                        "array": {"type": "object", "not": {"required": ["default"]}},
+                        "object": {"type": "object", "not": {"required": ["default"]}}
+                      }
+                    }
+                  }
+                }
+              ]
+            },
             "outputs": {
               "type": "object",
               "minProperties": 1,

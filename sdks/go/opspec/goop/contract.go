@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
 
@@ -58,6 +59,9 @@ func parseResponse(data []byte) (*model.OpSpec, error) {
 	spec, err := opfile.Unmarshal(response.Opspec)
 	if err != nil {
 		return nil, err
+	}
+	if needed := opspec.MinimumSchema(spec.Run); needed > response.OpspecSchema {
+		return nil, fmt.Errorf("Go op graph requires opspec schema %d but response declares schema %d", needed, response.OpspecSchema)
 	}
 	return spec, nil
 }

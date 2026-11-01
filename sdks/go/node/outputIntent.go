@@ -39,3 +39,19 @@ func outputDestinations(ctx context.Context, params map[string]*model.ParamSpec,
 	}
 	return result
 }
+
+func withDeclaredContainerOutputs(ctx context.Context, spec *model.ContainerCallSpec) context.Context {
+	inherited, _ := ctx.Value(protectedSourcesKey{}).(map[string]bool)
+	sources := map[string]*model.ParamSpec{}
+	for name, private := range inherited {
+		if private {
+			sources[name] = &model.ParamSpec{String: &model.StringParamSpec{IsSecret: true}}
+		}
+	}
+	for member, param := range spec.OutputParams {
+		if ref, bound := spec.Outputs[member]; bound && secretParam(param) {
+			sources[opspec.RefToName(ref)] = param
+		}
+	}
+	return withProtectedSources(ctx, sources)
+}

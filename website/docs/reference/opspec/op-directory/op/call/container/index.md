@@ -17,6 +17,7 @@ An object defining a container call.
   - [sockets](#sockets)
   - [stdout and stderr](#stdout-and-stderr)
   - [outputs](outputs.md)
+  - [outputParams](outputs.md#typed-members)
   - [workDir](#workdir)
 
 ### image
@@ -88,3 +89,7 @@ run:
 ### outputs
 
 A nonempty map from JSON member names to whole scope write references, such as `outputs: {version: $(buildVersion)}`. See the [outputs file reference](outputs.md).
+
+### outputParams
+
+Optional declarations for required outputs-file members. Validate exact JSON types and constraints before binding. See [typed members](outputs.md#typed-members).

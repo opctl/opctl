@@ -16,6 +16,7 @@ import (
 func Validate(
 	value *model.Value,
 	constraints map[string]interface{},
+	includeLocation ...bool,
 ) []error {
 	// register custom format checkers
 	gojsonschema.FormatCheckers.Add("docker-image-ref", formats.DockerImageRefFormatChecker{})
@@ -60,11 +61,12 @@ func Validate(
 		}
 
 		for _, errString := range result.Errors() {
-			// enum validation errors include `(root) ` prefix we don't want
-			errs = append(
-				errs,
-				errors.New(strings.TrimPrefix(errString.Description(), "(root) ")),
-			)
+			// Keep legacy diagnostics unchanged unless exact output validation requests locations.
+			description := strings.TrimPrefix(errString.Description(), "(root) ")
+			if len(includeLocation) > 0 && includeLocation[0] && errString.Field() != "(root)" {
+				description = errString.Field() + ": " + description
+			}
+			errs = append(errs, errors.New(description))
 		}
 
 		return errs

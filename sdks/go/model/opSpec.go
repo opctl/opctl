@@ -26,10 +26,11 @@ type CallSpec struct {
 
 // ContainerCallSpec is a spec for calling a container
 type ContainerCallSpec struct {
-	Outputs        map[string]string `json:"outputs,omitempty"`
-	Stdout         string            `json:"stdout,omitempty"`
-	Stderr         string            `json:"stderr,omitempty"`
-	ReadOnlyMounts map[string]bool   `json:"-"`
+	OutputParams   map[string]*ParamSpec `json:"outputParams,omitempty"`
+	Outputs        map[string]string     `json:"outputs,omitempty"`
+	Stdout         string                `json:"stdout,omitempty"`
+	Stderr         string                `json:"stderr,omitempty"`
+	ReadOnlyMounts map[string]bool       `json:"-"`
 	// Cmd entries will be interpreted to strings
 	Cmd interface{} `json:"cmd,omitempty"`
 	// Dirs entries will be interpreted to dirs
