@@ -284,7 +284,7 @@ func (cache *goBootstrapCache) prepare(ctx context.Context, bootstrap _bootstrap
 			return nil, nil, err
 		}
 		recipe := goop.BuildRecipe{Launcher: goBootstrapLauncher, Command: buildSpec.Cmd.([]interface{}), Env: buildSpec.EnvVars.(map[string]interface{})}
-		key, err := source.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain, recipe)
+		key, err := source.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath, source.ModuleRoot), toolchain, recipe)
 		if ctx.Err() != nil {
 			return nil, nil, ctx.Err()
 		}
@@ -313,7 +313,7 @@ func (cache *goBootstrapCache) prepare(ctx context.Context, bootstrap _bootstrap
 }
 func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _bootstrapper, op *model.OpCall, root string, source *goop.Source, image *containerruntime.ImageIdentity, key string, toolchain goop.Toolchain, recipe goop.BuildRecipe, buildSpec *model.ContainerCallSpec, auth bootstrapAuth, waited bool) (*goProgram, func(), bool, error) {
 	if waited {
-		fresh, err := source.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain, recipe)
+		fresh, err := source.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath, source.ModuleRoot), toolchain, recipe)
 		if err != nil {
 			return nil, nil, false, err
 		}
@@ -367,7 +367,7 @@ func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _boo
 	if err := ctx.Err(); err != nil {
 		return nil, nil, false, err
 	}
-	fresh, err := source.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain, recipe)
+	fresh, err := source.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath, source.ModuleRoot), toolchain, recipe)
 	if err != nil {
 		return nil, nil, false, err
 	}
@@ -409,7 +409,11 @@ func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _boo
 	return program, release, false, nil
 }
 
-func bootstrapWritablePaths(dataDir string) []string {
+func bootstrapWritablePaths(dataDir, sourceRoot string) []string {
+	relative, err := filepath.Rel(filepath.Join(dataDir, "ops"), sourceRoot)
+	if err != nil || relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
+		return []string{dataDir}
+	}
 	paths := []string{}
 	for _, name := range []string{"go", "dcg", "call", "vms"} {
 		paths = append(paths, filepath.Join(dataDir, name))

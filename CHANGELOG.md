@@ -34,6 +34,7 @@ accordance with
 
 ### Fixed
 
+- Go op bootstrap ignores node data stored inside a local source repository when computing its compiled-program cache key.
 - YAML ops keep their existing event outputs and error messages for defaulted secret inputs and outputs. Go ops and container result calls still redact secrets.
 
 ## [0.1.76] - 2026-06-18

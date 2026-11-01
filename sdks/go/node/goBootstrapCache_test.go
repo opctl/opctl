@@ -306,3 +306,36 @@ func TestCancelledBuildOwnerDoesNotCancelWaiter(t *testing.T) {
 		t.Fatal("waiter did not build its executable")
 	}
 }
+
+func TestBootstrapCacheIgnoresLocalNodeData(t *testing.T) {
+	bootstrap, _, op, builds := cachedBootstrapFixture(t)
+	local := bootstrap.(_bootstrapper)
+	local.dataDirPath = filepath.Join(op.OpPath, "data")
+	for _, name := range []string{"events", "ops", "auths", "new-node-directory"} {
+		if _, err := local.Describe(context.Background(), op, ""); err != nil {
+			t.Fatal(err)
+		}
+		path := filepath.Join(local.dataDirPath, name)
+		if err := os.MkdirAll(path, 0700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(path, "mutable-state"), []byte(name), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if _, err := local.Describe(context.Background(), op, ""); err != nil {
+		t.Fatal(err)
+	}
+	if builds.Load() != 1 {
+		t.Fatalf("node data invalidated local source cache: built %d times", builds.Load())
+	}
+	if err := os.WriteFile(filepath.Join(op.OpPath, "asset"), []byte("changed source"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := local.Describe(context.Background(), op, ""); err != nil {
+		t.Fatal(err)
+	}
+	if builds.Load() != 2 {
+		t.Fatalf("source change did not rebuild: built %d times", builds.Load())
+	}
+}
