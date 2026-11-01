@@ -15,15 +15,18 @@ func ChownTree(fsPath string) error {
 	}
 	defer root.Close()
 
-	// shortcut: re-chowns entries that are already owned correctly; skip by stat if large caches make this slow.
 	uid, gid := getSudoUID(), getSudoGID()
 	var errs []error
 	walkErr := fs.WalkDir(
 		root.FS(),
 		".",
-		func(entryPath string, _ fs.DirEntry, err error) error {
+		func(entryPath string, entry fs.DirEntry, err error) error {
 			if err == nil {
-				err = root.Lchown(entryPath, uid, gid)
+				var info fs.FileInfo
+				info, err = entry.Info()
+				if err == nil && !isOwnedBy(info, uid, gid) {
+					err = root.Lchown(entryPath, uid, gid)
+				}
 			}
 			// entries may vanish under calls sharing the cache dir
 			if err != nil && !errors.Is(err, fs.ErrNotExist) {

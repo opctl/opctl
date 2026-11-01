@@ -5,12 +5,41 @@ import (
 	"path/filepath"
 	"strconv"
 	"syscall"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Context("ChownTree", func() {
+	It("should leave already-owned entries untouched", func() {
+		GinkgoT().Setenv("SUDO_UID", strconv.Itoa(os.Geteuid()))
+		GinkgoT().Setenv("SUDO_GID", strconv.Itoa(os.Getegid()))
+		rootPath := GinkgoT().TempDir()
+		filePath := filepath.Join(rootPath, "file")
+		linkPath := filepath.Join(rootPath, "link")
+		brokenLinkPath := filepath.Join(rootPath, "broken-link")
+		Expect(os.WriteFile(filePath, []byte("cached"), 0600)).To(Succeed())
+		Expect(os.Symlink(filePath, linkPath)).To(Succeed())
+		Expect(os.Symlink(filepath.Join(rootPath, "missing"), brokenLinkPath)).To(Succeed())
+
+		before := map[string]os.FileInfo{}
+		for _, entryPath := range []string{filePath, linkPath, brokenLinkPath} {
+			info, err := os.Lstat(entryPath)
+			Expect(err).To(BeNil())
+			before[entryPath] = info
+		}
+		// Even a same-owner chown updates ctime, so an unchanged ctime proves the entry was skipped.
+		time.Sleep(20 * time.Millisecond)
+		Expect(ChownTree(rootPath)).To(Succeed())
+
+		for entryPath, info := range before {
+			after, err := os.Lstat(entryPath)
+			Expect(err).To(BeNil())
+			Expect(after.Sys()).To(Equal(info.Sys()), entryPath)
+		}
+	})
+
 	It("should chown a tree without following symlinks", func() {
 		rootPath := GinkgoT().TempDir()
 		dirPath := filepath.Join(rootPath, "nested")
