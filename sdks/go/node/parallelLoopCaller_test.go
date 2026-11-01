@@ -91,8 +91,7 @@ var _ = Context("core", func() {
 						),
 						dbDir,
 						pubSub,
-						stateStore,
-					)
+						stateStore, &goBootstrapCache{})
 
 					objectUnderTest := _parallelLoopCaller{
 						caller: caller,
@@ -184,8 +183,7 @@ var _ = Context("core", func() {
 						),
 						dbDir,
 						pubSub,
-						stateStore,
-					),
+						stateStore, &goBootstrapCache{}),
 					pubSub: pubSub,
 				}
 

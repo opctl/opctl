@@ -73,25 +73,6 @@ func GoVersion(moduleRoot string) (string, error) {
 	return module.Go.Version, nil
 }
 
-// ContainerSpec prepares a bootstrap and returns the host dir to bind as
-// the module scope value. Local replace targets retain their host paths.
-func ContainerSpec(opDir, phase string) (*model.ContainerCallSpec, string, error) {
-	return ContainerSpecInRepository(opDir, phase, "")
-}
-
-// ContainerSpecInRepository bounds git-fetched Go sources and local replacements
-// to their resolved repository root. An empty root retains local-op behavior.
-func ContainerSpecInRepository(opDir, phase, repositoryRoot string) (*model.ContainerCallSpec, string, error) {
-	if phase != "plan" && phase != "describe" {
-		return nil, "", fmt.Errorf("unsupported bootstrap phase %q", phase)
-	}
-	source, err := Discover(opDir, repositoryRoot)
-	if err != nil {
-		return nil, "", err
-	}
-	return source.ContainerSpec(phase), source.ModuleRoot, nil
-}
-
 // ContainerSpec binds this prepared source identity without rediscovering a changed module.
 func (source *Source) ContainerSpec(phase string) *model.ContainerCallSpec {
 	root, version := source.ModuleRoot, source.GoVersion
@@ -111,7 +92,6 @@ func (source *Source) ContainerSpec(phase string) *model.ContainerCallSpec {
 	return &model.ContainerCallSpec{
 		ReadOnlyMounts: readOnly,
 		Image:          &model.ContainerCallImageSpec{Ref: "golang:" + version},
-		Cmd:            []interface{}{"go", "run", ".", phase},
 		Dirs:           dirs,
 		Files:          map[string]interface{}{"/opctl/request.json": "$(request)"},
 		EnvVars:        map[string]interface{}{"GOFLAGS": "-mod=readonly", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "OPCTL_BOOTSTRAP_REQUEST": "/opctl/request.json"},

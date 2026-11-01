@@ -88,7 +88,7 @@ run:
 				return nil, nil
 			}
 			store := newStateStore(context.Background(), db, bus)
-			clr := newCaller(newContainerCaller(runtime, bus, store), dir, bus, store)
+			clr := newCaller(newContainerCaller(runtime, bus, store), dir, bus, store, &goBootstrapCache{})
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
 			_, err = clr.Call(ctx, "root", nil, &model.CallSpec{Op: &model.OpCallSpec{Ref: dir}}, dir, nil, "root")

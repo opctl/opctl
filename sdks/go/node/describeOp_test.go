@@ -106,7 +106,7 @@ var _ = Describe("DescribeOp error classification", func() {
 			caller.CallStub = func(ctx context.Context, _ string, scope map[string]*model.Value, spec *model.CallSpec, _ string, _ *string, rootID string) (map[string]*model.Value, error) {
 				return containerCaller.Call(ctx, &model.ContainerCall{Image: &model.ContainerCallImage{}}, scope, spec.Container, rootID)
 			}
-			core := core{bootstrapper: newBootstrapper(caller, filepath.Join(root, "data"))}
+			core := core{bootstrapper: newCachedTestBootstrap(caller, filepath.Join(root, "data"))}
 			if tc.cancelBefore {
 				cancel()
 			}

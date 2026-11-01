@@ -61,8 +61,7 @@ var _ = Context("core", func() {
 							),
 							dbDir,
 							pubSub,
-							stateStore,
-						),
+							stateStore, &goBootstrapCache{}),
 						pubSub: pubSub,
 					}
 
@@ -160,8 +159,7 @@ var _ = Context("core", func() {
 						),
 						dbDir,
 						pubSub,
-						stateStore,
-					),
+						stateStore, &goBootstrapCache{}),
 					pubSub: pubSub,
 				}
 

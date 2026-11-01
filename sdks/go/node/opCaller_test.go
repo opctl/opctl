@@ -16,8 +16,7 @@ var _ = Context("opCaller", func() {
 			/* arrange/act/assert */
 			Expect(newOpCaller(
 				new(FakeCaller),
-				"",
-			)).To(Not(BeNil()))
+				"", &goBootstrapCache{})).To(Not(BeNil()))
 		})
 	})
 	Context("Call", func() {

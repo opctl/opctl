@@ -37,7 +37,7 @@ func newCaller(
 	dataDirPath string,
 	pubSub pubsub.PubSub,
 	stateStore stateStore,
-	caches ...*goBootstrapCache,
+	cache *goBootstrapCache,
 ) caller {
 	instance := &_caller{
 		containerCaller: containerCaller,
@@ -49,7 +49,7 @@ func newCaller(
 	instance.opCaller = newOpCaller(
 		instance,
 		dataDirPath,
-		caches...,
+		cache,
 	)
 
 	instance.parallelCaller = newParallelCaller(

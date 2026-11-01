@@ -28,7 +28,7 @@ var _ = Describe("secret op interop", func() {
 		defer db.Close()
 		bus := pubsub.New(db)
 		runtime := new(fakes.FakeContainerCaller)
-		clr := newCaller(runtime, dir, bus, &_stateStore{})
+		clr := newCaller(runtime, dir, bus, &_stateStore{}, &goBootstrapCache{})
 		token := "roundtrip-private-value"
 		items := []interface{}{token, token}
 		iteration := "$(item)"
@@ -96,7 +96,7 @@ var _ = Describe("nested Go privacy activation", func() {
 		defer cancel()
 		bus := pubsub.New(db)
 		runtime := new(fakes.FakeContainerCaller)
-		clr := newCaller(runtime, dir, bus, newStateStore(ctx, db, bus)).(*_caller)
+		clr := newCaller(runtime, dir, bus, newStateStore(ctx, db, bus), &goBootstrapCache{}).(*_caller)
 		secret := "nested-go-private-result"
 		bootstrap := newGoBootstrap()
 		bootstrap.DescribeReturns(&model.OpSpec{Outputs: map[string]*model.ParamSpec{"result": {String: &model.StringParamSpec{Default: secret, IsSecret: true}}}}, nil)

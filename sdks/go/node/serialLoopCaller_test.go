@@ -125,8 +125,7 @@ var _ = Context("core", func() {
 							),
 							dbDir,
 							pubSub,
-							stateStore,
-						)
+							stateStore, &goBootstrapCache{})
 
 						objectUnderTest := _serialLoopCaller{
 							caller: caller,
@@ -218,8 +217,7 @@ var _ = Context("core", func() {
 							),
 							dbDir,
 							pubSub,
-							stateStore,
-						),
+							stateStore, &goBootstrapCache{}),
 						pubSub: pubSub,
 					}
 

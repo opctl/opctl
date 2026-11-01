@@ -36,7 +36,7 @@ var _ = Describe("private Go graph completions", func() {
 		for _, spec := range cases {
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			ctx = withPrivateGoInputs(ctx, map[string]*model.ParamSpec{"token": {String: &model.StringParamSpec{IsSecret: true}}, "seed": {String: &model.StringParamSpec{IsSecret: true}}})
-			caller := newCaller(runtime, dir, bus, &_stateStore{})
+			caller := newCaller(runtime, dir, bus, &_stateStore{}, &goBootstrapCache{})
 			results, err := caller.Call(ctx, "root", map[string]*model.Value{"seed": {String: &token}}, spec, dir, nil, "root")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(results).To(HaveKey("token"))

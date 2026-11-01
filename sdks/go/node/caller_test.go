@@ -38,8 +38,7 @@ var _ = Context("caller", func() {
 					new(FakeContainerCaller),
 					"dummyDataDir",
 					pubSub,
-					newStateStore(context.Background(), db, pubSub),
-				),
+					newStateStore(context.Background(), db, pubSub), &goBootstrapCache{}),
 			).To(Not(BeNil()))
 		})
 	})

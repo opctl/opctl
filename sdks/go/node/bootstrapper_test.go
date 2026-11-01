@@ -9,6 +9,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/containerruntime"
+	runtimeFakes "github.com/opctl/opctl/sdks/go/node/containerruntime/fakes"
 	"github.com/opctl/opctl/sdks/go/node/internal/fakes"
 	containerInterpreter "github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container"
 )
@@ -47,17 +49,17 @@ var _ = Describe("Go op bootstrapper", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(interpreted.Files["/opctl/request.json"]).To(Equal(requestPath))
 			Expect(interpreted.Dirs[opDir]).To(Equal(opDir))
-			Expect(interpreted.Cmd).To(Equal([]string{"go", "run", ".", "plan"}))
+			Expect(interpreted.Cmd).To(Equal([]string{"sh", "/opctl/launcher", "/opctl/program", "plan"}))
 			capture := stdoutCaptureFrom(ctx)
 			Expect(capture).NotTo(BeNil())
 			_, err = capture.Write(fixture)
 			Expect(err).NotTo(HaveOccurred())
 			return nil, nil
 		}
-		plan, err := newBootstrapper(caller, dataDir).Plan(context.Background(), opCall, "root", map[string]interface{}{"env": "dev"})
+		plan, err := newCachedTestBootstrap(caller, dataDir).Plan(context.Background(), opCall, "root", map[string]interface{}{"env": "dev"})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(plan.Name).To(Equal("hello"))
-		Expect(caller.CallCallCount()).To(Equal(1))
+		Expect(caller.CallCallCount()).To(Equal(2))
 		Expect(requestPath).NotTo(BeAnExistingFile())
 		Expect(filepath.Dir(requestPath)).NotTo(BeAnExistingFile())
 	})
@@ -74,7 +76,7 @@ var _ = Describe("Go op bootstrapper", func() {
 				Expect(err).NotTo(HaveOccurred())
 				return nil, result.err
 			}
-			_, err := newBootstrapper(caller, dataDir).Plan(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: opDir}, OpID: "op"}, "root", nil)
+			_, err := newCachedTestBootstrap(caller, dataDir).Plan(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: opDir}, OpID: "op"}, "root", nil)
 			Expect(err).To(HaveOccurred())
 			Expect(request).NotTo(BeAnExistingFile())
 			if result.err != nil {
@@ -85,7 +87,7 @@ var _ = Describe("Go op bootstrapper", func() {
 	It("fails before making a call when the module cannot be prepared", func() {
 		Expect(os.Remove(filepath.Join(opDir, "go.mod"))).To(Succeed())
 		caller := new(fakes.FakeCaller)
-		_, err := newBootstrapper(caller, dataDir).Plan(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: opDir}}, "root", nil)
+		_, err := newCachedTestBootstrap(caller, dataDir).Plan(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: opDir}}, "root", nil)
 		Expect(err).To(HaveOccurred())
 		Expect(caller.CallCallCount()).To(Equal(0))
 	})
@@ -100,7 +102,7 @@ var _ = Describe("Go op bootstrapper", func() {
 			Expect(err).NotTo(HaveOccurred())
 			return nil, failure
 		}
-		_, err := newBootstrapper(caller, dataDir).Describe(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: opDir}}, "")
+		_, err := newCachedTestBootstrap(caller, dataDir).Describe(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: opDir}}, "")
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(ContainSubstring("unknown opctl tag key minimun"))
 		Expect(err.Error()).NotTo(ContainSubstring("private plan output"))
@@ -112,7 +114,7 @@ var _ = Describe("Go op bootstrapper", func() {
 			Expect(*parent).To(Equal("op"))
 			Expect(rootID).To(Equal("root"))
 			Expect(*spec.Name).To(Equal("bootstrap describe"))
-			Expect(spec.Container.Cmd).To(Equal([]interface{}{"go", "run", ".", "describe"}))
+			Expect(spec.Container.Cmd).To(Equal([]interface{}{"sh", "/opctl/launcher", "/opctl/program", "describe"}))
 			request, err := os.ReadFile(*scope["request"].File)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(request).To(MatchJSON(`{"contractVersion":1,"phase":"describe","opspecSchema":{"min":1,"max":3},"inputs":{},"knownOutputs":{}}`))
@@ -122,9 +124,26 @@ var _ = Describe("Go op bootstrapper", func() {
 			Expect(err).NotTo(HaveOccurred())
 			return nil, nil
 		}
-		spec, err := newBootstrapper(caller, dataDir).Describe(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: opDir}, OpID: "op"}, "root")
+		spec, err := newCachedTestBootstrap(caller, dataDir).Describe(context.Background(), &model.OpCall{BaseCall: model.BaseCall{OpPath: opDir}, OpID: "op"}, "root")
 		Expect(err).NotTo(HaveOccurred())
 		Expect(spec.Inputs["token"].String.IsSecret).To(BeTrue())
 	})
 
 })
+
+func newCachedTestBootstrap(caller *fakes.FakeCaller, dataDir string) bootstrapper {
+	runtime := new(runtimeFakes.FakeContainerRuntime)
+	runtime.ResolveImageReturns(&containerruntime.ImageIdentity{Ref: "sha256:compiler", ID: "sha256:compiler", OS: "linux", Arch: "amd64"}, nil)
+	original := caller.CallStub
+	caller.CallStub = func(ctx context.Context, id string, scope map[string]*model.Value, spec *model.CallSpec, path string, parent *string, root string) (map[string]*model.Value, error) {
+		if *spec.Name == "bootstrap build" {
+			output := *spec.Container.Dirs["/opctl/build"].(model.Value).Dir
+			if err := os.WriteFile(filepath.Join(output, "program"), []byte("test executable"), 0700); err != nil {
+				return nil, err
+			}
+			return nil, os.WriteFile(filepath.Join(output, "go-version"), []byte("go1.21"), 0600)
+		}
+		return original(ctx, id, scope, spec, path, parent, root)
+	}
+	return newBootstrapper(caller, dataDir, &goBootstrapCache{runtime: runtime})
+}
