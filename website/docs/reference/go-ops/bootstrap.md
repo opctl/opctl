@@ -2,6 +2,10 @@
 title: Bootstrap
 ---
 
+Op stub imports carry a trailing `//opctl:op <ref>` comment. The node describes each callee and renders the stub before compiling the caller. A read-only
+overlay supplies those packages to Go. Changes to a callee's interface change the caller's compiled-program cache key. Host `opctlgen/` files never supply
+execution code and do not affect the cache key. Go-to-Go stub cycles fail with a suggestion to use `CallOp` for one edge.
+
 Bootstrap is how opctl obtains a Go op's declaration: it compiles the program and runs its [describe and plan phases](index.md#describe-and-plan) in containers
 it manages. Bootstrap appears in the event stream and the UI as calls beneath the op call: `bootstrap build`, `bootstrap describe`, and `bootstrap plan`.
 

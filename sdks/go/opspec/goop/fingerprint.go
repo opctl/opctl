@@ -24,6 +24,7 @@ type BuildRecipe struct {
 	Launcher []byte
 	Command  []interface{}
 	Env      map[string]interface{}
+	Stubs    map[string]string `json:",omitempty"`
 }
 
 func record(h hash.Hash, fields ...string) {

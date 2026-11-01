@@ -20,20 +20,24 @@ func (c core) DescribeOp(ctx context.Context, req model.DescribeOpReq) (*model.O
 	if err != nil {
 		return nil, err
 	}
+	return describeOpDir(ctx, dir, req.Op.PullCreds, "", "", c.bootstrapper, c.dataCachePath)
+}
+
+func describeOpDir(ctx context.Context, dir model.DataHandle, creds *model.Creds, parent, root string, bootstrap bootstrapper, dataCachePath string) (*model.OpSpec, error) {
 	spec, err := opfile.Get(ctx, dir)
 	if errors.Is(err, opfile.ErrGoOp) {
 		path := dir.Ref()
 		if !filepath.IsAbs(path) {
-			path = filepath.Join(c.dataCachePath, path)
+			path = filepath.Join(dataCachePath, path)
 		}
-		op := &model.OpCall{BaseCall: model.BaseCall{OpPath: path}}
+		op := &model.OpCall{BaseCall: model.BaseCall{OpPath: path}, OpID: parent}
 		if fetched, ok := dir.(interface{ RepositoryRoot() string }); ok {
 			op.RepositoryRoot = fetched.RepositoryRoot()
 		}
 		if source, ok := dir.(interface{ SourceResource() string }); ok {
-			op.BootstrapSource, op.BootstrapCreds = source.SourceResource(), req.Op.PullCreds
+			op.BootstrapSource, op.BootstrapCreds = source.SourceResource(), creds
 		}
-		return c.bootstrapper.Describe(ctx, op, "")
+		return bootstrap.Describe(ctx, op, root)
 	}
 	if err != nil {
 		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {

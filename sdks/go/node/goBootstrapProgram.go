@@ -52,7 +52,7 @@ func (bootstrap _bootstrapper) runCached(ctx context.Context, op *model.OpCall, 
 	return invoke()
 }
 
-func (bootstrap _bootstrapper) prepareBuild(op *model.OpCall, source *goop.Source, image *containerruntime.ImageIdentity) (*model.ContainerCallSpec, bootstrapAuth, error) {
+func (bootstrap _bootstrapper) prepareBuild(op *model.OpCall, source *goop.Source, image *containerruntime.ImageIdentity, stubs goStubSet) (*model.ContainerCallSpec, bootstrapAuth, error) {
 	spec := source.ContainerSpec("plan")
 	spec.Image.Ref, spec.Image.Prepared = image.Ref, true
 	delete(spec.Files, "/opctl/request.json")
@@ -60,6 +60,9 @@ func (bootstrap _bootstrapper) prepareBuild(op *model.OpCall, source *goop.Sourc
 	delete(env, "OPCTL_BOOTSTRAP_REQUEST")
 	for name, value := range goCacheEnvironment() {
 		env[name] = value
+	}
+	if len(stubs.files) > 0 {
+		env["GOFLAGS"] = env["GOFLAGS"].(string) + " -overlay=/opctl/stubs/overlay.json"
 	}
 	env["GOARCH"], env["GOAMD64"] = image.Arch, "v1"
 	auths := []model.Auth{}
@@ -81,12 +84,24 @@ func (bootstrap _bootstrapper) prepareBuild(op *model.OpCall, source *goop.Sourc
 	return spec, auth, nil
 }
 
-func (bootstrap _bootstrapper) buildProgram(ctx context.Context, op *model.OpCall, root string, source *goop.Source, spec *model.ContainerCallSpec, auth bootstrapAuth, staging string) error {
+func (bootstrap _bootstrapper) buildProgram(ctx context.Context, op *model.OpCall, root string, source *goop.Source, spec *model.ContainerCallSpec, auth bootstrapAuth, staging string, stubs goStubSet) error {
+	if len(stubs.files) > 0 {
+		path, err := stubs.materialize(bootstrap.dataDirPath, source.ModuleRoot)
+		if err != nil {
+			return err
+		}
+		defer os.RemoveAll(path)
+		spec.Dirs["/opctl/stubs"] = model.Value{Dir: &path}
+		spec.ReadOnlyMounts["/opctl/stubs"] = true
+	}
 	spec.Dirs["/opctl/build"] = model.Value{Dir: &staging}
 	if len(auth.archive) > 0 {
 		ctx = containerruntime.WithBootstrapInput(ctx, bytes.NewReader(auth.archive))
 	}
 	_, err := bootstrap.invokeProgram(ctx, op, root, "bootstrap build", spec, source.ModuleRoot, true, nil)
+	if err != nil && len(stubs.files) > 0 {
+		return fmt.Errorf("%w\n%s", err, stubs.hint(source.ModuleRoot, err.Error()))
+	}
 	return err
 }
 

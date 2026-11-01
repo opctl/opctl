@@ -269,6 +269,10 @@ func (cache *goBootstrapCache) prepare(ctx context.Context, bootstrap _bootstrap
 		if err != nil {
 			return nil, nil, &OpDeclarationError{Err: err}
 		}
+		stubs, err := bootstrap.stubs(ctx, op, root, source)
+		if err != nil {
+			return nil, nil, &OpDeclarationError{Err: err}
+		}
 		ref := "golang:" + source.GoVersion
 		imageRequest := &model.ContainerCallImage{Ref: &ref}
 		if cache.stateStore != nil {
@@ -281,11 +285,11 @@ func (cache *goBootstrapCache) prepare(ctx context.Context, bootstrap _bootstrap
 			return nil, nil, err
 		}
 		toolchain := goop.Toolchain{ID: image.ID, OS: image.OS, Arch: image.Arch, Variant: image.Variant}
-		buildSpec, auth, err := bootstrap.prepareBuild(op, source, image)
+		buildSpec, auth, err := bootstrap.prepareBuild(op, source, image, stubs)
 		if err != nil {
 			return nil, nil, err
 		}
-		recipe := goop.BuildRecipe{Launcher: goBootstrapLauncher, Command: buildSpec.Cmd.([]interface{}), Env: buildSpec.EnvVars.(map[string]interface{})}
+		recipe := goop.BuildRecipe{Launcher: goBootstrapLauncher, Command: buildSpec.Cmd.([]interface{}), Env: buildSpec.EnvVars.(map[string]interface{}), Stubs: stubs.digests()}
 		key, err := source.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath, source.ModuleRoot), toolchain, recipe)
 		if ctx.Err() != nil {
 			return nil, nil, ctx.Err()
@@ -297,7 +301,7 @@ func (cache *goBootstrapCache) prepare(ctx context.Context, bootstrap _bootstrap
 		if err != nil {
 			return nil, nil, err
 		}
-		program, release, retry, err := cache.prepareLocked(ctx, bootstrap, op, root, source, image, key, toolchain, recipe, buildSpec, auth, waited)
+		program, release, retry, err := cache.prepareLocked(ctx, bootstrap, op, root, source, image, key, toolchain, recipe, buildSpec, auth, stubs, waited)
 		unlock()
 		if err != nil {
 			return nil, nil, err
@@ -313,7 +317,7 @@ func (cache *goBootstrapCache) prepare(ctx context.Context, bootstrap _bootstrap
 	}
 	return nil, nil, &OpDeclarationError{Err: fmt.Errorf("Go op source changed repeatedly during bootstrap; retry with stable sources")}
 }
-func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _bootstrapper, op *model.OpCall, root string, source *goop.Source, image *containerruntime.ImageIdentity, key string, toolchain goop.Toolchain, recipe goop.BuildRecipe, buildSpec *model.ContainerCallSpec, auth bootstrapAuth, waited bool) (*goProgram, func(), bool, error) {
+func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _bootstrapper, op *model.OpCall, root string, source *goop.Source, image *containerruntime.ImageIdentity, key string, toolchain goop.Toolchain, recipe goop.BuildRecipe, buildSpec *model.ContainerCallSpec, auth bootstrapAuth, stubs goStubSet, waited bool) (*goProgram, func(), bool, error) {
 	if waited {
 		fresh, err := source.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath, source.ModuleRoot), toolchain, recipe)
 		if err != nil {
@@ -363,7 +367,7 @@ func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _boo
 			os.RemoveAll(staging)
 		}
 	}()
-	if err := bootstrap.buildProgram(ctx, op, root, source, buildSpec, auth, staging); err != nil {
+	if err := bootstrap.buildProgram(ctx, op, root, source, buildSpec, auth, staging, stubs); err != nil {
 		return nil, nil, false, err
 	}
 	if err := ctx.Err(); err != nil {
@@ -418,9 +422,9 @@ func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _boo
 func bootstrapWritablePaths(dataDir, sourceRoot string) []string {
 	relative, err := filepath.Rel(filepath.Join(dataDir, "ops"), sourceRoot)
 	if err != nil || relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
-		return []string{dataDir}
+		return []string{dataDir, filepath.Join(sourceRoot, "opctlgen")}
 	}
-	paths := []string{}
+	paths := []string{filepath.Join(sourceRoot, "opctlgen")}
 	for _, name := range []string{"go", "dcg", "call", "vms"} {
 		paths = append(paths, filepath.Join(dataDir, name))
 	}

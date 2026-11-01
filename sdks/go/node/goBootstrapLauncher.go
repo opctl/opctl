@@ -20,10 +20,6 @@ func prepareGoCaches(spec *model.ContainerCallSpec, scope map[string]*model.Valu
 		}
 		spec.Dirs[destination] = model.Value{Dir: &path}
 	}
-	env := spec.EnvVars.(map[string]interface{})
-	for name, value := range goCacheEnvironment() {
-		env[name] = value
-	}
 	if err := prepareGoLauncher(spec, scope, scratch); err != nil {
 		return err
 	}
