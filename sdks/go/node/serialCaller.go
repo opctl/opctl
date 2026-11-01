@@ -98,7 +98,7 @@ func (sc _serialCaller) Call(
 					// end on any error
 					return nil, errors.New(event.CallEnded.Error.Message)
 				}
-				for name, value := range event.CallEnded.Outputs {
+				for name, value := range collectCompletion(ctx, event.CallEnded) {
 					outputs[name] = value
 				}
 				break eventLoop

@@ -10,6 +10,8 @@ import (
 type privateGoInputsKey struct{}
 
 func withPrivateGoInputs(ctx context.Context, params map[string]*model.ParamSpec) context.Context {
+	ctx = withPrivateCompletions(ctx)
+	activatePrivateResults(ctx)
 	names := []string{}
 	for name, param := range params {
 		if (param.String != nil && param.String.IsSecret) || (param.Number != nil && param.Number.IsSecret) || (param.Array != nil && param.Array.IsSecret) || (param.Object != nil && param.Object.IsSecret) || (param.Dir != nil && param.Dir.IsSecret) || (param.File != nil && param.File.IsSecret) || (param.Socket != nil && param.Socket.IsSecret) {

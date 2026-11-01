@@ -93,6 +93,10 @@ func (clr _caller) Call(
 	map[string]*model.Value,
 	error,
 ) {
+	ctx = withPrivateCompletions(ctx)
+	if id == rootCallID {
+		defer clearPrivateCompletions(ctx)
+	}
 	callCtx, cancelCall := context.WithCancel(ctx)
 	defer cancelCall()
 	var err error
@@ -116,6 +120,7 @@ func (clr _caller) Call(
 			}
 		}
 
+		recordPrivateCompletion(ctx, id, outputs)
 		event := model.Event{
 			CallEnded: &model.CallEnded{
 				Call:    callForEvent(ctx, call, callSpec),

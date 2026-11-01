@@ -123,6 +123,7 @@ func (oc _opCaller) Call(
 		&opCall.OpID,
 		rootCallID,
 	)
+	releaseCompletion(ctx, opCall.ChildCallID)
 	if err != nil {
 		return outboundScope, err
 	}

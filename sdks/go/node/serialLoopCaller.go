@@ -119,7 +119,7 @@ func (lpr _serialLoopCaller) Call(
 					err = errors.New(event.CallEnded.Error.Message)
 					return nil, err
 				}
-				for name, value := range event.CallEnded.Outputs {
+				for name, value := range collectCompletion(ctx, event.CallEnded) {
 					outboundScope[name] = value
 				}
 				break eventLoop

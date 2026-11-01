@@ -15,6 +15,8 @@ accordance with
 
 ### Fixed
 
+- Go graph groups and loops retain private runtime results while omitting secret values from public completion events.
+
 - Describing Go ops reports runtime and context failures as HTTP 500 while keeping declaration, bootstrap exit, and response parse failures as HTTP 400.
 
 - Go input schemas require unsigned array items and object properties to be nonnegative integers.

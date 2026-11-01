@@ -150,7 +150,7 @@ eventLoop:
 	for event := range eventChannel {
 		if event.CallEnded != nil {
 			if childCallIndex, isChildCallEnded := childCallIndexByID[event.CallEnded.Call.ID]; isChildCallEnded {
-				childCallOutputsByIndex[childCallIndex] = event.CallEnded.Outputs
+				childCallOutputsByIndex[childCallIndex] = collectCompletion(parentCtx, event.CallEnded)
 				if event.CallEnded.Error != nil {
 					isChildErred = true
 
