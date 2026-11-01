@@ -42,6 +42,9 @@ func TestRenderControl(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		if err = Compare(a, describeCode(t, rendered.Source), plan, map[string]any{"env": env, "count": float64(2), "regions": []any{"east", "west"}}); err != nil {
+			t.Fatal(err)
+		}
 		first := (*plan.Run.Serial)[0].Container
 		if env == "dev" && plan.OutputBindings["echo"] != first.Stdout {
 			t.Fatalf("false branch lost the preceding output: %+v", plan.OutputBindings)

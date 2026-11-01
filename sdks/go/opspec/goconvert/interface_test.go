@@ -40,9 +40,15 @@ func TestRenderInterface(t *testing.T) {
 		}
 	}
 }
-func describeCode(t *testing.T, code []byte) *model.OpSpec {
+func describeCode(t *testing.T, code []byte, basename ...string) *model.OpSpec {
 	t.Helper()
 	dir := t.TempDir()
+	if len(basename) > 0 {
+		dir = filepath.Join(dir, basename[0])
+		if err := os.Mkdir(dir, 0755); err != nil {
+			t.Fatal(err)
+		}
+	}
 	sdk, err := filepath.Abs("../sdk")
 	if err != nil {
 		t.Fatal(err)

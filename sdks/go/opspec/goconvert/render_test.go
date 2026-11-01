@@ -65,9 +65,15 @@ func TestRenderGraph(t *testing.T) {
 		})
 	}
 }
-func runCode(t *testing.T, rendered *Rendered, phase string, inputs map[string]any) []byte {
+func runCode(t *testing.T, rendered *Rendered, phase string, inputs map[string]any, basename ...string) []byte {
 	t.Helper()
 	dir := t.TempDir()
+	if len(basename) > 0 {
+		dir = filepath.Join(dir, basename[0])
+		if err := os.Mkdir(dir, 0755); err != nil {
+			t.Fatal(err)
+		}
+	}
 	sdk, err := filepath.Abs("../sdk")
 	if err != nil {
 		t.Fatal(err)

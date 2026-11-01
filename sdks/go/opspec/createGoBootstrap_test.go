@@ -1,10 +1,8 @@
 package opspec_test
 
 import (
-	"bytes"
-	"encoding/json"
 	"os"
-	"os/exec"
+
 	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
@@ -12,30 +10,11 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/goop"
+	"github.com/opctl/opctl/sdks/go/opspec/internal/gooptest"
 )
 
-// bootstrapLocally runs a Go op's describe and plan phases with `go run`, the
-// way bootstrap runs them, but without a node.
 func bootstrapLocally(opDir string, inputs map[string]interface{}) (*model.OpSpec, *goop.Plan) {
-	phase := func(name string, inputs map[string]interface{}) []byte {
-		request, err := json.Marshal(goop.NewRequest(name, inputs))
-		Expect(err).NotTo(HaveOccurred())
-		dir, err := os.MkdirTemp("", "")
-		Expect(err).NotTo(HaveOccurred())
-		defer os.RemoveAll(dir)
-		requestPath := filepath.Join(dir, "request.json")
-		Expect(os.WriteFile(requestPath, request, 0600)).To(Succeed())
-		cmd := exec.Command("go", "run", ".", name)
-		cmd.Dir = opDir
-		cmd.Env = append(os.Environ(), "GOFLAGS=-mod=readonly", "GOTOOLCHAIN=local", "CGO_ENABLED=0", "GOWORK=off", "OPCTL_BOOTSTRAP_REQUEST="+requestPath)
-		var stdout, stderr bytes.Buffer
-		cmd.Stdout, cmd.Stderr = &stdout, &stderr
-		Expect(cmd.Run()).To(Succeed(), stderr.String())
-		return stdout.Bytes()
-	}
-	described, err := goop.ParseDescribe(phase("describe", nil))
-	Expect(err).NotTo(HaveOccurred())
-	planned, err := goop.ParsePlan(phase("plan", inputs))
+	described, planned, err := gooptest.Bootstrap(opDir, inputs)
 	Expect(err).NotTo(HaveOccurred())
 	return described, planned
 }

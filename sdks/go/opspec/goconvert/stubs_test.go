@@ -58,6 +58,13 @@ func TestConvertedTypedStub(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	described, err := goop.ParseDescribe(runCode(t, rendered, "describe", nil, "dev"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = Compare(a, described, planned, map[string]any{"goBuildCachePath": "Library/Caches/go-build", "MYSQL_USER": "testuser", "MYSQL_PASSWORD": "testpassword", "MYSQL_DATABASE": "testapp", "MYSQL_HOST": "mysql"}); err != nil {
+		t.Fatal(err)
+	}
 	if planned.Run.Parallel == nil || (*planned.Run.Parallel)[0].Op.Ref != "../mysql" {
 		t.Fatalf("wrong stub ref: %+v", planned.Run)
 	}
