@@ -46,11 +46,13 @@ func plan(in Inputs) opctl.Call {
 func main() { opctl.Main(plan) }
 `
 
-// CreateGo creates a Go op in its own module at path. It never overwrites an
-// existing op or module file.
-func CreateGo(path, name, description string, sdk GoSDK) error {
+// GoOpFile is one file in a Go op scaffold.
+type GoOpFile struct{ Name, Content string }
+
+// GoOpFiles returns the scaffold files without writing to disk.
+func GoOpFiles(name, description string, sdk GoSDK) ([]GoOpFile, error) {
 	if err := module.CheckImportPath(name); err != nil {
-		return fmt.Errorf("op name %q is not a valid Go module path", name)
+		return nil, fmt.Errorf("op name %q is not a valid Go module path", name)
 	}
 
 	opGo := goOpTemplate
@@ -62,13 +64,23 @@ func CreateGo(path, name, description string, sdk GoSDK) error {
 	if sdk.Published() {
 		version = sdk.Version
 	}
-	files := []struct{ name, content string }{
+	files := []GoOpFile{
 		{"op.go", opGo},
 		{".gitignore", "/opctlgen/\n"},
 		{"go.mod", fmt.Sprintf("module ops.local/%s\n\ngo %s\n\nrequire %s %s\n", name, goDirective(), goSDKModule, version)},
 	}
 	if sdk.Published() {
-		files = append(files, struct{ name, content string }{"go.sum", fmt.Sprintf("%s %s %s\n%s %s/go.mod %s\n", goSDKModule, version, sdk.Sum, goSDKModule, version, sdk.GoModSum)})
+		files = append(files, GoOpFile{"go.sum", fmt.Sprintf("%s %s %s\n%s %s/go.mod %s\n", goSDKModule, version, sdk.Sum, goSDKModule, version, sdk.GoModSum)})
+	}
+
+	return files, nil
+}
+
+// CreateGo creates a Go op in its own module without overwriting existing files.
+func CreateGo(path, name, description string, sdk GoSDK) error {
+	files, err := GoOpFiles(name, description, sdk)
+	if err != nil {
+		return err
 	}
 
 	for _, existing := range []string{opfile.FileName, "op.go", "go.mod", "go.sum", ".gitignore"} {
@@ -82,9 +94,9 @@ func CreateGo(path, name, description string, sdk GoSDK) error {
 		return err
 	}
 	for i, file := range files {
-		if err := writeNew(filepath.Join(path, file.name), file.content); err != nil {
+		if err := writeNew(filepath.Join(path, file.Name), file.Content); err != nil {
 			for _, written := range files[:i] {
-				os.Remove(filepath.Join(path, written.name))
+				os.Remove(filepath.Join(path, written.Name))
 			}
 			return err
 		}
