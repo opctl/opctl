@@ -5,7 +5,6 @@ package node
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -59,9 +58,7 @@ func New(
 	}
 
 	// sweep --no-cache dirs left by runs that didn't finish cleaning up; after badger.Open so its exclusive lock stops a second node from deleting a live run's dirs
-	if err := os.RemoveAll(filepath.Join(dataDirPath, "nocache")); err != nil {
-		fmt.Printf("unable to remove leftover --no-cache dirs: %v\n", err)
-	}
+	sweepNoCache(dataDirPath)
 
 	pubSub := pubsub.New(db)
 
