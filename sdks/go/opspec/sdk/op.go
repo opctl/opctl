@@ -250,17 +250,13 @@ func OpOutput[T Handle](c OpCall, name string) (result OpCall, value T) {
 		return result, h.bind(inputValue{name: existing[2 : len(existing)-1], result: true}).(T)
 	}
 	kind, _ := h.inputType()
-	v := newOutput(kind)
-	v.result = true
+	v := newCallResult(kind)
 	if v.err != nil {
 		if result.err == nil {
 			result.err = v.err
 		}
 		return
 	}
-	site := activePlan.handles[v.name]
-	site.opResult = true
-	activePlan.handles[v.name] = site
 	result.op.Outputs = map[string]string{}
 	result.op.outputTypes = map[string]reflect.Type{}
 	for key, ref := range c.op.Outputs {

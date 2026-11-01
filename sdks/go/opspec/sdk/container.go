@@ -20,6 +20,8 @@ type ContainerCall struct {
 type bindingKey struct{ kind, name string }
 
 type containerSpec struct {
+	Stdout      string `json:"stdout,omitempty"`
+	Stderr      string `json:"stderr,omitempty"`
 	rawBindings map[bindingKey]bool
 	Image       imageSpec         `json:"image"`
 	Cmd         []string          `json:"cmd,omitempty"`
@@ -173,4 +175,36 @@ func (c ContainerCall) render() (*callSpec, error) {
 		return nil, fmt.Errorf("Go op plan must return a container call with an image")
 	}
 	return &callSpec{Container: &c.container}, nil
+}
+
+// Stdout requests a ref-only String result. Keep the returned producer in the graph.
+func (c ContainerCall) Stdout() (ContainerCall, String) { return c.stream("stdout") }
+
+// Stderr requests a separate ref-only String result with the same copying rules.
+func (c ContainerCall) Stderr() (ContainerCall, String) { return c.stream("stderr") }
+
+func (c ContainerCall) stream(stream string) (ContainerCall, String) {
+	if activePlan == nil {
+		if c.err == nil {
+			c.err = fmt.Errorf("%s must be called while building the op graph", stream)
+		}
+		return c, String{inputValue{err: c.err}}
+	}
+	ref := c.container.Stdout
+	if stream == "stderr" {
+		ref = c.container.Stderr
+	}
+	if ref != "" {
+		return c, String{inputValue{name: ref[2 : len(ref)-1], result: true, err: c.err}}
+	}
+	value := newCallResult("string")
+	if stream == "stdout" {
+		c.container.Stdout = value.handle()
+	} else {
+		c.container.Stderr = value.handle()
+	}
+	if c.err != nil {
+		value.err = c.err
+	}
+	return c, String{value}
 }

@@ -8,6 +8,8 @@ accordance with
 
 ### Added
 
+- Go container builders expose two-return `Stdout()` and `Stderr()` String handles with explicit producers, graph visibility checks, and minimum-schema negotiation.
+
 - Container calls can request named values through an opt-in JSON outputs file at `$OPCTL_OUTPUTS`, with atomic collection, private bindings, and strict size and format
   checks.
 

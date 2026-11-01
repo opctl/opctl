@@ -60,7 +60,7 @@ func TestOpOutputTypesAndCopies(t *testing.T) {
 		t.Fatal("accepted conflicting output types")
 	}
 	_, err = Plan(func(struct{}) Call { c, v := OpOutput[String](CallOp("x"), "out"); v.Value(); return c }, nil)
-	if err == nil || !strings.Contains(err.Error(), "op call outputs can't be read during plan") {
+	if err == nil || !strings.Contains(err.Error(), "call outputs can't be read during plan") {
 		t.Fatalf("%v", err)
 	}
 	c, _ := OpOutput[Dir](CallOp("x"), "out")

@@ -113,7 +113,7 @@ func emit[I, O any](phase string, fn func(I) (Call, O), values map[string]any) (
 			bindings[field.name] = ref
 		}
 	}
-	data, err = json.Marshal(response{ContractVersion: 1, OpspecSchema: 1, Opspec: spec, OutputBindings: bindings})
+	data, err = json.Marshal(response{ContractVersion: 1, OpspecSchema: minimumSchema(spec.Run), Opspec: spec, OutputBindings: bindings})
 	if err != nil {
 		return nil, err
 	}
@@ -132,4 +132,22 @@ func withoutOutputs[I any](fn func(I) Call) func(I) (Call, struct{}) {
 		return nil
 	}
 	return func(in I) (Call, struct{}) { return fn(in), struct{}{} }
+}
+
+func minimumSchema(call *callSpec) int {
+	version := 1
+	if call == nil {
+		return version
+	}
+	if call.Container != nil && (call.Container.Stdout != "" || call.Container.Stderr != "") {
+		version = 2
+	}
+	for _, group := range [][]*callSpec{call.Serial, call.Parallel} {
+		for _, child := range group {
+			if needed := minimumSchema(child); needed > version {
+				version = needed
+			}
+		}
+	}
+	return version
 }

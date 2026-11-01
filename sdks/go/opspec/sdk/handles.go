@@ -38,7 +38,7 @@ func (v inputValue) handle() string {
 func readValue[T any](v inputValue) T {
 	v.handle()
 	if v.result {
-		panic(inputError{fmt.Errorf("op call outputs can't be read during plan")})
+		panic(inputError{fmt.Errorf("call outputs can't be read during plan")})
 	}
 	if v.isRaw() {
 		panic(inputError{fmt.Errorf("RawRef values can't be read during plan")})

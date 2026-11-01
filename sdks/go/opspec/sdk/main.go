@@ -56,8 +56,8 @@ func runWithOutputs[I, O any](fn func(I) (Call, O)) error {
 	if req.Phase != phase {
 		return fmt.Errorf("bootstrap request phase %q differs from argv phase %q", req.Phase, phase)
 	}
-	if req.OpspecSchema.Min > 1 || req.OpspecSchema.Max < 1 || req.OpspecSchema.Min > req.OpspecSchema.Max {
-		return fmt.Errorf("Go op requires opspec schema 1; upgrade opctl to a version supporting it")
+	if req.OpspecSchema.Min < 1 || req.OpspecSchema.Max < 1 || req.OpspecSchema.Min > req.OpspecSchema.Max {
+		return fmt.Errorf("invalid opspec schema range")
 	}
 	if phase == "describe" && len(req.Inputs) != 0 {
 		return fmt.Errorf("describe does not accept input values")
@@ -68,6 +68,15 @@ func runWithOutputs[I, O any](fn func(I) (Call, O)) error {
 	response, err := emit(phase, fn, req.Inputs)
 	if err != nil {
 		return err
+	}
+	var envelope struct {
+		OpspecSchema int `json:"opspecSchema"`
+	}
+	if err := json.Unmarshal(response, &envelope); err != nil {
+		return err
+	}
+	if needed := envelope.OpspecSchema; needed < req.OpspecSchema.Min || needed > req.OpspecSchema.Max {
+		return fmt.Errorf("Go op requires opspec schema %d for its call features; upgrade opctl to a version supporting it", needed)
 	}
 	_, err = os.Stdout.Write(response)
 	return err

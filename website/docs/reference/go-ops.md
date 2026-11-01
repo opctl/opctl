@@ -225,6 +225,16 @@ caches are private to one data-dir owner, not an authorization boundary between
 users. Docker Linux has integration coverage; embedded requires a same-path Lima
 share and still needs a macOS smoke test for UID mapping and read-only behavior.
 
-Container graphs share YAML stdout/stderr bindings and privacy rules. The Go SDK accessors arrive separately; the host reads schema 1 graphs and schema 2 stream bindings.
+Container calls expose streams as ref-only String handles. Keep each returned producer in the graph. Builders copy their state, repeated access on the updated call reuses its binding, and output-bearing copies cannot both produce the same handle.
+
+```go
+producer, version := opctl.Container("alpine:3").
+    Cmd("sh", "-ce", `printf 'v1.2.3\n'`).Stdout()
+return opctl.Serial(producer,
+    opctl.Container("alpine:3").EnvFrom("VERSION", version).
+        Cmd("sh", "-ce", `test "$VERSION" = v1.2.3`))
+```
+
+`Stderr()` has the same two-return convention. Handles cannot be read with `Value()` during plan. Producers must be visible before consumers: serial calls accumulate results, parallel siblings cannot consume each other's results, and results become visible after a parallel group. Captures follow the [shared stream rules](opspec/op-directory/op/call/container/index.md#stdout-and-stderr), including secret declarations and the 1 MiB limit. Stream graphs require opspec schema 2; graphs without new fields remain schema 1 and byte-identical. An incompatible node fails before the SDK emits its response.
 
 The host also reads schema 3 container `outputs` bindings. The [outputs file protocol](opspec/op-directory/op/call/container/outputs.md) applies equally to YAML and Go graphs; it does not add typed container declarations yet.

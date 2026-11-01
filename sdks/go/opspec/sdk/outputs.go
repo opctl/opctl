@@ -18,8 +18,8 @@ type outputPlan struct {
 }
 
 type outputSite struct {
-	kind, site string
-	opResult   bool
+	kind, site     string
+	explicitResult bool
 }
 
 // NewDir creates a fresh directory handle. The first container to mount it
@@ -45,9 +45,38 @@ func newOutput(kind string) inputValue {
 	}
 	activePlan.counter++
 	name := fmt.Sprintf("opctl_%s_%d", kind, activePlan.counter)
-	_, file, line, _ := runtime.Caller(2)
-	activePlan.handles[name] = outputSite{kind: kind, site: fmt.Sprintf("%s:%d", filepath.Base(file), line)}
+	activePlan.handles[name] = outputSite{kind: kind, site: outputCreationSite()}
 	return inputValue{name: name}
+}
+
+func outputCreationSite() string {
+	_, source, _, _ := runtime.Caller(0)
+	var callers [16]uintptr
+	frames := runtime.CallersFrames(callers[:runtime.Callers(2, callers[:])])
+	for {
+		frame, more := frames.Next()
+		internal := false
+		if filepath.Dir(frame.File) == filepath.Dir(source) {
+			switch filepath.Base(frame.File) {
+			case "outputs.go", "container.go", "op.go", "container_outputs.go":
+				internal = true
+			}
+		}
+		if !internal || !more {
+			return fmt.Sprintf("%s:%d", filepath.Base(frame.File), frame.Line)
+		}
+	}
+}
+
+func newCallResult(kind string) inputValue {
+	v := newOutput(kind)
+	v.result = true
+	if v.err == nil {
+		site := activePlan.handles[v.name]
+		site.explicitResult = true
+		activePlan.handles[v.name] = site
+	}
+	return v
 }
 
 // Mirror node/serialCaller.go and node/parallelCaller.go: serial accumulates
@@ -104,8 +133,8 @@ func (p *outputPlan) walk(call *callSpec, path string, visible map[string]bool, 
 				if !fresh || visible[name] || ctr.rawBindings[bindingKey{mount.kind, key}] {
 					continue
 				}
-				if site.opResult {
-					return fmt.Errorf("%s op output created at %s is consumed by %s before its producer is visible", site.kind, site.site, location)
+				if site.explicitResult {
+					return fmt.Errorf("%s call output created at %s is consumed by %s before its producer is visible", site.kind, site.site, location)
 				}
 				if produced[name] {
 					return fmt.Errorf("%s created at %s is produced at two mount paths in %s", site.kind, site.site, location)
@@ -116,6 +145,17 @@ func (p *outputPlan) walk(call *callSpec, path string, visible map[string]bool, 
 				produced[name] = true
 				producers[name] = location
 			}
+		}
+		for _, ref := range []string{ctr.Stdout, ctr.Stderr} {
+			if ref == "" {
+				continue
+			}
+			name, site, _ := p.output(ref)
+			if earlier, exists := producers[name]; exists {
+				return fmt.Errorf("%s created at %s is produced twice by %s and %s", site.kind, site.site, earlier, location)
+			}
+			producers[name] = location
+			produced[name] = true
 		}
 		for name := range produced {
 			visible[name] = true
