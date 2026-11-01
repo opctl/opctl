@@ -105,3 +105,60 @@ func TestScanStubConflictsAndBounds(t *testing.T) {
 		t.Fatalf("%v", err)
 	}
 }
+
+func TestScanStubsIgnoresUnrelatedGoSources(t *testing.T) {
+	for _, imported := range []string{"", "import _ \"app/opctlgen/greet\" //opctl:op repo#v1\n"} {
+		for _, path := range []string{"testdata/bad.go", "_fixtures/bad.go", ".fixtures/bad.go", "_bad.go", ".bad.go", "unrelated/bad.go"} {
+			t.Run(imported+path, func(t *testing.T) {
+				root := stubTree(t, map[string]string{
+					"go.mod": "module app\ngo 1.25\n",
+					"op.go":  "// This comment mentions opctl:op without declaring a stub.\npackage main\n" + imported + "// Example: //opctl:op ../greet\n/* opctl:op is documented here. */\n",
+					path:     "this is not Go",
+				})
+				source, err := Discover(root, "")
+				if err != nil {
+					t.Fatal(err)
+				}
+				if _, err := ScanStubs(source); err != nil {
+					t.Fatal(err)
+				}
+			})
+		}
+	}
+}
+
+func TestScanStubsRejectsReachableParseErrors(t *testing.T) {
+	root := stubTree(t, map[string]string{
+		"go.mod":        "module app\ngo 1.25\n",
+		"op.go":         "package main\nimport _ \"app/helper\"\n",
+		"helper/bad.go": "this is not Go",
+	})
+	source, err := Discover(root, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := ScanStubs(source); err == nil || !strings.Contains(err.Error(), "helper/bad.go") {
+		t.Fatalf("%v", err)
+	}
+}
+
+func TestScanStubsStaysInMainModule(t *testing.T) {
+	for _, imported := range []string{"app/dependency", "app/dependency/pkg", "app/downloaded"} {
+		t.Run(imported, func(t *testing.T) {
+			root := stubTree(t, map[string]string{
+				"go.mod":                "module app\ngo 1.25\nrequire app/downloaded v1.0.0\n",
+				"op.go":                 "package main\nimport _ \"" + imported + "\"\n",
+				"dependency/go.mod":     "module app/dependency\ngo 1.25\n",
+				"dependency/dep.go":     "package dependency\n//opctl:op unrelated dependency directive\n",
+				"dependency/pkg/pkg.go": "package pkg\n//opctl:op unrelated dependency directive\n",
+			})
+			source, err := Discover(root, "")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if uses, err := ScanStubs(source); err != nil || len(uses) != 0 {
+				t.Fatalf("scanned another module: %+v %v", uses, err)
+			}
+		})
+	}
+}

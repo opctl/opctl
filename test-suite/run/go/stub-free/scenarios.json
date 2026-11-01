@@ -1,0 +1,8 @@
+[
+  {
+    "name": "stub-free op ignores fixture files and comments mentioning opctl:op",
+    "call": {
+      "expect": "success"
+    }
+  }
+]

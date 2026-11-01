@@ -25,37 +25,79 @@ type stubScanner struct {
 	module       string
 	declarations map[string]StubUse
 	packages     map[string]*stubPackage
+	parseErrors  map[string]error
 }
 
 // ScanStubs returns the stubs reachable through non-test imports of the op's
 // main module. Declarations may live anywhere in that module, including tests.
 func ScanStubs(source *Source) ([]StubUse, error) {
-	scan, err := scanStubModule(source)
+	scan, err := newStubScanner(source)
 	if err != nil {
 		return nil, err
 	}
 	needed := []stubImport{}
 	visited := map[string]bool{}
-	var visit func(string)
-	visit = func(dir string) {
+	var visit func(string) error
+	visit = func(dir string) error {
 		if visited[dir] {
-			return
+			return nil
 		}
 		visited[dir] = true
+		root, err := ModuleRoot(dir)
+		if err != nil {
+			return err
+		}
+		if root != source.ModuleRoot {
+			return nil
+		}
+		entries, err := os.ReadDir(dir)
+		if os.IsNotExist(err) {
+			return nil // An import with the same prefix may be a downloaded module.
+		}
+		if err != nil {
+			return err
+		}
+		for _, entry := range entries {
+			if !entry.IsDir() && stubSourceFile(entry.Name()) && !strings.HasSuffix(entry.Name(), "_test.go") {
+				if err := scan.file(filepath.Join(dir, entry.Name())); err != nil {
+					return err
+				}
+			}
+		}
+		if err := scan.parseErrors[dir]; err != nil {
+			return err
+		}
 		pkg := scan.packages[dir]
 		if pkg == nil {
-			return
+			return nil
 		}
 		needed = append(needed, pkg.stubs...)
 		for _, path := range pkg.imports {
+			var target string
 			if strings.HasPrefix(path, scan.module+"/") {
-				visit(filepath.Join(source.ModuleRoot, filepath.FromSlash(strings.TrimPrefix(path, scan.module+"/"))))
+				target = filepath.Join(source.ModuleRoot, filepath.FromSlash(strings.TrimPrefix(path, scan.module+"/")))
 			} else if path == scan.module {
-				visit(source.ModuleRoot)
+				target = source.ModuleRoot
+			}
+			if target != "" {
+				if err := visit(target); err != nil {
+					return err
+				}
 			}
 		}
+		return nil
 	}
-	visit(source.OpDir)
+	if err := visit(source.OpDir); err != nil {
+		return nil, err
+	}
+	// Stub-free builds need only their reachable imports, including on cache hits.
+	if len(needed) == 0 {
+		return []StubUse{}, nil
+	}
+	scan, err = scanStubModule(source)
+	if err != nil {
+		return nil, err
+	}
 	return scan.uses(needed)
 }
 
@@ -91,7 +133,7 @@ func (scan *stubScanner) uses(imports []stubImport) ([]StubUse, error) {
 	}
 	return result, errors.Join(failures...)
 }
-func scanStubModule(source *Source) (*stubScanner, error) {
+func newStubScanner(source *Source) (*stubScanner, error) {
 	module, err := readModule(source.ModuleRoot)
 	if err != nil {
 		return nil, err
@@ -99,7 +141,16 @@ func scanStubModule(source *Source) (*stubScanner, error) {
 	if module.Module == nil {
 		return nil, fmt.Errorf("%s/go.mod: needs a module directive", source.ModuleRoot)
 	}
-	scan := &stubScanner{source: source, module: module.Module.Mod.Path, declarations: map[string]StubUse{}, packages: map[string]*stubPackage{}}
+	return &stubScanner{source: source, module: module.Module.Mod.Path, declarations: map[string]StubUse{}, packages: map[string]*stubPackage{}, parseErrors: map[string]error{}}, nil
+}
+func stubSourceFile(name string) bool {
+	return strings.HasSuffix(name, ".go") && !strings.HasPrefix(name, "_") && !strings.HasPrefix(name, ".")
+}
+func scanStubModule(source *Source) (*stubScanner, error) {
+	scan, err := newStubScanner(source)
+	if err != nil {
+		return nil, err
+	}
 	err = filepath.WalkDir(source.ModuleRoot, func(path string, entry fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -107,7 +158,10 @@ func scanStubModule(source *Source) (*stubScanner, error) {
 		if entry.IsDir() {
 			if path != source.ModuleRoot {
 				switch entry.Name() {
-				case ".git", ".hg", ".svn", "vendor", "node_modules", "opctlgen":
+				case "testdata", "vendor", "node_modules", "opctlgen":
+					return filepath.SkipDir
+				}
+				if strings.HasPrefix(entry.Name(), "_") || strings.HasPrefix(entry.Name(), ".") && entry.Name() != ".opspec" {
 					return filepath.SkipDir
 				}
 				if _, err := os.Stat(filepath.Join(path, "go.mod")); err == nil {
@@ -118,7 +172,7 @@ func scanStubModule(source *Source) (*stubScanner, error) {
 			}
 			return nil
 		}
-		if !strings.HasSuffix(entry.Name(), ".go") {
+		if !stubSourceFile(entry.Name()) {
 			return nil
 		}
 		return scan.file(path)
@@ -133,7 +187,8 @@ func (scan *stubScanner) file(path string) error {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, path, data, parser.ImportsOnly|parser.ParseComments)
 	if err != nil {
-		return err
+		scan.parseErrors[filepath.Dir(path)] = err
+		return nil
 	}
 	dir := filepath.Dir(path)
 	pkg := scan.packages[dir]
@@ -201,7 +256,7 @@ func (scan *stubScanner) file(path string) error {
 		if tok == token.EOF {
 			break
 		}
-		if tok != token.COMMENT || !strings.Contains(text, "opctl:op") {
+		if tok != token.COMMENT || !(strings.HasPrefix(text, "//opctl:op") || strings.HasPrefix(text, "// opctl:op")) {
 			continue
 		}
 		site := fset.Position(pos).String()
