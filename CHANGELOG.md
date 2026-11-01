@@ -35,7 +35,8 @@ accordance with
   `outputParams` that opctl validates when the container exits.
 - Each opctl release also tags the Go op SDK as `sdks/go/opspec/sdk/vX.Y.Z`. That release's `opctl op create --go` requires the matching SDK
   version and writes its `go.sum`.
-- CLI end-to-end scenarios can assert exact public completion outputs with `expectOutputs`, and scaffold and run a Go op with `createGo`.
+- CLI end-to-end scenarios can assert exact public completion outputs with `expectOutputs`, assert diagnostic text with `expectMessage`,
+  and scaffold and run a Go op with `createGo`.
 
 ### Changed
 

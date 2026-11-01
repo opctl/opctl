@@ -1,0 +1,10 @@
+[
+  {
+    "call": {
+      "opRef": "/repo/test-suite/run/go/stubs/undeclared",
+      "scope": {},
+      "expect": "failure",
+      "expectMessage": "no ref is declared for op stub \"nope\""
+    }
+  }
+]

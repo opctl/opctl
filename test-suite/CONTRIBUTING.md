@@ -22,3 +22,7 @@ resolved path and Go ops can find their parent module.
 The Go parent-module fixture uses `call.cacheProof: true` to run twice on one
 node. Its driver asserts one cold build, zero warm builds, stable executable
 bytes/mtime, and fresh plans with changed public inputs, and prints timings.
+
+Use `call.expectMessage` to require a literal substring in `opctl run` output,
+including expected failures. The runner saves the exit status before checking
+the captured diagnostics.

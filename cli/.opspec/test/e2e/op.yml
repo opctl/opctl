@@ -51,6 +51,7 @@ run:
                       default:
                         opRef: ''
                         expectOutputs: ''
+                        expectMessage: ''
                         authAddGithub: false
                         cacheProof: false
                         createGo: ''
@@ -72,6 +73,7 @@ run:
                       opRef: $(call.opRef)
                       op: $(entry.path)
                       expect: $(call.expect)
+                      expectMessage: $(call.expectMessage)
                       authAddGithub: $(call.authAddGithub)
                       cacheProof: $(call.cacheProof)
                       createGo: $(call.createGo)

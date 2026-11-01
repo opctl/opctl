@@ -1,0 +1,14 @@
+[
+  {
+    "call": {
+      "opRef": "/repo/test-suite/run/go/stubs/caller",
+      "scope": {},
+      "expect": "success",
+      "expectOutputs": {
+        "greeting": {
+          "string": "hello from-go"
+        }
+      }
+    }
+  }
+]

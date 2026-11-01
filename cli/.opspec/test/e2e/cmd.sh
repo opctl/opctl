@@ -34,8 +34,15 @@ echo "op: $op"
 if [ "${cacheProof:-false}" = true ]; then
   exec "${assertCachePath:-/assert-cache}" "$opRef" /args.yml
 fi
-opctl run --no-progress --arg-file /args.yml "$opRef"
+runOutput=$(mktemp "${TMPDIR:-/tmp}/opctl-run.XXXXXX") || exit 1
+trap 'rm -f "$runOutput"' EXIT
+opctl run --no-progress --arg-file /args.yml "$opRef" > "$runOutput" 2>&1
 runStatus=$?
+cat "$runOutput"
+if [ -n "${expectMessage:-}" ] && ! grep -F -- "$expectMessage" "$runOutput"; then
+  echo "expected message not found: $expectMessage"
+  exit 1
+fi
 
 case "$expect" in
   success)

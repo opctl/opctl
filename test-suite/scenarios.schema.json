@@ -39,6 +39,10 @@
               "cacheProof": {
                 "type": "boolean",
                 "description": "Run the parent-module Go fixture twice on one node and verify the executable cache"
+              },
+              "expectMessage": {
+                "type": "string",
+                "description": "Literal text required in the opctl run diagnostics"
               }
             },
             "required": [

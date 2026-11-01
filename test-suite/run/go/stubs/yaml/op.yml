@@ -1,0 +1,36 @@
+name: yaml-callee
+inputs:
+  src: {dir: {}}
+  label: {string: {}}
+  prefix: {string: {default: default-}}
+  tags: {array: {default: [], constraints: {items: {type: string}}}}
+  config:
+    object:
+      default: {style: plain}
+      constraints:
+        properties:
+          style: {type: string}
+        required: [style]
+outputs:
+  artifact: {dir: {}}
+  text: {string: {}}
+run:
+  container:
+    image: {ref: alpine:3}
+    dirs:
+      /src: $(src)
+      /out: $(artifact)
+    envVars:
+      LABEL: $(label)
+      PREFIX: $(prefix)
+      TAGS: $(tags)
+      CONFIG: $(config)
+    cmd:
+      - sh
+      - -ce
+      - |
+        cp /src/marker /out/marker
+        test "$TAGS" = '["linux"]'
+        test "$CONFIG" = '{"style":"\$(not-a-ref)"}'
+        printf "%s%s" "$PREFIX" "$LABEL"
+    stdout: $(text)
