@@ -33,6 +33,9 @@ accordance with
 
 ### Fixed
 
+- Unused missing local Go replacements no longer create invalid mounts. Fetched replacements remain bounded to their repository, including missing paths beneath symlinked
+  parents.
+
 - YAML container calls retain their existing nonzero-exit error when the runtime also returns an error.
 
 - Separate Go replacement mounts reject host symlinks; replacements inside the module use its existing mount.

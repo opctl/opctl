@@ -85,51 +85,20 @@ func ContainerSpecInRepository(opDir, phase, repositoryRoot string) (*model.Cont
 	if phase != "plan" && phase != "describe" {
 		return nil, "", fmt.Errorf("unsupported bootstrap phase %q", phase)
 	}
-	opDir, err := filepath.Abs(opDir)
+	source, err := Discover(opDir, repositoryRoot)
 	if err != nil {
 		return nil, "", err
 	}
-	if strings.Contains(opDir, "$(") {
-		return nil, "", fmt.Errorf("Go op paths containing $( are not supported yet")
-	}
-	root, err := moduleRoot(opDir, repositoryRoot)
-	if err != nil {
-		return nil, "", err
-	}
-	version, err := GoVersion(root)
-	if err != nil {
-		return nil, "", err
-	}
-	module, err := readModule(root)
-	if err != nil {
-		return nil, "", err
-	}
-	if err := validateMount(root); err != nil {
-		return nil, "", err
-	}
-	dirs := map[string]interface{}{root: "$(module)"}
-	for _, replace := range module.Replace {
-		target := replace.New.Path
-		if !filepath.IsAbs(target) && !strings.HasPrefix(target, "./") && !strings.HasPrefix(target, "../") && target != "." && target != ".." {
-			continue
+	root, version := source.ModuleRoot, source.GoVersion
+	dirs := map[string]interface{}{}
+	for _, target := range source.Roots {
+		if target == root {
+			dirs[target] = "$(module)"
+		} else {
+			dirs[target] = model.Value{Dir: &target}
 		}
-		if !filepath.IsAbs(target) {
-			target = filepath.Join(root, target)
-		}
-		target = filepath.Clean(target)
-		if repositoryRoot != "" {
-			if err := inRepository(repositoryRoot, target); err != nil {
-				return nil, "", fmt.Errorf("Go op local replace %q must resolve within fetched repository root %q: %w", replace.New.Path, repositoryRoot, err)
-			}
-		}
-		if within(root, target) {
-			continue
-		}
-		if err := validateMount(target); err != nil {
-			return nil, "", err
-		}
-		dirs[target] = model.Value{Dir: &target}
 	}
+
 	readOnly := map[string]bool{"/opctl/request.json": true}
 	for destination := range dirs {
 		readOnly[destination] = true
@@ -141,7 +110,7 @@ func ContainerSpecInRepository(opDir, phase, repositoryRoot string) (*model.Cont
 		Dirs:           dirs,
 		Files:          map[string]interface{}{"/opctl/request.json": "$(request)"},
 		EnvVars:        map[string]interface{}{"GOFLAGS": "-mod=readonly", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "OPCTL_BOOTSTRAP_REQUEST": "/opctl/request.json"},
-		WorkDir:        filepath.ToSlash(opDir),
+		WorkDir:        filepath.ToSlash(source.OpDir),
 	}, root, nil
 }
 
@@ -150,7 +119,7 @@ func inRepository(root, path string) error {
 	if err != nil {
 		return fmt.Errorf("resolve fetched repository root %q: %w", root, err)
 	}
-	canonicalPath, err := filepath.EvalSymlinks(path)
+	canonicalPath, err := canonicalPath(path)
 	if err != nil {
 		return fmt.Errorf("resolve path %q within fetched repository root %q: %w", path, root, err)
 	}
@@ -166,11 +135,18 @@ func within(root, path string) bool {
 	return err == nil && rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator))
 }
 
-func validateMount(path string) error {
+func validateMountDestination(path string) error {
 	for _, protected := range []string{"/usr", "/usr/local", "/go", "/opctl"} {
-		if path == "/" || path == protected || strings.HasPrefix(protected, path+"/") {
+		if path == "/" || path == protected || strings.HasPrefix(protected, path+"/") || (protected == "/opctl" && within(protected, path)) {
 			return fmt.Errorf("Go op mount destination %q would hide required bootstrap image directory %q", path, protected)
 		}
+	}
+	return nil
+}
+
+func validateMount(path string) error {
+	if err := validateMountDestination(path); err != nil {
+		return err
 	}
 	resolved, err := filepath.EvalSymlinks(path)
 	if err != nil {

@@ -89,7 +89,7 @@ var _ = Describe("fetched Go module bounds", func() {
 	It("rejects local replacements and symlinks outside the fetched root with clear errors", func() {
 		outside := filepath.Join(data, "outside")
 		write(filepath.Join(outside, "go.mod"), "module outside\ngo 1.25\n")
-		for _, target := range []string{"../../../../outside", outside, "./linked", "./missing"} {
+		for _, target := range []string{"../../../../outside", outside, "./linked"} {
 			if target == "./linked" {
 				Expect(os.Symlink(outside, filepath.Join(repo, "linked"))).To(Succeed())
 			}
@@ -99,8 +99,13 @@ var _ = Describe("fetched Go module bounds", func() {
 			Expect(err.Error()).To(ContainSubstring("replace"))
 			Expect(err.Error()).To(ContainSubstring("fetched repository"))
 		}
+		write(filepath.Join(repo, "go.mod"), "module fetched\ngo 1.25\nreplace example.com/unused => ./missing\n")
+		spec, _, err := ContainerSpecInRepository(repo, "plan", repo)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(spec.Dirs).To(HaveLen(1))
+
 		write(filepath.Join(repo, "go.mod"), "module fetched\ngo 1.25\n")
-		_, _, err := ContainerSpecInRepository(outside, "describe", repo)
+		_, _, err = ContainerSpecInRepository(outside, "describe", repo)
 		Expect(err).To(MatchError(ContainSubstring("fetched repository")))
 	})
 })
