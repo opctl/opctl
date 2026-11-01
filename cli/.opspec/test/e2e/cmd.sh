@@ -5,10 +5,8 @@ nohup dockerd \
   --host=unix:///var/run/docker.sock \
   --storage-driver=overlay2 &
 
-# dummy account for these tests so we don't hit rate limits
-# it is not secret as it has no access to anything
-# and is use solely for this purpose
-opctl auth add docker.io -u 3hhyyicl1mzqsr6tggmg -p '%7Oe^4#fGGwc96rGcV&4'
+# start the node outside the $(...) capture below; a node started inside it inherits the captured stdout and the capture never ends
+opctl ls "$(mktemp -d)" > /dev/null
 
 if [[ $authAddGithub == "true" ]]; then
   opctl auth add github.com -u " " -p $githubAccessToken
