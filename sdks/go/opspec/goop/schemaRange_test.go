@@ -99,7 +99,7 @@ func TestSharedNegotiatedSchemaFixtures(t *testing.T) {
 		if err != nil {
 			t.Fatalf("v%d plan: %v", version, err)
 		}
-		if needed := opspec.MinimumSchema(plan.Run); needed != version {
+		if needed, _ := opspec.SchemaRequirement(plan.Run); needed != version {
 			t.Fatalf("v%d fixture only exercises schema %d", version, needed)
 		}
 		if version > 1 {

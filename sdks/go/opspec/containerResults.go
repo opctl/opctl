@@ -28,12 +28,6 @@ func HasContainerResults(call *model.CallSpec) bool {
 	return call.ParallelLoop != nil && HasContainerResults(&call.ParallelLoop.Run)
 }
 
-// MinimumSchema reports graph features independently of a bootstrap envelope label.
-func MinimumSchema(call *model.CallSpec) int {
-	version, _ := SchemaRequirement(call)
-	return version
-}
-
 // SchemaRequirement identifies the highest required schema and its first call path.
 func SchemaRequirement(call *model.CallSpec) (int, string) {
 	return schemaRequirement(call, "run")
