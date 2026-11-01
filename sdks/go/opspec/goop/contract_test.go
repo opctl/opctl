@@ -203,3 +203,13 @@ var _ = Describe("Go op call contract", func() {
 		Expect(spec.Run.Op.Ref).To(Equal("./yaml"))
 	})
 })
+
+var _ = Describe("Go op output call contract", func() {
+	It("uses callee output names as keys and caller references as values", func() {
+		data, err := os.ReadFile("../sdk/testdata/plan.op-output.json")
+		Expect(err).NotTo(HaveOccurred())
+		spec, err := ParsePlan(data)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(spec.Run.Op.Outputs).To(Equal(map[string]string{"artifact": "$(opctl_dir_1)", "label": "$(opctl_string_2)"}))
+	})
+})

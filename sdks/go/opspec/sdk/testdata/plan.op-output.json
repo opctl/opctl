@@ -1,0 +1,1 @@
+{"contractVersion":1,"opspecSchema":1,"opspec":{"name":"hello","run":{"op":{"ref":"./yaml","outputs":{"artifact":"$(opctl_dir_1)","label":"$(opctl_string_2)"}}}}}

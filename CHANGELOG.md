@@ -8,6 +8,8 @@ accordance with
 
 ### Added
 
+- Go op calls can request named outputs as typed handles with `OpOutput[T]`. Plan checks reject missing producers and invalid serial or parallel visibility.
+
 - Go ops can call local and git-ref ops with literal or handle inputs and optional pull credentials. Secret interop is guarded until private output collection is available.
 
 - Go ops can declare typed inputs with defaults and constraints, branch on public input values, and bind input handles to container environment variables, directories,

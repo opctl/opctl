@@ -87,3 +87,12 @@ are escaped, and an explicit empty string stays empty.
 `PullCreds(username, password)` accepts literal strings or `String` handles.
 Without it, the node uses stored auths. Secret interop is temporarily rejected
 before execution while private output collection is being added.
+
+Use `call, value := OpOutput[opctl.Dir](call, "artifact")` to request a named
+output. Keep the returned call in the graph. Other supported handles include
+`String`, `Number`, `Boolean`, `File`, `Socket`, `Array[T]`, and `Object[T]`.
+Repeated requests for the same name and type reuse the binding. The SDK checks
+producer visibility, including nested input handles and pull credentials.
+Result values cannot be read during plan. The callee validates its outputs at
+execution; the accessor does not describe or fetch the callee, and existing
+opspec coercions still apply.

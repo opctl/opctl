@@ -16,7 +16,10 @@ type outputPlan struct {
 	handles map[string]outputSite
 }
 
-type outputSite struct{ kind, site string }
+type outputSite struct {
+	kind, site string
+	opResult   bool
+}
 
 // NewDir creates a fresh directory handle. The first container to mount it
 // produces it; later serial calls may mount it, including after a parallel group.
@@ -61,6 +64,25 @@ func copyVisible(visible map[string]bool) map[string]bool {
 }
 
 func (p *outputPlan) walk(call *callSpec, path string, visible map[string]bool, producers map[string]string) error {
+	if call.Op != nil {
+		op := call.Op
+		location := fmt.Sprintf("%s (%s)", path, op.Ref)
+		for _, use := range append(append([]handleUse{}, op.uses...), op.credUses...) {
+			name, site, generated := p.output(use.ref)
+			if generated && !use.raw && !visible[name] {
+				return fmt.Errorf("%s created at %s is used in %s before its producer is visible", site.kind, site.site, location)
+			}
+		}
+		for _, key := range sortedBindings(op.Outputs) {
+			name, site, _ := p.output(op.Outputs[key])
+			if earlier, exists := producers[name]; exists {
+				return fmt.Errorf("%s created at %s is produced twice by %s and %s", site.kind, site.site, earlier, location)
+			}
+			producers[name] = location
+			visible[name] = true
+		}
+		return nil
+	}
 	if call.Container != nil {
 		ctr := call.Container
 		location := fmt.Sprintf("%s (%s)", path, ctr.Image.Ref)
@@ -79,6 +101,9 @@ func (p *outputPlan) walk(call *callSpec, path string, visible map[string]bool, 
 				name, site, fresh := p.output(mount.bindings[key])
 				if !fresh || visible[name] || ctr.rawBindings[bindingKey{mount.kind, key}] {
 					continue
+				}
+				if site.opResult {
+					return fmt.Errorf("%s op output created at %s is consumed by %s before its producer is visible", site.kind, site.site, location)
 				}
 				if produced[name] {
 					return fmt.Errorf("%s created at %s is produced at two mount paths in %s", site.kind, site.site, location)

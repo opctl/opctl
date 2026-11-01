@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"reflect"
+	"regexp"
 	"sort"
 )
 
@@ -18,9 +19,11 @@ type handleUse struct {
 	raw bool
 }
 type opCallSpec struct {
-	Ref            string         `json:"ref"`
-	Inputs         map[string]any `json:"inputs,omitempty"`
-	PullCreds      *credsSpec     `json:"pullCreds,omitempty"`
+	Ref            string            `json:"ref"`
+	Inputs         map[string]any    `json:"inputs,omitempty"`
+	PullCreds      *credsSpec        `json:"pullCreds,omitempty"`
+	Outputs        map[string]string `json:"outputs,omitempty"`
+	outputTypes    map[string]reflect.Type
 	uses, credUses []handleUse
 }
 type credsSpec struct {
@@ -107,6 +110,9 @@ func (OpCall) call() {}
 func (c OpCall) render() (*callSpec, error) {
 	if c.err != nil {
 		return nil, c.err
+	}
+	if c.op.Ref == "" {
+		return nil, fmt.Errorf("CallOp needs a nonempty literal op ref")
 	}
 	return &callSpec{Op: &c.op}, nil
 }
@@ -208,3 +214,61 @@ func sortedInputKeys(values map[string]any) []string {
 	sort.Strings(keys)
 	return keys
 }
+
+// OpOutput requests a callee output as a typed, ref-only handle. Keep the returned call in the graph.
+// The callee validates the actual value at execution; T describes its use in this graph.
+func OpOutput[T Handle](c OpCall, name string) (result OpCall, value T) {
+	result = c
+	if activePlan == nil {
+		if result.err == nil {
+			result.err = fmt.Errorf("OpOutput must be called while building the op graph")
+		}
+		return
+	}
+	typ := reflect.TypeOf((*T)(nil)).Elem()
+	h, ok := any(value).(inputHandle)
+	if !ok || typ.Kind() == reflect.Pointer || reflect.TypeOf(h.bind(inputValue{})) != typ {
+		if result.err == nil {
+			result.err = fmt.Errorf("OpOutput needs an opctl handle value")
+		}
+		return
+	}
+	if !outputName.MatchString(name) {
+		if result.err == nil {
+			result.err = fmt.Errorf("invalid op output name %q", name)
+		}
+		return
+	}
+	if existing, ok := c.op.Outputs[name]; ok {
+		if c.op.outputTypes[name] != typ {
+			if result.err == nil {
+				result.err = fmt.Errorf("op output %q requested with different handle types", name)
+			}
+			return
+		}
+		return result, h.bind(inputValue{name: existing[2 : len(existing)-1], result: true}).(T)
+	}
+	kind, _ := h.inputType()
+	v := newOutput(kind)
+	v.result = true
+	if v.err != nil {
+		if result.err == nil {
+			result.err = v.err
+		}
+		return
+	}
+	site := activePlan.handles[v.name]
+	site.opResult = true
+	activePlan.handles[v.name] = site
+	result.op.Outputs = map[string]string{}
+	result.op.outputTypes = map[string]reflect.Type{}
+	for key, ref := range c.op.Outputs {
+		result.op.Outputs[key] = ref
+		result.op.outputTypes[key] = c.op.outputTypes[key]
+	}
+	result.op.Outputs[name] = v.handle()
+	result.op.outputTypes[name] = typ
+	return result, h.bind(v).(T)
+}
+
+var outputName = regexp.MustCompile(`^[-_a-zA-Z0-9]+$`)
