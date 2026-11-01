@@ -46,7 +46,7 @@ func TestPlan(t *testing.T) {
 }
 
 func TestPlanRejectsMissingCall(t *testing.T) {
-	if _, err := Plan(func(struct{}) Call { return Call{} }, nil); err == nil {
+	if _, err := Plan(func(struct{}) Call { return nil }, nil); err == nil {
 		t.Fatal("missing container call accepted")
 	}
 }
@@ -124,5 +124,13 @@ func TestMainContract(t *testing.T) {
 				t.Fatal("plan missing op graph")
 			}
 		})
+	}
+}
+
+func TestContainerCallImplementsCall(t *testing.T) {
+	var _ Call = ContainerCall{}
+	_, err := Plan(func(struct{}) Call { return ContainerCall{} }, nil)
+	if err == nil || !strings.Contains(err.Error(), "image") {
+		t.Fatalf("missing image: %v", err)
 	}
 }

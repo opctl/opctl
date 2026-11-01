@@ -7,7 +7,13 @@ import (
 )
 
 // Call is a call in a lazily built op graph.
-type Call struct {
+type Call interface {
+	call()
+	render() (*callSpec, error)
+}
+
+// ContainerCall builds a container call. Its methods return independent copies.
+type ContainerCall struct {
 	container containerSpec
 	err       error
 }
@@ -25,12 +31,12 @@ type imageSpec struct {
 }
 
 // Container adds a container call using a literal image ref.
-func Container(image string) Call {
-	return Call{container: containerSpec{Image: imageSpec{Ref: escapeLiteral(image)}}}
+func Container(image string) ContainerCall {
+	return ContainerCall{container: containerSpec{Image: imageSpec{Ref: escapeLiteral(image)}}}
 }
 
 // Cmd sets the container's literal command and arguments.
-func (c Call) Cmd(args ...string) Call {
+func (c ContainerCall) Cmd(args ...string) ContainerCall {
 	c.container.Cmd = make([]string, len(args))
 	for i, arg := range args {
 		c.container.Cmd[i] = escapeLiteral(arg)
@@ -39,25 +45,36 @@ func (c Call) Cmd(args ...string) Call {
 }
 
 // Env sets a literal environment variable.
-func (c Call) Env(name, value string) Call { return c.binding(name, escapeLiteral(value), "env") }
+func (c ContainerCall) Env(name, value string) ContainerCall {
+	return c.binding(name, escapeLiteral(value), "env")
+}
 
 // EnvFrom binds an input to an environment variable.
-func (c Call) EnvFrom(name string, value Handle) Call { return c.bindHandle(name, value, "env") }
+func (c ContainerCall) EnvFrom(name string, value Handle) ContainerCall {
+	return c.bindHandle(name, value, "env")
+}
 
 // Dir mounts a directory input at a container path.
-func (c Call) Dir(path string, value Dir) Call { return c.bindHandle(path, value, "dir") }
+func (c ContainerCall) Dir(path string, value Dir) ContainerCall {
+	return c.bindHandle(path, value, "dir")
+}
 
 // File mounts a file input at a container path.
-func (c Call) File(path string, value File) Call { return c.bindHandle(path, value, "file") }
+func (c ContainerCall) File(path string, value File) ContainerCall {
+	return c.bindHandle(path, value, "file")
+}
 
 // Socket binds a socket input to a container address.
-func (c Call) Socket(address string, value Socket) Call {
+func (c ContainerCall) Socket(address string, value Socket) ContainerCall {
 	return c.bindHandle(address, value, "socket")
 }
 
 // WorkDir sets the container's literal working directory.
-func (c Call) WorkDir(path string) Call { c.container.WorkDir = escapeLiteral(path); return c }
-func (c Call) bindHandle(name string, value Handle, kind string) (result Call) {
+func (c ContainerCall) WorkDir(path string) ContainerCall {
+	c.container.WorkDir = escapeLiteral(path)
+	return c
+}
+func (c ContainerCall) bindHandle(name string, value Handle, kind string) (result ContainerCall) {
 	result = c
 	defer func() {
 		if failure := recover(); failure != nil {
@@ -79,7 +96,7 @@ func (c Call) bindHandle(name string, value Handle, kind string) (result Call) {
 	ref := value.handle()
 	return c.binding(name, ref, kind)
 }
-func (c Call) binding(name, value string, kind string) Call {
+func (c ContainerCall) binding(name, value string, kind string) ContainerCall {
 	if strings.Contains(name, "$") {
 		if c.err == nil {
 			c.err = fmt.Errorf("binding name %q must not contain $", name)
@@ -132,4 +149,16 @@ func escapeLiteral(value string) string {
 	}
 	out.WriteString(strings.Repeat("\\", slashes))
 	return out.String()
+}
+
+func (ContainerCall) call() {}
+
+func (c ContainerCall) render() (*callSpec, error) {
+	if c.err != nil {
+		return nil, c.err
+	}
+	if c.container.Image.Ref == "" {
+		return nil, fmt.Errorf("Go op plan must return a container call with an image")
+	}
+	return &callSpec{Container: &c.container}, nil
 }

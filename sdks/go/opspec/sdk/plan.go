@@ -63,13 +63,13 @@ func emit[I any](phase string, fn func(I) Call, values map[string]any) (data []b
 			return nil, err
 		}
 		call := fn(in)
-		if call.err != nil {
-			return nil, call.err
+		if call == nil {
+			return nil, errors.New("Go op plan must return a call")
 		}
-		if call.container.Image.Ref == "" {
-			return nil, errors.New("Go op plan must return a container call with an image")
+		spec.Run, err = call.render()
+		if err != nil {
+			return nil, err
 		}
-		spec.Run = &callSpec{Container: &call.container}
 	}
 	data, err = json.Marshal(response{ContractVersion: 1, OpspecSchema: 1, Opspec: spec})
 	if err != nil {
