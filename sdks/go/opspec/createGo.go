@@ -63,7 +63,7 @@ func CreateGo(path, name, description string, sdk GoSDK) error {
 	}
 	files := []struct{ name, content string }{
 		{"op.go", opGo},
-		{"go.mod", fmt.Sprintf("module %s\n\ngo %s\n\nrequire %s %s\n", name, goDirective(), goSDKModule, version)},
+		{"go.mod", fmt.Sprintf("module ops.local/%s\n\ngo %s\n\nrequire %s %s\n", name, goDirective(), goSDKModule, version)},
 	}
 	if sdk.Published() {
 		files = append(files, struct{ name, content string }{"go.sum", fmt.Sprintf("%s %s %s\n%s %s/go.mod %s\n", goSDKModule, version, sdk.Sum, goSDKModule, version, sdk.GoModSum)})

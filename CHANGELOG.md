@@ -36,6 +36,7 @@ accordance with
 
 ### Fixed
 
+- Go op scaffolds use `ops.local/NAME` module paths, so names such as `fmt` build without colliding with the Go standard library.
 - Empty container outputs files report how to write the required JSON object to `$OPCTL_OUTPUTS`.
 - Runtime validation rejects container output defaults written as `null`, matching the op file schema.
 - Go op bootstrap ignores node data stored inside a local source repository when computing its compiled-program cache key.

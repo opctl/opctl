@@ -2,6 +2,7 @@ package opspec
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
@@ -42,7 +43,7 @@ func plan(in Inputs) opctl.Call {
 
 func main() { opctl.Main(plan) }
 `))
-		Expect(read(filepath.Join(path, "go.mod"))).To(Equal("module hello\n\ngo " + goDirective() + "\n\nrequire github.com/opctl/opctl/sdks/go/opspec/sdk v0.0.0\n"))
+		Expect(read(filepath.Join(path, "go.mod"))).To(Equal("module ops.local/hello\n\ngo " + goDirective() + "\n\nrequire github.com/opctl/opctl/sdks/go/opspec/sdk v0.0.0\n"))
 		Expect(filepath.Join(path, "go.sum")).NotTo(BeAnExistingFile())
 		Expect(filepath.Join(path, "op.yml")).NotTo(BeAnExistingFile())
 	})
@@ -55,6 +56,22 @@ func main() { opctl.Main(plan) }
 			"github.com/opctl/opctl/sdks/go/opspec/sdk v0.1.77 h1:zip=\n" +
 				"github.com/opctl/opctl/sdks/go/opspec/sdk v0.1.77/go.mod h1:mod=\n",
 		))
+	})
+
+	It("builds a scaffold whose name matches a standard library package", func() {
+		path := filepath.Join(parent, "fmt")
+		Expect(CreateGo(path, "fmt", "", GoSDK{})).To(Succeed())
+		sdk, err := filepath.Abs("sdk")
+		Expect(err).NotTo(HaveOccurred())
+		goMod := read(filepath.Join(path, "go.mod"))
+		Expect(os.WriteFile(filepath.Join(path, "go.mod"), []byte(goMod+"\nreplace "+goSDKModule+" => "+sdk+"\n"), 0600)).To(Succeed())
+
+		cmd := exec.Command("go", "build", "-o", filepath.Join(parent, "op"), ".")
+		cmd.Dir = path
+		cmd.Env = append(os.Environ(), "GOFLAGS=-mod=readonly -buildvcs=false", "GOWORK=off", "GOTOOLCHAIN=local", "GOPROXY=off")
+		output, err := cmd.CombinedOutput()
+		Expect(err).NotTo(HaveOccurred(), string(output))
+		Expect(goMod).To(HavePrefix("module ops.local/fmt\n"))
 	})
 
 	It("treats an SDK release without both sums as unpublished", func() {
