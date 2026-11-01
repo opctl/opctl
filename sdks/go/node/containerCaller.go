@@ -113,8 +113,11 @@ func (cc _containerCaller) Call(
 		exitCode = *rawExitCode
 	}
 
-	if exitCode != 0 {
+	if exitCode != 0 && err == nil {
 		err = fmt.Errorf("nonzero container exit code: %d", exitCode)
+		if capture != nil {
+			err = &OpDeclarationError{Err: err}
+		}
 	}
 
 	// wait on logChan

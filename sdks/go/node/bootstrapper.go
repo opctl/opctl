@@ -35,7 +35,11 @@ func (bootstrap _bootstrapper) Describe(ctx context.Context, opCall *model.OpCal
 	if err != nil {
 		return nil, err
 	}
-	return goop.ParseDescribe(data)
+	spec, err := goop.ParseDescribe(data)
+	if err != nil {
+		return nil, &OpDeclarationError{Err: err}
+	}
+	return spec, nil
 }
 func (bootstrap _bootstrapper) Plan(ctx context.Context, opCall *model.OpCall, rootCallID string, inputs map[string]interface{}) (*model.OpSpec, error) {
 	data, err := bootstrap.run(ctx, opCall, rootCallID, "plan", inputs)
@@ -45,6 +49,9 @@ func (bootstrap _bootstrapper) Plan(ctx context.Context, opCall *model.OpCall, r
 	return goop.ParsePlan(data)
 }
 func (bootstrap _bootstrapper) run(ctx context.Context, opCall *model.OpCall, rootCallID, phase string, inputs map[string]interface{}) ([]byte, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	spec, mountRoot, err := goop.ContainerSpec(opCall.OpPath, phase)
 	if err != nil {
 		return nil, err
@@ -78,6 +85,9 @@ func (bootstrap _bootstrapper) run(ctx context.Context, opCall *model.OpCall, ro
 	}
 	ctx = withStdoutCapture(ctx, &stdout)
 	_, err = bootstrap.caller.Call(ctx, id, scope, &model.CallSpec{Container: spec, Name: &name}, opCall.OpPath, parent, rootCallID)
+	if ctx.Err() != nil {
+		return nil, ctx.Err()
+	}
 	if err != nil {
 		if diagnostic := strings.TrimSpace(string(stdoutCaptureFrom(ctx).diagnostics)); diagnostic != "" {
 			return nil, fmt.Errorf("Go op bootstrap %s: %w\n%s", phase, err, diagnostic)

@@ -35,7 +35,7 @@ var _ = Describe("describe handler", func() {
 			err    error
 			status int
 		}{
-			{model.ErrDataProviderAuthentication{}, 401}, {model.ErrDataProviderAuthorization{}, 403}, {model.ErrDataRefResolution{}, 404}, {model.ErrDataUnableToResolve{}, 404}, {model.ErrDataMissingVersion{}, 400}, {model.ErrDataGitInvalidRef{}, 400}, {&node.OpDeclarationError{Err: errors.New("compile failed")}, 400}, {errors.New("internal failure"), 500},
+			{model.ErrDataProviderAuthentication{}, 401}, {model.ErrDataProviderAuthorization{}, 403}, {model.ErrDataRefResolution{}, 404}, {model.ErrDataUnableToResolve{}, 404}, {model.ErrDataMissingVersion{}, 400}, {model.ErrDataGitInvalidRef{}, 400}, {&node.OpDeclarationError{Err: errors.New("compile failed")}, 400}, {errors.New("internal failure"), 500}, {context.Canceled, 500}, {context.DeadlineExceeded, 500},
 		} {
 			fake := new(fakes.FakeNode)
 			fake.DescribeOpReturns(nil, tc.err)

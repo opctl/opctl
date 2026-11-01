@@ -9,7 +9,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
 
-// OpDeclarationError reports invalid declarations or bootstrap failures.
+// OpDeclarationError reports invalid declarations or bootstrap program failures.
 type OpDeclarationError struct{ Err error }
 
 func (e *OpDeclarationError) Error() string { return e.Err.Error() }
@@ -26,9 +26,12 @@ func (c core) DescribeOp(ctx context.Context, req model.DescribeOpReq) (*model.O
 		if !filepath.IsAbs(path) {
 			path = filepath.Join(c.dataCachePath, path)
 		}
-		spec, err = c.bootstrapper.Describe(ctx, &model.OpCall{BaseCall: model.BaseCall{OpPath: path}}, "")
+		return c.bootstrapper.Describe(ctx, &model.OpCall{BaseCall: model.BaseCall{OpPath: path}}, "")
 	}
 	if err != nil {
+		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+			return nil, err
+		}
 		return nil, &OpDeclarationError{Err: err}
 	}
 	return spec, nil

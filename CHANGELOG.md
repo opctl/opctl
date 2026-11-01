@@ -15,6 +15,8 @@ accordance with
 
 ### Fixed
 
+- Describing Go ops reports runtime and context failures as HTTP 500 while keeping declaration, bootstrap exit, and response parse failures as HTTP 400.
+
 - Go input schemas require unsigned array items and object properties to be nonnegative integers.
 
 - Go input constraints reject attempts to replace schemas derived from array item and object property types.
