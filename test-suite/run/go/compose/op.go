@@ -24,7 +24,7 @@ func main() {
 		combine = combine.Cmd("sh", "-ce", "cat /in/a/a.txt /in/b/b.txt > /all.txt").File("/all.txt", all)
 		check := opctl.Container("alpine:3").
 			File("/all.txt", all).
-			File("/expected.txt", opctl.RawRef[opctl.File]("$(./expected.txt)")).
+			File("/expected.txt", opctl.OpFile("./expected.txt")).
 			Cmd("cmp", "/all.txt", "/expected.txt")
 		return opctl.Serial(opctl.Parallel(greetings...), combine, check)
 	})

@@ -75,7 +75,9 @@ Mounts are shared and mutable. Parallel consumers may mount an already visible h
 
 Build the graph deterministically in one goroutine, and sort map keys before iterating over them. Generated names are stable for repeated plans with the same handle creation order. Create handles inside the plan function, including inside helpers and Go loops.
 
-Use `RawRef[opctl.File]("$(./expected.txt)")` or `RawRef[opctl.Dir]("$(./scripts)")` for op-directory paths. `RawRef[T]` accepts only a whole `$(...)` reference and emits its inner text verbatim, including nested references. It works with any handle type, but bypasses visibility checks and has no readable plan-time value. Building a raw reference from input text can inject references into the graph. Prefer typed handles when they can express the binding. Literal commands, environment values, working directories, and image strings continue to escape `$`.
+`OpDir("./scripts")` and `OpFile("../expected.txt")` are handles to paths in the op's source, relative to the op directory. Their paths must start with `./` or `../`. `Dir.Dir(path)` and `Dir.File(path)` return handles beneath an input or op directory, for example `in.Home.Dir("go/pkg")`. Subpaths are relative and can't contain `..` elements, `$`, `(`, or `)`, so input text read during plan can't leave the directory or add references. Subpaths of call outputs, such as `NewDir` or `OpOutput` handles, aren't supported yet.
+
+`RawRef[T]` is the escape hatch for references the SDK doesn't model. It accepts only a whole `$(...)` reference and emits its inner text verbatim, including nested references. It works with any handle type, but bypasses visibility checks and has no readable plan-time value. Building a raw reference from input text can inject references into the graph. Prefer typed handles when they can express the binding. Literal commands, environment values, working directories, and image strings continue to escape `$`.
 
 ## Calling ops by ref
 

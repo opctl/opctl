@@ -1,0 +1,1 @@
+{"contractVersion":1,"opspecSchema":1,"opspec":{"name":"hello","run":{"container":{"image":{"ref":"alpine:3"},"cmd":["true"],"dirs":{"/cache":"$(HOME/.cache/go-build/v1)","/go/pkg":"$(HOME/go/pkg)","/nested":"$(../../sub/dir)","/scripts":"$(./scripts)","/src":"$(../..)"},"files":{"/config.yml":"$(src/config/app.yml)","/expected.txt":"$(./expected.txt)"}}}}}

@@ -8,8 +8,8 @@ import (
 var wholeReference = regexp.MustCompile(`^\$\(.+\)$`)
 
 // RawRef emits a whole $(...) reference verbatim, without visibility checks.
-// It supports op-directory paths, subpaths, and nested references the SDK does
-// not model. Value cannot be read during plan. Building expr from input values
+// It supports nested references and other expressions the SDK does not model;
+// use OpDir, OpFile, and Dir subpaths for paths. Value cannot be read during plan. Building expr from input values
 // can inject references into the op graph; use typed handles when possible.
 // Literal Cmd, Env, WorkDir, and image strings still escape every $.
 func RawRef[T Handle](expr string) T {

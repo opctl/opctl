@@ -198,6 +198,16 @@ var _ = Describe("Go op interfaces and public plan inputs", func() {
 		Expect(spec.Description).To(Equal("Greets the caller.\n\nRuns echo in alpine:\n\n\tsh -ce 'echo hello'"))
 		Expect(spec.Inputs).To(HaveKey("who"))
 	})
+	It("parses op-directory handles and dir subpaths from the SDK's plan", func() {
+		data, err := os.ReadFile("../sdk/testdata/plan.op-dir.json")
+		Expect(err).NotTo(HaveOccurred())
+		spec, err := ParsePlan(data)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(spec.Run.Container.Dirs).To(Equal(map[string]interface{}{
+			"/cache": "$(HOME/.cache/go-build/v1)", "/go/pkg": "$(HOME/go/pkg)", "/nested": "$(../../sub/dir)", "/scripts": "$(./scripts)", "/src": "$(../..)",
+		}))
+		Expect(spec.Run.Container.Files).To(Equal(map[string]interface{}{"/config.yml": "$(src/config/app.yml)", "/expected.txt": "$(./expected.txt)"}))
+	})
 	It("keeps secret and filesystem values out of plan requests", func() {
 		text := "private"
 		number := float64(3)

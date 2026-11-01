@@ -2,8 +2,11 @@ package sdk
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
+	"slices"
+	"strings"
 )
 
 // Handle is a typed input or output binding in an op graph.
@@ -111,3 +114,46 @@ func (Socket) inputType() (string, reflect.Type) { return "socket", nil }
 func (Socket) bind(v inputValue) Handle          { return Socket{v} }
 
 func (v inputValue) bindingValue() inputValue { return v }
+
+// OpDir is a handle to a directory in the op's source, relative to the op
+// directory. The path must start with ./ or ../.
+func OpDir(path string) Dir { return Dir{opPath("OpDir", path)} }
+
+// OpFile is a handle to a file in the op's source, relative to the op
+// directory. The path must start with ./ or ../.
+func OpFile(path string) File { return File{opPath("OpFile", path)} }
+
+func opPath(fn, path string) inputValue {
+	if !strings.HasPrefix(path, "./") && !strings.HasPrefix(path, "../") {
+		return inputValue{err: fmt.Errorf("%s needs a path starting with ./ or ../, got %q", fn, path)}
+	}
+	if strings.ContainsAny(path, "$()") {
+		return inputValue{err: fmt.Errorf("%s path %q must not contain $, ( or )", fn, path)}
+	}
+	return inputValue{name: path}
+}
+
+// Dir returns a handle to a directory beneath an input or op directory.
+// The path is relative and can't contain .. elements.
+func (v Dir) Dir(path string) Dir { return Dir{v.subpath(path)} }
+
+// File returns a handle to a file beneath an input or op directory.
+// The path is relative and can't contain .. elements.
+func (v Dir) File(path string) File { return File{v.subpath(path)} }
+
+func (v inputValue) subpath(path string) inputValue {
+	switch {
+	case v.err != nil:
+		return v
+	case v.isRaw():
+		return inputValue{err: errors.New("subpaths of RawRef handles are not supported; pass the whole reference to RawRef")}
+	case v.result || strings.HasPrefix(v.name, "opctl_"):
+		return inputValue{err: errors.New("subpaths of call outputs are not supported yet")}
+	case v.name == "":
+		return inputValue{err: errors.New("handle is not bound to an input")}
+	}
+	if path == "" || strings.HasPrefix(path, "/") || strings.ContainsAny(path, "$()") || slices.Contains(strings.Split(path, "/"), "..") {
+		return inputValue{err: fmt.Errorf("subpath %q must be relative, without .. elements, $, ( or )", path)}
+	}
+	return inputValue{name: strings.TrimSuffix(v.name, "/") + "/" + path}
+}
