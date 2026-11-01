@@ -35,6 +35,7 @@ accordance with
 
 ### Fixed
 
+- The `run-a-react-app` dev op forwards the caller's `HOME` directory to its Go service.
 - Failed YAML ops keep their bound outputs when Go ops or container results occur only in unrelated subtrees.
 - Private Go module bootstrap reads credentials with a Go launcher and bounds download diagnostics in tmpfs files.
 - Go op authoring docs clarify setup, SDK module replacements, handle visibility, container DNS names, and CLI metadata display.

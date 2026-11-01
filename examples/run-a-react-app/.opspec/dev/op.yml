@@ -1,10 +1,16 @@
 name: dev
 description: runs react-app for development
+inputs:
+  HOME:
+    dir:
+      description: Home directory of the caller; provides the Go service caches
 run:
   parallel:
     - op:
         # reference run-a-go-service dev op
         ref: $(../../../run-a-go-service/.opspec/dev)
+        inputs:
+          HOME: $(HOME)
     - container:
         image:
           ref: 'node:20-alpine'
