@@ -52,7 +52,7 @@ func ValidateContainerOutputParams(declarations map[string]*model.ParamSpec, bin
 		default:
 			return fmt.Errorf("container outputParams %q supports only string, number, boolean, array, and object; use mount/socket bindings for filesystem values", name)
 		}
-		if fallback != nil {
+		if p.DefaultPresent || fallback != nil {
 			return fmt.Errorf("container outputParams %q cannot have a default; every declared member must be produced", name)
 		}
 	}

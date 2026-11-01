@@ -1,16 +1,20 @@
 package model
 
+import "encoding/json"
+
 // ParamSpec represents a typed ParamSpec of an op
 type ParamSpec struct {
-	Array       *ArrayParamSpec   `json:"array,omitempty"`
-	Boolean     *BooleanParamSpec `json:"boolean,omitempty"`
-	Description string            `json:"description,omitempty"`
-	Dir         *DirParamSpec     `json:"dir,omitempty"`
-	File        *FileParamSpec    `json:"file,omitempty"`
-	Number      *NumberParamSpec  `json:"number,omitempty"`
-	Object      *ObjectParamSpec  `json:"object,omitempty"`
-	Socket      *SocketParamSpec  `json:"socket,omitempty"`
-	String      *StringParamSpec  `json:"string,omitempty"`
+	// DefaultPresent records an explicitly authored default, including null, during JSON decoding.
+	DefaultPresent bool              `json:"-"`
+	Array          *ArrayParamSpec   `json:"array,omitempty"`
+	Boolean        *BooleanParamSpec `json:"boolean,omitempty"`
+	Description    string            `json:"description,omitempty"`
+	Dir            *DirParamSpec     `json:"dir,omitempty"`
+	File           *FileParamSpec    `json:"file,omitempty"`
+	Number         *NumberParamSpec  `json:"number,omitempty"`
+	Object         *ObjectParamSpec  `json:"object,omitempty"`
+	Socket         *SocketParamSpec  `json:"socket,omitempty"`
+	String         *StringParamSpec  `json:"string,omitempty"`
 }
 
 // ArrayParamSpec represents a Parameter of type object
@@ -80,3 +84,28 @@ type StringParamSpec struct {
 }
 
 type Constraints map[string]interface{}
+
+func (param *ParamSpec) UnmarshalJSON(data []byte) error {
+	type plain ParamSpec
+	var decoded plain
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+	for _, kind := range []string{"array", "boolean", "dir", "file", "number", "object", "socket", "string"} {
+		if member, ok := raw[kind]; ok {
+			var fields map[string]json.RawMessage
+			if err := json.Unmarshal(member, &fields); err != nil {
+				return err
+			}
+			if _, present := fields["default"]; present {
+				decoded.DefaultPresent = true
+			}
+		}
+	}
+	*param = ParamSpec(decoded)
+	return nil
+}
