@@ -121,6 +121,9 @@ func emitForRange[I, O any](phase string, fn func(I) (Call, O), values map[strin
 			if handle.err != nil {
 				return nil, fmt.Errorf("output %q: %w", field.name, handle.err)
 			}
+			if handle.literal {
+				return nil, fmt.Errorf("output %q: bind outputs to handles; use a default tag for constants", field.name)
+			}
 			if handle.name == "" && handle.raw == "" {
 				if field.hasDefault {
 					continue

@@ -2,6 +2,7 @@
 package sdk
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
@@ -61,6 +62,14 @@ func (c ContainerCall) Env(name, value string) ContainerCall {
 
 // EnvFrom binds a handle to an environment variable.
 func (c ContainerCall) EnvFrom(name string, value Handle) ContainerCall {
+	if h, ok := value.(interface{ bindingValue() inputValue }); ok && h.bindingValue().literal {
+		v := h.bindingValue()
+		var text string
+		if err := json.Unmarshal(v.value, &text); err != nil {
+			text = string(v.value)
+		}
+		return c.Env(name, text)
+	}
 	return c.bindHandle(name, value, "env")
 }
 

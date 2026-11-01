@@ -137,6 +137,14 @@ func encodeArgument(v reflect.Value, visiting map[visit]bool) (any, []handleUse,
 		if !valid || v.Kind() == reflect.Pointer || reflect.TypeOf(concrete.bind(inputValue{})) != v.Type() {
 			return nil, nil, fmt.Errorf("argument must be an opctl handle value")
 		}
+		binding := h.(interface{ bindingValue() inputValue }).bindingValue()
+		if binding.literal {
+			var value any
+			if err := json.Unmarshal(binding.value, &value); err != nil {
+				return nil, nil, err
+			}
+			return encodeArgument(reflect.ValueOf(value), visiting)
+		}
 		ref := h.handle()
 		raw, _ := h.(interface{ isRaw() bool })
 		return ref, []handleUse{{ref: ref, raw: raw != nil && raw.isRaw()}}, nil

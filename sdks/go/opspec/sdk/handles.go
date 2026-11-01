@@ -17,12 +17,13 @@ type inputHandle interface {
 	bind(inputValue) Handle
 }
 type inputValue struct {
-	raw    string
-	name   string
-	value  json.RawMessage
-	result bool
-	secret bool
-	err    error
+	raw     string
+	name    string
+	value   json.RawMessage
+	result  bool
+	secret  bool
+	literal bool
+	err     error
 }
 type inputError struct{ error }
 
@@ -39,7 +40,9 @@ func (v inputValue) handle() string {
 	return "$(" + v.name + ")"
 }
 func readValue[T any](v inputValue) T {
-	v.handle()
+	if !v.literal || v.err != nil {
+		v.handle()
+	}
 	if v.result {
 		panic(inputError{fmt.Errorf("call outputs can't be read during plan")})
 	}
