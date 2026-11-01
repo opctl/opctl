@@ -135,25 +135,6 @@ func withoutOutputs[I any](fn func(I) Call) func(I) (Call, struct{}) {
 }
 
 func minimumSchema(call *callSpec) int {
-	version := 1
-	if call == nil {
-		return version
-	}
-	if call.Container != nil && (call.Container.Stdout != "" || call.Container.Stderr != "") {
-		version = 2
-	}
-	if call.Container != nil && len(call.Container.Outputs) > 0 {
-		version = 3
-	}
-	if call.Container != nil && len(call.Container.OutputParams) > 0 {
-		version = 4
-	}
-	for _, group := range [][]*callSpec{call.Serial, call.Parallel} {
-		for _, child := range group {
-			if needed := minimumSchema(child); needed > version {
-				version = needed
-			}
-		}
-	}
+	version, _ := schemaRequirement(call, "run")
 	return version
 }
