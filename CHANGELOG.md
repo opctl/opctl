@@ -8,6 +8,8 @@ accordance with
 
 ### Fixed
 
+- Legacy YAML ops retain bound outputs in failed completion events and print input interpretation diagnostics as before. Sensitive diagnostics stay private.
+
 - Public op-output errors retain their original diagnostic when another output is secret. Sensitive validation errors remain sanitized per parameter.
 
 - Secret values stay out of call events when YAML containers use implicit env, dir, or file bindings, or bare socket bindings.

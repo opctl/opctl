@@ -241,8 +241,8 @@ func (oc _opCaller) Call(
 		filepath.Join(oc.dataDirPath, "call", opCall.OpID),
 	)
 
-	// filter op outboundScope to bound call outboundScope
-	if err != nil {
+	// Preserve legacy failed YAML bindings; private/new-result paths remain atomic.
+	if err != nil && (isGoOp || privateResultsActive(ctx)) {
 		return outboundScope, err
 	}
 	for boundName, boundValue := range effectiveOutputs {

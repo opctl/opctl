@@ -40,6 +40,8 @@ func Interpret(
 		if err != nil {
 			if protected[argName] {
 				err = fmt.Errorf("sensitive input %q failed interpretation", argName)
+			} else {
+				fmt.Println(argName, err.Error())
 			}
 			paramErrMap[argName] = err
 		}

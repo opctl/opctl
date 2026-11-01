@@ -259,3 +259,5 @@ Go bootstrap requires a negotiated Docker API version of at least 1.44 to enforc
 Secret handles remain private when passed to YAML containers through shorthand bindings such as `envVars: {renamed: }`, implicit dir/file bindings, and bare socket references.
 
 Output validation reports the failing parameter. A separate secret output does not hide errors in public outputs or misspelled output bindings.
+
+Existing YAML ops retain their completion-output and input-diagnostic behavior. Go outputs and opted-in container results publish new values only after successful validation.
