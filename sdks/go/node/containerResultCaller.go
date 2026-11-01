@@ -13,10 +13,14 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 	"github.com/opctl/opctl/sdks/go/opspec"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/sensitivity"
 )
 
-func (cc _containerCaller) callWithResults(ctx context.Context, call *model.ContainerCall, scope map[string]*model.Value, spec *model.ContainerCallSpec, root string) (result map[string]*model.Value, resultErr error) {
+func (cc _containerCaller) callWithResults(ctx context.Context, call *model.ContainerCall, scope map[string]*model.Value, spec *model.ContainerCallSpec, root string, declarations map[string]*model.ParamSpec) (result map[string]*model.Value, resultErr error) {
+	if err := opspec.ValidateContainerOutputParams(declarations, spec.Outputs); err != nil {
+		return nil, err
+	}
 	if stdoutCaptureFrom(ctx) != nil {
 		return nil, fmt.Errorf("public container output bindings are not allowed on a private bootstrap call")
 	}
@@ -105,28 +109,49 @@ func (cc _containerCaller) callWithResults(ctx context.Context, call *model.Cont
 		return nil, logErr
 	}
 	values := map[string]*model.Value{}
-	for _, ref := range []string{spec.Stdout, spec.Stderr} {
-		if ref == "" {
+	streamValues := map[string]*model.Value{}
+	streamParams := map[string]*model.ParamSpec{}
+	for _, binding := range []struct{ name, ref string }{{"stdout", spec.Stdout}, {"stderr", spec.Stderr}} {
+		if binding.ref == "" {
 			continue
 		}
-		value, captureErr := streams[ref].value()
+		stream := streams[binding.ref]
+		if stream == nil {
+			return nil, fmt.Errorf("container %s capture result is missing", binding.name)
+		}
+		value, captureErr := stream.value()
 		if captureErr != nil {
 			return nil, captureErr
 		}
-		values[opspec.RefToName(ref)] = sensitivity.Mark(value, secretDestination(ctx, scope, ref))
+		value = sensitivity.Mark(value, secretDestination(ctx, scope, binding.ref))
+		streamValues[binding.name] = value
+		streamParams[binding.name] = &model.ParamSpec{String: &model.StringParamSpec{}}
+		values[opspec.RefToName(binding.ref)] = value
+	}
+	if err := params.Validate(streamValues, streamParams, params.ValidationOptions{ExactTypes: true}); err != nil {
+		return nil, fmt.Errorf("container output %w", err)
 	}
 	if len(spec.Outputs) > 0 {
 		named, err := readContainerOutputs(call.OutputsFile)
 		if err != nil {
 			return nil, err
 		}
+		for name, value := range named {
+			private := secretParam(declarations[name])
+			if ref, ok := spec.Outputs[name]; ok {
+				private = private || secretDestination(ctx, scope, ref)
+			}
+			named[name] = sensitivity.Mark(value, private)
+		}
+		if err := params.Validate(named, declarations, params.ValidationOptions{ExactTypes: true}); err != nil {
+			return nil, fmt.Errorf("container output %w", err)
+		}
 		for _, name := range sortedOutputNames(spec.Outputs) {
 			value, ok := named[name]
 			if !ok {
 				return nil, fmt.Errorf("outputs file is missing requested member %q", name)
 			}
-			ref := spec.Outputs[name]
-			values[opspec.RefToName(ref)] = sensitivity.Mark(value, secretDestination(ctx, scope, ref))
+			values[opspec.RefToName(spec.Outputs[name])] = value
 		}
 	}
 	outputs := cc.interpretOutputs(spec, call)
