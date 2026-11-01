@@ -133,6 +133,7 @@ func (cr _runContainer) RunContainer(
 	}
 
 	separateOutput := containerruntime.SeparateOutputFrom(ctx)
+	privateInput := containerruntime.BootstrapInputFrom(ctx)
 	gpuSupported := false
 	if !separateOutput {
 		gpuSupported, _ = isGpuSupported(ctx, cr.dockerClient, req.Image.PullCreds)
@@ -144,6 +145,10 @@ func (cr _runContainer) RunContainer(
 		hostConfig.Privileged = false
 		config.Tty = false
 		hostConfig.LogConfig = container.LogConfig{Type: "none"}
+	}
+	if privateInput != nil {
+		config.OpenStdin, config.AttachStdin, config.StdinOnce = true, true, true
+		hostConfig.Tmpfs = map[string]string{"/run/opctl-auth": "rw,noexec,nosuid,nodev,size=4m,mode=0700"}
 	}
 	// create container
 	_, createErr := cr.dockerClient.ContainerCreate(
@@ -166,14 +171,34 @@ func (cr _runContainer) RunContainer(
 	}
 
 	var copyOutput func() error
+	var copyInput func() error
 	if separateOutput {
-		attached, err := cr.dockerClient.ContainerAttach(ctx, dockerContainerName, container.AttachOptions{Stream: true, Stdout: true, Stderr: true})
+		attached, err := cr.dockerClient.ContainerAttach(ctx, dockerContainerName, container.AttachOptions{Stream: true, Stdout: true, Stderr: true, Stdin: privateInput != nil})
 		if err != nil {
 			return nil, err
 		}
 		defer attached.Close()
-		stopClose := context.AfterFunc(ctx, attached.Close)
+		stopClose := context.AfterFunc(ctx, func() {
+			attached.Close()
+			if closer, ok := privateInput.(io.Closer); ok {
+				closer.Close()
+			}
+		})
 		defer stopClose()
+		if privateInput != nil {
+			copyInput = func() error {
+				err := streamBootstrapInput(attached.Conn, privateInput)
+				closeErr := attached.CloseWrite()
+				if err != nil {
+					attached.Close()
+					return err
+				}
+				if closeErr != nil {
+					return fmt.Errorf("Go bootstrap private input half-close failed")
+				}
+				return nil
+			}
+		}
 		copyOutput = func() error {
 			_, err := stdcopy.StdCopy(stdout, stderr, attached.Reader)
 			return err
@@ -193,6 +218,9 @@ func (cr _runContainer) RunContainer(
 
 	if separateOutput {
 		eg.Go(copyOutput)
+		if copyInput != nil {
+			eg.Go(copyInput)
+		}
 	} else {
 
 		eg.Go(
@@ -260,4 +288,21 @@ func (cr _runContainer) RunContainer(
 
 	return &exitCode, errors.Join(waitErr, logErr)
 
+}
+
+func streamBootstrapInput(destination io.Writer, input io.Reader) error {
+	_, err := io.CopyN(destination, input, containerruntime.BootstrapInputLimit)
+	if err == io.EOF {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("Go bootstrap private input delivery failed")
+	}
+	var extra [1]byte
+	if n, err := input.Read(extra[:]); n != 0 {
+		return fmt.Errorf("Go bootstrap private input exceeds 1 MiB")
+	} else if err != io.EOF {
+		return fmt.Errorf("Go bootstrap private input delivery failed")
+	}
+	return nil
 }
