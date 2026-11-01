@@ -9,11 +9,11 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
-//go:embed goBootstrapLauncher.sh
+//go:embed bootstraplauncher/main_linux.go
 var goBootstrapLauncher []byte
 
 func prepareGoCaches(spec *model.ContainerCallSpec, scope map[string]*model.Value, dataDir, scratch string) error {
-	for destination, name := range map[string]string{"/opctl/mod": "mod", "/opctl/cache": "build"} {
+	for destination, name := range map[string]string{"/opctl/mod": "mod", "/opctl/cache": "build", "/opctl/launcher-cache": "launcher-build"} {
 		path := filepath.Join(dataDir, "go", name)
 		if err := unsudo.CreateDir(path); err != nil {
 			return err
@@ -31,7 +31,7 @@ func prepareGoCaches(spec *model.ContainerCallSpec, scope map[string]*model.Valu
 }
 
 func prepareGoLauncher(spec *model.ContainerCallSpec, scope map[string]*model.Value, scratch string) error {
-	path := filepath.Join(scratch, "launcher.sh")
+	path := filepath.Join(scratch, "launcher.go")
 	if err := unsudo.CreateFile(path, goBootstrapLauncher); err != nil {
 		return err
 	}
@@ -39,8 +39,8 @@ func prepareGoLauncher(spec *model.ContainerCallSpec, scope map[string]*model.Va
 		return err
 	}
 	scope["launcher"] = &model.Value{File: &path}
-	spec.Files["/opctl/launcher"] = "$(launcher)"
-	spec.ReadOnlyMounts["/opctl/launcher"] = true
+	spec.Files["/opctl/launcher.go"] = "$(launcher)"
+	spec.ReadOnlyMounts["/opctl/launcher.go"] = true
 	return nil
 }
 

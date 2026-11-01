@@ -47,9 +47,12 @@ func TestBootstrapAuthRuntimeBuildCount(t *testing.T) {
 		input := containerruntime.BootstrapInputFrom(ctx)
 		if output := call.Dirs["/opctl/build"]; output != "" {
 			builds++
-			want := []string{"sh", "/opctl/launcher", "sh", "-ce", "go version > /opctl/build/go-version; go build -mod=readonly -buildvcs=false -trimpath -o /opctl/build/program ."}
+			want := []string{"env", "GOCACHE=/opctl/launcher-cache", "go", "run", "/opctl/launcher.go", "build"}
 			if !reflect.DeepEqual(call.Cmd, want) || input == nil {
 				t.Fatal("build did not use the fixed compiler command with private input")
+			}
+			if err := os.WriteFile(filepath.Join(output, "launcher"), []byte("synthetic launcher"), 0700); err != nil {
+				return nil, err
 			}
 			if err := os.WriteFile(filepath.Join(output, "program"), []byte("runtime-built executable"), 0700); err != nil {
 				return nil, err
@@ -58,10 +61,10 @@ func TestBootstrapAuthRuntimeBuildCount(t *testing.T) {
 				return nil, err
 			}
 		} else {
-			if input != nil || len(call.Cmd) != 4 || call.Cmd[2] != "/opctl/program" || call.Dirs["/opctl/mod"] != "" || call.Dirs["/opctl/cache"] != "" {
+			if input != nil || len(call.Cmd) != 3 || call.Cmd[0] != "/opctl/launcher" || call.Cmd[1] != "/opctl/program" || call.Dirs["/opctl/mod"] != "" || call.Dirs["/opctl/cache"] != "" {
 				t.Fatal("cached phase received credentials/caches or invoked a compiler")
 			}
-			if call.Cmd[3] == "describe" {
+			if call.Cmd[2] == "describe" {
 				describes++
 				_, err = io.WriteString(stdout, `{"contractVersion":1,"opspecSchema":1,"opspec":{"name":"hello"}}`)
 			} else {

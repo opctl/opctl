@@ -39,7 +39,10 @@ func (bootstrap _bootstrapper) runCached(ctx context.Context, op *model.OpCall, 
 	executable := filepath.Join(program.path, "program")
 	spec.Files["/opctl/program"] = model.Value{File: &executable}
 	spec.ReadOnlyMounts["/opctl/program"] = true
-	spec.Cmd = []interface{}{"sh", "/opctl/launcher", "/opctl/program", phase}
+	launcher := filepath.Join(program.path, "launcher")
+	spec.Files["/opctl/launcher"] = model.Value{File: &launcher}
+	spec.ReadOnlyMounts["/opctl/launcher"] = true
+	spec.Cmd = []interface{}{"/opctl/launcher", "/opctl/program", phase}
 	invoke := func() ([]byte, error) {
 		return bootstrap.invokeProgram(ctx, op, root, "bootstrap "+phase, spec, program.source.ModuleRoot, false, request)
 	}
@@ -74,7 +77,7 @@ func (bootstrap _bootstrapper) prepareBuild(op *model.OpCall, source *goop.Sourc
 	if auth.private != "" {
 		env["GOPRIVATE"], env["GONOPROXY"], env["GONOSUMDB"] = auth.private, auth.private, auth.private
 	}
-	spec.Cmd = []interface{}{"sh", "/opctl/launcher", "sh", "-ce", "go version > /opctl/build/go-version; go build -mod=readonly -buildvcs=false -trimpath -o /opctl/build/program ."}
+	spec.Cmd = []interface{}{"env", "GOCACHE=/opctl/launcher-cache", "go", "run", "/opctl/launcher.go", "build"}
 	return spec, auth, nil
 }
 
@@ -114,8 +117,6 @@ func (bootstrap _bootstrapper) invokeProgram(ctx context.Context, op *model.OpCa
 	}
 	if shared {
 		err = prepareGoCaches(spec, scope, bootstrap.dataDirPath, scratch)
-	} else {
-		err = prepareGoLauncher(spec, scope, scratch)
 	}
 	if err != nil {
 		return nil, err

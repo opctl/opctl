@@ -57,7 +57,7 @@ func TestSharedBootstrapCaches(t *testing.T) {
 		if _, err := os.Stat(mod); err != nil {
 			t.Fatal(err)
 		}
-		if !spec.Container.ReadOnlyMounts["/opctl/launcher"] || spec.Container.ReadOnlyMounts["/opctl/mod"] {
+		if !spec.Container.ReadOnlyMounts["/opctl/launcher.go"] || spec.Container.ReadOnlyMounts["/opctl/mod"] {
 			t.Error("incorrect cache/launcher permissions")
 		}
 		launcher := scope["launcher"]
@@ -65,6 +65,9 @@ func TestSharedBootstrapCaches(t *testing.T) {
 			t.Fatal("missing scope-file launcher")
 		}
 		output := *spec.Container.Dirs["/opctl/build"].(model.Value).Dir
+		if err := os.WriteFile(filepath.Join(output, "launcher"), []byte("synthetic launcher"), 0700); err != nil {
+			return nil, err
+		}
 		if err := os.WriteFile(filepath.Join(output, "program"), []byte("synthetic executable"), 0700); err != nil {
 			return nil, err
 		}

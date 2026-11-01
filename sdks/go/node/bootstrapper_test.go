@@ -49,7 +49,7 @@ var _ = Describe("Go op bootstrapper", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(interpreted.Files["/opctl/request.json"]).To(Equal(requestPath))
 			Expect(interpreted.Dirs[opDir]).To(Equal(opDir))
-			Expect(interpreted.Cmd).To(Equal([]string{"sh", "/opctl/launcher", "/opctl/program", "plan"}))
+			Expect(interpreted.Cmd).To(Equal([]string{"/opctl/launcher", "/opctl/program", "plan"}))
 			capture := stdoutCaptureFrom(ctx)
 			Expect(capture).NotTo(BeNil())
 			_, err = capture.Write(fixture)
@@ -114,7 +114,7 @@ var _ = Describe("Go op bootstrapper", func() {
 			Expect(*parent).To(Equal("op"))
 			Expect(rootID).To(Equal("root"))
 			Expect(*spec.Name).To(Equal("bootstrap describe"))
-			Expect(spec.Container.Cmd).To(Equal([]interface{}{"sh", "/opctl/launcher", "/opctl/program", "describe"}))
+			Expect(spec.Container.Cmd).To(Equal([]interface{}{"/opctl/launcher", "/opctl/program", "describe"}))
 			request, err := os.ReadFile(*scope["request"].File)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(request).To(MatchJSON(`{"contractVersion":1,"phase":"describe","opspecSchema":{"min":1,"max":4},"inputs":{},"knownOutputs":{}}`))
@@ -138,6 +138,9 @@ func newCachedTestBootstrap(caller *fakes.FakeCaller, dataDir string) bootstrapp
 	caller.CallStub = func(ctx context.Context, id string, scope map[string]*model.Value, spec *model.CallSpec, path string, parent *string, root string) (map[string]*model.Value, error) {
 		if *spec.Name == "bootstrap build" {
 			output := *spec.Container.Dirs["/opctl/build"].(model.Value).Dir
+			if err := os.WriteFile(filepath.Join(output, "launcher"), []byte("test launcher"), 0700); err != nil {
+				return nil, err
+			}
 			if err := os.WriteFile(filepath.Join(output, "program"), []byte("test executable"), 0700); err != nil {
 				return nil, err
 			}

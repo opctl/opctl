@@ -54,7 +54,8 @@ type goProgram struct {
 }
 type programMetadata struct {
 	Recipe, Key, ImageID, OS, Arch, Variant, GoVersion, Checksum string
-	Size                                                         int64
+	Size, LauncherSize                                           int64
+	LauncherChecksum                                             string
 	Created, LastUsed                                            time.Time
 }
 
@@ -188,7 +189,8 @@ func readProgram(path, key string, image *containerruntime.ImageIdentity) (progr
 	if err != nil {
 		return metadata, err
 	}
-	if checksum != metadata.Checksum || size != metadata.Size {
+	launcherChecksum, launcherSize, launcherErr := executableChecksum(filepath.Join(path, "launcher"))
+	if checksum != metadata.Checksum || size != metadata.Size || launcherErr != nil || launcherChecksum != metadata.LauncherChecksum || launcherSize != metadata.LauncherSize {
 		return metadata, errInvalidProgram
 	}
 	return metadata, nil
@@ -237,9 +239,9 @@ func (cache *goBootstrapCache) prune() error {
 		if json.Unmarshal(data, &metadata) != nil {
 			continue
 		}
-		total += metadata.Size
+		total += metadata.Size + metadata.LauncherSize
 		if cache.leases[path] == 0 {
-			candidates = append(candidates, candidate{path, metadata.Size, metadata.LastUsed})
+			candidates = append(candidates, candidate{path, metadata.Size + metadata.LauncherSize, metadata.LastUsed})
 		}
 	}
 	sort.Slice(candidates, func(i, j int) bool { return candidates[i].used.Before(candidates[j].used) })
@@ -378,6 +380,10 @@ func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _boo
 	if err != nil {
 		return nil, nil, false, fmt.Errorf("validate built Go program: %w", err)
 	}
+	launcherChecksum, launcherSize, err := executableChecksum(filepath.Join(staging, "launcher"))
+	if err != nil {
+		return nil, nil, false, fmt.Errorf("validate built Go launcher: %w", err)
+	}
 	version, err := os.ReadFile(filepath.Join(staging, "go-version"))
 	if err != nil {
 		return nil, nil, false, err
@@ -389,11 +395,11 @@ func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _boo
 		return nil, nil, false, err
 	}
 	now := time.Now().UTC()
-	metadata = programMetadata{Recipe: goop.CacheFormatVersion, Key: key, ImageID: image.ID, OS: image.OS, Arch: image.Arch, Variant: image.Variant, GoVersion: strings.TrimSpace(string(version)), Checksum: checksum, Size: size, Created: now, LastUsed: now}
+	metadata = programMetadata{Recipe: goop.CacheFormatVersion, Key: key, ImageID: image.ID, OS: image.OS, Arch: image.Arch, Variant: image.Variant, GoVersion: strings.TrimSpace(string(version)), Checksum: checksum, Size: size, LauncherChecksum: launcherChecksum, LauncherSize: launcherSize, Created: now, LastUsed: now}
 	if err := writeProgramMetadata(staging, metadata); err != nil {
 		return nil, nil, false, err
 	}
-	program := &goProgram{key: key, path: staging, source: source, image: image, metadata: metadata, ephemeral: size > cache.limit()}
+	program := &goProgram{key: key, path: staging, source: source, image: image, metadata: metadata, ephemeral: size+launcherSize > cache.limit()}
 	if !program.ephemeral {
 		program.path = path
 	}

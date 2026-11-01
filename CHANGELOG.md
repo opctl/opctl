@@ -37,6 +37,8 @@ accordance with
 
 ### Fixed
 
+- Private Go module bootstrap reads credentials with a Go launcher and bounds download diagnostics in tmpfs files.
+
 - Go op authoring docs clarify setup, SDK module replacements, handle visibility, container DNS names, and CLI metadata display.
 - Release retries reuse an existing Go op SDK tag and its sums when the SDK contents match. Changed SDK contents require a new CHANGELOG version.
 - Go op scaffolds use `ops.local/NAME` module paths, so names such as `fmt` build without colliding with the Go standard library.

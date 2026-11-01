@@ -37,6 +37,9 @@ func cachedBootstrapFixture(t *testing.T) (bootstrapper, *goBootstrapCache, *mod
 		case "bootstrap build":
 			builds.Add(1)
 			path := *spec.Container.Dirs["/opctl/build"].(model.Value).Dir
+			if err := os.WriteFile(filepath.Join(path, "launcher"), []byte("synthetic launcher"), 0700); err != nil {
+				return nil, err
+			}
 			if err := os.WriteFile(filepath.Join(path, "program"), []byte("synthetic executable"), 0700); err != nil {
 				return nil, err
 			}
@@ -85,7 +88,7 @@ func TestCompiledBootstrapCache(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(files) != 2 {
+	if len(files) != 3 {
 		t.Fatal("program entry retained extra files")
 	}
 	if err := os.WriteFile(filepath.Join(path, "program"), []byte("corrupt executable"), 0700); err != nil {
@@ -337,5 +340,25 @@ func TestBootstrapCacheIgnoresLocalNodeData(t *testing.T) {
 	}
 	if builds.Load() != 2 {
 		t.Fatalf("source change did not rebuild: built %d times", builds.Load())
+	}
+}
+
+func TestCompiledBootstrapRejectsCorruptLauncher(t *testing.T) {
+	bootstrap, cache, op, builds := cachedBootstrapFixture(t)
+	if _, err := bootstrap.Describe(context.Background(), op, ""); err != nil {
+		t.Fatal(err)
+	}
+	entries, err := os.ReadDir(cache.directory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(cache.directory, entries[0].Name(), "launcher"), []byte("corrupt launcher"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := bootstrap.Describe(context.Background(), op, ""); err != nil {
+		t.Fatal(err)
+	}
+	if builds.Load() != 2 {
+		t.Fatal("corrupt launcher was reused")
 	}
 }
