@@ -81,7 +81,7 @@ func (cr _containerRuntime) RunContainer(
 	defer stderr.Close()
 
 	if containerruntime.SeparateOutputFrom(ctx) {
-		return nil, fmt.Errorf("Go op bootstrap is not supported yet with the Kubernetes container runtime")
+		return nil, fmt.Errorf("separate stdout/stderr is not supported with the Kubernetes container runtime (including Go bootstrap and stream bindings)")
 	}
 
 	pod, err := constructPod(req)

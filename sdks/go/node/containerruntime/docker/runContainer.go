@@ -135,14 +135,16 @@ func (cr _runContainer) RunContainer(
 	separateOutput := containerruntime.SeparateOutputFrom(ctx)
 	privateInput := containerruntime.BootstrapInputFrom(ctx)
 	gpuSupported := false
-	if !separateOutput {
+	if !containerruntime.BootstrapFrom(ctx) {
 		gpuSupported, _ = isGpuSupported(ctx, cr.dockerClient, req.Image.PullCreds)
 	}
 
 	config := constructContainerConfig(req.Cmd, req.EnvVars, *req.Image.Ref, portBindings, req.WorkDir)
 	hostConfig := constructHostConfig(req.Dirs, req.Files, req.Sockets, portBindings, gpuSupported, req.ReadOnlyMounts)
-	if separateOutput {
+	if containerruntime.BootstrapFrom(ctx) {
 		hostConfig.Privileged = false
+	}
+	if separateOutput {
 		config.Tty = false
 		hostConfig.LogConfig = container.LogConfig{Type: "none"}
 	}

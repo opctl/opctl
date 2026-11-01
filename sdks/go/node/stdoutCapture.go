@@ -33,7 +33,7 @@ func (capture *bootstrapDiagnostics) Write(data []byte) (int, error) {
 }
 
 func withStdoutCapture(ctx context.Context, writer io.Writer) context.Context {
-	return context.WithValue(containerruntime.WithSeparateOutput(ctx), stdoutCaptureKey{}, &stdoutCapture{writer: writer})
+	return context.WithValue(containerruntime.WithBootstrap(ctx), stdoutCaptureKey{}, &stdoutCapture{writer: writer})
 }
 
 func stdoutCaptureFrom(ctx context.Context) *stdoutCapture {

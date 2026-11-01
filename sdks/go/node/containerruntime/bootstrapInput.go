@@ -12,7 +12,7 @@ const BootstrapInputLimit = 1024 * 1024
 
 // WithBootstrapInput attaches private, node-generated input without serializing it.
 func WithBootstrapInput(ctx context.Context, input io.Reader) context.Context {
-	return context.WithValue(WithSeparateOutput(ctx), bootstrapInputKey{}, input)
+	return context.WithValue(WithBootstrap(ctx), bootstrapInputKey{}, input)
 }
 
 func BootstrapInputFrom(ctx context.Context) io.Reader {

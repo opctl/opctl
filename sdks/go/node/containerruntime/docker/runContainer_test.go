@@ -66,7 +66,7 @@ var _ = Context("RunContainer", func() {
 		out, errOut := new(bytes.Buffer), new(bytes.Buffer)
 		runtime := _runContainer{dockerClient: client}
 		imageRef := "sha256:prepared"
-		_, err := runtime.RunContainer(containerruntime.WithSeparateOutput(context.Background()), &model.ContainerCall{ContainerID: "bootstrap", Image: &model.ContainerCallImage{Ref: &imageRef, Prepared: true}}, "root", pubSub, nopWriteCloser{out}, nopWriteCloser{errOut})
+		_, err := runtime.RunContainer(containerruntime.WithBootstrap(context.Background()), &model.ContainerCall{ContainerID: "bootstrap", Image: &model.ContainerCallImage{Ref: &imageRef, Prepared: true}}, "root", pubSub, nopWriteCloser{out}, nopWriteCloser{errOut})
 		Expect(err).NotTo(HaveOccurred())
 		_, config, host, _, _, _ := client.ContainerCreateArgsForCall(0)
 		Expect(client.ContainerCreateCallCount()).To(Equal(1))

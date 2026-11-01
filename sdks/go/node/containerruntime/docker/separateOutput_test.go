@@ -13,8 +13,8 @@ import (
 	. "github.com/opctl/opctl/sdks/go/node/containerruntime/docker/internal/fakes"
 )
 
-var _ = Describe("bootstrap output separation", func() {
-	It("disables TTY only for bootstrap container calls", func() {
+var _ = Describe("output separation", func() {
+	It("keeps ordinary privilege settings when only separate streams are requested", func() {
 		for _, separate := range []bool{false, true} {
 			client := new(FakeCommonAPIClient)
 			client.ContainerCreateReturns(container.CreateResponse{}, errors.New("stop after config"))
@@ -28,6 +28,11 @@ var _ = Describe("bootstrap output separation", func() {
 			Expect(err).To(HaveOccurred())
 			_, config, _, _, _, _ := client.ContainerCreateArgsForCall(client.ContainerCreateCallCount() - 1)
 			Expect(config.Tty).To(Equal(!separate))
+			_, _, host, _, _, _ := client.ContainerCreateArgsForCall(client.ContainerCreateCallCount() - 1)
+			Expect(host.Privileged).To(BeTrue())
+			if separate {
+				Expect(host.LogConfig.Type).To(Equal("none"))
+			}
 		}
 	})
 })
