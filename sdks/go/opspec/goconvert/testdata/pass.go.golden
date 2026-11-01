@@ -1,0 +1,60 @@
+package main
+
+import (
+	opctl "github.com/opctl/opctl/sdks/go/opspec/sdk"
+)
+
+type Outputs struct {
+	Version      opctl.String                 `opctl:"version"`
+	BuildCount   opctl.Number                 `opctl:"buildCount"`
+	Ready        opctl.Boolean                `opctl:"ready"`
+	Targets      opctl.Array[any]             `opctl:"targets"`
+	Metadata     opctl.Object[map[string]any] `opctl:"metadata"`
+	Stream       opctl.String                 `opctl:"stream"`
+	Diagnostic   opctl.String                 `opctl:"diagnostic"`
+	MemberStdout opctl.Number                 `opctl:"memberStdout"`
+}
+
+// ContainerOutputs declares the outputs file of run.serial[0].
+type ContainerOutputs struct {
+	Version  opctl.String                 `opctl:"version"`
+	Count    opctl.Number                 `opctl:"count,format=integer,minimum=1"`
+	Ready    opctl.Boolean                `opctl:"ready"`
+	Targets  opctl.Array[any]             `opctl:"targets,minItems=1,constraints={\"items\":{\"type\":\"string\"}}"`
+	Metadata opctl.Object[map[string]any] `opctl:"metadata,required=revision,constraints={\"properties\":{\"revision\":{\"type\":\"string\"}}}"`
+	Stdout   opctl.Number                 `opctl:"stdout"`
+}
+
+func plan(in struct{}) (opctl.Call, Outputs) {
+	alpine, results := opctl.Outputs[ContainerOutputs](opctl.Container("alpine:3").
+		Cmd("sh", "-ce", `printf 'v1.2.3\n'
+printf 'diagnostic\n' >&2
+printf '%s' '{"version":"v1.2.3","count":3,"ready":true,"targets":["linux"],"metadata":{"revision":"abc123"},"stdout":7}' > "$OPCTL_OUTPUTS"
+`))
+	alpine, stream := alpine.Stdout()
+	alpine, diagnostic := alpine.Stderr()
+	alpine2 := opctl.Container("alpine:3").
+		EnvFrom("VERSION", results.Version).
+		EnvFrom("COUNT", results.Count).
+		EnvFrom("READY", results.Ready).
+		EnvFrom("TARGETS", results.Targets).
+		EnvFrom("METADATA", results.Metadata).
+		EnvFrom("STREAM", stream).
+		EnvFrom("DIAGNOSTIC", diagnostic).
+		EnvFrom("MEMBER_STDOUT", results.Stdout).
+		Cmd("sh", "-ce", "test \"$VERSION\" = v1.2.3 && test \"$COUNT\" = 3 && test \"$READY\" = true && test \"$TARGETS\" = '[\"linux\"]' && test \"$METADATA\" = '{\"revision\":\"abc123\"}' && test \"$STREAM\" = v1.2.3 && test \"$DIAGNOSTIC\" = diagnostic && test \"$MEMBER_STDOUT\" = 7")
+	return opctl.Serial(alpine,
+			alpine2), Outputs{
+			Version:      results.Version,
+			BuildCount:   results.Count,
+			Ready:        results.Ready,
+			Targets:      results.Targets,
+			Metadata:     results.Metadata,
+			Stream:       stream,
+			Diagnostic:   diagnostic,
+			MemberStdout: results.Stdout,
+		}
+
+}
+
+func main() { opctl.MainWithOutputs(plan, opctl.Op{Name: "typed-outputs-pass"}) }

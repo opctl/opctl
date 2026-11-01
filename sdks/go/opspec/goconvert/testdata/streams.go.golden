@@ -1,0 +1,21 @@
+package main
+
+import (
+	opctl "github.com/opctl/opctl/sdks/go/opspec/sdk"
+)
+
+func plan(in struct{}) opctl.Call {
+	alpine := opctl.Container("alpine:3").
+		Cmd("sh", "-ce", "printf 'v1.2.3\\n'; printf 'diagnostic\\n' >&2")
+	alpine, version := alpine.Stdout()
+	alpine, diagnostic := alpine.Stderr()
+	alpine2 := opctl.Container("alpine:3").
+		EnvFrom("VERSION", version).
+		EnvFrom("DIAGNOSTIC", diagnostic).
+		Cmd("sh", "-ce", "test \"$VERSION\" = v1.2.3 && test \"$DIAGNOSTIC\" = diagnostic")
+	return opctl.Serial(alpine,
+		alpine2)
+
+}
+
+func main() { opctl.Main(plan) }
