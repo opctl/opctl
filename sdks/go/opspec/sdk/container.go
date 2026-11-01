@@ -17,14 +17,17 @@ type ContainerCall struct {
 	container containerSpec
 	err       error
 }
+type bindingKey struct{ kind, name string }
+
 type containerSpec struct {
-	Image   imageSpec         `json:"image"`
-	Cmd     []string          `json:"cmd,omitempty"`
-	EnvVars map[string]string `json:"envVars,omitempty"`
-	WorkDir string            `json:"workDir,omitempty"`
-	Dirs    map[string]string `json:"dirs,omitempty"`
-	Files   map[string]string `json:"files,omitempty"`
-	Sockets map[string]string `json:"sockets,omitempty"`
+	rawBindings map[bindingKey]bool
+	Image       imageSpec         `json:"image"`
+	Cmd         []string          `json:"cmd,omitempty"`
+	EnvVars     map[string]string `json:"envVars,omitempty"`
+	WorkDir     string            `json:"workDir,omitempty"`
+	Dirs        map[string]string `json:"dirs,omitempty"`
+	Files       map[string]string `json:"files,omitempty"`
+	Sockets     map[string]string `json:"sockets,omitempty"`
 }
 type imageSpec struct {
 	Ref string `json:"ref"`
@@ -46,7 +49,7 @@ func (c ContainerCall) Cmd(args ...string) ContainerCall {
 
 // Env sets a literal environment variable.
 func (c ContainerCall) Env(name, value string) ContainerCall {
-	return c.binding(name, escapeLiteral(value), "env")
+	return c.binding(name, escapeLiteral(value), "env", false)
 }
 
 // EnvFrom binds a handle to an environment variable.
@@ -96,15 +99,22 @@ func (c ContainerCall) bindHandle(name string, value Handle, kind string) (resul
 		return c
 	}
 	ref := value.handle()
-	return c.binding(name, ref, kind)
+	raw, ok := value.(interface{ isRaw() bool })
+	return c.binding(name, ref, kind, ok && raw.isRaw())
 }
-func (c ContainerCall) binding(name, value string, kind string) ContainerCall {
+func (c ContainerCall) binding(name, value string, kind string, raw bool) ContainerCall {
 	if strings.Contains(name, "$") {
 		if c.err == nil {
 			c.err = fmt.Errorf("binding name %q must not contain $", name)
 		}
 		return c
 	}
+	rawBindings := make(map[bindingKey]bool, len(c.container.rawBindings)+1)
+	for key, value := range c.container.rawBindings {
+		rawBindings[key] = value
+	}
+	rawBindings[bindingKey{kind, name}] = raw
+	c.container.rawBindings = rawBindings
 	var existing map[string]string
 	switch kind {
 	case "env":

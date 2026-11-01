@@ -66,15 +66,18 @@ func (p *outputPlan) walk(call *callSpec, path string, visible map[string]bool, 
 		location := fmt.Sprintf("%s (%s)", path, ctr.Image.Ref)
 		for _, key := range sortedBindings(ctr.EnvVars) {
 			name, site, fresh := p.output(ctr.EnvVars[key])
-			if fresh && !visible[name] {
+			if fresh && !ctr.rawBindings[bindingKey{"env", key}] && !visible[name] {
 				return fmt.Errorf("%s created at %s is used by EnvFrom in %s before any earlier call mounts it", site.kind, site.site, location)
 			}
 		}
 		produced := map[string]bool{}
-		for _, bindings := range []map[string]string{ctr.Dirs, ctr.Files} {
-			for _, key := range sortedBindings(bindings) {
-				name, site, fresh := p.output(bindings[key])
-				if !fresh || visible[name] {
+		for _, mount := range []struct {
+			kind     string
+			bindings map[string]string
+		}{{"dir", ctr.Dirs}, {"file", ctr.Files}} {
+			for _, key := range sortedBindings(mount.bindings) {
+				name, site, fresh := p.output(mount.bindings[key])
+				if !fresh || visible[name] || ctr.rawBindings[bindingKey{mount.kind, key}] {
 					continue
 				}
 				if produced[name] {

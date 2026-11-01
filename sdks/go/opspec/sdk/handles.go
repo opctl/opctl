@@ -14,6 +14,7 @@ type inputHandle interface {
 	bind(inputValue) Handle
 }
 type inputValue struct {
+	raw    string
 	name   string
 	value  json.RawMessage
 	secret bool
@@ -25,6 +26,9 @@ func (v inputValue) handle() string {
 	if v.err != nil {
 		panic(inputError{v.err})
 	}
+	if v.raw != "" {
+		return v.raw
+	}
 	if v.name == "" {
 		panic(inputError{fmt.Errorf("handle is not bound to an input")})
 	}
@@ -32,6 +36,9 @@ func (v inputValue) handle() string {
 }
 func readValue[T any](v inputValue) T {
 	v.handle()
+	if v.isRaw() {
+		panic(inputError{fmt.Errorf("RawRef values can't be read during plan")})
+	}
 	if v.secret {
 		panic(inputError{fmt.Errorf("input %q is secret; its value can't be read during plan, bind it with EnvFrom", v.name)})
 	}
