@@ -57,6 +57,23 @@ func TestRenderStub(t *testing.T) {
 			t.Fatal("nondeterministic rendering", err)
 		}
 	}
+	for _, text := range []string{"\n\n+build ignore", "\n\n  +build ignore", "\n\ngo:build ignore", "\ufeff", "\x00\x01\r\t", "\xff"} {
+		t.Run("untrusted "+text, func(t *testing.T) {
+			param := &model.ParamSpec{Description: text, String: &model.StringParamSpec{Default: text, Constraints: model.Constraints{"pattern": text}}}
+			spec := &model.OpSpec{Description: text, Inputs: map[string]*model.ParamSpec{text: param}, Outputs: map[string]*model.ParamSpec{"result": {String: &model.StringParamSpec{Description: text}}}}
+			data, err := RenderStub(StubUse{Name: "greet", Ref: "repo#v1" + text}, spec)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, line := range strings.Split(string(data), "\n") {
+				line = strings.TrimSpace(line)
+				if strings.HasPrefix(line, "//go:") || strings.HasPrefix(line, "// +build") {
+					t.Fatalf("description became a directive: %s", data)
+				}
+			}
+		})
+	}
+
 }
 
 func TestRenderSharedDescribe(t *testing.T) {

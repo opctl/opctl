@@ -1,0 +1,14 @@
+name: injected-description
+description: |
+  Callee description.
+
+  +build ignore
+inputs:
+  message:
+    description: |
+      Input description.
+
+      +build ignore
+    string: {default: hello}
+run:
+  serial: []

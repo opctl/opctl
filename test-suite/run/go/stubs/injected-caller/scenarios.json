@@ -1,0 +1,8 @@
+[
+  {
+    "name": "callee build-directive descriptions remain ordinary comments",
+    "call": {
+      "expect": "success"
+    }
+  }
+]

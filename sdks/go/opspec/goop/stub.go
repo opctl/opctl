@@ -72,14 +72,21 @@ func sortedStubKeys[T any](values map[string]T) []string {
 	sort.Strings(keys)
 	return keys
 }
-func stubComment(out *bytes.Buffer, text string) {
-	text = strings.Map(func(r rune) rune {
-		if r != '\n' && unicode.IsControl(r) {
+func stubCommentText(text string) string {
+	return strings.Map(func(r rune) rune {
+		if r != '\n' && unicode.IsControl(r) || unicode.Is(unicode.Cf, r) {
 			return -1
 		}
 		return r
 	}, text)
-	for _, line := range strings.Split(text, "\n") {
+}
+func stubComment(out *bytes.Buffer, text string) {
+	for _, line := range strings.Split(stubCommentText(text), "\n") {
+		trimmed := strings.TrimSpace(line)
+		// gofmt promotes legacy build comments even when they have a space.
+		if strings.HasPrefix(trimmed, "+build") || strings.HasPrefix(trimmed, "go:build") {
+			line = "Comment: " + line
+		}
 		fmt.Fprintf(out, "// %s\n", line)
 	}
 }
@@ -217,12 +224,7 @@ func RenderStub(use StubUse, spec *model.OpSpec) ([]byte, error) {
 		ref = use.ModuleRef
 	}
 	var out bytes.Buffer
-	fmt.Fprintf(&out, "%s%s. DO NOT EDIT.\n\n", GeneratedStubHeader, strings.Map(func(r rune) rune {
-		if unicode.IsControl(r) {
-			return -1
-		}
-		return r
-	}, ref))
+	fmt.Fprintf(&out, "%s%s. DO NOT EDIT.\n\n", GeneratedStubHeader, strings.ReplaceAll(stubCommentText(ref), "\n", ""))
 	stubComment(&out, fmt.Sprintf("Package %s calls op %s through its op stub.\n\n%s", use.Name, ref, spec.Description))
 	fmt.Fprintf(&out, "package %s\n\nimport opctl %q\n\n", use.Name, "github.com/opctl/opctl/sdks/go/opspec/sdk")
 	for _, group := range groups {
@@ -306,5 +308,15 @@ func RenderStub(use StubUse, spec *model.OpSpec) ([]byte, error) {
 		fmt.Fprintf(&out, "c, out.%s = opctl.OpOutput[%s](c, %q)\n", outputs[key], r.handleType(spec.Outputs[key], stubPath("Outputs", key)), key)
 	}
 	out.WriteString("return c, out\n}\n")
-	return format.Source(out.Bytes())
+	formatted, err := format.Source(out.Bytes())
+	if err != nil {
+		return nil, err
+	}
+	for _, line := range strings.Split(string(formatted), "\n") {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "//go:build") || strings.HasPrefix(line, "// +build") {
+			return nil, fmt.Errorf("op stub %s: rendered source contains a build constraint", use.Name)
+		}
+	}
+	return formatted, nil
 }
