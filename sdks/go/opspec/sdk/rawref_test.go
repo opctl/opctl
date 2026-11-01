@@ -2,6 +2,7 @@ package sdk
 
 import (
 	"bytes"
+	"encoding/json"
 	"strings"
 	"testing"
 )
@@ -36,11 +37,33 @@ func TestRawRefBindings(t *testing.T) {
 	}
 }
 
-func TestRawRefRejectsPartialReferences(t *testing.T) {
-	for _, ref := range []string{"", "text", "prefix $(x)", "$(x) suffix", "$()", "$(x)\n", "$(a\nb)"} {
+func TestRawRefRejectsMissingReferences(t *testing.T) {
+	for _, ref := range []string{"", "text", "$()", "$(x", `\$(x)`, "$(a\nb)"} {
 		_, err := Plan(func(struct{}) Call { return Container("a").File("/x", RawRef[File](ref)) }, nil)
-		if err == nil || !strings.Contains(err.Error(), "RawRef needs a whole $(...) reference") {
+		if err == nil || !strings.Contains(err.Error(), "RawRef needs an unescaped $(...) reference") {
 			t.Fatalf("ref %q: %v", ref, err)
+		}
+	}
+}
+
+func TestRawRefTemplates(t *testing.T) {
+	for _, ref := range []string{"Bearer $(token)", "$(a)-$(b)", "$(x) suffix", "$(x)\n", "$(dir/$(name))", `\\$(x)`} {
+		data, err := Plan(func(struct{}) Call { return Container("a").EnvFrom("VALUE", RawRef[String](ref)) }, nil)
+		if err != nil {
+			t.Fatalf("%q: %v", ref, err)
+		}
+		var plan struct {
+			Opspec struct {
+				Run struct {
+					Container struct{ EnvVars map[string]string }
+				}
+			}
+		}
+		if err := json.Unmarshal(data, &plan); err != nil {
+			t.Fatal(err)
+		}
+		if plan.Opspec.Run.Container.EnvVars["VALUE"] != ref {
+			t.Fatalf("template changed: %s", data)
 		}
 	}
 }

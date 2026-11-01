@@ -158,7 +158,7 @@ func plan(struct{}) opctl.Call {
 
 ## RawRef
 
-`RawRef[T](expr)` emits a whole opspec `$(...)` reference verbatim, for references the SDK doesn't model, such as nested references:
+`RawRef[T](expr)` emits an expression containing an unescaped opspec `$(...)` reference verbatim, for references the SDK doesn't model, such as nested references or `Bearer $(token)` templates:
 
 ```go
 type Inputs struct {

@@ -2,12 +2,13 @@ package sdk
 
 import (
 	"fmt"
+	"github.com/opctl/opctl/sdks/go/opspec/sdk/refscan"
 	"regexp"
 )
 
 var wholeReference = regexp.MustCompile(`^\$\(.+\)$`)
 
-// RawRef emits a whole $(...) reference verbatim, without visibility checks.
+// RawRef emits an expression containing $(...) references verbatim, without visibility checks.
 // It supports nested references and other expressions the SDK does not model;
 // use OpDir, OpFile, and Dir subpaths for paths. Value cannot be read during plan. Building expr from input values
 // can inject references into the op graph; use typed handles when possible.
@@ -23,8 +24,8 @@ func RawRef[T Handle](expr string) T {
 }
 
 func (v *inputValue) setRaw(expr string) {
-	if !wholeReference.MatchString(expr) {
-		v.err = fmt.Errorf("RawRef needs a whole $(...) reference, got %q", expr)
+	if !refscan.Contains(expr) {
+		v.err = fmt.Errorf("RawRef needs an unescaped $(...) reference, got %q", expr)
 		return
 	}
 	v.raw = expr
