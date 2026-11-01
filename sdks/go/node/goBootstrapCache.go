@@ -25,6 +25,8 @@ import (
 
 // goBootstrapCache is shared by API describes and all op callers in this node.
 type goBootstrapCache struct {
+	// schema is immutable for the lifetime of a node. Zero keeps test fixtures at the production default.
+	schema        goop.SchemaRange
 	describes     map[string]describeMemo
 	describeBytes int
 	describeClock uint64
@@ -413,4 +415,11 @@ func bootstrapWritablePaths(dataDir string) []string {
 		paths = append(paths, filepath.Join(dataDir, name))
 	}
 	return paths
+}
+
+func (cache *goBootstrapCache) supportedSchemas() goop.SchemaRange {
+	if cache.schema == (goop.SchemaRange{}) {
+		return goop.SupportedSchemas()
+	}
+	return cache.schema
 }

@@ -17,6 +17,10 @@ import (
 )
 
 func (bootstrap _bootstrapper) runCached(ctx context.Context, op *model.OpCall, root, phase string, inputs map[string]interface{}) ([]byte, error) {
+	request, err := goop.NewRequestForRange(phase, inputs, bootstrap.cache.supportedSchemas())
+	if err != nil {
+		return nil, err
+	}
 	session, _ := ctx.Value(goBootstrapSessionKey{}).(*goBootstrapSession)
 	if session == nil || session.path != op.OpPath {
 		ctx, session = withGoBootstrapSession(ctx, op.OpPath)
@@ -37,7 +41,7 @@ func (bootstrap _bootstrapper) runCached(ctx context.Context, op *model.OpCall, 
 	spec.ReadOnlyMounts["/opctl/program"] = true
 	spec.Cmd = []interface{}{"sh", "/opctl/launcher", "/opctl/program", phase}
 	invoke := func() ([]byte, error) {
-		return bootstrap.invokeProgram(ctx, op, root, "bootstrap "+phase, spec, program.source.ModuleRoot, false, goop.NewRequest(phase, inputs))
+		return bootstrap.invokeProgram(ctx, op, root, "bootstrap "+phase, spec, program.source.ModuleRoot, false, request)
 	}
 	if phase == "describe" {
 		return bootstrap.describeCached(ctx, op, root, program, invoke)

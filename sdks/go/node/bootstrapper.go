@@ -27,7 +27,7 @@ func (bootstrap _bootstrapper) Describe(ctx context.Context, opCall *model.OpCal
 	if err != nil {
 		return nil, err
 	}
-	spec, err := goop.ParseDescribe(data)
+	spec, err := goop.ParseDescribeForRange(data, bootstrap.cache.supportedSchemas())
 	if err != nil {
 		return nil, &OpDeclarationError{Err: err}
 	}
@@ -38,5 +38,5 @@ func (bootstrap _bootstrapper) Plan(ctx context.Context, opCall *model.OpCall, r
 	if err != nil {
 		return nil, err
 	}
-	return goop.ParsePlan(data)
+	return goop.ParsePlanForRange(data, bootstrap.cache.supportedSchemas())
 }

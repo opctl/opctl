@@ -297,7 +297,7 @@ Describe reflects public output declarations supplied to `MainWithOutputs`, with
 
 ## Schema negotiation
 
-Describe and plan each receive the node's supported opspec schema range. The dependency-free Go op SDK supports schemas 1 through 4 and emits the newest version both support. A baseline graph emits schema 1 for a `[1,1]` node and schema 4 for a `[1,4]` node. Its calls, mounts, escaped literals, and output aliases stay the same. Missing, null, non-integer, and reversed request ranges fail without a response. The node also rejects null envelope versions, including after duplicate fields. The node continues to read older schemas and checks every response against the range it requested.
+Describe and plan each receive the node's supported opspec schema range. The dependency-free Go op SDK supports schemas 1 through 4 and emits the newest version both support. A baseline graph emits schema 1 for a `[1,1]` node and schema 4 for a `[1,4]` node. Its calls, mounts, escaped literals, and output aliases stay the same. Missing, null, non-integer, and reversed request ranges fail without a response. The node also rejects null envelope versions, including after duplicate fields. The node continues to read older schemas and checks every response against the range it requested. Production nodes advertise their complete readable range, currently `[1,4]`, for every API, root, and nested Go bootstrap.
 
 | Required schema | Graph syntax |
 | --- | --- |

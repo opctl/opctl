@@ -17,6 +17,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
+	"github.com/opctl/opctl/sdks/go/opspec/goop"
 )
 
 // New returns a new LocalCore initialized with the given options
@@ -25,6 +26,15 @@ func New(
 	containerRuntime containerruntime.ContainerRuntime,
 	dataDirPath string,
 ) (Core, error) {
+
+	return newWithSchemaRange(ctx, containerRuntime, dataDirPath, goop.SupportedSchemas())
+}
+
+// newWithSchemaRange limits Go bootstrap readers for package integration tests.
+func newWithSchemaRange(ctx context.Context, containerRuntime containerruntime.ContainerRuntime, dataDirPath string, schema goop.SchemaRange) (Core, error) {
+	if err := schema.Validate(); err != nil {
+		return nil, err
+	}
 
 	eventDbPath := path.Join(dataDirPath, "dcg", "events")
 	if err := unsudo.CreateDir(eventDbPath); err != nil {
@@ -65,7 +75,7 @@ func New(
 		pubSub,
 	)
 
-	goCache := &goBootstrapCache{runtime: containerRuntime, stateStore: stateStore, pubSub: pubSub}
+	goCache := &goBootstrapCache{runtime: containerRuntime, stateStore: stateStore, pubSub: pubSub, schema: schema}
 	caller := newCaller(
 		newContainerCaller(
 			containerRuntime,

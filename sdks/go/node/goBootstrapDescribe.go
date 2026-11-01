@@ -2,6 +2,7 @@ package node
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
@@ -53,12 +54,14 @@ func (cache *goBootstrapCache) rememberDescribe(key string, data []byte) {
 	}
 }
 func (bootstrap _bootstrapper) describeCached(ctx context.Context, op *model.OpCall, root string, program *goProgram, invoke func() ([]byte, error)) ([]byte, error) {
-	unlock, _, err := bootstrap.cache.acquire(ctx, "describe:"+program.key)
+	schema := bootstrap.cache.supportedSchemas()
+	key := fmt.Sprintf("%s:1:%d:%d", program.key, schema.Min, schema.Max)
+	unlock, _, err := bootstrap.cache.acquire(ctx, "describe:"+key)
 	if err != nil {
 		return nil, err
 	}
 	defer unlock()
-	if data, ok := bootstrap.cache.cachedDescribe(program.key); ok {
+	if data, ok := bootstrap.cache.cachedDescribe(key); ok {
 		if err := bootstrap.cachedDescribeEvents(op, root); err != nil {
 			return nil, err
 		}
@@ -68,10 +71,10 @@ func (bootstrap _bootstrapper) describeCached(ctx context.Context, op *model.OpC
 	if err != nil {
 		return nil, err
 	}
-	if _, err := goop.ParseDescribe(data); err != nil {
+	if _, err := goop.ParseDescribeForRange(data, schema); err != nil {
 		return nil, &OpDeclarationError{Err: err}
 	}
-	bootstrap.cache.rememberDescribe(program.key, data)
+	bootstrap.cache.rememberDescribe(key, data)
 	return data, nil
 }
 func (bootstrap _bootstrapper) cachedDescribeEvents(op *model.OpCall, root string) error {
