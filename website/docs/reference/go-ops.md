@@ -132,3 +132,12 @@ outputs can alias one handle. Input and output declarations may share a public
 name. Use `PlanWithOutputs` and `DescribeWithOutputs` in SDK tests. Describe
 reads only the tagged types and never invokes the plan function. Existing
 `Main`, `Plan`, and `Describe` programs keep their no-output contract.
+
+Go ops fetched by git ref must keep their nearest `go.mod` and every local
+`replace` target inside that fetched repository. Bootstrap rejects paths and
+symlinks that escape it. The node carries the resolved repository root through
+nested local calls; it does not infer the boundary from `#` or a `.git` folder.
+Local ops retain their existing parent-module and replacement behavior. A git
+fetch includes the tagged repository tree, including helpers and in-repo SDK
+replacements, but does not fetch a developer's sibling checkouts. Private Go
+dependency downloads and compiled-program caching remain separate work.

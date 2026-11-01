@@ -1,0 +1,10 @@
+[
+  {
+    "name": "public git-ref YAML outputs",
+    "call": {
+      "opRef": "/repo/test-suite/run/go/interop/git-ref",
+      "scope": {},
+      "expect": "success"
+    }
+  }
+]

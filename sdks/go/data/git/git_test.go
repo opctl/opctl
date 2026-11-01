@@ -65,7 +65,7 @@ var _ = Context("_git", func() {
 							panic(err)
 						}
 						objectUnderTest := New(basePath, nil)
-						expectedHandle := newHandle(filepath.Join(basePath, providedRef), providedRef)
+						expectedHandle := newHandle(filepath.Join(basePath, providedRef), providedRef, filepath.Join(basePath, providedRef))
 
 						/* act */
 						actualHandle, actualError := objectUnderTest.TryResolve(
@@ -160,7 +160,7 @@ var _ = Context("_git", func() {
 
 				objectUnderTest := New(basePath, nil)
 
-				expectedResult := newHandle(filepath.Join(basePath, providedRef), providedRef)
+				expectedResult := newHandle(filepath.Join(basePath, providedRef), providedRef, filepath.Join(basePath, providedRef))
 
 				var (
 					actualResult1,
@@ -214,8 +214,8 @@ var _ = Context("_git", func() {
 
 				objectUnderTest := New(basePath, nil)
 
-				expectedResult1 := newHandle(filepath.Join(basePath, providedRef1), providedRef1)
-				expectedResult2 := newHandle(filepath.Join(basePath, providedRef2), providedRef2)
+				expectedResult1 := newHandle(filepath.Join(basePath, providedRef1), providedRef1, filepath.Join(basePath, providedRef1))
+				expectedResult2 := newHandle(filepath.Join(basePath, providedRef2), providedRef2, filepath.Join(basePath, providedRef2))
 
 				var (
 					actualResult1,

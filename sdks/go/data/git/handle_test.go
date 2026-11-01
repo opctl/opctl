@@ -119,3 +119,10 @@ var _ = Context("handle", func() {
 		})
 	})
 })
+
+var _ = Describe("fetched repository provenance", func() {
+	It("retains the resolved repo root separately from the op subdirectory", func() {
+		fetched := newHandle("/cache/github.com/example/repo#v1/ops/hello", "github.com/example/repo#v1/ops/hello", "/cache/github.com/example/repo#v1")
+		Expect(fetched.(interface{ RepositoryRoot() string }).RepositoryRoot()).To(Equal("/cache/github.com/example/repo#v1"))
+	})
+})

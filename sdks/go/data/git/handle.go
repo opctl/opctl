@@ -11,17 +11,20 @@ import (
 func newHandle(
 	path string,
 	dataRef string,
+	repositoryRoot string,
 ) model.DataHandle {
 	return handle{
-		path:    path,
-		dataRef: dataRef,
+		repositoryRoot: repositoryRoot,
+		path:           path,
+		dataRef:        dataRef,
 	}
 }
 
 // handle allows interacting w/ data sourced from git
 type handle struct {
-	path    string
-	dataRef string
+	path           string
+	dataRef        string
+	repositoryRoot string
 }
 
 func (gh handle) GetContent(
@@ -95,3 +98,6 @@ func (gh handle) rListDescendants(
 func (gh handle) Ref() string {
 	return gh.dataRef
 }
+
+// RepositoryRoot identifies the full fetched tree independently of its op subdir.
+func (gh handle) RepositoryRoot() string { return gh.repositoryRoot }

@@ -26,7 +26,11 @@ func (c core) DescribeOp(ctx context.Context, req model.DescribeOpReq) (*model.O
 		if !filepath.IsAbs(path) {
 			path = filepath.Join(c.dataCachePath, path)
 		}
-		return c.bootstrapper.Describe(ctx, &model.OpCall{BaseCall: model.BaseCall{OpPath: path}}, "")
+		op := &model.OpCall{BaseCall: model.BaseCall{OpPath: path}}
+		if fetched, ok := dir.(interface{ RepositoryRoot() string }); ok {
+			op.RepositoryRoot = fetched.RepositoryRoot()
+		}
+		return c.bootstrapper.Describe(ctx, op, "")
 	}
 	if err != nil {
 		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {

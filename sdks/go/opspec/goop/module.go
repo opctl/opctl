@@ -12,17 +12,39 @@ import (
 
 // ModuleRoot finds the nearest go.mod in the op dir or its parents.
 func ModuleRoot(opDir string) (string, error) {
+	return moduleRoot(opDir, "")
+}
+
+func moduleRoot(opDir, repositoryRoot string) (string, error) {
 	dir, err := filepath.Abs(opDir)
 	if err != nil {
 		return "", err
 	}
+	if repositoryRoot != "" {
+		if err := inRepository(repositoryRoot, dir); err != nil {
+			return "", err
+		}
+	}
 	for {
 		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			if repositoryRoot != "" {
+				if err := inRepository(repositoryRoot, filepath.Join(dir, "go.mod")); err != nil {
+					return "", err
+				}
+			}
 			return dir, nil
 		} else if !os.IsNotExist(err) {
 			return "", err
 		}
+		if repositoryRoot != "" && filepath.Clean(dir) == filepath.Clean(repositoryRoot) {
+			return "", fmt.Errorf("Go op needs a go.mod within fetched repository root %q", repositoryRoot)
+		}
 		parent := filepath.Dir(dir)
+		if repositoryRoot != "" {
+			if err := inRepository(repositoryRoot, parent); err != nil {
+				return "", fmt.Errorf("Go op needs a go.mod within fetched repository root %q", repositoryRoot)
+			}
+		}
 		if parent == dir {
 			return "", fmt.Errorf("Go op needs a go.mod in the op dir or a parent")
 		}
@@ -54,6 +76,12 @@ func GoVersion(moduleRoot string) (string, error) {
 // ContainerSpec prepares a bootstrap and returns the host dir to bind as
 // the module scope value. Local replace targets retain their host paths.
 func ContainerSpec(opDir, phase string) (*model.ContainerCallSpec, string, error) {
+	return ContainerSpecInRepository(opDir, phase, "")
+}
+
+// ContainerSpecInRepository bounds git-fetched Go sources and local replacements
+// to their resolved repository root. An empty root retains local-op behavior.
+func ContainerSpecInRepository(opDir, phase, repositoryRoot string) (*model.ContainerCallSpec, string, error) {
 	if phase != "plan" && phase != "describe" {
 		return nil, "", fmt.Errorf("unsupported bootstrap phase %q", phase)
 	}
@@ -64,7 +92,7 @@ func ContainerSpec(opDir, phase string) (*model.ContainerCallSpec, string, error
 	if strings.Contains(opDir, "$(") {
 		return nil, "", fmt.Errorf("Go op paths containing $( are not supported yet")
 	}
-	root, err := ModuleRoot(opDir)
+	root, err := moduleRoot(opDir, repositoryRoot)
 	if err != nil {
 		return nil, "", err
 	}
@@ -86,6 +114,11 @@ func ContainerSpec(opDir, phase string) (*model.ContainerCallSpec, string, error
 			target = filepath.Join(root, target)
 		}
 		target = filepath.Clean(target)
+		if repositoryRoot != "" {
+			if err := inRepository(repositoryRoot, target); err != nil {
+				return nil, "", fmt.Errorf("Go op local replace %q must resolve within fetched repository root %q: %w", replace.New.Path, repositoryRoot, err)
+			}
+		}
 		if target != root {
 			dirs[target] = model.Value{Dir: &target}
 		}
@@ -105,4 +138,20 @@ func ContainerSpec(opDir, phase string) (*model.ContainerCallSpec, string, error
 		EnvVars: map[string]interface{}{"GOFLAGS": "-mod=readonly", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "OPCTL_BOOTSTRAP_REQUEST": "/opctl/request.json"},
 		WorkDir: filepath.ToSlash(opDir),
 	}, root, nil
+}
+
+func inRepository(root, path string) error {
+	canonicalRoot, err := filepath.EvalSymlinks(root)
+	if err != nil {
+		return fmt.Errorf("resolve fetched repository root %q: %w", root, err)
+	}
+	canonicalPath, err := filepath.EvalSymlinks(path)
+	if err != nil {
+		return fmt.Errorf("resolve path %q within fetched repository root %q: %w", path, root, err)
+	}
+	relative, err := filepath.Rel(canonicalRoot, canonicalPath)
+	if err != nil || relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
+		return fmt.Errorf("Go op path %q resolves outside fetched repository root %q", path, root)
+	}
+	return nil
 }

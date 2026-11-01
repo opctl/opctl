@@ -111,6 +111,10 @@ func Interpret(
 		OpID:              opID,
 	}
 
+	opCall.RepositoryRoot = goopctx.RepositoryRoot(ctx)
+	if fetched, ok := opDir.(interface{ RepositoryRoot() string }); ok {
+		opCall.RepositoryRoot = fetched.RepositoryRoot()
+	}
 	if goopctx.Active(ctx) {
 		opCall.InputParams = opFile.Inputs
 		opCall.OutputParams = opFile.Outputs

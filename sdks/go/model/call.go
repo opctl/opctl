@@ -77,6 +77,7 @@ type OCIImagePlatform struct {
 
 // OpCall is a call of an op
 type OpCall struct {
+	RepositoryRoot            string                `json:"-"`
 	InputParams, OutputParams map[string]*ParamSpec `json:"-"`
 	IsGoOp                    bool                  `json:"-"`
 	BaseCall

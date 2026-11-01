@@ -52,7 +52,7 @@ func (bootstrap _bootstrapper) run(ctx context.Context, opCall *model.OpCall, ro
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	spec, mountRoot, err := goop.ContainerSpec(opCall.OpPath, phase)
+	spec, mountRoot, err := goop.ContainerSpecInRepository(opCall.OpPath, phase, opCall.RepositoryRoot)
 	if err != nil {
 		return nil, err
 	}

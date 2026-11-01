@@ -28,6 +28,9 @@ accordance with
 - Failed interpretation of sensitive Go graph bindings reports binding names without exposing resolved values. Event snapshots also keep sensitive names, image credentials,
   and dynamic environments private.
 
+- Git-fetched Go ops cannot bootstrap with a module or local replacement outside their fetched repository, including through symlinks. Local ops retain their existing
+  module mounts.
+
 - Go graph groups and loops retain private runtime results while omitting secret values from public completion events.
 
 - Describing Go ops reports runtime and context failures as HTTP 500 while keeping declaration, bootstrap exit, and response parse failures as HTTP 400.

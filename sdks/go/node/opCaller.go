@@ -8,6 +8,7 @@ import (
 	"sort"
 
 	"github.com/opctl/opctl/sdks/go/data/fs"
+	"github.com/opctl/opctl/sdks/go/internal/goopctx"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/goop"
@@ -62,6 +63,9 @@ func (oc _opCaller) Call(
 	map[string]*model.Value,
 	error,
 ) {
+	if opCall.RepositoryRoot != "" {
+		ctx = goopctx.WithRepositoryRoot(ctx, opCall.RepositoryRoot)
+	}
 	var err error
 	outboundScope := map[string]*model.Value{}
 

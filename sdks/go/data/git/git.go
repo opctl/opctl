@@ -120,5 +120,5 @@ func (gp _git) TryResolve(
 		return nil, err
 	}
 
-	return newHandle(filepath.Join(gp.basePath, dataRef), dataRef), nil
+	return newHandle(filepath.Join(gp.basePath, dataRef), dataRef, repoAbsPath), nil
 }
