@@ -27,6 +27,8 @@ accordance with
 
 ### Fixed
 
+- Separate Go replacement mounts reject host symlinks; replacements inside the module use its existing mount.
+
 - Go describe classifies missing or malformed module files and invalid bootstrap mounts as declaration errors.
 
 - Failed interpretation of sensitive Go graph bindings reports binding names without exposing resolved values. Event snapshots also keep sensitive names, image credentials,

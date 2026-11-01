@@ -101,7 +101,9 @@ var _ = Describe("Go op module and container spec", func() {
 	It("mounts the module and each local replacement at their own host paths", func() {
 		module := filepath.Join(root, "app", "ops", "hello")
 		sdk := filepath.Join(root, "sdk")
-		shared := "/var/lib/opctl-replace-fixture"
+		shared := filepath.Join(root, "absolute-replacement")
+		Expect(os.MkdirAll(sdk, 0700)).To(Succeed())
+		Expect(os.MkdirAll(shared, 0700)).To(Succeed())
 		write(filepath.Join(module, "go.mod"), "module hello\ngo 1.21\nreplace example.com/sdk => ../../../sdk\nreplace example.com/other => "+shared+"\nreplace example.com/remote => example.com/remote v1.0.0\n")
 		spec, mount, err := ContainerSpec(module, "plan")
 		Expect(err).NotTo(HaveOccurred())
@@ -125,12 +127,34 @@ var _ = Describe("Go op module and container spec", func() {
 		}
 	})
 	It("allows replacements below image directories and duplicate module replacements", func() {
-		write(filepath.Join(root, "go.mod"), "module hello\ngo 1.21\nreplace example.com/sdk => /usr/local/sdk\nreplace example.com/self => .\n")
+		write(filepath.Join(root, "go.mod"), "module hello\ngo 1.21\nreplace example.com/sdk => ./sdk\nreplace example.com/self => .\n")
 		spec, _, err := ContainerSpec(root, "plan")
 		Expect(err).NotTo(HaveOccurred())
-		Expect(spec.Dirs).To(HaveLen(2))
+		Expect(spec.Dirs).To(HaveLen(1))
 		Expect(spec.Dirs[root]).To(Equal("$(module)"))
 	})
+	It("uses the root mount for replacements within the module, including local links", func() {
+		write(filepath.Join(root, "go.mod"), "module app\ngo 1.21\nreplace example.com/lib => ./lib\n")
+		outside := filepath.Join(filepath.Dir(root), filepath.Base(root)+"-outside")
+		Expect(os.MkdirAll(outside, 0700)).To(Succeed())
+		defer os.RemoveAll(outside)
+		Expect(os.Symlink(outside, filepath.Join(root, "lib"))).To(Succeed())
+		spec, _, err := ContainerSpec(root, "plan")
+		Expect(err).NotTo(HaveOccurred())
+		Expect(spec.Dirs).To(HaveLen(1))
+	})
+	It("rejects symlinked separate replacement mounts and module roots", func() {
+		module := filepath.Join(root, "app")
+		write(filepath.Join(module, "go.mod"), "module app\ngo 1.21\nreplace example.com/lib => ../link\n")
+		Expect(os.MkdirAll(filepath.Join(root, "private"), 0700)).To(Succeed())
+		Expect(os.Symlink(filepath.Join(root, "private"), filepath.Join(root, "link"))).To(Succeed())
+		_, _, err := ContainerSpec(module, "plan")
+		Expect(err).To(MatchError(ContainSubstring("symlink")))
+		Expect(os.Symlink(module, filepath.Join(root, "alias"))).To(Succeed())
+		_, _, err = ContainerSpec(filepath.Join(root, "alias"), "plan")
+		Expect(err).To(MatchError(ContainSubstring("symlink")))
+	})
+
 	It("reports a missing module or Go directive and malformed module files", func() {
 		_, err := ModuleRoot(root)
 		Expect(err).To(MatchError("Go op needs a go.mod in the op dir or a parent"))

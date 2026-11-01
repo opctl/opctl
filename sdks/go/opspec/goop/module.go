@@ -104,6 +104,9 @@ func ContainerSpecInRepository(opDir, phase, repositoryRoot string) (*model.Cont
 	if err != nil {
 		return nil, "", err
 	}
+	if err := validateMount(root); err != nil {
+		return nil, "", err
+	}
 	dirs := map[string]interface{}{root: "$(module)"}
 	for _, replace := range module.Replace {
 		target := replace.New.Path
@@ -119,16 +122,13 @@ func ContainerSpecInRepository(opDir, phase, repositoryRoot string) (*model.Cont
 				return nil, "", fmt.Errorf("Go op local replace %q must resolve within fetched repository root %q: %w", replace.New.Path, repositoryRoot, err)
 			}
 		}
-		if target != root {
-			dirs[target] = model.Value{Dir: &target}
+		if within(root, target) {
+			continue
 		}
-	}
-	for destination := range dirs {
-		for _, protected := range []string{"/usr", "/usr/local", "/go", "/opctl"} {
-			if destination == "/" || destination == protected || strings.HasPrefix(protected, destination+"/") {
-				return nil, "", fmt.Errorf("Go op mount destination %q would hide required bootstrap image directory %q", destination, protected)
-			}
+		if err := validateMount(target); err != nil {
+			return nil, "", err
 		}
+		dirs[target] = model.Value{Dir: &target}
 	}
 	return &model.ContainerCallSpec{
 		Image:   &model.ContainerCallImageSpec{Ref: "golang:" + version},
@@ -152,6 +152,27 @@ func inRepository(root, path string) error {
 	relative, err := filepath.Rel(canonicalRoot, canonicalPath)
 	if err != nil || relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
 		return fmt.Errorf("Go op path %q resolves outside fetched repository root %q", path, root)
+	}
+	return nil
+}
+
+func within(root, path string) bool {
+	rel, err := filepath.Rel(root, path)
+	return err == nil && rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator))
+}
+
+func validateMount(path string) error {
+	for _, protected := range []string{"/usr", "/usr/local", "/go", "/opctl"} {
+		if path == "/" || path == protected || strings.HasPrefix(protected, path+"/") {
+			return fmt.Errorf("Go op mount destination %q would hide required bootstrap image directory %q", path, protected)
+		}
+	}
+	resolved, err := filepath.EvalSymlinks(path)
+	if err != nil {
+		return fmt.Errorf("resolve Go op mount %q: %w", path, err)
+	}
+	if resolved != filepath.Clean(path) {
+		return fmt.Errorf("Go op mount %q follows a host symlink to %q", path, resolved)
 	}
 	return nil
 }
