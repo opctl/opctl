@@ -178,24 +178,86 @@ func plan(struct{}) opctl.Call {
 
 A helper has no op boundary: its calls are part of your op. To reuse a whole op, with its own inputs and outputs, call it by ref instead.
 
-## Calling YAML ops, and being called
+## Typed op calls
 
-`CallOp` calls another op by ref, whether it's a YAML op or a Go op. `OpOutput` binds one of its outputs to a handle:
+An op stub gives a YAML or Go callee typed inputs and outputs. Keep both ops under `.opspec/`. In a repository module named `example.com/myapp`, import the
+stub and declare its ref with a trailing comment:
 
-```go
+```go title=".opspec/release/op.go"
+// Publishes a greeting.
+package main
+
+import (
+    "example.com/myapp/opctlgen/greet" //opctl:op ../greet
+    opctl "github.com/opctl/opctl/sdks/go/opspec/sdk"
+)
+
 func plan(struct{}) opctl.Call {
-    version, tag := opctl.OpOutput[opctl.String](
-        opctl.CallOp("../version").Inputs(map[string]any{"prefix": "v"}),
-        "tag",
-    )
+    call, out := greet.Call(greet.Inputs{Name: opctl.StringOf("Ada")})
     publish := opctl.Container("alpine:3").
-        EnvFrom("TAG", tag).
-        Cmd("sh", "-ce", `echo "publishing $TAG"`)
-    return opctl.Serial(version, publish)
+        EnvFrom("GREETING", out.Greeting).
+        Cmd("sh", "-ce", `echo "$GREETING"`)
+    return opctl.Serial(call, publish)
+}
+
+func main() { opctl.Main(plan) }
+```
+
+The callee `.opspec/greet/op.yml` can be a YAML op:
+
+```yaml
+name: greet
+inputs:
+  name: {string: {}}
+  tags: {array: {default: [], constraints: {items: {type: string}}}}
+  config:
+    object:
+      default: {style: plain}
+      constraints:
+        properties:
+          style: {type: string}
+          loud: {type: boolean}
+        required: [style]
+outputs:
+  greeting: {string: {}}
+run:
+  container:
+    image: {ref: alpine:3}
+    envVars: {NAME: $(name)}
+    cmd: [sh, -ce, 'printf "hello %s" "$NAME"']
+    stdout: $(greeting)
+```
+
+Run `opctl op gen release` for editor completion, then `opctl run release`. Running or validating a local Go op refreshes all declared stubs in its module.
+opctl always generates the execution stubs from current callee interfaces before compiling. Do not author or commit `opctlgen/`; it ignores itself.
+
+Leave a field unset to use the callee's default. A required input left unset fails during plan. `StringOf`, `NumberOf`, `BooleanOf`, `ArrayOf`, and `ObjectOf`
+create literal handles. Keep the returned call in the graph before using its output handles. A callee's removed input or changed type causes a compiler error.
+The [op stub reference](../reference/go-ops/op-stubs.md) covers object properties, naming, and diagnostics.
+
+Local refs are relative to the file declaring the import. Remote stubs use the existing `repo#tag/path` grammar:
+
+```go title=".opspec/merge-example/op.go"
+package main
+
+import (
+    "example.com/myapp/opctlgen/merge" //opctl:op github.com/opspec-pkgs/object.merge#1.0.0
+    opctl "github.com/opctl/opctl/sdks/go/opspec/sdk"
+)
+
+func main() {
+    opctl.Main(func(struct{}) opctl.Call {
+        call, out := merge.Call(merge.Inputs{
+            Default: opctl.ObjectOf(map[string]any{"tag": "pending"}),
+            Override: opctl.ObjectOf(map[string]any{"by": "release"}),
+        })
+        return opctl.Serial(call, opctl.Container("alpine:3").EnvFrom("MERGED", out.Result).Cmd("true"))
+    })
 }
 ```
 
-Local refs are relative to the op directory. Git refs use `repo#tag/path`. A YAML op calls a Go op the same way it calls any op:
+Use `CallOp` with `Inputs` and `OpOutput` for dynamic refs or to break Go-to-Go stub cycles. It is also the escape hatch for values a stub cannot express.
+A YAML op calls a Go op through its ordinary ref:
 
 ```yaml
 name: release

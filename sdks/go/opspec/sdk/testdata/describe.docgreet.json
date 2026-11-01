@@ -1,0 +1,1 @@
+{"contractVersion":1,"opspecSchema":1,"opspec":{"name":"greet","inputs":{"name":{"string":{}},"config":{"object":{"default":{"style":"plain"},"constraints":{"properties":{"style":{"type":"string"},"loud":{"type":"boolean"}},"required":["style"]}}},"tags":{"array":{"default":[],"constraints":{"items":{"type":"string"}}}}},"outputs":{"greeting":{"string":{}}}}}

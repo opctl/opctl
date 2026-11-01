@@ -3,7 +3,7 @@ title: Handles
 ---
 
 A handle is a typed value in the op graph that an input supplies or a call produces: `Dir`, `File`, `Socket`, `String`, `Number`, `Boolean`, `Array[T]`, or `Object[T]`.
-Handles that a call produces have no value during plan; only [public inputs](inputs-and-outputs.md#values-during-plan) do.
+Handles that a call produces have no value during plan; [public inputs](inputs-and-outputs.md#values-during-plan) and literal handles do.
 
 ## Literal handles
 

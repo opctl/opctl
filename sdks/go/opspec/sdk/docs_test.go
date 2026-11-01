@@ -1,6 +1,7 @@
 package sdk
 
 import (
+	"bytes"
 	"fmt"
 	"io/fs"
 	"os"
@@ -36,6 +37,22 @@ func TestDocsExamplesCompile(t *testing.T) {
 	goMod := "module example.com/myapp\n\ngo 1.21\n\nrequire github.com/opctl/opctl/sdks/go/opspec/sdk v0.0.0\n\nreplace github.com/opctl/opctl/sdks/go/opspec/sdk => " + sdk + "\n"
 	if err := os.WriteFile(filepath.Join(module, "go.mod"), []byte(goMod), 0600); err != nil {
 		t.Fatal(err)
+	}
+	// These interfaces are rendered and checked against shared describe fixtures
+	// by goop's golden tests, without adding a dependency to this SDK module.
+	for _, name := range []string{"greet", "merge"} {
+		data, err := os.ReadFile(filepath.Join(sdk, "internal", "stubgolden", "doc"+name, "stub.go"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		data = bytes.Replace(data, []byte("package doc"+name), []byte("package "+name), 1)
+		dir := filepath.Join(module, "opctlgen", name)
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(dir, "stub.go"), data, 0644); err != nil {
+			t.Fatal(err)
+		}
 	}
 	files := map[string]string{}
 	dirs := map[string]bool{}

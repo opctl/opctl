@@ -60,7 +60,7 @@ func TestRenderStub(t *testing.T) {
 }
 
 func TestRenderSharedDescribe(t *testing.T) {
-	for _, name := range []string{"inputs", "outputs", "metadata"} {
+	for _, name := range []string{"inputs", "outputs", "metadata", "docgreet", "docmerge"} {
 		data, err := os.ReadFile("../sdk/testdata/describe." + name + ".json")
 		if err != nil {
 			t.Fatal(err)

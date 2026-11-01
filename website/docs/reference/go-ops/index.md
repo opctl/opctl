@@ -8,6 +8,7 @@ imports the dependency-free Go op SDK, `github.com/opctl/opctl/sdks/go/opspec/sd
 Go](../../training/authoring-ops-in-go.md).
 
 - [Inputs and outputs](inputs-and-outputs.md): declaring an op's interface.
+- [Op stubs](op-stubs.md): typed op calls to YAML and Go ops.
 - [Calls](calls.md): container calls, op calls, and groups.
 - [Handles](handles.md): passing values between inputs, calls, and outputs.
 - [Bootstrap](bootstrap.md): how opctl runs the program, and its caches.
