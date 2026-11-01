@@ -3,6 +3,7 @@ package node
 import (
 	"context"
 	"os"
+	"time"
 
 	"io"
 
@@ -43,6 +44,36 @@ var _ = Context("core", func() {
 			})
 		})
 		Context("Call", func() {
+			It("closes its subscription after the call returns", func() {
+				ctx, cancel := context.WithCancel(context.Background())
+				defer cancel()
+				pubSub := &subscriptionRecordingPubSub{PubSub: pubsub.New(db)}
+				fakeCaller := new(FakeCaller)
+				fakeCaller.CallStub = func(
+					ctx context.Context,
+					id string,
+					scope map[string]*model.Value,
+					callSpec *model.CallSpec,
+					opPath string,
+					parentCallID *string,
+					rootCallID string,
+				) (map[string]*model.Value, error) {
+					pubSub.Publish(model.Event{
+						CallEnded: &model.CallEnded{Call: model.Call{ID: id, RootID: rootCallID}},
+						Timestamp: time.Now().UTC(),
+					})
+					return nil, nil
+				}
+
+				_, err := newSerialCaller(fakeCaller, pubSub).Call(
+					ctx, "callID", nil, "rootCallID", "opPath", []*model.CallSpec{{}},
+				)
+
+				Expect(err).To(BeNil())
+				Expect(ctx.Err()).To(BeNil())
+				Expect(pubSub.eventChannels).To(HaveLen(1))
+				Eventually(pubSub.eventChannels[0]).Should(BeClosed())
+			})
 
 			Context("caller errors", func() {
 				It("should return expected results", func() {
@@ -259,3 +290,17 @@ var _ = Context("core", func() {
 		})
 	})
 })
+
+type subscriptionRecordingPubSub struct {
+	pubsub.PubSub
+	eventChannels []<-chan model.Event
+}
+
+func (ps *subscriptionRecordingPubSub) Subscribe(
+	ctx context.Context,
+	filter model.EventFilter,
+) (<-chan model.Event, error) {
+	eventChannel, err := ps.PubSub.Subscribe(ctx, filter)
+	ps.eventChannels = append(ps.eventChannels, eventChannel)
+	return eventChannel, err
+}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"os"
+	"time"
 
 	"github.com/dgraph-io/badger/v4"
 	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/containerruntime/fakes"
@@ -41,6 +42,40 @@ var _ = Context("core", func() {
 		})
 
 		Context("Call", func() {
+			It("reuses its subscription across iterations and closes it after returning", func() {
+				ctx, cancel := context.WithCancel(context.Background())
+				defer cancel()
+				pubSub := &subscriptionRecordingPubSub{PubSub: pubsub.New(db)}
+				fakeCaller := new(FakeCaller)
+				fakeCaller.CallStub = func(
+					ctx context.Context,
+					id string,
+					scope map[string]*model.Value,
+					callSpec *model.CallSpec,
+					opPath string,
+					parentCallID *string,
+					rootCallID string,
+				) (map[string]*model.Value, error) {
+					pubSub.Publish(model.Event{
+						CallEnded: &model.CallEnded{Call: model.Call{ID: id, RootID: rootCallID}},
+						Timestamp: time.Now().UTC(),
+					})
+					return nil, nil
+				}
+
+				_, err := newSerialLoopCaller(fakeCaller, pubSub).Call(
+					ctx, "callID", map[string]*model.Value{},
+					model.SerialLoopCallSpec{Range: []interface{}{0, 1, 2}},
+					"opPath", nil, "rootCallID",
+				)
+
+				Expect(err).To(BeNil())
+				Expect(fakeCaller.CallCallCount()).To(Equal(3))
+				Expect(ctx.Err()).To(BeNil())
+				Expect(pubSub.eventChannels).To(HaveLen(1))
+				Eventually(pubSub.eventChannels[0]).Should(BeClosed())
+			})
+
 			Context("initial callSerialLoop.Until true", func() {
 				It("should not call caller.Call", func() {
 					/* arrange */
