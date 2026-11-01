@@ -14,8 +14,7 @@ run:
           - sh
           - -ce
           - |
-            printf '%s' '{"version":"v1.2.3","count":3,"ready":true,"targets":["linux","darwin"],"metadata":{"revision":"abc123","\$(literal-key)":"\$(not-a-ref)"},"literal":"\$(not-a-ref)"}' > "$OPCTL_OUTPUTS.tmp"
-            mv "$OPCTL_OUTPUTS.tmp" "$OPCTL_OUTPUTS"
+            printf '%s' '{"version":"v1.2.3","count":3,"ready":true,"targets":["linux","darwin"],"metadata":{"revision":"abc123","\$(literal-key)":"\$(not-a-ref)"},"literal":"\$(not-a-ref)"}' > "$OPCTL_OUTPUTS"
     - container:
         image: {ref: alpine:3}
         envVars:

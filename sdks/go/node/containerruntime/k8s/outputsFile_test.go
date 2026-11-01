@@ -9,10 +9,10 @@ import (
 var _ = Describe("outputs file PVC mapping", func() {
 	It("maps trusted shared scratch and rejects unshared or escaped paths", func() {
 		image := "alpine"
-		req := &model.ContainerCall{Image: &model.ContainerCallImage{Ref: &image}, OutputsFile: "/root/opctl/dcg/id/outputs/values.json", Dirs: map[string]string{"/opctl/outputs": "/root/opctl/dcg/id/outputs"}, EnvVars: map[string]string{"OPCTL_OUTPUTS": "/opctl/outputs/values.json"}}
+		req := &model.ContainerCall{Image: &model.ContainerCallImage{Ref: &image}, OutputsFile: "/root/opctl/dcg/id/outputs/values.json", Files: map[string]string{"/opctl/outputs/values.json": "/root/opctl/dcg/id/outputs/values.json"}, EnvVars: map[string]string{"OPCTL_OUTPUTS": "/opctl/outputs/values.json"}}
 		pod, err := constructPod(req)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(pod.Spec.Containers[0].VolumeMounts[1].SubPath).To(Equal("dcg/id/outputs"))
+		Expect(pod.Spec.Containers[0].VolumeMounts[1].SubPath).To(Equal("dcg/id/outputs/values.json"))
 		Expect(pod.Spec.Containers[0].Env[0].Value).To(Equal("/opctl/outputs/values.json"))
 		for _, path := range []string{"/tmp/outputs/values.json", "/root/opctl/../else/values.json", "/root/opctl-other/values.json"} {
 			req.OutputsFile = path

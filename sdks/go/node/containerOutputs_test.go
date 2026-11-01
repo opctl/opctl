@@ -17,7 +17,7 @@ import (
 )
 
 var _ = Describe("container outputs file", func() {
-	It("copies runtime maps, supports atomic rename, binds only requested keys, and cleans its scratch directory", func() {
+	It("mounts only the writable values file, copies maps, binds requested keys, and cleans scratch", func() {
 		dir, err := os.MkdirTemp("", "outputs-caller-")
 		Expect(err).NotTo(HaveOccurred())
 		defer os.RemoveAll(dir)
@@ -28,12 +28,12 @@ var _ = Describe("container outputs file", func() {
 			defer stderr.Close()
 			Expect(containerruntime.SeparateOutputFrom(ctx)).To(BeFalse())
 			Expect(c.EnvVars["OPCTL_OUTPUTS"]).To(Equal("/opctl/outputs/values.json"))
-			Expect(c.Dirs["/opctl/outputs"]).To(Equal(filepath.Join(dir, "outputs")))
-			stat, err := os.Stat(c.Dirs["/opctl/outputs"])
+			Expect(c.Dirs).NotTo(HaveKey("/opctl/outputs"))
+			Expect(c.Files["/opctl/outputs/values.json"]).To(Equal(c.OutputsFile))
+			stat, err := os.Stat(c.OutputsFile)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(stat.Mode() & (os.ModeSticky | 0777)).To(Equal(os.ModeSticky | os.FileMode(0777)))
-			Expect(os.WriteFile(c.OutputsFile+".tmp", []byte(`{"version":"$(literal)\n","count":3,"ignored":true}`), 0600)).To(Succeed())
-			Expect(os.Rename(c.OutputsFile+".tmp", c.OutputsFile)).To(Succeed())
+			Expect(stat.Mode().Perm()).To(Equal(os.FileMode(0666)))
+			Expect(os.WriteFile(c.OutputsFile, []byte(`{"version":"$(literal)\n","count":3,"ignored":true}`), 0666)).To(Succeed())
 			return nil, nil
 		}
 		cc := newContainerCaller(runtime, new(fakes.FakePubSub), &_stateStore{})

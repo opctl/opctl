@@ -18,7 +18,7 @@ container:
       printf '%s' '{"version":"v1.2.3","count":3}' > "$OPCTL_OUTPUTS"
 ```
 
-opctl mounts a fresh writable directory at `/opctl/outputs` and sets `OPCTL_OUTPUTS=/opctl/outputs/values.json`. The file starts absent. Applications may write it directly or write a temporary sibling and rename it. Authored environment variables named `OPCTL_OUTPUTS` and mounts that overlap `/opctl/outputs` are rejected only when outputs are requested. Calls without bindings get no new environment entry or mount.
+opctl mounts a fresh empty writable file at `/opctl/outputs/values.json` and sets `OPCTL_OUTPUTS` to that path. Write directly to this file; renaming a sibling over the mount is unsupported. Only this file reaches the host. Sibling files and subdirectories remain inside the container and disappear when it is removed. Authored environment variables named `OPCTL_OUTPUTS` and mounts that overlap `/opctl/outputs` are rejected only when outputs are requested. Calls without bindings get no new environment entry or mount.
 
 Write one UTF-8 JSON object, at most 1 MiB including whitespace and unrequested members. Strings remain exact, including newlines and literal `$()` text. Numbers use finite float64 values; use strings for large exact identifiers. Booleans, arrays, and objects retain native JSON data. Paths in JSON are strings, not file handles.
 
@@ -26,7 +26,7 @@ Every requested key must exist. Extra keys are validated and ignored. Empty file
 
 Secret output declarations and sensitive targets keep values out of completion events while later calls receive them privately. Applications must avoid printing secrets themselves. The file lives under the private call directory in the node data dir. opctl removes only its outputs directory on completion or failure; a node crash can leave scratch data. The 1 MiB read limit is not a disk write quota.
 
-Docker supports outputs files, including non-root writers. Embedded requires a same-path Lima share and a macOS mount/UID smoke before claiming support. Outputs-file-only YAML on Kubernetes uses the existing shared PVC under `/root/opctl`; paths outside it are rejected. A live shared-PVC smoke remains required. Kubernetes stream bindings and Go bootstrap remain unsupported.
+Docker supports outputs files with root and non-root writers, including a non-root node user. Outputs files are not yet verified on Embedded and Kubernetes. Kubernetes stream bindings and Go bootstrap are not yet supported.
 
 ## Typed members
 

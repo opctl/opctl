@@ -70,7 +70,7 @@ Bind a process stream to a String using a whole scope reference, for example `st
 
 Each bound stream accepts at most 1 MiB of valid UTF-8. Capture strips exactly one final LF or CRLF and preserves other whitespace. The call publishes values only after successful execution and collection. Overflow cancels the container and fails the call. Public log events retain the original bytes; a stream bound to a declared secret output or sensitive target produces no log events and remains available to later calls through private runtime results. Authors must declare derived secrets. Unbound application logs are still public.
 
-Docker supports separate streams. Embedded forwards the same request to Docker, but its mount and UID behavior needs a macOS smoke test. Kubernetes rejects stream bindings explicitly. Calls without stream bindings keep their existing stream and TTY behavior.
+Docker supports separate streams. Separate streams are not yet verified on Embedded and are not yet supported on Kubernetes. Calls without stream bindings keep their existing stream and TTY behavior.
 
 ```yaml
 run:

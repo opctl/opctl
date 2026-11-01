@@ -8,6 +8,9 @@ accordance with
 
 ### Fixed
 
+- Container outputs mount only `values.json`, so root-owned subdirectories cannot block cleanup by a non-root node. Writers must write directly to the file; renaming over
+  its mount is unsupported.
+
 - Parallel calls protect private completion values without mutating a callee-owned result map.
 
 - Public Go output-binding failures include their underlying reference error. Sensitive bindings keep the value-free diagnostic.

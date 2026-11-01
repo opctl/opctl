@@ -51,18 +51,23 @@ func (cc _containerCaller) callWithResults(ctx context.Context, call *model.Cont
 				resultErr = fmt.Errorf("unable to remove outputs directory")
 			}
 		}()
-		if err := os.Chmod(dir, 0777|os.ModeSticky); err != nil {
-			return nil, fmt.Errorf("unable to make outputs directory writable")
+		// Only the file crosses the mount boundary; root-owned siblings stay in the container.
+		if err := unsudo.CreateFile(call.OutputsFile, nil); err != nil {
+			return nil, fmt.Errorf("unable to prepare outputs file")
 		}
-		runtimeCall.Dirs = maps.Clone(call.Dirs)
-		if runtimeCall.Dirs == nil {
-			runtimeCall.Dirs = map[string]string{}
+		if err := os.Chmod(call.OutputsFile, 0666); err != nil {
+			return nil, fmt.Errorf("unable to make outputs file writable")
 		}
+		runtimeCall.Files = maps.Clone(call.Files)
+		if runtimeCall.Files == nil {
+			runtimeCall.Files = map[string]string{}
+		}
+
 		runtimeCall.EnvVars = maps.Clone(call.EnvVars)
 		if runtimeCall.EnvVars == nil {
 			runtimeCall.EnvVars = map[string]string{}
 		}
-		runtimeCall.Dirs["/opctl/outputs"] = dir
+		runtimeCall.Files["/opctl/outputs/values.json"] = call.OutputsFile
 		runtimeCall.EnvVars["OPCTL_OUTPUTS"] = "/opctl/outputs/values.json"
 	}
 	outReader, outWriter := io.Pipe()
