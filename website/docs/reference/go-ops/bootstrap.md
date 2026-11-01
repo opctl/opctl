@@ -74,7 +74,8 @@ clients receive up to 64 KiB of stderr. Download failures that involve credentia
 
 ## Release retries
 
-The release op tags the Go op SDK before compiling and publishing opctl. If a release fails later, retrying keeps the existing SDK tag when it points to the
+Each opctl release tags the Go op SDK as `sdks/go/opspec/sdk/vX.Y.Z` before compiling and publishing opctl. A new tag points to the release commit.
+If a release fails later, retrying keeps the existing SDK tag when it points to the
 release commit or its `sdks/go/opspec/sdk` contents match the release commit. The release fetches both commits to compare them and reuses the tagged module's
 `go.sum` hashes. It never moves the tag. If the SDK contents differ, bump the CHANGELOG version before releasing again.
 

@@ -37,6 +37,7 @@ accordance with
 
 ### Fixed
 
+- Go op authoring docs clarify setup, SDK module replacements, handle visibility, container DNS names, and CLI metadata display.
 - Release retries reuse an existing Go op SDK tag and its sums when the SDK contents match. Changed SDK contents require a new CHANGELOG version.
 - Go op scaffolds use `ops.local/NAME` module paths, so names such as `fmt` build without colliding with the Go standard library.
 - Empty container outputs files report how to write the required JSON object to `$OPCTL_OUTPUTS`.
