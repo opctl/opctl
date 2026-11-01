@@ -124,7 +124,8 @@ func wgUp(
 		}()
 
 		ctx := context.Background()
-		pingCtx, _ := context.WithTimeout(ctx, time.Second)
+		pingCtx, cancelPing := context.WithTimeout(ctx, time.Second)
+		defer cancelPing()
 		// test if VM pingable
 		_, err := ping.IPv4(pingCtx, vmPeerIp)
 		// if VM pingable, nothing to do
