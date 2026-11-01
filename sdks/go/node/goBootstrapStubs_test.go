@@ -4,11 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	gitclient "github.com/go-git/go-git/v5/plumbing/transport/client"
+	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/opctl/opctl/sdks/go/data"
 	datafs "github.com/opctl/opctl/sdks/go/data/fs"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -203,6 +207,41 @@ func TestBootstrapStubBuildHintsMatchDiagnostics(t *testing.T) {
 			}
 			if strings.Contains(err.Error(), "these ops no longer declare") != tc.changed {
 				t.Fatalf("misleading build hint: %v", err)
+			}
+		})
+	}
+}
+
+func TestBootstrapStubFetchAuthHints(t *testing.T) {
+	for _, tc := range []struct {
+		status int
+		auth   error
+	}{
+		{http.StatusUnauthorized, model.ErrDataProviderAuthentication{}},
+		{http.StatusForbidden, model.ErrDataProviderAuthorization{}},
+		{http.StatusNotFound, nil},
+		{http.StatusServiceUnavailable, nil},
+	} {
+		t.Run(http.StatusText(tc.status), func(t *testing.T) {
+			server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(tc.status) }))
+			defer server.Close()
+			original := gitclient.Protocols["https"]
+			gitclient.InstallProtocol("https", githttp.NewClient(server.Client()))
+			t.Cleanup(func() { gitclient.InstallProtocol("https", original) })
+			b, _, op, _ := cachedBootstrapFixture(t)
+			ref := server.URL + "/repo#v1"
+			if err := os.WriteFile(filepath.Join(op.OpPath, "op.go"), []byte("package main\nimport _ \"hello/opctlgen/greet\" //opctl:op "+ref+"\n"), 0644); err != nil {
+				t.Fatal(err)
+			}
+			_, err := b.Describe(context.Background(), op, "root")
+			if err == nil {
+				t.Fatal("expected a fetch error")
+			}
+			if strings.Contains(err.Error(), "add credentials with opctl auth add") != (tc.auth != nil) {
+				t.Fatalf("misleading fetch hint: %v", err)
+			}
+			if tc.auth != nil && !errors.Is(err, tc.auth) {
+				t.Fatalf("lost auth cause: %v", err)
 			}
 		})
 	}

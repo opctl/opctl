@@ -64,7 +64,11 @@ func (bootstrap _bootstrapper) stubs(ctx context.Context, op *model.OpCall, root
 			}
 			dir, err = data.Resolve(ctx, ref, git.New(filepath.Join(bootstrap.dataDirPath, "ops"), creds))
 			if err != nil {
-				return set, fmt.Errorf("%s: op stub %s: fetch %s: %w; add credentials with opctl auth add", use.Site, use.Name, ref, err)
+				hint := ""
+				if model.IsAuthError(err) {
+					hint = "; add credentials with opctl auth add"
+				}
+				return set, fmt.Errorf("%s: op stub %s: fetch %s: %w%s", use.Site, use.Name, ref, err, hint)
 			}
 		}
 		// Filesystem handles do not carry the fetched caller's repository bound.
