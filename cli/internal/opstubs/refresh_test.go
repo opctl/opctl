@@ -46,3 +46,22 @@ func TestRefreshPartialSuccess(t *testing.T) {
 		t.Fatal("refreshed a remote or cached op")
 	}
 }
+
+func TestRefreshStubFreeModule(t *testing.T) {
+	root := t.TempDir()
+	for name, text := range map[string]string{"go.mod": "module app\ngo 1.25\n", "op.go": "package main\n"} {
+		if err := os.WriteFile(filepath.Join(root, name), []byte(text), 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	api := new(fakes.FakeNode)
+	if err := RefreshModule(context.Background(), root, api); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Lstat(filepath.Join(root, "opctlgen")); !os.IsNotExist(err) {
+		t.Fatalf("created opctlgen without stubs: %v", err)
+	}
+	if api.DescribeOpCallCount() != 0 {
+		t.Fatal("described a stub-free module")
+	}
+}

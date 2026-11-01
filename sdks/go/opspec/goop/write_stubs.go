@@ -26,6 +26,8 @@ func WriteStubs(moduleRoot string, files map[string][]byte) error {
 		}
 	} else if !os.IsNotExist(err) {
 		return err
+	} else if len(files) == 0 {
+		return nil
 	}
 	if err := os.MkdirAll(root, 0755); err != nil {
 		return err

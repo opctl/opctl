@@ -81,3 +81,13 @@ func TestWriteStubsPreservesUserFiles(t *testing.T) {
 		})
 	}
 }
+
+func TestWriteStubsLeavesStubFreeModuleUntouched(t *testing.T) {
+	root := t.TempDir()
+	if err := WriteStubs(root, nil); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Lstat(filepath.Join(root, "opctlgen")); !os.IsNotExist(err) {
+		t.Fatalf("created opctlgen without stubs: %v", err)
+	}
+}
