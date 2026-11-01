@@ -61,9 +61,11 @@ func (sc _serialCaller) Call(
 
 	// subscribe to events
 	// @TODO: handle err channel
+	subCtx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	eventFilterSince := time.Now().UTC()
 	eventChannel, _ := sc.pubSub.Subscribe(
-		ctx,
+		subCtx,
 		model.EventFilter{
 			Roots: []string{rootCallID},
 			Since: &eventFilterSince,
