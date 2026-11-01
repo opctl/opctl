@@ -1,0 +1,28 @@
+name: outputs-file
+run:
+  serial:
+    - container:
+        image: {ref: alpine:3}
+        outputs:
+          version: $(version)
+          count: $(buildCount)
+          ready: $(ready)
+          targets: $(targets)
+          metadata: $(metadata)
+          literal: $(literal)
+        cmd:
+          - sh
+          - -ce
+          - |
+            printf '%s' '{"version":"v1.2.3","count":3,"ready":true,"targets":["linux","darwin"],"metadata":{"revision":"abc123","\$(literal-key)":"\$(not-a-ref)"},"literal":"\$(not-a-ref)"}' > "$OPCTL_OUTPUTS.tmp"
+            mv "$OPCTL_OUTPUTS.tmp" "$OPCTL_OUTPUTS"
+    - container:
+        image: {ref: alpine:3}
+        envVars:
+          VERSION: $(version)
+          COUNT: $(buildCount)
+          READY: $(ready)
+          TARGET: $(targets[0])
+          REVISION: $(metadata.revision)
+          LITERAL: $(literal)
+        cmd: [sh, -ce, 'test "$VERSION" = v1.2.3 && test "$COUNT" = 3 && test "$READY" = true && test "$TARGET" = linux && test "$REVISION" = abc123 && test "$LITERAL" = ''\$(not-a-ref)''']

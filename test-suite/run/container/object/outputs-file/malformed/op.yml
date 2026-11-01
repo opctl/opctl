@@ -1,0 +1,10 @@
+name: malformed
+run:
+  serial:
+    - container:
+        image: {ref: alpine:3}
+        outputs: {version: $(version)}
+        cmd: [sh, -ce, "printf '%s' '{\"version\":' > \"$OPCTL_OUTPUTS\""]
+    - container:
+        image: {ref: alpine:3}
+        cmd: [sh, -ce, "echo CONSUMER_SHOULD_NOT_RUN; exit 99"]

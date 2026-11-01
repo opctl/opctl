@@ -16,6 +16,7 @@ An object defining a container call.
   - [name](#name)
   - [sockets](#sockets)
   - [stdout and stderr](#stdout-and-stderr)
+  - [outputs](outputs.md)
   - [workDir](#workdir)
 
 ### image
@@ -82,3 +83,8 @@ run:
         envVars: {VERSION: $(version)}
         cmd: [sh, -ce, 'test "$VERSION" = v1.2.3']
 ```
+
+
+### outputs
+
+A nonempty map from JSON member names to whole scope write references, such as `outputs: {version: $(buildVersion)}`. See the [outputs file reference](outputs.md).

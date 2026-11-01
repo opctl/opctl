@@ -1,0 +1,11 @@
+name: non-root-outputs
+run:
+  serial:
+    - container:
+        image: {ref: alpine:3}
+        outputs: {version: $(version)}
+        cmd: [sh, -ce, 'su nobody -s /bin/sh -c ''printf "{\"version\":\"non-root\"}" > "$OPCTL_OUTPUTS"''']
+    - container:
+        image: {ref: alpine:3}
+        envVars: {VERSION: $(version)}
+        cmd: [sh, -ce, 'test "$VERSION" = non-root']

@@ -1,0 +1,10 @@
+name: overflow
+run:
+  serial:
+    - container:
+        image: {ref: alpine:3}
+        outputs: {version: $(version)}
+        cmd: [sh, -ce, "head -c 1048577 /dev/zero > \"$OPCTL_OUTPUTS\""]
+    - container:
+        image: {ref: alpine:3}
+        cmd: [sh, -ce, "echo CONSUMER_SHOULD_NOT_RUN; exit 99"]

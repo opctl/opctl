@@ -226,3 +226,5 @@ users. Docker Linux has integration coverage; embedded requires a same-path Lima
 share and still needs a macOS smoke test for UID mapping and read-only behavior.
 
 Container graphs share YAML stdout/stderr bindings and privacy rules. The Go SDK accessors arrive separately; the host reads schema 1 graphs and schema 2 stream bindings.
+
+The host also reads schema 3 container `outputs` bindings. The [outputs file protocol](opspec/op-directory/op/call/container/outputs.md) applies equally to YAML and Go graphs; it does not add typed container declarations yet.

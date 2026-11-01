@@ -1,6 +1,8 @@
 package k8s
 
 import (
+	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/opctl/opctl/sdks/go/model"
@@ -13,6 +15,13 @@ func constructPod(
 	req *model.ContainerCall,
 ) (*coreV1.Pod, error) {
 
+	if req.OutputsFile != "" {
+		dir := filepath.Dir(req.OutputsFile)
+		rel, err := filepath.Rel("/root/opctl", dir)
+		if err != nil || rel == ".." || strings.HasPrefix(rel, "../") || filepath.IsAbs(rel) || req.Dirs["/opctl/outputs"] != dir {
+			return nil, fmt.Errorf("outputs directory must be within the node shared PVC at /root/opctl")
+		}
+	}
 	podName := constructPodName(req.ContainerID)
 
 	container := coreV1.Container{

@@ -1,0 +1,10 @@
+name: failed
+run:
+  serial:
+    - container:
+        image: {ref: alpine:3}
+        outputs: {version: $(version)}
+        cmd: [sh, -ce, "printf '%s' '{\"version\":\"unused\"}' > \"$OPCTL_OUTPUTS\"; exit 17"]
+    - container:
+        image: {ref: alpine:3}
+        cmd: [sh, -ce, "echo CONSUMER_SHOULD_NOT_RUN; exit 99"]

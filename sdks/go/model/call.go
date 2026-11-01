@@ -33,6 +33,7 @@ type BaseCall struct {
 
 // ContainerCall is a call of a container
 type ContainerCall struct {
+	OutputsFile    string          `json:"-"`
 	ReadOnlyMounts map[string]bool `json:"-"`
 	BaseCall
 	ContainerID string   `json:"containerId"`

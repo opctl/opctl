@@ -142,6 +142,12 @@ func Interpret(
 		scratchDirPath,
 	)
 
+	if err == nil && len(containerCallSpec.Outputs) > 0 {
+		if err = validateOutputsMount(containerCall); err != nil {
+			return nil, err
+		}
+		containerCall.OutputsFile = filepath.Join(dataDirPath, "dcg", containerID, "outputs", "values.json")
+	}
 	return containerCall, err
 
 }

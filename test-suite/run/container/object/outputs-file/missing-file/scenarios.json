@@ -1,0 +1,1 @@
+[{"call": {"opRef": "/repo/test-suite/run/container/object/outputs-file/missing-file", "scope": {}, "expect": "failure"}}]

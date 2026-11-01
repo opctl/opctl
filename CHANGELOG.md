@@ -8,6 +8,9 @@ accordance with
 
 ### Added
 
+- Container calls can request named values through an opt-in JSON outputs file at `$OPCTL_OUTPUTS`, with atomic collection, private bindings, and strict size and format
+  checks.
+
 - Container calls can bind `stdout` and `stderr` to String values in YAML, with separate streams, bounded capture, and private secret targets.
 
 - Private Go modules use existing HTTPS auth records and repository-scoped explicit pull credentials. Credentials reach download containers only on stdin into tmpfs and are

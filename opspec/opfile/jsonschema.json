@@ -855,6 +855,14 @@
         "container": {
           "type": "object",
           "properties": {
+            "outputs": {
+              "type": "object",
+              "minProperties": 1,
+              "patternProperties": {
+                "^[-_a-zA-Z0-9]+$": {"$ref": "#/definitions/containerOutputBinding"}
+              },
+              "additionalProperties": false
+            },
             "stdout": {"$ref": "#/definitions/containerOutputBinding"},
             "stderr": {"$ref": "#/definitions/containerOutputBinding"},
             "cmd": {
