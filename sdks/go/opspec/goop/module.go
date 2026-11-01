@@ -51,7 +51,7 @@ func GoVersion(moduleRoot string) (string, error) {
 	return module.Go.Version, nil
 }
 
-// ContainerSpec prepares a plan bootstrap and returns the host dir to bind as
+// ContainerSpec prepares a bootstrap and returns the host dir to bind as
 // the module scope value. Local replace targets retain their host paths.
 func ContainerSpec(opDir, phase string) (*model.ContainerCallSpec, string, error) {
 	if phase != "plan" && phase != "describe" {
@@ -76,7 +76,7 @@ func ContainerSpec(opDir, phase string) (*model.ContainerCallSpec, string, error
 	if err != nil {
 		return nil, "", err
 	}
-	mountRoot := root
+	dirs := map[string]interface{}{root: "$(module)"}
 	for _, replace := range module.Replace {
 		target := replace.New.Path
 		if !filepath.IsAbs(target) && !strings.HasPrefix(target, "./") && !strings.HasPrefix(target, "../") && target != "." && target != ".." {
@@ -85,23 +85,24 @@ func ContainerSpec(opDir, phase string) (*model.ContainerCallSpec, string, error
 		if !filepath.IsAbs(target) {
 			target = filepath.Join(root, target)
 		}
-		for {
-			rel, err := filepath.Rel(mountRoot, target)
-			if err != nil {
-				return nil, "", err
+		target = filepath.Clean(target)
+		if target != root {
+			dirs[target] = model.Value{Dir: &target}
+		}
+	}
+	for destination := range dirs {
+		for _, protected := range []string{"/usr", "/usr/local", "/go", "/opctl"} {
+			if destination == "/" || destination == protected || strings.HasPrefix(protected, destination+"/") {
+				return nil, "", fmt.Errorf("Go op mount destination %q would hide required bootstrap image directory %q", destination, protected)
 			}
-			if rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
-				break
-			}
-			mountRoot = filepath.Dir(mountRoot)
 		}
 	}
 	return &model.ContainerCallSpec{
 		Image:   &model.ContainerCallImageSpec{Ref: "golang:" + version},
 		Cmd:     []interface{}{"go", "run", ".", phase},
-		Dirs:    map[string]interface{}{mountRoot: "$(module)"},
+		Dirs:    dirs,
 		Files:   map[string]interface{}{"/opctl/request.json": "$(request)"},
 		EnvVars: map[string]interface{}{"GOFLAGS": "-mod=readonly", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "OPCTL_BOOTSTRAP_REQUEST": "/opctl/request.json"},
 		WorkDir: filepath.ToSlash(opDir),
-	}, mountRoot, nil
+	}, root, nil
 }

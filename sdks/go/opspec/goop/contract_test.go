@@ -98,22 +98,38 @@ var _ = Describe("Go op module and container spec", func() {
 		Expect(spec.WorkDir).To(Equal(opDir))
 		Expect(spec.EnvVars).To(Equal(map[string]interface{}{"GOFLAGS": "-mod=readonly", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "OPCTL_BOOTSTRAP_REQUEST": "/opctl/request.json"}))
 	})
-	It("mounts the common ancestor of all local replace targets", func() {
+	It("mounts the module and each local replacement at their own host paths", func() {
 		module := filepath.Join(root, "app", "ops", "hello")
-		write(filepath.Join(module, "go.mod"), "module hello\ngo 1.21\nreplace example.com/sdk => ../../../sdk\nreplace example.com/other => "+filepath.Join(root, "shared")+"\nreplace example.com/remote => example.com/remote v1.0.0\n")
-		_, mount, err := ContainerSpec(module, "plan")
+		sdk := filepath.Join(root, "sdk")
+		shared := "/var/lib/opctl-replace-fixture"
+		write(filepath.Join(module, "go.mod"), "module hello\ngo 1.21\nreplace example.com/sdk => ../../../sdk\nreplace example.com/other => "+shared+"\nreplace example.com/remote => example.com/remote v1.0.0\n")
+		spec, mount, err := ContainerSpec(module, "plan")
 		Expect(err).NotTo(HaveOccurred())
-		Expect(mount).To(Equal(root))
-		spec, _, err := ContainerSpec(module, "plan")
-		Expect(err).NotTo(HaveOccurred())
+		Expect(mount).To(Equal(module))
 		Expect(spec.WorkDir).To(Equal(module))
-		Expect(spec.Dirs).To(Equal(map[string]interface{}{root: "$(module)"}))
+		Expect(spec.Dirs).To(HaveLen(3))
 		requestPath := filepath.Join(root, "request.json")
 		write(requestPath, "{}")
-		actual, err := containerInterpreter.Interpret(map[string]*model.Value{"module": {Dir: &mount}, "request": {File: &requestPath}}, spec, "bootstrap", module, root)
+		actual, err := containerInterpreter.Interpret(map[string]*model.Value{"module": {Dir: &mount}, "request": {File: &requestPath}}, spec, "bootstrap", module, filepath.Join(root, "cache"))
 		Expect(err).NotTo(HaveOccurred())
-		Expect(actual.Dirs[root]).To(Equal(root))
+		Expect(actual.Dirs).To(Equal(map[string]string{module: module, sdk: sdk, shared: shared}))
 		Expect(actual.WorkDir).To(Equal(module))
+	})
+	It("rejects replacement mounts that hide required bootstrap image directories", func() {
+		for _, target := range []string{"/", "/usr", "/usr/local", "/usr/local/..", "/go", "/opctl"} {
+			write(filepath.Join(root, "go.mod"), "module hello\ngo 1.21\nreplace example.com/sdk => "+target+"\n")
+			_, _, err := ContainerSpec(root, "plan")
+			Expect(err).To(HaveOccurred(), target)
+			Expect(err.Error()).To(ContainSubstring("mount destination"))
+			Expect(err.Error()).To(ContainSubstring(filepath.Clean(target)))
+		}
+	})
+	It("allows replacements below image directories and duplicate module replacements", func() {
+		write(filepath.Join(root, "go.mod"), "module hello\ngo 1.21\nreplace example.com/sdk => /usr/local/sdk\nreplace example.com/self => .\n")
+		spec, _, err := ContainerSpec(root, "plan")
+		Expect(err).NotTo(HaveOccurred())
+		Expect(spec.Dirs).To(HaveLen(2))
+		Expect(spec.Dirs[root]).To(Equal("$(module)"))
 	})
 	It("reports a missing module or Go directive and malformed module files", func() {
 		_, err := ModuleRoot(root)

@@ -15,6 +15,8 @@ accordance with
 
 ### Fixed
 
+- Go bootstrap mounts the module root and local replacements separately and rejects destinations that hide required image directories.
+
 - Go bootstrap failures return compiler and declaration diagnostics to describe clients, including `opctl op validate`.
 
 ## [0.1.76] - 2026-06-18
