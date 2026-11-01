@@ -219,12 +219,6 @@ func sortedInputKeys(values map[string]any) []string {
 // The callee validates the actual value at execution; T describes its use in this graph.
 func OpOutput[T Handle](c OpCall, name string) (result OpCall, value T) {
 	result = c
-	if activePlan == nil {
-		if result.err == nil {
-			result.err = fmt.Errorf("OpOutput must be called while building the op graph")
-		}
-		return
-	}
 	typ := reflect.TypeOf((*T)(nil)).Elem()
 	h, ok := any(value).(inputHandle)
 	if !ok || typ.Kind() == reflect.Pointer || reflect.TypeOf(h.bind(inputValue{})) != typ {
@@ -233,11 +227,18 @@ func OpOutput[T Handle](c OpCall, name string) (result OpCall, value T) {
 		}
 		return
 	}
+	if activePlan == nil {
+		if result.err == nil {
+			result.err = fmt.Errorf("OpOutput must be called while building the op graph")
+		}
+		return result, h.bind(inputValue{err: result.err}).(T)
+	}
+
 	if !outputName.MatchString(name) {
 		if result.err == nil {
 			result.err = fmt.Errorf("invalid op output name %q", name)
 		}
-		return
+		return result, h.bind(inputValue{err: result.err}).(T)
 	}
 	if existing, ok := c.op.Outputs[name]; ok {
 		if c.op.outputTypes[name] != typ {

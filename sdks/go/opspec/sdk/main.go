@@ -26,7 +26,15 @@ func Main[I any](fn func(I) Call) {
 	}
 }
 
-func run[I any](fn func(I) Call) error {
+// MainWithOutputs serves describe and plan for an op with tagged output handles.
+func MainWithOutputs[I, O any](fn func(I) (Call, O)) {
+	if err := runWithOutputs(fn); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+func run[I any](fn func(I) Call) error { return runWithOutputs(withoutOutputs(fn)) }
+func runWithOutputs[I, O any](fn func(I) (Call, O)) error {
 	if len(os.Args) != 2 {
 		return fmt.Errorf("expected bootstrap phase: describe or plan")
 	}

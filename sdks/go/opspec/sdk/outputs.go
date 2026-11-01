@@ -12,6 +12,7 @@ var planMu sync.Mutex
 var activePlan *outputPlan
 
 type outputPlan struct {
+	visible map[string]bool
 	counter int
 	handles map[string]outputSite
 }
@@ -52,7 +53,8 @@ func newOutput(kind string) inputValue {
 // Mirror node/serialCaller.go and node/parallelCaller.go: serial accumulates
 // outputs, while every parallel child starts with the same incoming scope.
 func (p *outputPlan) validate(root *callSpec) error {
-	return p.walk(root, "run", map[string]bool{}, map[string]string{})
+	p.visible = map[string]bool{}
+	return p.walk(root, "run", p.visible, map[string]string{})
 }
 
 func copyVisible(visible map[string]bool) map[string]bool {

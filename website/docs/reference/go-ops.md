@@ -48,7 +48,7 @@ The CLI prompts for missing inputs, applies defaults, and checks constraints. In
 
 The node bootstraps describe and plan in containers using the Go version in the nearest `go.mod`. The module root and each local `replace` target mount separately at their host paths, including absolute replacements. Mounts that hide required bootstrap image directories are rejected. Bootstrap calls appear beneath the op call. Bootstrap stdout is captured in memory, with Docker logging disabled, and is never published as log events. Bootstrap failures return up to 64 KiB of stderr diagnostics to the client. Describe is also available through `POST /api/ops/describes` with `{"op":{"ref":"path/to/op"}}`. Invalid declarations, bootstrap program exits, and response parse failures return HTTP 400; runtime and context failures return HTTP 500.
 
-Describe and plan compile separately for each request. No compiled-program cache is available yet. Go ops do not yet declare op outputs.
+Describe and plan compile separately for each request. No compiled-program cache is available yet.
 
 ```go
 func checks() opctl.Call {
@@ -104,3 +104,31 @@ the graph, then resolves those bindings from the completed graph scope. Root Go
 calls export every declared output in their completion event. Nested calls
 export the names requested by their caller. Defaults fill omitted bindings;
 output declarations never turn missing runtime references into fresh mounts.
+
+## Declaring outputs
+
+Use `MainWithOutputs` when a Go op returns outputs. Its function returns the
+root call and a struct of output handles. Inputs and outputs use the same
+`opctl` tag grammar, including descriptions, constraints, defaults, and `secret`.
+
+```go
+type Inputs struct {
+    Text opctl.String `opctl:"text"`
+}
+type Outputs struct {
+    Echoed opctl.String `opctl:"echoed"`
+    Fallback opctl.String `opctl:"fallback,default=from-default"`
+}
+func main() {
+    opctl.MainWithOutputs(func(in Inputs) (opctl.Call, Outputs) {
+        return opctl.Container("alpine:3").Cmd("true"), Outputs{Echoed: in.Text}
+    })
+}
+```
+
+Every output must hold a bound handle or have a default. A zero handle uses its
+default; an invalid or unproduced handle fails even when it has a default. Two
+outputs can alias one handle. Input and output declarations may share a public
+name. Use `PlanWithOutputs` and `DescribeWithOutputs` in SDK tests. Describe
+reads only the tagged types and never invokes the plan function. Existing
+`Main`, `Plan`, and `Describe` programs keep their no-output contract.

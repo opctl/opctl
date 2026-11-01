@@ -12,46 +12,52 @@ import (
 type paramSpec map[string]any
 type inputField struct {
 	name, kind string
+	hasDefault bool
 	secret     bool
 	handle     inputHandle
 	index      int
 }
 
 func inputSpecs[I any]() (map[string]paramSpec, []inputField, error) {
-	typ := reflect.TypeOf((*I)(nil)).Elem()
+	return parameterSpecs[I]("input")
+}
+
+func parameterSpecs[P any](direction string) (map[string]paramSpec, []inputField, error) {
+	typ := reflect.TypeOf((*P)(nil)).Elem()
 	if typ.Kind() != reflect.Struct {
-		return nil, nil, fmt.Errorf("Go op inputs must be a struct")
+		return nil, nil, fmt.Errorf("Go op %ss must be a struct", direction)
 	}
 	specs := map[string]paramSpec{}
 	fields := []inputField{}
 	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)
 		if !field.IsExported() {
-			return nil, nil, fmt.Errorf("input field %s must be exported", field.Name)
+			return nil, nil, fmt.Errorf("%s field %s must be exported", direction, field.Name)
 		}
 		handle, ok := reflect.Zero(field.Type).Interface().(inputHandle)
 		if !ok || field.Type.Kind() == reflect.Pointer || reflect.TypeOf(handle.bind(inputValue{})) != field.Type {
-			return nil, nil, fmt.Errorf("input field %s must be an opctl handle value", field.Name)
+			return nil, nil, fmt.Errorf("%s field %s must be an opctl handle value", direction, field.Name)
 		}
 		tag, err := parseTag(field.Tag.Get("opctl"))
 		if err != nil {
-			return nil, nil, fmt.Errorf("input field %s: %w", field.Name, err)
+			return nil, nil, fmt.Errorf("%s field %s: %w", direction, field.Name, err)
 		}
 		name := tag["name"]
 		if strings.HasPrefix(name, "opctl_") {
-			return nil, nil, fmt.Errorf("input %q: prefix opctl_ is reserved for generated handles", name)
+			return nil, nil, fmt.Errorf("%s %q: prefix opctl_ is reserved for generated handles", direction, name)
 		}
 		delete(tag, "name")
 		if _, ok := specs[name]; ok {
-			return nil, nil, fmt.Errorf("duplicate input %q", name)
+			return nil, nil, fmt.Errorf("duplicate %s %q", direction, name)
 		}
 		kind, valueType := handle.inputType()
 		spec, err := param(kind, valueType, tag)
 		if err != nil {
-			return nil, nil, fmt.Errorf("input %q: %w", name, err)
+			return nil, nil, fmt.Errorf("%s %q: %w", direction, name, err)
 		}
 		specs[name] = spec
-		fields = append(fields, inputField{name: name, kind: kind, secret: tag["secret"] == "true", handle: handle, index: i})
+		_, hasDefault := tag["default"]
+		fields = append(fields, inputField{hasDefault: hasDefault, name: name, kind: kind, secret: tag["secret"] == "true", handle: handle, index: i})
 	}
 	return specs, fields, nil
 }

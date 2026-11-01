@@ -8,6 +8,9 @@ accordance with
 
 ### Added
 
+- Go ops declare tagged output structs with `MainWithOutputs`, `PlanWithOutputs`, and `DescribeWithOutputs`. Outputs can bind input, op, or container handles, or use an
+  authored default.
+
 - The node collects declared Go outputs through runtime reference bindings, validates them, and includes public root outputs in ordinary completion events.
 
 - Go op calls can request named outputs as typed handles with `OpOutput[T]`. Plan checks reject missing producers and invalid serial or parallel visibility.
@@ -18,7 +21,7 @@ accordance with
 - Go ops can declare typed inputs with defaults and constraints, branch on public input values, and bind input handles to container environment variables, directories,
   files, and sockets. `opctl run` prompts for Go op inputs and rejects invalid explicit values without substituting defaults; `opctl op validate` and `opctl ls` describe Go
   op interfaces. The webapp opens `op.go` and shows its described name and description. Go ops can compose calls in serial and parallel and pass output directories and
-  files between calls. `RawRef` provides an unchecked escape hatch for whole opspec references. Go op outputs are not supported yet.
+  files between calls. `RawRef` provides an unchecked escape hatch for whole opspec references.
 
 ### Fixed
 

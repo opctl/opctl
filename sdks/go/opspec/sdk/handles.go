@@ -53,28 +53,28 @@ func readValue[T any](v inputValue) T {
 	return value
 }
 
-// String is a string input handle.
+// String is a string handle.
 type String struct{ inputValue }
 
 func (String) inputType() (string, reflect.Type) { return "string", reflect.TypeOf("") }
 func (String) bind(v inputValue) Handle          { return String{v} }
 func (v String) Value() string                   { return readValue[string](v.inputValue) }
 
-// Number is a number input handle.
+// Number is a number handle.
 type Number struct{ inputValue }
 
 func (Number) inputType() (string, reflect.Type) { return "number", reflect.TypeOf(float64(0)) }
 func (Number) bind(v inputValue) Handle          { return Number{v} }
 func (v Number) Value() float64                  { return readValue[float64](v.inputValue) }
 
-// Boolean is a boolean input handle.
+// Boolean is a boolean handle.
 type Boolean struct{ inputValue }
 
 func (Boolean) inputType() (string, reflect.Type) { return "boolean", reflect.TypeOf(false) }
 func (Boolean) bind(v inputValue) Handle          { return Boolean{v} }
 func (v Boolean) Value() bool                     { return readValue[bool](v.inputValue) }
 
-// Array is an array input handle with items of type T.
+// Array is an array handle with items of type T.
 type Array[T any] struct{ inputValue }
 
 func (Array[T]) inputType() (string, reflect.Type) {
@@ -83,7 +83,7 @@ func (Array[T]) inputType() (string, reflect.Type) {
 func (Array[T]) bind(v inputValue) Handle { return Array[T]{v} }
 func (v Array[T]) Value() []T             { return readValue[[]T](v.inputValue) }
 
-// Object is an object input handle decoded into a struct or string-keyed map T.
+// Object is an object handle decoded into a struct or string-keyed map T.
 type Object[T any] struct{ inputValue }
 
 func (Object[T]) inputType() (string, reflect.Type) {
@@ -104,8 +104,10 @@ type File struct{ inputValue }
 func (File) inputType() (string, reflect.Type) { return "file", nil }
 func (File) bind(v inputValue) Handle          { return File{v} }
 
-// Socket is a socket input handle.
+// Socket is a socket handle.
 type Socket struct{ inputValue }
 
 func (Socket) inputType() (string, reflect.Type) { return "socket", nil }
 func (Socket) bind(v inputValue) Handle          { return Socket{v} }
+
+func (v inputValue) bindingValue() inputValue { return v }
