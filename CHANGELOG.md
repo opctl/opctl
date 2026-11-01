@@ -8,6 +8,8 @@ accordance with
 
 ### Fixed
 
+- The compiled Go bootstrap cache hashes the launcher, build command, and actual build environment, so recipe changes invalidate cached programs.
+
 - Go ops fetched into the node cache can bootstrap and use local replacements within their fetched repository. Only writable node state is excluded from their source
   fingerprint.
 

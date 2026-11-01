@@ -62,7 +62,7 @@ func (discardBootstrapEvents) Publish(model.Event) {}
 
 func (cache *goBootstrapCache) initialize(dataDir string) error {
 	cache.once.Do(func() {
-		cache.directory = filepath.Join(dataDir, "go", "programs", goop.RecipeVersion)
+		cache.directory = filepath.Join(dataDir, "go", "programs", goop.CacheFormatVersion)
 		cache.initErr = unsudo.CreateDir(cache.directory)
 		if cache.initErr != nil {
 			return
@@ -174,7 +174,7 @@ func readProgram(path, key string, image *containerruntime.ImageIdentity) (progr
 	if err != nil {
 		return metadata, err
 	}
-	if json.Unmarshal(data, &metadata) != nil || metadata.Key != key || metadata.Recipe != goop.RecipeVersion || metadata.ImageID != image.ID || metadata.OS != image.OS || metadata.Arch != image.Arch || metadata.Variant != image.Variant {
+	if json.Unmarshal(data, &metadata) != nil || metadata.Key != key || metadata.Recipe != goop.CacheFormatVersion || metadata.ImageID != image.ID || metadata.OS != image.OS || metadata.Arch != image.Arch || metadata.Variant != image.Variant {
 		return metadata, errInvalidProgram
 	}
 	checksum, size, err := executableChecksum(filepath.Join(path, "program"))
@@ -272,7 +272,12 @@ func (cache *goBootstrapCache) prepare(ctx context.Context, bootstrap _bootstrap
 			return nil, nil, err
 		}
 		toolchain := goop.Toolchain{ID: image.ID, OS: image.OS, Arch: image.Arch, Variant: image.Variant}
-		key, err := source.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain)
+		buildSpec, auth, err := bootstrap.prepareBuild(op, source, image)
+		if err != nil {
+			return nil, nil, err
+		}
+		recipe := goop.BuildRecipe{Launcher: goBootstrapLauncher, Command: buildSpec.Cmd.([]interface{}), Env: buildSpec.EnvVars.(map[string]interface{})}
+		key, err := source.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain, recipe)
 		if ctx.Err() != nil {
 			return nil, nil, ctx.Err()
 		}
@@ -283,7 +288,7 @@ func (cache *goBootstrapCache) prepare(ctx context.Context, bootstrap _bootstrap
 		if err != nil {
 			return nil, nil, err
 		}
-		program, release, retry, err := cache.prepareLocked(ctx, bootstrap, op, root, source, image, key, toolchain)
+		program, release, retry, err := cache.prepareLocked(ctx, bootstrap, op, root, source, image, key, toolchain, recipe, buildSpec, auth)
 		unlock()
 		if err != nil {
 			return nil, nil, err
@@ -299,13 +304,13 @@ func (cache *goBootstrapCache) prepare(ctx context.Context, bootstrap _bootstrap
 	}
 	return nil, nil, &OpDeclarationError{Err: fmt.Errorf("Go op source changed repeatedly during bootstrap; retry with stable sources")}
 }
-func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _bootstrapper, op *model.OpCall, root string, source *goop.Source, image *containerruntime.ImageIdentity, key string, toolchain goop.Toolchain) (*goProgram, func(), bool, error) {
+func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _bootstrapper, op *model.OpCall, root string, source *goop.Source, image *containerruntime.ImageIdentity, key string, toolchain goop.Toolchain, recipe goop.BuildRecipe, buildSpec *model.ContainerCallSpec, auth bootstrapAuth) (*goProgram, func(), bool, error) {
 	// Discover again after waiting: go.mod edits may have changed the replacement set.
 	current, err := goop.Discover(op.OpPath, op.RepositoryRoot)
 	if err != nil {
 		return nil, nil, false, &OpDeclarationError{Err: err}
 	}
-	fresh, err := current.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain)
+	fresh, err := current.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain, recipe)
 	if err != nil {
 		return nil, nil, false, err
 	}
@@ -352,7 +357,7 @@ func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _boo
 			os.RemoveAll(staging)
 		}
 	}()
-	if err := bootstrap.buildProgram(ctx, op, root, source, image, staging); err != nil {
+	if err := bootstrap.buildProgram(ctx, op, root, source, buildSpec, auth, staging); err != nil {
 		return nil, nil, false, err
 	}
 	if err := ctx.Err(); err != nil {
@@ -362,7 +367,7 @@ func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _boo
 	if err != nil {
 		return nil, nil, false, err
 	}
-	fresh, err = current.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain)
+	fresh, err = current.Fingerprint(ctx, bootstrapWritablePaths(bootstrap.dataDirPath), toolchain, recipe)
 	if err != nil {
 		return nil, nil, false, err
 	}
@@ -384,7 +389,7 @@ func (cache *goBootstrapCache) prepareLocked(ctx context.Context, bootstrap _boo
 		return nil, nil, false, err
 	}
 	now := time.Now().UTC()
-	metadata = programMetadata{Recipe: goop.RecipeVersion, Key: key, ImageID: image.ID, OS: image.OS, Arch: image.Arch, Variant: image.Variant, GoVersion: strings.TrimSpace(string(version)), Checksum: checksum, Size: size, Created: now, LastUsed: now}
+	metadata = programMetadata{Recipe: goop.CacheFormatVersion, Key: key, ImageID: image.ID, OS: image.OS, Arch: image.Arch, Variant: image.Variant, GoVersion: strings.TrimSpace(string(version)), Checksum: checksum, Size: size, Created: now, LastUsed: now}
 	if err := writeProgramMetadata(staging, metadata); err != nil {
 		return nil, nil, false, err
 	}

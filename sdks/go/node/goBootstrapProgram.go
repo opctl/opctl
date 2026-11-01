@@ -45,34 +45,41 @@ func (bootstrap _bootstrapper) runCached(ctx context.Context, op *model.OpCall, 
 	return invoke()
 }
 
-func (bootstrap _bootstrapper) buildProgram(ctx context.Context, op *model.OpCall, root string, source *goop.Source, image *containerruntime.ImageIdentity, staging string) error {
+func (bootstrap _bootstrapper) prepareBuild(op *model.OpCall, source *goop.Source, image *containerruntime.ImageIdentity) (*model.ContainerCallSpec, bootstrapAuth, error) {
 	spec := source.ContainerSpec("plan")
 	spec.Image.Ref, spec.Image.Prepared = image.Ref, true
-	spec.Dirs["/opctl/build"] = model.Value{Dir: &staging}
 	delete(spec.Files, "/opctl/request.json")
 	env := spec.EnvVars.(map[string]interface{})
 	delete(env, "OPCTL_BOOTSTRAP_REQUEST")
+	for name, value := range goCacheEnvironment() {
+		env[name] = value
+	}
 	env["GOARCH"], env["GOAMD64"] = image.Arch, "v1"
 	auths := []model.Auth{}
 	if bootstrap.cache.stateStore != nil {
 		var err error
 		auths, err = bootstrap.cache.stateStore.AuthSnapshot()
 		if err != nil {
-			return err
+			return nil, bootstrapAuth{}, err
 		}
 	}
 	auth, err := prepareBootstrapAuth(auths, op.BootstrapSource, op.BootstrapCreds)
 	if err != nil {
-		return err
+		return nil, bootstrapAuth{}, err
 	}
 	if auth.private != "" {
 		env["GOPRIVATE"], env["GONOPROXY"], env["GONOSUMDB"] = auth.private, auth.private, auth.private
 	}
+	spec.Cmd = []interface{}{"sh", "/opctl/launcher", "sh", "-ce", "go version > /opctl/build/go-version; go build -mod=readonly -buildvcs=false -trimpath -o /opctl/build/program ."}
+	return spec, auth, nil
+}
+
+func (bootstrap _bootstrapper) buildProgram(ctx context.Context, op *model.OpCall, root string, source *goop.Source, spec *model.ContainerCallSpec, auth bootstrapAuth, staging string) error {
+	spec.Dirs["/opctl/build"] = model.Value{Dir: &staging}
 	if len(auth.archive) > 0 {
 		ctx = containerruntime.WithBootstrapInput(ctx, bytes.NewReader(auth.archive))
 	}
-	spec.Cmd = []interface{}{"sh", "-ce", "go version > /opctl/build/go-version; go build " + goop.BuildFlags + " -o /opctl/build/program ."}
-	_, err = bootstrap.invokeProgram(ctx, op, root, "bootstrap build", spec, source.ModuleRoot, true, nil)
+	_, err := bootstrap.invokeProgram(ctx, op, root, "bootstrap build", spec, source.ModuleRoot, true, nil)
 	return err
 }
 

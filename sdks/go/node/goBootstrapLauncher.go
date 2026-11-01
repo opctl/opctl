@@ -21,14 +21,12 @@ func prepareGoCaches(spec *model.ContainerCallSpec, scope map[string]*model.Valu
 		spec.Dirs[destination] = model.Value{Dir: &path}
 	}
 	env := spec.EnvVars.(map[string]interface{})
-	for name, value := range map[string]string{"GOMODCACHE": "/opctl/mod", "GOCACHE": "/opctl/cache", "GOWORK": "off", "GOENV": "off", "GOOS": "linux", "GOFLAGS": "-mod=readonly -buildvcs=false -trimpath"} {
+	for name, value := range goCacheEnvironment() {
 		env[name] = value
 	}
 	if err := prepareGoLauncher(spec, scope, scratch); err != nil {
 		return err
 	}
-	command := []interface{}{"sh", "/opctl/launcher"}
-	spec.Cmd = append(command, spec.Cmd.([]interface{})...)
 	return nil
 }
 
@@ -44,4 +42,8 @@ func prepareGoLauncher(spec *model.ContainerCallSpec, scope map[string]*model.Va
 	spec.Files["/opctl/launcher"] = "$(launcher)"
 	spec.ReadOnlyMounts["/opctl/launcher"] = true
 	return nil
+}
+
+func goCacheEnvironment() map[string]string {
+	return map[string]string{"GOMODCACHE": "/opctl/mod", "GOCACHE": "/opctl/cache", "GOWORK": "off", "GOENV": "off", "GOOS": "linux", "GOFLAGS": "-mod=readonly -buildvcs=false -trimpath"}
 }

@@ -16,7 +16,6 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
-	"github.com/opctl/opctl/sdks/go/opspec/goop"
 )
 
 func checkCacheEvents(events []model.Event, warm bool) error {
@@ -111,6 +110,9 @@ func entry(data string) (executable, map[string]interface{}, error) {
 	if err := json.Unmarshal(metadataBytes, &metadata); err != nil {
 		return executable{}, nil, err
 	}
+	if metadata["Key"] != entries[0].Name() {
+		return executable{}, nil, fmt.Errorf("cache metadata key does not match its program entry")
+	}
 	return executable{path, hex.EncodeToString(sum[:]), info.ModTime()}, metadata, nil
 }
 func durations(events []model.Event) (time.Duration, time.Duration) {
@@ -166,7 +168,6 @@ func run() error {
 	}
 	var first executable
 	var cold time.Duration
-	var metadata map[string]interface{}
 	for index, suffix := range []string{"first", "second"} {
 		since := time.Now().UTC()
 		start := time.Now()
@@ -189,11 +190,10 @@ func run() error {
 		if err := checkCacheEvents(events, index == 1); err != nil {
 			return err
 		}
-		actual, entryMetadata, err := entry(data)
+		actual, _, err := entry(data)
 		if err != nil {
 			return err
 		}
-		metadata = entryMetadata
 		build, bootstrap := durations(events)
 		if index == 0 {
 			first, cold = actual, elapsed
@@ -205,17 +205,6 @@ func run() error {
 			fmt.Printf("WARM total=%s bootstrap=%s build=%s ratio=%.2fx\n", elapsed, bootstrap, build, float64(cold)/float64(elapsed))
 		}
 	}
-	source, err := goop.Discover(path, "")
-	if err != nil {
-		return err
-	}
-	image := goop.Toolchain{ID: metadata["ImageID"].(string), OS: metadata["OS"].(string), Arch: metadata["Arch"].(string), Variant: metadata["Variant"].(string)}
-	start := time.Now()
-	key, err := source.Fingerprint(context.Background(), []string{data}, image)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("HASH duration=%s key=%s\n", time.Since(start), key)
 	fmt.Println("PASS: one cold build, zero warm builds, stable executable, memoised describe, fresh plans with changed inputs")
 	return nil
 }

@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"hash"
 	"io"
@@ -15,10 +16,15 @@ import (
 // Toolchain is the immutable image identity and explicit Linux target used to build.
 type Toolchain struct{ ID, OS, Arch, Variant string }
 
-// RecipeVersion changes whenever the launcher or fixed compilation recipe changes.
-const RecipeVersion = "v1"
-const BuildFlags = "-mod=readonly -buildvcs=false -trimpath"
-const BuildEnvironment = "GOWORK=off GOENV=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=linux GOPROXY=off GONOPROXY=none GOAMD64=v1"
+// CacheFormatVersion identifies the on-disk metadata format, not the build recipe.
+const CacheFormatVersion = "v1"
+
+// BuildRecipe contains the launcher and the exact command/environment sent to the builder.
+type BuildRecipe struct {
+	Launcher []byte
+	Command  []interface{}
+	Env      map[string]interface{}
+}
 
 func record(h hash.Hash, fields ...string) {
 	var length [8]byte
@@ -30,7 +36,7 @@ func record(h hash.Hash, fields ...string) {
 }
 
 // Fingerprint streams source content; it never reads the mutable Go caches or input values.
-func (source *Source) Fingerprint(ctx context.Context, excluded []string, image Toolchain) (string, error) {
+func (source *Source) Fingerprint(ctx context.Context, excluded []string, image Toolchain, recipe BuildRecipe) (string, error) {
 	roots := []string{}
 	for _, root := range source.Roots {
 		resolved, err := filepath.EvalSymlinks(root)
@@ -58,7 +64,11 @@ func (source *Source) Fingerprint(ctx context.Context, excluded []string, image 
 		return "", err
 	}
 	h := sha256.New()
-	record(h, RecipeVersion, main, source.Package, source.Name, source.GoVersion, image.ID, image.OS, image.Arch, image.Variant, BuildFlags, BuildEnvironment)
+	recipeBytes, err := json.Marshal(recipe)
+	if err != nil {
+		return "", err
+	}
+	record(h, string(recipeBytes), main, source.Package, source.Name, source.GoVersion, image.ID, image.OS, image.Arch, image.Variant)
 	if _, err := os.Stat(filepath.Join(source.ModuleRoot, "go.sum")); os.IsNotExist(err) {
 		record(h, "missing go.sum")
 	} else if err != nil {

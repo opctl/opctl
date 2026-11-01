@@ -1,8 +1,12 @@
 package main
 
 import (
-	"github.com/opctl/opctl/sdks/go/model"
+	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
+
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 func TestCacheLifecycleAssertions(t *testing.T) {
@@ -30,6 +34,27 @@ func TestCacheLifecycleAssertions(t *testing.T) {
 		}
 		if err := checkCacheEvents(events, tc.warm); (err != nil) != tc.wantError {
 			t.Fatalf("%s: %v", tc.name, err)
+		}
+	}
+}
+
+func TestCacheEntryRequiresMatchingMetadata(t *testing.T) {
+	data := t.TempDir()
+	root := filepath.Join(data, "go", "programs", "v1", "program-key")
+	if err := os.MkdirAll(root, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "program"), []byte("executable"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	for _, key := range []string{"different-key", "program-key"} {
+		metadata := []byte(fmt.Sprintf(`{"Key":%q}`, key))
+		if err := os.WriteFile(filepath.Join(root, "metadata.json"), metadata, 0600); err != nil {
+			t.Fatal(err)
+		}
+		_, _, err := entry(data)
+		if (err == nil) != (key == "program-key") {
+			t.Fatalf("key %s: %v", key, err)
 		}
 	}
 }

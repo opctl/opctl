@@ -251,3 +251,5 @@ Supported handle kinds are String, Number, Boolean, Array, and Object. Repeated 
 `T` expresses the author's expected use in Go. It does not install strict runtime type declarations. Bindings validate presence and supported JSON data; ordinary consumer coercions still apply. `outputParams` is reserved and not accepted. Named-result graphs require opspec schema 3. No-feature graphs remain schema 1.
 
 Fetched Go ops and their in-repository local replacements remain part of the source fingerprint under the node's `ops` directory. The fingerprint excludes writable node state in `go`, `dcg`, `call`, and `vms`.
+
+The compiled-program key includes the launcher bytes, build command, and build environment, including `GOFLAGS` and the target `GOARCH`. Changing the build recipe invalidates the executable cache.

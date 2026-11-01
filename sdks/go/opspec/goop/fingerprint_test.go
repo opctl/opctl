@@ -34,7 +34,7 @@ func TestSourceFingerprint(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		key, err := source.Fingerprint(context.Background(), []string{data}, toolchain)
+		key, err := source.Fingerprint(context.Background(), []string{data}, toolchain, BuildRecipe{})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -101,7 +101,7 @@ func TestSourceFingerprint(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err = source.Fingerprint(context.Background(), []string{data}, image); err == nil {
+	if _, err = source.Fingerprint(context.Background(), []string{data}, image, BuildRecipe{}); err == nil {
 		t.Fatal("escaping symlink accepted")
 	}
 	if err := os.Remove(filepath.Join(app, "escape")); err != nil {
@@ -110,7 +110,41 @@ func TestSourceFingerprint(t *testing.T) {
 	if err := os.Symlink(".", filepath.Join(app, "cycle")); err != nil {
 		t.Fatal(err)
 	}
-	if _, err = source.Fingerprint(context.Background(), []string{data}, image); err == nil {
+	if _, err = source.Fingerprint(context.Background(), []string{data}, image, BuildRecipe{}); err == nil {
 		t.Fatal("source cycle accepted")
+	}
+}
+
+func TestFingerprintBuildRecipe(t *testing.T) {
+	root := t.TempDir()
+	if err := os.WriteFile(filepath.Join(root, "go.mod"), []byte("module hello\ngo 1.21\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	source, err := Discover(root, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	key := func(recipe BuildRecipe) string {
+		t.Helper()
+		result, err := source.Fingerprint(context.Background(), nil, Toolchain{}, recipe)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return result
+	}
+	recipe := BuildRecipe{Launcher: []byte("launcher"), Command: []interface{}{"go", "build", "-trimpath"}, Env: map[string]interface{}{"GOARCH": "amd64", "GOFLAGS": "-mod=readonly"}}
+	before := key(recipe)
+	for _, changed := range []BuildRecipe{
+		{Launcher: []byte("changed launcher"), Command: recipe.Command, Env: recipe.Env},
+		{Launcher: recipe.Launcher, Command: []interface{}{"go", "build"}, Env: recipe.Env},
+		{Launcher: recipe.Launcher, Command: recipe.Command, Env: map[string]interface{}{"GOARCH": "arm64", "GOFLAGS": "-mod=readonly"}},
+		{Launcher: recipe.Launcher, Command: recipe.Command, Env: map[string]interface{}{"GOARCH": "amd64", "GOFLAGS": "-mod=mod"}},
+	} {
+		if before == key(changed) {
+			t.Fatal("changed build recipe reused its cache key")
+		}
+	}
+	if before != key(BuildRecipe{Launcher: recipe.Launcher, Command: recipe.Command, Env: map[string]interface{}{"GOFLAGS": "-mod=readonly", "GOARCH": "amd64"}}) {
+		t.Fatal("environment map order changed the key")
 	}
 }
