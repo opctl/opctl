@@ -11,6 +11,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	. "github.com/opctl/opctl/sdks/go/node/containerruntime/fakes"
+	"github.com/opctl/opctl/sdks/go/node/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
 )
 
@@ -190,5 +191,29 @@ var _ = Context("containerCaller", func() {
 		/* assert */
 		Expect(actualOutputs).To(Equal(map[string]*model.Value{}))
 		Expect(actualErr).To(Equal(expectedErr))
+	})
+})
+
+var _ = Describe("container exit error compatibility", func() {
+	It("keeps the YAML exit message and preserves bootstrap runtime failures", func() {
+		for _, bootstrap := range []bool{false, true} {
+			runtime := new(FakeContainerRuntime)
+			runtime.RunContainerStub = func(_ context.Context, _ *model.ContainerCall, _ string, _ pubsub.EventPublisher, stdout, stderr io.WriteCloser) (*int64, error) {
+				stdout.Close()
+				stderr.Close()
+				exit := int64(17)
+				return &exit, errors.New("runtime wait failed")
+			}
+			ctx := context.Background()
+			if bootstrap {
+				ctx = withStdoutCapture(ctx, io.Discard)
+			}
+			_, err := newContainerCaller(runtime, new(fakes.FakePubSub), nil).Call(ctx, &model.ContainerCall{Image: &model.ContainerCallImage{}}, nil, &model.ContainerCallSpec{}, "root")
+			if bootstrap {
+				Expect(err).To(MatchError("runtime wait failed"))
+			} else {
+				Expect(err).To(MatchError("nonzero container exit code: 17"))
+			}
+		}
 	})
 })

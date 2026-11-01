@@ -27,6 +27,8 @@ accordance with
 
 ### Fixed
 
+- YAML container calls retain their existing nonzero-exit error when the runtime also returns an error.
+
 - Separate Go replacement mounts reject host symlinks; replacements inside the module use its existing mount.
 
 - Go describe classifies missing or malformed module files and invalid bootstrap mounts as declaration errors.

@@ -113,7 +113,7 @@ func (cc _containerCaller) Call(
 		exitCode = *rawExitCode
 	}
 
-	if exitCode != 0 && err == nil {
+	if exitCode != 0 && (capture == nil || err == nil) {
 		err = fmt.Errorf("nonzero container exit code: %d", exitCode)
 		if capture != nil {
 			err = &OpDeclarationError{Err: err}
