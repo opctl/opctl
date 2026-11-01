@@ -21,6 +21,19 @@ var cacheNamePattern = regexp.MustCompile(`^[A-Za-z0-9._-]+$`)
 // include hyphens so adjacent separators collapse to one
 var cacheNameSeparatorPattern = regexp.MustCompile(`[^A-Za-z0-9._]+`)
 
+// ValidateName checks that a cache name can safely identify a dir under the cache root.
+func ValidateName(name string) error {
+	if !cacheNamePattern.MatchString(name) || name == "." || name == ".." {
+		// truncate so a mistaken secret or large file reference isn't echoed in full
+		shownName := name
+		if len(shownName) > 64 {
+			shownName = shownName[:64] + "..."
+		}
+		return fmt.Errorf("invalid cache name %q: must match ^[A-Za-z0-9._-]+$ and must not be . or ..", shownName)
+	}
+	return nil
+}
+
 // Interpret container cache dirs
 func Interpret(
 	scope map[string]*model.Value,
@@ -67,13 +80,8 @@ func Interpret(
 			}
 			name = *nameValue.String
 		}
-		if !cacheNamePattern.MatchString(name) || name == "." || name == ".." {
-			// truncate so a mistaken secret or large file reference isn't echoed in full
-			shownName := name
-			if len(shownName) > 64 {
-				shownName = shownName[:64] + "..."
-			}
-			return nil, fmt.Errorf("unable to bind cache dir %q: invalid cache name %q: must match ^[A-Za-z0-9._-]+$ and must not be . or ..", containerPath, shownName)
+		if err := ValidateName(name); err != nil {
+			return nil, fmt.Errorf("unable to bind cache dir %q: %w", containerPath, err)
 		}
 
 		hostPath := filepath.Join(dataDirPath, "caches", name)

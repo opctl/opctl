@@ -9,6 +9,7 @@ import (
 
 	"github.com/appdataspec/sdk-golang/appdatapath"
 	"github.com/opctl/opctl/cli/cmd/auth"
+	"github.com/opctl/opctl/cli/cmd/cache"
 	"github.com/opctl/opctl/cli/cmd/node"
 	"github.com/opctl/opctl/cli/cmd/op"
 	"github.com/opctl/opctl/cli/internal/clicolorer"
@@ -248,6 +249,11 @@ func NewRootCmd() (*cobra.Command, error) {
 	// add commands
 	rootCmd.AddCommand(
 		auth.NewAuthCmd(
+			&nodeConfig,
+		),
+	)
+	rootCmd.AddCommand(
+		cache.NewCacheCmd(
 			&nodeConfig,
 		),
 	)

@@ -53,6 +53,8 @@ jobs:
 
 The key changes when a lockfile changes. The restore prefix lets a job start with an older cache when there is no exact match; with a stable cache name the op reuses it and the tool refreshes what changed. Old entries accumulate, so delete the CI cache occasionally if it grows too large. GitHub Actions caches are immutable, so this workflow saves only when the exact key was not restored, and only after a successful run so a partial cache isn't locked in under that key.
 
+To limit the size of the local cache root before saving, use `opctl cache prune [NAME...]`. Give names to remove selected cache dirs, or omit them to empty the cache root. Use the same `--data-dir` or `OPCTL_DATA_DIR` as the node, and only prune when no call is using the affected dirs. It runs as root, re-executing itself with `sudo -E` when not already root (cache contents can be root-owned), and leaves `<data-dir>/nocache` untouched. Pruning locally does not change existing CI cache entries.
+
 Containers commonly write root-owned files. When the node runs with sudo, it recursively restores each call's cache dirs to `SUDO_UID` and `SUDO_GID` after the container finishes, including failed or killed calls. A root node without those variables leaves ownership unchanged. Cleanup warnings appear in the call's stderr and do not change its outcome.
 
 An unprivileged node cannot change ownership of files written by another user. Run `sudo chown -R "$(id -u):$(id -g)" <cache root>` before saving in that case. GitHub-hosted Linux runners have passwordless sudo. The workflow runs this step even after a failed op, before the explicit save step.

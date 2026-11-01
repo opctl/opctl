@@ -50,7 +50,7 @@ run:
         cmd: [npm, ci]
 ```
 
-Each distinct name is a separate cache dir that the node never evicts, so a hash-keyed name leaves a full cache behind every time the hash changes. Prefer a stable name, such as `npm`, for caches that tolerate mixed contents, like npm's content-addressed cache. Reserve hash-keyed names for caches that must not be shared across versions, and prune old dirs yourself.
+Each distinct name is a separate cache dir that the node never evicts, so a hash-keyed name leaves a full cache behind every time the hash changes. Prefer a stable name, such as `npm`, for caches that tolerate mixed contents, like npm's content-addressed cache. Reserve hash-keyed names for caches that must not be shared across versions, and prune old dirs with `opctl cache prune NAME...` when no call is using them.
 
 The node stores each cache dir at `<data-dir>/caches/<name>`. The cache root is `<data-dir>/caches`. Contents persist between runs on the node, but are never guaranteed. An empty or partial cache dir must always be a valid starting point. Failed or killed calls keep whatever they wrote.
 
@@ -71,3 +71,5 @@ Cache names are global per node. Calls using the same name share contents across
 Concurrent calls share the directory without locking. Tools that are not safe to run concurrently, such as apt, may corrupt their cache contents.
 
 Deleting a cache dir or the cache root is always safe when no call is using it. Later calls recreate the directories as needed.
+
+Use `opctl cache prune [NAME...]` to remove named cache dirs, or omit names to empty the whole cache root. It uses `--data-dir` or `OPCTL_DATA_DIR`, runs as root (re-executing itself with `sudo -E` when not already root, since cache contents can be root-owned), and ignores missing names. All names must pass the cache name rules above before anything is deleted. Only prune when no call is using the affected dirs; the command does not check for active calls. It leaves `<data-dir>/nocache` untouched.
