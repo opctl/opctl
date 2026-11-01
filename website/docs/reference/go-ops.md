@@ -253,3 +253,5 @@ Supported handle kinds are String, Number, Boolean, Array, and Object. Repeated 
 Fetched Go ops and their in-repository local replacements remain part of the source fingerprint under the node's `ops` directory. The fingerprint excludes writable node state in `go`, `dcg`, `call`, and `vms`.
 
 The compiled-program key includes the launcher bytes, build command, and build environment, including `GOFLAGS` and the target `GOARCH`. Changing the build recipe invalidates the executable cache.
+
+Go bootstrap requires a negotiated Docker API version of at least 1.44 to enforce recursive read-only source mounts. Older daemons fail before a bootstrap container starts.

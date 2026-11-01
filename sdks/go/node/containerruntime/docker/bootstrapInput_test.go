@@ -26,6 +26,7 @@ func (c halfCloseConnection) CloseWrite() error { close(c.done); return nil }
 func TestPrivateBootstrapStdin(t *testing.T) {
 	marker := strings.Repeat("synthetic-private-input", 4)
 	client := new(fakes.FakeCommonAPIClient)
+	client.ClientVersionReturns("1.44")
 	done := make(chan struct{})
 	reader, peer := net.Pipe()
 	defer peer.Close()
@@ -92,6 +93,7 @@ func TestPrivateBootstrapCancellationAndCleanup(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	client := new(fakes.FakeCommonAPIClient)
+	client.ClientVersionReturns("1.44")
 	reader, peer := net.Pipe()
 	defer peer.Close()
 	client.ContainerAttachReturns(types.NewHijackedResponse(reader, ""), nil)

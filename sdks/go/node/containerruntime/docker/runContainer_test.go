@@ -46,6 +46,7 @@ var _ = Context("RunContainer", func() {
 	pubSub := pubsub.New(db)
 	It("attaches bootstrap streams before start without persisting logs", func() {
 		client := new(FakeCommonAPIClient)
+		client.ClientVersionReturns("1.44")
 		client.ContainerWaitReturns(closedContainerWaitOkBodyChan, nil)
 		client.ImagePullReturns(io.NopCloser(strings.NewReader("")), nil)
 		reader, writer := net.Pipe()

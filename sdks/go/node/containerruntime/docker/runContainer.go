@@ -8,6 +8,7 @@ import (
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
+	"github.com/docker/docker/api/types/versions"
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/opctl/opctl/sdks/go/model"
@@ -56,6 +57,9 @@ func (cr _runContainer) RunContainer(
 ) (*int64, error) {
 	defer stdout.Close()
 	defer stderr.Close()
+	if containerruntime.BootstrapFrom(ctx) && versions.LessThan(cr.dockerClient.ClientVersion(), "1.44") {
+		return nil, fmt.Errorf("Go bootstrap requires Docker API >= 1.44 for recursive read-only source mounts; negotiated %q", cr.dockerClient.ClientVersion())
+	}
 
 	// ensure user defined network exists to allow inter container resolution via name
 	// @TODO: remove when socket outputs supported
