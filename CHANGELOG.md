@@ -29,6 +29,8 @@ accordance with
 
 ### Changed
 
+- After a Go op or container result call activates private results, a YAML op whose output validation fails returns no partial outputs,
+  even in an unrelated subtree of the same root run. Private-result activation is currently shared across the root run.
 - The `run-a-go-service` example's `dev` op is a Go op that calls the YAML `mysql` op. Its `MYSQL_HOST` default is now the `mysql` op's container name,
   `run-a-go-service-mysql`, so the service can reach the database.
 
