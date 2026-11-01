@@ -27,6 +27,49 @@ var _ = Describe("private Go input event bindings", func() {
 		Expect(call.Container.Files["/config"]).To(Equal("private-path"))
 		Expect(callForEvent(context.Background(), call, spec)).To(Equal(*call))
 	})
+	It("keeps shorthand env, dir, file, and bare socket bindings out of events", func() {
+		dir, err := os.MkdirTemp("", "shorthand-private-path-")
+		Expect(err).NotTo(HaveOccurred())
+		defer os.RemoveAll(dir)
+		file := dir + "/file"
+		Expect(os.WriteFile(file, nil, 0600)).To(Succeed())
+		secret := "shorthand-private-token"
+		socket := dir + "/socket"
+		publisher := new(fakes.FakePubSub)
+		closed := make(chan model.Event)
+		close(closed)
+		publisher.SubscribeReturns(closed, nil)
+		runtime := new(fakes.FakeContainerCaller)
+		caller := _caller{pubSub: publisher, containerCaller: runtime, dataDirPath: dir}
+		ctx := withPrivateGoInputs(context.Background(), map[string]*model.ParamSpec{
+			"renamed":  {String: &model.StringParamSpec{IsSecret: true}},
+			"artifact": {Dir: &model.DirParamSpec{IsSecret: true}},
+			"config":   {File: &model.FileParamSpec{IsSecret: true}},
+			"socket":   {Socket: &model.SocketParamSpec{IsSecret: true}},
+		})
+		scope := map[string]*model.Value{"renamed": {String: &secret}, "artifact": {Dir: &dir}, "config": {File: &file}, "socket": {Socket: &socket}}
+		spec := &model.CallSpec{Container: &model.ContainerCallSpec{Image: &model.ContainerCallImageSpec{Ref: "alpine"}, EnvVars: map[string]interface{}{"renamed": nil}, Dirs: map[string]interface{}{"artifact": nil}, Files: map[string]interface{}{"config": nil}, Sockets: map[string]string{"/socket": "socket"}}}
+		_, err = caller.Call(ctx, "child", scope, spec, dir, nil, "root")
+		Expect(err).NotTo(HaveOccurred())
+		_, actual, _, _, _ := runtime.CallArgsForCall(0)
+		Expect(actual.EnvVars["renamed"]).To(Equal(secret))
+		Expect(actual.Dirs["artifact"]).To(Equal(dir))
+		Expect(actual.Files["config"]).To(Equal(file))
+		Expect(actual.Sockets["/socket"]).To(Equal(socket))
+		for i := 0; i < publisher.PublishCallCount(); i++ {
+			encoded, err := json.Marshal(publisher.PublishArgsForCall(i))
+			Expect(err).NotTo(HaveOccurred())
+			Expect(strings.Contains(string(encoded), secret)).To(BeFalse())
+			event := publisher.PublishArgsForCall(i)
+			if event.CallStarted != nil {
+				container := event.CallStarted.Call.Container
+				Expect(container.Dirs["artifact"]).To(Equal("$(artifact)"))
+				Expect(container.Files["config"]).To(Equal("$(config)"))
+				Expect(container.Sockets["/socket"]).To(Equal("$(socket)"))
+			}
+		}
+	})
+
 	It("keeps secret values out of both start and completion events", func() {
 		dir, err := os.MkdirTemp("", "private-go-events-")
 		Expect(err).NotTo(HaveOccurred())
@@ -50,7 +93,7 @@ var _ = Describe("private Go input event bindings", func() {
 		for i := 0; i < publisher.PublishCallCount(); i++ {
 			encoded, err := json.Marshal(publisher.PublishArgsForCall(i))
 			Expect(err).NotTo(HaveOccurred())
-			Expect(string(encoded)).NotTo(ContainSubstring(secret))
+			Expect(strings.Contains(string(encoded), secret)).To(BeFalse())
 		}
 	})
 

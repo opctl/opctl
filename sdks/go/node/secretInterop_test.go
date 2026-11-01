@@ -3,8 +3,10 @@ package node
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/dgraph-io/badger/v4"
@@ -18,53 +20,60 @@ import (
 )
 
 var _ = Describe("secret op interop", func() {
-	It("carries renamed secrets through YAML, serial, parallel, and both loops with private snapshots", func() {
-		dir, err := os.MkdirTemp("", "secret-interop-")
-		Expect(err).NotTo(HaveOccurred())
-		defer os.RemoveAll(dir)
-		Expect(os.WriteFile(filepath.Join(dir, "op.yml"), []byte("name: passthrough\ninputs:\n  renamed:\n    string: {}\noutputs:\n  renamed:\n    string: {}\nrun:\n  serial:\n    - container:\n        image: {ref: alpine}\n        envVars:\n          TOKEN: $(renamed)\n"), 0600)).To(Succeed())
-		db, err := badger.Open(badger.DefaultOptions("").WithInMemory(true).WithLogger(nil))
-		Expect(err).NotTo(HaveOccurred())
-		defer db.Close()
-		bus := pubsub.New(db)
-		runtime := new(fakes.FakeContainerCaller)
-		clr := newCaller(runtime, dir, bus, &_stateStore{}, &goBootstrapCache{})
-		token := "roundtrip-private-value"
-		items := []interface{}{token, token}
-		iteration := "$(item)"
-		op := &model.CallSpec{Op: &model.OpCallSpec{Ref: dir, PullCreds: &model.CredsSpec{}, Inputs: map[string]interface{}{"renamed": "$(token)"}, Outputs: map[string]string{"renamed": "$(alias)"}}}
-		consume := func(ref string) *model.CallSpec {
-			return &model.CallSpec{Container: &model.ContainerCallSpec{Image: &model.ContainerCallImageSpec{Ref: "alpine"}, EnvVars: map[string]interface{}{"TOKEN": ref}}}
-		}
-		parallel := []*model.CallSpec{consume("$(alias)"), consume("$(alias)")}
-		children := []*model.CallSpec{op, {Parallel: &parallel}, {SerialLoop: &model.SerialLoopCallSpec{Range: "$(items)", Vars: &model.LoopVarsSpec{Value: &iteration}, Run: *consume("$(item)")}}, {ParallelLoop: &model.ParallelLoopCallSpec{Range: "$(items)", Vars: &model.LoopVarsSpec{Value: &iteration}, Run: *consume("$(item)")}}}
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		ctx = withPrivateGoInputs(ctx, map[string]*model.ParamSpec{"token": {String: &model.StringParamSpec{IsSecret: true}}, "items": {Array: &model.ArrayParamSpec{IsSecret: true}}})
-		result, err := clr.Call(ctx, "root", map[string]*model.Value{"token": {String: &token}, "items": {Array: &items}}, &model.CallSpec{Serial: &children}, dir, nil, "root")
-		Expect(err).NotTo(HaveOccurred())
-		Expect(result["alias"].Sensitive).To(BeTrue())
-		Expect(*result["alias"].String).To(Equal(token))
-		Expect(runtime.CallCallCount()).To(Equal(7))
-		for i := 0; i < runtime.CallCallCount(); i++ {
-			_, call, _, _, _ := runtime.CallArgsForCall(i)
-			Expect(call.EnvVars["TOKEN"]).To(Equal(token))
-		}
-		replay, cancelReplay := context.WithTimeout(context.Background(), 200*time.Millisecond)
-		defer cancelReplay()
-		events, err := bus.Subscribe(replay, model.EventFilter{Roots: []string{"root"}})
-		Expect(err).NotTo(HaveOccurred())
-		for {
-			select {
-			case <-replay.Done():
-				return
-			case event := <-events:
-				data, err := json.Marshal(event)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(string(data)).NotTo(ContainSubstring(token))
+	for _, binding := range []string{"TOKEN: $(renamed)", "renamed:"} {
+		binding := binding
+		It("carries renamed secrets through YAML, serial, parallel, and both loops with private snapshots using "+binding, func() {
+			dir, err := os.MkdirTemp("", "secret-interop-")
+			Expect(err).NotTo(HaveOccurred())
+			defer os.RemoveAll(dir)
+			Expect(os.WriteFile(filepath.Join(dir, "op.yml"), []byte(fmt.Sprintf("name: passthrough\ninputs:\n  renamed:\n    string: {}\noutputs:\n  renamed:\n    string: {}\nrun:\n  serial:\n    - container:\n        image: {ref: alpine}\n        envVars:\n          %s\n", binding)), 0600)).To(Succeed())
+			db, err := badger.Open(badger.DefaultOptions("").WithInMemory(true).WithLogger(nil))
+			Expect(err).NotTo(HaveOccurred())
+			defer db.Close()
+			bus := pubsub.New(db)
+			runtime := new(fakes.FakeContainerCaller)
+			clr := newCaller(runtime, dir, bus, &_stateStore{}, &goBootstrapCache{})
+			token := "roundtrip-private-value"
+			items := []interface{}{token, token}
+			iteration := "$(item)"
+			op := &model.CallSpec{Op: &model.OpCallSpec{Ref: dir, PullCreds: &model.CredsSpec{}, Inputs: map[string]interface{}{"renamed": "$(token)"}, Outputs: map[string]string{"renamed": "$(alias)"}}}
+			consume := func(ref string) *model.CallSpec {
+				return &model.CallSpec{Container: &model.ContainerCallSpec{Image: &model.ContainerCallImageSpec{Ref: "alpine"}, EnvVars: map[string]interface{}{"TOKEN": ref}}}
 			}
-		}
-	})
+			parallel := []*model.CallSpec{consume("$(alias)"), consume("$(alias)")}
+			children := []*model.CallSpec{op, {Parallel: &parallel}, {SerialLoop: &model.SerialLoopCallSpec{Range: "$(items)", Vars: &model.LoopVarsSpec{Value: &iteration}, Run: *consume("$(item)")}}, {ParallelLoop: &model.ParallelLoopCallSpec{Range: "$(items)", Vars: &model.LoopVarsSpec{Value: &iteration}, Run: *consume("$(item)")}}}
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			ctx = withPrivateGoInputs(ctx, map[string]*model.ParamSpec{"token": {String: &model.StringParamSpec{IsSecret: true}}, "items": {Array: &model.ArrayParamSpec{IsSecret: true}}})
+			result, err := clr.Call(ctx, "root", map[string]*model.Value{"token": {String: &token}, "items": {Array: &items}}, &model.CallSpec{Serial: &children}, dir, nil, "root")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(result["alias"].Sensitive).To(BeTrue())
+			Expect(*result["alias"].String).To(Equal(token))
+			Expect(runtime.CallCallCount()).To(Equal(7))
+			for i := 0; i < runtime.CallCallCount(); i++ {
+				_, call, _, _, _ := runtime.CallArgsForCall(i)
+				key := "TOKEN"
+				if i == 0 && binding == "renamed:" {
+					key = "renamed"
+				}
+				Expect(call.EnvVars[key]).To(Equal(token))
+			}
+			replay, cancelReplay := context.WithTimeout(context.Background(), 200*time.Millisecond)
+			defer cancelReplay()
+			events, err := bus.Subscribe(replay, model.EventFilter{Roots: []string{"root"}})
+			Expect(err).NotTo(HaveOccurred())
+			for {
+				select {
+				case <-replay.Done():
+					return
+				case event := <-events:
+					data, err := json.Marshal(event)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(strings.Contains(string(data), token)).To(BeFalse())
+				}
+			}
+		})
+	}
 	It("reports sensitive coercion and constraint failures without their bytes", func() {
 		// These public collectors are also used at both op boundaries.
 		token := "sensitive-invalid-number"

@@ -8,6 +8,8 @@ accordance with
 
 ### Fixed
 
+- Secret values stay out of call events when YAML containers use implicit env, dir, or file bindings, or bare socket bindings.
+
 - Go bootstrap fails clearly on Docker API versions below 1.44, which cannot enforce recursive read-only source mounts.
 
 - The compiled Go bootstrap cache hashes the launcher, build command, and actual build environment, so recipe changes invalidate cached programs.

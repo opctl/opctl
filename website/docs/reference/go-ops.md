@@ -255,3 +255,5 @@ Fetched Go ops and their in-repository local replacements remain part of the sou
 The compiled-program key includes the launcher bytes, build command, and build environment, including `GOFLAGS` and the target `GOARCH`. Changing the build recipe invalidates the executable cache.
 
 Go bootstrap requires a negotiated Docker API version of at least 1.44 to enforce recursive read-only source mounts. Older daemons fail before a bootstrap container starts.
+
+Secret handles remain private when passed to YAML containers through shorthand bindings such as `envVars: {renamed: }`, implicit dir/file bindings, and bare socket references.

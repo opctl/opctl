@@ -6,6 +6,7 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/internal/goopctx"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/sensitivity"
 )
 
@@ -102,7 +103,11 @@ func callForEvent(ctx context.Context, call *model.Call, spec *model.CallSpec) (
 				if sensitiveExpression(ctx, key) {
 					return nil
 				}
-				expressions[key], _ = value.(string)
+				if value == nil {
+					expressions[key] = opspec.NameToRef(key)
+				} else {
+					expressions[key], _ = value.(string)
+				}
 			}
 		case map[string]string:
 			for key := range values {
@@ -136,7 +141,14 @@ func callForEvent(ctx context.Context, call *model.Call, spec *model.CallSpec) (
 	container.EnvVars = bindings(container.EnvVars, spec.Container.EnvVars)
 	container.Dirs = bindings(container.Dirs, spec.Container.Dirs)
 	container.Files = bindings(container.Files, spec.Container.Files)
-	container.Sockets = bindings(container.Sockets, spec.Container.Sockets)
+	socketExpressions := map[string]string{}
+	for key, expr := range spec.Container.Sockets {
+		if !wholeRef(expr) {
+			expr = opspec.NameToRef(expr)
+		}
+		socketExpressions[key] = expr
+	}
+	container.Sockets = bindings(container.Sockets, socketExpressions)
 	snapshot.Container = &container
 	return snapshot
 }
