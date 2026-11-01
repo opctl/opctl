@@ -40,7 +40,9 @@ func RestoreCacheTree(fsPath string) error {
 			if err == nil {
 				var info fs.FileInfo
 				info, err = entry.Info()
-				if err == nil {
+				// a hard-linked file may also live outside the cache dir; never re-own or widen it
+				// shortcut: link check is by path, so a hard link swapped in after Lstat can still be re-owned/widened; use fd-based fchown/fchmod if hosts lack protected_hardlinks
+				if err == nil && !isHardLinked(info) {
 					if chown && !isOwnedBy(info, uid, gid) {
 						if chownErr := root.Lchown(entryPath, uid, gid); chownErr != nil && !errors.Is(chownErr, fs.ErrNotExist) {
 							errs = append(errs, chownErr)

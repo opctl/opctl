@@ -10,9 +10,10 @@ accordance with
 
 - Cache dirs support an object value with optional `name` and `sharing: locked` to serialize concurrent locked calls using the same cache dir on the node
 - `opctl cache prune [NAME...]` removes named cache dirs, or empties the cache root when no names are given
+- The JS SDK's op start client accepts an optional `noCache` argument for `--no-cache` runs
 - `opctl run --no-cache` starts every cache dir in the run empty, including nested calls, without changing the cache root (restart a running node after upgrading so it honours the flag)
 - Container calls can declare named cache dirs with `caches` to keep contents between runs on the node; names can use expressions such as `npm-$(lockHash)` or default to the image repository plus container path
-- Cache dirs and their contents gain `a+rwX` after each container call when permitted; nodes run with sudo also restore ownership to the sudo user, with a CI guide for saving and restoring the cache root
+- Cache dirs and their contents gain `a+rwX` after each container call when permitted; nodes run with sudo also restore ownership to the sudo user, skipping hard-linked files, with a CI guide for saving and restoring the cache root
 
 ## [0.1.76] - 2026-06-18
 

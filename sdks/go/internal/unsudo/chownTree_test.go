@@ -79,6 +79,25 @@ var _ = Context("RestoreCacheTree", func() {
 		}
 	})
 
+	It("should leave hard-linked files untouched so files outside the cache dir can't be re-owned or widened", func() {
+		rootPath := GinkgoT().TempDir()
+		outsidePath := filepath.Join(GinkgoT().TempDir(), "outside")
+		Expect(os.WriteFile(outsidePath, nil, 0600)).To(Succeed())
+		Expect(os.Chmod(outsidePath, 0600)).To(Succeed())
+		Expect(os.Link(outsidePath, filepath.Join(rootPath, "link"))).To(Succeed())
+		before, err := os.Stat(outsidePath)
+		Expect(err).To(BeNil())
+		GinkgoT().Setenv("SUDO_UID", "1234")
+		GinkgoT().Setenv("SUDO_GID", "2345")
+
+		Expect(RestoreCacheTree(rootPath)).To(Succeed())
+
+		after, err := os.Stat(outsidePath)
+		Expect(err).To(BeNil())
+		Expect(after.Mode()).To(Equal(before.Mode()))
+		Expect(after.Sys().(*syscall.Stat_t).Uid).To(Equal(before.Sys().(*syscall.Stat_t).Uid))
+	})
+
 	It("should reject a symlink as the tree root", func() {
 		linkPath := filepath.Join(GinkgoT().TempDir(), "link")
 		Expect(os.Symlink(GinkgoT().TempDir(), linkPath)).To(Succeed())
