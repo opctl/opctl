@@ -74,7 +74,7 @@ func (this core) StartOp(
 	go func() {
 		defer func() {
 			if noCacheRootPath != "" {
-				// shortcut: a killed run can still have containers stopping, and an unprivileged node can't remove root-owned files; leftovers are swept when the node next starts
+				// shortcut: a killed run can still have containers stopping (swept at next node start); an unprivileged node can't remove root-owned files at all (docs give the manual cleanup)
 				if err := os.RemoveAll(noCacheRootPath); err != nil {
 					fmt.Printf("unable to remove --no-cache dirs %s: %v\n", noCacheRootPath, err)
 				}

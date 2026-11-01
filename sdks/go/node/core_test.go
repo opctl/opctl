@@ -50,5 +50,21 @@ var _ = Context("core", func() {
 			Expect(filepath.Join(dataDir, "nocache")).NotTo(BeAnExistingFile())
 			Expect(cachePath).To(BeADirectory())
 		})
+
+		It("should not sweep --no-cache dirs while another node holds the data dir", func() {
+			/* arrange */
+			dataDir := GinkgoT().TempDir()
+			_, err := New(context.Background(), new(FakeContainerRuntime), dataDir)
+			Expect(err).To(BeNil())
+			livePath := filepath.Join(dataDir, "nocache", "run", "npm")
+			Expect(os.MkdirAll(livePath, 0700)).To(Succeed())
+
+			/* act */
+			_, actualErr := New(context.Background(), new(FakeContainerRuntime), dataDir)
+
+			/* assert */
+			Expect(actualErr).To(HaveOccurred())
+			Expect(livePath).To(BeADirectory())
+		})
 	})
 })
