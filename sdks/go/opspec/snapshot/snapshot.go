@@ -73,6 +73,10 @@ func known(v any, scope map[string]*model.Value) bool {
 		ok := true
 		_ = interpolater.Scan(v, func(string) error { return nil }, func(ref string) error {
 			body := ref[2 : len(ref)-1]
+			if strings.HasPrefix(body, "./") || strings.HasPrefix(body, "../") || strings.HasPrefix(body, "/") {
+				ok = false
+				return nil
+			}
 			root := strings.FieldsFunc(body, func(r rune) bool { return r == '/' || r == '.' || r == '[' })
 			if len(root) == 0 || scope[root[0]] == nil || strings.Contains(body, "$(") {
 				ok = false
@@ -155,7 +159,7 @@ func expand(c *model.CallSpec, scope, locals map[string]*model.Value) (*model.Ca
 				if !parallel {
 					base = loopScope
 				}
-				iterScope, err := iteration.Scope(i, base, rangeValue, vars)
+				iterScope, err := iteration.Scope(i, copyScope(base), rangeValue, vars)
 				if err != nil {
 					return nil, err
 				}
@@ -182,6 +186,12 @@ func expand(c *model.CallSpec, scope, locals map[string]*model.Value) (*model.Ca
 				}
 				if !parallel {
 					loopScope = iterScope
+				} else {
+					for k := range loopScope {
+						if iterScope[k] == nil {
+							delete(loopScope, k)
+						}
+					}
 				}
 			}
 			for k := range scope {
@@ -256,21 +266,48 @@ func expand(c *model.CallSpec, scope, locals map[string]*model.Value) (*model.Ca
 			return nil, err
 		}
 	}
+	shadowOutputs(c, scope, locals)
+	return c, nil
+}
+
+func shadowOutputs(c *model.CallSpec, scope, locals map[string]*model.Value) {
+	if c == nil {
+		return
+	}
 	if c.Container != nil {
 		for _, ref := range []string{c.Container.Stdout, c.Container.Stderr} {
 			shadow(ref, scope, locals)
 		}
-		for _, ref := range c.Container.Outputs {
+		for name, ref := range c.Container.Outputs {
+			if ref == "" {
+				ref = "$(" + name + ")"
+			}
 			shadow(ref, scope, locals)
 		}
 	}
 	if c.Op != nil {
-		for _, ref := range c.Op.Outputs {
+		for name, ref := range c.Op.Outputs {
+			if ref == "" {
+				ref = "$(" + name + ")"
+			}
 			shadow(ref, scope, locals)
 		}
 	}
-	return c, nil
+	for _, group := range []*[]*model.CallSpec{c.Serial, c.Parallel} {
+		if group != nil {
+			for _, child := range *group {
+				shadowOutputs(child, scope, locals)
+			}
+		}
+	}
+	if c.SerialLoop != nil {
+		shadowOutputs(&c.SerialLoop.Run, scope, locals)
+	}
+	if c.ParallelLoop != nil {
+		shadowOutputs(&c.ParallelLoop.Run, scope, locals)
+	}
 }
+
 func shadow(ref string, scope, locals map[string]*model.Value) {
 	if strings.HasPrefix(ref, "$(") && strings.HasSuffix(ref, ")") {
 		name := ref[2 : len(ref)-1]
