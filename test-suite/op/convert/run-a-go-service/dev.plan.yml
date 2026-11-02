@@ -1,0 +1,61 @@
+# opctl op plan: snapshot of the op graph that dev plans for the inputs below.
+# For inspection and debugging only. It isn't a conversion: other inputs can plan a different graph,
+# and Go branches, helpers and op stubs don't appear in it.
+# Secret, dir, file and socket inputs aren't passed to plan, so they stay references.
+#   MYSQL_DATABASE: "testapp"
+#   MYSQL_HOST: "mysql"
+#   MYSQL_PASSWORD: "testpassword"
+#   MYSQL_USER: "testuser"
+#   goBuildCachePath: "Library/Caches/go-build"
+name: dev
+description: runs go-svc for development
+inputs:
+  HOME:
+    description: Home directory of caller; used to access go modules
+    dir: {}
+  MYSQL_DATABASE:
+    description: Database to create
+    string:
+      default: testapp
+  MYSQL_HOST:
+    string:
+      default: mysql
+  MYSQL_PASSWORD:
+    description: password for MySQL user to create
+    string:
+      default: testpassword
+  MYSQL_USER:
+    description: username for MySQL user to create
+    string:
+      default: testuser
+  goBuildCachePath:
+    description: Path relative to HOME dir, to use for go build cache e.g., on macOS, Library/Caches/go-build; on Linux, .cache/go-build
+    string:
+      default: Library/Caches/go-build
+run:
+  parallel:
+    - op:
+        inputs:
+          MYSQL_DATABASE: $(MYSQL_DATABASE)
+          MYSQL_HOST: $(MYSQL_HOST)
+          MYSQL_PASSWORD: $(MYSQL_PASSWORD)
+          MYSQL_USER: $(MYSQL_USER)
+        ref: ../mysql
+    - container:
+        cmd:
+          - go
+          - run
+          - main.go
+        dirs:
+          /go/pkg: $(HOME/go/pkg)
+          /root/.cache/go-build: $(HOME/$(goBuildCachePath))
+          /src: $(../..)
+        envVars:
+          MYSQL_DATABASE: $(MYSQL_DATABASE)
+          MYSQL_HOST: $(MYSQL_HOST)
+          MYSQL_PASSWORD: $(MYSQL_PASSWORD)
+          MYSQL_USER: $(MYSQL_USER)
+        image:
+          ref: golang:1.25
+        name: run-a-go-service-api
+        workDir: /src

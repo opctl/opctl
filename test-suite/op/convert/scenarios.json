@@ -1,0 +1,252 @@
+[
+  {
+    "name": "streams",
+    "call": {
+      "convert": {
+        "root": "/repo/test-suite/run/container/object/streams",
+        "op": ".",
+        "expect": "written"
+      },
+      "opRef": "/repo/test-suite/run/container/object/streams",
+      "scope": {},
+      "expect": "success"
+    }
+  },
+  {
+    "name": "typed container and op outputs",
+    "call": {
+      "convert": {
+        "root": "/repo/test-suite/run/container/object/typed-outputs/pass",
+        "op": ".",
+        "expect": "written"
+      },
+      "opRef": "/repo/test-suite/run/container/object/typed-outputs/pass",
+      "scope": {},
+      "expect": "success",
+      "expectOutputs": {
+        "version": {
+          "string": "v1.2.3"
+        },
+        "buildCount": {
+          "number": 3
+        },
+        "ready": {
+          "boolean": true
+        },
+        "targets": {
+          "array": [
+            "linux"
+          ]
+        },
+        "metadata": {
+          "object": {
+            "revision": "abc123"
+          }
+        },
+        "stream": {
+          "string": "v1.2.3"
+        },
+        "diagnostic": {
+          "string": "diagnostic"
+        },
+        "memberStdout": {
+          "number": 7
+        }
+      }
+    }
+  },
+  {
+    "name": "unchanged Go caller",
+    "call": {
+      "convert": {
+        "root": "/repo/test-suite/run/go/interop",
+        "op": "go-to-yaml/yaml",
+        "expect": "written"
+      },
+      "opRef": "/repo/test-suite/run/go/interop/go-to-yaml",
+      "scope": {
+        "mode": "normal"
+      },
+      "expect": "success"
+    }
+  },
+  {
+    "name": "unchanged typed stub caller",
+    "call": {
+      "convert": {
+        "root": "/repo/test-suite/run/go/stubs",
+        "op": "yaml",
+        "expect": "written"
+      },
+      "opRef": "/repo/test-suite/run/go/stubs/caller",
+      "scope": {},
+      "expect": "success"
+    }
+  },
+  {
+    "name": "YAML caller dev count=2 regions=1",
+    "call": {
+      "convert": {
+        "root": "/repo/test-suite/op/convert",
+        "op": "callee",
+        "expect": "written"
+      },
+      "opRef": "/repo/test-suite/op/convert/caller",
+      "scope": {
+        "env": "dev",
+        "count": 2,
+        "regions": [
+          "east"
+        ]
+      },
+      "expect": "success",
+      "expectOutputs": {
+        "message": {
+          "string": "base"
+        }
+      }
+    }
+  },
+  {
+    "name": "YAML caller prod count=2 regions=2",
+    "call": {
+      "convert": {
+        "root": "/repo/test-suite/op/convert",
+        "op": "callee",
+        "expect": "written"
+      },
+      "opRef": "/repo/test-suite/op/convert/caller",
+      "scope": {
+        "env": "prod",
+        "count": 2,
+        "regions": [
+          "east",
+          "west"
+        ]
+      },
+      "expect": "success",
+      "expectOutputs": {
+        "message": {
+          "string": "deployed"
+        }
+      }
+    }
+  },
+  {
+    "name": "YAML caller prod count=1 regions=0",
+    "call": {
+      "convert": {
+        "root": "/repo/test-suite/op/convert",
+        "op": "callee",
+        "expect": "written"
+      },
+      "opRef": "/repo/test-suite/op/convert/caller",
+      "scope": {
+        "env": "prod",
+        "count": 1,
+        "regions": []
+      },
+      "expect": "success",
+      "expectOutputs": {
+        "message": {
+          "string": "base"
+        }
+      }
+    }
+  },
+  {
+    "name": "service plan only",
+    "call": {
+      "convert": {
+        "root": "/repo/test-suite/op/convert/run-a-go-service",
+        "op": ".opspec/dev",
+        "expect": "written",
+        "planOnly": true,
+        "snapshot": "dev.plan.yml"
+      },
+      "opRef": "/repo/test-suite/op/convert/run-a-go-service/.opspec/dev",
+      "scope": {},
+      "expect": "success"
+    }
+  },
+  {
+    "name": "secret-safe Go plan",
+    "call": {
+      "opRef": "/repo/test-suite/op/convert/plan-secret",
+      "scope": {
+        "region": "east"
+      },
+      "expect": "success",
+      "plan": true
+    }
+  },
+  {
+    "name": "produced property and item refusals",
+    "call": {
+      "convert": {
+        "root": "/repo/test-suite/run/container/object/outputs-file",
+        "op": ".",
+        "expect": "refused",
+        "expectMessages": [
+          "op.yml:24:19  run.serial[1].container.envVars.TARGET",
+          "op.yml:25:21  run.serial[1].container.envVars.REVISION"
+        ]
+      },
+      "opRef": "/repo/test-suite/run/container/object/outputs-file",
+      "scope": {},
+      "expect": "success"
+    }
+  },
+  {
+    "name": "initializer refusals",
+    "call": {
+      "convert": {
+        "root": "/repo/.opspec/release/to-ghcr",
+        "op": ".",
+        "expect": "refused",
+        "expectMessages": [
+          "run.parallelLoop.run.container.dirs./buildCtx",
+          "run.parallelLoop.run.container.files./root/.docker/config.json",
+          "op.yml:"
+        ]
+      },
+      "opRef": "/repo/.opspec/release/to-ghcr",
+      "scope": {},
+      "expect": "success"
+    }
+  },
+  {
+    "name": "until refusal",
+    "call": {
+      "convert": {
+        "root": "/repo/test-suite/run/serialLoop/object/until/array/eq/strings",
+        "op": ".",
+        "expect": "refused",
+        "expectMessages": [
+          "run.serialLoop.until",
+          "op.yml:"
+        ]
+      },
+      "opRef": "/repo/test-suite/run/serialLoop/object/until/array/eq/strings",
+      "scope": {},
+      "expect": "success"
+    }
+  },
+  {
+    "name": "call name refusal",
+    "call": {
+      "convert": {
+        "root": "/repo/test-suite/run/name",
+        "op": ".",
+        "expect": "refused",
+        "expectMessages": [
+          "run.name",
+          "op.yml:"
+        ]
+      },
+      "opRef": "/repo/test-suite/run/name",
+      "scope": {},
+      "expect": "success"
+    }
+  }
+]

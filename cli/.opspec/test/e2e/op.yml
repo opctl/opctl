@@ -20,7 +20,7 @@ run:
         envVars:
           CGO_ENABLED: '0'
           GOFLAGS: '-tags=containers_image_openpgp -buildvcs=false'
-        cmd: [sh, -ce, "go build -o /out/assert-outputs ./cli/.opspec/test/e2e/assert-outputs; go build -o /out/assert-cache ./cli/.opspec/test/e2e/assert-cache; go build -o /out/assert-stubs ./cli/.opspec/test/e2e/assert-stubs"]
+        cmd: [sh, -ce, "go build -o /out/assert-outputs ./cli/.opspec/test/e2e/assert-outputs; go build -o /out/assert-cache ./cli/.opspec/test/e2e/assert-cache; go build -o /out/assert-stubs ./cli/.opspec/test/e2e/assert-stubs; go build -o /out/assert-convert ./cli/.opspec/test/e2e/assert-convert"]
     - op:
         ref: github.com/opspec-pkgs/dir.list-contents#1.1.0
         inputs:
@@ -56,6 +56,8 @@ run:
                         cacheProof: false
                         stubProof: false
                         createGo: ''
+                        convert: ''
+                        plan: false
                       override:  $(scenario.call)
                     outputs:
                       result: $(call)
@@ -79,13 +81,17 @@ run:
                       cacheProof: $(call.cacheProof)
                       stubProof: $(call.stubProof)
                       createGo: $(call.createGo)
+                      convert: $(call.convert)
+                      plan: $(call.plan)
                       githubAccessToken:
                     files:
                       /args.yml: $(call.scope)
                       /expected-outputs.json: $(call.expectOutputs)
+                      /convert.json: $(call.convert)
                       /assert-outputs: $(outputAssertions/assert-outputs)
                       /assert-cache: $(outputAssertions/assert-cache)
                       /assert-stubs: $(outputAssertions/assert-stubs)
+                      /assert-convert: $(outputAssertions/assert-convert)
                       /cmd.sh:
                       /usr/local/bin/opctl: $(../../../opctl-linux-amd64)
                     image:

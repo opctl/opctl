@@ -1,0 +1,38 @@
+name: convert-callee
+inputs:
+  env: {string: {default: dev}}
+  count: {number: {default: 2}}
+  regions: {array: {default: [east, west], constraints: {items: {type: string}}}}
+outputs:
+  message: {string: {default: base}}
+run:
+  serial:
+    - container:
+        image: {ref: alpine:3}
+        cmd: [printf, base]
+        stdout: $(message)
+    - if:
+        - eq: [$(env), prod]
+        - gt: [$(count), 1]
+      container:
+        image: {ref: alpine:3}
+        cmd: [printf, deployed]
+        stdout: $(message)
+    - serialLoop:
+        range: $(regions)
+        vars: {index: $(index), value: $(region)}
+        run:
+          container:
+            image: {ref: alpine:3}
+            dirs: {/scratch: $(scratch)}
+            envVars: {REGION: $(region), INDEX: $(index)}
+            cmd: [sh, -ce, 'test -d /scratch; printf "%s:%s" "$INDEX" "$REGION"']
+    - parallelLoop:
+        range: [one, two]
+        vars: {value: $(item)}
+        run:
+          container:
+            image: {ref: alpine:3}
+            dirs: {/scratch: $(fresh)}
+            envVars: {ITEM: $(item)}
+            cmd: [sh, -ce, 'test -d /scratch; printf "%s" "$ITEM"']

@@ -1,0 +1,12 @@
+name: convert-caller
+inputs:
+  env: {string: {default: dev}}
+  count: {number: {default: 2}}
+  regions: {array: {default: [east, west], constraints: {items: {type: string}}}}
+outputs:
+  message: {string: {}}
+run:
+  op:
+    ref: ../callee
+    inputs: {env: $(env), count: $(count), regions: $(regions)}
+    outputs: {message: $(message)}

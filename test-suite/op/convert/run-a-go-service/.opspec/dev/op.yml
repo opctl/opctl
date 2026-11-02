@@ -1,0 +1,57 @@
+name: dev
+description: runs go-svc for development
+inputs:
+  goBuildCachePath:
+    string:
+      description: Path relative to HOME dir, to use for go build cache e.g., on macOS, Library/Caches/go-build; on Linux, .cache/go-build
+      default: Library/Caches/go-build
+  HOME:
+    dir:
+      description: Home directory of caller; used to access go modules
+  MYSQL_USER:
+    string:
+      default: testuser
+      description: username for MySQL user to create
+  MYSQL_PASSWORD:
+    string:
+      default: testpassword
+      description: password for MySQL user to create
+  MYSQL_DATABASE:
+    string:
+      default: testapp
+      description: Database to create
+  MYSQL_HOST:
+    string:
+      default: mysql # the host for mysql is the container name in the mysql op
+run:
+  parallel:
+    - op:
+        ref: $(../mysql) # we reference the mysql op using its relative path to this op
+        inputs:
+          # we pass the relevant inputs through to the mysql op
+          MYSQL_USER:
+          MYSQL_PASSWORD:
+          MYSQL_HOST:
+          MYSQL_DATABASE:
+    - container:
+        image:
+          ref: 'golang:1.25'
+        dirs:
+          # mount the source code of our app to the container
+          /src: $(../..)
+          # mount the go pkg and build cache to speed up builds
+          /go/pkg: $(HOME/go/pkg)
+          /root/.cache/go-build: $(HOME/$(goBuildCachePath))
+        envVars:
+          # let our code know how to connect to the DB
+          MYSQL_USER:
+          MYSQL_PASSWORD:
+          MYSQL_HOST:
+          MYSQL_DATABASE:
+        # this sets an opctl DNS A record so the containers available via this name.
+        name: run-a-go-service-api
+        workDir: /src
+        cmd:
+          - go
+          - run
+          - main.go

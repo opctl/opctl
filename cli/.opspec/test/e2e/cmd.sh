@@ -34,6 +34,19 @@ fi
 
 opRef="${opRef:-/test}"
 
+if [ "${convert:-}" != "" ]; then
+  convertCopy=$(mktemp -d "${TMPDIR:-/tmp}/opctl-convert.XXXXXX") || exit 1
+  trap 'rm -rf "$convertCopy"' EXIT
+  opRef=$("${assertConvertPath:-/assert-convert}" convert /convert.json "$opRef" "$convertCopy" /args.yml) || exit 1
+  # Refusals and service snapshots finish without executing the op.
+  [ -n "$opRef" ] || exit 0
+fi
+
+if [ "${plan:-false}" = true ]; then
+  "${assertConvertPath:-/assert-convert}" plan "$opRef" /args.yml
+  exit $?
+fi
+
 echo "op: $op"
 if [ "${cacheProof:-false}" = true ]; then
   exec "${assertCachePath:-/assert-cache}" "$opRef" /args.yml
@@ -42,7 +55,7 @@ if [ "${stubProof:-false}" = true ]; then
   exec "${assertStubsPath:-/assert-stubs}" "$opRef" /args.yml
 fi
 runOutput=$(mktemp "${TMPDIR:-/tmp}/opctl-run.XXXXXX") || exit 1
-trap 'rm -f "$runOutput"' EXIT
+trap 'rm -f "$runOutput"; if [ -n "${convertCopy:-}" ]; then rm -rf "$convertCopy"; fi' EXIT
 opctl run --no-progress --arg-file /args.yml "$opRef" > "$runOutput" 2>&1
 runStatus=$?
 cat "$runOutput"

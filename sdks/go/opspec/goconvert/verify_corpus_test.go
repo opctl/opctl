@@ -56,10 +56,16 @@ func TestPlanCorpus(t *testing.T) {
 	cases := []testCase{}
 	refused := 0
 	reasons := map[string]int{}
-	for _, group := range []string{"test-suite", "examples", ".opspec", "cli/.opspec"} {
-		err = filepath.WalkDir(filepath.Join(root, group), func(path string, entry os.DirEntry, err error) error {
+	{
+		err = filepath.WalkDir(root, func(path string, entry os.DirEntry, err error) error {
 			if err != nil {
 				return err
+			}
+			if entry.IsDir() {
+				switch entry.Name() {
+				case ".git", "node_modules", "vendor", "build", "opctlgen":
+					return filepath.SkipDir
+				}
 			}
 			if entry.IsDir() || entry.Name() != "op.yml" {
 				return nil

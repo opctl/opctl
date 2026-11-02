@@ -47,6 +47,46 @@
               "stubProof": {
                 "type": "boolean",
                 "description": "Verify typed op calls, warm caching, host stub refresh, and interface-triggered caller rebuilds"
+              },
+              "convert": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Copy a fixture root, convert its YAML op, and run the unchanged caller",
+                "properties": {
+                  "root": {
+                    "type": "string"
+                  },
+                  "op": {
+                    "type": "string"
+                  },
+                  "expect": {
+                    "enum": [
+                      "written",
+                      "refused"
+                    ]
+                  },
+                  "expectMessages": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "planOnly": {
+                    "type": "boolean"
+                  },
+                  "snapshot": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "root",
+                  "op",
+                  "expect"
+                ]
+              },
+              "plan": {
+                "type": "boolean",
+                "description": "Inspect a secret-input Go op without running its calls; assert redaction and event privacy"
               }
             },
             "required": [
