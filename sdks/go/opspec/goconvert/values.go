@@ -127,6 +127,7 @@ func (a *Analysis) reference(raw, path string, scope map[string]*binding, state 
 	}
 	if r.Binding != nil {
 		b := r.Binding
+		a.reads[path] = append(a.reads[path], b)
 		if b.Loop != "" && !strings.HasPrefix(state.loop, b.Loop) {
 			a.refuse(path, "loop-body producer is referenced outside its loop")
 		}

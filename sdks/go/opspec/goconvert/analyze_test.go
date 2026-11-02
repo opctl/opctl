@@ -3,6 +3,7 @@ package goconvert
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/opctl/opctl/sdks/go/model"
 	"go/ast"
 	"go/parser"
@@ -150,5 +151,30 @@ func TestRenderQuotesSourceText(t *testing.T) {
 	}
 	if functions != 2 {
 		t.Fatalf("got %d functions", functions)
+	}
+}
+
+func TestLoopRefusesOuterReadAndRebind(t *testing.T) {
+	for _, loop := range []string{"serialLoop", "parallelLoop"} {
+		for _, read := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s/read=%t", loop, read), func(t *testing.T) {
+				env := ""
+				if read {
+					env = ", envVars: {PREVIOUS: '$(text)'}"
+				}
+				source := fmt.Sprintf("name: loop-rebind\nrun:\n  serial:\n  - container: {image: {ref: alpine}, stdout: '$(text)'}\n  - %s:\n      range: [a, b]\n      run:\n        container: {image: {ref: alpine}%s, stdout: '$(text)'}\n", loop, env)
+				a, err := Analyze(context.Background(), t.TempDir(), []byte(source), nil)
+				if err != nil {
+					t.Fatal(err)
+				}
+				refused := false
+				for _, r := range a.Refusals {
+					refused = refused || strings.Contains(r.Reason, "loop body reads and rebinds outer name text across iterations")
+				}
+				if refused != read {
+					t.Fatalf("read=%t: %+v", read, a.Refusals)
+				}
+			})
+		}
 	}
 }

@@ -243,6 +243,16 @@ func (a *Analysis) walk(c *model.CallSpec, path string, scope map[string]*bindin
 			}
 		}
 		g.Body = a.walk(body, lp+".run", loopScope, next, false)
+		for readPath, bindings := range a.reads {
+			if !strings.HasPrefix(readPath, lp+".run.") {
+				continue
+			}
+			for _, b := range bindings {
+				if b == scope[b.Name] && loopScope[b.Name] != b {
+					a.refuse(readPath, "loop body reads and rebinds outer name "+b.Name+" across iterations")
+				}
+			}
+		}
 		for name, b := range loopScope {
 			if b != scope[name] {
 				scope[name] = b

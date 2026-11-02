@@ -42,6 +42,7 @@ type Analysis struct {
 	nodes      map[string]*yaml.Node
 	callees    map[string]*model.OpSpec
 	refs       map[string]string
+	reads      map[string][]*binding
 	values     map[string]*boundValue
 	inputs     map[string]*binding
 	produced   map[string][]*binding
@@ -100,7 +101,7 @@ func Analyze(ctx context.Context, dir string, source []byte, describe Describe) 
 	if err = yaml.Unmarshal(source, &doc); err != nil {
 		return nil, err
 	}
-	a := &Analysis{Dir: dir, Spec: spec, nodes: map[string]*yaml.Node{}, callees: map[string]*model.OpSpec{}, refs: map[string]string{}, values: map[string]*boundValue{}, inputs: map[string]*binding{}, produced: map[string][]*binding{}, loopInputs: map[string]string{}}
+	a := &Analysis{Dir: dir, Spec: spec, nodes: map[string]*yaml.Node{}, callees: map[string]*model.OpSpec{}, refs: map[string]string{}, reads: map[string][]*binding{}, values: map[string]*boundValue{}, inputs: map[string]*binding{}, produced: map[string][]*binding{}, loopInputs: map[string]string{}}
 	if len(doc.Content) > 0 {
 		a.index(doc.Content[0], "")
 	}
