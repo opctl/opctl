@@ -90,6 +90,9 @@ func TestPlanCorpus(t *testing.T) {
 				return nil
 			}
 			sets, err := InputSets(a.Spec, a.Dir, nil)
+			if err == nil {
+				err = CheckCoverage(a, sets)
+			}
 			if err != nil {
 				refused++
 				reasons[err.Error()]++

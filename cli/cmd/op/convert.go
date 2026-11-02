@@ -218,6 +218,9 @@ func convertInputValues(cmd *cobra.Command, satisfier cliparamsatisfier.CLIParam
 }
 
 func verifyConversion(ctx context.Context, a *goconvert.Analysis, files *goconvert.FileSet, sets []map[string]any) error {
+	if err := goconvert.CheckCoverage(a, sets); err != nil {
+		return err
+	}
 	stage, err := goconvert.StageFiles(a, files)
 	if err != nil {
 		return err

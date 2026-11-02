@@ -2,6 +2,7 @@ package goconvert
 
 import (
 	"context"
+	"fmt"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/goop"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
@@ -107,5 +108,34 @@ func TestPredicateBoundaryCandidatesComeFirst(t *testing.T) {
 	}
 	if sets[0]["num"] != float64(0) {
 		t.Fatalf("lost default set: %v", sets[0])
+	}
+}
+
+func TestControlInputsPrecedeOtherVariations(t *testing.T) {
+	source := "name: late-input\ninputs:\n"
+	for _, name := range []string{"a", "b", "c", "d", "e", "f", "g", "h"} {
+		source += fmt.Sprintf("  %s: {string: {default: one, constraints: {enum: [one, two, three, four]}}}\n", name)
+	}
+	source += "  zone: {string: {default: dev}}\n  zones: {array: {default: []}}\nrun:\n  serial:\n  - container: {image: {ref: alpine}, cmd: ['$(a) $(b) $(c) $(d) $(e) $(f) $(g) $(h)']}\n  - if: [{eq: ['$(zone)', prod]}]\n    container: {image: {ref: alpine}}\n  - serialLoop: {range: '$(zones)', run: {container: {image: {ref: alpine}}}}\n"
+	spec, err := opfile.Unmarshal([]byte(source))
+	if err != nil {
+		t.Fatal(err)
+	}
+	sets, err := InputSets(spec, t.TempDir(), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	prod, loop, flipped := false, false, false
+	for _, set := range sets {
+		prod = prod || set["zone"] == "prod"
+		loop = loop || len(set["zones"].([]any)) == 2
+		all := set["zone"] != "dev" && len(set["zones"].([]any)) > 0
+		for _, name := range []string{"a", "b", "c", "d", "e", "f", "g", "h"} {
+			all = all && set[name] != "one"
+		}
+		flipped = flipped || all
+	}
+	if len(sets) > 16 || !prod || !loop || !flipped {
+		t.Fatalf("starved control input or all-flipped set: %v", sets)
 	}
 }

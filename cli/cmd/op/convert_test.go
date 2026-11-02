@@ -134,3 +134,61 @@ func TestConvertCommand(t *testing.T) {
 		})
 	}
 }
+
+func TestConvertReportsUnreachedControlFlow(t *testing.T) {
+	for _, force := range []bool{false, true} {
+		t.Run(fmt.Sprint(force), func(t *testing.T) {
+			root := t.TempDir()
+			dir := filepath.Join(root, "coverage")
+			if err := os.Mkdir(dir, 0755); err != nil {
+				t.Fatal(err)
+			}
+			source := []byte("name: coverage\ninputs: {zone: {string: {default: dev, constraints: {enum: [dev]}}}, zones: {array: {default: []}}}\nrun:\n  serial:\n  - container: {image: {ref: alpine}}\n  - if: [{eq: ['$(zone)', prod]}]\n    serialLoop: {range: '$(zones)', run: {container: {image: {ref: alpine}}}}\n")
+			if err := os.WriteFile(filepath.Join(dir, "op.yml"), source, 0600); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(root, "go.mod"), []byte("module ops.local/test\ngo 1.25\nrequire github.com/opctl/opctl/sdks/go/opspec/sdk v0.0.0\n"), 0600); err != nil {
+				t.Fatal(err)
+			}
+			spec, err := opfile.Unmarshal(source)
+			if err != nil {
+				t.Fatal(err)
+			}
+			api := new(fakes.FakeNode)
+			api.DescribeOpReturns(spec, nil)
+			api.PlanOpCalls(func(context.Context, model.PlanOpReq) (*model.OpPlan, error) {
+				t.Fatal("incomplete coverage reached node verification")
+				return nil, nil
+			})
+			saved := node
+			node = api
+			defer func() { node = saved }()
+			cmd := newConvertCmd(cliparamsatisfier.New(nil))
+			var stdout, stderr bytes.Buffer
+			cmd.SetOut(&stdout)
+			cmd.SetErr(&stderr)
+			args := []string{"--go", dir}
+			if force {
+				args = append(args, "--force")
+			}
+			cmd.SetArgs(args)
+			err = cmd.Execute()
+			if (err == nil) != force {
+				t.Fatalf("force=%v: %v", force, err)
+			}
+			diagnostic := stderr.String()
+			if err != nil {
+				diagnostic += err.Error()
+			}
+			for _, want := range []string{"true branch wasn't reached", "loop length 0 wasn't reached", "loop length 2 wasn't reached"} {
+				if !strings.Contains(diagnostic, want) {
+					t.Fatalf("missing %q: %s", want, diagnostic)
+				}
+			}
+			_, goErr := os.Stat(filepath.Join(dir, "op.go"))
+			if force != (goErr == nil) {
+				t.Fatalf("force=%v: op.go %v", force, goErr)
+			}
+		})
+	}
+}

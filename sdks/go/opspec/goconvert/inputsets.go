@@ -7,7 +7,9 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/goop"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater"
 	"reflect"
+	"sort"
 	"strings"
 )
 
@@ -82,9 +84,10 @@ func InputSets(spec *model.OpSpec, opDir string, supplied map[string]any) ([]map
 	}
 	sets := []map[string]any{}
 	seen := map[string]bool{}
+	limit := 15 // Reserve the final slot for the all-flipped set.
 	add := func(set map[string]any) {
 		b, _ := json.Marshal(set)
-		if !seen[string(b)] && len(sets) < 16 {
+		if !seen[string(b)] && len(sets) < limit {
 			sets = append(sets, set)
 			seen[string(b)] = true
 		}
@@ -92,7 +95,10 @@ func InputSets(spec *model.OpSpec, opDir string, supplied map[string]any) ([]map
 	add(base)
 	flipped := copyValues(base)
 	run, _ := json.Marshal(spec.Run)
-	for _, name := range keys(publicParams) {
+	names := keys(publicParams)
+	control := controlInputNames(spec.Run)
+	sort.SliceStable(names, func(i, j int) bool { return control[names[i]] && !control[names[j]] })
+	for _, name := range names {
 		if !strings.Contains(string(run), "$("+name) {
 			continue
 		}
@@ -113,6 +119,7 @@ func InputSets(spec *model.OpSpec, opDir string, supplied map[string]any) ([]map
 			}
 		}
 	}
+	limit = 16
 	add(flipped)
 	return sets, nil
 }
@@ -175,4 +182,47 @@ func sampleValues(kind string, cs map[string]any) []any {
 		values = append(values, map[string]any{})
 	}
 	return values
+}
+
+func controlInputNames(run *model.CallSpec) map[string]bool {
+	names := map[string]bool{}
+	var collect func(any)
+	collect = func(v any) {
+		switch x := v.(type) {
+		case string:
+			_ = interpolater.Scan(x, func(string) error { return nil }, func(ref string) error { name, _ := rootRef(ref[2 : len(ref)-1]); names[name] = true; return nil })
+		case []any:
+			for _, v := range x {
+				collect(v)
+			}
+		case map[string]any:
+			for _, v := range x {
+				collect(v)
+			}
+		}
+	}
+	var visit func(*model.CallSpec)
+	visit = func(c *model.CallSpec) {
+		if c == nil {
+			return
+		}
+		collect(jsonValue(c.If))
+		if c.SerialLoop != nil {
+			collect(c.SerialLoop.Range)
+			visit(&c.SerialLoop.Run)
+		}
+		if c.ParallelLoop != nil {
+			collect(c.ParallelLoop.Range)
+			visit(&c.ParallelLoop.Run)
+		}
+		for _, group := range []*[]*model.CallSpec{c.Serial, c.Parallel} {
+			if group != nil {
+				for _, child := range *group {
+					visit(child)
+				}
+			}
+		}
+	}
+	visit(run)
+	return names
 }
