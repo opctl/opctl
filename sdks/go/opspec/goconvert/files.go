@@ -142,6 +142,7 @@ func writeFiles(dir string, files map[string][]byte, beforeRemove func() error) 
 			return err
 		}
 	}
+	createdModule := false
 	for _, name := range []string{"go.mod", "go.sum", ".gitignore"} {
 		data, ok := files[name]
 		if !ok {
@@ -178,8 +179,14 @@ func writeFiles(dir string, files map[string][]byte, beforeRemove func() error) 
 			}
 		}
 		if err := writeNewFile(path, data); err != nil {
+			if name == "go.sum" && createdModule {
+				if removeErr := os.Remove(filepath.Join(dir, "go.mod")); removeErr != nil {
+					return fmt.Errorf("%w; remove incomplete go.mod: %v", err, removeErr)
+				}
+			}
 			return err
 		}
+		createdModule = createdModule || name == "go.mod"
 	}
 	tmp := filepath.Join(dir, "op.go.tmp")
 	if err := writeNewFile(tmp, files["op.go"]); err != nil {

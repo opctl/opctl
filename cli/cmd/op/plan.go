@@ -32,23 +32,8 @@ func newPlanCmd(satisfier cliparamsatisfier.CLIParamSatisfier) *cobra.Command {
 		}
 		params := goop.PlanParams(spec.Inputs)
 		noteIgnoredArgs(cmd.ErrOrStderr(), args, params)
-		if argFile != "" {
-			data, err := os.ReadFile(argFile)
-			if err != nil {
-				return err
-			}
-			var doc yaml.Node
-			if err = yaml.Unmarshal(data, &doc); err != nil {
-				return err
-			}
-			if len(doc.Content) > 0 {
-				root := doc.Content[0]
-				for i := 0; i+1 < len(root.Content); i += 2 {
-					if params[root.Content[i].Value] == nil {
-						fmt.Fprintf(cmd.ErrOrStderr(), "note: input %s isn't passed to plan; ignored\n", root.Content[i].Value)
-					}
-				}
-			}
+		if err := noteIgnoredArgFile(cmd.ErrOrStderr(), argFile, params); err != nil {
+			return err
 		}
 		file, err := satisfier.NewYMLFileInputSrc(argFile)
 		if err != nil {
@@ -88,6 +73,29 @@ func noteIgnoredArgs(w io.Writer, args []string, params map[string]*model.ParamS
 			seen[name] = true
 		}
 	}
+}
+
+func noteIgnoredArgFile(w io.Writer, argFile string, params map[string]*model.ParamSpec) error {
+	if argFile == "" {
+		return nil
+	}
+	data, err := os.ReadFile(argFile)
+	if err != nil {
+		return err
+	}
+	var doc yaml.Node
+	if err = yaml.Unmarshal(data, &doc); err != nil {
+		return err
+	}
+	if len(doc.Content) > 0 {
+		root := doc.Content[0]
+		for i := 0; i+1 < len(root.Content); i += 2 {
+			if params[root.Content[i].Value] == nil {
+				fmt.Fprintf(w, "note: input %s isn't passed to plan; ignored\n", root.Content[i].Value)
+			}
+		}
+	}
+	return nil
 }
 
 func renderPlan(w io.Writer, plan *model.OpPlan, inputs map[string]*model.Value) error {

@@ -146,23 +146,8 @@ func newConvertCmd(satisfier cliparamsatisfier.CLIParamSatisfier) *cobra.Command
 func convertInputValues(cmd *cobra.Command, satisfier cliparamsatisfier.CLIParamSatisfier, args []string, argFile string, all map[string]*model.ParamSpec) (map[string]any, error) {
 	params := goop.PlanParams(all)
 	noteIgnoredArgs(cmd.ErrOrStderr(), args, params)
-	if argFile != "" {
-		data, err := os.ReadFile(argFile)
-		if err != nil {
-			return nil, err
-		}
-		var doc yaml.Node
-		if err = yaml.Unmarshal(data, &doc); err != nil {
-			return nil, err
-		}
-		if len(doc.Content) > 0 {
-			root := doc.Content[0]
-			for i := 0; i+1 < len(root.Content); i += 2 {
-				if params[root.Content[i].Value] == nil {
-					fmt.Fprintf(cmd.ErrOrStderr(), "note: input %s isn't passed to plan; ignored\n", root.Content[i].Value)
-				}
-			}
-		}
+	if err := noteIgnoredArgFile(cmd.ErrOrStderr(), argFile, params); err != nil {
+		return nil, err
 	}
 	file, err := satisfier.NewYMLFileInputSrc(argFile)
 	if err != nil {
@@ -181,32 +166,17 @@ func convertInputValues(cmd *cobra.Command, satisfier cliparamsatisfier.CLIParam
 			continue
 		}
 		p := params[name]
-		kind := "string"
 		var value any = *raw
-		switch {
-		case p.Array != nil:
-			kind = "array"
-		case p.Object != nil:
-			kind = "object"
-		case p.Boolean != nil:
-			kind = "boolean"
-		case p.Number != nil:
-			kind = "number"
-		}
-		if kind != "string" {
+		if p.String == nil {
 			if err = yaml.Unmarshal([]byte(*raw), &value); err != nil {
 				return nil, fmt.Errorf("input %s: %w", name, err)
 			}
 		}
-		b, err := json.Marshal(map[string]any{kind: value})
+		boxed, err := boxPlanValue(p, value)
 		if err != nil {
-			return nil, err
-		}
-		var boxed model.Value
-		if err = json.Unmarshal(b, &boxed); err != nil {
 			return nil, fmt.Errorf("input %s: %w", name, err)
 		}
-		if errs := param.Validate(&boxed, p, true); len(errs) > 0 {
+		if errs := param.Validate(boxed, p, true); len(errs) > 0 {
 			return nil, fmt.Errorf("input %s: %v", name, errs)
 		}
 		values[name], err = boxed.Unbox()
@@ -226,30 +196,18 @@ func verifyConversion(ctx context.Context, a *goconvert.Analysis, files *goconve
 		return err
 	}
 	defer os.RemoveAll(stage)
+	publicParams := goop.PlanParams(a.Spec.Inputs)
 	for _, set := range sets {
 		if err = ctx.Err(); err != nil {
 			return err
 		}
 		args := map[string]*model.Value{}
 		for name, value := range set {
-			p := goop.PlanParams(a.Spec.Inputs)[name]
-			kind := "string"
-			switch {
-			case p.Array != nil:
-				kind = "array"
-			case p.Object != nil:
-				kind = "object"
-			case p.Boolean != nil:
-				kind = "boolean"
-			case p.Number != nil:
-				kind = "number"
-			}
-			data, _ := json.Marshal(map[string]any{kind: value})
-			var v model.Value
-			if err = json.Unmarshal(data, &v); err != nil {
+			v, err := boxPlanValue(publicParams[name], value)
+			if err != nil {
 				return err
 			}
-			args[name] = &v
+			args[name] = v
 		}
 		planned, err := node.PlanOp(ctx, model.PlanOpReq{Op: model.StartOpReqOp{Ref: stage}, Args: args})
 		if err != nil {
@@ -267,4 +225,27 @@ func verifyConversion(ctx context.Context, a *goconvert.Analysis, files *goconve
 		}
 	}
 	return nil
+}
+
+func boxPlanValue(p *model.ParamSpec, value any) (*model.Value, error) {
+	kind := "string"
+	switch {
+	case p.Array != nil:
+		kind = "array"
+	case p.Object != nil:
+		kind = "object"
+	case p.Boolean != nil:
+		kind = "boolean"
+	case p.Number != nil:
+		kind = "number"
+	}
+	data, err := json.Marshal(map[string]any{kind: value})
+	if err != nil {
+		return nil, err
+	}
+	var boxed model.Value
+	if err = json.Unmarshal(data, &boxed); err != nil {
+		return nil, err
+	}
+	return &boxed, nil
 }
