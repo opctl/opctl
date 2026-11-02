@@ -88,3 +88,24 @@ func TestCompareUnusedStubOutputs(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestPredicateBoundaryCandidatesComeFirst(t *testing.T) {
+	spec, err := opfile.Unmarshal([]byte("name: boundary\ninputs: {num: {number: {default: 0}}}\nrun: {serial: [{container: {image: {ref: alpine}}}, {if: [{gt: ['$(num)', 5]}], container: {image: {ref: alpine}}}]}\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	sets, err := InputSets(spec, t.TempDir(), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	reached := map[bool]bool{}
+	for _, set := range sets {
+		reached[set["num"].(float64) > 5] = true
+	}
+	if !reached[true] || !reached[false] {
+		t.Fatalf("missed predicate side: %v", sets)
+	}
+	if sets[0]["num"] != float64(0) {
+		t.Fatalf("lost default set: %v", sets[0])
+	}
+}

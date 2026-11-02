@@ -49,6 +49,7 @@ accordance with
 ### Fixed
 
 - Go conversion rejects whitespace and control characters in op refs before generating source or describing callees.
+- Go conversion samples predicate boundaries before generic verification values.
 - `opctl op create` gives the files and directories it creates to the user who ran it, rather than root, when opctl re-runs itself under sudo to start a node.
 - The `run-a-react-app` dev op forwards the caller's `HOME` directory to its Go service.
 - Failed YAML ops keep their bound outputs when Go ops or container results occur only in unrelated subtrees.

@@ -35,7 +35,6 @@ func InputSets(spec *model.OpSpec, opDir string, supplied map[string]any) ([]map
 			}
 			values = append(values, v)
 		}
-		values = append(values, sampleValues(kind, cs)...)
 		// Literal operands supply boundary and opposite-side candidates for predicates.
 		var visit func(any)
 		visit = func(v any) {
@@ -65,6 +64,7 @@ func InputSets(spec *model.OpSpec, opDir string, supplied map[string]any) ([]map
 			}
 		}
 		visit(jsonValue(spec.Run))
+		values = append(values, sampleValues(kind, cs)...)
 		seen := map[string]bool{}
 		for _, v := range values {
 			if validCandidate(p, kind, v) {
