@@ -48,6 +48,7 @@ accordance with
 
 ### Fixed
 
+- The conversion skill documents every refusal and checks YAML rewrites before converting the op.
 - Failed conversion go.sum writes remove only the newly created go.mod so retries choose the correct module.
 - Go conversion rejects whitespace and control characters in op refs before generating source or describing callees.
 - Go conversion samples predicate boundaries before generic verification values.
