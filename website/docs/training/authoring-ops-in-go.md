@@ -441,6 +441,29 @@ func TestDescribe(t *testing.T) {
 
 `Plan` takes resolved values, so pass every public input, including those with defaults. `Describe` returns the op's interface without calling `plan`.
 
+## Converting ops
+
+Preview a YAML op as Go, then convert it after verification:
+
+```sh
+opctl op convert --go dev --dry-run
+opctl op convert --go dev
+```
+
+The converter preserves the interface and compares the Go op's plans with the op file for generated input sets. It writes `op.go`, removes `op.yml`, and refreshes
+editor stubs. Run the existing callers and tests unchanged after conversion. Unsupported constructs are refused with their op-file locations; move those calls
+into a YAML op and retry.
+
+Inspect either declaration with `opctl op plan dev -a name=value`. A plan snapshot shows the graph for those inputs without executing the op's calls. It doesn't
+recover Go branches or helpers, so porting Go back to YAML is a manual process. See [Converting ops](../reference/go-ops/converting.md) for verification, module
+rules, refusals, and snapshots.
+
+Agents can install the conversion workflow with:
+
+```sh
+npx skills add opctl/opctl
+```
+
 ## Next
 
 - The [Go op reference](../reference/go-ops/index.md) covers every SDK function and the rules opctl applies.

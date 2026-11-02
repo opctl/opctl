@@ -8,6 +8,8 @@ accordance with
 
 ### Added
 
+- `opctl op convert --go` converts local YAML ops to Go with located refusals, verified plans, a dry run, and an explicit option to write unverified results.
+- `opctl op plan` prints a Go or YAML op's plan snapshot for public value inputs without executing its calls, and redacts secret defaults.
 - The `converting-opctl-ops` agent skill guides YAML-to-Go conversions, splitting refused calls into YAML ops, and manual Go-to-YAML ports using plan snapshots.
 - `POST /api/ops/plans` obtains the op graph for a Go or YAML op without running its calls. Only non-secret value inputs are accepted.
 - Go op scaffolds git-ignore `/opctlgen/` and preserve an existing `.gitignore` by refusing to overwrite it.

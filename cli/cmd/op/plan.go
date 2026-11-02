@@ -21,7 +21,7 @@ import (
 func newPlanCmd(satisfier cliparamsatisfier.CLIParamSatisfier) *cobra.Command {
 	var args []string
 	var argFile string
-	cmd := &cobra.Command{Use: "plan OP_REF", Short: "Inspect an op graph without running its calls", Hidden: true, Args: cobra.ExactArgs(1), RunE: func(cmd *cobra.Command, refs []string) error {
+	cmd := &cobra.Command{Use: "plan OP_REF", Short: "Inspect an op graph without running its calls", Args: cobra.ExactArgs(1), RunE: func(cmd *cobra.Command, refs []string) error {
 		handle, err := dataresolver.New(satisfier, node).Resolve(cmd.Context(), refs[0], nil)
 		if err != nil {
 			return err

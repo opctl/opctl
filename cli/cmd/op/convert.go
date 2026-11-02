@@ -25,7 +25,7 @@ func newConvertCmd(satisfier cliparamsatisfier.CLIParamSatisfier) *cobra.Command
 	var goFlag, dryRun, force bool
 	var args []string
 	var argFile string
-	cmd := &cobra.Command{Use: "convert --go OP_REF", Short: "Convert a local op file to a verified Go op", Hidden: true, Args: cobra.ExactArgs(1), RunE: func(cmd *cobra.Command, refs []string) error {
+	cmd := &cobra.Command{Use: "convert --go OP_REF", Short: "Convert a local op file to a verified Go op", Args: cobra.ExactArgs(1), RunE: func(cmd *cobra.Command, refs []string) error {
 		if !goFlag {
 			return fmt.Errorf("pass --go; op convert only converts op.yml to Go")
 		}

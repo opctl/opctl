@@ -12,6 +12,7 @@ Go](../../training/authoring-ops-in-go.md).
 - [Calls](calls.md): container calls, op calls, and groups.
 - [Handles](handles.md): passing values between inputs, calls, and outputs.
 - [Bootstrap](bootstrap.md): how opctl runs the program, and its caches.
+- [Converting ops](converting.md): converting YAML ops to Go and inspecting plan snapshots.
 
 ## Entry points
 
