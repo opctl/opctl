@@ -12,7 +12,11 @@ import (
 )
 
 // RenderOptions identifies the module that will own converted op stubs.
-type RenderOptions struct{ ModuleRoot, ModulePath string }
+type RenderOptions struct {
+	ModuleRoot, ModulePath string
+	// StagingDir anchors local callee refs at their original targets during verification.
+	StagingDir string
+}
 
 // Rendered is formatted Go source and the editor stubs needed to compile it locally.
 type Rendered struct {
@@ -38,6 +42,28 @@ type renderer struct {
 func Render(a *Analysis, options RenderOptions) (*Rendered, error) {
 	if len(a.Refusals) > 0 {
 		return nil, fmt.Errorf("op can't be converted: %s", a.Refusals[0])
+	}
+	if options.StagingDir != "" {
+		staged := *a
+		staged.refs = map[string]string{}
+		for site, ref := range a.refs {
+			if !strings.Contains(ref, "#") {
+				target := ref
+				if !filepath.IsAbs(target) {
+					target = filepath.Join(a.Dir, target)
+				}
+				relative, err := filepath.Rel(options.StagingDir, target)
+				if err != nil {
+					return nil, err
+				}
+				ref = filepath.ToSlash(relative)
+				if !strings.HasPrefix(ref, "../") {
+					ref = "./" + ref
+				}
+			}
+			staged.refs[site] = ref
+		}
+		a = &staged
 	}
 	r := &renderer{a: a, options: options, names: map[string]bool{}, expr: map[*binding]string{}, used: map[*binding]bool{}, declared: map[*binding]bool{}, predecl: map[*binding]bool{}, imports: map[string]string{}, stubs: map[string][]byte{}}
 	for _, name := range []string{"opctl", "plan", "in", "main", "Inputs", "Outputs", "strconv", "maps", "slices"} {

@@ -94,9 +94,27 @@ func ScanStubs(source *Source) ([]StubUse, error) {
 	if len(needed) == 0 {
 		return []StubUse{}, nil
 	}
+	reachable := scan
 	scan, err = scanStubModule(source)
 	if err != nil {
 		return nil, err
+	}
+	// The requested op can be in a hidden verification directory skipped by the module walk.
+	for _, dir := range sortedStubKeys(reachable.packages) {
+		if scan.packages[dir] != nil {
+			continue
+		}
+		entries, err := os.ReadDir(dir)
+		if err != nil {
+			return nil, err
+		}
+		for _, entry := range entries {
+			if !entry.IsDir() && stubSourceFile(entry.Name()) {
+				if err = scan.file(filepath.Join(dir, entry.Name())); err != nil {
+					return nil, err
+				}
+			}
+		}
 	}
 	return scan.uses(needed)
 }

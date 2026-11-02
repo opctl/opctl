@@ -108,3 +108,18 @@ func TestConvertedStubNames(t *testing.T) {
 	}
 	_ = runCode(t, rendered, "plan", nil)
 }
+
+func TestStubNameAvoidsStandardImports(t *testing.T) {
+	a, err := Analyze(context.Background(), t.TempDir(), []byte("name: import-collision\ninputs: {count: {number: {default: 2}}}\nrun: {serial: [{op: {ref: ../strconv}}, {container: {image: {ref: alpine}, cmd: [echo, '$(count)']}}]}\n"), func(context.Context, string) (*model.OpSpec, error) { return &model.OpSpec{}, nil })
+	if err != nil {
+		t.Fatal(err)
+	}
+	rendered, err := Render(a, RenderOptions{ModuleRoot: a.Dir, ModulePath: "ops.local/test"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if rendered.Stubs["strconv2"] == nil {
+		t.Fatalf("stub shadows strconv: %s", rendered.Source)
+	}
+	_ = runCode(t, rendered, "plan", map[string]any{"count": float64(2)})
+}

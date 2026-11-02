@@ -162,3 +162,22 @@ func TestScanStubsStaysInMainModule(t *testing.T) {
 		})
 	}
 }
+
+func TestScanStubsInHiddenStagingDirectory(t *testing.T) {
+	root := stubTree(t, map[string]string{"go.mod": "module app\ngo 1.25\n", ".caller.opctl-convert-123/op.go": "package main\nimport _ \"app/opctlgen/child\" //opctl:op ../caller/child\n", ".unrelated/bad.go": "not Go"})
+	source, err := Discover(filepath.Join(root, ".caller.opctl-convert-123"), "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	uses, err := ScanStubs(source)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(uses) != 1 || uses[0].ModuleRef != "caller/child" {
+		t.Fatalf("%+v", uses)
+	}
+	all, err := ScanModuleStubs(root)
+	if err != nil || len(all) != 0 {
+		t.Fatalf("unrelated hidden directories became module declarations: %+v %v", all, err)
+	}
+}

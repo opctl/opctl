@@ -9,6 +9,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/sdk/refscan"
 	"github.com/opctl/opctl/sdks/go/opspec/snapshot"
 	"path"
+	"path/filepath"
 	"reflect"
 	"sort"
 	"strconv"
@@ -368,6 +369,12 @@ func (c *canonicalizer) call(raw map[string]any, scope map[string]string) (any, 
 				normalized, err := NormalizeRef(c.a.Dir, v.(string))
 				if err != nil {
 					return nil, err
+				}
+				if !strings.Contains(normalized, "#") {
+					if !filepath.IsAbs(normalized) {
+						normalized = filepath.Join(c.a.Dir, normalized)
+					}
+					normalized = filepath.Clean(normalized)
 				}
 				out[key] = normalized
 				continue
