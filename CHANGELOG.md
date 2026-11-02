@@ -8,6 +8,7 @@ accordance with
 
 ### Added
 
+- The `converting-opctl-ops` agent skill guides YAML-to-Go conversions, splitting refused calls into YAML ops, and manual Go-to-YAML ports using plan snapshots.
 - `POST /api/ops/plans` obtains the op graph for a Go or YAML op without running its calls. Only non-secret value inputs are accepted.
 - Go op scaffolds git-ignore `/opctlgen/` and preserve an existing `.gitignore` by refusing to overwrite it.
 - Go ops can call local or git-ref YAML and Go ops through typed op stubs, generated just in time from the callee's current interface.
