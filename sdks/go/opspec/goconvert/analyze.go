@@ -14,6 +14,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"unicode"
 )
 
 // Describe obtains a callee's current interface. Local refs are absolute paths.
@@ -375,6 +376,9 @@ func (a *Analysis) describeCalls(ctx context.Context, c *model.CallSpec, path st
 
 // NormalizeRef makes local op refs explicit while preserving git refs.
 func NormalizeRef(dir, ref string) (string, error) {
+	if strings.ContainsFunc(ref, func(r rune) bool { return unicode.IsSpace(r) || unicode.IsControl(r) }) {
+		return "", fmt.Errorf("op refs can't contain whitespace or control characters")
+	}
 	if strings.HasPrefix(ref, "$(") && strings.HasSuffix(ref, ")") {
 		body := ref[2 : len(ref)-1]
 		if strings.HasPrefix(body, "./") || strings.HasPrefix(body, "../") {

@@ -2,7 +2,11 @@ package goconvert
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/opctl/opctl/sdks/go/model"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"os"
 	"path/filepath"
 	"strings"
@@ -85,5 +89,66 @@ func TestAnalysisCorpus(t *testing.T) {
 	}
 	if total < 250 {
 		t.Fatalf("only %d parseable ops", total)
+	}
+}
+
+func TestAnalyzeRejectsDirectiveInjection(t *testing.T) {
+	for _, ref := range []string{"../child\n)\nfunc init() { println(1) }\nvar (_ = 1", "../child other", "../child\tother", "../child\rfoo", "../child\x00", "../child\u00a0other"} {
+		t.Run(ref, func(t *testing.T) {
+			source, err := json.Marshal(map[string]any{"name": "injection", "run": map[string]any{"op": map[string]any{"ref": ref}}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			described := false
+			a, err := Analyze(context.Background(), t.TempDir(), source, func(context.Context, string) (*model.OpSpec, error) { described = true; return &model.OpSpec{}, nil })
+			if err != nil {
+				t.Fatal(err)
+			}
+			if described {
+				t.Fatal("unsafe ref reached describe")
+			}
+			if len(a.Refusals) == 0 || a.Refusals[0].Reason != "op refs can't contain whitespace or control characters" {
+				t.Fatalf("refusals: %+v", a.Refusals)
+			}
+			if _, err = Render(a, RenderOptions{ModuleRoot: a.Dir, ModulePath: "ops.local/injection"}); err == nil {
+				t.Fatal("render accepted unsafe ref")
+			}
+		})
+	}
+}
+
+func TestRenderQuotesSourceText(t *testing.T) {
+	payload := "\"`\n)\nfunc init() { println(1) }\nvar (_ = 1 //"
+	source, err := json.Marshal(map[string]any{
+		"name": payload, "description": payload,
+		"inputs": map[string]any{"text": map[string]any{"description": payload, "string": map[string]any{"default": payload, "constraints": map[string]any{"enum": []any{payload}}}}},
+		"run":    map[string]any{"description": payload, "container": map[string]any{"image": map[string]any{"ref": "alpine"}, "cmd": []any{payload}, "envVars": map[string]any{"TEXT": payload}, "files": map[string]any{"/file": "$(./file)"}}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	a, err := Analyze(context.Background(), t.TempDir(), source, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rendered, err := Render(a, RenderOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	file, err := parser.ParseFile(token.NewFileSet(), "op.go", rendered.Source, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	functions := 0
+	for _, decl := range file.Decls {
+		if f, ok := decl.(*ast.FuncDecl); ok {
+			functions++
+			if f.Name.Name != "main" && f.Name.Name != "plan" {
+				t.Fatalf("injected function %s", f.Name.Name)
+			}
+		}
+	}
+	if functions != 2 {
+		t.Fatalf("got %d functions", functions)
 	}
 }

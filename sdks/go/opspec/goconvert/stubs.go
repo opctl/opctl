@@ -140,6 +140,9 @@ func (r *renderer) prepareStubs() error {
 		}
 		ref := r.a.refs[g.Path]
 		name := labels[ref]
+		if _, err := NormalizeRef(r.a.Dir, ref); err != nil {
+			return err
+		}
 		use := goop.StubUse{Name: name, Ref: ref, Local: !strings.Contains(ref, "#")}
 		if use.Local {
 			relative, err := filepath.Rel(r.options.ModuleRoot, r.target(ref))
