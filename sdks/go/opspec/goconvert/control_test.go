@@ -3,6 +3,7 @@ package goconvert
 import (
 	"context"
 	"github.com/opctl/opctl/sdks/go/opspec/goop"
+	"go/format"
 	"os"
 	"path/filepath"
 	"strings"
@@ -31,6 +32,10 @@ func TestRenderControl(t *testing.T) {
 		}
 	}
 	want, err := os.ReadFile(golden)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want, err = format.Source(want)
 	if err != nil {
 		t.Fatal(err)
 	}

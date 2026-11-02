@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/opctl/opctl/sdks/go/opspec/goop"
+	"go/format"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -40,6 +41,10 @@ func TestRenderGraph(t *testing.T) {
 				}
 			}
 			want, err := os.ReadFile(golden)
+			if err != nil {
+				t.Fatal(err)
+			}
+			want, err = format.Source(want)
 			if err != nil {
 				t.Fatal(err)
 			}

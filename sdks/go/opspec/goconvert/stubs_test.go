@@ -5,6 +5,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/goop"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"go/format"
 	"os"
 	"path/filepath"
 	"strings"
@@ -48,6 +49,10 @@ func TestConvertedTypedStub(t *testing.T) {
 		}
 	}
 	want, err := os.ReadFile(golden)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want, err = format.Source(want)
 	if err != nil {
 		t.Fatal(err)
 	}
