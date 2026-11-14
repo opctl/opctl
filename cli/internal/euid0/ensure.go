@@ -50,7 +50,7 @@ func sudoArgs(sudoRs bool, environ []string, pathToOpctlBin string, args []strin
 	if sudoRs {
 		var names []string
 		for _, kv := range environ {
-			name, _, _ := strings.Cut(kv, "=")
+			name, value, _ := strings.Cut(kv, "=")
 			switch name {
 			case "", "PATH", "USER", "LOGNAME",
 				"SUDO_USER", "SUDO_UID", "SUDO_GID", "SUDO_HOME", "SUDO_COMMAND":
@@ -58,6 +58,10 @@ func sudoArgs(sudoRs bool, environ []string, pathToOpctlBin string, args []strin
 			}
 			// --preserve-env= is comma-separated
 			if strings.Contains(name, ",") {
+				continue
+			}
+			// classic sudo -E drops these (exported bash functions)
+			if strings.HasPrefix(value, "()") {
 				continue
 			}
 			names = append(names, name)
