@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.77] - 2026-11-13
+
+### Fixed
+
+- Commands that re-exec opctl as root via `sudo` now keep the caller's environment when `sudo` is sudo-rs (the
+default on Ubuntu 26.04), so env var inputs and `HOME` are no longer dropped
+
 ## [0.1.76] - 2026-06-18
 
 ### Added
