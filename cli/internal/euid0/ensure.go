@@ -43,11 +43,8 @@ func isSudoRs() bool {
 	return err == nil && bytes.HasPrefix(out, []byte("sudo-rs"))
 }
 
-// sudoArgs preserves the caller's environment across the sudo re-exec.
-// sudo-rs (default sudo on Ubuntu 26.04+) ignores -E, so there each variable
-// is named via --preserve-env=, minus those classic sudo -E resets anyway.
-// Preserved vars override what sudo-rs sets, so its SUDO_* identity vars are
-// excluded too (a caller already under sudo would otherwise pass on stale ones).
+// sudo-rs ignores -E, so vars are named instead, minus those classic sudo -E resets.
+// Named vars override sudo-rs's own, so stale SUDO_* identity vars are dropped too.
 func sudoArgs(sudoRs bool, environ []string, pathToOpctlBin string, args []string) []string {
 	preserveEnv := "-E"
 	if sudoRs {
@@ -59,7 +56,7 @@ func sudoArgs(sudoRs bool, environ []string, pathToOpctlBin string, args []strin
 				"SUDO_USER", "SUDO_UID", "SUDO_GID", "SUDO_HOME", "SUDO_COMMAND":
 				continue
 			}
-			// --preserve-env= is comma separated, so such a name can't be expressed
+			// --preserve-env= is comma-separated
 			if strings.Contains(name, ",") {
 				continue
 			}
