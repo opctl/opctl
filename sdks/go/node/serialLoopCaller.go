@@ -81,15 +81,28 @@ func (lpr _serialLoopCaller) Call(
 		return nil, err
 	}
 
-	for !serialloop.IsIterationComplete(index, callSerialLoop) {
-		eventFilterSince := time.Now().UTC()
+	// subscribe to events
+	// @TODO: handle err channel
+	subCtx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	eventFilterSince := time.Now().UTC()
+	eventChannel, _ := lpr.pubSub.Subscribe(
+		subCtx,
+		model.EventFilter{
+			Roots: []string{rootCallID},
+			Since: &eventFilterSince,
+		},
+	)
+	watchChildCallEnded := newChildCallEndedWatcher(eventChannel)
 
+	for !serialloop.IsIterationComplete(index, callSerialLoop) {
 		var callID string
 		callID, err = uniquestring.Construct()
 		if err != nil {
 			return nil, err
 		}
 
+		childCallEndedChannel := watchChildCallEnded(callID)
 		lpr.caller.Call(
 			ctx,
 			callID,
@@ -100,29 +113,14 @@ func (lpr _serialLoopCaller) Call(
 			rootCallID,
 		)
 
-		// subscribe to events
-		// @TODO: handle err channel
-		eventChannel, _ := lpr.pubSub.Subscribe(
-			ctx,
-			model.EventFilter{
-				Roots: []string{rootCallID},
-				Since: &eventFilterSince,
-			},
-		)
-
-	eventLoop:
-		for event := range eventChannel {
+		if callEnded := <-childCallEndedChannel; callEnded != nil {
+			if callEnded.Error != nil {
+				err = errors.New(callEnded.Error.Message)
+				return nil, err
+			}
 			// merge child outboundScope w/ outboundScope, child outboundScope having precedence
-			switch {
-			case event.CallEnded != nil && event.CallEnded.Call.ID == callID:
-				if event.CallEnded.Error != nil {
-					err = errors.New(event.CallEnded.Error.Message)
-					return nil, err
-				}
-				for name, value := range event.CallEnded.Outputs {
-					outboundScope[name] = value
-				}
-				break eventLoop
+			for name, value := range callEnded.Outputs {
+				outboundScope[name] = value
 			}
 		}
 

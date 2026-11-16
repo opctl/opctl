@@ -89,11 +89,16 @@ func (ps *pubSub) Subscribe(
 		}
 
 		// new events
-		for event := range publishEventChannel {
+		for {
 			select {
 			case <-ctx.Done():
 				return
-			case dstEventChannel <- event:
+			case event := <-publishEventChannel:
+				select {
+				case <-ctx.Done():
+					return
+				case dstEventChannel <- event:
+				}
 			}
 		}
 	}()
@@ -104,13 +109,10 @@ func (ps *pubSub) Subscribe(
 func (ps *pubSub) closeSubscription(
 	channel chan model.Event,
 ) {
-	ps.subscriptionsMutex.RLock()
-	close(ps.subscriptions[channel].Done)
-	ps.subscriptionsMutex.RUnlock()
-
 	ps.subscriptionsMutex.Lock()
+	defer ps.subscriptionsMutex.Unlock()
+	close(ps.subscriptions[channel].Done)
 	delete(ps.subscriptions, channel)
-	ps.subscriptionsMutex.Unlock()
 }
 
 // O(n) complexity (n being number of existing subscriptions); thread safe

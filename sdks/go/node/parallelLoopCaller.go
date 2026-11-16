@@ -133,9 +133,11 @@ func (plpr _parallelLoopCaller) Call(
 
 	// subscribe to events
 	// @TODO: handle err channel
+	subCtx, cancel := context.WithCancel(parentCtx)
+	defer cancel()
 	eventChannel, _ := plpr.pubSub.Subscribe(
 		// don't cancel w/ children; we need to read err msgs
-		parentCtx,
+		subCtx,
 		model.EventFilter{
 			Roots: []string{rootCallID},
 			Since: &startTime,

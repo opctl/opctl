@@ -86,6 +86,72 @@ var _ = Context("pubSub", func() {
 		})
 	})
 	Context("Subscribe", func() {
+		It("removes a cancelled subscription without another publish", func() {
+			Expect(db.DropAll()).To(Succeed())
+			objectUnderTest := New(db).(*pubSub)
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+
+			eventChannel, err := objectUnderTest.Subscribe(ctx, model.EventFilter{})
+			Expect(err).To(BeNil())
+			subscriptionCount := func() int {
+				objectUnderTest.subscriptionsMutex.RLock()
+				defer objectUnderTest.subscriptionsMutex.RUnlock()
+				return len(objectUnderTest.subscriptions)
+			}
+			Eventually(subscriptionCount).Should(Equal(1))
+
+			cancel()
+
+			Eventually(subscriptionCount).Should(Equal(0))
+			Eventually(eventChannel).Should(BeClosed())
+		})
+
+		It("releases blocked publishers when a subscription is cancelled", func() {
+			Expect(db.DropAll()).To(Succeed())
+			objectUnderTest := New(db).(*pubSub)
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+
+			eventChannel, err := objectUnderTest.Subscribe(ctx, model.EventFilter{})
+			Expect(err).To(BeNil())
+			var publishEventChannel chan model.Event
+			var info subscriptionInfo
+			Eventually(func() bool {
+				objectUnderTest.subscriptionsMutex.RLock()
+				defer objectUnderTest.subscriptionsMutex.RUnlock()
+				for channel, subscription := range objectUnderTest.subscriptions {
+					publishEventChannel, info = channel, subscription
+					return true
+				}
+				return false
+			}).Should(BeTrue())
+
+			const publisherCount = 10
+			published := make(chan struct{}, publisherCount)
+			for i := 0; i < publisherCount; i++ {
+				go func() {
+					objectUnderTest.publishToSubscription(publishEventChannel, info, model.Event{})
+					published <- struct{}{}
+				}()
+			}
+			// The subscription can accept one event before blocking on its unread output.
+			Eventually(published).Should(Receive())
+			Consistently(published).ShouldNot(Receive())
+
+			cancel()
+
+			Eventually(info.Done).Should(BeClosed())
+			Eventually(eventChannel).Should(BeClosed())
+			for i := 1; i < publisherCount; i++ {
+				Eventually(published).Should(Receive())
+			}
+			objectUnderTest.subscriptionsMutex.RLock()
+			subscriptionCount := len(objectUnderTest.subscriptions)
+			objectUnderTest.subscriptionsMutex.RUnlock()
+			Expect(subscriptionCount).To(Equal(0))
+		})
+
 		Context("one publish has occurred", func() {
 			Context("no filter", func() {
 				It("should receive published event", func() {
