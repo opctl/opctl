@@ -74,7 +74,6 @@ var _ = Context("constructContainerConfig", func() {
 			ExposedPorts: nat.PortSet{},
 			Image:        providedImageRef,
 			WorkingDir:   providedWorkDir,
-			Tty:          true,
 		}
 
 		for port := range providedPortBindings {

@@ -59,9 +59,8 @@ var _ = Context("RunContainer", func() {
 		fakeDockerClient.ContainerWaitReturns(closedContainerWaitOkBodyChan, nil)
 
 		objectUnderTest := _runContainer{
-			containerStdErrStreamer: new(FakeContainerLogStreamer),
-			containerStdOutStreamer: new(FakeContainerLogStreamer),
-			dockerClient:            fakeDockerClient,
+			containerLogStreamer: new(FakeContainerLogStreamer),
+			dockerClient:         fakeDockerClient,
 		}
 
 		/* act */
@@ -88,9 +87,8 @@ var _ = Context("RunContainer", func() {
 			/* arrange */
 
 			objectUnderTest := _runContainer{
-				containerStdErrStreamer: new(FakeContainerLogStreamer),
-				containerStdOutStreamer: new(FakeContainerLogStreamer),
-				dockerClient:            new(FakeCommonAPIClient),
+				containerLogStreamer: new(FakeContainerLogStreamer),
+				dockerClient:         new(FakeCommonAPIClient),
 			}
 
 			/* act */
@@ -133,9 +131,8 @@ var _ = Context("RunContainer", func() {
 			_fakeDockerClient.ImagePullReturns(io.NopCloser(bytes.NewBufferString("")), nil)
 
 			objectUnderTest := _runContainer{
-				containerStdErrStreamer: new(FakeContainerLogStreamer),
-				containerStdOutStreamer: new(FakeContainerLogStreamer),
-				dockerClient:            _fakeDockerClient,
+				containerLogStreamer: new(FakeContainerLogStreamer),
+				dockerClient:         _fakeDockerClient,
 			}
 
 			/* act */
@@ -256,9 +253,8 @@ var _ = Context("RunContainer", func() {
 			fakeDockerClient.ContainerInspectReturns(types.ContainerJSON{NetworkSettings: &types.NetworkSettings{}}, nil)
 
 			objectUnderTest := _runContainer{
-				containerStdErrStreamer: new(FakeContainerLogStreamer),
-				containerStdOutStreamer: new(FakeContainerLogStreamer),
-				dockerClient:            fakeDockerClient,
+				containerLogStreamer: new(FakeContainerLogStreamer),
+				dockerClient:         fakeDockerClient,
 			}
 
 			/* act */

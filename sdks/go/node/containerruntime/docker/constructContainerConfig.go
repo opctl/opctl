@@ -17,9 +17,11 @@ func constructContainerConfig(
 	workDir string,
 ) *container.Config {
 	containerConfig := &container.Config{
-		Image:        imageRef,
-		WorkingDir:   workDir,
-		Tty:          true,
+		Image:      imageRef,
+		WorkingDir: workDir,
+		// no TTY: opctl never forwards input to containers, so a TTY only makes
+		// tools (e.g. yarn v1) wait on prompts nobody can answer.
+		Tty:          false,
 		ExposedPorts: nat.PortSet{},
 	}
 
