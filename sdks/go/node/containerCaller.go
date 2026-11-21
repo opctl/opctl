@@ -1,9 +1,11 @@
 package node
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
+	"sync"
 	"time"
 
 	"github.com/opctl/opctl/sdks/go/model"
@@ -66,19 +68,7 @@ func (cc _containerCaller) Call(
 		}
 	}
 
-	logStdOutPR, logStdOutPW := io.Pipe()
-	logStdErrPR, logStdErrPW := io.Pipe()
-
-	// interpret logs
-	logChan := make(chan error, 1)
-	go func() {
-		logChan <- cc.interpretLogs(
-			logStdOutPR,
-			logStdErrPR,
-			containerCall,
-			rootCallID,
-		)
-	}()
+	stdout, stderr := cc.newLogWriters(containerCall, rootCallID)
 
 	outputs = cc.interpretOutputs(
 		containerCallSpec,
@@ -90,8 +80,8 @@ func (cc _containerCaller) Call(
 		containerCall,
 		rootCallID,
 		cc.pubSub,
-		logStdOutPW,
-		logStdErrPW,
+		stdout,
+		stderr,
 	)
 
 	// @TODO: handle no exit code
@@ -103,73 +93,107 @@ func (cc _containerCaller) Call(
 		err = fmt.Errorf("nonzero container exit code: %d", exitCode)
 	}
 
-	// wait on logChan
-	if logChanErr := <-logChan; err == nil {
-		// non-destructively set err
-		err = logChanErr
-	}
-
 	return outputs, err
 }
 
-func (this _containerCaller) interpretLogs(
-	stdOutReader io.Reader,
-	stdErrReader io.Reader,
+// newLogWriters returns stdout and stderr writers that publish each line as
+// an event from within Write. They share a logOrder, so events keep the order the
+// container runtime wrote them in.
+func (this _containerCaller) newLogWriters(
 	containerCall *model.ContainerCall,
 	rootCallID string,
-) error {
-	stdOutLogChan := make(chan error, 1)
-	go func() {
-		// interpret stdOut
-		stdOutLogChan <- readChunks(
-			stdOutReader,
-			func(chunk []byte) {
-				this.pubSub.Publish(
-					model.Event{
-						Timestamp: time.Now().UTC(),
-						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenTo{
-							Data:        chunk,
-							ContainerID: containerCall.ContainerID,
-							OpRef:       containerCall.OpPath,
-							RootCallID:  rootCallID,
-						},
-					},
-				)
-			})
-	}()
+) (stdout io.WriteCloser, stderr io.WriteCloser) {
+	order := new(logOrder)
+	stdout = &lineEventWriter{order: order, publish: func(line []byte) {
+		this.pubSub.Publish(model.Event{
+			Timestamp: time.Now().UTC(),
+			ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenTo{
+				Data:        line,
+				ContainerID: containerCall.ContainerID,
+				OpRef:       containerCall.OpPath,
+				RootCallID:  rootCallID,
+			},
+		})
+	}}
+	stderr = &lineEventWriter{order: order, publish: func(line []byte) {
+		this.pubSub.Publish(model.Event{
+			Timestamp: time.Now().UTC(),
+			ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenTo{
+				Data:        line,
+				ContainerID: containerCall.ContainerID,
+				OpRef:       containerCall.OpPath,
+				RootCallID:  rootCallID,
+			},
+		})
+	}}
+	return stdout, stderr
+}
 
-	stdErrLogChan := make(chan error, 1)
-	go func() {
-		// interpret stdErr
-		stdErrLogChan <- readChunks(
-			stdErrReader,
-			func(chunk []byte) {
-				this.pubSub.Publish(
-					model.Event{
-						Timestamp: time.Now().UTC(),
-						ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenTo{
-							Data:        chunk,
-							ContainerID: containerCall.ContainerID,
-							OpRef:       containerCall.OpPath,
-							RootCallID:  rootCallID,
-						},
-					},
-				)
-			})
-	}()
+// logOrder is shared by a container's stdout and stderr writers.
+type logOrder struct {
+	sync.Mutex
+	// partial is the writer holding an unterminated line, if any
+	partial *lineEventWriter
+}
 
-	// wait on logs
-	stdOutLogErr := <-stdOutLogChan
-	stdErrLogErr := <-stdErrLogChan
+// lineEventWriter publishes complete lines. A partial line is published when
+// the other stream writes, or on Close, so fragments keep their order too.
+type lineEventWriter struct {
+	order   *logOrder
+	buf     []byte
+	closed  bool
+	publish func(line []byte)
+}
 
-	// return errs
-	if stdOutLogErr != nil {
-		return stdOutLogErr
+func (w *lineEventWriter) Write(p []byte) (int, error) {
+	w.order.Lock()
+	defer w.order.Unlock()
+
+	if w.closed {
+		// like the io.Pipe this replaced: nothing is published after Close
+		return 0, io.ErrClosedPipe
 	}
-	if stdErrLogErr != nil {
-		return stdErrLogErr
+	if other := w.order.partial; other != nil && other != w {
+		other.flush()
 	}
 
+	n := len(p)
+	// scan only the new bytes, so a long line arriving in many writes stays linear
+	for {
+		i := bytes.IndexByte(p, '\n')
+		if i < 0 {
+			w.buf = append(w.buf, p...)
+			break
+		}
+		w.publish(append(bytes.Clone(w.buf), p[:i+1]...))
+		w.buf = w.buf[:0]
+		p = p[i+1:]
+	}
+	if len(w.buf) > 0 {
+		w.order.partial = w
+	} else if w.order.partial == w {
+		w.order.partial = nil
+	}
+	return n, nil
+}
+
+// flush publishes any partial line; callers hold the order lock.
+func (w *lineEventWriter) flush() {
+	if len(w.buf) > 0 {
+		w.publish(bytes.Clone(w.buf))
+		w.buf = nil
+	}
+	if w.order.partial == w {
+		w.order.partial = nil
+	}
+}
+
+func (w *lineEventWriter) Close() error {
+	w.order.Lock()
+	defer w.order.Unlock()
+
+	w.flush()
+	w.closed = true
 	return nil
 }
 

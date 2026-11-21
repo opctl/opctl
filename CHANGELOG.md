@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.78] - 2026-11-21
+
+### Changed
+
+- Docker containers no longer get a TTY. opctl never forwards input to containers, so prompts (e.g. yarn v1's
+"Please choose a version") used to wait forever; they now get end-of-input and fail fast. Side effects: tools that
+colour only on a terminal print plain output, `TERM` is unset, lines end in `\n` instead of `\r\n`, and stderr is
+reported as stderr instead of being merged into stdout. Docker captures stdout and stderr separately, so lines from
+the two streams can appear out of order; use `2>&1` in an op's cmd where exact order matters
+
 ## [0.1.77] - 2026-11-13
 
 ### Fixed

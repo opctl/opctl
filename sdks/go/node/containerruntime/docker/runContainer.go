@@ -31,17 +31,15 @@ func newRunContainer(
 	dockerClient dockerClientPkg.CommonAPIClient,
 ) (runContainer, error) {
 	rc := _runContainer{
-		containerStdErrStreamer: newContainerStdErrStreamer(dockerClient),
-		containerStdOutStreamer: newContainerStdOutStreamer(dockerClient),
-		dockerClient:            dockerClient,
+		containerLogStreamer: newContainerLogStreamer(dockerClient),
+		dockerClient:         dockerClient,
 	}
 	return rc, nil
 }
 
 type _runContainer struct {
-	containerStdErrStreamer containerLogStreamer
-	containerStdOutStreamer containerLogStreamer
-	dockerClient            dockerClientPkg.CommonAPIClient
+	containerLogStreamer containerLogStreamer
+	dockerClient         dockerClientPkg.CommonAPIClient
 }
 
 func (cr _runContainer) RunContainer(
@@ -181,19 +179,11 @@ func (cr _runContainer) RunContainer(
 
 	eg.Go(
 		func() error {
-			return cr.containerStdErrStreamer.Stream(
-				ctx,
-				dockerContainerName,
-				stderr,
-			)
-		},
-	)
-	eg.Go(
-		func() error {
-			return cr.containerStdOutStreamer.Stream(
+			return cr.containerLogStreamer.Stream(
 				ctx,
 				dockerContainerName,
 				stdout,
+				stderr,
 			)
 		},
 	)
