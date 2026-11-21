@@ -27,6 +27,8 @@ func getEventRootCallID(
 	switch {
 	case event.CallEnded != nil:
 		return event.CallEnded.Call.RootID
+	case event.ContainerStarted != nil:
+		return event.ContainerStarted.RootCallID
 	case event.ContainerStdErrWrittenTo != nil:
 		return event.ContainerStdErrWrittenTo.RootCallID
 	case event.ContainerStdOutWrittenTo != nil:

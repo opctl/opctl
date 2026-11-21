@@ -5,11 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"time"
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 	"github.com/opctl/opctl/sdks/go/node/dns"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
 	"golang.org/x/sync/errgroup"
@@ -23,6 +25,8 @@ type runContainer interface {
 		eventPublisher pubsub.EventPublisher,
 		stdout io.WriteCloser,
 		stderr io.WriteCloser,
+		stdin io.Reader,
+		resize <-chan model.TermSize,
 	) (*int64, error)
 }
 
@@ -51,6 +55,8 @@ func (cr _runContainer) RunContainer(
 	eventPublisher pubsub.EventPublisher,
 	stdout io.WriteCloser,
 	stderr io.WriteCloser,
+	stdin io.Reader,
+	resize <-chan model.TermSize,
 ) (*int64, error) {
 	defer stdout.Close()
 	defer stderr.Close()
@@ -136,22 +142,26 @@ func (cr _runContainer) RunContainer(
 		isGpuSupported = false
 	}
 
+	config := constructContainerConfig(req.Cmd, req.EnvVars, *req.Image.Ref, portBindings, req.WorkDir)
+	var initialSize model.TermSize
+	if stdin != nil {
+		initialSize = containerruntime.InitialTermSize(ctx)
+		config.OpenStdin = true
+		config.AttachStdin = true
+		config.StdinOnce = true
+	}
+
 	// create container
 	_, createErr := cr.dockerClient.ContainerCreate(
 		ctx,
-		constructContainerConfig(
-			req.Cmd,
-			req.EnvVars,
-			*req.Image.Ref,
-			portBindings,
-			req.WorkDir,
-		),
+		config,
 		constructHostConfig(
 			req.Dirs,
 			req.Files,
 			req.Sockets,
 			portBindings,
 			isGpuSupported,
+			initialSize,
 		),
 		networkingConfig,
 		// platform requires API v1.41 so set to nil to avoid version errors
@@ -168,6 +178,15 @@ func (cr _runContainer) RunContainer(
 		}
 	}
 
+	var tty *terminalAttachment
+	if stdin != nil {
+		tty, err = cr.attachTerminal(ctx, dockerContainerName)
+		if err != nil {
+			return nil, err
+		}
+		defer tty.close()
+	}
+
 	// start container
 	if err := cr.dockerClient.ContainerStart(
 		ctx,
@@ -179,24 +198,44 @@ func (cr _runContainer) RunContainer(
 
 	eg, ctx := errgroup.WithContext(ctx)
 
-	eg.Go(
-		func() error {
-			return cr.containerStdErrStreamer.Stream(
-				ctx,
-				dockerContainerName,
-				stderr,
-			)
-		},
-	)
-	eg.Go(
-		func() error {
-			return cr.containerStdOutStreamer.Stream(
-				ctx,
-				dockerContainerName,
-				stdout,
-			)
-		},
-	)
+	if tty != nil {
+		resizeCtx, cancelResize := context.WithCancel(ctx)
+		defer cancelResize()
+		go copyTerminalInput(tty.input, stdin)
+		go cr.resizeTerminal(resizeCtx, dockerContainerName, resize)
+		eventPublisher.Publish(model.Event{
+			Timestamp: time.Now().UTC(),
+			ContainerStarted: &model.ContainerStarted{
+				ContainerID: req.ContainerID,
+				RootCallID:  rootCallID,
+				OpRef:       req.OpPath,
+				Name:        req.Name,
+			},
+		})
+		eg.Go(func() error {
+			_, err := io.Copy(stdout, tty.output.Reader)
+			return err
+		})
+	} else {
+		eg.Go(
+			func() error {
+				return cr.containerStdErrStreamer.Stream(
+					ctx,
+					dockerContainerName,
+					stderr,
+				)
+			},
+		)
+		eg.Go(
+			func() error {
+				return cr.containerStdOutStreamer.Stream(
+					ctx,
+					dockerContainerName,
+					stdout,
+				)
+			},
+		)
+	}
 
 	if req.Name != nil {
 		containerJSON, err := cr.dockerClient.ContainerInspect(ctx, dockerContainerName)

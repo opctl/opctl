@@ -8,6 +8,7 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
 
@@ -62,6 +63,10 @@ func (this core) StartOp(
 		opCallSpec.Outputs[name] = ""
 	}
 
+	ctx = containerruntime.WithInteractive(ctx, req.Interactive)
+	if req.Interactive && req.TermSize != nil {
+		ctx = containerruntime.WithInitialTermSize(ctx, *req.TermSize)
+	}
 	opCtx, cancelOp := context.WithCancel(ctx)
 	go func() {
 		defer func() {

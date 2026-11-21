@@ -31,7 +31,8 @@ type ContainerRuntime interface {
 		ctx context.Context,
 	) error
 
-	// RunContainer creates, starts, and waits on a container. ExitCode &/Or an error will be returned
+	// RunContainer creates, starts, and waits on a container.
+	// stdin and resize are nil unless interactive input was requested and is supported.
 	RunContainer(
 		ctx context.Context,
 		req *model.ContainerCall,
@@ -41,5 +42,7 @@ type ContainerRuntime interface {
 		eventPublisher pubsub.EventPublisher,
 		stdout io.WriteCloser,
 		stderr io.WriteCloser,
+		stdin io.Reader,
+		resize <-chan model.TermSize,
 	) (*int64, error)
 }

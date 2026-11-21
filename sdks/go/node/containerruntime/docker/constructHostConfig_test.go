@@ -6,9 +6,15 @@ import (
 	"github.com/docker/go-connections/nat"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 var _ = Context("constructHostConfig", func() {
+	It("sets the initial console size for container creation", func() {
+		config := constructHostConfig(nil, nil, nil, nil, false, model.TermSize{Rows: 33, Cols: 95})
+		Expect(config.ConsoleSize).To(Equal([2]uint{33, 95}))
+	})
+
 	It("should return expected result", func() {
 		/* arrange */
 		providedContainerDirs := map[string]string{
@@ -88,6 +94,7 @@ var _ = Context("constructHostConfig", func() {
 			providedContainerSockets,
 			providedPortBindings,
 			true,
+			model.TermSize{},
 		)
 
 		/* assert */

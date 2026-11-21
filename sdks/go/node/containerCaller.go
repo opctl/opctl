@@ -31,20 +31,20 @@ func newContainerCaller(
 	containerRuntime containerruntime.ContainerRuntime,
 	pubSub pubsub.PubSub,
 	stateStore stateStore,
-) containerCaller {
-
-	return _containerCaller{
+) *_containerCaller {
+	return &_containerCaller{
 		containerRuntime: containerRuntime,
 		pubSub:           pubSub,
 		stateStore:       stateStore,
+		containerInputs:  &containerInputs{},
 	}
-
 }
 
 type _containerCaller struct {
 	containerRuntime containerruntime.ContainerRuntime
 	pubSub           pubsub.PubSub
 	stateStore       stateStore
+	containerInputs  *containerInputs
 }
 
 func (cc _containerCaller) Call(
@@ -66,6 +66,16 @@ func (cc _containerCaller) Call(
 		}
 	}
 
+	var stdin io.Reader
+	var resize <-chan model.TermSize
+	if containerruntime.IsInteractive(ctx) {
+		if runtime, ok := cc.containerRuntime.(containerruntime.InteractiveRuntime); ok && runtime.SupportsInteractive() {
+			session, release := cc.containerInputs.register(containerCall.ContainerID)
+			stdin, resize = session.reader, session.resize
+			defer release()
+		}
+	}
+
 	logStdOutPR, logStdOutPW := io.Pipe()
 	logStdErrPR, logStdErrPW := io.Pipe()
 
@@ -77,6 +87,7 @@ func (cc _containerCaller) Call(
 			logStdErrPR,
 			containerCall,
 			rootCallID,
+			stdin != nil,
 		)
 	}()
 
@@ -92,7 +103,14 @@ func (cc _containerCaller) Call(
 		cc.pubSub,
 		logStdOutPW,
 		logStdErrPW,
+		stdin,
+		resize,
 	)
+	if stdin != nil {
+		// The embedded runtime can fail before handing these pipes to Docker.
+		logStdOutPW.Close()
+		logStdErrPW.Close()
+	}
 
 	// @TODO: handle no exit code
 	if rawExitCode != nil {
@@ -117,11 +135,16 @@ func (this _containerCaller) interpretLogs(
 	stdErrReader io.Reader,
 	containerCall *model.ContainerCall,
 	rootCallID string,
+	interactive bool,
 ) error {
+	read := readChunks
+	if interactive {
+		read = readRawChunks
+	}
 	stdOutLogChan := make(chan error, 1)
 	go func() {
 		// interpret stdOut
-		stdOutLogChan <- readChunks(
+		stdOutLogChan <- read(
 			stdOutReader,
 			func(chunk []byte) {
 				this.pubSub.Publish(
@@ -141,7 +164,7 @@ func (this _containerCaller) interpretLogs(
 	stdErrLogChan := make(chan error, 1)
 	go func() {
 		// interpret stdErr
-		stdErrLogChan <- readChunks(
+		stdErrLogChan <- read(
 			stdErrReader,
 			func(chunk []byte) {
 				this.pubSub.Publish(

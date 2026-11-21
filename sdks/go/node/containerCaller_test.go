@@ -61,6 +61,8 @@ var _ = Context("containerCaller", func() {
 				eventPublisher pubsub.EventPublisher,
 				stdOut io.WriteCloser,
 				stdErr io.WriteCloser,
+				_ io.Reader,
+				_ <-chan model.TermSize,
 			) (*int64, error) {
 
 				stdErr.Close()
@@ -91,10 +93,14 @@ var _ = Context("containerCaller", func() {
 				actualRootCallID,
 				actualEventPublisher,
 				_,
-				_ := fakeContainerRuntime.RunContainerArgsForCall(0)
+				_,
+				actualStdin,
+				actualResize := fakeContainerRuntime.RunContainerArgsForCall(0)
 			Expect(actualContainerCall).To(Equal(providedContainerCall))
 			Expect(actualRootCallID).To(Equal(providedRootCallID))
 			Expect(actualEventPublisher).To(Equal(pubSub))
+			Expect(actualStdin).To(BeNil())
+			Expect(actualResize).To(BeNil())
 		})
 		Context("containerRuntime.RunContainer errors", func() {
 			It("should publish expected ContainerExited", func() {
@@ -110,6 +116,8 @@ var _ = Context("containerCaller", func() {
 					eventPublisher pubsub.EventPublisher,
 					stdOut io.WriteCloser,
 					stdErr io.WriteCloser,
+					_ io.Reader,
+					_ <-chan model.TermSize,
 				) (*int64, error) {
 
 					stdErr.Close()
@@ -165,6 +173,8 @@ var _ = Context("containerCaller", func() {
 			eventPublisher pubsub.EventPublisher,
 			stdOut io.WriteCloser,
 			stdErr io.WriteCloser,
+			_ io.Reader,
+			_ <-chan model.TermSize,
 		) (*int64, error) {
 
 			stdErr.Close()

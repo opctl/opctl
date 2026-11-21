@@ -1,7 +1,9 @@
 package clioutput
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -12,6 +14,43 @@ import (
 )
 
 var _ = Context("output", func() {
+	It("prefixes each background output line in an interactive run", func() {
+		var stdout bytes.Buffer
+		colorer := clicolorer.New()
+		output := NewInteractive(colorer, io.Discard, &stdout, nil)
+
+		output.Event(&model.Event{ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenTo{
+			ContainerID: "background",
+			Data:        []byte("first\r\nsecond\r\n"),
+		}})
+
+		prefix := colorer.Muted("[backgrou]") + " "
+		Expect(stdout.String()).To(Equal(prefix + "first\r\n" + prefix + "second\r\n"))
+	})
+
+	It("keeps partial background output lines separate by container and stream", func() {
+		var stdout, stderr bytes.Buffer
+		colorer := clicolorer.New()
+		output := NewInteractive(colorer, &stderr, &stdout, nil)
+		out := func(id, data string) {
+			output.Event(&model.Event{ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenTo{
+				ContainerID: id, Data: []byte(data),
+			}})
+		}
+		out("first", "caf\xc3")
+		out("other", "hi\r\n")
+		output.Event(&model.Event{ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenTo{
+			ContainerID: "first", Data: []byte("warning\r\n"),
+		}})
+		out("first", "\xa9\r")
+		out("first", "\nnext\r\n")
+
+		first := colorer.Muted("[first   ]") + " "
+		other := colorer.Muted("[other   ]") + " "
+		Expect(stdout.String()).To(Equal(first + "caf\xc3" + other + "hi\r\n" + "\xa9\r\n" + first + "next\r\n"))
+		Expect(stderr.String()).To(Equal(first + "warning\r\n"))
+	})
+
 	Context("newOutput", func() {
 		It("should return output", func() {
 			/* arrange/act/assert */

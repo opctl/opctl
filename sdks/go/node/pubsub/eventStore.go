@@ -52,35 +52,47 @@ func (es eventStore) List(
 	eventChannel chan model.Event,
 ) error {
 	return es.db.View(func(txn *badger.Txn) error {
-		sinceTime := new(time.Time)
-		if filter.Since != nil {
-			sinceTime = filter.Since
+		return es.list(txn, ctx, filter, eventChannel)
+	})
+}
+
+func (es eventStore) list(
+	txn *badger.Txn,
+	ctx context.Context,
+	filter model.EventFilter,
+	eventChannel chan model.Event,
+) error {
+	sinceTime := new(time.Time)
+	if filter.Since != nil {
+		sinceTime = filter.Since
+	}
+
+	it := txn.NewIterator(badger.DefaultIteratorOptions)
+	defer it.Close()
+	sinceBytes := []byte(es.eventsByTimestampKeyPrefix + sinceTime.Format(sortableRFC3339Nano))
+	for it.Seek(sinceBytes); it.ValidForPrefix([]byte(es.eventsByTimestampKeyPrefix)); it.Next() {
+		if err := ctx.Err(); err != nil {
+			return err
 		}
-
-		it := txn.NewIterator(badger.DefaultIteratorOptions)
-		defer it.Close()
-		sinceBytes := []byte(es.eventsByTimestampKeyPrefix + sinceTime.Format(sortableRFC3339Nano))
-		for it.Seek(sinceBytes); it.ValidForPrefix([]byte(es.eventsByTimestampKeyPrefix)); it.Next() {
-			if err := it.Item().Value(func(v []byte) error {
-				event := model.Event{}
-				if err := json.Unmarshal(v, &event); err != nil {
-					return err
-				}
-
-				if !isRootCallIDExcludedByFilter(getEventRootCallID(event), filter) {
-					select {
-					case <-ctx.Done():
-						return ctx.Err()
-					case eventChannel <- event:
-						return ctx.Err()
-					}
-				}
-				return nil
-			}); nil != err {
+		if err := it.Item().Value(func(v []byte) error {
+			event := model.Event{}
+			if err := json.Unmarshal(v, &event); err != nil {
 				return err
 			}
-		}
 
-		return nil
-	})
+			if !isRootCallIDExcludedByFilter(getEventRootCallID(event), filter) {
+				select {
+				case <-ctx.Done():
+					return ctx.Err()
+				case eventChannel <- event:
+					return ctx.Err()
+				}
+			}
+			return nil
+		}); nil != err {
+			return err
+		}
+	}
+
+	return nil
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/internal/urlpath"
 	"github.com/opctl/opctl/sdks/go/node"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/auths"
+	"github.com/opctl/opctl/sdks/go/node/api/handler/containers/attach"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/data"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/events"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/liveness"
@@ -22,6 +23,7 @@ func New(
 ) http.Handler {
 	return _handler{
 		authsHandler:    auths.NewHandler(node),
+		attachHandler:   attach.NewHandler(node),
 		dataHandler:     data.NewHandler(node),
 		eventsHandler:   events.NewHandler(node),
 		livenessHandler: liveness.NewHandler(node),
@@ -31,6 +33,7 @@ func New(
 
 type _handler struct {
 	authsHandler    auths.Handler
+	attachHandler   http.Handler
 	dataHandler     data.Handler
 	eventsHandler   events.Handler
 	livenessHandler liveness.Handler
@@ -53,6 +56,8 @@ func (hdlr _handler) ServeHTTP(
 	switch pathSegment {
 	case "auths":
 		hdlr.authsHandler.Handle(httpResp, httpReq)
+	case "containers":
+		hdlr.attachHandler.ServeHTTP(httpResp, httpReq)
 	case "data":
 		hdlr.dataHandler.Handle(httpResp, httpReq)
 	case "events":

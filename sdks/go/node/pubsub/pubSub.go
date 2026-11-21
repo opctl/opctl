@@ -39,12 +39,15 @@ func New(
 ) PubSub {
 	return &pubSub{
 		eventStore:    newEventStore(db),
+		ordered:       make(map[*orderedSubscription]struct{}),
 		subscriptions: map[chan model.Event]subscriptionInfo{},
 	}
 }
 
 type pubSub struct {
 	eventStore eventStore
+	orderedMu  sync.RWMutex
+	ordered    map[*orderedSubscription]struct{}
 	// subscriptions is a map where key is a channel for the subscription & value is info about the subscription
 	subscriptions      map[chan model.Event]subscriptionInfo
 	subscriptionsMutex sync.RWMutex
@@ -57,6 +60,10 @@ func (ps *pubSub) Subscribe(
 	<-chan model.Event,
 	error,
 ) {
+	if filter.Ordered {
+		return ps.subscribeOrdered(ctx, filter), nil
+	}
+
 	dstEventChannel := make(chan model.Event)
 
 	go func() {
@@ -117,7 +124,7 @@ func (ps *pubSub) closeSubscription(
 func (ps *pubSub) Publish(
 	event model.Event,
 ) {
-	ps.eventStore.Add(event)
+	ps.storeAndPublishOrdered(event)
 
 	ps.subscriptionsMutex.RLock()
 	defer ps.subscriptionsMutex.RUnlock()

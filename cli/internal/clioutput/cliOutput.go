@@ -1,6 +1,7 @@
 package clioutput
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"strings"
@@ -43,10 +44,28 @@ func New(
 	}
 }
 
+// NewInteractive prefixes each line of output from background containers.
+func NewInteractive(
+	cliColorer clicolorer.CliColorer,
+	errWriter, stdWriter io.Writer,
+	writeFocused func(*model.Event) bool,
+) CliOutput {
+	return _cliOutput{
+		cliColorer:   cliColorer,
+		errWriter:    errWriter,
+		stdWriter:    stdWriter,
+		stdPartial:   make(map[string]bool),
+		errPartial:   make(map[string]bool),
+		writeFocused: writeFocused,
+	}
+}
+
 type _cliOutput struct {
-	cliColorer clicolorer.CliColorer
-	errWriter  io.Writer
-	stdWriter  io.Writer
+	cliColorer             clicolorer.CliColorer
+	errWriter              io.Writer
+	stdWriter              io.Writer
+	stdPartial, errPartial map[string]bool
+	writeFocused           func(*model.Event) bool
 }
 
 func (clio _cliOutput) DisableColor() {
@@ -84,6 +103,9 @@ func (clio _cliOutput) Event(event *model.Event) {
 	switch {
 	case event.CallEnded != nil &&
 		event.CallEnded.Call.Container != nil:
+		id := event.CallEnded.Call.Container.ContainerID
+		delete(clio.stdPartial, id)
+		delete(clio.errPartial, id)
 		clio.containerExited(event)
 
 	case event.CallStarted != nil &&
@@ -91,10 +113,12 @@ func (clio _cliOutput) Event(event *model.Event) {
 		clio.containerStarted(event)
 
 	case event.ContainerStdErrWrittenTo != nil:
-		clio.containerStdErrWrittenTo(event.ContainerStdErrWrittenTo)
+		out := event.ContainerStdErrWrittenTo
+		clio.containerOutput(event, clio.errWriter, clio.errPartial, out.ContainerID, out.OpRef, out.Data)
 
 	case event.ContainerStdOutWrittenTo != nil:
-		clio.containerStdOutWrittenTo(event.ContainerStdOutWrittenTo)
+		out := event.ContainerStdOutWrittenTo
+		clio.containerOutput(event, clio.stdWriter, clio.stdPartial, out.ContainerID, out.OpRef, out.Data)
 
 	case event.CallEnded != nil && event.CallEnded.Call.Op != nil:
 		clio.opEnded(event)
@@ -201,26 +225,37 @@ func (clio _cliOutput) callEnded(event *model.Event) {
 	)
 }
 
-func (clio _cliOutput) containerStdErrWrittenTo(event *model.ContainerStdErrWrittenTo) {
-	io.WriteString(
-		clio.errWriter,
-		fmt.Sprintf(
-			"%s%s",
-			clio.outputPrefix(event.ContainerID, event.OpRef),
-			event.Data,
-		),
-	)
-}
-
-func (clio _cliOutput) containerStdOutWrittenTo(event *model.ContainerStdOutWrittenTo) {
-	io.WriteString(
-		clio.stdWriter,
-		fmt.Sprintf(
-			"%s%s",
-			clio.outputPrefix(event.ContainerID, event.OpRef),
-			event.Data,
-		),
-	)
+func (clio _cliOutput) containerOutput(
+	event *model.Event,
+	writer io.Writer,
+	partial map[string]bool,
+	id, opRef string,
+	data []byte,
+) {
+	if partial == nil {
+		fmt.Fprintf(writer, "%s%s", clio.outputPrefix(id, opRef), data)
+		return
+	}
+	if len(data) == 0 {
+		return
+	}
+	atLineStart := !partial[id]
+	if data[len(data)-1] == '\n' {
+		delete(partial, id)
+	} else {
+		partial[id] = true
+	}
+	if clio.writeFocused != nil && clio.writeFocused(event) {
+		return
+	}
+	prefix := clio.outputPrefix(id, opRef)
+	for line := range bytes.Lines(data) {
+		if atLineStart {
+			io.WriteString(writer, prefix)
+		}
+		writer.Write(line)
+		atLineStart = true
+	}
 }
 
 func (clio _cliOutput) opEnded(event *model.Event) {
