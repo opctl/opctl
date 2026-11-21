@@ -16,6 +16,8 @@ type EventFilter struct {
 	Roots []string
 	// filter to events occurring after & including this time
 	Since *time.Time
+	// Ordered delivers live events in publication order after replay.
+	Ordered bool
 }
 
 type GetEventStreamReq struct {
@@ -41,7 +43,14 @@ type StartOpReq struct {
 	// map of args keyed by input name
 	Args map[string]*Value `json:"args,omitempty"`
 	// Op details the op to start
-	Op StartOpReqOp `json:"op,omitempty"`
+	Op          StartOpReqOp `json:"op,omitempty"`
+	TermSize    *TermSize    `json:"termSize,omitempty"`
+	Interactive bool         `json:"interactive,omitempty"`
+}
+
+type TermSize struct {
+	Rows uint `json:"rows"`
+	Cols uint `json:"cols"`
 }
 
 type StartOpReqOp struct {

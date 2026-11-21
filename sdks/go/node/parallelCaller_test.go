@@ -10,10 +10,17 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 	containerRuntimeFakes "github.com/opctl/opctl/sdks/go/node/containerruntime/fakes"
 	. "github.com/opctl/opctl/sdks/go/node/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
 )
+
+type interactiveFakeRuntime struct {
+	*containerRuntimeFakes.FakeContainerRuntime
+}
+
+func (interactiveFakeRuntime) SupportsInteractive() bool { return true }
 
 var _ = Context("core", func() {
 	dbDir, err := os.MkdirTemp("", "")
@@ -114,7 +121,7 @@ var _ = Context("core", func() {
 				childOp1Path := filepath.Join(childOpRef, "op1")
 				childOp2Path := filepath.Join(childOpRef, "op2")
 
-				ctx := context.Background()
+				ctx := containerruntime.WithInteractive(context.Background(), true)
 
 				fakeContainerRuntime := new(containerRuntimeFakes.FakeContainerRuntime)
 				fakeContainerRuntime.RunContainerStub = func(
@@ -124,6 +131,8 @@ var _ = Context("core", func() {
 					eventPublisher pubsub.EventPublisher,
 					stdOut io.WriteCloser,
 					stdErr io.WriteCloser,
+					_ io.Reader,
+					_ <-chan model.TermSize,
 				) (*int64, error) {
 
 					stdErr.Close()
@@ -154,7 +163,7 @@ var _ = Context("core", func() {
 				objectUnderTest := _parallelCaller{
 					caller: newCaller(
 						newContainerCaller(
-							fakeContainerRuntime,
+							interactiveFakeRuntime{fakeContainerRuntime},
 							pubSub,
 							stateStore,
 						),
@@ -194,6 +203,13 @@ var _ = Context("core", func() {
 
 				/* assert */
 				Expect(actualErr).To(BeNil())
+				Expect(fakeContainerRuntime.RunContainerCallCount()).To(Equal(2))
+				for i := range 2 {
+					childCtx, _, _, _, _, _, stdin, resize := fakeContainerRuntime.RunContainerArgsForCall(i)
+					Expect(containerruntime.IsInteractive(childCtx)).To(BeTrue())
+					Expect(stdin).NotTo(BeNil())
+					Expect(resize).NotTo(BeNil())
+				}
 
 				actualChildCalls := []model.CallStarted{}
 				go func() {

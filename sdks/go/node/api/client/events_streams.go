@@ -28,6 +28,9 @@ func (c apiClient) GetEventStream(
 	if req.Filter.Roots != nil {
 		queryValues.Add("roots", strings.Join(req.Filter.Roots, ","))
 	}
+	if req.Filter.Ordered {
+		queryValues.Add("ordered", "true")
+	}
 	reqURL.RawQuery = queryValues.Encode()
 
 	wsConn, _, err := c.wsDialer.DialContext(
@@ -54,13 +57,26 @@ func (c apiClient) GetEventStream(
 		// ensure channel closed on exit
 		defer close(eventStream)
 
+		if req.Filter.Ordered {
+			stop := context.AfterFunc(ctx, func() { wsConn.Close() })
+			defer stop()
+		}
+
 		for {
 			var event model.Event
 			err := wsConn.ReadJSON(&event)
 			if err != nil {
 				return
 			}
-			eventStream <- event
+			if req.Filter.Ordered {
+				select {
+				case <-ctx.Done():
+					return
+				case eventStream <- event:
+				}
+			} else {
+				eventStream <- event
+			}
 		}
 	}()
 

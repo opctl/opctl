@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file in
 accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.78] - 2026-11-21
+
+### Added
+
+- Foreground `opctl run` forwards terminal input and window size to Docker and embedded containers.
+  Press Ctrl-] to cycle through running containers or release focus to stop the op with Ctrl-C.
+  Disconnecting input sends Ctrl-D. Programs in canonical mode with the default EOF key get
+  end-of-input. Raw-mode programs receive the bytes and may keep running until the op is stopped.
+
 ## [0.1.77] - 2026-11-13
 
 ### Fixed

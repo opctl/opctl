@@ -65,16 +65,8 @@ func New(
 		pubSub,
 	)
 
-	caller := newCaller(
-		newContainerCaller(
-			containerRuntime,
-			pubSub,
-			stateStore,
-		),
-		dataDirPath,
-		pubSub,
-		stateStore,
-	)
+	containerCaller := newContainerCaller(containerRuntime, pubSub, stateStore)
+	caller := newCaller(containerCaller, dataDirPath, pubSub, stateStore)
 
 	go func() {
 		// process events in background
@@ -107,6 +99,7 @@ func New(
 
 	return core{
 		caller:           caller,
+		containerInputs:  containerCaller.containerInputs,
 		containerRuntime: containerRuntime,
 		dataCachePath:    filepath.Join(dataDirPath, "ops"),
 		opCaller: newOpCaller(
@@ -120,6 +113,7 @@ func New(
 
 // core is an Node that supports running ops directly on the host
 type core struct {
+	containerInputs  *containerInputs
 	caller           caller
 	containerRuntime containerruntime.ContainerRuntime
 	dataCachePath    string
@@ -139,6 +133,10 @@ func (c core) Liveness(
 // Core is an Node that supports running ops directly on the current machine
 type Core interface {
 	Node
+
+	// ClaimContainerInput reserves an input session before a WebSocket upgrade.
+	// Call release only if the upgrade fails before using the session.
+	ClaimContainerInput(ctx context.Context, containerID string) (input ContainerInput, release func(), err error)
 
 	// Resolve attempts to resolve data via local filesystem or git
 	// nil pullCreds will be ignored

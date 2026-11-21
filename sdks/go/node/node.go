@@ -18,6 +18,9 @@ type Node interface {
 		req model.AddAuthReq,
 	) error
 
+	// AttachContainer opens stdin and terminal resize for a running interactive container.
+	AttachContainer(ctx context.Context, containerID string) (ContainerInput, error)
+
 	GetEventStream(
 		ctx context.Context,
 		req *model.GetEventStreamReq,

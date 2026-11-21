@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -10,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/opctl/opctl/cli/internal/attach"
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
@@ -79,6 +81,12 @@ opctl node and other opctl containers by their name. Containers will be removed 
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
+			interactive := attach.IsInteractive(os.Stdin, os.Stdout)
+			if interactive {
+				var cancel context.CancelFunc
+				ctx, cancel = context.WithCancel(ctx)
+				defer cancel()
+			}
 			startTime := time.Now().UTC()
 			opRef := args[0]
 
@@ -148,31 +156,44 @@ opctl node and other opctl containers by their name. Containers will be removed 
 			// init signal channels
 			aSigIntWasReceivedAlready := false
 			sigIntChannel := make(chan os.Signal, 1)
-			defer close(sigIntChannel)
+			defer signal.Stop(sigIntChannel)
 			signal.Notify(
 				sigIntChannel,
 				syscall.SIGINT,
 			)
 
 			sigTermChannel := make(chan os.Signal, 1)
-			defer close(sigTermChannel)
+			defer signal.Stop(sigTermChannel)
 			signal.Notify(
 				sigTermChannel,
 				syscall.SIGTERM,
 			)
 
-			sigInfoChannel := make(chan os.Signal, 1)
-			defer close(sigInfoChannel)
-			signal.Notify(
-				sigInfoChannel,
-				syscall.Signal(0x1d), // portable version of syscall.SIGINFO
-			)
+			var sigInfoChannel, sigWinchChannel chan os.Signal
+			if interactive {
+				sigWinchChannel = make(chan os.Signal, 1)
+				defer signal.Stop(sigWinchChannel)
+				signal.Notify(sigWinchChannel, syscall.SIGWINCH)
+			} else {
+				sigInfoChannel = make(chan os.Signal, 1)
+				defer signal.Stop(sigInfoChannel)
+				signal.Notify(sigInfoChannel, syscall.Signal(0x1d)) // portable version of syscall.SIGINFO
+			}
+
+			var termSize *model.TermSize
+			if interactive {
+				if cols, rows, err := term.GetSize(int(os.Stdout.Fd())); err == nil && rows > 0 && cols > 0 {
+					termSize = &model.TermSize{Rows: uint(rows), Cols: uint(cols)}
+				}
+			}
 
 			// start op
 			rootCallID, err := node.StartOp(
 				ctx,
 				model.StartOpReq{
-					Args: argsMap,
+					Args:        argsMap,
+					Interactive: interactive,
+					TermSize:    termSize,
 					Op: model.StartOpReqOp{
 						Ref: opHandle.Ref(),
 					},
@@ -182,15 +203,11 @@ opctl node and other opctl containers by their name. Containers will be removed 
 				return err
 			}
 
-			// "request animation frame" like loop to force refresh of display loading spinners
-			animationFrame := make(chan bool)
+			var animationFrame <-chan time.Time
 			if !noProgressFlag {
-				go func() {
-					for {
-						time.Sleep(time.Second / 10)
-						animationFrame <- true
-					}
-				}()
+				ticker := time.NewTicker(time.Second / 10)
+				defer ticker.Stop()
+				animationFrame = ticker.C
 			}
 
 			var state opgraph.CallGraph
@@ -202,15 +219,34 @@ opctl node and other opctl containers by their name. Containers will be removed 
 				fmt.Println()
 			}()
 
+			runOutput := cliOutput
+			var terminal *attach.Terminal
+			containerFocused := func() bool { return terminal != nil && terminal.Focused() }
+			graphVisible := false
 			clearGraph := func() {
-				if !noProgressFlag {
+				if graphVisible {
 					output.Clear()
+					graphVisible = false
+				}
+			}
+			displayGraph := func() {
+				if showLiveGraph(noProgressFlag, containerFocused()) {
+					graphVisible = output.Print(state.String(loadingSpinner, time.Now(), true)) == nil
 				}
 			}
 
-			displayGraph := func() {
-				if !noProgressFlag {
-					output.Print(state.String(loadingSpinner, time.Now(), true))
+			var inputTick <-chan time.Time
+			if interactive {
+				terminal = attach.NewTerminal(ctx, node, os.Stdin, os.Stdout, os.Stderr)
+				defer terminal.Close()
+				runOutput = clioutput.NewInteractive(cliColorer, terminal.MessageWriter(os.Stderr), terminal.MessageWriter(os.Stdout), terminal.WriteOutput)
+				ticker := time.NewTicker(15 * time.Millisecond)
+				defer ticker.Stop()
+				inputTick = ticker.C
+			}
+			reportInputError := func(err error) {
+				if err != nil {
+					runOutput.Warning(err.Error())
 				}
 			}
 
@@ -219,8 +255,9 @@ opctl node and other opctl containers by their name. Containers will be removed 
 				ctx,
 				&model.GetEventStreamReq{
 					Filter: model.EventFilter{
-						Roots: []string{rootCallID},
-						Since: &startTime,
+						Roots:   []string{rootCallID},
+						Since:   &startTime,
+						Ordered: interactive,
 					},
 				},
 			)
@@ -230,10 +267,21 @@ opctl node and other opctl containers by their name. Containers will be removed 
 
 			for {
 				select {
+				case <-inputTick:
+					wasFocused := containerFocused()
+					reportInputError(terminal.PollInput(clearGraph))
+					if wasFocused && !containerFocused() {
+						displayGraph()
+					}
+				case <-sigWinchChannel:
+					reportInputError(terminal.Resize())
 				case <-sigIntChannel:
+					if terminal != nil {
+						reportInputError(terminal.Close())
+					}
 					clearGraph()
 					if !aSigIntWasReceivedAlready {
-						cliOutput.Warning("Gracefully stopping... (signal Control-C again to force)")
+						runOutput.Warning("Gracefully stopping... (signal Control-C again to force)")
 						aSigIntWasReceivedAlready = true
 
 						node.KillOp(
@@ -261,8 +309,11 @@ opctl node and other opctl containers by their name. Containers will be removed 
 					displayGraph()
 
 				case <-sigTermChannel:
+					if terminal != nil {
+						reportInputError(terminal.Close())
+					}
 					clearGraph()
-					cliOutput.Error("Gracefully stopping...")
+					runOutput.Error("Gracefully stopping...")
 					node.KillOp(
 						ctx,
 						model.KillOpReq{
@@ -279,11 +330,17 @@ opctl node and other opctl containers by their name. Containers will be removed 
 					}
 
 					if err := state.HandleEvent(&event); err != nil {
-						cliOutput.Error(fmt.Sprintf("%v", err))
+						runOutput.Error(fmt.Sprintf("%v", err))
 					}
 
-					cliOutput.Event(&event)
+					runOutput.Event(&event)
+					if terminal != nil && event.ContainerStarted != nil {
+						reportInputError(terminal.Started(event.ContainerStarted))
+					}
 					if event.CallEnded != nil {
+						if container := event.CallEnded.Call.Container; terminal != nil && container != nil {
+							reportInputError(terminal.Ended(container.ContainerID))
+						}
 						if event.CallEnded.Call.ID == rootCallID {
 							switch event.CallEnded.Outcome {
 							case model.OpOutcomeSucceeded:
@@ -309,4 +366,8 @@ opctl node and other opctl containers by their name. Containers will be removed 
 	runCmd.Flags().BoolVarP(&noProgressFlag, noProgressFlagName, "", !term.IsTerminal(int(os.Stdout.Fd())), "Disable live call graph for the op")
 
 	return &runCmd
+}
+
+func showLiveGraph(noProgress, containerFocused bool) bool {
+	return !noProgress && !containerFocused
 }

@@ -32,3 +32,21 @@ func readChunks(
 	}
 	return err
 }
+
+// readRawChunks publishes terminal output as soon as the reader provides it.
+func readRawChunks(stream io.Reader, onChunk func([]byte)) error {
+	buf := make([]byte, 32*1024)
+	for {
+		n, err := stream.Read(buf)
+		if n > 0 {
+			// Subscribers can read the event after the next read reuses buf.
+			onChunk(append([]byte(nil), buf[:n]...))
+		}
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+	}
+}

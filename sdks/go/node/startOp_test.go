@@ -10,6 +10,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/containerruntime"
 	. "github.com/opctl/opctl/sdks/go/node/internal/fakes"
 	"github.com/opctl/opctl/sdks/go/node/pubsub"
 )
@@ -73,6 +74,8 @@ var _ = Context("core", func() {
 					}
 					providedOpPath := filepath.Join(wd, "testdata/startOp")
 					providedReq := model.StartOpReq{
+						Interactive: true,
+						TermSize:    &model.TermSize{Rows: 33, Cols: 95},
 						Args: map[string]*model.Value{
 							"dummyArg1Name": {String: &providedArg1String},
 							"dummyArg2Name": {Dir: &providedArg2Dir},
@@ -131,7 +134,7 @@ var _ = Context("core", func() {
 					/* assert */
 					// Call happens in go routine; wait 500ms to allow it to occur
 					time.Sleep(time.Millisecond * 500)
-					_,
+					actualCtx,
 						actualOpID,
 						actualScope,
 						actualCallSpec,
@@ -139,6 +142,10 @@ var _ = Context("core", func() {
 						_,
 						actualRootID := fakeCaller.CallArgsForCall(0)
 
+					branchCtx, cancel := context.WithCancel(actualCtx)
+					defer cancel()
+					Expect(containerruntime.IsInteractive(branchCtx)).To(BeTrue())
+					Expect(containerruntime.InitialTermSize(branchCtx)).To(Equal(model.TermSize{Rows: 33, Cols: 95}))
 					Expect(actualOpID).To(HaveLen(32))
 					Expect(actualScope).To(Equal(providedReq.Args))
 					Expect(*actualCallSpec).To(BeEquivalentTo(model.CallSpec{

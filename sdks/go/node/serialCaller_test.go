@@ -126,6 +126,8 @@ var _ = Context("core", func() {
 					eventPublisher pubsub.EventPublisher,
 					stdOut io.WriteCloser,
 					stdErr io.WriteCloser,
+					_ io.Reader,
+					_ <-chan model.TermSize,
 				) (*int64, error) {
 
 					stdErr.Close()

@@ -1,6 +1,6 @@
 export default interface ContainerStarted {
     containerId: string
-    imageRef: string
+    rootCallId: string
     opRef: string
-    rootOpId: string
+    name?: string
 }

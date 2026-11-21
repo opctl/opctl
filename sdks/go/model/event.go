@@ -7,6 +7,7 @@ type Event struct {
 	AuthAdded                *AuthAdded                `json:"authAdded,omitempty"`
 	CallEnded                *CallEnded                `json:"callEnded,omitempty"`
 	CallStarted              *CallStarted              `json:"callStarted,omitempty"`
+	ContainerStarted         *ContainerStarted         `json:"containerStarted,omitempty"`
 	ContainerStdErrWrittenTo *ContainerStdErrWrittenTo `json:"containerStdErrWrittenTo,omitempty"`
 	ContainerStdOutWrittenTo *ContainerStdOutWrittenTo `json:"containerStdOutWrittenTo,omitempty"`
 	CallKillRequested        *CallKillRequested        `json:"callKillRequested,omitempty"`
@@ -47,6 +48,14 @@ type CallStarted struct {
 // CallEndedError represents an error associated w/ an ended call
 type CallEndedError struct {
 	Message string `json:"message"`
+}
+
+// ContainerStarted indicates that a container with interactive input is running.
+type ContainerStarted struct {
+	ContainerID string  `json:"containerId"`
+	RootCallID  string  `json:"rootCallId"`
+	OpRef       string  `json:"opRef"`
+	Name        *string `json:"name,omitempty"`
 }
 
 // ContainerStdErrWrittenTo represents a single write to a containers std err.

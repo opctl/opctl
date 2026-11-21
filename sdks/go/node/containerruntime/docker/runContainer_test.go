@@ -72,6 +72,8 @@ var _ = Context("RunContainer", func() {
 			pubSub,
 			nopWriteCloser{io.Discard},
 			nopWriteCloser{io.Discard},
+			nil,
+			nil,
 		)
 
 		/* assert */
@@ -106,6 +108,8 @@ var _ = Context("RunContainer", func() {
 				pubSub,
 				nopWriteCloser{io.Discard},
 				nopWriteCloser{io.Discard},
+				nil,
+				nil,
 			)
 
 			/* assert */
@@ -146,6 +150,8 @@ var _ = Context("RunContainer", func() {
 				pubSub,
 				nopWriteCloser{io.Discard},
 				nopWriteCloser{io.Discard},
+				nil,
+				nil,
 			)
 
 			/* assert */
@@ -269,6 +275,8 @@ var _ = Context("RunContainer", func() {
 				pubSub,
 				nopWriteCloser{io.Discard},
 				nopWriteCloser{io.Discard},
+				nil,
+				nil,
 			)
 
 			/* assert */

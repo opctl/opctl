@@ -96,6 +96,8 @@ func (cr _containerRuntime) getEnv() []string {
 	return n
 }
 
+func (_containerRuntime) SupportsInteractive() bool { return true }
+
 // RunContainer creates, starts, and waits on a container. ExitCode &/Or an error will be returned
 func (cr _containerRuntime) RunContainer(
 	ctx context.Context,
@@ -106,13 +108,15 @@ func (cr _containerRuntime) RunContainer(
 	eventPublisher pubsub.EventPublisher,
 	stdout io.WriteCloser,
 	stderr io.WriteCloser,
+	stdin io.Reader,
+	resize <-chan model.TermSize,
 ) (*int64, error) {
 	dockerCR, err := cr.getDockerContainerRuntime(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return dockerCR.RunContainer(ctx, req, rootCallID, eventPublisher, stdout, stderr)
+	return dockerCR.RunContainer(ctx, req, rootCallID, eventPublisher, stdout, stderr, stdin, resize)
 }
 
 func (cr _containerRuntime) getDockerContainerRuntime(

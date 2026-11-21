@@ -76,6 +76,8 @@ func (cr _containerRuntime) RunContainer(
 	eventPublisher pubsub.EventPublisher,
 	stdout io.WriteCloser,
 	stderr io.WriteCloser,
+	_ io.Reader,
+	_ <-chan model.TermSize,
 ) (*int64, error) {
 	defer stdout.Close()
 	defer stderr.Close()

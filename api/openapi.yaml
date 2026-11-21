@@ -25,6 +25,31 @@ paths:
           $ref: "#/components/responses/badRequest"
         "500":
           $ref: "#/components/responses/internalServerError"
+  "/containers/{containerID}/attach":
+    get:
+      summary: Attach to an interactive container's input
+      description: >
+        Upgrades to WebSocket. Send binary messages of up to 64 KiB for stdin
+        and text messages with JSON rows and cols for terminal resize.
+        Disconnecting sends Ctrl-D. Programs reading in canonical mode with
+        the default EOF key get end-of-input. Raw-mode programs receive the
+        bytes and can continue running until the op is killed.
+        The server closes the connection when the container exits.
+      tags:
+        - containers
+      parameters:
+        - name: containerID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "101":
+          description: Switching Protocols
+        "404":
+          description: No running interactive container with this ID
+        "409":
+          description: The container already has an input attachment
   /events/stream:
     get:
       summary: Get an event stream
@@ -36,6 +61,13 @@ paths:
           description:
             When specified, client MUST ack (empty reply) each message before server will send another.
             This enables the client to apply back pressure to the stream
+          schema:
+            type: boolean
+          allowEmptyValue: true
+        - name: ordered
+          in: query
+          required: false
+          description: Delivers live events in publication order after replay when true. A bare ordered flag means true.
           schema:
             type: boolean
           allowEmptyValue: true
@@ -405,6 +437,21 @@ components:
           $ref: "#/components/schemas/startOpReqArgs"
         op:
           $ref: "#/components/schemas/startOpReqOp"
+        interactive:
+          description: Open terminal input for containers on supported runtimes.
+          type: boolean
+          default: false
+        termSize:
+          description: Initial console size for interactive containers.
+          type: object
+          required: [rows, cols]
+          properties:
+            rows:
+              type: integer
+              minimum: 1
+            cols:
+              type: integer
+              minimum: 1
     value:
       description: a typed value
       oneOf:
@@ -450,6 +497,9 @@ components:
             callStarted:
               $ref: "#/components/schemas/callStarted"
         - properties:
+            containerStarted:
+              $ref: "#/components/schemas/containerStarted"
+        - properties:
             containerStdErrWrittenTo:
               $ref: "#/components/schemas/containerStdErrWrittenTo"
         - properties:
@@ -493,6 +543,17 @@ components:
         rootCallId:
           type: string
       type: object
+    containerStarted:
+      type: object
+      properties:
+        containerId:
+          type: string
+        rootCallId:
+          type: string
+        opRef:
+          type: string
+        name:
+          type: string
     containerStdErrWrittenTo:
       properties:
         imageRef:

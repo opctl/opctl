@@ -6,6 +6,7 @@ require (
 	github.com/appdataspec/sdk-golang v0.0.0-20170917062448-0c0ade7a92f7
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/containers/image/v5 v5.30.1
+	github.com/creack/pty v1.1.20
 	github.com/dgraph-io/badger/v4 v4.1.0
 	github.com/distribution/reference v0.5.0
 	github.com/docker/docker v27.3.1+incompatible
@@ -37,6 +38,7 @@ require (
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/net v0.47.0
 	golang.org/x/sync v0.18.0
+	golang.org/x/sys v0.38.0
 	golang.org/x/term v0.37.0
 	golang.zx2c4.com/wireguard v0.0.0-20231211153847-12269c276173
 	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20230429144221-925a1e7659e6
@@ -183,7 +185,6 @@ require (
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/mod v0.29.0 // indirect
 	golang.org/x/oauth2 v0.19.0 // indirect
-	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/telemetry v0.0.0-20251008203120-078029d740a8 // indirect
 	golang.org/x/text v0.31.0 // indirect
 	golang.org/x/time v0.5.0 // indirect

@@ -6,6 +6,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/go-connections/nat"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 func constructHostConfig(
@@ -14,9 +15,11 @@ func constructHostConfig(
 	containerCallSockets map[string]string,
 	portBindings nat.PortMap,
 	isGpuSupported bool,
+	size model.TermSize,
 ) *container.HostConfig {
 	hostConfig := &container.HostConfig{
 		PortBindings: portBindings,
+		ConsoleSize:  [2]uint{size.Rows, size.Cols},
 		// support docker in docker
 		// @TODO: reconsider; can we avoid this?
 		// see for similar discussion: https://github.com/kubernetes/kubernetes/issues/391
