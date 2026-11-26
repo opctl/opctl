@@ -14,7 +14,7 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "react-router": "^6.1.0",
+    "react-router": "^6.30.2",
     "react-router-dom": "^6.1.0"
   },
   "proxy": {
